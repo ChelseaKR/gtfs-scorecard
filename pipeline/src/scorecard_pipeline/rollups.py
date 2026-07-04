@@ -29,6 +29,7 @@ from . import SCHEMA_VERSION
 from .alerts import build_digest
 from .config import artifacts_dir, repo_root
 from .metrics import expiry_status
+from .ntd import assess_shapes_readiness
 from .publish import RESERVED_ARTIFACT_DIRS, _write_json
 
 
@@ -111,6 +112,26 @@ def _agency_ids_in_state(state: str) -> list[str]:
     return ids
 
 
+def _shapes_status(latest: dict[str, Any]) -> str | None:
+    """This agency's current shapes.txt (NTD RY2026) readiness status, or None
+    when it does not apply: a non-US agency (NTD is a US-federal FTA program,
+    ADR 0026) or an artifact that predates the check. Recomputed from the
+    stored trip counts rather than trusting the stored status/prose directly,
+    the same pattern render_site.py's _current_shapes_readiness uses, so a
+    wording or threshold fix reaches every rollup without a rescore."""
+    if latest.get("agency", {}).get("country", "US") != "US":
+        return None
+    shapes = latest.get("shapes_readiness")
+    if not shapes:
+        return None
+    total = shapes.get("total_trips")
+    with_shape = shapes.get("trips_with_shape")
+    if isinstance(total, int) and isinstance(with_shape, int):
+        return assess_shapes_readiness(total, with_shape).status
+    status = shapes.get("status")
+    return str(status) if status is not None else None
+
+
 def build_rollup(
     rollup: Rollup, generated_at: dt.datetime, attention: dict[str, str] | None = None
 ) -> dict[str, Any]:
@@ -162,6 +183,7 @@ def build_rollup(
                 "days_until_expiry": days,
                 "expiry_status": expiry_status(days),
                 "top_fix": fixes[0]["fix"] if fixes else None,
+                "shapes_status": _shapes_status(latest),
             }
         )
 
@@ -181,6 +203,20 @@ def build_rollup(
     lapsed = sum(1 for m in members if m["expiry_status"] == "lapsed")
     stale = sum(1 for m in members if m["expiry_status"] == "stale")
 
+    # shapes.txt (NTD RY2026) readiness across the cohort, the liaison-facing
+    # half of the per-agency check (03-A1). "not_measured" folds together a
+    # non-US member and an artifact that predates the check — both mean "no
+    # signal yet," which is what a liaison scanning the summary cares about.
+    shapes_statuses = [m["shapes_status"] for m in members if m["shapes_status"]]
+    shapes_counts = Counter(shapes_statuses)
+    shapes_readiness = {
+        "ready": shapes_counts.get("ready", 0),
+        "at_risk": shapes_counts.get("at_risk", 0),
+        "not_ready": shapes_counts.get("not_ready", 0),
+        "not_measured": len(members) - len(shapes_statuses),
+        "total": len(members),
+    }
+
     return {
         "schema_version": SCHEMA_VERSION,
         "rollup": {"id": rollup.id, "name": rollup.name},
@@ -190,6 +226,7 @@ def build_rollup(
         "grade_distribution": {g: grades[g] for g in sorted(grades)},
         "needs_attention": sum(1 for m in members if m["needs_attention"]),
         "expired": {"lapsed": lapsed, "stale": stale, "total": lapsed + stale},
+        "shapes_readiness": shapes_readiness,
         "members": members,
         "common_fixes": common,
     }
@@ -208,6 +245,7 @@ _CSV_COLUMNS: tuple[tuple[str, str], ...] = (
     ("needs_attention", "needs_attention"),
     ("attention_reason", "attention_reason"),
     ("top_fix", "top_fix"),
+    ("shapes_txt_status", "shapes_status"),
 )
 
 

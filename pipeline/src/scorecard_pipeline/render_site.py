@@ -2626,6 +2626,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     rows = "".join(rows_parts)
     avg = "—" if rollup.get("average_score") is None else f"{rollup['average_score']} out of 100"
     expired_section = _rollup_expired_section(rollup)
+    shapes_section = _rollup_shapes_section(rollup)
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (rname, None)])
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -2638,6 +2639,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </div>
     {_route_rule()}
     {expired_section}
+    {shapes_section}
     <section aria-labelledby="members-h">
       <h2 class="section-title" id="members-h">Agencies, worst first</h2>
       <ul class="program-list">{rows}</ul>
@@ -2709,6 +2711,38 @@ def _rollup_expired_section(rollup: dict[str, Any]) -> str:
         '<p class="page-lede">These feeds have run out and dropped from trip planners. '
         "Start the program's outreach here.</p>"
         f"{''.join(groups)}</section>"
+    )
+
+
+def _rollup_shapes_section(rollup: dict[str, Any]) -> str:
+    """A worklist of this program's members not yet covered by shapes.txt, the
+    liaison-facing half of the per-agency NTD shapes readiness check (03-A1).
+    FTA's July 2025 final rule requires shapes.txt covering every trip for
+    Reduced, Rural, and Tribal NTD reporters by Report Year 2026 (Full
+    Reporters already, RY2025); this checks the feed itself, not each
+    agency's reporter type, so it is a heads-up to check against each
+    agency's own filing, never a claim that a listed agency is currently
+    out of compliance. Absent when nothing in the cohort has a gap, or when
+    the cohort has no measured members (all non-US, or artifacts that
+    predate the check)."""
+    shapes = rollup.get("shapes_readiness")
+    if not shapes or not (shapes["not_ready"] or shapes["at_risk"]):
+        return ""
+    gaps = [m for m in rollup["members"] if m.get("shapes_status") in ("not_ready", "at_risk")]
+    gaps.sort(key=lambda m: (m["shapes_status"] != "not_ready", m["id"]))
+    rows = "".join(
+        _rollup_member_row(m, _NTD_LABELS.get(m["shapes_status"], m["shapes_status"])) for m in gaps
+    )
+    measured = shapes["total"] - shapes["not_measured"]
+    return (
+        '<section class="expired-panel" aria-labelledby="rollup-shapes-h">'
+        '<h2 class="section-title" id="rollup-shapes-h">shapes.txt coverage '
+        f'<span class="grade-count">{shapes["ready"]} of {measured}</span></h2>'
+        '<p class="page-lede">The FTA National Transit Database requires shapes.txt covering '
+        "every trip (Reduced, Rural, and Tribal reporters by Report Year 2026; Full Reporters "
+        "already). These agencies are not fully covered yet — check each one against its own "
+        "NTD filing.</p>"
+        f'<ul class="program-list">{rows}</ul></section>'
     )
 
 
