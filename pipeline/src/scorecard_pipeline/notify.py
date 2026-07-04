@@ -23,6 +23,7 @@ import yaml
 
 from .alerts import Digest, render_digest
 from .config import repo_root
+from .portfolio_digest import PortfolioDigest, render_portfolio_digest
 
 # Enough to catch a typo without policing addresses, but restricted to the
 # characters a real address uses, so a registered address can't smuggle URL or
@@ -45,16 +46,23 @@ class Subscriber:
     `verified` is the consent gate. It defaults to false, and an unverified
     subscriber is never emailed (see build_emails), so nothing goes to an address
     that has not confirmed. `kinds` is the opt-in granularity (None means every
-    kind), so an agency can ask for expiry warnings only."""
+    kind), so an agency can ask for expiry warnings only. `rollup_ids` is a
+    separate opt-in (ADR 0004 amendment): a liaison adds a cohort id to also
+    receive that rollup's weekly portfolio digest. It rides the same verified
+    gate — an unverified subscriber is never sent a rollup digest either."""
 
     email: str
     agency_ids: frozenset[str] | None  # None means "every tracked agency"
     verified: bool = False
     kinds: frozenset[str] | None = None  # None means "every alert kind"
     unsub_token: str = ""  # one-click unsubscribe; only set for stored subscribers
+    rollup_ids: frozenset[str] | None = None  # rollups opted into for the weekly digest
 
     def follows(self, agency_id: str) -> bool:
         return self.agency_ids is None or agency_id in self.agency_ids
+
+    def follows_rollup(self, rollup_id: str) -> bool:
+        return self.rollup_ids is not None and rollup_id in self.rollup_ids
 
     def wants(self, agency_id: str, kind: str) -> bool:
         """Whether this subscriber should hear about a given agency and kind."""
@@ -109,12 +117,21 @@ def parse_subscribers(raw: object) -> list[Subscriber]:
         else:
             raise SubscriptionError(f"{label}: 'kinds' must be a non-empty list if present")
 
+        rollups_raw = entry.get("rollups")
+        if rollups_raw is None:
+            rollup_ids: frozenset[str] | None = None
+        elif isinstance(rollups_raw, list) and rollups_raw:
+            rollup_ids = frozenset(str(r) for r in rollups_raw)
+        else:
+            raise SubscriptionError(f"{label}: 'rollups' must be a non-empty list if present")
+
         subscribers.append(
             Subscriber(
                 email=email,
                 agency_ids=agency_ids,
                 verified=bool(entry.get("verified", False)),
                 kinds=kinds,
+                rollup_ids=rollup_ids,
             )
         )
     return subscribers
@@ -138,12 +155,15 @@ def subscriber_from_item(item: dict[str, Any]) -> Subscriber:
         agency_ids = frozenset(str(a) for a in (item.get("agencies") or []))
     kinds_raw = item.get("kinds")
     kinds = frozenset(str(k) for k in kinds_raw) if kinds_raw else None
+    rollups_raw = item.get("rollups")
+    rollup_ids = frozenset(str(r) for r in rollups_raw) if rollups_raw else None
     return Subscriber(
         email=str(item["email"]),
         agency_ids=agency_ids,
         verified=bool(item.get("verified", False)),
         kinds=kinds,
         unsub_token=str(item.get("unsub_token", "")),
+        rollup_ids=rollup_ids,
     )
 
 
@@ -204,6 +224,39 @@ def build_emails(
             continue
         body = render_digest(personal) + _unsubscribe_footer(subscriber, unsubscribe_base)
         emails.append(Email(to=subscriber.email, subject=_subject(personal), body=body))
+    return emails
+
+
+def build_portfolio_emails(
+    subscribers: list[Subscriber],
+    digests: dict[str, PortfolioDigest],
+    unsubscribe_base: str | None = None,
+) -> list[Email]:
+    """One weekly portfolio-digest email per verified subscriber who opted into a
+    rollup that has a digest this week.
+
+    The same consent gate as the alert path applies: an unverified subscriber is
+    skipped entirely. Unlike the alert digest, a scheduled cohort digest is sent
+    on the regular cadence even when it is all-clear — that reassurance is the
+    point of a weekly rollup, and the volume is low and opt-in. A subscriber's
+    opted-in rollups are combined into one email. `digests` maps rollup id to the
+    built PortfolioDigest for the week."""
+    emails: list[Email] = []
+    for subscriber in subscribers:
+        if not subscriber.verified or not subscriber.rollup_ids:
+            continue
+        mine = [
+            digests[rollup_id]
+            for rollup_id in sorted(subscriber.rollup_ids)
+            if rollup_id in digests
+        ]
+        if not mine:
+            continue
+        body = "\n\n".join(render_portfolio_digest(digest) for digest in mine)
+        body += _unsubscribe_footer(subscriber, unsubscribe_base)
+        as_of = mine[0].as_of
+        subject = f"GTFS Scorecard: weekly portfolio digest ({as_of.isoformat()})"
+        emails.append(Email(to=subscriber.email, subject=subject, body=body))
     return emails
 
 

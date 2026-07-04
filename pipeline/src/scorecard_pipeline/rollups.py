@@ -111,6 +111,20 @@ def _agency_ids_in_state(state: str) -> list[str]:
     return ids
 
 
+def resolve_member_ids(rollup: Rollup) -> list[str]:
+    """The agency ids a rollup covers.
+
+    Explicit members when the rollup lists them, otherwise every agency in its
+    state, otherwise every agency with a published artifact. Shared by the
+    rollup artifact build and the portfolio digest so a cohort means the same
+    set of agencies in both."""
+    if rollup.member_ids:
+        return list(rollup.member_ids)
+    if rollup.state:
+        return _agency_ids_in_state(rollup.state)
+    return _available_agency_ids()
+
+
 def build_rollup(
     rollup: Rollup, generated_at: dt.datetime, attention: dict[str, str] | None = None
 ) -> dict[str, Any]:
@@ -125,12 +139,7 @@ def build_rollup(
     setting that would lift several agencies at once.
     """
     attention = attention or {}
-    if rollup.member_ids:
-        member_ids = list(rollup.member_ids)
-    elif rollup.state:
-        member_ids = _agency_ids_in_state(rollup.state)
-    else:
-        member_ids = _available_agency_ids()
+    member_ids = resolve_member_ids(rollup)
     members: list[dict[str, Any]] = []
     fix_counter: Counter[tuple[str, str]] = Counter()
 

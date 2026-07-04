@@ -9,6 +9,7 @@ scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
 scorecard shards --count 4                        # CI fan-out plan (JSON)
 scorecard alerts [--out digest.md]                # expiry/regression digest
+scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for liaisons
 scorecard rollups                                 # portfolio rollup artifacts
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
@@ -1472,6 +1473,39 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_portfolio_digest(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .portfolio_digest import (
+        build_portfolio_digest,
+        load_snapshot,
+        render_portfolio_digest,
+        save_snapshot,
+    )
+    from .rollups import load_rollups
+
+    rollups = load_rollups()
+    if args.rollup:
+        rollups = [r for r in rollups if r.id == args.rollup]
+        if not rollups:
+            parser.error(f"no rollup with id {args.rollup!r}")
+
+    sections: list[str] = []
+    for rollup in rollups:
+        previous = load_snapshot(rollup)
+        digest = build_portfolio_digest(rollup, today=args.date, previous_snapshot=previous)
+        sections.append(render_portfolio_digest(digest))
+        if not args.no_save:
+            # Advance the baseline so next week diffs against this run.
+            save_snapshot(rollup, digest.snapshot, digest.as_of)
+
+    text = "\n".join(sections)
+    if args.out:
+        Path(args.out).write_text(text)
+        log.info("Wrote portfolio digest for %d rollup(s) to %s", len(rollups), args.out)
+    else:
+        print(text, end="" if text.endswith("\n") else "\n")
+    return 0
+
+
 def _cmd_rollups(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .rollups import publish_rollups
 
@@ -1771,6 +1805,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     notify.add_argument("--from", dest="sender", help="verified SES sender address")
 
+    portfolio = sub.add_parser(
+        "portfolio-digest", help="build the weekly cohort digest for a program liaison"
+    )
+    portfolio.add_argument("--rollup", help="scope to one rollup id (default: every rollup)")
+    portfolio.add_argument(
+        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+    )
+    portfolio.add_argument("--out", help="write the digest here instead of stdout")
+    portfolio.add_argument(
+        "--no-save", action="store_true", help="do not advance the persisted weekly snapshot"
+    )
+
     sub.add_parser("rollups", help="publish portfolio rollup artifacts")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
     sub.add_parser("render-site", help="generate crawlable static HTML pages, sitemap, robots")
@@ -1909,6 +1955,7 @@ def main(argv: list[str] | None = None) -> int:
         "shards": _cmd_shards,
         "alerts": _cmd_alerts,
         "notify": _cmd_notify,
+        "portfolio-digest": _cmd_portfolio_digest,
         "rollups": _cmd_rollups,
         "reindex": _cmd_reindex,
         "render-site": _cmd_render_site,

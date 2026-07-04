@@ -14,11 +14,13 @@ from scorecard_pipeline.notify import (
     EMAIL_RE,
     SubscriptionError,
     build_emails,
+    build_portfolio_emails,
     parse_subscribers,
     personal_digest,
     subscriber_from_item,
     verification_email,
 )
+from scorecard_pipeline.portfolio_digest import PortfolioDigest
 
 
 def test_email_regex_rejects_url_significant_characters() -> None:
@@ -278,3 +280,93 @@ def test_subscriber_kinds_filter_anomaly_items() -> None:
     )[0]
     personal = personal_digest(sub, digest)
     assert [i.kind for i in personal.items] == ["expiry"]
+
+
+# ---------------------------------------------------------------------------
+# Portfolio (cohort rollup) digest opt-in — the consent-model extension.
+# ---------------------------------------------------------------------------
+
+
+def _portfolio_digest(rollup_id: str = "all", member_count: int = 3) -> PortfolioDigest:
+    # A steady (all-clear) weekly digest is still sent on the schedule.
+    return PortfolioDigest(
+        rollup_id=rollup_id,
+        rollup_name="All tracked agencies",
+        as_of=dt.date(2026, 6, 19),
+        first_run=False,
+        member_count=member_count,
+        movements=[],
+        snapshot={},
+    )
+
+
+def test_parse_rollups_field() -> None:
+    sub = parse_subscribers(
+        {"subscribers": [{"email": "a@example.org", "all": True, "rollups": ["all", "ca"]}]}
+    )[0]
+    assert sub.rollup_ids == frozenset({"all", "ca"})
+    assert sub.follows_rollup("ca")
+    assert not sub.follows_rollup("nv")
+
+
+def test_rollups_field_defaults_to_none() -> None:
+    sub = parse_subscribers({"subscribers": [{"email": "b@example.org", "all": True}]})[0]
+    assert sub.rollup_ids is None
+    assert not sub.follows_rollup("all")
+
+
+def test_parse_rejects_empty_rollups() -> None:
+    with pytest.raises(SubscriptionError):
+        parse_subscribers({"subscribers": [{"email": "a@example.org", "all": True, "rollups": []}]})
+
+
+def test_subscriber_from_item_parses_rollups() -> None:
+    sub = subscriber_from_item(
+        {"email": "liaison@x.org", "all": True, "rollups": {"all"}, "verified": True}
+    )
+    assert sub.rollup_ids == frozenset({"all"})
+
+
+def test_build_portfolio_emails_for_opted_in_verified() -> None:
+    subs = parse_subscribers(
+        {
+            "subscribers": [
+                {"email": "liaison@example.org", "all": True, "rollups": ["all"], "verified": True}
+            ]
+        }
+    )
+    emails = build_portfolio_emails(subs, {"all": _portfolio_digest()})
+    assert len(emails) == 1
+    assert emails[0].to == "liaison@example.org"
+    assert "portfolio digest" in emails[0].subject
+    # A steady week still sends the reassuring all-clear (unlike the alert path).
+    assert "held steady" in emails[0].body
+
+
+def test_build_portfolio_emails_skips_unverified() -> None:
+    # Same subscriber but unverified (the default): the consent gate keeps it silent.
+    subs = parse_subscribers(
+        {"subscribers": [{"email": "liaison@example.org", "all": True, "rollups": ["all"]}]}
+    )
+    assert subs[0].verified is False
+    assert build_portfolio_emails(subs, {"all": _portfolio_digest()}) == []
+
+
+def test_build_portfolio_emails_skips_when_not_opted_in() -> None:
+    # Verified, follows every agency for alerts, but did not opt into any rollup.
+    subs = parse_subscribers(
+        {"subscribers": [{"email": "a@example.org", "all": True, "verified": True}]}
+    )
+    assert build_portfolio_emails(subs, {"all": _portfolio_digest()}) == []
+
+
+def test_build_portfolio_emails_only_sends_subscribed_rollups() -> None:
+    subs = parse_subscribers(
+        {
+            "subscribers": [
+                {"email": "a@example.org", "all": True, "rollups": ["ca"], "verified": True}
+            ]
+        }
+    )
+    # The only digest built this week is for a rollup the subscriber did not opt into.
+    assert build_portfolio_emails(subs, {"all": _portfolio_digest()}) == []
