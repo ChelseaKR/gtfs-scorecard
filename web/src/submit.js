@@ -12,6 +12,18 @@ const endpoint = /** @type {any} */ (window).SCORECARD_SUBMIT_URL;
 const DOCS_URL =
   "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/add-your-agency.md";
 
+// Prefill from an instant-score "track this feed daily" handoff
+// (web/try.html), which links here with ?url=&name=.
+{
+  const params = new URLSearchParams(location.search);
+  const urlField = /** @type {HTMLInputElement | null} */ (
+    form?.querySelector('[name="static_gtfs_url"]')
+  );
+  const nameField = /** @type {HTMLInputElement | null} */ (form?.querySelector('[name="name"]'));
+  if (urlField && params.get("url")) urlField.value = params.get("url") || "";
+  if (nameField && params.get("name")) nameField.value = params.get("name") || "";
+}
+
 /** @param {string} message @param {"ok"|"err"|"info"} kind */
 function setStatus(message, kind) {
   status.textContent = message;
