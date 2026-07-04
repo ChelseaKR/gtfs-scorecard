@@ -2877,6 +2877,246 @@ def _sensitivity_note() -> str:
     )
 
 
+# The methodology sandbox (EXP-06): a dependency-free widget on /how-to-read/
+# that lets a reader move the four rubric weights and watch, entirely client
+# side, how the grade distribution shifts. It fetches the same scoring.json the
+# pipeline publishes (weights + grade bands) and the flat agencies.json (each
+# agency's measured category scores), so the default weights, the band
+# thresholds, and the overall-score formula all come from the published data at
+# runtime -- nothing about the rubric is hardcoded here. The recompute mirrors
+# score.build_scorecard exactly: overall = weighted average of the *measured*
+# categories, with the weights of any unmeasured category (realtime is null for
+# most agencies) renormalized out, then mapped to a letter by the grade bands'
+# min_score thresholds. The published side of every comparison uses each
+# agency's already-published grade, so at the default weights nothing moves --
+# which is the visible proof the JS and the pipeline compute the same score.
+_SANDBOX_JS = r"""    <script>
+      (function () {
+        var root = document.getElementById("sandbox");
+        if (!root || !window.fetch || !window.Promise) return;
+        var CATS = ["correctness", "freshness", "completeness", "realtime"];
+        var GRADES = ["A", "B", "C", "D", "F"];
+        var status = document.getElementById("sandbox-status");
+        var summary = document.getElementById("sandbox-summary");
+        var sample = document.getElementById("sandbox-sample");
+        var resetBtn = document.getElementById("sandbox-reset");
+        var sliders = {}, outputs = {};
+        CATS.forEach(function (c) {
+          sliders[c] = root.querySelector('input[data-cat="' + c + '"]');
+          outputs[c] = root.querySelector('output[data-cat="' + c + '"]');
+        });
+
+        var bands = null, defaults = {}, agencies = [];
+
+        function gradeFor(score) {
+          for (var i = 0; i < bands.length; i++) {
+            if (score >= bands[i].min_score) return bands[i].grade;
+          }
+          return bands[bands.length - 1].grade;
+        }
+
+        function overallFor(a, w) {
+          var num = 0, den = 0;
+          for (var i = 0; i < CATS.length; i++) {
+            var s = a[CATS[i]];
+            if (s === null || s === undefined) continue;
+            num += s * w[CATS[i]];
+            den += w[CATS[i]];
+          }
+          return den > 0 ? num / den : 0;
+        }
+
+        function esc(s) {
+          return String(s).replace(/[&<>"]/g, function (ch) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch];
+          });
+        }
+
+        function currentWeights() {
+          var w = {};
+          CATS.forEach(function (c) { w[c] = Number(sliders[c].value) / 100; });
+          return w;
+        }
+
+        function recompute() {
+          var w = currentWeights();
+          CATS.forEach(function (c) {
+            outputs[c].textContent = sliders[c].value + "%";
+          });
+          var userCounts = {}, pubCounts = {};
+          GRADES.forEach(function (g) { userCounts[g] = 0; pubCounts[g] = 0; });
+          var moved = [], changed = 0;
+          agencies.forEach(function (a) {
+            // Baseline: the same formula run at the published weights, so any
+            // difference below is attributable to the user's weights alone, not
+            // to rounding of the published category scores. At the default slider
+            // positions user weights equal published, so nothing moves -- the
+            // visible proof the sandbox and the pipeline compute the same grade.
+            var bo = overallFor(a, defaults);
+            var pub = gradeFor(bo);
+            if (pubCounts[pub] === undefined) pubCounts[pub] = 0;
+            pubCounts[pub]++;
+            var uo = overallFor(a, w);
+            var ug = gradeFor(uo);
+            userCounts[ug]++;
+            if (ug !== pub) {
+              changed++;
+              moved.push({
+                id: a.id, name: a.name, from: pub, to: ug,
+                delta: uo - bo,
+              });
+            }
+          });
+
+          var rows = GRADES.map(function (g) {
+            return '<tr><td><span class="grade-chip grade-' + g.toLowerCase() +
+              '">' + g + "</span></td><td>" + pubCounts[g] +
+              "</td><td>" + userCounts[g] + "</td><td>" +
+              (userCounts[g] - pubCounts[g] > 0 ? "+" : "") +
+              (userCounts[g] - pubCounts[g]) + "</td></tr>";
+          }).join("");
+          summary.innerHTML =
+            '<p class="sandbox-headline">' +
+            (changed === 0
+              ? "These are the published weights: no agency changes band."
+              : changed + " of " + agencies.length +
+                " agencies change letter grade under these weights.") +
+            "</p>" +
+            '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
+            "<caption class=\"visually-hidden\">Agencies per grade band: published weights versus your weights</caption>" +
+            "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">Published</th>" +
+            "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
+            "<tbody>" + rows + "</tbody></table></div>";
+
+          if (!moved.length) {
+            sample.innerHTML = "";
+            return;
+          }
+          var up = moved.filter(function (m) { return m.delta > 0; })
+            .sort(function (a, b) { return b.delta - a.delta; }).slice(0, 5);
+          var down = moved.filter(function (m) { return m.delta < 0; })
+            .sort(function (a, b) { return a.delta - b.delta; }).slice(0, 5);
+          function li(m) {
+            return "<li><span>" + esc(m.name) + "</span> " +
+              '<span class="grade-chip grade-' + m.from.toLowerCase() + '">' + m.from +
+              '</span> &rarr; <span class="grade-chip grade-' + m.to.toLowerCase() +
+              '">' + m.to + "</span> <span class=\"sandbox-delta\">(" +
+              (m.delta > 0 ? "+" : "") + m.delta.toFixed(1) + ")</span></li>";
+          }
+          var html = "";
+          if (up.length) {
+            html += "<h3 class=\"sandbox-sub\">Rise the most</h3><ul class=\"sandbox-movers\">" +
+              up.map(li).join("") + "</ul>";
+          }
+          if (down.length) {
+            html += "<h3 class=\"sandbox-sub\">Fall the most</h3><ul class=\"sandbox-movers\">" +
+              down.map(li).join("") + "</ul>";
+          }
+          sample.innerHTML = html;
+        }
+
+        function applyDefaults() {
+          CATS.forEach(function (c) {
+            sliders[c].value = Math.round((defaults[c] || 0) * 100);
+          });
+          recompute();
+        }
+
+        Promise.all([
+          fetch("/api/v1/scoring.json").then(function (r) { return r.json(); }),
+          fetch("/api/v1/agencies.json").then(function (r) { return r.json(); }),
+        ]).then(function (res) {
+          var scoring = res[0], agenciesDoc = res[1];
+          bands = (scoring.grade_bands || []).slice().sort(function (a, b) {
+            return b.min_score - a.min_score;
+          });
+          defaults = scoring.category_weights || {};
+          agencies = (agenciesDoc.agencies || []).filter(function (a) {
+            return typeof a.score === "number";
+          });
+          CATS.forEach(function (c) {
+            sliders[c].disabled = false;
+            sliders[c].addEventListener("input", recompute);
+          });
+          resetBtn.disabled = false;
+          resetBtn.addEventListener("click", applyDefaults);
+          if (status) status.hidden = true;
+          root.querySelector(".sandbox-controls").hidden = false;
+          applyDefaults();
+        }).catch(function () {
+          if (status) {
+            status.textContent =
+              "The live sandbox could not load the scoring data. " +
+              "The weights and grade bands are still described above.";
+          }
+        });
+      })();
+    </script>"""
+
+
+_SANDBOX_STYLE = """    <style>
+      #sandbox .sandbox-controls { display: grid; gap: 0.9rem; margin: 1rem 0; }
+      #sandbox .sandbox-slider { display: grid; grid-template-columns: 10rem 1fr 3.5rem; align-items: center; gap: 0.75rem; }
+      #sandbox .sandbox-slider label { font-weight: 600; }
+      #sandbox .sandbox-slider input[type="range"] { width: 100%; accent-color: var(--green); }
+      #sandbox .sandbox-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); }
+      #sandbox .sandbox-buttons { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+      #sandbox .sandbox-headline { font-weight: 600; margin: 0.75rem 0; }
+      #sandbox .sandbox-table-scroll { overflow-x: auto; }
+      #sandbox table.sandbox-table { border-collapse: collapse; width: 100%; max-width: 34rem; }
+      #sandbox table.sandbox-table th, #sandbox table.sandbox-table td { text-align: left; padding: 0.35rem 0.75rem; border-bottom: 1.5px solid var(--line); font-variant-numeric: tabular-nums; }
+      #sandbox .sandbox-sub { font-size: 1rem; margin: 1rem 0 0.4rem; }
+      #sandbox .sandbox-movers { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
+      #sandbox .sandbox-movers li { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+      #sandbox .sandbox-delta { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+      @media (max-width: 40rem) { #sandbox .sandbox-slider { grid-template-columns: 1fr; gap: 0.25rem; } #sandbox .sandbox-slider output { text-align: left; } }
+    </style>"""
+
+
+def _sandbox_section() -> str:
+    """The interactive methodology sandbox (EXP-06): four weight sliders, a reset,
+    and a live grade-distribution summary, all computed client-side from the
+    published scoring.json and agencies.json. Additive to the guide page; degrades
+    to the static explanation above when scripting or the data fetch is
+    unavailable. The slider labels mirror the four rubric categories; their
+    starting positions are placeholders that the inline JS immediately overwrites
+    with the published weights it fetches at runtime (the single-source rule)."""
+    labels = [
+        ("correctness", "Correctness"),
+        ("freshness", "Freshness"),
+        ("completeness", "Rider experience"),
+        ("realtime", "Realtime quality"),
+    ]
+    sliders = "".join(
+        f'      <div class="sandbox-slider">'
+        f'<label for="w-{cat}">{label}</label>'
+        f'<input type="range" id="w-{cat}" data-cat="{cat}" min="0" max="100" step="1" '
+        f'value="0" disabled aria-describedby="w-{cat}-out">'
+        f'<output id="w-{cat}-out" data-cat="{cat}" for="w-{cat}">—</output></div>'
+        for cat, label in labels
+    )
+    return f"""    {_route_rule()}
+    <section id="sandbox" aria-labelledby="sandbox-h">
+    <h2 class="section-title" id="sandbox-h">Methodology sandbox</h2>
+    <p>The grade blends the four categories with fixed weights. Curious how much those
+    weights matter? Move the sliders to reweight the rubric and watch how many of the
+    agencies we track would change letter grade. Nothing is saved and no grade on the
+    site changes; this is a what-if you run in your own browser. Agencies without
+    realtime data have that weight spread across the categories they do have, exactly
+    as the published score does.</p>
+    <p id="sandbox-status" role="status">Loading the live weights and agency scores…</p>
+    <div class="sandbox-controls" hidden>
+{sliders}
+      <div class="sandbox-buttons">
+        <button type="button" id="sandbox-reset" class="download-btn" disabled>Reset to published weights</button>
+      </div>
+    </div>
+    <div id="sandbox-summary" aria-live="polite"></div>
+    <div id="sandbox-sample"></div>
+    </section>
+{_SANDBOX_STYLE}"""
+
+
 def _render_guide() -> str:
     """A plain-language 'how to read your scorecard' on-ramp for someone who has
     never seen GTFS, including what the grades mean so 'is a B good?' is answered."""
@@ -2933,6 +3173,8 @@ def _render_guide() -> str:
     <p>The category weights behind the score are documented judgment calls, so we also measure
     their consequences the same way: {_sensitivity_note()}</p></section>
 
+{_sandbox_section()}
+
     {_route_rule()}
     <section><h2 class="section-title">What to do</h2>
     <p>Start at the top of "Top things to fix." We put the most rider-affecting fix first. If your
@@ -2980,7 +3222,8 @@ def _render_guide() -> str:
       <dd>Continuous integration: automated checks that run on every change, including the feed grader.</dd>
       <dt><dfn id="g-sha"><abbr title="Secure Hash Algorithm, 256-bit">SHA-256</abbr></dfn></dt>
       <dd>A fingerprint of the exact feed bytes scored, so a grade is reproducible and citeable.</dd>
-    </dl></section>"""
+    </dl></section>
+{_SANDBOX_JS}"""
     return _page(
         title="How to read your scorecard — GTFS Scorecard",
         description="A plain-language guide to the GTFS Scorecard: what it checks, what the A-F grades mean, and what to do first.",
@@ -5103,7 +5346,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     # opinion. Published alongside the artifacts.
     from .score import methodology
 
-    (art / "scoring.json").write_text(json.dumps(methodology(), indent=2) + "\n")
+    scoring_json = json.dumps(methodology(), indent=2) + "\n"
+    (art / "scoring.json").write_text(scoring_json)
+    # Also publish it under the site's api/v1, next to leaderboard.json and
+    # agencies.json, so the methodology sandbox on /how-to-read/ (and any other
+    # consumer) can fetch the same weights + grade bands the pipeline scored with
+    # over same-origin HTTP. One source (score.methodology), two byte-identical
+    # copies, so the interactive widget and the pipeline agree by construction.
+    write("api/v1/scoring.json", scoring_json)
 
     # Per-feed change-detection freshness from the intraday refresh, shown on each
     # page so a reader can see how current the monitoring is. Absent until the
