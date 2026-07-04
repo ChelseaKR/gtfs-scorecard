@@ -25,6 +25,7 @@ from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog, merge_receipts
 from .metrics import expiry_status
 from .score import Scorecard
+from .site_shell import CATEGORY_LABELS
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +33,95 @@ log = logging.getLogger(__name__)
 # They have no per-agency latest.json/dated artifact shape, so anything walking
 # the artifacts tree as if every dir were an agency must skip them.
 RESERVED_ARTIFACT_DIRS = frozenset({"rollups", "changes"})
+
+# Measurement-confidence levels, weakest first (EXP-01). Words, never a letter
+# or a number, so the read cannot be mistaken for a second grade.
+CONFIDENCE_LEVELS = ("provisional", "medium", "high")
+
+# A snapshot older than this at scoring time is read as stale evidence, and the
+# confidence level drops one step.
+STALE_SNAPSHOT_DAYS = 7
+
+
+def _join_labels(labels: list[str]) -> str:
+    """Plain-language list of category labels ("Freshness and Realtime quality",
+    "Freshness, Rider experience, and Realtime quality"), used in confidence
+    notes naming what was not measured this run."""
+    if len(labels) <= 1:
+        return "".join(labels)
+    return ", ".join(labels[:-1]) + (f"{',' if len(labels) > 2 else ''} and {labels[-1]}")
+
+
+def _confidence(
+    card: dict[str, Any], fetch: FetchResult, generated_at: dt.datetime
+) -> dict[str, Any]:
+    """How much of this grade the pipeline could actually measure, and from
+    what source (EXP-01, docs/ideation/03-expansions.md).
+
+    A legibility layer on the one grade, never a second grade: the level is a
+    word, and low confidence describes our measurement coverage this run, not
+    the feed. Derived only from signals the pipeline already records: which
+    categories are measured vs not_yet_measured (score.py), the realtime
+    sampling depth when realtime was measured (rt.py details), the fetch
+    source (fetch.py: origin | mirror | unknown), and the snapshot's age at
+    scoring time.
+    """
+    categories: dict[str, Any] = card["categories"]
+    measured = [k for k, c in categories.items() if c.get("status") == "measured"]
+    unmeasured = [k for k in categories if k not in measured]
+    total = len(categories)
+    notes: list[str] = []
+
+    # Breadth of measurement sets the base level; provenance and staleness can
+    # only lower it.
+    if not unmeasured:
+        rank = 2
+        notes.append("All four score categories were measured this run.")
+    else:
+        rank = 1 if len(measured) * 2 >= total else 0
+        labels = _join_labels([CATEGORY_LABELS.get(k, k) for k in unmeasured])
+        was, does = ("was", "It does") if len(unmeasured) == 1 else ("were", "They do")
+        notes.append(f"{labels} {was} not measured this run. {does} not count against the grade.")
+
+    rt_windows = 1 if categories.get("realtime", {}).get("status") == "measured" else 0
+    if rt_windows:
+        samples = categories["realtime"].get("details", {}).get("samples")
+        if samples:
+            notes.append(f"Realtime was sampled in one bounded window of {samples} snapshots.")
+        else:
+            notes.append("Realtime was sampled in one bounded window.")
+
+    if fetch.source == "mirror":
+        rank -= 1
+        notes.append(
+            "The agency's own feed URL was unreachable, so the Mobility Database's "
+            "hosted mirror copy was scored instead."
+        )
+    elif fetch.source == "unknown":
+        rank -= 1
+        notes.append(
+            "This snapshot predates fetch-source recording, so where it was "
+            "originally downloaded from is not known."
+        )
+    else:
+        notes.append("The feed was downloaded from the agency's own URL.")
+
+    feed_age_days = max(0, (generated_at.date() - fetch.fetched_date).days)
+    if feed_age_days:
+        if feed_age_days > STALE_SNAPSHOT_DAYS:
+            rank -= 1
+        s = "" if feed_age_days == 1 else "s"
+        notes.append(f"The scored snapshot was {feed_age_days} day{s} old at scoring time.")
+
+    return {
+        "level": CONFIDENCE_LEVELS[max(0, rank)],
+        "measured_categories": len(measured),
+        "total_categories": total,
+        "fetch_source": fetch.source,
+        "rt_windows": rt_windows,
+        "feed_age_days": feed_age_days,
+        "notes": notes,
+    }
 
 
 def build_artifact(
@@ -100,6 +190,10 @@ def build_artifact(
             "reachable": True,
         },
         "fetch": fetch_block,
+        # The measurement-confidence read (EXP-01): what this run could and
+        # could not measure, so a reader can tell a fully-measured grade from
+        # a provisional one. Additive; schema 1.5.
+        "confidence": _confidence(card, fetch, generated_at),
         **card,
     }
 

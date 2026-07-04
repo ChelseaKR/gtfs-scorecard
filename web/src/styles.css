@@ -740,6 +740,19 @@ main:focus { outline: none; }
 .ntd-not_ready { color: var(--error); }
 .ntd-unknown { color: var(--info); }
 .fineprint { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.85rem; }
+/* Measurement-confidence read (EXP-01): one quiet line plus an expandable
+   "how we measured this". A legibility layer on the grade, never a second one. */
+.confidence-note { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--ink-soft); max-width: 34rem; }
+.confidence-how { margin: 0 0 0.4rem; max-width: 40rem; font-size: 0.9rem; }
+.confidence-how > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--green);
+}
+.confidence-how ul { margin: 0; padding-left: 1.2rem; }
+.confidence-how li { margin: 0.2rem 0; }
 /* "Beyond the grade" recommendations: a quiet list, not a list of failures. */
 .recs { list-style: none; padding: 0; margin: 0; }
 .rec { padding: 0.7rem 0; border-top: 1px solid var(--line); }

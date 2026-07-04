@@ -1681,3 +1681,90 @@ def test_press_page_guards_the_no_shaming_line() -> None:
     assert "worst transit agency" in html  # the unfair claim is named and refused
     assert "not covered, never failing" in html.replace("\n      ", " ")
     assert "CC BY 4.0" in html
+
+
+def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
+    conf: dict[str, Any] = {
+        "level": "medium",
+        "measured_categories": 3,
+        "total_categories": 4,
+        "fetch_source": "origin",
+        "rt_windows": 0,
+        "feed_age_days": 0,
+        "notes": [
+            "Realtime quality was not measured this run. It does not count against the grade.",
+            "The feed was downloaded from the agency's own URL.",
+        ],
+    }
+    conf.update(overrides)
+    return {"confidence": conf}
+
+
+def test_confidence_section_renders_quiet_line_and_breakdown() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    html = _confidence_section(_confidence_artifact())
+    assert "Measured 3 of 4 score categories from the agency" in html
+    assert "How we measured this" in html
+    assert "Confidence in this measurement: medium." in html
+    assert "Realtime quality was not measured this run." in html
+    # A legibility layer, never a second grade: no letter reel, no score bar.
+    assert "var(--grade" not in html and "/ 100" not in html
+    assert "It never changes the grade." in html
+
+
+def test_confidence_section_names_the_mirror_source() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    html = _confidence_section(_confidence_artifact(fetch_source="mirror"))
+    assert "from the Mobility Database" in html
+
+
+def test_confidence_section_names_the_unknown_source() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    html = _confidence_section(_confidence_artifact(fetch_source="unknown"))
+    assert "original source was not recorded" in html
+
+
+def test_confidence_section_empty_for_pre_1_5_artifacts() -> None:
+    # Artifacts published before schema 1.5 carry no confidence block; the page
+    # must render exactly as it did before the feature.
+    from scorecard_pipeline.render_site import _confidence_section
+
+    assert _confidence_section({}) == ""
+    assert _confidence_section({"confidence": {}}) == ""
+
+
+def test_agency_page_carries_the_confidence_line() -> None:
+    import datetime as dt
+    from pathlib import Path
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.fetch import FetchResult
+    from scorecard_pipeline.metrics import CategoryResult
+    from scorecard_pipeline.publish import build_artifact
+    from scorecard_pipeline.render_site import _render_agency
+    from scorecard_pipeline.score import build_scorecard
+
+    agency = Agency(id="demo", name="Demo Transit", static_gtfs_url="https://ex.org/g.zip")
+    fetch = FetchResult(
+        agency_id="demo",
+        path=Path("/tmp/g.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256="abc",
+        size_bytes=1,
+        reused=False,
+        source="origin",
+    )
+    card = build_scorecard(
+        [
+            CategoryResult(name="correctness", score=90.0, summary="s"),
+            CategoryResult(name="freshness", score=90.0, summary="s"),
+        ]
+    )
+    artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
+    html = _render_agency(artifact)
+    assert "Measured 2 of 4 score categories from the agency" in html
+    assert "How we measured this" in html

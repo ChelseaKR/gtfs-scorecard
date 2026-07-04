@@ -707,6 +707,45 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
+# How the quiet confidence line names the fetch source (EXP-01). Keyed by the
+# artifact's confidence.fetch_source (fetch.py: origin | mirror | unknown); an
+# unrecognized value falls back to no phrase rather than guessing.
+_CONFIDENCE_SOURCE_PHRASES = {
+    "origin": " from the agency's own feed",
+    "mirror": " from the Mobility Database's mirror copy of the feed",
+    "unknown": " from a snapshot whose original source was not recorded",
+}
+
+
+def _confidence_section(artifact: dict[str, Any]) -> str:
+    """The measurement-confidence read (EXP-01): one quiet line saying how much
+    of the grade this run could measure and from what source, plus an expandable
+    per-signal breakdown. A legibility layer on the one grade; it never shows a
+    second letter or number, and low confidence describes our measurement
+    coverage, not the feed. Artifacts published before schema 1.5 carry no
+    confidence block and render byte-for-byte as before (returns empty)."""
+    conf = artifact.get("confidence")
+    if not conf:
+        return ""
+    source_phrase = _CONFIDENCE_SOURCE_PHRASES.get(str(conf.get("fetch_source", "")), "")
+    line = (
+        f"Measured {conf.get('measured_categories', 0)} of "
+        f"{conf.get('total_categories', 0)} score categories{source_phrase}."
+    )
+    level = str(conf.get("level", ""))
+    level_html = f"<p>Confidence in this measurement: {esc(level)}.</p>" if level else ""
+    notes = "".join(f"<li>{esc(note)}</li>" for note in conf.get("notes", []))
+    notes_html = f"<ul>{notes}</ul>" if notes else ""
+    return (
+        f'<p class="confidence-note">{esc(line)}</p>\n'
+        f'    <details class="confidence-how"><summary>How we measured this</summary>'
+        f"{level_html}{notes_html}"
+        '<p class="fineprint">Confidence describes how much the pipeline could '
+        "measure this run, not the feed itself. It never changes the grade.</p>"
+        "</details>"
+    )
+
+
 _OUTREACH_CODES = ("scorecard_feed_expired", "scorecard_feed_expiring_soon")
 
 
@@ -1293,6 +1332,11 @@ def _render_agency(
         if op_note
         else ""
     )
+    # The measurement-confidence read rides on its own line only when the
+    # artifact carries one, so a pre-1.5 artifact renders byte-for-byte as it
+    # did before this feature.
+    confidence = _confidence_section(artifact)
+    confidence_block = f"\n    {confidence}" if confidence else ""
     _outreach_block = _outreach_section(artifact, canonical)
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name)
@@ -1316,7 +1360,7 @@ def _render_agency(
       <a href="/how-to-read/">New to this? How to read your scorecard.</a>
       <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
       Rubric v{esc(artifact.get("rubric_version", "—"))}, validator {esc(artifact.get("validator_version", "—"))}.</p>
-    {_liveness_note(liveness, now)}
+    {_liveness_note(liveness, now)}{confidence_block}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
