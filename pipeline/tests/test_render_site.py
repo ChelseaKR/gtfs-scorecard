@@ -884,6 +884,48 @@ def test_history_section_narrates_changes_and_is_empty_when_steady() -> None:
     assert _history_section(None) == ""
 
 
+def test_history_section_leads_with_a_dated_grade_story_paragraph() -> None:
+    from scorecard_pipeline.render_site import _history_section
+
+    history = [
+        {
+            "date": "2026-06-10",
+            "score": 84.0,
+            "grade": "B",
+            "days_until_expiry": 80,
+            "categories": {"freshness": 85.0},
+        },
+        {
+            "date": "2026-06-14",
+            "score": 70.0,
+            "grade": "C",
+            "days_until_expiry": 78,
+            "categories": {"freshness": 40.0},
+        },
+    ]
+    artifacts = [
+        {
+            "snapshot_date": "2026-06-10",
+            "categories": {
+                "correctness": {
+                    "status": "measured",
+                    "findings": [{"code": "missing_feed_contact", "what": "no contact"}],
+                }
+            },
+        },
+        {
+            "snapshot_date": "2026-06-14",
+            "categories": {"correctness": {"status": "measured", "findings": []}},
+        },
+    ]
+    html = _history_section(history, artifacts)
+    assert 'class="grade-story"' in html
+    assert "On 2026-06-10 this feed started at grade B." in html
+    assert "it cleared missing_feed_contact" in html
+    # The story sits above the newest-first timeline lede.
+    assert html.index('class="grade-story"') < html.index("newest first")
+
+
 def test_embed_section_offers_a_live_badge_and_copyable_markdown() -> None:
     from scorecard_pipeline.render_site import _embed_section
 

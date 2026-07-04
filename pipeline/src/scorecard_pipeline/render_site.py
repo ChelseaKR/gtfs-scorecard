@@ -64,7 +64,8 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     esc,
     sync_static_navs,
 )
-from .timemachine import history_events
+from .timemachine import finding_codes as _finding_codes
+from .timemachine import grade_story, history_events
 from .tool_profiles import detect_tool
 
 FIX_CODES_WITH_PAGES: set[str] = set()  # filled in by render_fixes()
@@ -149,19 +150,6 @@ def _fix_rule_reference(code: str) -> str:
     )
 
 
-def _finding_codes(artifact: dict[str, Any]) -> dict[str, str]:
-    """Map each finding code in an artifact to its 'what' text, across measured
-    categories. Used to diff one run against the next."""
-    out: dict[str, str] = {}
-    for cat in artifact.get("categories", {}).values():
-        if cat.get("status") == "measured":
-            for f in cat.get("findings", []):
-                code = f.get("code")
-                if code:
-                    out.setdefault(str(code), str(f.get("what", "")))
-    return out
-
-
 def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[tuple[str, str]]:
     """Findings present last run but gone this run: a fix that landed. Returns
     (code, what) pairs, where `what` is the previous run's description."""
@@ -171,13 +159,21 @@ def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[
     return [(code, what) for code, what in _finding_codes(prev).items() if code not in current]
 
 
-def _history_section(history: list[dict[str, Any]] | None) -> str:
+def _history_section(
+    history: list[dict[str, Any]] | None,
+    artifacts: list[dict[str, Any]] | None = None,
+) -> str:
     """A plain-language timeline of what changed across this feed's history, the
     text companion to the trend chart (and the screen-reader-friendly version of
-    it). Empty when the feed has been steady."""
+    it). Leads with a short deterministic "grade story" paragraph — a few dated
+    sentences tracing how the current grade came to be, composed from the dated
+    artifacts (``artifacts``, oldest first) so cleared findings are named too.
+    Empty when the feed has been steady."""
     events = history_events(history or [])
     if not events:
         return ""
+    story = grade_story(history or [], artifacts or [])
+    story_html = f'<p class="grade-story">{" ".join(esc(s) for s in story)}</p>' if story else ""
     items = "".join(
         f'<li class="event"><span class="event-date">{esc(e.date)}</span> {esc(e.detail)}</li>'
         for e in events[:12]
@@ -185,6 +181,7 @@ def _history_section(history: list[dict[str, Any]] | None) -> str:
     return (
         '<section aria-labelledby="history-h"><h2 class="section-title" id="history-h">'
         "What changed over time</h2>"
+        f"{story_html}"
         '<p class="page-lede">A plain-language history of this feed, newest first.</p>'
         f'<ul class="events">{items}</ul></section>'
     )
@@ -1181,6 +1178,7 @@ def _render_agency(
     stop_names: list[str] | None = None,
     has_fixlog: bool = False,
     now: dt.datetime | None = None,
+    artifacts: list[dict[str, Any]] | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -1332,7 +1330,7 @@ def _render_agency(
     {_route_rule()}{map_block}
     {_trend_section(history or [])}
     {_feeddiff_section(prev_artifact, artifact, agency_id)}
-    {_history_section(history)}
+    {_history_section(history, artifacts)}
     {_route_rule()}
     <section aria-labelledby="findings-h">
       <h2 class="section-title" id="findings-h">Everything we checked</h2>
@@ -5161,15 +5159,17 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
         if feature is not None:
             map_features.append(feature)
         history = index["agencies"][agency_id].get("history", [])
-        # The previous dated snapshot lets the page show which findings cleared
-        # since the last check; the newest dated file equals latest.json.
+        # The dated snapshots (oldest first; the newest equals latest.json) drive
+        # both the previous-run finding diff and the grade story, so read each one
+        # once and reuse. An unreadable day is skipped, not fatal.
         dated = sorted((art / agency_id).glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
-        prev_artifact = None
-        if len(dated) >= 2:
+        dated_artifacts: list[dict[str, Any]] = []
+        for dated_path in dated:
             try:
-                prev_artifact = json.loads(dated[-2].read_text())
+                dated_artifacts.append(json.loads(dated_path.read_text()))
             except (json.JSONDecodeError, OSError):
-                prev_artifact = None
+                continue
+        prev_artifact = dated_artifacts[-2] if len(dated_artifacts) >= 2 else None
         # Stop names for the map's accessible equivalent come from the geometry
         # artifact (the map's own data), kept out of the per-day JSON to avoid
         # bloating it. Absent or unreadable geometry simply means no stop list.
@@ -5186,6 +5186,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 stop_names,
                 has_fixlog=bool(receipts),
                 now=now,
+                artifacts=dated_artifacts,
             ),
             f"{BASE_URL}/agency/{agency_id}/",
         )

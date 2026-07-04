@@ -360,6 +360,14 @@ main:focus { outline: none; }
   margin: 0 0 1.8rem;
 }
 
+/* The "grade story": a short, dated plain-language paragraph above the
+   what-changed timeline, tracing how the current grade came to be. */
+.grade-story {
+  max-width: 42rem;
+  margin: 0 0 1.2rem;
+  line-height: 1.6;
+}
+
 .picker-controls {
   display: flex;
   flex-wrap: wrap;
