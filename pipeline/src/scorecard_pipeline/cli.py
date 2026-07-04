@@ -1438,7 +1438,14 @@ def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
-    from .notify import build_emails, load_subscribers, load_subscribers_from_dynamo, send_via_ses
+    from .notify import (
+        build_emails,
+        build_webhook_notifications,
+        load_subscribers,
+        load_subscribers_from_dynamo,
+        send_via_ses,
+        send_webhooks,
+    )
 
     table = args.table or os.environ.get("SUBSCRIPTIONS_TABLE")
     if table:
@@ -1450,25 +1457,36 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     digest = build_digest(today=args.date, expiry_days=args.expiry_days)
     unsubscribe_base = os.environ.get("ALERTS_API_BASE")
     emails = build_emails(subscribers, digest, unsubscribe_base=unsubscribe_base)
+    webhooks = build_webhook_notifications(subscribers, digest)
 
-    if not emails:
+    if not emails and not webhooks:
         log.info(
             "Nothing to send: %d subscriber(s), no followed feed needs attention.", len(subscribers)
         )
         return 0
 
     if args.send:
-        sender = args.sender or os.environ.get("SES_FROM")
-        if not sender:
-            parser.error("--send requires --from or the SES_FROM environment variable")
-        region = os.environ.get("AWS_REGION", "us-west-2")
-        sent = send_via_ses(emails, sender, region=region)
-        log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
+        if emails:
+            sender = args.sender or os.environ.get("SES_FROM")
+            if not sender:
+                parser.error("--send requires --from or the SES_FROM environment variable")
+            region = os.environ.get("AWS_REGION", "us-west-2")
+            sent = send_via_ses(emails, sender, region=region)
+            log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
+        if webhooks:
+            sent_hooks = send_webhooks(webhooks)
+            log.info("Posted %d digest webhook(s) of %d configured.", sent_hooks, len(webhooks))
         return 0
 
     for email in emails:
         print(f"=== To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
-    log.info("%d email(s) would be sent (dry run; pass --send to send via SES).", len(emails))
+    for hook in webhooks:
+        print(f"=== Webhook: {hook.url}\n\n{hook.payload['text']}")
+    log.info(
+        "%d email(s), %d webhook(s) would be sent (dry run; pass --send to send).",
+        len(emails),
+        len(webhooks),
+    )
     return 0
 
 
