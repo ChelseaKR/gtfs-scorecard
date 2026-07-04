@@ -119,10 +119,16 @@ Each lands independently, in this order, so the highest-value and lowest-risk
 work ships first.
 
 1. **This roadmap.** Captures the plan and the citations.
-2. **Interactive maps.** Feature-state hover and selection on the per-agency
-   route and stop map and the national cluster and route maps; linked
-   highlighting between a map feature and its table row; a keyboard model for
-   selecting a feature; focus moved to the results table after a filter runs.
+2. **Interactive maps.** Done. Feature-state hover and selection on the
+   per-agency route and stop map and the national cluster map (`/map/`);
+   linked highlighting between a map feature and its table row (a highlight
+   layer enlarges the hovered row's point, mirroring the agency map's
+   `routes-hi` pattern, and hovering a map point scrolls its row into view
+   unless `prefers-reduced-motion` is set); a keyboard model for selecting a
+   feature (the agency map's route rows become focusable, and Enter or Space
+   pins the highlight; on the national map the rows' existing agency links
+   stay the tab stops, and Space pins); focus moves to the results region
+   after a user-driven filter runs, never on the initial load.
 3. **Interactive and small-multiple sparklines.** Done. The agency trend
    sparkline (static and app) carries a hover readout at every check (a native
    `<title>` dot with date and score), and the app gained the same "Show the

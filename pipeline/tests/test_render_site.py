@@ -63,6 +63,42 @@ def test_route_map_section_builds_accessible_table_and_skip_link() -> None:
     assert "maplibregl" in html and "geometry.geojson" in html
 
 
+def test_route_map_section_keyboard_model_rides_on_the_table() -> None:
+    artifact = _artifact_with_route_map(
+        routes=[
+            {
+                "id": "A",
+                "label": "A",
+                "type_label": "Bus",
+                "color": "0E6734",
+                "color_name": "green",
+                "has_shape": True,
+            }
+        ],
+        route_count=1,
+        drawn_route_count=1,
+        stop_count=1,
+        has_shapes=True,
+        path="data/artifacts/demo/geometry.geojson",
+    )
+    html = _route_map_section(artifact, "demo", stop_names=["Only Stop"])
+    # The script (not the markup) makes each drawable route's row focusable, so
+    # a page without the script gains no inert tab stops.
+    assert 'data-route-key="A"' in html
+    assert 'tabindex="0"' not in html.split("<script>")[0]
+    assert 'tr.setAttribute("tabindex", "0")' in html
+    # Focus brushes the row's line; blur falls back to the pinned selection.
+    assert 'tr.addEventListener("focus"' in html
+    assert 'tr.addEventListener("blur"' in html
+    # Enter or Space pins, and Space never scrolls the page.
+    assert 'tr.addEventListener("keydown"' in html
+    assert 'e.key !== "Enter" && e.key !== " "' in html
+    assert "e.preventDefault()" in html
+    # The canvas stays aria-hidden and out of the tab order.
+    assert 'aria-hidden="true"' in html
+    assert 'setAttribute("tabindex", "-1")' in html
+
+
 def test_route_map_section_falls_back_to_stops_only_without_shapes() -> None:
     artifact = _artifact_with_route_map(
         routes=[
@@ -1173,6 +1209,30 @@ def test_render_map_page_has_accessible_table_and_skip_link() -> None:
     assert 'href="/agency/alpha-transit/"' in html
     assert 'data-grade="A"' in html and 'data-state="Iowa"' in html
     assert 'data-grade="F"' in html and 'data-state="Ohio"' in html
+
+
+def test_render_map_page_links_points_to_rows_with_keyboard_model() -> None:
+    html = _render_map_page(_map_features())
+    # Each row names its map point so the two can brush each other.
+    assert 'data-id="alpha-transit"' in html
+    assert 'data-id="bravo-transit"' in html
+    # A highlight layer enlarges one point at a time (the routes-hi pattern).
+    assert '"agencies-hi"' in html
+    assert '["==", ["get", "id"], NONE]' in html
+    # Point -> row: hovering brushes the row and scrolls it into view, except
+    # under prefers-reduced-motion.
+    assert '"mousemove", "agencies"' in html
+    assert "scrollIntoView" in html
+    assert "!reduce" in html
+    # Row -> point: the row's existing link is the tab stop (no new tabindex);
+    # focus reaching it brushes, and Space pins without scrolling the page.
+    assert '"focusin"' in html and '"focusout"' in html
+    assert 'tabindex="0"' not in html
+    assert "e.preventDefault()" in html
+    # After a user-driven filter, focus lands on the results region.
+    assert "focusResults" in html
+    assert "preventScroll: true" in html
+    assert 'id="agency-list" tabindex="-1"' in html
 
 
 def test_render_map_page_filters_cover_grade_and_state() -> None:

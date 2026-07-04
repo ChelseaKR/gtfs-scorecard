@@ -996,6 +996,13 @@ main:focus { outline: none; }
 .route-table tr.is-brushed th,
 .route-table tr.is-brushed td { background: rgba(127, 127, 127, 0.18); }
 .route-table tr.is-brushed th { box-shadow: inset 2px 0 0 currentColor; }
+/* The keyboard model: the map script makes each drawable route's row focusable
+   (Enter or Space pins it), so a focused row shows the same tint as .is-brushed
+   on top of the global focus outline, the keyboard equivalent of hovering the
+   line on the canvas. */
+.route-table tr[data-route-key]:focus-visible th,
+.route-table tr[data-route-key]:focus-visible td { background: rgba(127, 127, 127, 0.18); }
+.route-table tr[data-route-key]:focus-visible th { box-shadow: inset 2px 0 0 currentColor; }
 .map-stopcount { margin: 0.6rem 0 0.3rem; }
 .stop-list-wrap > summary {
   cursor: pointer;

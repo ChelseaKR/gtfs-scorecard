@@ -86,7 +86,7 @@
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
-        <tbody id="map-tbody"><tr data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
+        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
       </table>
     </section>
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -123,10 +123,20 @@
           if (countEl) countEl.textContent = shown;
         }
 
+        // After a user-driven filter, focus moves to the results region (the
+        // section already carries tabindex="-1" for the bypass link), so a
+        // keyboard or screen-reader user lands on the updated count and table
+        // instead of hunting for what changed. Never fired by the initial load.
+        var results = document.getElementById("agency-list");
+        function focusResults() {
+          if (results) results.focus({ preventScroll: true });
+        }
+
         if (!window.maplibregl) {
-          gradeEl.addEventListener("change", filterTable);
-          stateEl.addEventListener("change", filterTable);
-          if (flexEl) flexEl.addEventListener("change", filterTable);
+          var fallbackFilter = function () { filterTable(); focusResults(); };
+          gradeEl.addEventListener("change", fallbackFilter);
+          stateEl.addEventListener("change", fallbackFilter);
+          if (flexEl) flexEl.addEventListener("change", fallbackFilter);
           filterTable();
           return;
         }
@@ -146,6 +156,60 @@
         // order, so it must hold nothing focusable. Scroll/pinch zooms; clicking
         // a cluster zooms in; the table is the operable primary.
 
+        var NONE = "__none__";  // sentinel agency id; no real feature matches
+
+        // Agency id -> table row, so a hovered map point can light up its row
+        // and the reverse. Visual only: the row text is the accessible source.
+        var rowById = {};
+        rows.forEach(function (tr) {
+          var id = tr.getAttribute("data-id");
+          if (id) rowById[id] = tr;
+        });
+        var current = null;   // agency id currently brushed, or null
+        var pinned = null;    // sticky selection from Space or a row tap, or null
+        var hiReady = false;  // the highlight layer exists once the map loads
+
+        function paintRow(id, on) {
+          var tr = rowById[id];
+          if (tr) tr.classList.toggle("is-brushed", on);
+        }
+        function highlight(id) {
+          if (id === current) return;
+          if (current !== null) paintRow(current, false);
+          current = id;
+          if (hiReady) {
+            map.setFilter("agencies-hi", ["==", ["get", "id"], id === null ? NONE : id]);
+          }
+          if (id !== null) paintRow(id, true);
+        }
+        function togglePin(id) {
+          pinned = (pinned === id) ? null : id;
+          highlight(pinned);
+        }
+
+        // Row -> point: hovering or focusing a row enlarges its point. The
+        // row's existing agency link is the tab stop (no tabindex added), so
+        // focus reaching it brushes through focusin; Space pins the highlight,
+        // while Enter keeps its meaning and follows the link. A click outside
+        // the link pins too, for touch.
+        rows.forEach(function (tr) {
+          var id = tr.getAttribute("data-id");
+          if (!id) return;
+          tr.addEventListener("mouseenter", function () { highlight(id); });
+          tr.addEventListener("mouseleave", function () { highlight(pinned); });
+          tr.addEventListener("focusin", function () { highlight(id); });
+          tr.addEventListener("focusout", function () { highlight(pinned); });
+          tr.addEventListener("click", function (e) {
+            if (e.target && e.target.closest && e.target.closest("a")) return;
+            togglePin(id);
+          });
+          tr.addEventListener("keydown", function (e) {
+            if (e.key !== " ") return;
+            e.preventDefault();  // Space pins, never scrolls the page
+            togglePin(id);
+          });
+        });
+
         function filtered() {
           if (!all) return { type: "FeatureCollection", features: [] };
           return {
@@ -156,10 +220,13 @@
             })
           };
         }
-        function applyFilter() {
+        function applyFilter(fromUser) {
           filterTable();
           var src = map.getSource("agencies");
           if (src) src.setData(filtered());
+          // Focus moves only for a change the user made on the filter
+          // controls, never for the initial data load.
+          if (fromUser) focusResults();
         }
 
         map.on("load", function () {
@@ -198,6 +265,18 @@
               "circle-stroke-width": 1, "circle-stroke-color": "#ffffff"
             }
           });
+          // Highlight layer above the base points, empty until brushing sets
+          // its filter to one agency id, enlarging just that point (the agency
+          // map's routes-hi pattern). Added before the grade letters so the
+          // letter still draws on top of the enlarged disc.
+          map.addLayer({
+            id: "agencies-hi", type: "circle", source: "agencies",
+            filter: ["==", ["get", "id"], NONE],
+            paint: {
+              "circle-radius": 12, "circle-color": ["get", "color"],
+              "circle-stroke-width": 2, "circle-stroke-color": "#ffffff"
+            }
+          });
           // The grade letter, drawn on every point so grade reads without colour.
           map.addLayer({
             id: "agency-grade", type: "symbol", source: "agencies",
@@ -211,6 +290,10 @@
               "text-halo-color": "#1c1c1c", "text-halo-width": 0.8
             }
           });
+          hiReady = true;
+          if (current !== null) {
+            map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
+          }
           fetch("/map.geojson").then(function (r) { return r.json(); })
             .then(function (gj) { all = gj; applyFilter(); })
             .catch(function () {});
@@ -237,14 +320,29 @@
             div.appendChild(link);
             new maplibregl.Popup().setLngLat(e.lngLat).setDOMContent(div).addTo(map);
           });
-          ["clusters", "agencies"].forEach(function (layer) {
-            map.on("mouseenter", layer, function () { map.getCanvas().style.cursor = "pointer"; });
-            map.on("mouseleave", layer, function () { map.getCanvas().style.cursor = ""; });
+          // Point -> row: hovering a point brushes its row and scrolls it into
+          // view (skipped under prefers-reduced-motion); leaving falls back to
+          // the pinned selection (or clears).
+          map.on("mousemove", "agencies", function (e) {
+            map.getCanvas().style.cursor = "pointer";
+            var id = e.features[0].properties.id;
+            highlight(id);
+            var tr = rowById[id];
+            if (tr && !tr.hidden && !reduce) {
+              tr.scrollIntoView({ block: "nearest" });
+            }
           });
+          map.on("mouseleave", "agencies", function () {
+            map.getCanvas().style.cursor = "";
+            highlight(pinned);
+          });
+          map.on("mouseenter", "clusters", function () { map.getCanvas().style.cursor = "pointer"; });
+          map.on("mouseleave", "clusters", function () { map.getCanvas().style.cursor = ""; });
         });
-        gradeEl.addEventListener("change", applyFilter);
-        stateEl.addEventListener("change", applyFilter);
-        if (flexEl) flexEl.addEventListener("change", applyFilter);
+        function onFilterChange() { applyFilter(true); }
+        gradeEl.addEventListener("change", onFilterChange);
+        stateEl.addEventListener("change", onFilterChange);
+        if (flexEl) flexEl.addEventListener("change", onFilterChange);
       })();
     </script>
   </main>

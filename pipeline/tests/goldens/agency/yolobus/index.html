@@ -129,14 +129,27 @@ Full scorecard: https://gtfsscorecard.org/agency/yolobus/</textarea><button type
         }
 
         // Hover on desktop; tap to pin on touch (no hover there). Rows carry no
-        // links, so a click only toggles the highlight.
+        // links, so a click only toggles the highlight. The rows are also the
+        // keyboard surface (the canvas stays aria-hidden and untabbable): each
+        // becomes focusable here, not in the markup, so a page without this
+        // script gains no inert tab stops, focus brushes its line, and Enter
+        // or Space toggles the pin, mirroring the click.
+        function togglePin(key) {
+          pinned = (pinned === key) ? null : key;
+          highlight(pinned);
+        }
         Object.keys(rows).forEach(function (key) {
           var tr = rows[key];
+          tr.setAttribute("tabindex", "0");
           tr.addEventListener("mouseenter", function () { highlight(key); });
           tr.addEventListener("mouseleave", function () { highlight(pinned); });
-          tr.addEventListener("click", function () {
-            pinned = (pinned === key) ? null : key;
-            highlight(pinned);
+          tr.addEventListener("focus", function () { highlight(key); });
+          tr.addEventListener("blur", function () { highlight(pinned); });
+          tr.addEventListener("click", function () { togglePin(key); });
+          tr.addEventListener("keydown", function (e) {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();  // Space must pin, never scroll the page
+            togglePin(key);
           });
         });
 
