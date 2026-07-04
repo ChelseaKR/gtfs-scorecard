@@ -1085,6 +1085,41 @@ def test_ntd_section_renders_id_alignment_when_present() -> None:
     assert "agency_id matches your NTD ID" not in _ntd_section(base)
 
 
+def test_ntd_section_renders_shapes_readiness_when_present() -> None:
+    from scorecard_pipeline.render_site import _ntd_section
+
+    base = {
+        "feed": {"reachable": True, "static_url": "https://ex.org/g.zip"},
+        "categories": {
+            "correctness": {"status": "measured", "findings": []},
+            "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
+        },
+    }
+    partial = {
+        **base,
+        "shapes_readiness": {
+            "status": "at_risk",
+            "detail": "stale detail baked into the fixture",
+            "fix": "stale fix baked into the fixture",
+            "total_trips": 10,
+            "trips_with_shape": 6,
+        },
+    }
+    html = _ntd_section(partial)
+    assert "shapes.txt covers your trips" in html
+    assert "Needs attention" in html
+    # Recomputed at render time from the stored counts, so wording fixes reach
+    # every page without a rescore (same pattern as agency_id alignment).
+    assert "6 of 10 trips have a shape" in html
+    assert "stale detail baked into the fixture" not in html
+    # The fineprint cites the RY2025/26 shapes.txt requirement.
+    assert "Report Year 2026" in html and "Report Year 2025" in html
+
+    # Absent block (older artifacts, or a feed scored before this check shipped)
+    # renders no shapes row.
+    assert "shapes.txt covers your trips" not in _ntd_section(base)
+
+
 def test_liveness_note_shows_checked_and_changed_freshness() -> None:
     import datetime as dt
 

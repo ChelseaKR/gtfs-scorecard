@@ -176,15 +176,22 @@ def run_agency(
     # so no hollow NTD box appears (ADR 0026). Absent keys mean the SPA and API
     # omit the section, and render_site gates its recomputed view on country too.
     if agency.country == "US":
-        from .gtfs import read_agency_ids
+        from .gtfs import read_agency_ids, read_shapes_coverage
         from .ntd import assess as assess_ntd_readiness
-        from .ntd import assess_id_alignment
+        from .ntd import assess_id_alignment, assess_shapes_readiness
 
         # NTD ID alignment: does the feed's agency_id match the agency's NTD ID?
         # A forward-looking compliance flag (FTA RY2025/26), zero-deduction, shown
         # as not-yet-checked when we have no NTD ID on file.
         artifact["ntd_id_alignment"] = assess_id_alignment(
             read_agency_ids(str(fetched.path)), agency.ntd_id
+        ).to_dict()
+        # Shapes readiness: does shapes.txt cover this feed's trips? FTA's July
+        # 2025 final rule requires shapes.txt from Reduced, Rural, and Tribal
+        # NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
+        shapes_coverage = read_shapes_coverage(str(fetched.path))
+        artifact["shapes_readiness"] = assess_shapes_readiness(
+            shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
         # NTD certification readiness (published / valid / current), precomputed so
         # the web app and API render it without re-deriving the verdict.
