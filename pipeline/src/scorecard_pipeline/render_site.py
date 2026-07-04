@@ -1172,6 +1172,72 @@ def _route_map_section(
     )
 
 
+def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool) -> str:
+    """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
+    top fix, stitching the pieces that already exist into a single per-finding
+    path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
+    the change", naming the producing tool detected from the feed host and, when a
+    safe mechanical autofix covers that exact finding, a link to the corrected
+    feed, and (3) "Prove it cleared", explaining that the next scorecard run
+    re-checks the fix and mints a dated receipt on the agency's fix log.
+
+    The boundary stays explicit: the scorecard shows the fix; the agency publishes
+    it. Empty when the feed has no top fixes, so an all-clear feed renders exactly
+    as it did before this feature."""
+    fixes = artifact.get("top_fixes", [])
+    if not fixes:
+        return ""
+    fix_tool = detect_tool(artifact.get("feed", {}).get("static_url"))
+    tool_path = esc(fix_tool.fix_path) if fix_tool else ""
+    # Reuse the autofix block's own data (see _autofix_section): a corrected feed
+    # is offered only when the engine is available and a download URL was attached
+    # at score time. Map it by finding code so the download shows on exactly the
+    # fixes it can make.
+    autofix = artifact.get("autofix") or {}
+    autofix_codes = (
+        {str(f.get("code", "")) for f in autofix.get("fixes", [])}
+        if autofix.get("available")
+        else set()
+    )
+    autofix_url = autofix.get("download_url")
+    if has_fixlog:
+        prove_link = (
+            f' <a class="fix-guide" href="/agency/{esc(agency_id)}/fixes/">'
+            "See this feed's dated fix log</a>."
+        )
+    else:
+        prove_link = (
+            ' <a class="fix-guide" href="/check/">Self-check a feed before you publish</a>.'
+        )
+    items = []
+    for f in fixes:
+        code = str(f.get("code", ""))
+        guide = _fix_guide_link(code)
+        if code and code in autofix_codes and autofix_url:
+            change = (f"{tool_path} " if tool_path else "") + (
+                f'<a class="fix-guide" href="{esc(str(autofix_url))}" download>'
+                "Download the corrected feed for this fix</a>."
+            )
+        else:
+            change = tool_path or (
+                "Make this change in whatever tool produces your feed, then re-export."
+            )
+        items.append(
+            f'<li class="fixloop-item"><p class="fixloop-name">{esc(f.get("fix", ""))}{guide}</p>'
+            f'<p class="fixloop-step"><strong>Make the change.</strong> {change}</p>'
+            f'<p class="fixloop-step"><strong>Prove it cleared.</strong> The next scorecard '
+            "run re-checks this automatically and, once it is gone, mints a dated receipt."
+            f"{prove_link}</p></li>"
+        )
+    return (
+        '<div class="fixloop">'
+        '<p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, '
+        "make the change in your tool, and let the next run verify it &mdash; the scorecard "
+        "shows the fix; the agency publishes it.</p>"
+        f'<ol class="fixloop-list">{"".join(items)}</ol></div>'
+    )
+
+
 def _render_agency(
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -1321,6 +1387,7 @@ def _render_agency(
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
+      {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
     {_vendor_block}
     {_outreach_block}
@@ -1797,6 +1864,10 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
       <ul class="cleared-list">{"".join(items)}</ul>
       <p class="fineprint">Verified means the daily check stopped reporting the finding. A
       finding that returns and clears again appears as a separate entry.</p>
+      <p class="fixloop-close">This log is the end of the guided fix loop: you make a change,
+      republish, and the next run verifies it and records it here as
+      <a href="/agency/{esc(agency_id)}/">linkable proof for a board packet or NTD
+      narrative</a>.</p>
     </section>"""
     desc = (
         f"Dated, linkable record of {len(receipts)} data-quality "
@@ -2732,9 +2803,18 @@ def _render_fix(code: str, md: str) -> str:
     para = next((re.sub("<[^>]+>", "", p) for p in re.findall(r"<p>(.*?)</p>", body_html)), "")
     desc = (para[:155] or f"How to fix the GTFS validator notice {code}.").strip()
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (f"Fix: {code}", None)])
+    after_republish = (
+        '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
+        "After you republish</h2>"
+        "<p>Once the corrected feed is live at your published URL, the next scorecard run "
+        "re-checks it automatically. When this finding is gone, it is recorded as a dated "
+        "receipt on your agency's fix log &mdash; a citable, linkable record that the fix "
+        "cleared. That closes the loop: the scorecard shows the fix; the agency publishes "
+        "it.</p></section>"
+    )
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    <article class="feed-details">{body_html}{_fix_rule_reference(code)}</article>"""
+    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>"""
     jsonld = {
         "@context": "https://schema.org",
         "@type": "TechArticle",

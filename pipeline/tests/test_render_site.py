@@ -1681,3 +1681,93 @@ def test_press_page_guards_the_no_shaming_line() -> None:
     assert "worst transit agency" in html  # the unfair claim is named and refused
     assert "not covered, never failing" in html.replace("\n      ", " ")
     assert "CC BY 4.0" in html
+
+
+def _guided_flow_artifact() -> dict[str, Any]:
+    return {
+        "agency": {"id": "demo", "name": "Demo Transit"},
+        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "top_fixes": [
+            {"code": "expired_calendar", "fix": "Re-export with a longer calendar."},
+            {"code": "autofix_trim_whitespace", "fix": "Trim whitespace in stop names."},
+        ],
+        "autofix": {
+            "available": True,
+            "download_url": "https://cdn.example.com/demo/corrected.zip",
+            "fixes": [
+                {"code": "autofix_trim_whitespace", "label": "Trimmed whitespace", "count": 3}
+            ],
+        },
+    }
+
+
+def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
+    from scorecard_pipeline import render_site
+    from scorecard_pipeline.render_site import _guided_fix_flow
+
+    # The /fix/<code>/ guide link only shows for codes that have a generated page;
+    # register one so the step-1 guide link is deterministic in isolation.
+    render_site.FIX_CODES_WITH_PAGES.add("expired_calendar")
+    try:
+        html = _guided_fix_flow(_guided_flow_artifact(), "demo", has_fixlog=True)
+    finally:
+        render_site.FIX_CODES_WITH_PAGES.discard("expired_calendar")
+
+    # (1) the plain-language finding with its /fix/<code>/ guide.
+    assert "Re-export with a longer calendar." in html
+    assert 'href="/fix/expired_calendar/"' in html
+    # (2) "Make the change": the tool-specific fix path (Trillium, hosted) and, for
+    # the finding an autofix covers, the corrected-feed download.
+    assert "Make the change." in html
+    assert "Trillium" in html
+    assert 'href="https://cdn.example.com/demo/corrected.zip"' in html
+    assert "Download the corrected feed for this fix" in html
+    # (3) "Prove it cleared": the receipt copy and the dated fix log link.
+    assert "Prove it cleared." in html
+    assert "mints a dated receipt" in html
+    assert 'href="/agency/demo/fixes/"' in html
+    # The explicit boundary copy.
+    assert "the scorecard shows the fix; the agency publishes it." in html
+
+
+def test_guided_fix_flow_points_to_self_check_without_a_fixlog() -> None:
+    from scorecard_pipeline.render_site import _guided_fix_flow
+
+    html = _guided_fix_flow(_guided_flow_artifact(), "demo", has_fixlog=False)
+    assert 'href="/check/"' in html
+    assert 'href="/agency/demo/fixes/"' not in html
+
+
+def test_guided_fix_flow_empty_without_fixes() -> None:
+    from scorecard_pipeline.render_site import _guided_fix_flow
+
+    art = _guided_flow_artifact()
+    art["top_fixes"] = []
+    assert _guided_fix_flow(art, "demo", has_fixlog=True) == ""
+
+
+def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
+    from scorecard_pipeline.render_site import _render_fix
+
+    html = _render_fix("expired_calendar", "# Fix expired calendars\n\nRe-export the feed.\n")
+    assert "After you republish" in html
+    assert "dated receipt" in html
+    assert "the scorecard shows the fix; the agency publishes it." in html
+
+
+def test_fixlog_page_frames_receipts_as_the_end_of_the_loop() -> None:
+    from scorecard_pipeline.render_site import _render_fixlog_page
+
+    art = {"agency": {"id": "demo", "name": "Demo Transit"}}
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "3 calendars expired.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+    html = _render_fixlog_page(art, receipts)
+    assert "end of the guided fix loop" in html
+    assert "linkable proof for a board packet or NTD" in html
+    assert 'href="/agency/demo/"' in html

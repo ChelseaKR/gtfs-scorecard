@@ -1875,6 +1875,18 @@ main p,
 .download-btn:hover { filter: brightness(1.08); color: var(--paper); }
 .download-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
+/* Closed-loop guided fix flow (EXP-11): a compact three-step loop per top fix,
+   shown under "Top things to fix". Structural only; reuses existing tokens so it
+   inherits the verified AAA palette. */
+.fixloop { margin: 1.1rem 0 0; }
+.fixloop-lede { margin: 0 0 0.7rem; max-width: var(--measure); }
+.fixloop-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; counter-reset: fixloop; }
+.fixloop-item { padding: 0.8rem 0 0; border-top: 1px solid var(--line); max-width: var(--measure); }
+.fixloop-name { margin: 0 0 0.35rem; font-family: var(--font-display); font-weight: 600; }
+.fixloop-step { margin: 0 0 0.3rem; font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft); }
+.fixloop-step:last-child { margin-bottom: 0; }
+.fixloop-close { font-size: 0.9rem; line-height: 1.45; margin-top: 0.85rem; max-width: var(--measure); }
+
 /* ===================================================================
    Call-prep brief: a calm one-pager a liaison can print or screen-share.
    Black-on-white, one page, no site chrome (see the print block below).
