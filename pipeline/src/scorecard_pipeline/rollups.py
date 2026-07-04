@@ -30,6 +30,7 @@ from .alerts import build_digest
 from .config import artifacts_dir, repo_root
 from .metrics import expiry_status
 from .publish import RESERVED_ARTIFACT_DIRS, _write_json
+from .ridership import annual_trips_for
 
 
 @dataclass(frozen=True)
@@ -112,7 +113,10 @@ def _agency_ids_in_state(state: str) -> list[str]:
 
 
 def build_rollup(
-    rollup: Rollup, generated_at: dt.datetime, attention: dict[str, str] | None = None
+    rollup: Rollup,
+    generated_at: dt.datetime,
+    attention: dict[str, str] | None = None,
+    ridership: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     """Aggregate member artifacts into one rollup payload.
 
@@ -123,6 +127,15 @@ def build_rollup(
     not merely "below a B", so the flag points at the calls worth making first.
     Common fixes are counted across members so a program can see the one export
     setting that would lift several agencies at once.
+
+    When an NTD ridership snapshot is supplied (ADR 0021,
+    docs/decisions/0021-ridership-weighting.md), the attention group is ordered
+    by annual rider-trips first, so a high-ridership feed that is expiring ranks
+    above a tiny one before falling back to score — the same call is worth making
+    first when more riders depend on it. This is a tiebreak on ordering only, not
+    a re-scoring: the framing stays "worst first, here to help", never a ranking
+    of agencies against each other. Non-attention members keep their plain
+    worst-score-first order, and with no ridership data the order is unchanged.
     """
     attention = attention or {}
     if rollup.member_ids:
@@ -150,6 +163,7 @@ def build_rollup(
             .get("details", {})
             .get("days_until_expiry")
         )
+        ntd_id = (latest.get("ntd_id_alignment") or {}).get("ntd_id")
         members.append(
             {
                 "id": latest["agency"]["id"],
@@ -162,11 +176,21 @@ def build_rollup(
                 "days_until_expiry": days,
                 "expiry_status": expiry_status(days),
                 "top_fix": fixes[0]["fix"] if fixes else None,
+                "annual_trips": annual_trips_for({"ntd_id": ntd_id}, ridership),
             }
         )
 
-    # Attention-needing agencies first (a call worth making), then worst-score-first.
-    members.sort(key=lambda m: (not m["needs_attention"], m["score"], m["id"]))
+    # Attention-needing agencies first (a call worth making). Within that group,
+    # order by annual rider-trips descending when ridership data is present (ADR
+    # 0021) so a high-ridership feed outranks a tiny one, then worst-score-first;
+    # non-attention members stay plain worst-score-first. With no ridership data
+    # every annual_trips is None (treated as 0), leaving the order unchanged.
+    def _sort_key(m: dict[str, Any]) -> tuple[int, int, float, str]:
+        if m["needs_attention"]:
+            return (0, -(m["annual_trips"] or 0), m["score"], m["id"])
+        return (1, 0, m["score"], m["id"])
+
+    members.sort(key=_sort_key)
     scores = [float(m["score"]) for m in members]
     grades = Counter(str(m["grade"]) for m in members)
     common = [
@@ -244,10 +268,17 @@ def publish_rollups(generated_at: dt.datetime | None = None) -> list[Path]:
     # digest, computed once and shared across rollups so the flag is consistent.
     attention = {item.agency_id: item.headline for item in build_digest(today=when.date()).items}
 
+    # Ridership snapshot (ADR 0021), loaded once and shared: when present it tie-
+    # breaks each rollup's attention list toward higher-ridership feeds. None when
+    # the file is absent, in which case ordering is unweighted as before.
+    from .ridership import load_ridership
+
+    ridership = load_ridership(repo_root() / "data" / "ntd-ridership.csv")
+
     written: list[Path] = []
     index: list[dict[str, Any]] = []
     for rollup in rollups:
-        payload = build_rollup(rollup, when, attention)
+        payload = build_rollup(rollup, when, attention, ridership)
         path = out_dir / f"{rollup.id}.json"
         _write_json(path, payload)
         written.append(path)

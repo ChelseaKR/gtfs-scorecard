@@ -50,24 +50,50 @@ def agencies_endpoint(dataset: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def leaderboard(index: dict[str, Any], dataset: dict[str, Any]) -> dict[str, Any]:
+def leaderboard(
+    index: dict[str, Any],
+    dataset: dict[str, Any],
+    annual_trips: dict[str, int] | None = None,
+) -> dict[str, Any]:
     """Cross-agency standings: best and worst by score, and the biggest movers.
 
     Best and worst rank the latest scores. Movers compare each agency's latest
     score to its previous check, so a feed that just improved or regressed shows
     up, with moves below the noise floor dropped. Names ride along so a consumer
     can render the board without a second lookup.
+
+    When ``annual_trips`` (agency id -> NTD annual rider-trips, ADR 0021) is
+    given, the two "worst" lists — lowest scoring and biggest decliners — break
+    ties toward higher-ridership feeds, so a feed more riders depend on surfaces
+    first among equally-severe entries, and each matched entry carries its
+    ``annual_trips`` for a rider-count column. With no ridership data the field
+    is omitted and the ordering is unchanged.
     """
+    trips_map = annual_trips or {}
+
+    def _trips(agency_id: str) -> int:
+        return trips_map.get(agency_id) or 0
+
     scored = [r for r in dataset.get("rows", []) if isinstance(r.get("score"), (int, float))]
     by_score = sorted(scored, key=lambda r: (-float(r["score"]), r["id"]))
+    if annual_trips:
+        bottom_rows = sorted(scored, key=lambda r: (float(r["score"]), -_trips(r["id"]), r["id"]))[
+            :LEADERBOARD_SIZE
+        ]
+    else:
+        bottom_rows = by_score[-LEADERBOARD_SIZE:][::-1]
 
     def _entry(row: dict[str, Any]) -> dict[str, Any]:
-        return {
+        entry: dict[str, Any] = {
             "id": row["id"],
             "name": row.get("name"),
             "grade": row.get("grade"),
             "score": row.get("score"),
         }
+        trips = trips_map.get(row["id"])
+        if trips is not None:
+            entry["annual_trips"] = trips
+        return entry
 
     movers: list[dict[str, Any]] = []
     for agency_id, entry in (index.get("agencies") or {}).items():
@@ -82,21 +108,26 @@ def leaderboard(index: dict[str, Any], dataset: dict[str, Any]) -> dict[str, Any
         delta = round(float(last["score"]) - float(prev["score"]), 1)
         if abs(delta) < MIN_MOVE:
             continue
-        movers.append(
-            {
-                "id": agency_id,
-                "name": entry.get("name", agency_id),
-                "grade": last.get("grade"),
-                "score": last.get("score"),
-                "score_delta": delta,
-                "date": last.get("date"),
-            }
-        )
+        mover: dict[str, Any] = {
+            "id": agency_id,
+            "name": entry.get("name", agency_id),
+            "grade": last.get("grade"),
+            "score": last.get("score"),
+            "score_delta": delta,
+            "date": last.get("date"),
+        }
+        trips = trips_map.get(agency_id)
+        if trips is not None:
+            mover["annual_trips"] = trips
+        movers.append(mover)
     improved = sorted(movers, key=lambda m: (-m["score_delta"], m["id"]))
-    declined = sorted(movers, key=lambda m: (m["score_delta"], m["id"]))
+    if annual_trips:
+        declined = sorted(movers, key=lambda m: (m["score_delta"], -_trips(m["id"]), m["id"]))
+    else:
+        declined = sorted(movers, key=lambda m: (m["score_delta"], m["id"]))
     return {
         "top": [_entry(r) for r in by_score[:LEADERBOARD_SIZE]],
-        "bottom": [_entry(r) for r in by_score[-LEADERBOARD_SIZE:][::-1]],
+        "bottom": [_entry(r) for r in bottom_rows],
         "most_improved": [m for m in improved if m["score_delta"] > 0][:LEADERBOARD_SIZE],
         "most_declined": [m for m in declined if m["score_delta"] < 0][:LEADERBOARD_SIZE],
     }

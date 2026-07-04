@@ -3869,40 +3869,53 @@ def _leaderboard_sections(
     """Best and worst standings and the biggest movers, as a two-column grid of
     tables inside the national pulse page. The same data the /api/v1 endpoints
     serve. Each row links to that agency's scorecard and carries a small score
-    sparkline from its history (an em dash until it has two checks)."""
+    sparkline from its history (an em dash until it has two checks). A
+    "Riders/yr" column appears in a table only when the NTD ridership snapshot
+    (ADR 0021) matched at least one of its rows, so an unweighted build renders
+    exactly as before."""
     hist = histories or {}
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
 
+    def _trips_cell(r: dict[str, Any]) -> str:
+        t = r.get("annual_trips")
+        return f"<td>{esc(f'{t:,}')}</td>" if t is not None else "<td></td>"
+
     def _rank_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
-            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>{_trend_cell(r)}</tr>"
+            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Trend</th></tr></thead><tbody>{items}</tbody></table></section>"
+            f"<th>Score</th>{trips_th}<th>Trend</th></tr></thead>"
+            f"<tbody>{items}</tbody></table></section>"
         )
 
     def _move_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
             f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
             f"<td>{'+' if r['score_delta'] > 0 else ''}{esc(r['score_delta'])}</td>"
-            f"{_trend_cell(r)}</tr>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Change</th><th>Trend</th></tr></thead>"
+            f"<th>Score</th><th>Change</th>{trips_th}<th>Trend</th></tr></thead>"
             f"<tbody>{items}</tbody></table></section>"
         )
 
@@ -5503,12 +5516,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     # (the daily run fetches it via `scorecard ntd-ridership --fetch`), weight
     # quality by annual unlinked passenger trips and publish the national
     # numbers. National framing only: trips on expired feeds, never a ranking.
+    from .ridership import annual_trips_for, load_ridership, weighted_impact
+
     ridership_impact: dict[str, Any] | None = None
     ridership_csv = root / "data" / "ntd-ridership.csv"
-    if ridership_csv.exists():
-        from .ridership import parse_ridership_csv, weighted_impact
-
-        rid = parse_ridership_csv(ridership_csv.read_text())
+    rid = load_ridership(ridership_csv)
+    if rid is not None:
         rid_records = []
         for a in ntd_artifacts:
             cfg = AGENCIES.get(str(a.get("agency", {}).get("id", "")))
@@ -5540,9 +5553,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
             + "\n",
         )
 
+    # Ridership-weighted standings (ADR 0021, R16): when the NTD snapshot matched
+    # any feeds, tie-break the "worst" boards toward higher-ridership agencies and
+    # give each matched row a rider-count. Resolved through the same id join as
+    # the national impact stat above, so the two agree on which feeds are matched.
+    annual_trips_by_agency: dict[str, int] | None = None
+    if rid:
+        annual_trips_by_agency = {}
+        for aid, cfg in AGENCIES.items():
+            trips = annual_trips_for({"ntd_id": cfg.ntd_id}, rid)
+            if trips is not None:
+                annual_trips_by_agency[aid] = trips
+
     # The national pulse: rankings, movers, and the trend on one page; the three
     # retired URLs redirect to their anchors so old links keep working.
-    board = leaderboard(index, build_quality_dataset(index))
+    board = leaderboard(index, build_quality_dataset(index), annual_trips_by_agency)
     write(
         "pulse/index.html",
         _render_pulse_page(
