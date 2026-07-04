@@ -168,6 +168,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
             "by_state": f"{base}/by-state.json",
             "stats": f"{base}/stats.json",
             "equity": f"{base}/equity.json",
+            "canada_equity": f"{base}/canada-equity.json",
             "accessibility": f"{base}/accessibility.json",
             "adoption": f"{base}/adoption.json",
             "realtime": f"{base}/realtime.json",
