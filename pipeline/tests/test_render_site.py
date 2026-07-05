@@ -1427,9 +1427,12 @@ def test_render_map_page_links_points_to_rows_with_keyboard_model() -> None:
     assert '"focusin"' in html and '"focusout"' in html
     assert 'tabindex="0"' not in html
     assert "e.preventDefault()" in html
-    # After a user-driven filter, focus lands on the results region.
-    assert "focusResults" in html
-    assert "preventScroll: true" in html
+    # A changed filter never moves focus (WCAG 3.2.2 On Input): the result
+    # count sits in a role="status" live region that a screen reader announces
+    # on its own, and a skip link jumps to the list on demand.
+    assert "focusResults" not in html
+    assert 'role="status"' in html
+    assert 'href="#agency-list"' in html
     assert 'id="agency-list" tabindex="-1"' in html
 
 

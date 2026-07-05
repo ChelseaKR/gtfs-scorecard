@@ -138,10 +138,21 @@ Full scorecard: https://gtfsscorecard.org/agency/unitrans/</textarea><button typ
         function togglePin(key) {
           pinned = (pinned === key) ? null : key;
           highlight(pinned);
+          // Reflect the pin on each row so a screen reader announces the toggle
+          // state, not just that a control was activated.
+          Object.keys(rows).forEach(function (k) {
+            rows[k].setAttribute("aria-pressed", k === pinned ? "true" : "false");
+          });
         }
         Object.keys(rows).forEach(function (key) {
           var tr = rows[key];
           tr.setAttribute("tabindex", "0");
+          // The row is an operable toggle (focus brushes its route; Enter/Space
+          // pins it), so give it a button role, a pressed state, and an
+          // accessible name so assistive tech perceives it as actionable. Its
+          // cell text (route name and detail) supplies the name.
+          tr.setAttribute("role", "button");
+          tr.setAttribute("aria-pressed", "false");
           tr.addEventListener("mouseenter", function () { highlight(key); });
           tr.addEventListener("mouseleave", function () { highlight(pinned); });
           tr.addEventListener("focus", function () { highlight(key); });

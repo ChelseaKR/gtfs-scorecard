@@ -945,10 +945,21 @@ _AGENCY_MAP_JS = r"""      (function () {
         function togglePin(key) {
           pinned = (pinned === key) ? null : key;
           highlight(pinned);
+          // Reflect the pin on each row so a screen reader announces the toggle
+          // state, not just that a control was activated.
+          Object.keys(rows).forEach(function (k) {
+            rows[k].setAttribute("aria-pressed", k === pinned ? "true" : "false");
+          });
         }
         Object.keys(rows).forEach(function (key) {
           var tr = rows[key];
           tr.setAttribute("tabindex", "0");
+          // The row is an operable toggle (focus brushes its route; Enter/Space
+          // pins it), so give it a button role, a pressed state, and an
+          // accessible name so assistive tech perceives it as actionable. Its
+          // cell text (route name and detail) supplies the name.
+          tr.setAttribute("role", "button");
+          tr.setAttribute("aria-pressed", "false");
           tr.addEventListener("mouseenter", function () { highlight(key); });
           tr.addEventListener("mouseleave", function () { highlight(pinned); });
           tr.addEventListener("focus", function () { highlight(key); });
@@ -4033,20 +4044,16 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           if (countEl) countEl.textContent = shown;
         }}
 
-        // After a user-driven filter, focus moves to the results region (the
-        // section already carries tabindex="-1" for the bypass link), so a
-        // keyboard or screen-reader user lands on the updated count and table
-        // instead of hunting for what changed. Never fired by the initial load.
-        var results = document.getElementById("agency-list");
-        function focusResults() {{
-          if (results) results.focus({{ preventScroll: true }});
-        }}
-
+        // A changed filter updates the count in its role="status" live region
+        // (see #map-result-count), which a screen reader announces on its own,
+        // and the "Skip to the agency list" link jumps there on demand. So the
+        // filter never moves focus: on a native <select>, keyboard arrow keys
+        // fire "change" per option, and moving focus then would yank the caret
+        // out of the control mid-choice (WCAG 3.2.2 On Input).
         if (!window.maplibregl) {{
-          var fallbackFilter = function () {{ filterTable(); focusResults(); }};
-          gradeEl.addEventListener("change", fallbackFilter);
-          stateEl.addEventListener("change", fallbackFilter);
-          if (flexEl) flexEl.addEventListener("change", fallbackFilter);
+          gradeEl.addEventListener("change", filterTable);
+          stateEl.addEventListener("change", filterTable);
+          if (flexEl) flexEl.addEventListener("change", filterTable);
           filterTable();
           return;
         }}
@@ -4130,13 +4137,10 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             }})
           }};
         }}
-        function applyFilter(fromUser) {{
+        function applyFilter() {{
           filterTable();
           var src = map.getSource("agencies");
           if (src) src.setData(filtered());
-          // Focus moves only for a change the user made on the filter
-          // controls, never for the initial data load.
-          if (fromUser) focusResults();
         }}
 
         map.on("load", function () {{
@@ -4249,7 +4253,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           map.on("mouseenter", "clusters", function () {{ map.getCanvas().style.cursor = "pointer"; }});
           map.on("mouseleave", "clusters", function () {{ map.getCanvas().style.cursor = ""; }});
         }});
-        function onFilterChange() {{ applyFilter(true); }}
+        function onFilterChange() {{ applyFilter(); }}
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
