@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/muletown-trolley/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/muletown-trolley/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -259,10 +258,9 @@
     "static_url": "https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip"
   },
   "fetch": {
-    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-tennessee-muletown-trolley-gtfs-2420.zip?alt=media",
-    "max_attempts": 1,
-    "origin_error": "ConnectTimeout",
-    "source": "mirror",
+    "final_url": "https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip",
+    "max_attempts": 4,
+    "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
   "generated_at": "2026-07-04T00:00:00+00:00",

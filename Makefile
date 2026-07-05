@@ -1,8 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl render-site render-constants test contrast sync-static-nav mutation mutation-results
-.PHONY: verify tiles tiles-geojsonl render-site test contrast readability sync-static-nav mutation mutation-results
+.PHONY: verify tiles tiles-geojsonl render-site render-constants test contrast readability sync-static-nav mutation mutation-results
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
