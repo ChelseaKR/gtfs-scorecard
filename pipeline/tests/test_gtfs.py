@@ -6,7 +6,7 @@ import datetime as dt
 from collections.abc import Callable
 from pathlib import Path
 
-from scorecard_pipeline.gtfs import read_agency_ids, read_feed_dates
+from scorecard_pipeline.gtfs import read_agency_ids, read_feed_dates, read_shapes_coverage
 
 CALENDAR_HEADER = (
     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\n"
@@ -193,3 +193,38 @@ def test_read_agency_ids_empty_when_unset(make_gtfs_zip: Callable[..., Path]) ->
         {"agency.txt": "agency_name,agency_url,agency_timezone\nUnitrans,https://ex.org,UTC\n"}
     )
     assert read_agency_ids(str(path)) == []
+
+
+def test_read_shapes_coverage_counts_trips_with_a_real_shape(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    path = make_gtfs_zip(
+        {
+            "shapes.txt": (
+                "shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence\n"
+                "S1,38.5,-121.7,0\nS1,38.6,-121.8,1\n"
+            ),
+            "trips.txt": (
+                "route_id,service_id,trip_id,shape_id\n"
+                "R1,WK,T1,S1\nR1,WK,T2,S1\nR1,WK,T3,\nR1,WK,T4,DANGLING\n"
+            ),
+        }
+    )
+    coverage = read_shapes_coverage(str(path))
+    assert coverage.total_trips == 4
+    # T3 has no shape_id and T4 references a shape not present in shapes.txt.
+    assert coverage.trips_with_shape == 2
+
+
+def test_read_shapes_coverage_empty_when_no_shapes_file(make_gtfs_zip: Callable[..., Path]) -> None:
+    path = make_gtfs_zip({"trips.txt": "route_id,service_id,trip_id\nR1,WK,T1\nR1,WK,T2\n"})
+    coverage = read_shapes_coverage(str(path))
+    assert coverage.total_trips == 2
+    assert coverage.trips_with_shape == 0
+
+
+def test_read_shapes_coverage_no_trips(make_gtfs_zip: Callable[..., Path]) -> None:
+    path = make_gtfs_zip({"stops.txt": "stop_id,stop_name\nS1,Main St\n"})
+    coverage = read_shapes_coverage(str(path))
+    assert coverage.total_trips == 0
+    assert coverage.trips_with_shape == 0

@@ -62,6 +62,33 @@ def test_leaderboard_ranks_and_finds_movers() -> None:
     assert all(m["id"] != "alpha" for m in board["most_improved"])
 
 
+def test_leaderboard_without_ridership_omits_trips_field() -> None:
+    idx = _index()
+    board = leaderboard(idx, build_quality_dataset(idx))
+    assert all("annual_trips" not in e for e in board["bottom"])
+    assert all("annual_trips" not in e for e in board["top"])
+
+
+def test_leaderboard_ridership_breaks_ties_and_carries_trips() -> None:
+    # Two feeds tied on the low end (both 55): the higher-ridership one sorts
+    # first once ridership weights the "bottom" list, and each matched row
+    # carries its rider count (ADR 0021).
+    idx = {
+        "agencies": {
+            "alpha": {"name": "Alpha", "history": [_pt("2026-06-10", 90.0, "A")]},
+            "big": {"name": "Big", "history": [_pt("2026-06-10", 55.0, "F")]},
+            "small": {"name": "Small", "history": [_pt("2026-06-10", 55.0, "F")]},
+        }
+    }
+    trips = {"big": 5_000_000, "small": 10_000}
+    board = leaderboard(idx, build_quality_dataset(idx), trips)
+    assert board["bottom"][0]["id"] == "big"
+    assert board["bottom"][0]["annual_trips"] == 5_000_000
+    assert board["bottom"][1]["id"] == "small"
+    # Alpha has no ridership record, so its entry omits the field.
+    assert all("annual_trips" not in e for e in board["top"] if e["id"] == "alpha")
+
+
 def test_by_state_aggregates_with_unlocated_fallback() -> None:
     ds = build_quality_dataset(_index())
     out = by_state(ds, {"alpha": "California", "bravo": "California"})

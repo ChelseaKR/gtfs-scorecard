@@ -35,6 +35,12 @@
       "code": "scorecard_rt_vehicle_positions_unreachable",
       "last_seen": "2026-06-26",
       "what": "The vehicle positions realtime feed failed during sampling."
+    },
+    {
+      "cleared": "2026-07-04",
+      "code": "scorecard_rt_trip_coverage",
+      "last_seen": "2026-07-02",
+      "what": "1 of 24 trips scheduled during the sampling window had no live predictions."
     }
   ]
 }

@@ -75,6 +75,19 @@ feed's history in four sentences, each traceable to a dated artifact.
 
 ### EXP-03 — Fix-effort estimates calibrated from real outcomes
 
+**Status: Done (2026-07-04).** `effort_calibration.py` derives per-notice-code
+runs-to-clear episodes from the same dated-artifact walk the fix log runs
+(`publish.rebuild_index`), pooling them corpus-wide into
+`data/effort-calibration.json`. An episode opens the run a code first appears
+and closes the run it is verified gone (its category measured), mirroring the
+fix log's rule (`fixlog.diff_receipts`); recurrences are separate episodes and
+never-cleared episodes are counted as "still open" but excluded from the
+median. Codes with at least `MIN_SAMPLES` (5) closed episodes earn a week-
+rounded empirical band shown beneath the hand-authored effort hint on the
+findings list, the agency top-fixes, and the brief/board "effort" lines. The
+band is additive and gated on the calibration file existing, so renders
+without it are unchanged.
+
 **Pitch.** Replace hand-authored effort hints with empirical ones: how long
 agencies actually take to clear each finding, measured across the corpus.
 

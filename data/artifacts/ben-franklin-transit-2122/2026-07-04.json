@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/ben-franklin-transit-2122/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/ben-franklin-transit-2122/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -33,6 +32,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 0.0,
@@ -152,39 +155,18 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 95.8,
-        "covered_trips": 23,
-        "drift": {
-          "median_seconds": 18,
-          "observations": 5522,
-          "on_time_share_pct": 98.0,
-          "p90_abs_seconds": 115
-        },
+        "coverage_pct": null,
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 24,
-        "vehicles_checked": 68,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 15
+        "scheduled_trips_in_window": 0,
+        "worst_lag_seconds": 3
       },
-      "findings": [
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 1,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 1.5,
-          "severity": "WARNING",
-          "what": "1 of 24 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
-        }
-      ],
+      "findings": [],
       "name": "realtime",
-      "score": 98.5,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 95.8% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 18s behind schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -197,7 +179,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 168 days.",
+        "detail": "Service data covers the next 161 days.",
         "key": "current",
         "met": true
       },
@@ -217,7 +199,13 @@
     "size_bytes": 1860570,
     "static_url": "https://myride.bft.org/Static/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://myride.bft.org/Static/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -119.78899,
@@ -230,7 +218,7 @@
     "stop_count": 851
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "0d2ded38-0c73-408a-bd3c-9da89ef9e9ed"
     ],
@@ -249,19 +237,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 168 days.",
+        "detail": "Service data covers the next 161 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 7.6,
-    "margin_to_next_band": 2.4,
-    "score": 87.6
+    "margin_to_lower_band": 7.9,
+    "margin_to_next_band": 2.1,
+    "score": 87.9
   },
   "recommendations": [
     {
@@ -287,17 +275,275 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 851,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
     "trips_total": 2704
+  },
+  "route_map": {
+    "drawn_route_count": 23,
+    "has_shapes": true,
+    "path": "data/artifacts/ben-franklin-transit-2122/geometry.geojson",
+    "route_count": 23,
+    "routes": [
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Metro Route 1",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4169E1",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Route 10",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "123",
+        "label": "123",
+        "long": "Route 123",
+        "short": "123",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "170",
+        "label": "170",
+        "long": "Route 170",
+        "short": "170",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4D03F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Express 2",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC143C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Route 20",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF1493",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "225",
+        "label": "225",
+        "long": "Route 225",
+        "short": "225",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4D03F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "240",
+        "label": "240",
+        "long": "Express 240",
+        "short": "240",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF1493",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "Route 25",
+        "short": "25",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26",
+        "label": "26",
+        "long": "Route 26",
+        "short": "26",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4D03F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Express 27",
+        "short": "27",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "40E0D0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Metro Route 3",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC143C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "Route 40",
+        "short": "40",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "Route 41",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4169E1",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "Route 42",
+        "short": "42",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "Route 47",
+        "short": "47",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "48",
+        "label": "48",
+        "long": "Route 48",
+        "short": "48",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC143C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "50",
+        "label": "50",
+        "long": "Route 50",
+        "short": "50",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "Route 64",
+        "short": "64",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F27935",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "65",
+        "label": "65",
+        "long": "Route 65",
+        "short": "65",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC143C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "Route 66",
+        "short": "66",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4169E1",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "67",
+        "label": "67",
+        "long": "Route 67",
+        "short": "67",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC143C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "Route 68",
+        "short": "68",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 851,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
   "schema_version": "1.4",
