@@ -2029,6 +2029,8 @@ def test_agency_page_carries_the_confidence_line() -> None:
     html = _render_agency(artifact)
     assert "Measured 2 of 4 score categories from the agency" in html
     assert "How we measured this" in html
+
+
 def _guided_flow_artifact() -> dict[str, Any]:
     return {
         "agency": {"id": "demo", "name": "Demo Transit"},

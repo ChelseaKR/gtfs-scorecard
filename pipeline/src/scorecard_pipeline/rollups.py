@@ -125,6 +125,8 @@ def resolve_member_ids(rollup: Rollup) -> list[str]:
     if rollup.state:
         return _agency_ids_in_state(rollup.state)
     return _available_agency_ids()
+
+
 def _shapes_status(latest: dict[str, Any]) -> str | None:
     """This agency's current shapes.txt (NTD RY2026) readiness status, or None
     when it does not apply: a non-US agency (NTD is a US-federal FTA program,

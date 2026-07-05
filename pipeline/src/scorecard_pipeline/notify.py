@@ -281,6 +281,8 @@ def build_portfolio_emails(
         subject = f"GTFS Scorecard: weekly portfolio digest ({as_of.isoformat()})"
         emails.append(Email(to=subscriber.email, subject=subject, body=body))
     return emails
+
+
 @dataclass(frozen=True)
 class WebhookNotification:
     """A rendered digest, ready to POST to one subscriber's webhook."""
