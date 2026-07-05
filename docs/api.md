@@ -48,7 +48,7 @@ the covered set, not the universe of US agencies.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.4`). The rule for
+Every artifact carries a `schema_version` (currently `1.5`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -78,6 +78,11 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.5` adds a `confidence` block to every scorecard: a `level`
+  (`provisional`, `medium`, or `high`) reading how much of the grade this run
+  could measure, plus the measured category count, fetch source, realtime
+  sampling depth, and snapshot age behind it. A legibility layer on the one
+  grade, never a second grade. Additive.
 - `1.4` carries identity and provenance on every catalog and directory row
   (`mdb_id`, `validator_version`, `rubric_version`, `retrieved_at`,
   `feed_sha256`) and a `license`/`attribution` on the catalog and directory
@@ -89,7 +94,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "rubric_version": "1.1",
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
   "agency": { "id": "yolobus", "name": "Yolobus (...)",
@@ -107,6 +112,10 @@ Changelog:
              "user_agent": "...",     // the User-Agent presented to that server
              "max_attempts": 4,       // configured attempt ceiling; omitted when unknown
              "origin_error": "..." }, // exception that forced the mirror; only on mirror fetches
+  "confidence": { "level": "high",          // "provisional", "medium", or "high" — a word, never a letter or a number
+                  "measured_categories": 4, "total_categories": 4,
+                  "fetch_source": "origin", "rt_windows": 1, "feed_age_days": 0,
+                  "notes": [ "All four score categories were measured this run.", "..." ] },
   "overall": { "score": 84.1, "grade": "B" },
   "categories": {
     "correctness":  { "name": "...", "status": "measured", "score": 0, "weight": 0.35,
@@ -130,6 +139,17 @@ The `fetch` block states how the graded bytes were obtained. When an origin
 of dropping the agency; `"source": "mirror"` makes that visible, since a mirror
 copy can lag what the agency republished. The block is additive within schema
 1.4 (consumers tolerate added fields, per the versioning rule above).
+
+The `confidence` block states how much of this grade the pipeline could
+measure this run, not a second grade on top of it: `level` is always a word
+(`provisional`, `medium`, or `high`), never a letter or a number, so it cannot
+be mistaken for a second score. `measured_categories` and `total_categories`
+state the breadth measured; `fetch_source` mirrors `fetch.source` above;
+`rt_windows` is `1` when realtime was sampled this run; `feed_age_days` is how
+old the scored snapshot was at scoring time; `notes` are the same
+plain-language sentences shown in the scorecard page's "How we measured this"
+panel. Absent on artifacts published before schema 1.5. Additive within schema
+1.5.
 
 ## Freshness fields
 
@@ -158,7 +178,7 @@ a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "rubric_version": "1.1",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -262,7 +282,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "count": 2,
@@ -278,7 +298,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

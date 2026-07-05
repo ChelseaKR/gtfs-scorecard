@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import csv
 import io
+from pathlib import Path
 from typing import Any
 
 from ._stats import _GRADES
@@ -112,6 +113,38 @@ def parse_ridership_csv(text: str) -> dict[str, int]:
             continue
         out[ntd] = out.get(ntd, 0) + trips
     return out
+
+
+def load_ridership(csv_path: str | Path) -> dict[str, int] | None:
+    """Load an NTD ridership snapshot into annual trips per NTD ID, or None.
+
+    A thin wrapper over ``parse_ridership_csv`` for call sites that only have a
+    path: returns ``None`` when the file is absent — the common case in an
+    environment without the snapshot — so a caller can degrade gracefully to
+    unweighted ordering, and the parsed map otherwise. A present-but-empty or
+    unparseable file yields an empty dict, not ``None``, so "no file" and "file
+    matched nothing" stay distinguishable.
+    """
+    path = Path(csv_path)
+    if not path.exists():
+        return None
+    return parse_ridership_csv(path.read_text())
+
+
+def annual_trips_for(record: dict[str, Any], ridership: dict[str, int] | None) -> int | None:
+    """Annual trips for one record's NTD ID, or ``None`` when unknown.
+
+    Resolves the record's ``ntd_id`` the same way ``weighted_impact`` does (as a
+    plain string), so the two agree on which feeds are matched. Returns ``None``
+    — never ``0`` — when the ridership map is absent, the record carries no NTD
+    ID, or the id is unmatched, so "no data" never reads as "no riders".
+    """
+    if not ridership:
+        return None
+    ntd = str(record.get("ntd_id") or "")
+    if not ntd:
+        return None
+    return ridership.get(ntd)
 
 
 def weighted_impact(records: list[dict[str, Any]], ridership: dict[str, int]) -> dict[str, Any]:

@@ -200,6 +200,55 @@
         ]
       }
     },
+    "confidence": {
+      "type": "object",
+      "description": "Measurement-confidence read (EXP-01): how much of this grade the pipeline could measure this run and from what source. A legibility layer on the one grade, never a second grade; absent on artifacts published before schema 1.5.",
+      "required": [
+        "level",
+        "measured_categories",
+        "total_categories",
+        "fetch_source",
+        "rt_windows",
+        "feed_age_days",
+        "notes"
+      ],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "provisional",
+            "medium",
+            "high"
+          ]
+        },
+        "measured_categories": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_categories": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fetch_source": {
+          "type": "string"
+        },
+        "rt_windows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "feed_age_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "recommendations": {
       "type": "array",
       "description": "Beyond-the-grade opportunities (Fares v2, Flex, accessibility); zero-deduction."

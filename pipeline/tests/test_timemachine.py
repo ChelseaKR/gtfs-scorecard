@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 
 from scorecard_pipeline.timemachine import (
-    finding_events,
     grade_story,
     history_events,
 )
@@ -89,30 +88,6 @@ def _artifact(date: str, *codes: str) -> dict[str, Any]:
             }
         },
     }
-
-
-def test_finding_events_diff_cleared_and_introduced_codes_newest_first() -> None:
-    artifacts = [
-        _artifact("2026-06-10", "missing_feed_contact", "stop_too_far"),
-        _artifact("2026-06-14", "stop_too_far", "route_color_contrast"),
-        _artifact("2026-06-18", "stop_too_far", "route_color_contrast"),
-    ]
-    events = finding_events(artifacts)
-    # Only the pair that changed produces an event; the identical last pair does not.
-    assert [e.date for e in events] == ["2026-06-14"]
-    assert events[0].kind == "findings"
-    assert events[0].detail == "Cleared missing_feed_contact; introduced route_color_contrast."
-
-
-def test_finding_events_capitalizes_introduce_only_change() -> None:
-    events = finding_events([_artifact("a"), _artifact("b", "route_color_contrast")])
-    assert events[0].detail == "Introduced route_color_contrast."
-
-
-def test_finding_events_empty_for_single_or_steady_run() -> None:
-    assert finding_events([_artifact("a", "x")]) == []
-    assert finding_events([_artifact("a", "x"), _artifact("b", "x")]) == []
-    assert finding_events([]) == []
 
 
 def test_grade_story_is_stable_dated_and_within_bound() -> None:

@@ -14,8 +14,10 @@ from scorecard_pipeline.notify import (
     EMAIL_RE,
     SubscriptionError,
     build_emails,
+    build_webhook_notifications,
     parse_subscribers,
     personal_digest,
+    send_webhooks,
     subscriber_from_item,
     verification_email,
 )
@@ -177,6 +179,149 @@ def test_subscriber_from_dynamo_item() -> None:
     # missing verified defaults to false (the consent gate's safe default)
     pending = subscriber_from_item({"email": "b@x.org", "agencies": {"yolobus"}})
     assert pending.verified is False
+
+
+def test_parse_accepts_https_webhook_url() -> None:
+    sub = parse_subscribers(
+        {
+            "subscribers": [
+                {
+                    "email": "a@example.org",
+                    "all": True,
+                    "webhook_url": "https://hooks.example.org/services/T00/B00/xyz",
+                }
+            ]
+        }
+    )[0]
+    assert sub.webhook_url == "https://hooks.example.org/services/T00/B00/xyz"
+
+
+def test_parse_defaults_webhook_url_to_empty() -> None:
+    sub = parse_subscribers({"subscribers": [{"email": "a@example.org", "all": True}]})[0]
+    assert sub.webhook_url == ""
+
+
+def test_parse_rejects_non_https_webhook_url() -> None:
+    with pytest.raises(SubscriptionError):
+        parse_subscribers(
+            {
+                "subscribers": [
+                    {
+                        "email": "a@example.org",
+                        "all": True,
+                        "webhook_url": "http://hooks.example.org/x",
+                    }
+                ]
+            }
+        )
+
+
+def test_subscriber_from_dynamo_item_reads_webhook_url() -> None:
+    sub = subscriber_from_item(
+        {"email": "a@x.org", "all": True, "webhook_url": "https://hooks.example.org/x"}
+    )
+    assert sub.webhook_url == "https://hooks.example.org/x"
+
+    # A non-https value in the store is dropped, not trusted or raised.
+    bad = subscriber_from_item(
+        {"email": "b@x.org", "all": True, "webhook_url": "javascript:alert(1)"}
+    )
+    assert bad.webhook_url == ""
+
+
+def test_build_webhook_notifications_skips_all_clear_and_renders() -> None:
+    subs = parse_subscribers(
+        {
+            "subscribers": [
+                {
+                    "email": "follows@example.org",
+                    "agencies": ["merced"],
+                    "verified": True,
+                    "webhook_url": "https://hooks.example.org/a",
+                },
+                {
+                    "email": "healthy@example.org",
+                    "agencies": ["someone-else"],
+                    "verified": True,
+                    "webhook_url": "https://hooks.example.org/b",
+                },
+            ]
+        }
+    )
+    notes = build_webhook_notifications(subs, _digest())
+    assert len(notes) == 1
+    assert notes[0].url == "https://hooks.example.org/a"
+    assert "Merced" in notes[0].payload["text"]
+
+
+def test_build_webhook_notifications_skips_unverified_and_no_webhook() -> None:
+    subs = parse_subscribers(
+        {
+            "subscribers": [
+                # verified, but no webhook_url set.
+                {"email": "a@example.org", "agencies": ["merced"], "verified": True},
+                # a webhook_url set, but unverified.
+                {
+                    "email": "b@example.org",
+                    "agencies": ["merced"],
+                    "webhook_url": "https://hooks.example.org/a",
+                },
+            ]
+        }
+    )
+    assert build_webhook_notifications(subs, _digest()) == []
+
+
+def test_send_webhooks_skips_a_non_public_url_without_posting(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import requests
+
+    from scorecard_pipeline.notify import WebhookNotification
+
+    posted: list[str] = []
+    monkeypatch.setattr(requests, "post", lambda url, **_kw: posted.append(url))
+    # A private-IP-literal URL needs no DNS lookup and is rejected by the same
+    # SSRF guard every feed fetch uses (net.validate_public_url).
+    notes = [WebhookNotification(url="https://10.0.0.5/hook", payload={"text": "x"})]
+    assert send_webhooks(notes) == 0
+    assert posted == []  # never attempted
+
+
+def test_send_webhooks_posts_to_a_public_url_and_counts_it(monkeypatch: pytest.MonkeyPatch) -> None:
+    import requests
+
+    from scorecard_pipeline.notify import WebhookNotification
+
+    calls: list[tuple[str, dict[str, object]]] = []
+
+    def fake_post(url: str, json: dict[str, object], **_kw: object) -> None:
+        calls.append((url, json))
+
+    monkeypatch.setattr(requests, "post", fake_post)
+    # 93.184.216.34 (example.com) is publicly routable; no DNS needed in the test.
+    notes = [WebhookNotification(url="https://93.184.216.34/hook", payload={"text": "hi"})]
+    assert send_webhooks(notes) == 1
+    assert calls == [("https://93.184.216.34/hook", {"text": "hi"})]
+
+
+def test_send_webhooks_skips_a_failed_post_without_stopping_the_rest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import requests
+
+    from scorecard_pipeline.notify import WebhookNotification
+
+    def fake_post(url: str, **_kw: object) -> None:
+        if url.endswith("/broken"):
+            raise requests.exceptions.ConnectionError("refused")
+
+    monkeypatch.setattr(requests, "post", fake_post)
+    notes = [
+        WebhookNotification(url="https://93.184.216.34/broken", payload={"text": "a"}),
+        WebhookNotification(url="https://93.184.216.34/ok", payload={"text": "b"}),
+    ]
+    assert send_webhooks(notes) == 1
 
 
 def test_verification_email_contains_tokenized_confirm_link() -> None:

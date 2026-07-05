@@ -117,33 +117,6 @@ def history_events(
     return list(reversed(events))
 
 
-def finding_events(artifacts: list[dict[str, Any]]) -> list[Event]:
-    """A dated 'findings' event for each pair of consecutive dated artifacts whose
-    set of finding codes changed: which codes cleared and which were introduced.
-
-    Artifacts are the full per-day snapshots (oldest first), the same files the
-    render step already retains (~10 per agency). The language is strictly
-    correlational — it names what appeared or disappeared between two runs, never
-    why. Newest first, to match ``history_events``."""
-    events: list[Event] = []
-    for prev, curr in zip(artifacts, artifacts[1:], strict=False):
-        prev_codes = finding_codes(prev)
-        curr_codes = finding_codes(curr)
-        cleared = sorted(c for c in prev_codes if c not in curr_codes)
-        introduced = sorted(c for c in curr_codes if c not in prev_codes)
-        if not cleared and not introduced:
-            continue
-        parts: list[str] = []
-        if cleared:
-            parts.append("cleared " + ", ".join(cleared))
-        if introduced:
-            parts.append("introduced " + ", ".join(introduced))
-        detail = "; ".join(parts) + "."
-        detail = detail[0].upper() + detail[1:]
-        events.append(Event(_artifact_date(curr), "findings", detail))
-    return list(reversed(events))
-
-
 # How many story sentences to spend on transitions between the opening and closing
 # grade sentence; keeps ``grade_story`` within its 3-5 sentence bound.
 _STORY_MIDDLE_BUDGET = 3
@@ -191,7 +164,24 @@ def grade_story(
             middle.append(f"On {_artifact_date(curr)} it cleared {', '.join(cleared)}.")
 
     if not middle:
-        middle.append(f"On {end_date} the grade held steady.")
+        # No band move, expiry crossing, or cleared finding. The grade held, but
+        # the score may still have drifted within the band. Say so, using the
+        # same whole-point rounding the timeline uses for its "Score rose N
+        # points" note, so the story never reads as "held steady" next to a
+        # timeline that shows the score moving.
+        first_score, last_score = first.get("score"), last.get("score")
+        if (
+            isinstance(first_score, (int, float))
+            and isinstance(last_score, (int, float))
+            and round(first_score) != round(last_score)
+        ):
+            verb = "rose" if last_score > first_score else "fell"
+            middle.append(
+                f"On {end_date} the grade held, though the score {verb} "
+                f"from {round(first_score)} to {round(last_score)}."
+            )
+        else:
+            middle.append(f"On {end_date} the grade held steady.")
     story.extend(middle[:_STORY_MIDDLE_BUDGET])
 
     story.append(f"As of {end_date} it holds grade {last.get('grade')}.")

@@ -14,6 +14,7 @@ from scorecard_pipeline.ntd import (
     UNKNOWN,
     assess,
     assess_id_alignment,
+    assess_shapes_readiness,
 )
 
 
@@ -195,3 +196,54 @@ def test_one_fix_from_ready_keeps_only_single_pillar_misses() -> None:
     assert "expired" in rows[0]["fix"]
     assert rows[1]["pillar"] == "valid"
     assert "error" in rows[1]["fix"]
+
+
+# --- Shapes readiness (shapes.txt coverage of trips.txt, FTA RY2025/26) ---
+
+
+def test_shapes_ready_when_every_trip_has_a_shape() -> None:
+    r = assess_shapes_readiness(total_trips=40, trips_with_shape=40)
+    assert r.status == READY
+    assert not r.fix
+    assert "40" in r.detail
+    assert r.to_dict() == {
+        "status": "ready",
+        "detail": r.detail,
+        "total_trips": 40,
+        "trips_with_shape": 40,
+    }
+
+
+def test_shapes_not_ready_when_no_trip_has_a_shape() -> None:
+    r = assess_shapes_readiness(total_trips=12, trips_with_shape=0)
+    assert r.status == NOT_READY
+    assert "Report Year 2026" in r.fix
+    assert "Report Year 2025" in r.fix
+
+
+def test_shapes_not_ready_when_feed_has_no_trips() -> None:
+    r = assess_shapes_readiness(total_trips=0, trips_with_shape=0)
+    assert r.status == NOT_READY
+    assert not r.fix
+    assert "can't be checked" in r.detail
+
+
+def test_shapes_at_risk_when_partially_covered() -> None:
+    r = assess_shapes_readiness(total_trips=10, trips_with_shape=6)
+    assert r.status == AT_RISK
+    assert "6 of 10" in r.detail
+    assert "4" in r.detail
+
+
+def test_shapes_readiness_never_claims_current_noncompliance() -> None:
+    """The RY2026 requirement phases in by reporter type we do not curate per
+    agency, so the copy must read as a heads-up against a future deadline, never
+    a claim that the agency is out of compliance today."""
+    for result in (
+        assess_shapes_readiness(0, 0),
+        assess_shapes_readiness(10, 0),
+        assess_shapes_readiness(10, 5),
+    ):
+        text = f"{result.detail} {result.fix}".lower()
+        for mandate in ("you are not compliant", "you are in violation", "you must"):
+            assert mandate not in text, f"mandate phrasing leaked: {mandate!r}"

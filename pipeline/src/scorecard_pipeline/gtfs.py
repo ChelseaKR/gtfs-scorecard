@@ -1,7 +1,8 @@
 """Minimal readers for the handful of GTFS files the rubric needs directly.
 
-Only freshness-related files are read here (feed_info, calendar,
-calendar_dates). Everything rule-shaped stays in the canonical validator.
+Mostly freshness-related files (feed_info, calendar, calendar_dates), plus a
+few fields NTD readiness reads directly (agency_id, shapes/trips). Everything
+rule-shaped stays in the canonical validator.
 """
 
 from __future__ import annotations
@@ -62,6 +63,30 @@ def read_agency_ids(gtfs_zip_path: str) -> list[str]:
             seen.add(value)
             ids.append(value)
     return ids
+
+
+@dataclass(frozen=True)
+class ShapesCoverage:
+    """How much of a feed's service is drawn from shapes.txt.
+
+    Used by the shapes readiness check (ntd.assess_shapes_readiness). total_trips
+    is the row count of trips.txt; trips_with_shape counts only rows whose
+    shape_id is non-blank and actually present in shapes.txt (a dangling
+    reference does not count as coverage)."""
+
+    total_trips: int
+    trips_with_shape: int
+
+
+def read_shapes_coverage(gtfs_zip_path: str) -> ShapesCoverage:
+    """Read trips.txt and shapes.txt and report shape coverage across trips."""
+    tables = read_tables(gtfs_zip_path, ["shapes.txt", "trips.txt"])
+    shape_ids = {
+        row["shape_id"].strip() for row in tables["shapes.txt"] if row.get("shape_id", "").strip()
+    }
+    trips = tables["trips.txt"]
+    with_shape = sum(1 for t in trips if (t.get("shape_id") or "").strip() in shape_ids)
+    return ShapesCoverage(total_trips=len(trips), trips_with_shape=with_shape)
 
 
 @dataclass(frozen=True)

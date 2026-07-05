@@ -51,8 +51,8 @@
     <header class="brief-head">
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked 2026-07-04</p>
       <h1 class="brief-title">Pasadena Transit</h1>
-      <p class="brief-grade">Grade B &middot; 80.2 / 100</p>
-      <p class="brief-trend">Down 2.9 points since 2026-07-02 (B to B).</p>
+      <p class="brief-grade">Grade B &middot; 81.7 / 100</p>
+      <p class="brief-trend">Down 1.4 points since 2026-07-02 (B to B).</p>
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>
@@ -67,10 +67,10 @@
     </section>
     <section aria-labelledby="board-asks-h">
       <h2 id="board-asks-h">What needs attention next</h2>
-      <p>Three improvements, in priority order, each sized so the board can see what it is approving:</p><ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The vehicle positions realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Estimated effort: Usually a vendor support ticket.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">446 of 446 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">996 of 996 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Estimated effort: Often one default setting in your export.</p></li></ol>
+      <p>Three improvements, in priority order, each sized so the board can see what it is approving:</p><ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The vehicle positions realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Estimated effort: Usually a vendor support ticket.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">446 of 446 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">989 of 989 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Estimated effort: Often one default setting in your export.</p></li></ol>
       
     </section>
-    <section aria-labelledby="board-standing-h"><h2 id="board-standing-h">Where this agency stands</h2><p>Ahead of 81% of all tracked agencies, and ahead of 80% of mid-size agencies nationwide.</p></section>
+    <section aria-labelledby="board-standing-h"><h2 id="board-standing-h">Where this agency stands</h2><p>Ahead of 85% of all tracked agencies, and ahead of 85% of mid-size agencies nationwide.</p></section>
     <p class="brief-foot">Produced by the GTFS Scorecard, an open-source data quality
       tool. A data-quality read to support the board conversation, not an official
       compliance determination. Live scorecard: https://gtfsscorecard.org/agency/pasadena-transit/.

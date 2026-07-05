@@ -52,6 +52,10 @@ class Subscriber:
     verified: bool = False
     kinds: frozenset[str] | None = None  # None means "every alert kind"
     unsub_token: str = ""  # one-click unsubscribe; only set for stored subscribers
+    # An incoming-webhook URL (Slack, Teams, or a generic endpoint) that also
+    # receives this subscriber's digest as a JSON POST. Optional and additive to
+    # email: a liaison can set both, or a webhook alone. Empty means no webhook.
+    webhook_url: str = ""
 
     def follows(self, agency_id: str) -> bool:
         return self.agency_ids is None or agency_id in self.agency_ids
@@ -109,12 +113,23 @@ def parse_subscribers(raw: object) -> list[Subscriber]:
         else:
             raise SubscriptionError(f"{label}: 'kinds' must be a non-empty list if present")
 
+        webhook_url = entry.get("webhook_url", "") or ""
+        if not isinstance(webhook_url, str):
+            raise SubscriptionError(f"{label}: webhook_url must be a string")
+        webhook_url = webhook_url.strip()
+        # Shape only, checked here so parsing stays pure and network-free (the
+        # module's testability guarantee); reachability and SSRF safety are
+        # checked again at send time in send_webhooks.
+        if webhook_url and not webhook_url.startswith("https://"):
+            raise SubscriptionError(f"{label}: webhook_url must be an https:// URL")
+
         subscribers.append(
             Subscriber(
                 email=email,
                 agency_ids=agency_ids,
                 verified=bool(entry.get("verified", False)),
                 kinds=kinds,
+                webhook_url=webhook_url,
             )
         )
     return subscribers
@@ -138,12 +153,21 @@ def subscriber_from_item(item: dict[str, Any]) -> Subscriber:
         agency_ids = frozenset(str(a) for a in (item.get("agencies") or []))
     kinds_raw = item.get("kinds")
     kinds = frozenset(str(k) for k in kinds_raw) if kinds_raw else None
+    # No path stores a webhook_url in DynamoDB today (the public subscribe form
+    # is email-only); read it defensively so a future self-serve field needs no
+    # change here, but never trust an unexpected value: same https-only shape
+    # check as the YAML path, silently dropped rather than raised since a
+    # malformed stored row should not break the whole digest run.
+    webhook_url = str(item.get("webhook_url", "") or "").strip()
+    if not webhook_url.startswith("https://"):
+        webhook_url = ""
     return Subscriber(
         email=str(item["email"]),
         agency_ids=agency_ids,
         verified=bool(item.get("verified", False)),
         kinds=kinds,
         unsub_token=str(item.get("unsub_token", "")),
+        webhook_url=webhook_url,
     )
 
 
@@ -205,6 +229,62 @@ def build_emails(
         body = render_digest(personal) + _unsubscribe_footer(subscriber, unsubscribe_base)
         emails.append(Email(to=subscriber.email, subject=_subject(personal), body=body))
     return emails
+
+
+@dataclass(frozen=True)
+class WebhookNotification:
+    """A rendered digest, ready to POST to one subscriber's webhook."""
+
+    url: str
+    payload: dict[str, Any]
+
+
+def build_webhook_notifications(
+    subscribers: list[Subscriber], digest: Digest
+) -> list[WebhookNotification]:
+    """One notification per verified subscriber with a webhook_url and at least
+    one item to act on, mirroring build_emails. A single ``text`` field covers
+    Slack, Microsoft Teams (via its incoming-webhook connector), and a generic
+    endpoint alike, so one payload shape serves all three without per-service
+    branching."""
+    notifications: list[WebhookNotification] = []
+    for subscriber in subscribers:
+        if not subscriber.verified or not subscriber.webhook_url:
+            continue
+        personal = personal_digest(subscriber, digest)
+        if not personal.items:
+            continue
+        notifications.append(
+            WebhookNotification(
+                url=subscriber.webhook_url, payload={"text": render_digest(personal)}
+            )
+        )
+    return notifications
+
+
+def send_webhooks(notifications: list[WebhookNotification], timeout: float = 10.0) -> int:
+    """POST each notification's payload as JSON. Returns the count actually sent.
+
+    webhook_url is operator-curated in subscriptions.yaml (or, in the future,
+    validated at self-serve intake), but every send re-validates the URL is
+    public (net.validate_public_url) rather than trusting a value that could
+    have been repointed since it was reviewed. A redirect is not followed: a
+    webhook target should answer directly, and following one risks landing on
+    an address that was never reviewed. One bad or unreachable webhook is
+    skipped rather than aborting the rest of the digest run's sends."""
+    import requests
+
+    from .net import UnsafeURLError, validate_public_url
+
+    sent = 0
+    for note in notifications:
+        try:
+            validate_public_url(note.url)
+            requests.post(note.url, json=note.payload, timeout=timeout, allow_redirects=False)
+        except (UnsafeURLError, requests.exceptions.RequestException):
+            continue
+        sent += 1
+    return sent
 
 
 def verification_email(

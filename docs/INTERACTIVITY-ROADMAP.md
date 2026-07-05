@@ -145,6 +145,16 @@ work ships first.
    planned `maplibre-gl-compare` swipe: that plugin is built for two overlapping
    layers of the same area, but the data keeps only current per-agency geometry
    and agencies sit in different places, and it was the one runtime dependency.
+8. **Methodology sandbox.** _(shipped, EXP-06)_ A dependency-free what-if on the
+   `/how-to-read/` page: four range sliders reweight the rubric categories and the
+   page recomputes, entirely client-side, how many agencies would change letter
+   grade. It fetches the published `api/v1/scoring.json` (weights + grade bands)
+   and `api/v1/agencies.json` (each agency's measured category scores), so the
+   default weights, band thresholds, and the renormalized overall-score formula
+   all come from the published data at runtime — the sandbox and the pipeline
+   agree by construction (the FIX-03 single-source intent, without a schema
+   change). Degrades to the static rubric explanation when scripting or the fetch
+   is unavailable.
 
 ## Open questions to settle as the work lands
 

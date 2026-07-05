@@ -1,0 +1,68 @@
+{
+  "rubric_version": "1.1",
+  "overall": "Weighted average of the measured categories. The weights of any unmeasured category are renormalized, so an agency is never punished for a category it does not have (for example, realtime).",
+  "category_weights": {
+    "correctness": 0.35,
+    "freshness": 0.2,
+    "completeness": 0.25,
+    "realtime": 0.2
+  },
+  "grade_bands": [
+    {
+      "min_score": 90.0,
+      "grade": "A"
+    },
+    {
+      "min_score": 80.0,
+      "grade": "B"
+    },
+    {
+      "min_score": 70.0,
+      "grade": "C"
+    },
+    {
+      "min_score": 60.0,
+      "grade": "D"
+    },
+    {
+      "min_score": 0.0,
+      "grade": "F"
+    }
+  ],
+  "correctness": {
+    "start_score": 100.0,
+    "deduction_per_distinct_notice_code": {
+      "ERROR": 12.0,
+      "WARNING": 4.0,
+      "INFO": 0.5
+    },
+    "count_scaling": "Per distinct notice code, not per instance. The base deduction is multiplied by a tier based on how many instances the code has, so one systemic export bug cannot zero the score.",
+    "count_multiplier_tiers": [
+      {
+        "max_instances": 5,
+        "multiplier": 1.0
+      },
+      {
+        "max_instances": 50,
+        "multiplier": 1.5
+      },
+      {
+        "max_instances": null,
+        "multiplier": 2.0
+      }
+    ]
+  },
+  "source": "Scored on top of the MobilityData gtfs-validator. Full methodology with citations: docs/rubric.md.",
+  "changelog": [
+    {
+      "rubric_version": "1.1",
+      "effective_date": "2026-06-16",
+      "summary": "The most rider-affecting fix is ranked first, and every grade now carries the validator and rubric version that produced it, so a trend can tell a feed change apart from a methodology change."
+    },
+    {
+      "rubric_version": "1.0",
+      "effective_date": "2026-06-11",
+      "summary": "First published rubric: four weighted categories (Correctness 35%, Freshness 20%, Rider experience 25%, Realtime 20%), A-F grade bands, scored on the MobilityData gtfs-validator and anchored to the California Transit Data Guidelines v4.0."
+    }
+  ]
+}
