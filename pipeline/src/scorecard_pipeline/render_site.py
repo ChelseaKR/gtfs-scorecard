@@ -3223,8 +3223,8 @@ _SANDBOX_JS = r"""    <script>
                 " agencies change letter grade under these weights.") +
             "</p>" +
             '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
-            "<caption class=\"visually-hidden\">Agencies per grade band: published weights versus your weights</caption>" +
-            "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">Published</th>" +
+            "<caption class=\"visually-hidden\">Agencies per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
             "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
             "<tbody>" + rows + "</tbody></table></div>";
 
