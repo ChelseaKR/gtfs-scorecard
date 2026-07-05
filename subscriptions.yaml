@@ -20,6 +20,10 @@
 #              summarizes week-over-week movement across that whole cohort. Same
 #              verified gate as alerts: unverified is never sent. Omit for none.
 #   verified   true only after the address is confirmed; unverified is never sent.
+#   webhook_url  an https:// incoming-webhook URL (Slack, Microsoft Teams, or a
+#              generic endpoint) that also gets this subscriber's digest as a
+#              JSON POST ({"text": "..."}). Optional and additive to email; a
+#              program liaison can set both, or a webhook alone.
 subscribers:
   - email: liaison@example.org
     all: true

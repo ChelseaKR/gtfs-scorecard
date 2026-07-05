@@ -130,7 +130,7 @@ sources; the repo's own `expansion-research.md` independently verified several o
 | R13 | **"Still operating?" `operating_note` for the long-expired bucket** so a confirmed-running feed reads as recoverable, not defunct | A2,F1 | P2 | S | `[corroborates feature-roadmap.md / listing-policy.md]` |
 | R14 | **Liaison-ready outreach copy block** on each expired scorecard ("copy a note to the agency": what lapsed, rider impact, the one setting) | F1,A1 | P2 | S | `[corroborates feature-roadmap.md "Liaison-ready outreach copy"]` |
 | R15 | **Recognize shared regional feeds and FTA-waived reporters** so a tribal/rural agency on a shared feed is not flagged for identity or coverage it does not own | A2,E1 | P2 | M | `[NET-NEW]` — FTA named these as the hard identity cases |
-| R16 | **Ridership-weighted views** in rollups/leaderboard so a high-ridership low-grade feed ranks above a tiny one | D2,F1,E4 | P3 | S | `[corroborates ADR 0021]` |
+| R16 | **Ridership-weighted views** in rollups/leaderboard so a high-ridership low-grade feed ranks above a tiny one | D2,F1,E4 | P3 | S | `[corroborates ADR 0021]` · ✅ Implemented 2026-07-04 (`ridership.load_ridership`/`annual_trips_for`; the rollup attention list and the pulse "needs attention"/"lowest scoring" boards tie-break by NTD annual trips, with a "Riders/yr" column; degrades to unweighted order when the snapshot is absent) |
 
 ## Expansion backlog (new capability)
 

@@ -60,14 +60,34 @@
     <h1 class="page-title">Score a feed now.</h1>
     <p class="page-lede">Paste a link to any published
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> Schedule feed and get a
-    graded scorecard back, usually within a few minutes. No account, no
+    graded scorecard back, usually within a minute. No account, no
     <abbr title="YAML Ain't Markup Language, a plain-text config format">YAML</abbr>, and no waiting
     for a review. This is a one-off check. To track a feed over time, <a href="submit.html">add
     your agency</a> instead. Not published yet? <a href="/check/">Check the zip before you
     publish</a>, right in your browser.</p>
 
+    <section aria-labelledby="form-h">
+      <h2 class="section-title" id="form-h">Score it now</h2>
+      <form id="try-form" class="submit-form" novalidate>
+        <p class="field">
+          <label for="try-url">GTFS Schedule URL <span class="req">(required)</span></label>
+          <input id="try-url" name="url" type="url" required
+            placeholder="https://your-agency.example/google_transit.zip">
+        </p>
+        <p class="field">
+          <label for="try-name">Agency name <span class="hint">(optional, labels the result)</span></label>
+          <input id="try-name" name="name" type="text" maxlength="200" autocomplete="organization">
+        </p>
+        <p class="field">
+          <button type="submit" class="submit-button">Score this feed</button>
+        </p>
+        <p id="try-status" class="form-status" role="status" aria-live="polite"></p>
+      </form>
+      <div id="try-result" hidden></div>
+    </section>
+
     <section aria-labelledby="how-h">
-      <h2 class="section-title" id="how-h">How it works</h2>
+      <h2 class="section-title" id="how-h">Prefer GitHub instead?</h2>
       <ol class="how-list">
         <li>Open the form and paste your GTFS Schedule URL.</li>
         <li>A scorer downloads the feed, runs the MobilityData validator, and grades it
@@ -82,7 +102,8 @@
         </a>
       </p>
       <p class="hint">The form lives on GitHub, so you will need a free GitHub account to
-      submit it. The grade comes back as a comment on the request you open.</p>
+      submit it. The grade comes back as a comment on the request you open, usually within a
+      few minutes. Use this if the form above is not enabled on this deployment.</p>
     </section>
 
     <section aria-labelledby="cli-h">
@@ -128,5 +149,8 @@
       Built by <a href="https://chelseakr.com">Chelsea Kelly-Reif</a></p>
     </div>
   </footer>
+
+  <script src="src/config.js"></script>
+  <script type="module" src="src/try.js"></script>
 </body>
 </html>

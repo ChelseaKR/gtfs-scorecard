@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 446,
-        "trips": 996,
+        "trips": 989,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 996,
+          "count": 989,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "996 of 996 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "989 of 989 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -106,10 +106,10 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 24,
+          "INFO": 23,
           "WARNING": 4
         },
         "validator_version": "8.0.1"
@@ -158,30 +158,19 @@
           "severity": "INFO",
           "what": "Some files contain columns that are not part of the GTFS spec.",
           "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
-        },
-        {
-          "code": "future_calendar",
-          "count": 1,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'future_calendar' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.5,
-          "severity": "INFO",
-          "what": "Future calendar (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 86.8,
+      "score": 87.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 28 instances (0 error, 4 warning, 24 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 27 instances (0 error, 4 warning, 23 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 545,
         "feed_end_date": "2027-12-31",
-        "feed_start_date": "2026-07-04",
+        "feed_start_date": "2026-05-26",
         "feed_version": "20260704",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
@@ -197,12 +186,19 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 100.0,
+        "covered_trips": 4,
+        "drift": {
+          "median_seconds": 110,
+          "observations": 19,
+          "on_time_share_pct": 78.9,
+          "p90_abs_seconds": 360
+        },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 5
+        "scheduled_trips_in_window": 4,
+        "worst_lag_seconds": 2
       },
       "findings": [
         {
@@ -218,9 +214,9 @@
         }
       ],
       "name": "realtime",
-      "score": 83.3,
+      "score": 90.2,
       "status": "measured",
-      "summary": "Sampled 6 times outside service hours: 2 of 3 feeds healthy.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; predictions ran a median of 110s behind schedule.",
       "weight": 0.2
     }
   },
@@ -249,8 +245,8 @@
   "feed": {
     "license_note": "License: https://www.cityofpasadena.net/pasadena-transit/real-time-applications/",
     "reachable": true,
-    "sha256": "b9fc05d68734da86c2892f5342233b26f140cffcc604108d199a3cd4c16d3ec0",
-    "size_bytes": 337438,
+    "sha256": "6e4581e135fe5acad1ae9d5936a21245e69025f127ea88faf13ea07d2e3c3ab6",
+    "size_bytes": 334223,
     "static_url": "http://rt.pasadenatransit.net/rtt/public/utility/gtfs.aspx"
   },
   "fetch": {
@@ -301,9 +297,9 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 0.2,
-    "margin_to_next_band": 9.8,
-    "score": 80.2
+    "margin_to_lower_band": 1.7,
+    "margin_to_next_band": 8.3,
+    "score": 81.7
   },
   "recommendations": [
     {
@@ -334,7 +330,7 @@
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 996
+    "trips_total": 989
   },
   "route_map": {
     "drawn_route_count": 12,
@@ -508,14 +504,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 996,
+      "count": 989,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "996 of 996 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "989 of 989 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],

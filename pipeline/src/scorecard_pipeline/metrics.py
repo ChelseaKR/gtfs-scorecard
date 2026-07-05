@@ -357,6 +357,14 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
                 "agency. Fixing it now is calmer than after riders notice.",
                 fix="Re-export with a validity window that reaches at least 60 days out.",
                 effort="One export setting.",
+                # Display-only "points this costs" estimate for the finding card.
+                # It is NOT the category delta: the score is `date_score` (set
+                # above), so the true loss is `100 - score`, as the sibling
+                # findings report. This softened curve understates the impact at
+                # very low days_left on purpose (a feed 1 day from expiry still
+                # works today), so the card reads calmer than the raw score drop.
+                # Keep the two in mind as separate numbers; changing this formula
+                # is a governed methodology change (see METHODOLOGY_CHANGELOG).
                 deduction=round((1 - days_left / 60) * 60 + 20, 1),
             )
         )

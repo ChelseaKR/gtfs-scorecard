@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-04T20:02:45+00:00",
+  "generated_at": "2026-07-04T23:32:56+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -100,8 +100,8 @@
       "prevalence_pct": 1.2
     },
     "future_calendar": {
-      "agencies": 28,
-      "instances": 28,
+      "agencies": 27,
+      "instances": 27,
       "prevalence_pct": 1.9
     },
     "future_feed": {
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 3,
-      "instances": 2199,
-      "prevalence_pct": 0.2
+      "agencies": 4,
+      "instances": 2259,
+      "prevalence_pct": 0.3
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -415,8 +415,8 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 51,
-      "instances": 1663,
+      "agencies": 50,
+      "instances": 1661,
       "prevalence_pct": 3.5
     },
     "scorecard_rt_trip_updates_unreachable": {
@@ -430,9 +430,9 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 6,
-      "instances": 163,
-      "prevalence_pct": 0.4
+      "agencies": 7,
+      "instances": 168,
+      "prevalence_pct": 0.5
     },
     "scorecard_station_no_pathways": {
       "agencies": 143,
@@ -451,7 +451,7 @@
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1239,
-      "instances": 2145476,
+      "instances": 2145469,
       "prevalence_pct": 85.5
     },
     "scorecard_wheelchair_boarding_unknown": {
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2145476,
+      "instances": 2145469,
       "prevalence_pct": 85.5,
       "severity": "WARNING",
       "source": "scorecard",

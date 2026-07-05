@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/charlotte-area-transit-system-cats-2265/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/charlotte-area-transit-system-cats-2265/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -41,6 +40,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -164,7 +167,7 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -175,7 +178,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
@@ -242,7 +245,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 99 days.",
+        "detail": "Service data covers the next 92 days.",
         "key": "current",
         "met": true
       },
@@ -262,7 +265,13 @@
     "size_bytes": 3017636,
     "static_url": "https://gtfsrealtime.ridetransit.org/GTFSStatic/GTFS.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://gtfsrealtime.ridetransit.org/GTFSStatic/GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -81.17989,
@@ -275,7 +284,7 @@
     "stop_count": 2919
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "CATS"
     ],
@@ -294,13 +303,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 99 days.",
+        "detail": "Service data covers the next 92 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "D",
@@ -332,17 +341,726 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2901,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
     "trips_total": 9857
+  },
+  "route_map": {
+    "drawn_route_count": 64,
+    "has_shapes": true,
+    "path": "data/artifacts/charlotte-area-transit-system-cats-2265/geometry.geojson",
+    "route_count": 64,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Mt. Holly Road",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "West Boulevard",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "North Tryon",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "South Boulevard",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "Nevin Road",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Providence Road",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Randolph Road",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "South Tryon",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Commonwealth Avenue",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "Paw Creek/Rosa Parks Crosstown",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "Park Road",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Ashley/Scaleybark Crosstown",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Sharon Road",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "Statesville Ave",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "211",
+        "label": "211",
+        "long": "Hidden Valley",
+        "short": "211",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Graham Street",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "221",
+        "label": "221",
+        "long": "E. Harris Blvd-Idlewild Rd",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "Pence Road",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "Shamrock Drive",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "235",
+        "label": "235",
+        "long": "West Charlotte Connector",
+        "short": "235",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "Nations Ford Road",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26",
+        "label": "26",
+        "long": "Oaklawn Avenue",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Monroe Road",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "Fairview Road",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "29",
+        "label": "29",
+        "long": "UNCC/JW Clay",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "The Plaza",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Woodlawn/Scaleybark/Crosstown",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "34",
+        "label": "34",
+        "long": "Freedom Drive",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "Wilkinson-Amazon",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "39",
+        "label": "39",
+        "long": "Eastway",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Belmont",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40x",
+        "label": "40x",
+        "long": "Lawyers Road Express",
+        "short": "40x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "41x",
+        "label": "41x",
+        "long": "Steele Creek Express",
+        "short": "41x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "Carowinds",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "Ballantyne",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "46x",
+        "label": "46x",
+        "long": "Harrisburg Road Express",
+        "short": "46x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "48x",
+        "label": "48x",
+        "long": "Northcross Express",
+        "short": "48x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Airport",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "50",
+        "label": "50",
+        "long": "URP/CIC",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "501",
+        "label": "501",
+        "long": "Light Rail - Lynx Blue Line",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Pineville-Matthews Road",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "510",
+        "label": "510",
+        "long": "CityLYNX Gold Line",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "52x",
+        "label": "52x",
+        "long": "Idlewild Road Express",
+        "short": "52x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "53x",
+        "label": "53x",
+        "long": "Northlake Express",
+        "short": "53x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "University Research Park",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "Westinghouse",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "Arrowood",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "Archdale/South Park",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Pineville",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "UNC Charlotte-Huntersville",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Kings Drive",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "Tyvola Road",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "61x",
+        "label": "61x",
+        "long": "Arboretum Express",
+        "short": "61x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "62x",
+        "label": "62x",
+        "long": "Rea Road Express",
+        "short": "62x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "63x",
+        "label": "63x",
+        "long": "Huntersville Express",
+        "short": "63x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "64x",
+        "label": "64x",
+        "long": "Independence Blvd Express",
+        "short": "64x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Beatties Ford",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74x",
+        "label": "74x",
+        "long": "Union County Express",
+        "short": "74x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "77x",
+        "label": "77x",
+        "long": "North Mecklenburg Express",
+        "short": "77x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Tuckaseegee Road",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "82x",
+        "label": "82x",
+        "long": "Rock Hill Express",
+        "short": "82x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "85x",
+        "label": "85x",
+        "long": "Gastonia Express",
+        "short": "85x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "88x",
+        "label": "88x",
+        "long": "Mountain Island Express",
+        "short": "88x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "Central Avenue",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2919,
+    "stop_points_capped": true
   },
   "rubric_version": "1.1",
   "schema_version": "1.4",
@@ -373,16 +1091,16 @@
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

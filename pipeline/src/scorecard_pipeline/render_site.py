@@ -64,7 +64,8 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     esc,
     sync_static_navs,
 )
-from .timemachine import history_events
+from .timemachine import finding_codes as _finding_codes
+from .timemachine import grade_story, history_events
 from .tool_profiles import detect_tool
 
 FIX_CODES_WITH_PAGES: set[str] = set()  # filled in by render_fixes()
@@ -149,19 +150,6 @@ def _fix_rule_reference(code: str) -> str:
     )
 
 
-def _finding_codes(artifact: dict[str, Any]) -> dict[str, str]:
-    """Map each finding code in an artifact to its 'what' text, across measured
-    categories. Used to diff one run against the next."""
-    out: dict[str, str] = {}
-    for cat in artifact.get("categories", {}).values():
-        if cat.get("status") == "measured":
-            for f in cat.get("findings", []):
-                code = f.get("code")
-                if code:
-                    out.setdefault(str(code), str(f.get("what", "")))
-    return out
-
-
 def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[tuple[str, str]]:
     """Findings present last run but gone this run: a fix that landed. Returns
     (code, what) pairs, where `what` is the previous run's description."""
@@ -171,13 +159,21 @@ def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[
     return [(code, what) for code, what in _finding_codes(prev).items() if code not in current]
 
 
-def _history_section(history: list[dict[str, Any]] | None) -> str:
+def _history_section(
+    history: list[dict[str, Any]] | None,
+    artifacts: list[dict[str, Any]] | None = None,
+) -> str:
     """A plain-language timeline of what changed across this feed's history, the
     text companion to the trend chart (and the screen-reader-friendly version of
-    it). Empty when the feed has been steady."""
+    it). Leads with a short deterministic "grade story" paragraph — a few dated
+    sentences tracing how the current grade came to be, composed from the dated
+    artifacts (``artifacts``, oldest first) so cleared findings are named too.
+    Empty when the feed has been steady."""
     events = history_events(history or [])
     if not events:
         return ""
+    story = grade_story(history or [], artifacts or [])
+    story_html = f'<p class="grade-story">{" ".join(esc(s) for s in story)}</p>' if story else ""
     items = "".join(
         f'<li class="event"><span class="event-date">{esc(e.date)}</span> {esc(e.detail)}</li>'
         for e in events[:12]
@@ -185,6 +181,7 @@ def _history_section(history: list[dict[str, Any]] | None) -> str:
     return (
         '<section aria-labelledby="history-h"><h2 class="section-title" id="history-h">'
         "What changed over time</h2>"
+        f"{story_html}"
         '<p class="page-lede">A plain-language history of this feed, newest first.</p>'
         f'<ul class="events">{items}</ul></section>'
     )
@@ -707,6 +704,45 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
+# How the quiet confidence line names the fetch source (EXP-01). Keyed by the
+# artifact's confidence.fetch_source (fetch.py: origin | mirror | unknown); an
+# unrecognized value falls back to no phrase rather than guessing.
+_CONFIDENCE_SOURCE_PHRASES = {
+    "origin": " from the agency's own feed",
+    "mirror": " from the Mobility Database's mirror copy of the feed",
+    "unknown": " from a snapshot whose original source was not recorded",
+}
+
+
+def _confidence_section(artifact: dict[str, Any]) -> str:
+    """The measurement-confidence read (EXP-01): one quiet line saying how much
+    of the grade this run could measure and from what source, plus an expandable
+    per-signal breakdown. A legibility layer on the one grade; it never shows a
+    second letter or number, and low confidence describes our measurement
+    coverage, not the feed. Artifacts published before schema 1.5 carry no
+    confidence block and render byte-for-byte as before (returns empty)."""
+    conf = artifact.get("confidence")
+    if not conf:
+        return ""
+    source_phrase = _CONFIDENCE_SOURCE_PHRASES.get(str(conf.get("fetch_source", "")), "")
+    line = (
+        f"Measured {conf.get('measured_categories', 0)} of "
+        f"{conf.get('total_categories', 0)} score categories{source_phrase}."
+    )
+    level = str(conf.get("level", ""))
+    level_html = f"<p>Confidence in this measurement: {esc(level)}.</p>" if level else ""
+    notes = "".join(f"<li>{esc(note)}</li>" for note in conf.get("notes", []))
+    notes_html = f"<ul>{notes}</ul>" if notes else ""
+    return (
+        f'<p class="confidence-note">{esc(line)}</p>\n'
+        f'    <details class="confidence-how"><summary>How we measured this</summary>'
+        f"{level_html}{notes_html}"
+        '<p class="fineprint">Confidence describes how much the pipeline could '
+        "measure this run, not the feed itself. It never changes the grade.</p>"
+        "</details>"
+    )
+
+
 _OUTREACH_CODES = ("scorecard_feed_expired", "scorecard_feed_expiring_soon")
 
 
@@ -1172,6 +1208,106 @@ def _route_map_section(
     )
 
 
+def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool) -> str:
+    """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
+    top fix, stitching the pieces that already exist into a single per-finding
+    path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
+    the change", naming the producing tool detected from the feed host and, when a
+    safe mechanical autofix covers that exact finding, a link to the corrected
+    feed, and (3) "Prove it cleared", explaining that the next scorecard run
+    re-checks the fix and mints a dated receipt on the agency's fix log.
+
+    The boundary stays explicit: the scorecard shows the fix; the agency publishes
+    it. Empty when the feed has no top fixes, so an all-clear feed renders exactly
+    as it did before this feature."""
+    fixes = artifact.get("top_fixes", [])
+    if not fixes:
+        return ""
+    fix_tool = detect_tool(artifact.get("feed", {}).get("static_url"))
+    tool_path = esc(fix_tool.fix_path) if fix_tool else ""
+    # Reuse the autofix block's own data (see _autofix_section): a corrected feed
+    # is offered only when the engine is available and a download URL was attached
+    # at score time. Map it by finding code so the download shows on exactly the
+    # fixes it can make.
+    autofix = artifact.get("autofix") or {}
+    autofix_codes = (
+        {str(f.get("code", "")) for f in autofix.get("fixes", [])}
+        if autofix.get("available")
+        else set()
+    )
+    autofix_url = autofix.get("download_url")
+    if has_fixlog:
+        prove_link = (
+            f' <a class="fix-guide" href="/agency/{esc(agency_id)}/fixes/">'
+            "See this feed's dated fix log</a>."
+        )
+    else:
+        prove_link = (
+            ' <a class="fix-guide" href="/check/">Self-check a feed before you publish</a>.'
+        )
+    items = []
+    for f in fixes:
+        code = str(f.get("code", ""))
+        guide = _fix_guide_link(code)
+        if code and code in autofix_codes and autofix_url:
+            change = (f"{tool_path} " if tool_path else "") + (
+                f'<a class="fix-guide" href="{esc(str(autofix_url))}" download>'
+                "Download the corrected feed for this fix</a>."
+            )
+        else:
+            change = tool_path or (
+                "Make this change in whatever tool produces your feed, then re-export."
+            )
+        items.append(
+            f'<li class="fixloop-item"><p class="fixloop-name">{esc(f.get("fix", ""))}{guide}</p>'
+            f'<p class="fixloop-step"><strong>Make the change.</strong> {change}</p>'
+            f'<p class="fixloop-step"><strong>Prove it cleared.</strong> The next scorecard '
+            "run re-checks this automatically and, once it is gone, mints a dated receipt."
+            f"{prove_link}</p></li>"
+        )
+    return (
+        '<div class="fixloop">'
+        '<p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, '
+        "make the change in your tool, and let the next run verify it &mdash; the scorecard "
+        "shows the fix; the agency publishes it.</p>"
+        f'<ol class="fixloop-list">{"".join(items)}</ol></div>'
+    )
+
+
+def _load_effort_bands() -> dict[str, str]:
+    """Code -> empirical effort band, from the corpus calibration file.
+
+    Only codes that clear the sample floor get an entry (band_text returns None
+    below it). A missing or unreadable file yields an empty mapping, which is
+    the gate that keeps calibration purely additive: no file, no bands, output
+    unchanged (so golden fixtures without one stay byte-identical)."""
+    from .effort_calibration import band_text
+
+    path = _repo_root() / "data" / "effort-calibration.json"
+    try:
+        data = json.loads(path.read_text())
+    except (FileNotFoundError, ValueError, OSError):
+        return {}
+    codes = data.get("codes", {}) if isinstance(data, dict) else {}
+    bands: dict[str, str] = {}
+    for code, stats in sorted(codes.items()):
+        if isinstance(stats, dict) and (text := band_text(stats)):
+            bands[str(code)] = text
+    return bands
+
+
+def _effort_band_html(code: str, effort_bands: dict[str, str] | None) -> str:
+    """Empirical effort band for a notice code, or '' when none applies.
+
+    Additive by design: the hand-authored hint always renders first, and this
+    appends the observed runs-to-clear band only when the corpus has enough
+    closed episodes for this code (effort_calibration.band_text) and the
+    calibration file exists. Absent file -> empty mapping -> no change, so
+    goldens rendered without calibration stay byte-identical."""
+    band = (effort_bands or {}).get(str(code))
+    return f'<p class="effort-band">{esc(band)}</p>' if band else ""
+
+
 def _render_agency(
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -1181,6 +1317,8 @@ def _render_agency(
     stop_names: list[str] | None = None,
     has_fixlog: bool = False,
     now: dt.datetime | None = None,
+    artifacts: list[dict[str, Any]] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -1215,7 +1353,8 @@ def _render_agency(
                 f'<div class="alert"><span class="badge{cls}">Fix {i + 1:02d}</span>'
                 f'<div><p class="afix">{esc(f["fix"])}{owner_tag}</p>'
                 f'<p class="awhy">{esc(f["what"])} {esc(f["why"])}</p>'
-                f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p></div></div>'
+                f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p>'
+                f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</div></div>"
             )
         fixes_html = '<div class="alerts">' + "".join(alerts) + "</div>"
     else:
@@ -1281,6 +1420,7 @@ def _render_agency(
             f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
             f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
             f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
             f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
             for f in findings
         )
@@ -1293,6 +1433,11 @@ def _render_agency(
         if op_note
         else ""
     )
+    # The measurement-confidence read rides on its own line only when the
+    # artifact carries one, so a pre-1.5 artifact renders byte-for-byte as it
+    # did before this feature.
+    confidence = _confidence_section(artifact)
+    confidence_block = f"\n    {confidence}" if confidence else ""
     _outreach_block = _outreach_section(artifact, canonical)
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name)
@@ -1316,11 +1461,12 @@ def _render_agency(
       <a href="/how-to-read/">New to this? How to read your scorecard.</a>
       <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
       Rubric v{esc(artifact.get("rubric_version", "—"))}, validator {esc(artifact.get("validator_version", "—"))}.</p>
-    {_liveness_note(liveness, now)}
+    {_liveness_note(liveness, now)}{confidence_block}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
+      {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
     {_vendor_block}
     {_outreach_block}
@@ -1332,7 +1478,7 @@ def _render_agency(
     {_route_rule()}{map_block}
     {_trend_section(history or [])}
     {_feeddiff_section(prev_artifact, artifact, agency_id)}
-    {_history_section(history)}
+    {_history_section(history, artifacts)}
     {_route_rule()}
     <section aria-labelledby="findings-h">
       <h2 class="section-title" id="findings-h">Everything we checked</h2>
@@ -1455,6 +1601,7 @@ def _render_brief(
     dir_record: dict[str, Any] | None = None,
     liveness: dict[str, Any] | None = None,
     program_ids: set[str] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     """A calm, print-clean one-page brief for a program liaison to have open or
     printed during an agency check-in. Renders only precomputed artifact fields:
@@ -1475,7 +1622,8 @@ def _render_brief(
         fix_items = "".join(
             f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
-            f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p></li>'
+            f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
         fixes_html = f'<ol class="brief-fixes">{fix_items}</ol>'
@@ -1637,6 +1785,7 @@ def _render_board_page(
     history: list[dict[str, Any]] | None = None,
     prev_artifact: dict[str, Any] | None = None,
     dir_record: dict[str, Any] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     """A one-page summary written for an agency's board packet (docs/
     RESEARCH-ROADMAP.md E6). The call brief prepares the liaison; this page is
@@ -1672,7 +1821,8 @@ def _render_board_page(
         ask_items = "".join(
             f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
-            f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p></li>'
+            f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
         asks_html = (
@@ -1797,6 +1947,10 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
       <ul class="cleared-list">{"".join(items)}</ul>
       <p class="fineprint">Verified means the daily check stopped reporting the finding. A
       finding that returns and clears again appears as a separate entry.</p>
+      <p class="fixloop-close">This log is the end of the guided fix loop: you make a change,
+      republish, and the next run verifies it and records it here as
+      <a href="/agency/{esc(agency_id)}/">linkable proof for a board packet or NTD
+      narrative</a>.</p>
     </section>"""
     desc = (
         f"Dated, linkable record of {len(receipts)} data-quality "
@@ -2058,6 +2212,45 @@ def _ntd_id_alignment_html(artifact: dict[str, Any]) -> str:
     )
 
 
+def _current_shapes_readiness(artifact: dict[str, Any]) -> dict[str, Any] | None:
+    """The shapes readiness block, re-worded at render time from the stored trip
+    counts, the same way ``_current_alignment`` re-words the agency_id check —
+    so a wording fix reaches every page without a rescore."""
+    shapes = artifact.get("shapes_readiness")
+    if not shapes:
+        return None
+    total = shapes.get("total_trips")
+    with_shape = shapes.get("trips_with_shape")
+    if isinstance(total, int) and isinstance(with_shape, int):
+        from .ntd import assess_shapes_readiness
+
+        return assess_shapes_readiness(total, with_shape).to_dict()
+    return dict(shapes)
+
+
+def _shapes_readiness_html(artifact: dict[str, Any]) -> str:
+    """Render the shapes.txt readiness line, when the check ran for this feed.
+
+    FTA's July 2025 final rule requires shapes.txt from Reduced, Rural, and
+    Tribal NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
+    Absent for artifacts that predate the check."""
+    shapes = _current_shapes_readiness(artifact)
+    if not shapes:
+        return ""
+    status = str(shapes.get("status", "not_ready"))
+    label = _NTD_LABELS.get(status, status)
+    detail = str(shapes.get("detail", ""))
+    fix = str(shapes.get("fix", ""))
+    body = esc(detail)
+    if fix:
+        body += f" {esc(fix)}"
+    return (
+        '<dl class="standards-list">'
+        f'<dt>shapes.txt covers your trips <span class="ntd-status ntd-{status}">'
+        f"{esc(label)}</span></dt><dd>{body}</dd></dl>"
+    )
+
+
 _CIMD_TIER_PHRASE = {"high": "higher need", "moderate": "moderate need", "lower": "lower need"}
 
 
@@ -2136,6 +2329,7 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         f'<p class="page-lede">{esc(readiness.summary)}</p>'
         f'<dl class="standards-list">{"".join(rows)}</dl>'
         f"{_ntd_id_alignment_html(artifact)}"
+        f"{_shapes_readiness_html(artifact)}"
         '<p class="plain-summary"><strong>In plain words:</strong> if you report to the federal '
         "transit database, you have to publish a working, up-to-date feed and confirm it once a "
         "year. This box is a heads-up on whether yours looks ready; it is not the official "
@@ -2149,8 +2343,9 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         '<a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/'
         'national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">'
         "July 2025 final rule</a> links the two on the P-50 form rather than requiring that "
-        "feed change. Not an official determination; your certification is the official "
-        "check.</p></section>"
+        "feed change, and requires shapes.txt in the published GTFS: Full Reporters from Report "
+        "Year 2025, and Reduced, Rural, and Tribal Reporters from Report Year 2026. Not an "
+        "official determination; your certification is the official check.</p></section>"
     )
 
 
@@ -2585,6 +2780,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     rows = "".join(rows_parts)
     avg = "—" if rollup.get("average_score") is None else f"{rollup['average_score']} out of 100"
     expired_section = _rollup_expired_section(rollup)
+    shapes_section = _rollup_shapes_section(rollup)
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (rname, None)])
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -2597,6 +2793,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </div>
     {_route_rule()}
     {expired_section}
+    {shapes_section}
     <section aria-labelledby="members-h">
       <h2 class="section-title" id="members-h">Agencies, worst first</h2>
       <ul class="program-list">{rows}</ul>
@@ -2671,6 +2868,38 @@ def _rollup_expired_section(rollup: dict[str, Any]) -> str:
     )
 
 
+def _rollup_shapes_section(rollup: dict[str, Any]) -> str:
+    """A worklist of this program's members not yet covered by shapes.txt, the
+    liaison-facing half of the per-agency NTD shapes readiness check (03-A1).
+    FTA's July 2025 final rule requires shapes.txt covering every trip for
+    Reduced, Rural, and Tribal NTD reporters by Report Year 2026 (Full
+    Reporters already, RY2025); this checks the feed itself, not each
+    agency's reporter type, so it is a heads-up to check against each
+    agency's own filing, never a claim that a listed agency is currently
+    out of compliance. Absent when nothing in the cohort has a gap, or when
+    the cohort has no measured members (all non-US, or artifacts that
+    predate the check)."""
+    shapes = rollup.get("shapes_readiness")
+    if not shapes or not (shapes["not_ready"] or shapes["at_risk"]):
+        return ""
+    gaps = [m for m in rollup["members"] if m.get("shapes_status") in ("not_ready", "at_risk")]
+    gaps.sort(key=lambda m: (m["shapes_status"] != "not_ready", m["id"]))
+    rows = "".join(
+        _rollup_member_row(m, _NTD_LABELS.get(m["shapes_status"], m["shapes_status"])) for m in gaps
+    )
+    measured = shapes["total"] - shapes["not_measured"]
+    return (
+        '<section class="expired-panel" aria-labelledby="rollup-shapes-h">'
+        '<h2 class="section-title" id="rollup-shapes-h">shapes.txt coverage '
+        f'<span class="grade-count">{shapes["ready"]} of {measured}</span></h2>'
+        '<p class="page-lede">The FTA National Transit Database requires shapes.txt covering '
+        "every trip (Reduced, Rural, and Tribal reporters by Report Year 2026; Full Reporters "
+        "already). These agencies are not fully covered yet — check each one against its own "
+        "NTD filing.</p>"
+        f'<ul class="program-list">{rows}</ul></section>'
+    )
+
+
 # --- minimal markdown for the fix knowledge base -------------------------------
 
 
@@ -2732,9 +2961,18 @@ def _render_fix(code: str, md: str) -> str:
     para = next((re.sub("<[^>]+>", "", p) for p in re.findall(r"<p>(.*?)</p>", body_html)), "")
     desc = (para[:155] or f"How to fix the GTFS validator notice {code}.").strip()
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (f"Fix: {code}", None)])
+    after_republish = (
+        '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
+        "After you republish</h2>"
+        "<p>Once the corrected feed is live at your published URL, the next scorecard run "
+        "re-checks it automatically. When this finding is gone, it is recorded as a dated "
+        "receipt on your agency's fix log &mdash; a citable, linkable record that the fix "
+        "cleared. That closes the loop: the scorecard shows the fix; the agency publishes "
+        "it.</p></section>"
+    )
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    <article class="feed-details">{body_html}{_fix_rule_reference(code)}</article>"""
+    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>"""
     jsonld = {
         "@context": "https://schema.org",
         "@type": "TechArticle",
@@ -2877,6 +3115,246 @@ def _sensitivity_note() -> str:
     )
 
 
+# The methodology sandbox (EXP-06): a dependency-free widget on /how-to-read/
+# that lets a reader move the four rubric weights and watch, entirely client
+# side, how the grade distribution shifts. It fetches the same scoring.json the
+# pipeline publishes (weights + grade bands) and the flat agencies.json (each
+# agency's measured category scores), so the default weights, the band
+# thresholds, and the overall-score formula all come from the published data at
+# runtime -- nothing about the rubric is hardcoded here. The recompute mirrors
+# score.build_scorecard exactly: overall = weighted average of the *measured*
+# categories, with the weights of any unmeasured category (realtime is null for
+# most agencies) renormalized out, then mapped to a letter by the grade bands'
+# min_score thresholds. The published side of every comparison uses each
+# agency's already-published grade, so at the default weights nothing moves --
+# which is the visible proof the JS and the pipeline compute the same score.
+_SANDBOX_JS = r"""    <script>
+      (function () {
+        var root = document.getElementById("sandbox");
+        if (!root || !window.fetch || !window.Promise) return;
+        var CATS = ["correctness", "freshness", "completeness", "realtime"];
+        var GRADES = ["A", "B", "C", "D", "F"];
+        var status = document.getElementById("sandbox-status");
+        var summary = document.getElementById("sandbox-summary");
+        var sample = document.getElementById("sandbox-sample");
+        var resetBtn = document.getElementById("sandbox-reset");
+        var sliders = {}, outputs = {};
+        CATS.forEach(function (c) {
+          sliders[c] = root.querySelector('input[data-cat="' + c + '"]');
+          outputs[c] = root.querySelector('output[data-cat="' + c + '"]');
+        });
+
+        var bands = null, defaults = {}, agencies = [];
+
+        function gradeFor(score) {
+          for (var i = 0; i < bands.length; i++) {
+            if (score >= bands[i].min_score) return bands[i].grade;
+          }
+          return bands[bands.length - 1].grade;
+        }
+
+        function overallFor(a, w) {
+          var num = 0, den = 0;
+          for (var i = 0; i < CATS.length; i++) {
+            var s = a[CATS[i]];
+            if (s === null || s === undefined) continue;
+            num += s * w[CATS[i]];
+            den += w[CATS[i]];
+          }
+          return den > 0 ? num / den : 0;
+        }
+
+        function esc(s) {
+          return String(s).replace(/[&<>"]/g, function (ch) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch];
+          });
+        }
+
+        function currentWeights() {
+          var w = {};
+          CATS.forEach(function (c) { w[c] = Number(sliders[c].value) / 100; });
+          return w;
+        }
+
+        function recompute() {
+          var w = currentWeights();
+          CATS.forEach(function (c) {
+            outputs[c].textContent = sliders[c].value + "%";
+          });
+          var userCounts = {}, pubCounts = {};
+          GRADES.forEach(function (g) { userCounts[g] = 0; pubCounts[g] = 0; });
+          var moved = [], changed = 0;
+          agencies.forEach(function (a) {
+            // Baseline: the same formula run at the published weights, so any
+            // difference below is attributable to the user's weights alone, not
+            // to rounding of the published category scores. At the default slider
+            // positions user weights equal published, so nothing moves -- the
+            // visible proof the sandbox and the pipeline compute the same grade.
+            var bo = overallFor(a, defaults);
+            var pub = gradeFor(bo);
+            if (pubCounts[pub] === undefined) pubCounts[pub] = 0;
+            pubCounts[pub]++;
+            var uo = overallFor(a, w);
+            var ug = gradeFor(uo);
+            userCounts[ug]++;
+            if (ug !== pub) {
+              changed++;
+              moved.push({
+                id: a.id, name: a.name, from: pub, to: ug,
+                delta: uo - bo,
+              });
+            }
+          });
+
+          var rows = GRADES.map(function (g) {
+            return '<tr><td><span class="grade-chip grade-' + g.toLowerCase() +
+              '">' + g + "</span></td><td>" + pubCounts[g] +
+              "</td><td>" + userCounts[g] + "</td><td>" +
+              (userCounts[g] - pubCounts[g] > 0 ? "+" : "") +
+              (userCounts[g] - pubCounts[g]) + "</td></tr>";
+          }).join("");
+          summary.innerHTML =
+            '<p class="sandbox-headline">' +
+            (changed === 0
+              ? "These are the published weights: no agency changes band."
+              : changed + " of " + agencies.length +
+                " agencies change letter grade under these weights.") +
+            "</p>" +
+            '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
+            "<caption class=\"visually-hidden\">Agencies per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
+            "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
+            "<tbody>" + rows + "</tbody></table></div>";
+
+          if (!moved.length) {
+            sample.innerHTML = "";
+            return;
+          }
+          var up = moved.filter(function (m) { return m.delta > 0; })
+            .sort(function (a, b) { return b.delta - a.delta; }).slice(0, 5);
+          var down = moved.filter(function (m) { return m.delta < 0; })
+            .sort(function (a, b) { return a.delta - b.delta; }).slice(0, 5);
+          function li(m) {
+            return "<li><span>" + esc(m.name) + "</span> " +
+              '<span class="grade-chip grade-' + m.from.toLowerCase() + '">' + m.from +
+              '</span> &rarr; <span class="grade-chip grade-' + m.to.toLowerCase() +
+              '">' + m.to + "</span> <span class=\"sandbox-delta\">(" +
+              (m.delta > 0 ? "+" : "") + m.delta.toFixed(1) + ")</span></li>";
+          }
+          var html = "";
+          if (up.length) {
+            html += "<h3 class=\"sandbox-sub\">Rise the most</h3><ul class=\"sandbox-movers\">" +
+              up.map(li).join("") + "</ul>";
+          }
+          if (down.length) {
+            html += "<h3 class=\"sandbox-sub\">Fall the most</h3><ul class=\"sandbox-movers\">" +
+              down.map(li).join("") + "</ul>";
+          }
+          sample.innerHTML = html;
+        }
+
+        function applyDefaults() {
+          CATS.forEach(function (c) {
+            sliders[c].value = Math.round((defaults[c] || 0) * 100);
+          });
+          recompute();
+        }
+
+        Promise.all([
+          fetch("/api/v1/scoring.json").then(function (r) { return r.json(); }),
+          fetch("/api/v1/agencies.json").then(function (r) { return r.json(); }),
+        ]).then(function (res) {
+          var scoring = res[0], agenciesDoc = res[1];
+          bands = (scoring.grade_bands || []).slice().sort(function (a, b) {
+            return b.min_score - a.min_score;
+          });
+          defaults = scoring.category_weights || {};
+          agencies = (agenciesDoc.agencies || []).filter(function (a) {
+            return typeof a.score === "number";
+          });
+          CATS.forEach(function (c) {
+            sliders[c].disabled = false;
+            sliders[c].addEventListener("input", recompute);
+          });
+          resetBtn.disabled = false;
+          resetBtn.addEventListener("click", applyDefaults);
+          if (status) status.hidden = true;
+          root.querySelector(".sandbox-controls").hidden = false;
+          applyDefaults();
+        }).catch(function () {
+          if (status) {
+            status.textContent =
+              "The live sandbox could not load the scoring data. " +
+              "The weights and grade bands are still described above.";
+          }
+        });
+      })();
+    </script>"""
+
+
+_SANDBOX_STYLE = """    <style>
+      #sandbox .sandbox-controls { display: grid; gap: 0.9rem; margin: 1rem 0; }
+      #sandbox .sandbox-slider { display: grid; grid-template-columns: 10rem 1fr 3.5rem; align-items: center; gap: 0.75rem; }
+      #sandbox .sandbox-slider label { font-weight: 600; }
+      #sandbox .sandbox-slider input[type="range"] { width: 100%; accent-color: var(--green); }
+      #sandbox .sandbox-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); }
+      #sandbox .sandbox-buttons { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+      #sandbox .sandbox-headline { font-weight: 600; margin: 0.75rem 0; }
+      #sandbox .sandbox-table-scroll { overflow-x: auto; }
+      #sandbox table.sandbox-table { border-collapse: collapse; width: 100%; max-width: 34rem; }
+      #sandbox table.sandbox-table th, #sandbox table.sandbox-table td { text-align: left; padding: 0.35rem 0.75rem; border-bottom: 1.5px solid var(--line); font-variant-numeric: tabular-nums; }
+      #sandbox .sandbox-sub { font-size: 1rem; margin: 1rem 0 0.4rem; }
+      #sandbox .sandbox-movers { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
+      #sandbox .sandbox-movers li { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+      #sandbox .sandbox-delta { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+      @media (max-width: 40rem) { #sandbox .sandbox-slider { grid-template-columns: 1fr; gap: 0.25rem; } #sandbox .sandbox-slider output { text-align: left; } }
+    </style>"""
+
+
+def _sandbox_section() -> str:
+    """The interactive methodology sandbox (EXP-06): four weight sliders, a reset,
+    and a live grade-distribution summary, all computed client-side from the
+    published scoring.json and agencies.json. Additive to the guide page; degrades
+    to the static explanation above when scripting or the data fetch is
+    unavailable. The slider labels mirror the four rubric categories; their
+    starting positions are placeholders that the inline JS immediately overwrites
+    with the published weights it fetches at runtime (the single-source rule)."""
+    labels = [
+        ("correctness", "Correctness"),
+        ("freshness", "Freshness"),
+        ("completeness", "Rider experience"),
+        ("realtime", "Realtime quality"),
+    ]
+    sliders = "".join(
+        f'      <div class="sandbox-slider">'
+        f'<label for="w-{cat}">{label}</label>'
+        f'<input type="range" id="w-{cat}" data-cat="{cat}" min="0" max="100" step="1" '
+        f'value="0" disabled aria-describedby="w-{cat}-out">'
+        f'<output id="w-{cat}-out" data-cat="{cat}" for="w-{cat}">—</output></div>'
+        for cat, label in labels
+    )
+    return f"""    {_route_rule()}
+    <section id="sandbox" aria-labelledby="sandbox-h">
+    <h2 class="section-title" id="sandbox-h">Methodology sandbox</h2>
+    <p>The grade blends the four categories with fixed weights. Curious how much those
+    weights matter? Move the sliders to reweight the rubric and watch how many of the
+    agencies we track would change letter grade. Nothing is saved and no grade on the
+    site changes; this is a what-if you run in your own browser. Agencies without
+    realtime data have that weight spread across the categories they do have, exactly
+    as the published score does.</p>
+    <p id="sandbox-status" role="status">Loading the live weights and agency scores…</p>
+    <div class="sandbox-controls" hidden>
+{sliders}
+      <div class="sandbox-buttons">
+        <button type="button" id="sandbox-reset" class="download-btn" disabled>Reset to published weights</button>
+      </div>
+    </div>
+    <div id="sandbox-summary" aria-live="polite"></div>
+    <div id="sandbox-sample"></div>
+    </section>
+{_SANDBOX_STYLE}"""
+
+
 def _render_guide() -> str:
     """A plain-language 'how to read your scorecard' on-ramp for someone who has
     never seen GTFS, including what the grades mean so 'is a B good?' is answered."""
@@ -2933,6 +3411,8 @@ def _render_guide() -> str:
     <p>The category weights behind the score are documented judgment calls, so we also measure
     their consequences the same way: {_sensitivity_note()}</p></section>
 
+{_sandbox_section()}
+
     {_route_rule()}
     <section><h2 class="section-title">What to do</h2>
     <p>Start at the top of "Top things to fix." We put the most rider-affecting fix first. If your
@@ -2980,7 +3460,8 @@ def _render_guide() -> str:
       <dd>Continuous integration: automated checks that run on every change, including the feed grader.</dd>
       <dt><dfn id="g-sha"><abbr title="Secure Hash Algorithm, 256-bit">SHA-256</abbr></dfn></dt>
       <dd>A fingerprint of the exact feed bytes scored, so a grade is reproducible and citeable.</dd>
-    </dl></section>"""
+    </dl></section>
+{_SANDBOX_JS}"""
     return _page(
         title="How to read your scorecard — GTFS Scorecard",
         description="A plain-language guide to the GTFS Scorecard: what it checks, what the A-F grades mean, and what to do first.",
@@ -3869,40 +4350,53 @@ def _leaderboard_sections(
     """Best and worst standings and the biggest movers, as a two-column grid of
     tables inside the national pulse page. The same data the /api/v1 endpoints
     serve. Each row links to that agency's scorecard and carries a small score
-    sparkline from its history (an em dash until it has two checks)."""
+    sparkline from its history (an em dash until it has two checks). A
+    "Riders/yr" column appears in a table only when the NTD ridership snapshot
+    (ADR 0021) matched at least one of its rows, so an unweighted build renders
+    exactly as before."""
     hist = histories or {}
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
 
+    def _trips_cell(r: dict[str, Any]) -> str:
+        t = r.get("annual_trips")
+        return f"<td>{esc(f'{t:,}')}</td>" if t is not None else "<td></td>"
+
     def _rank_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
-            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>{_trend_cell(r)}</tr>"
+            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Trend</th></tr></thead><tbody>{items}</tbody></table></section>"
+            f"<th>Score</th>{trips_th}<th>Trend</th></tr></thead>"
+            f"<tbody>{items}</tbody></table></section>"
         )
 
     def _move_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
             f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
             f"<td>{'+' if r['score_delta'] > 0 else ''}{esc(r['score_delta'])}</td>"
-            f"{_trend_cell(r)}</tr>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Change</th><th>Trend</th></tr></thead>"
+            f"<th>Score</th><th>Change</th>{trips_th}<th>Trend</th></tr></thead>"
             f"<tbody>{items}</tbody></table></section>"
         )
 
@@ -4931,6 +5425,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     root = _repo_root()
     web = root / "web"
     art = artifacts_dir()
+    # Empirical fix-effort bands, loaded once for the whole render. Empty when
+    # the corpus has not yet written a calibration file, which keeps the band
+    # purely additive (EXP-03).
+    effort_bands = _load_effort_bands()
     written: list[Path] = []
     urls: list[str] = [
         f"{BASE_URL}/",
@@ -5103,7 +5601,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     # opinion. Published alongside the artifacts.
     from .score import methodology
 
-    (art / "scoring.json").write_text(json.dumps(methodology(), indent=2) + "\n")
+    scoring_json = json.dumps(methodology(), indent=2) + "\n"
+    (art / "scoring.json").write_text(scoring_json)
+    # Also publish it under the site's api/v1, next to leaderboard.json and
+    # agencies.json, so the methodology sandbox on /how-to-read/ (and any other
+    # consumer) can fetch the same weights + grade bands the pipeline scored with
+    # over same-origin HTTP. One source (score.methodology), two byte-identical
+    # copies, so the interactive widget and the pipeline agree by construction.
+    write("api/v1/scoring.json", scoring_json)
 
     # Per-feed change-detection freshness from the intraday refresh, shown on each
     # page so a reader can see how current the monitoring is. Absent until the
@@ -5161,15 +5666,17 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
         if feature is not None:
             map_features.append(feature)
         history = index["agencies"][agency_id].get("history", [])
-        # The previous dated snapshot lets the page show which findings cleared
-        # since the last check; the newest dated file equals latest.json.
+        # The dated snapshots (oldest first; the newest equals latest.json) drive
+        # both the previous-run finding diff and the grade story, so read each one
+        # once and reuse. An unreadable day is skipped, not fatal.
         dated = sorted((art / agency_id).glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
-        prev_artifact = None
-        if len(dated) >= 2:
+        dated_artifacts: list[dict[str, Any]] = []
+        for dated_path in dated:
             try:
-                prev_artifact = json.loads(dated[-2].read_text())
+                dated_artifacts.append(json.loads(dated_path.read_text()))
             except (json.JSONDecodeError, OSError):
-                prev_artifact = None
+                continue
+        prev_artifact = dated_artifacts[-2] if len(dated_artifacts) >= 2 else None
         # Stop names for the map's accessible equivalent come from the geometry
         # artifact (the map's own data), kept out of the per-day JSON to avoid
         # bloating it. Absent or unreadable geometry simply means no stop list.
@@ -5186,6 +5693,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 stop_names,
                 has_fixlog=bool(receipts),
                 now=now,
+                artifacts=dated_artifacts,
+                effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/",
         )
@@ -5198,6 +5707,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 by_id[agency_id],
                 liveness_state.get(agency_id),
                 program_ids,
+                effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/brief/",
         )
@@ -5206,7 +5716,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
         # fixes read as the asks (docs/RESEARCH-ROADMAP.md E6).
         write(
             f"agency/{agency_id}/board/index.html",
-            _render_board_page(artifact, history, prev_artifact, by_id[agency_id]),
+            _render_board_page(
+                artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
+            ),
             f"{BASE_URL}/agency/{agency_id}/board/",
         )
         # The durable fix log, only once the collect step has recorded at least
@@ -5503,12 +6015,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     # (the daily run fetches it via `scorecard ntd-ridership --fetch`), weight
     # quality by annual unlinked passenger trips and publish the national
     # numbers. National framing only: trips on expired feeds, never a ranking.
+    from .ridership import annual_trips_for, load_ridership, weighted_impact
+
     ridership_impact: dict[str, Any] | None = None
     ridership_csv = root / "data" / "ntd-ridership.csv"
-    if ridership_csv.exists():
-        from .ridership import parse_ridership_csv, weighted_impact
-
-        rid = parse_ridership_csv(ridership_csv.read_text())
+    rid = load_ridership(ridership_csv)
+    if rid is not None:
         rid_records = []
         for a in ntd_artifacts:
             cfg = AGENCIES.get(str(a.get("agency", {}).get("id", "")))
@@ -5540,9 +6052,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
             + "\n",
         )
 
+    # Ridership-weighted standings (ADR 0021, R16): when the NTD snapshot matched
+    # any feeds, tie-break the "worst" boards toward higher-ridership agencies and
+    # give each matched row a rider-count. Resolved through the same id join as
+    # the national impact stat above, so the two agree on which feeds are matched.
+    annual_trips_by_agency: dict[str, int] | None = None
+    if rid:
+        annual_trips_by_agency = {}
+        for aid, cfg in AGENCIES.items():
+            trips = annual_trips_for({"ntd_id": cfg.ntd_id}, rid)
+            if trips is not None:
+                annual_trips_by_agency[aid] = trips
+
     # The national pulse: rankings, movers, and the trend on one page; the three
     # retired URLs redirect to their anchors so old links keep working.
-    board = leaderboard(index, build_quality_dataset(index))
+    board = leaderboard(index, build_quality_dataset(index), annual_trips_by_agency)
     write(
         "pulse/index.html",
         _render_pulse_page(
