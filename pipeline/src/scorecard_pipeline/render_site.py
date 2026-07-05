@@ -707,6 +707,45 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
+# How the quiet confidence line names the fetch source (EXP-01). Keyed by the
+# artifact's confidence.fetch_source (fetch.py: origin | mirror | unknown); an
+# unrecognized value falls back to no phrase rather than guessing.
+_CONFIDENCE_SOURCE_PHRASES = {
+    "origin": " from the agency's own feed",
+    "mirror": " from the Mobility Database's mirror copy of the feed",
+    "unknown": " from a snapshot whose original source was not recorded",
+}
+
+
+def _confidence_section(artifact: dict[str, Any]) -> str:
+    """The measurement-confidence read (EXP-01): one quiet line saying how much
+    of the grade this run could measure and from what source, plus an expandable
+    per-signal breakdown. A legibility layer on the one grade; it never shows a
+    second letter or number, and low confidence describes our measurement
+    coverage, not the feed. Artifacts published before schema 1.5 carry no
+    confidence block and render byte-for-byte as before (returns empty)."""
+    conf = artifact.get("confidence")
+    if not conf:
+        return ""
+    source_phrase = _CONFIDENCE_SOURCE_PHRASES.get(str(conf.get("fetch_source", "")), "")
+    line = (
+        f"Measured {conf.get('measured_categories', 0)} of "
+        f"{conf.get('total_categories', 0)} score categories{source_phrase}."
+    )
+    level = str(conf.get("level", ""))
+    level_html = f"<p>Confidence in this measurement: {esc(level)}.</p>" if level else ""
+    notes = "".join(f"<li>{esc(note)}</li>" for note in conf.get("notes", []))
+    notes_html = f"<ul>{notes}</ul>" if notes else ""
+    return (
+        f'<p class="confidence-note">{esc(line)}</p>\n'
+        f'    <details class="confidence-how"><summary>How we measured this</summary>'
+        f"{level_html}{notes_html}"
+        '<p class="fineprint">Confidence describes how much the pipeline could '
+        "measure this run, not the feed itself. It never changes the grade.</p>"
+        "</details>"
+    )
+
+
 _OUTREACH_CODES = ("scorecard_feed_expired", "scorecard_feed_expiring_soon")
 
 
@@ -1172,6 +1211,106 @@ def _route_map_section(
     )
 
 
+def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool) -> str:
+    """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
+    top fix, stitching the pieces that already exist into a single per-finding
+    path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
+    the change", naming the producing tool detected from the feed host and, when a
+    safe mechanical autofix covers that exact finding, a link to the corrected
+    feed, and (3) "Prove it cleared", explaining that the next scorecard run
+    re-checks the fix and mints a dated receipt on the agency's fix log.
+
+    The boundary stays explicit: the scorecard shows the fix; the agency publishes
+    it. Empty when the feed has no top fixes, so an all-clear feed renders exactly
+    as it did before this feature."""
+    fixes = artifact.get("top_fixes", [])
+    if not fixes:
+        return ""
+    fix_tool = detect_tool(artifact.get("feed", {}).get("static_url"))
+    tool_path = esc(fix_tool.fix_path) if fix_tool else ""
+    # Reuse the autofix block's own data (see _autofix_section): a corrected feed
+    # is offered only when the engine is available and a download URL was attached
+    # at score time. Map it by finding code so the download shows on exactly the
+    # fixes it can make.
+    autofix = artifact.get("autofix") or {}
+    autofix_codes = (
+        {str(f.get("code", "")) for f in autofix.get("fixes", [])}
+        if autofix.get("available")
+        else set()
+    )
+    autofix_url = autofix.get("download_url")
+    if has_fixlog:
+        prove_link = (
+            f' <a class="fix-guide" href="/agency/{esc(agency_id)}/fixes/">'
+            "See this feed's dated fix log</a>."
+        )
+    else:
+        prove_link = (
+            ' <a class="fix-guide" href="/check/">Self-check a feed before you publish</a>.'
+        )
+    items = []
+    for f in fixes:
+        code = str(f.get("code", ""))
+        guide = _fix_guide_link(code)
+        if code and code in autofix_codes and autofix_url:
+            change = (f"{tool_path} " if tool_path else "") + (
+                f'<a class="fix-guide" href="{esc(str(autofix_url))}" download>'
+                "Download the corrected feed for this fix</a>."
+            )
+        else:
+            change = tool_path or (
+                "Make this change in whatever tool produces your feed, then re-export."
+            )
+        items.append(
+            f'<li class="fixloop-item"><p class="fixloop-name">{esc(f.get("fix", ""))}{guide}</p>'
+            f'<p class="fixloop-step"><strong>Make the change.</strong> {change}</p>'
+            f'<p class="fixloop-step"><strong>Prove it cleared.</strong> The next scorecard '
+            "run re-checks this automatically and, once it is gone, mints a dated receipt."
+            f"{prove_link}</p></li>"
+        )
+    return (
+        '<div class="fixloop">'
+        '<p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, '
+        "make the change in your tool, and let the next run verify it &mdash; the scorecard "
+        "shows the fix; the agency publishes it.</p>"
+        f'<ol class="fixloop-list">{"".join(items)}</ol></div>'
+    )
+
+
+def _load_effort_bands() -> dict[str, str]:
+    """Code -> empirical effort band, from the corpus calibration file.
+
+    Only codes that clear the sample floor get an entry (band_text returns None
+    below it). A missing or unreadable file yields an empty mapping, which is
+    the gate that keeps calibration purely additive: no file, no bands, output
+    unchanged (so golden fixtures without one stay byte-identical)."""
+    from .effort_calibration import band_text
+
+    path = _repo_root() / "data" / "effort-calibration.json"
+    try:
+        data = json.loads(path.read_text())
+    except (FileNotFoundError, ValueError, OSError):
+        return {}
+    codes = data.get("codes", {}) if isinstance(data, dict) else {}
+    bands: dict[str, str] = {}
+    for code, stats in sorted(codes.items()):
+        if isinstance(stats, dict) and (text := band_text(stats)):
+            bands[str(code)] = text
+    return bands
+
+
+def _effort_band_html(code: str, effort_bands: dict[str, str] | None) -> str:
+    """Empirical effort band for a notice code, or '' when none applies.
+
+    Additive by design: the hand-authored hint always renders first, and this
+    appends the observed runs-to-clear band only when the corpus has enough
+    closed episodes for this code (effort_calibration.band_text) and the
+    calibration file exists. Absent file -> empty mapping -> no change, so
+    goldens rendered without calibration stay byte-identical."""
+    band = (effort_bands or {}).get(str(code))
+    return f'<p class="effort-band">{esc(band)}</p>' if band else ""
+
+
 def _render_agency(
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -1181,6 +1320,7 @@ def _render_agency(
     stop_names: list[str] | None = None,
     has_fixlog: bool = False,
     now: dt.datetime | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -1215,7 +1355,8 @@ def _render_agency(
                 f'<div class="alert"><span class="badge{cls}">Fix {i + 1:02d}</span>'
                 f'<div><p class="afix">{esc(f["fix"])}{owner_tag}</p>'
                 f'<p class="awhy">{esc(f["what"])} {esc(f["why"])}</p>'
-                f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p></div></div>'
+                f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p>'
+                f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</div></div>"
             )
         fixes_html = '<div class="alerts">' + "".join(alerts) + "</div>"
     else:
@@ -1281,6 +1422,7 @@ def _render_agency(
             f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
             f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
             f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
             f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
             for f in findings
         )
@@ -1293,6 +1435,11 @@ def _render_agency(
         if op_note
         else ""
     )
+    # The measurement-confidence read rides on its own line only when the
+    # artifact carries one, so a pre-1.5 artifact renders byte-for-byte as it
+    # did before this feature.
+    confidence = _confidence_section(artifact)
+    confidence_block = f"\n    {confidence}" if confidence else ""
     _outreach_block = _outreach_section(artifact, canonical)
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name)
@@ -1316,11 +1463,12 @@ def _render_agency(
       <a href="/how-to-read/">New to this? How to read your scorecard.</a>
       <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
       Rubric v{esc(artifact.get("rubric_version", "—"))}, validator {esc(artifact.get("validator_version", "—"))}.</p>
-    {_liveness_note(liveness, now)}
+    {_liveness_note(liveness, now)}{confidence_block}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
+      {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
     {_vendor_block}
     {_outreach_block}
@@ -1455,6 +1603,7 @@ def _render_brief(
     dir_record: dict[str, Any] | None = None,
     liveness: dict[str, Any] | None = None,
     program_ids: set[str] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     """A calm, print-clean one-page brief for a program liaison to have open or
     printed during an agency check-in. Renders only precomputed artifact fields:
@@ -1475,7 +1624,8 @@ def _render_brief(
         fix_items = "".join(
             f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
-            f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p></li>'
+            f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
         fixes_html = f'<ol class="brief-fixes">{fix_items}</ol>'
@@ -1637,6 +1787,7 @@ def _render_board_page(
     history: list[dict[str, Any]] | None = None,
     prev_artifact: dict[str, Any] | None = None,
     dir_record: dict[str, Any] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     """A one-page summary written for an agency's board packet (docs/
     RESEARCH-ROADMAP.md E6). The call brief prepares the liaison; this page is
@@ -1672,7 +1823,8 @@ def _render_board_page(
         ask_items = "".join(
             f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
-            f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p></li>'
+            f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
         asks_html = (
@@ -1797,6 +1949,10 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
       <ul class="cleared-list">{"".join(items)}</ul>
       <p class="fineprint">Verified means the daily check stopped reporting the finding. A
       finding that returns and clears again appears as a separate entry.</p>
+      <p class="fixloop-close">This log is the end of the guided fix loop: you make a change,
+      republish, and the next run verifies it and records it here as
+      <a href="/agency/{esc(agency_id)}/">linkable proof for a board packet or NTD
+      narrative</a>.</p>
     </section>"""
     desc = (
         f"Dated, linkable record of {len(receipts)} data-quality "
@@ -2058,6 +2214,45 @@ def _ntd_id_alignment_html(artifact: dict[str, Any]) -> str:
     )
 
 
+def _current_shapes_readiness(artifact: dict[str, Any]) -> dict[str, Any] | None:
+    """The shapes readiness block, re-worded at render time from the stored trip
+    counts, the same way ``_current_alignment`` re-words the agency_id check —
+    so a wording fix reaches every page without a rescore."""
+    shapes = artifact.get("shapes_readiness")
+    if not shapes:
+        return None
+    total = shapes.get("total_trips")
+    with_shape = shapes.get("trips_with_shape")
+    if isinstance(total, int) and isinstance(with_shape, int):
+        from .ntd import assess_shapes_readiness
+
+        return assess_shapes_readiness(total, with_shape).to_dict()
+    return dict(shapes)
+
+
+def _shapes_readiness_html(artifact: dict[str, Any]) -> str:
+    """Render the shapes.txt readiness line, when the check ran for this feed.
+
+    FTA's July 2025 final rule requires shapes.txt from Reduced, Rural, and
+    Tribal NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
+    Absent for artifacts that predate the check."""
+    shapes = _current_shapes_readiness(artifact)
+    if not shapes:
+        return ""
+    status = str(shapes.get("status", "not_ready"))
+    label = _NTD_LABELS.get(status, status)
+    detail = str(shapes.get("detail", ""))
+    fix = str(shapes.get("fix", ""))
+    body = esc(detail)
+    if fix:
+        body += f" {esc(fix)}"
+    return (
+        '<dl class="standards-list">'
+        f'<dt>shapes.txt covers your trips <span class="ntd-status ntd-{status}">'
+        f"{esc(label)}</span></dt><dd>{body}</dd></dl>"
+    )
+
+
 _CIMD_TIER_PHRASE = {"high": "higher need", "moderate": "moderate need", "lower": "lower need"}
 
 
@@ -2136,6 +2331,7 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         f'<p class="page-lede">{esc(readiness.summary)}</p>'
         f'<dl class="standards-list">{"".join(rows)}</dl>'
         f"{_ntd_id_alignment_html(artifact)}"
+        f"{_shapes_readiness_html(artifact)}"
         '<p class="plain-summary"><strong>In plain words:</strong> if you report to the federal '
         "transit database, you have to publish a working, up-to-date feed and confirm it once a "
         "year. This box is a heads-up on whether yours looks ready; it is not the official "
@@ -2149,8 +2345,9 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         '<a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/'
         'national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">'
         "July 2025 final rule</a> links the two on the P-50 form rather than requiring that "
-        "feed change. Not an official determination; your certification is the official "
-        "check.</p></section>"
+        "feed change, and requires shapes.txt in the published GTFS: Full Reporters from Report "
+        "Year 2025, and Reduced, Rural, and Tribal Reporters from Report Year 2026. Not an "
+        "official determination; your certification is the official check.</p></section>"
     )
 
 
@@ -2585,6 +2782,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     rows = "".join(rows_parts)
     avg = "—" if rollup.get("average_score") is None else f"{rollup['average_score']} out of 100"
     expired_section = _rollup_expired_section(rollup)
+    shapes_section = _rollup_shapes_section(rollup)
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (rname, None)])
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -2597,6 +2795,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </div>
     {_route_rule()}
     {expired_section}
+    {shapes_section}
     <section aria-labelledby="members-h">
       <h2 class="section-title" id="members-h">Agencies, worst first</h2>
       <ul class="program-list">{rows}</ul>
@@ -2671,6 +2870,38 @@ def _rollup_expired_section(rollup: dict[str, Any]) -> str:
     )
 
 
+def _rollup_shapes_section(rollup: dict[str, Any]) -> str:
+    """A worklist of this program's members not yet covered by shapes.txt, the
+    liaison-facing half of the per-agency NTD shapes readiness check (03-A1).
+    FTA's July 2025 final rule requires shapes.txt covering every trip for
+    Reduced, Rural, and Tribal NTD reporters by Report Year 2026 (Full
+    Reporters already, RY2025); this checks the feed itself, not each
+    agency's reporter type, so it is a heads-up to check against each
+    agency's own filing, never a claim that a listed agency is currently
+    out of compliance. Absent when nothing in the cohort has a gap, or when
+    the cohort has no measured members (all non-US, or artifacts that
+    predate the check)."""
+    shapes = rollup.get("shapes_readiness")
+    if not shapes or not (shapes["not_ready"] or shapes["at_risk"]):
+        return ""
+    gaps = [m for m in rollup["members"] if m.get("shapes_status") in ("not_ready", "at_risk")]
+    gaps.sort(key=lambda m: (m["shapes_status"] != "not_ready", m["id"]))
+    rows = "".join(
+        _rollup_member_row(m, _NTD_LABELS.get(m["shapes_status"], m["shapes_status"])) for m in gaps
+    )
+    measured = shapes["total"] - shapes["not_measured"]
+    return (
+        '<section class="expired-panel" aria-labelledby="rollup-shapes-h">'
+        '<h2 class="section-title" id="rollup-shapes-h">shapes.txt coverage '
+        f'<span class="grade-count">{shapes["ready"]} of {measured}</span></h2>'
+        '<p class="page-lede">The FTA National Transit Database requires shapes.txt covering '
+        "every trip (Reduced, Rural, and Tribal reporters by Report Year 2026; Full Reporters "
+        "already). These agencies are not fully covered yet — check each one against its own "
+        "NTD filing.</p>"
+        f'<ul class="program-list">{rows}</ul></section>'
+    )
+
+
 # --- minimal markdown for the fix knowledge base -------------------------------
 
 
@@ -2732,9 +2963,18 @@ def _render_fix(code: str, md: str) -> str:
     para = next((re.sub("<[^>]+>", "", p) for p in re.findall(r"<p>(.*?)</p>", body_html)), "")
     desc = (para[:155] or f"How to fix the GTFS validator notice {code}.").strip()
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (f"Fix: {code}", None)])
+    after_republish = (
+        '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
+        "After you republish</h2>"
+        "<p>Once the corrected feed is live at your published URL, the next scorecard run "
+        "re-checks it automatically. When this finding is gone, it is recorded as a dated "
+        "receipt on your agency's fix log &mdash; a citable, linkable record that the fix "
+        "cleared. That closes the loop: the scorecard shows the fix; the agency publishes "
+        "it.</p></section>"
+    )
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    <article class="feed-details">{body_html}{_fix_rule_reference(code)}</article>"""
+    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>"""
     jsonld = {
         "@context": "https://schema.org",
         "@type": "TechArticle",
@@ -3869,40 +4109,53 @@ def _leaderboard_sections(
     """Best and worst standings and the biggest movers, as a two-column grid of
     tables inside the national pulse page. The same data the /api/v1 endpoints
     serve. Each row links to that agency's scorecard and carries a small score
-    sparkline from its history (an em dash until it has two checks)."""
+    sparkline from its history (an em dash until it has two checks). A
+    "Riders/yr" column appears in a table only when the NTD ridership snapshot
+    (ADR 0021) matched at least one of its rows, so an unweighted build renders
+    exactly as before."""
     hist = histories or {}
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
 
+    def _trips_cell(r: dict[str, Any]) -> str:
+        t = r.get("annual_trips")
+        return f"<td>{esc(f'{t:,}')}</td>" if t is not None else "<td></td>"
+
     def _rank_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
-            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>{_trend_cell(r)}</tr>"
+            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Trend</th></tr></thead><tbody>{items}</tbody></table></section>"
+            f"<th>Score</th>{trips_th}<th>Trend</th></tr></thead>"
+            f"<tbody>{items}</tbody></table></section>"
         )
 
     def _move_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
             f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
             f"<td>{'+' if r['score_delta'] > 0 else ''}{esc(r['score_delta'])}</td>"
-            f"{_trend_cell(r)}</tr>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Change</th><th>Trend</th></tr></thead>"
+            f"<th>Score</th><th>Change</th>{trips_th}<th>Trend</th></tr></thead>"
             f"<tbody>{items}</tbody></table></section>"
         )
 
@@ -4931,6 +5184,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     root = _repo_root()
     web = root / "web"
     art = artifacts_dir()
+    # Empirical fix-effort bands, loaded once for the whole render. Empty when
+    # the corpus has not yet written a calibration file, which keeps the band
+    # purely additive (EXP-03).
+    effort_bands = _load_effort_bands()
     written: list[Path] = []
     urls: list[str] = [
         f"{BASE_URL}/",
@@ -5186,6 +5443,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 stop_names,
                 has_fixlog=bool(receipts),
                 now=now,
+                effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/",
         )
@@ -5198,6 +5456,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 by_id[agency_id],
                 liveness_state.get(agency_id),
                 program_ids,
+                effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/brief/",
         )
@@ -5206,7 +5465,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
         # fixes read as the asks (docs/RESEARCH-ROADMAP.md E6).
         write(
             f"agency/{agency_id}/board/index.html",
-            _render_board_page(artifact, history, prev_artifact, by_id[agency_id]),
+            _render_board_page(
+                artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
+            ),
             f"{BASE_URL}/agency/{agency_id}/board/",
         )
         # The durable fix log, only once the collect step has recorded at least
@@ -5503,12 +5764,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     # (the daily run fetches it via `scorecard ntd-ridership --fetch`), weight
     # quality by annual unlinked passenger trips and publish the national
     # numbers. National framing only: trips on expired feeds, never a ranking.
+    from .ridership import annual_trips_for, load_ridership, weighted_impact
+
     ridership_impact: dict[str, Any] | None = None
     ridership_csv = root / "data" / "ntd-ridership.csv"
-    if ridership_csv.exists():
-        from .ridership import parse_ridership_csv, weighted_impact
-
-        rid = parse_ridership_csv(ridership_csv.read_text())
+    rid = load_ridership(ridership_csv)
+    if rid is not None:
         rid_records = []
         for a in ntd_artifacts:
             cfg = AGENCIES.get(str(a.get("agency", {}).get("id", "")))
@@ -5540,9 +5801,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
             + "\n",
         )
 
+    # Ridership-weighted standings (ADR 0021, R16): when the NTD snapshot matched
+    # any feeds, tie-break the "worst" boards toward higher-ridership agencies and
+    # give each matched row a rider-count. Resolved through the same id join as
+    # the national impact stat above, so the two agree on which feeds are matched.
+    annual_trips_by_agency: dict[str, int] | None = None
+    if rid:
+        annual_trips_by_agency = {}
+        for aid, cfg in AGENCIES.items():
+            trips = annual_trips_for({"ntd_id": cfg.ntd_id}, rid)
+            if trips is not None:
+                annual_trips_by_agency[aid] = trips
+
     # The national pulse: rankings, movers, and the trend on one page; the three
     # retired URLs redirect to their anchors so old links keep working.
-    board = leaderboard(index, build_quality_dataset(index))
+    board = leaderboard(index, build_quality_dataset(index), annual_trips_by_agency)
     write(
         "pulse/index.html",
         _render_pulse_page(

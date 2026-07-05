@@ -22,8 +22,8 @@ AGENCY = Agency(
 GENERATED_AT = dt.datetime(2026, 6, 11, 12, 0, tzinfo=dt.UTC)
 
 
-def make_artifact(date: dt.date, score: float = 88.0) -> dict:  # type: ignore[type-arg]
-    fetch = FetchResult(
+def make_fetch(date: dt.date, source: str = "unknown") -> FetchResult:
+    return FetchResult(
         agency_id=AGENCY.id,
         path=Path("/tmp/gtfs.zip"),
         url=AGENCY.static_gtfs_url,
@@ -31,9 +31,16 @@ def make_artifact(date: dt.date, score: float = 88.0) -> dict:  # type: ignore[t
         sha256="abc123",
         size_bytes=1024,
         reused=False,
+        source=source,
     )
+
+
+def make_artifact(date: dt.date, score: float = 88.0) -> dict:  # type: ignore[type-arg]
     card = build_scorecard([CategoryResult(name="correctness", score=score, summary="s")])
-    return build_artifact(AGENCY, fetch, card, GENERATED_AT)
+    return build_artifact(AGENCY, make_fetch(date), card, GENERATED_AT)
+
+
+ALL_CATEGORIES = ("correctness", "freshness", "completeness", "realtime")
 
 
 def test_artifact_schema_essentials() -> None:
@@ -80,6 +87,78 @@ def test_fetch_provenance_block_carries_mirror_details() -> None:
     }
     # feed.static_url still records the configured origin URL, unchanged.
     assert artifact["feed"]["static_url"] == AGENCY.static_gtfs_url
+
+
+def test_confidence_high_when_all_measured_from_origin() -> None:
+    card = build_scorecard(
+        [
+            CategoryResult(
+                name=name,
+                score=90.0,
+                summary="s",
+                details={"samples": 5} if name == "realtime" else {},
+            )
+            for name in ALL_CATEGORIES
+        ]
+    )
+    fetch = make_fetch(dt.date(2026, 6, 11), source="origin")
+    artifact = build_artifact(AGENCY, fetch, card, GENERATED_AT)
+    conf = artifact["confidence"]
+    assert conf["level"] == "high"
+    assert conf["measured_categories"] == 4
+    assert conf["total_categories"] == 4
+    assert conf["fetch_source"] == "origin"
+    assert conf["rt_windows"] == 1
+    assert conf["feed_age_days"] == 0
+    assert any("5 snapshots" in n for n in conf["notes"])
+    assert any("agency's own URL" in n for n in conf["notes"])
+
+
+def test_confidence_provisional_when_realtime_missing_and_mirror_fetched() -> None:
+    card = build_scorecard(
+        [
+            CategoryResult(name=name, score=80.0, summary="s")
+            for name in ("correctness", "freshness", "completeness")
+        ]
+    )
+    fetch = make_fetch(dt.date(2026, 6, 11), source="mirror")
+    artifact = build_artifact(AGENCY, fetch, card, GENERATED_AT)
+    conf = artifact["confidence"]
+    assert conf["level"] == "provisional"
+    assert conf["measured_categories"] == 3
+    assert conf["fetch_source"] == "mirror"
+    assert conf["rt_windows"] == 0
+    assert artifact["fetch"]["source"] == "mirror"
+    assert any("mirror" in n for n in conf["notes"])
+    assert any("Realtime quality was not measured" in n for n in conf["notes"])
+    # The level is a word, never a letter grade or a number out of 100.
+    assert conf["level"] not in "ABCDF"
+
+
+def test_confidence_unknown_fetch_source_is_flagged_and_floors_at_provisional() -> None:
+    # One measured category is already provisional; an unrecorded fetch source
+    # cannot push it any lower than the floor.
+    card = build_scorecard([CategoryResult(name="correctness", score=88.0, summary="s")])
+    fetch = make_fetch(dt.date(2026, 6, 11), source="unknown")
+    conf = build_artifact(AGENCY, fetch, card, GENERATED_AT)["confidence"]
+    assert conf["level"] == "provisional"
+    assert any("not known" in n for n in conf["notes"])
+    # Three unmeasured categories are named, and framed as not counting.
+    assert any("do not count against the grade" in n for n in conf["notes"])
+
+
+def test_confidence_stale_snapshot_drops_a_full_measurement_to_medium() -> None:
+    card = build_scorecard(
+        [CategoryResult(name=name, score=90.0, summary="s") for name in ALL_CATEGORIES]
+    )
+    # Scored 10 days after the snapshot was fetched: stale evidence.
+    fetch = make_fetch(dt.date(2026, 6, 1), source="origin")
+    conf = build_artifact(AGENCY, fetch, card, GENERATED_AT)["confidence"]
+    assert conf["level"] == "medium"
+    assert conf["feed_age_days"] == 10
+    assert any("10 days old" in n for n in conf["notes"])
+    # Realtime measured but without a recorded sample count still gets a note.
+    assert any("one bounded window" in n for n in conf["notes"])
 
 
 def test_publish_writes_dated_latest_and_index() -> None:

@@ -21,10 +21,16 @@ import jsonschema
 from . import RUBRIC_VERSION, SCHEMA_VERSION
 from .badge import render_badge, render_mark
 from .config import Agency, artifacts_dir, repo_root
+from .effort_calibration import (
+    CALIBRATION_SCHEMA_NOTE,
+    agency_episodes,
+    stats_from_episodes,
+)
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog, merge_receipts
 from .metrics import expiry_status
 from .score import Scorecard
+from .site_shell import CATEGORY_LABELS
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +38,95 @@ log = logging.getLogger(__name__)
 # They have no per-agency latest.json/dated artifact shape, so anything walking
 # the artifacts tree as if every dir were an agency must skip them.
 RESERVED_ARTIFACT_DIRS = frozenset({"rollups", "changes"})
+
+# Measurement-confidence levels, weakest first (EXP-01). Words, never a letter
+# or a number, so the read cannot be mistaken for a second grade.
+CONFIDENCE_LEVELS = ("provisional", "medium", "high")
+
+# A snapshot older than this at scoring time is read as stale evidence, and the
+# confidence level drops one step.
+STALE_SNAPSHOT_DAYS = 7
+
+
+def _join_labels(labels: list[str]) -> str:
+    """Plain-language list of category labels ("Freshness and Realtime quality",
+    "Freshness, Rider experience, and Realtime quality"), used in confidence
+    notes naming what was not measured this run."""
+    if len(labels) <= 1:
+        return "".join(labels)
+    return ", ".join(labels[:-1]) + (f"{',' if len(labels) > 2 else ''} and {labels[-1]}")
+
+
+def _confidence(
+    card: dict[str, Any], fetch: FetchResult, generated_at: dt.datetime
+) -> dict[str, Any]:
+    """How much of this grade the pipeline could actually measure, and from
+    what source (EXP-01, docs/ideation/03-expansions.md).
+
+    A legibility layer on the one grade, never a second grade: the level is a
+    word, and low confidence describes our measurement coverage this run, not
+    the feed. Derived only from signals the pipeline already records: which
+    categories are measured vs not_yet_measured (score.py), the realtime
+    sampling depth when realtime was measured (rt.py details), the fetch
+    source (fetch.py: origin | mirror | unknown), and the snapshot's age at
+    scoring time.
+    """
+    categories: dict[str, Any] = card["categories"]
+    measured = [k for k, c in categories.items() if c.get("status") == "measured"]
+    unmeasured = [k for k in categories if k not in measured]
+    total = len(categories)
+    notes: list[str] = []
+
+    # Breadth of measurement sets the base level; provenance and staleness can
+    # only lower it.
+    if not unmeasured:
+        rank = 2
+        notes.append("All four score categories were measured this run.")
+    else:
+        rank = 1 if len(measured) * 2 >= total else 0
+        labels = _join_labels([CATEGORY_LABELS.get(k, k) for k in unmeasured])
+        was, does = ("was", "It does") if len(unmeasured) == 1 else ("were", "They do")
+        notes.append(f"{labels} {was} not measured this run. {does} not count against the grade.")
+
+    rt_windows = 1 if categories.get("realtime", {}).get("status") == "measured" else 0
+    if rt_windows:
+        samples = categories["realtime"].get("details", {}).get("samples")
+        if samples:
+            notes.append(f"Realtime was sampled in one bounded window of {samples} snapshots.")
+        else:
+            notes.append("Realtime was sampled in one bounded window.")
+
+    if fetch.source == "mirror":
+        rank -= 1
+        notes.append(
+            "The agency's own feed URL was unreachable, so the Mobility Database's "
+            "hosted mirror copy was scored instead."
+        )
+    elif fetch.source == "unknown":
+        rank -= 1
+        notes.append(
+            "This snapshot predates fetch-source recording, so where it was "
+            "originally downloaded from is not known."
+        )
+    else:
+        notes.append("The feed was downloaded from the agency's own URL.")
+
+    feed_age_days = max(0, (generated_at.date() - fetch.fetched_date).days)
+    if feed_age_days:
+        if feed_age_days > STALE_SNAPSHOT_DAYS:
+            rank -= 1
+        s = "" if feed_age_days == 1 else "s"
+        notes.append(f"The scored snapshot was {feed_age_days} day{s} old at scoring time.")
+
+    return {
+        "level": CONFIDENCE_LEVELS[max(0, rank)],
+        "measured_categories": len(measured),
+        "total_categories": total,
+        "fetch_source": fetch.source,
+        "rt_windows": rt_windows,
+        "feed_age_days": feed_age_days,
+        "notes": notes,
+    }
 
 
 def build_artifact(
@@ -100,6 +195,10 @@ def build_artifact(
             "reachable": True,
         },
         "fetch": fetch_block,
+        # The measurement-confidence read (EXP-01): what this run could and
+        # could not measure, so a reader can tell a fully-measured grade from
+        # a provisional one. Additive; schema 1.5.
+        "confidence": _confidence(card, fetch, generated_at),
         **card,
     }
 
@@ -298,6 +397,10 @@ def rebuild_index() -> Path:
         _write_json(root / "index.json", index)
         return root / "index.json"
 
+    # Runs-to-clear episodes accumulate across every agency in this one walk, so
+    # the corpus-level effort-calibration.json costs no extra artifact reads
+    # (effort_calibration.py).
+    all_episodes: list[Any] = []
     for agency_dir in sorted(
         p for p in root.iterdir() if p.is_dir() and p.name not in RESERVED_ARTIFACT_DIRS
     ):
@@ -306,6 +409,7 @@ def rebuild_index() -> Path:
         operating_note = ""
         newest: dict[str, Any] | None = None
         receipts: list[dict[str, str]] = []
+        agency_artifacts: list[dict[str, Any]] = []
         for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
             artifact = _read_artifact(dated)
             if artifact is None:
@@ -317,7 +421,11 @@ def rebuild_index() -> Path:
             # (fixlog.py); this walk is already reading every dated artifact in
             # order, so the diff costs nothing extra.
             receipts.extend(diff_receipts(newest, artifact))
+            agency_artifacts.append(artifact)
             newest = artifact
+        # Episodes are derived per agency from its own dated sequence, then
+        # pooled corpus-wide for the calibration stats.
+        all_episodes.extend(agency_episodes(agency_artifacts))
         if history and newest is not None:
             # Re-derive latest.json, badge, and mark so a clobbered copy is repaired.
             _write_json(agency_dir / "latest.json", newest)
@@ -333,9 +441,27 @@ def rebuild_index() -> Path:
                 entry["operating_note"] = operating_note
             index["agencies"][agency_dir.name] = entry
 
+    _write_calibration(stats_from_episodes(all_episodes))
+
     index_path = root / "index.json"
     _write_json(index_path, index)
     return index_path
+
+
+def _write_calibration(stats: dict[str, Any]) -> None:
+    """Write the corpus-level effort-calibration.json.
+
+    Written under data/ (a sibling of the artifacts tree) because it is a
+    cross-agency aggregate, not a per-agency file. Ordering is deterministic
+    (sort_keys) so re-running collect over unchanged history is a no-op; the
+    generated date is the only field that moves day to day.
+    """
+    payload = {
+        "schema_note": CALIBRATION_SCHEMA_NOTE,
+        "generated": dt.date.today().isoformat(),
+        "codes": stats,
+    }
+    _write_json(repo_root() / "data" / "effort-calibration.json", payload)
 
 
 def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:

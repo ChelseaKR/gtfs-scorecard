@@ -29,7 +29,9 @@ from . import SCHEMA_VERSION
 from .alerts import build_digest
 from .config import artifacts_dir, repo_root
 from .metrics import expiry_status
+from .ntd import assess_shapes_readiness
 from .publish import RESERVED_ARTIFACT_DIRS, _write_json
+from .ridership import annual_trips_for
 
 
 @dataclass(frozen=True)
@@ -111,8 +113,31 @@ def _agency_ids_in_state(state: str) -> list[str]:
     return ids
 
 
+def _shapes_status(latest: dict[str, Any]) -> str | None:
+    """This agency's current shapes.txt (NTD RY2026) readiness status, or None
+    when it does not apply: a non-US agency (NTD is a US-federal FTA program,
+    ADR 0026) or an artifact that predates the check. Recomputed from the
+    stored trip counts rather than trusting the stored status/prose directly,
+    the same pattern render_site.py's _current_shapes_readiness uses, so a
+    wording or threshold fix reaches every rollup without a rescore."""
+    if latest.get("agency", {}).get("country", "US") != "US":
+        return None
+    shapes = latest.get("shapes_readiness")
+    if not shapes:
+        return None
+    total = shapes.get("total_trips")
+    with_shape = shapes.get("trips_with_shape")
+    if isinstance(total, int) and isinstance(with_shape, int):
+        return assess_shapes_readiness(total, with_shape).status
+    status = shapes.get("status")
+    return str(status) if status is not None else None
+
+
 def build_rollup(
-    rollup: Rollup, generated_at: dt.datetime, attention: dict[str, str] | None = None
+    rollup: Rollup,
+    generated_at: dt.datetime,
+    attention: dict[str, str] | None = None,
+    ridership: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     """Aggregate member artifacts into one rollup payload.
 
@@ -123,6 +148,15 @@ def build_rollup(
     not merely "below a B", so the flag points at the calls worth making first.
     Common fixes are counted across members so a program can see the one export
     setting that would lift several agencies at once.
+
+    When an NTD ridership snapshot is supplied (ADR 0021,
+    docs/decisions/0021-ridership-weighting.md), the attention group is ordered
+    by annual rider-trips first, so a high-ridership feed that is expiring ranks
+    above a tiny one before falling back to score — the same call is worth making
+    first when more riders depend on it. This is a tiebreak on ordering only, not
+    a re-scoring: the framing stays "worst first, here to help", never a ranking
+    of agencies against each other. Non-attention members keep their plain
+    worst-score-first order, and with no ridership data the order is unchanged.
     """
     attention = attention or {}
     if rollup.member_ids:
@@ -150,6 +184,7 @@ def build_rollup(
             .get("details", {})
             .get("days_until_expiry")
         )
+        ntd_id = (latest.get("ntd_id_alignment") or {}).get("ntd_id")
         members.append(
             {
                 "id": latest["agency"]["id"],
@@ -162,11 +197,22 @@ def build_rollup(
                 "days_until_expiry": days,
                 "expiry_status": expiry_status(days),
                 "top_fix": fixes[0]["fix"] if fixes else None,
+                "shapes_status": _shapes_status(latest),
+                "annual_trips": annual_trips_for({"ntd_id": ntd_id}, ridership),
             }
         )
 
-    # Attention-needing agencies first (a call worth making), then worst-score-first.
-    members.sort(key=lambda m: (not m["needs_attention"], m["score"], m["id"]))
+    # Attention-needing agencies first (a call worth making). Within that group,
+    # order by annual rider-trips descending when ridership data is present (ADR
+    # 0021) so a high-ridership feed outranks a tiny one, then worst-score-first;
+    # non-attention members stay plain worst-score-first. With no ridership data
+    # every annual_trips is None (treated as 0), leaving the order unchanged.
+    def _sort_key(m: dict[str, Any]) -> tuple[int, int, float, str]:
+        if m["needs_attention"]:
+            return (0, -(m["annual_trips"] or 0), m["score"], m["id"])
+        return (1, 0, m["score"], m["id"])
+
+    members.sort(key=_sort_key)
     scores = [float(m["score"]) for m in members]
     grades = Counter(str(m["grade"]) for m in members)
     common = [
@@ -181,6 +227,20 @@ def build_rollup(
     lapsed = sum(1 for m in members if m["expiry_status"] == "lapsed")
     stale = sum(1 for m in members if m["expiry_status"] == "stale")
 
+    # shapes.txt (NTD RY2026) readiness across the cohort, the liaison-facing
+    # half of the per-agency check (03-A1). "not_measured" folds together a
+    # non-US member and an artifact that predates the check — both mean "no
+    # signal yet," which is what a liaison scanning the summary cares about.
+    shapes_statuses = [m["shapes_status"] for m in members if m["shapes_status"]]
+    shapes_counts = Counter(shapes_statuses)
+    shapes_readiness = {
+        "ready": shapes_counts.get("ready", 0),
+        "at_risk": shapes_counts.get("at_risk", 0),
+        "not_ready": shapes_counts.get("not_ready", 0),
+        "not_measured": len(members) - len(shapes_statuses),
+        "total": len(members),
+    }
+
     return {
         "schema_version": SCHEMA_VERSION,
         "rollup": {"id": rollup.id, "name": rollup.name},
@@ -190,6 +250,7 @@ def build_rollup(
         "grade_distribution": {g: grades[g] for g in sorted(grades)},
         "needs_attention": sum(1 for m in members if m["needs_attention"]),
         "expired": {"lapsed": lapsed, "stale": stale, "total": lapsed + stale},
+        "shapes_readiness": shapes_readiness,
         "members": members,
         "common_fixes": common,
     }
@@ -208,6 +269,7 @@ _CSV_COLUMNS: tuple[tuple[str, str], ...] = (
     ("needs_attention", "needs_attention"),
     ("attention_reason", "attention_reason"),
     ("top_fix", "top_fix"),
+    ("shapes_txt_status", "shapes_status"),
 )
 
 
@@ -244,10 +306,17 @@ def publish_rollups(generated_at: dt.datetime | None = None) -> list[Path]:
     # digest, computed once and shared across rollups so the flag is consistent.
     attention = {item.agency_id: item.headline for item in build_digest(today=when.date()).items}
 
+    # Ridership snapshot (ADR 0021), loaded once and shared: when present it tie-
+    # breaks each rollup's attention list toward higher-ridership feeds. None when
+    # the file is absent, in which case ordering is unweighted as before.
+    from .ridership import load_ridership
+
+    ridership = load_ridership(repo_root() / "data" / "ntd-ridership.csv")
+
     written: list[Path] = []
     index: list[dict[str, Any]] = []
     for rollup in rollups:
-        payload = build_rollup(rollup, when, attention)
+        payload = build_rollup(rollup, when, attention, ridership)
         path = out_dir / f"{rollup.id}.json"
         _write_json(path, payload)
         written.append(path)
