@@ -28,31 +28,37 @@ asserts >=7:1 for normal text (>=4.5:1 for large text) across all three explicit
 palettes. To avoid a flash of the wrong theme, each page also applies the saved
 `data-theme` inline in `<head>` before first paint.
 
+The OS-following defaults are scoped to `:root:not([data-theme])` in both
+stylesheets, so an explicit Light choice wins over an OS dark preference (the
+shared stylesheet lacked this guard until 2026-07; the landing page always had
+it).
+
 This control is what satisfies 1.4.8's requirement for a mechanism to select
 foreground and background colours.
 
 ## Final contrast ratios (light theme, normal text, threshold 7:1)
 
-Computed with `python3 pipeline/scripts/check_contrast.py`. Tokens were only
-darkened (hue preserved).
+Computed with `python3 pipeline/scripts/check_contrast.py`. Text tokens were
+kept or darkened; the 2026-07 signage palette brightened the grounds, which
+raises every dark-text ratio.
 
 | Pair | Ratio |
 | --- | --- |
-| `--ink-soft #3d4339` on `--paper #f5efe2` (app) | 8.90 |
-| `--ink-soft #3d4339` on `--card #fbf7ee` | 9.53 |
-| `--ink-soft #3d4339` on `--paper-deep #ece3cf` (fix effort) | 7.99 |
-| `--green #163a2c` link on `--paper` | 10.94 |
-| `--green #163a2c` link on `--card` | 11.72 |
-| `--green-bright #1d4633` on `--card` | 9.94 |
-| severity `--warning #6b490e` text on `--card` | 7.3+ |
-| severity `--info #3a4753` text on `--card` | 7.7+ |
+| `--ink-soft #3d4339` on `--paper #f2f3ee` (app) | 9.14 |
+| `--ink-soft #3d4339` on `--card #fbfcf8` | 9.89 |
+| `--ink-soft #3d4339` on `--paper-deep #e5e8df` (fix effort) | 8.22 |
+| `--green #163a2c` link on `--paper` | 11.24 |
+| `--green #163a2c` link on `--card` | 12.16 |
+| `--green-bright #1d4633` on `--card` | 10.31 |
+| severity `--warning #6b490e` text on `--card` | 7.89 |
+| severity `--info #3a4753` text on `--card` | 9.24 |
 | `.score-of` board-soft `#bcccbd` on `--board #102a20` | 9.10 |
 | `.peer-context #d3e0d4` on `--board` | 11.19 |
-| landing `--ink-soft #3c4840` on `--paper #f4ecd9` | 8.14 |
-| landing `--ink-soft #3c4840` on `--paper-2 #ebe0c8` | 7.31 |
-| landing `--green #11522a` on `--paper` | 7.88 |
-| landing `--green #11522a` on `--paper-2` | 7.08 |
-| landing `--rust #822c12` on `--paper` | 7.70 |
+| landing `--ink-soft #3c4840` on `--paper #f2f3ee` | 8.59 |
+| landing `--ink-soft #3c4840` on `--paper-2 #e5e8df` | 7.72 |
+| landing `--green #11522a` on `--paper` | 8.32 |
+| landing `--green #11522a` on `--paper-2` | 7.48 |
+| landing `--rust #822c12` on `--paper` | 8.12 |
 
 The High contrast and Dark themes clear the same threshold with wider margin
 (typically 9:1 to 21:1); run the script for the full table.
@@ -65,7 +71,7 @@ The High contrast and Dark themes clear the same threshold with wider margin
 | 1.4.8 Visual Presentation | MET | Prose measure capped to ~70ch (`--measure`); no justified text; the theme menu provides the colour-selection mechanism. |
 | 2.4.8 Location | MET | `aria-current="page"` on the active nav item; a `nav[aria-label="Breadcrumb"]` on prerendered agency, program, fix, and section pages. |
 | 2.4.9 Link Purpose (Link Only) | MET | Bare-filename and arrow/"view" links given self-describing text or `aria-label` ("standards crosswalk", "the leaderboard API", "Open transit data downloads", "Source code on GitHub"). |
-| 2.4.13 Focus Appearance | MET | All `:focus-visible` outlines are >=3px solid with >=3:1 contrast; the choropleth has a real outline plus a thick dark stroke. |
+| 2.4.13 Focus Appearance | MET | All `:focus-visible` outlines are >=3px solid with >=3:1 contrast; the choropleth has a real outline plus a thick dark stroke. The dark pine chrome band (header controls and footer links) rings in `--amber` rather than the blue `--focus`, which is tuned for the light page and would fall to ~1.6:1 on pine; amber clears >=9:1 on pine in every theme (`check_contrast.py`). |
 | 2.5.5 Target Size (Enhanced) 44x44 | MET (one documented exception) | Chips, filter buttons, follow/remove, selects, copy buttons, search, form controls, and dense nav/footer links are >=44px. See the choropleth exception below. |
 | 3.1.3 Unusual Words | MET | A glossary lives at `/how-to-read/#glossary`; first uses are `<dfn>` and linked to it. |
 | 3.1.4 Abbreviations | MET | First meaningful use of GTFS, GTFS-Realtime/GTFS-RT, RT, NTD, FTA, ACS, D-10, MDB, GBFS, YAML, CI, SHA-256, JSON wrapped in `<abbr title="...">`. |

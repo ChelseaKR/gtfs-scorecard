@@ -57,7 +57,18 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("app --board-soft (score-of) on --board", "board-soft", "board", False),
     # The board hero text is a fixed light cream (#f4ecd9), independent of theme,
     # because the board ground is always dark; reel/title sit on it.
-    ("app board title #f4ecd9 on --board", "#f4ecd9", "board", False),
+    ("app board title #f4f6f0 on --board", "#f4f6f0", "board", False),
+    ("app --amber board kicker on --board", "amber", "board", False),
+    ("app .chip text on --board", "#dfe7dd", "board", False),
+    ("app footer link on --board", "#f4f6f0", "board", False),
+    ("app footer text on --board", "#cfdcd2", "board", False),
+    # 2.4.13 focus appearance: the dark chrome band (header + footer) rings its
+    # controls in --amber, not the blue --focus (which is tuned for the light
+    # page and drops to ~1.6:1 on pine). Amber on pine clears even the 7:1 text
+    # bar, so testing it here also covers the 3:1 non-text focus requirement. The
+    # header background is a literal #102a20 in every theme; the footer uses
+    # --board (darker in dark/contrast), so #102a20 is the lightest ground.
+    ("app --amber focus ring on pine #102a20", "amber", "#102a20", False),
     # ---- landing page inline tokens (web/index.html) ----
     ("landing --ink-soft on --paper", "L_ink-soft", "L_paper", False),
     ("landing --ink-soft on --paper-2", "L_ink-soft", "L_paper-2", False),
@@ -65,14 +76,14 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("landing --green on --paper-2 (who band)", "L_green", "L_paper-2", False),
     ("landing --rust on --paper card", "L_rust", "L_paper", False),
     ("landing --ink on --paper", "L_ink", "L_paper", False),
-    ("landing .lede #e6dcc2 on --pine", "#e6dcc2", "L_pine", False),
+    ("landing .lede #dfe7dd on --pine", "#dfe7dd", "L_pine", False),
     ("landing .reassure #b9c7ba on --pine", "#b9c7ba", "L_pine", False),
     ("landing board .lab #b9c7ba on --pine-2", "#b9c7ba", "L_pine-2", False),
     ("landing footer #b9c7ba on --pine", "#b9c7ba", "L_pine", False),
-    ("landing cta p #d8cdb4 on --pine", "#d8cdb4", "L_pine", False),
+    ("landing cta p #d3decf on --pine", "#d3decf", "L_pine", False),
     # Primary nav: cream stops on the pine wayfinding bar (theme-independent).
-    ("nav active stop on pine", "#f4ecd9", "#102a20", False),
-    ("nav inactive stop on pine", "#cfe0d2", "#102a20", False),
+    ("nav active stop on pine", "#f4f6f0", "#102a20", False),
+    ("nav inactive stop on pine", "#cfdcd2", "#102a20", False),
     # --on-pine is the cream text on the pine chrome (hero, board, cta, footer,
     # nav). It must stay light in EVERY theme; this pair is what would have caught
     # the dark-mode regression where the chrome text used --paper and went dark.
@@ -86,9 +97,9 @@ THEMES: dict[str, dict[str, str]] = {
         # app shared tokens
         "ink": "#20241f",
         "ink-soft": "#3d4339",
-        "paper": "#f5efe2",
-        "paper-deep": "#ece3cf",
-        "card": "#fbf7ee",
+        "paper": "#f2f3ee",
+        "paper-deep": "#e5e8df",
+        "card": "#fbfcf8",
         "green": "#163a2c",
         "green-bright": "#1d4633",
         "error": "#8e2a23",
@@ -96,20 +107,21 @@ THEMES: dict[str, dict[str, str]] = {
         "info": "#3a4753",
         "board": "#102a20",
         "board-soft": "#bcccbd",
+        "amber": "#fdc70a",
         "badge-error": "#8e2a23",
         "badge-warning": "#6b490e",
         "badge-info": "#3a4753",
         # landing tokens (light)
         "L_ink": "#15231c",
         "L_ink-soft": "#3c4840",
-        "L_paper": "#f4ecd9",
-        "L_paper-2": "#ebe0c8",
+        "L_paper": "#f2f3ee",
+        "L_paper-2": "#e5e8df",
         "L_green": "#11522a",
         "L_rust": "#822c12",
         "L_pine": "#102a20",
         "L_pine-2": "#163a2c",
-        "L_on-pine": "#f4ecd9",
-        "L_amber": "#e7a531",
+        "L_on-pine": "#f4f6f0",
+        "L_amber": "#fdc70a",
     },
     "dark": {
         "ink": "#e9e4d7",
@@ -124,6 +136,7 @@ THEMES: dict[str, dict[str, str]] = {
         "info": "#a9c4d6",
         "board": "#0c1410",
         "board-soft": "#cdd9ce",
+        "amber": "#fdc70a",
         "badge-error": "#7e2a23",
         "badge-warning": "#5c3d0a",
         "badge-info": "#2f4452",
@@ -137,7 +150,7 @@ THEMES: dict[str, dict[str, str]] = {
         "L_pine": "#0c1410",
         "L_pine-2": "#14201a",
         "L_on-pine": "#e9e4d7",
-        "L_amber": "#f0b54f",
+        "L_amber": "#ffd34d",
     },
     "contrast": {
         "ink": "#000000",
@@ -152,6 +165,7 @@ THEMES: dict[str, dict[str, str]] = {
         "info": "#003a5a",
         "board": "#000000",
         "board-soft": "#f2f2f2",
+        "amber": "#ffd34d",
         "badge-error": "#7a0000",
         "badge-warning": "#5a4900",
         "badge-info": "#003a5a",

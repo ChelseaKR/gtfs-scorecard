@@ -30,30 +30,30 @@
 <script src="/src/theme.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23163a2c'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f5efe2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23163a2c'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
 <style>
   :root {
-    --pine: #102a20;        /* deep forest, hero ground */
+    --pine: #102a20;        /* guide-sign green, near black: hero ground */
     --pine-2: #163a2c;
-    --green: #11522a;       /* signal green, darkened to clear AAA 7:1 on cream */
+    --green: #11522a;       /* guide-sign green, darkened to clear AAA 7:1 */
     --green-on-dark: #6fc8a0; /* green used as text on the pine ground */
-    --on-pine: #f4ecd9;     /* cream text/borders on the pine chrome (hero, board,
-                               cta, footer, nav); stays light in EVERY theme, so
-                               dark mode never turns this dark-on-dark */
-    --paper: #f4ecd9;       /* warm cream */
-    --paper-2: #ebe0c8;
-    --ink: #15231c;         /* near-black green, body text on cream */
+    --on-pine: #f4f6f0;     /* sign-white text/borders on the pine chrome (hero,
+                               board, cta, footer, nav); stays light in EVERY
+                               theme, so dark mode never turns this dark-on-dark */
+    --paper: #f2f3ee;       /* enamel sign blank, a near-white with a green cast */
+    --paper-2: #e5e8df;
+    --ink: #15231c;         /* near-black green, body text on the sign blank */
     --ink-soft: #3c4840;    /* darkened to clear AAA 7:1 on both papers */
-    --amber: #e7a531;       /* the one sharp accent: a transit signal amber */
-    --rust: #822c12;        /* darkened to clear AAA 7:1 on cream */
-    --line: rgba(244,236,217,.22);
-    --line-ink: #d8ccae;
+    --amber: #fdc70a;       /* the one sharp accent: warning-sign yellow */
+    --rust: #822c12;        /* darkened to clear AAA 7:1 on the sign blank */
+    --line: rgba(244,246,240,.22);
+    --line-ink: #c6ccbe;
     --radius: 14px;
     --measure: 70ch;        /* 1.4.8 line-length cap for prose blocks */
-    --display: "Fraunces", Georgia, serif;
+    --display: "Overpass", "Helvetica Neue", Arial, sans-serif;
     --body: "Public Sans", system-ui, sans-serif;
-    --mono: "Spline Sans Mono", ui-monospace, monospace;
+    --mono: "Overpass Mono", ui-monospace, monospace;
     /* grade swatches */
     --g-a:#11522a; --g-b:#356b1b; --g-c:#7d660a; --g-d:#8f4d16; --g-f:#8a1b1b;
     --focus-ring: var(--amber);
@@ -83,9 +83,9 @@
     --green: #7fd3a6; --green-on-dark: #7fd3a6; --on-pine: #e9e4d7;
     --paper: #15181b; --paper-2: #1d2125;
     --ink: #e9e4d7; --ink-soft: #c2c8bc;
-    --amber: #f0b54f; --rust: #f0a07f;
+    --amber: #ffd34d; --rust: #f0a07f;
     --line: rgba(233,228,215,.22); --line-ink: #3a4038;
-    --focus-ring: #f0b54f;
+    --focus-ring: #ffd34d;
     --g-a:#7fd3a6; --g-b:#9cc97f; --g-c:#e0c878; --g-d:#e8a36a; --g-f:#f08a8a;
   }
   @media (prefers-color-scheme: dark) {
@@ -95,9 +95,9 @@
       --green: #7fd3a6; --green-on-dark: #7fd3a6; --on-pine: #e9e4d7;
       --paper: #15181b; --paper-2: #1d2125;
       --ink: #e9e4d7; --ink-soft: #c2c8bc;
-      --amber: #f0b54f; --rust: #f0a07f;
+      --amber: #ffd34d; --rust: #f0a07f;
       --line: rgba(233,228,215,.22); --line-ink: #3a4038;
-      --focus-ring: #f0b54f;
+      --focus-ring: #ffd34d;
       --g-a:#7fd3a6; --g-b:#9cc97f; --g-c:#e0c878; --g-d:#e8a36a; --g-f:#f08a8a;
     }
   }
@@ -159,7 +159,7 @@
     transition: transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
   }
   .btn-primary { background: var(--amber); color: #2a1c00; }
-  .btn-primary:hover { transform: translateY(-2px); background: #f2b855; }
+  .btn-primary:hover { transform: translateY(-2px); background: #ffd23f; }
   .btn-ghost { background: transparent; color: var(--on-pine); border-color: var(--line); }
   .btn-ghost:hover { border-color: var(--on-pine); transform: translateY(-2px); }
   .btn-ink { background: var(--pine); color: var(--on-pine); }
@@ -173,7 +173,7 @@
   .hero {
     position: relative;
     background:
-      radial-gradient(120% 80% at 85% -10%, rgba(231,165,49,.16), transparent 55%),
+      radial-gradient(120% 80% at 85% -10%, rgba(253,199,10,.13), transparent 55%),
       radial-gradient(90% 70% at 5% 110%, rgba(31,122,77,.30), transparent 60%),
       var(--pine);
     color: var(--on-pine);
@@ -248,9 +248,10 @@
     line-height: .98; letter-spacing: -.025em; margin: 0;
     font-optical-sizing: auto;
   }
-  .hero h1 em { font-style: italic; color: var(--amber); }
+  /* Signs don't slant: the emphasized words go signal yellow, upright. */
+  .hero h1 em { font-style: normal; color: var(--amber); }
   .hero .lede {
-    max-width: 30rem; margin: 1.6rem 0 2.1rem; font-size: 1.12rem; color: #e6dcc2;
+    max-width: 30rem; margin: 1.6rem 0 2.1rem; font-size: 1.12rem; color: #dfe7dd;
   }
   .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; }
   .reassure { margin: 1.5rem 0 0; font-family: var(--mono); font-size: .8rem; letter-spacing: .04em; color: #b9c7ba; }
@@ -267,10 +268,11 @@
     border-radius: var(--radius);
     box-shadow: 0 34px 70px -25px rgba(0,0,0,.62), 0 2px 0 rgba(255,255,255,.4) inset;
     padding: 1.8rem 2rem 2rem;
-    position: relative; rotate: 1.4deg;
+    position: relative;
+    border: 1.5px solid var(--line-ink);
     animation: cardin 1s cubic-bezier(.2,.7,.2,1) .35s both;
   }
-  @keyframes cardin { from { opacity:0; transform: translateY(40px) rotate(4deg); } to { opacity:1; } }
+  @keyframes cardin { from { opacity:0; transform: translateY(40px); } to { opacity:1; } }
   .card .tag {
     position:absolute; top: -12px; left: 18px;
     background: var(--pine); color: var(--on-pine);
@@ -405,13 +407,13 @@
      =================================================================== */
   .cta {
     background:
-      radial-gradient(80% 120% at 100% 0%, rgba(231,165,49,.18), transparent 55%),
+      radial-gradient(80% 120% at 100% 0%, rgba(253,199,10,.15), transparent 55%),
       var(--pine);
     color: var(--on-pine); text-align: center;
     padding: clamp(3.5rem, 8vw, 6rem) 0;
   }
   .cta h2 { font-family: var(--display); font-weight: 900; font-size: clamp(2.1rem, 5.5vw, 3.6rem); letter-spacing: -.02em; line-height: 1.02; margin: 0 auto .8rem; max-width: 16ch; }
-  .cta p { color: #d8cdb4; max-width: 42ch; margin: 0 auto 2rem; }
+  .cta p { color: #d3decf; max-width: 42ch; margin: 0 auto 2rem; }
 
   footer { background: var(--pine); color: #b9c7ba; border-top: 1px solid var(--line); padding: 2.5rem 0; font-size: .85rem; }
   footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }

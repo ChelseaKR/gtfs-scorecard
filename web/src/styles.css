@@ -1,14 +1,16 @@
-/* GTFS Scorecard — civic report card aesthetic.
-   Warm paper ground, ink type, route-line motif. Mobile-first.
-   Severity and grades always carry text; color is reinforcement only. */
+/* GTFS Scorecard — roadway signage aesthetic.
+   Enamel sign-blank ground, guide-sign green, signal-yellow accents; type set
+   in Overpass (the open digitization of the FHWA's Highway Gothic, the
+   letterforms on road signs) with Public Sans (USWDS) for running text.
+   Mobile-first. Severity and grades always carry text; color reinforces only. */
 
 :root {
   color-scheme: light dark;
-  --paper: #f5efe2;
-  --paper-deep: #ece3cf;
+  --paper: #f2f3ee;
+  --paper-deep: #e5e8df;
   --ink: #20241f;
   --ink-soft: #3d4339;     /* darkened to clear AAA 7:1 on paper/card/paper-deep */
-  --line: #cfc4a9;
+  --line: #c6ccbe;
   --green: #163a2c;        /* primary civic green, darkened to clear AAA 7:1 */
   --green-bright: #1d4633; /* darkened to clear AAA 7:1 as text */
   --grade-a: #1d5c40;
@@ -19,18 +21,18 @@
   --error: #8e2a23;
   --warning: #6b490e;      /* darkened to clear AAA 7:1 as severity text */
   --info: #3a4753;         /* darkened to clear AAA 7:1 as severity text */
-  --card: #fbf7ee;
+  --card: #fbfcf8;
   --focus: #1a3aa8;        /* darkened so the 3px ring clears 3:1 on paper */
   --measure: 70ch;         /* 1.4.8 line-length cap for prose blocks */
   --board-soft: #bcccbd;   /* muted text on the dark board, AAA on --board */
   --radius: 10px;
   --shadow: 0 1px 2px rgb(32 36 31 / 0.08), 0 4px 14px rgb(32 36 31 / 0.07);
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-display: "Overpass", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Spline Sans Mono", ui-monospace, "SF Mono", monospace;
-  --board: #102a20;        /* dark pine ground for the status board */
+  --font-mono: "Overpass Mono", ui-monospace, "SF Mono", monospace;
+  --board: #102a20;        /* dark pine ground: guide-sign green, near black */
   --board-2: #163a2c;
-  --amber: #e7a531;        /* signal accent */
+  --amber: #fdc70a;        /* the signal accent: warning-sign yellow */
 }
 
 * { box-sizing: border-box; }
@@ -137,11 +139,11 @@ a:hover { color: var(--green-bright); }
 .site-header {
   position: relative;
   background: #102a20;
-  color: #f4ecd9;
-  /* The landing page's amber signal, echoed as a hairline so the inner pages
+  color: #f4f6f0;
+  /* The landing page's signal yellow, echoed as a hairline so the inner pages
      read as the same product. Decorative (a border, not text), so it sits
      outside the AAA text-contrast budget. */
-  border-bottom: 3px solid #e7a531;
+  border-bottom: 3px solid #fdc70a;
 }
 .site-header::after { /* the dashed route line the stops sit on */
   content: "";
@@ -150,7 +152,7 @@ a:hover { color: var(--green-bright); }
   right: 0;
   bottom: 0;
   height: 2px;
-  background: repeating-linear-gradient(to right, rgba(244, 236, 217, 0.22) 0 7px, transparent 7px 14px);
+  background: repeating-linear-gradient(to right, rgba(244, 246, 240, 0.22) 0 7px, transparent 7px 14px);
 }
 /* The header spans the full viewport (the dashed route line in ::after already
    does), so the wayfinding stops use the whole width instead of overflowing the
@@ -170,14 +172,14 @@ a:hover { color: var(--green-bright); }
   align-items: center;
   gap: 0.55rem;
   text-decoration: none;
-  color: #f4ecd9;
+  color: #f4f6f0;
   flex: none;
 }
 .brand-mark {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background: #f4ecd9;
+  background: #f4f6f0;
   display: grid;
   place-items: center;
 }
@@ -211,7 +213,7 @@ a:hover { color: var(--green-bright); }
   align-items: center;
   gap: 0.4rem;
   text-decoration: none;
-  color: #cfe0d2;
+  color: #cfdcd2;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   font-weight: 500;
@@ -231,13 +233,13 @@ a:hover { color: var(--green-bright); }
   flex: none;
 }
 .nav-stop:hover {
-  color: #f4ecd9;
+  color: #f4f6f0;
 }
 .nav-stop:hover .pip {
   background: rgba(111, 200, 160, 0.4);
 }
 .nav-stop[aria-current="page"] {
-  color: #f4ecd9;
+  color: #f4f6f0;
 }
 .nav-stop[aria-current="page"] .pip {
   background: #6fc8a0;
@@ -247,12 +249,12 @@ a:hover { color: var(--green-bright); }
   margin-left: 0.3rem;
 }
 .site-header .theme-toggle {
-  color: #f4ecd9;
+  color: #f4f6f0;
   background: transparent;
-  border-color: rgba(244, 236, 217, 0.32);
+  border-color: rgba(244, 246, 240, 0.32);
 }
 .site-header .theme-toggle:hover {
-  border-color: #f4ecd9;
+  border-color: #f4f6f0;
 }
 .nav-menu-btn {
   display: none;
@@ -263,8 +265,8 @@ a:hover { color: var(--green-bright); }
   padding: 0.4rem 0.9rem;
   cursor: pointer;
   background: transparent;
-  color: #f4ecd9;
-  border: 1.5px solid rgba(244, 236, 217, 0.32);
+  color: #f4f6f0;
+  border: 1.5px solid rgba(244, 246, 240, 0.32);
   border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -289,7 +291,7 @@ a:hover { color: var(--green-bright); }
     gap: 0;
     background: #102a20;
     padding: 0.4rem;
-    border-bottom: 1px solid rgba(244, 236, 217, 0.22);
+    border-bottom: 1px solid rgba(244, 246, 240, 0.22);
     box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.6);
   }
   .site-header.nav-open .nav-cluster {
@@ -307,13 +309,33 @@ a:hover { color: var(--green-bright); }
   }
 }
 
+/* The footer is the same pine signage band as the header, so every page is
+   bookended by the chrome. Text colors are fixed light values (the band is
+   always dark, in every theme); pairs verified in check_contrast.py. */
 .site-footer {
   margin-top: 4rem;
-  border-top: 3px solid var(--ink);
-  background: var(--paper-deep);
+  border-top: 3px solid #fdc70a;
+  background: var(--board);
   padding-block: 1.4rem 2.2rem;
   font-size: 0.9rem;
-  color: var(--ink-soft);
+  color: #cfdcd2;
+}
+.site-footer a { color: #f4f6f0; }
+.site-footer a:hover { color: #fff; }
+.site-footer strong { color: #f4f6f0; }
+
+/* 2.4.13 focus appearance on the dark chrome band. The global --focus ring is a
+   dark blue tuned for the light page; on the pine header/footer it falls to
+   ~1.6:1. The band uses the signal amber instead (>=9:1 on pine in every theme,
+   matching the landing page's --focus-ring: var(--amber)). Scoped to the
+   controls that actually sit on pine, so the theme dropdown's items — which open
+   on a light --card surface and keep the blue ring — are left untouched. */
+.site-header .brand:focus-visible,
+.nav-stop:focus-visible,
+.nav-menu-btn:focus-visible,
+.site-header .theme-toggle:focus-visible,
+.site-footer a:focus-visible {
+  outline-color: var(--amber);
 }
 
 main { padding-top: 1.6rem; }
@@ -454,7 +476,7 @@ main:focus { outline: none; }
   border-color: var(--green);
   color: var(--paper);
 }
-.facet-chip[aria-pressed="true"] .facet-n { color: rgb(245 239 226 / 0.75); }
+.facet-chip[aria-pressed="true"] .facet-n { color: rgb(242 243 238 / 0.75); }
 
 .agency-list {
   list-style: none;
@@ -486,6 +508,8 @@ main:focus { outline: none; }
 .agency-card h2 a:hover { text-decoration: underline; }
 .agency-card .meta { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
 
+/* Grade roundel: the letter sits on a colored disc with a white keyline just
+   inside the edge, the way a route number sits on a bus-stop flag. */
 .grade-chip {
   font-family: var(--font-display);
   font-weight: 900;
@@ -497,6 +521,7 @@ main:focus { outline: none; }
   place-items: center;
   border-radius: 50%;
   color: var(--paper);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.9);
 }
 
 .grade-a { background: var(--grade-a); }
@@ -591,7 +616,7 @@ main:focus { outline: none; }
 .state-chip:focus-visible { outline: 3px solid var(--green); outline-offset: 1px; }
 .state-chip .state-n { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 .state-chip[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: var(--paper); }
-.state-chip[aria-pressed="true"] .state-n { color: rgb(245 239 226 / 0.75); }
+.state-chip[aria-pressed="true"] .state-n { color: rgb(242 243 238 / 0.75); }
 .state-chip-muted { color: var(--ink-soft); }
 
 .results-hint { color: var(--ink-soft); margin: 0.4rem 0 0; }
@@ -684,8 +709,8 @@ main:focus { outline: none; }
   place-items: center;
   border-radius: 50%;
   color: var(--paper);
-  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 5px rgb(245 239 226 / 0.55), var(--shadow);
-  transform: rotate(-4deg);
+  /* sign-panel keyline: a white border set just inside the disc edge */
+  box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.92), var(--shadow);
 }
 
 .score-hero .overall { margin: 0.35rem 0 0; color: var(--ink-soft); }
@@ -1572,9 +1597,9 @@ main:focus { outline: none; }
   border-radius: var(--radius);
   /* The board ground is always dark, so its text stays a fixed light cream
      regardless of the active theme (it must not follow --paper, which flips). */
-  color: #f4ecd9;
+  color: #f4f6f0;
   background:
-    radial-gradient(110% 80% at 92% -20%, rgb(231 165 49 / 0.16), transparent 55%),
+    radial-gradient(110% 80% at 92% -20%, rgb(253 199 10 / 0.14), transparent 55%),
     radial-gradient(90% 90% at -10% 120%, rgb(46 110 81 / 0.45), transparent 60%),
     var(--board);
   padding: clamp(1.3rem, 4vw, 2.2rem);
@@ -1611,7 +1636,7 @@ main:focus { outline: none; }
   animation: flapTo 1.7s cubic-bezier(.2,.85,.25,1) .35s both;
 }
 @keyframes flapTo { to { transform: translateY(var(--flap-end, 0)); } }
-.reel-strip span { display: grid; place-items: center; color: #f4ecd9;
+.reel-strip span { display: grid; place-items: center; color: #f4f6f0;
   font-family: var(--font-display); font-weight: 900; font-size: 4rem; line-height: 1; }
 
 .score-block .score-big { font-family: var(--font-display); font-weight: 900;
@@ -1620,9 +1645,9 @@ main:focus { outline: none; }
 .score-block .score-trend { font-family: var(--font-mono); font-size: .82rem; margin: .45rem 0 0; color: #bcccbd; }
 .score-block .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.1rem; }
 .chip { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase;
-  padding: .32rem .65rem; border-radius: 999px; border: 1px solid rgb(244 236 217 / 0.22); color: #e6dcc2; }
+  padding: .32rem .65rem; border-radius: 999px; border: 1px solid rgb(244 246 240 / 0.22); color: #dfe7dd; }
 .chip.ok { color: #bfe6cf; border-color: rgb(46 110 81 / 0.6); }
-.chip.warn { color: #f1d9a6; border-color: rgb(231 165 49 / 0.55); }
+.chip.warn { color: #f1d9a6; border-color: rgb(253 199 10 / 0.5); }
 
 /* category platforms — departure-board "track" rows */
 .platforms { margin: 0; }
@@ -1760,8 +1785,12 @@ main p,
    (--paper as page ground and as the letter on a grade chip; --error as finding
    text and as a badge background); those get explicit overrides below so
    contrast stays WCAG AA on the dark surface. */
+/* Every selector here is guarded by :root:not([data-theme]) so the OS setting
+   only applies when the visitor has not picked a theme; an explicit "Light"
+   choice must win over an OS dark preference (it did not, before this guard —
+   the landing page always had it, the shared stylesheet did not). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --paper: #15181b;
     --paper-deep: #0f1113;
     --ink: #e9e4d7;
@@ -1780,28 +1809,28 @@ main p,
     --info: #a9c4d6;
   }
 
-  body {
+  :root:not([data-theme]) body {
     background:
       radial-gradient(at 15% 0%, rgb(255 255 255 / 0.05), transparent 45%),
       var(--paper);
   }
 
   /* Keep the grade letter and pressed-facet count light on their coloured fills. */
-  .grade-chip { color: #f5efe2; }
-  .facet-chip[aria-pressed="true"] { color: #15181b; }
+  :root:not([data-theme]) .grade-chip { color: #f2f3ee; }
+  :root:not([data-theme]) .facet-chip[aria-pressed="true"] { color: #15181b; }
 
   /* Finding "Fix NN" badges: white text needs a dark fill, not the brightened token. */
-  .alert .badge { background: #7e2a23; }
-  .alert .badge.sev-warning { background: #5c3d0a; }
-  .alert .badge.sev-info { background: #2f4452; }
+  :root:not([data-theme]) .alert .badge { background: #7e2a23; }
+  :root:not([data-theme]) .alert .badge.sev-warning { background: #5c3d0a; }
+  :root:not([data-theme]) .alert .badge.sev-info { background: #2f4452; }
 
   /* Curator/operating note and flags: brighten so they read on the dark card. */
-  .operating-note { background: rgb(111 200 160 / 0.12); }
-  .op-note { color: #7fd3a6; }
-  .meta-flag { color: #e3905c; }
-  .cleared-mark { color: #7fd3a6; }
-  .pill-warn { background: rgb(156 69 17 / 0.28); color: #f0b48f; }
-  .pill-ok { background: rgb(29 92 64 / 0.34); color: #84d6aa; }
+  :root:not([data-theme]) .operating-note { background: rgb(111 200 160 / 0.12); }
+  :root:not([data-theme]) .op-note { color: #7fd3a6; }
+  :root:not([data-theme]) .meta-flag { color: #e3905c; }
+  :root:not([data-theme]) .cleared-mark { color: #7fd3a6; }
+  :root:not([data-theme]) .pill-warn { background: rgb(156 69 17 / 0.28); color: #f0b48f; }
+  :root:not([data-theme]) .pill-ok { background: rgb(29 92 64 / 0.34); color: #84d6aa; }
 }
 
 /* ===================================================================
@@ -1836,7 +1865,7 @@ main p,
     radial-gradient(at 15% 0%, rgb(255 255 255 / 0.05), transparent 45%),
     var(--paper);
 }
-:root[data-theme="dark"] .grade-chip { color: #f5efe2; }
+:root[data-theme="dark"] .grade-chip { color: #f2f3ee; }
 :root[data-theme="dark"] .facet-chip[aria-pressed="true"] { color: #15181b; }
 :root[data-theme="dark"] .alert .badge { background: #7e2a23; }
 :root[data-theme="dark"] .alert .badge.sev-warning { background: #5c3d0a; }
@@ -1869,7 +1898,7 @@ main p,
   --grade-c: #5a4900;
   --grade-d: #7a3a0a;
   --grade-f: #7a0000;
-  --amber: #b25c00;
+  --amber: #ffd34d;   /* signal yellow, readable on the black board */
 }
 :root[data-theme="contrast"] .grade-chip { color: #ffffff; }
 :root[data-theme="contrast"] .alert .badge { color: #ffffff; background: #7a0000; }
