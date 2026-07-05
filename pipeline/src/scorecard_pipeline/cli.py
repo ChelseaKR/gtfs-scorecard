@@ -176,15 +176,22 @@ def run_agency(
     # so no hollow NTD box appears (ADR 0026). Absent keys mean the SPA and API
     # omit the section, and render_site gates its recomputed view on country too.
     if agency.country == "US":
-        from .gtfs import read_agency_ids
+        from .gtfs import read_agency_ids, read_shapes_coverage
         from .ntd import assess as assess_ntd_readiness
-        from .ntd import assess_id_alignment
+        from .ntd import assess_id_alignment, assess_shapes_readiness
 
         # NTD ID alignment: does the feed's agency_id match the agency's NTD ID?
         # A forward-looking compliance flag (FTA RY2025/26), zero-deduction, shown
         # as not-yet-checked when we have no NTD ID on file.
         artifact["ntd_id_alignment"] = assess_id_alignment(
             read_agency_ids(str(fetched.path)), agency.ntd_id
+        ).to_dict()
+        # Shapes readiness: does shapes.txt cover this feed's trips? FTA's July
+        # 2025 final rule requires shapes.txt from Reduced, Rural, and Tribal
+        # NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
+        shapes_coverage = read_shapes_coverage(str(fetched.path))
+        artifact["shapes_readiness"] = assess_shapes_readiness(
+            shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
         # NTD certification readiness (published / valid / current), precomputed so
         # the web app and API render it without re-deriving the verdict.
@@ -1438,7 +1445,14 @@ def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
-    from .notify import build_emails, load_subscribers, load_subscribers_from_dynamo, send_via_ses
+    from .notify import (
+        build_emails,
+        build_webhook_notifications,
+        load_subscribers,
+        load_subscribers_from_dynamo,
+        send_via_ses,
+        send_webhooks,
+    )
 
     table = args.table or os.environ.get("SUBSCRIPTIONS_TABLE")
     if table:
@@ -1450,25 +1464,36 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     digest = build_digest(today=args.date, expiry_days=args.expiry_days)
     unsubscribe_base = os.environ.get("ALERTS_API_BASE")
     emails = build_emails(subscribers, digest, unsubscribe_base=unsubscribe_base)
+    webhooks = build_webhook_notifications(subscribers, digest)
 
-    if not emails:
+    if not emails and not webhooks:
         log.info(
             "Nothing to send: %d subscriber(s), no followed feed needs attention.", len(subscribers)
         )
         return 0
 
     if args.send:
-        sender = args.sender or os.environ.get("SES_FROM")
-        if not sender:
-            parser.error("--send requires --from or the SES_FROM environment variable")
-        region = os.environ.get("AWS_REGION", "us-west-2")
-        sent = send_via_ses(emails, sender, region=region)
-        log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
+        if emails:
+            sender = args.sender or os.environ.get("SES_FROM")
+            if not sender:
+                parser.error("--send requires --from or the SES_FROM environment variable")
+            region = os.environ.get("AWS_REGION", "us-west-2")
+            sent = send_via_ses(emails, sender, region=region)
+            log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
+        if webhooks:
+            sent_hooks = send_webhooks(webhooks)
+            log.info("Posted %d digest webhook(s) of %d configured.", sent_hooks, len(webhooks))
         return 0
 
     for email in emails:
         print(f"=== To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
-    log.info("%d email(s) would be sent (dry run; pass --send to send via SES).", len(emails))
+    for hook in webhooks:
+        print(f"=== Webhook: {hook.url}\n\n{hook.payload['text']}")
+    log.info(
+        "%d email(s), %d webhook(s) would be sent (dry run; pass --send to send).",
+        len(emails),
+        len(webhooks),
+    )
     return 0
 
 

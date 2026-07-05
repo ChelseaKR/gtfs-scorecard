@@ -26,23 +26,33 @@ def write_latest(
     fixes: list[dict[str, str]] | None = None,
     days: int | None = None,
     state: str | None = None,
+    country: str | None = None,
+    shapes: tuple[int, int] | None = None,
+    ntd_id: str | None = None,
 ) -> None:
     agency: dict[str, object] = {"id": agency_id, "name": name}
     if state:
         agency["state"] = state
+    if country:
+        agency["country"] = country
+    payload: dict[str, object] = {
+        "agency": agency,
+        "snapshot_date": "2026-06-12",
+        "overall": {"score": score, "grade": grade},
+        "categories": {"freshness": {"details": {"days_until_expiry": days}}},
+        "top_fixes": fixes or [],
+    }
+    if shapes is not None:
+        total_trips, trips_with_shape = shapes
+        payload["shapes_readiness"] = {
+            "total_trips": total_trips,
+            "trips_with_shape": trips_with_shape,
+        }
+    if ntd_id is not None:
+        payload["ntd_id_alignment"] = {"ntd_id": ntd_id, "status": "aligned"}
     path = artifacts_dir() / agency_id
     path.mkdir(parents=True, exist_ok=True)
-    (path / "latest.json").write_text(
-        json.dumps(
-            {
-                "agency": agency,
-                "snapshot_date": "2026-06-12",
-                "overall": {"score": score, "grade": grade},
-                "categories": {"freshness": {"details": {"days_until_expiry": days}}},
-                "top_fixes": fixes or [],
-            }
-        )
-    )
+    (path / "latest.json").write_text(json.dumps(payload))
 
 
 def test_rollup_csv_has_header_and_rows_with_blanks_for_none() -> None:
@@ -59,6 +69,7 @@ def test_rollup_csv_has_header_and_rows_with_blanks_for_none() -> None:
                 "needs_attention": True,
                 "attention_reason": "Feed expired",
                 "top_fix": "Re-export your feed",
+                "shapes_status": "not_ready",
             },
             {
                 "id": "a",
@@ -71,18 +82,19 @@ def test_rollup_csv_has_header_and_rows_with_blanks_for_none() -> None:
                 "needs_attention": False,
                 "attention_reason": None,
                 "top_fix": None,
+                "shapes_status": None,
             },
         ]
     }
     lines = rollup_csv(payload).splitlines()
     assert lines[0] == (
         "agency_id,agency_name,grade,score,checked,expiry_status,"
-        "days_until_expiry,needs_attention,attention_reason,top_fix"
+        "days_until_expiry,needs_attention,attention_reason,top_fix,shapes_txt_status"
     )
     assert lines[1].startswith("b,B Transit,F,40.0,")
-    assert lines[1].endswith(",yes,Feed expired,Re-export your feed")
-    # None reason and top_fix render as empty cells, not "None".
-    assert lines[2].endswith(",no,,")
+    assert lines[1].endswith(",yes,Feed expired,Re-export your feed,not_ready")
+    # None reason, top_fix, and shapes_status render as empty cells, not "None".
+    assert lines[2].endswith(",no,,,")
 
 
 def test_state_rollup_auto_includes_agencies_by_persisted_state() -> None:
@@ -155,6 +167,44 @@ def test_attention_flagged_agencies_sort_first_with_reason() -> None:
     assert payload["average_score"] == 78.0
 
 
+def test_ridership_weights_attention_order_high_ridership_first() -> None:
+    # Two attention-flagged feeds: the big one scores slightly *better* but must
+    # still rank first once ridership weights the list (ADR 0021).
+    write_latest("big", "Big Transit", 66.0, "D", ntd_id="90001")
+    write_latest("tiny", "Tiny Transit", 64.0, "D", ntd_id="90002")
+    attention = {"big": "Feed expires in 5 days", "tiny": "Feed expires in 3 days"}
+    ridership = {"90001": 5_000_000, "90002": 10_000}
+    payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, ridership)
+    assert [m["id"] for m in payload["members"]] == ["big", "tiny"]
+    assert payload["members"][0]["annual_trips"] == 5_000_000
+    assert payload["members"][1]["annual_trips"] == 10_000
+
+
+def test_ridership_none_leaves_order_unchanged() -> None:
+    # Same feeds, no ridership map: falls back to worst-score-first, so the
+    # lower-scoring "tiny" leads despite carrying fewer riders.
+    write_latest("big", "Big Transit", 66.0, "D", ntd_id="90001")
+    write_latest("tiny", "Tiny Transit", 64.0, "D", ntd_id="90002")
+    attention = {"big": "Feed expires in 5 days", "tiny": "Feed expires in 3 days"}
+    payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, None)
+    assert [m["id"] for m in payload["members"]] == ["tiny", "big"]
+    # With no snapshot the trips field is present but None, never a guessed 0.
+    assert payload["members"][0]["annual_trips"] is None
+
+
+def test_ridership_only_reorders_within_attention_group() -> None:
+    # A high-ridership feed that is *not* flagged stays below the attention group,
+    # so ridership never promotes a feed past the "needs a call" line.
+    write_latest("huge-ok", "Huge OK", 95.0, "A", ntd_id="90001")
+    write_latest("small-flag", "Small Flagged", 60.0, "D", ntd_id="90002")
+    attention = {"small-flag": "Feed expired"}
+    ridership = {"90001": 9_000_000, "90002": 1_000}
+    payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, ridership)
+    assert payload["members"][0]["id"] == "small-flag"
+    assert payload["members"][0]["needs_attention"] is True
+    assert payload["members"][1]["id"] == "huge-ok"
+
+
 def test_common_fixes_counts_shared_codes() -> None:
     shared = {
         "code": "scorecard_wheelchair_boarding_unknown",
@@ -210,3 +260,40 @@ def test_rollup_expired_count_zero_when_all_current() -> None:
     write_latest("b", "B Transit", 85.0, "B", days=None)  # no expiry date -> unknown
     payload = build_rollup(Rollup("all", "All", ()), WHEN)
     assert payload["expired"]["total"] == 0
+
+
+def test_rollup_aggregates_shapes_readiness_across_members() -> None:
+    write_latest("ready1", "Ready Transit", 90.0, "A", shapes=(10, 10))
+    write_latest("risk1", "At-Risk Transit", 80.0, "B", shapes=(10, 6))
+    write_latest("notready1", "Not-Ready Transit", 70.0, "C", shapes=(10, 0))
+    write_latest("unmeasured1", "Unmeasured Transit", 85.0, "B")  # no shapes_readiness at all
+    write_latest("ca1", "Canadian Transit", 88.0, "A", country="CA", shapes=(10, 10))
+    payload = build_rollup(Rollup("all", "All", ()), WHEN)
+
+    assert payload["shapes_readiness"] == {
+        "ready": 1,
+        "at_risk": 1,
+        "not_ready": 1,
+        "not_measured": 2,  # the un-checked artifact and the non-US agency
+        "total": 5,
+    }
+    statuses = {m["id"]: m["shapes_status"] for m in payload["members"]}
+    assert statuses == {
+        "ready1": "ready",
+        "risk1": "at_risk",
+        "notready1": "not_ready",
+        "unmeasured1": None,
+        "ca1": None,
+    }
+
+
+def test_rollup_shapes_readiness_all_zero_when_nothing_measured() -> None:
+    write_latest("a", "A Transit", 90.0, "A")
+    payload = build_rollup(Rollup("all", "All", ()), WHEN)
+    assert payload["shapes_readiness"] == {
+        "ready": 0,
+        "at_risk": 0,
+        "not_ready": 0,
+        "not_measured": 1,
+        "total": 1,
+    }

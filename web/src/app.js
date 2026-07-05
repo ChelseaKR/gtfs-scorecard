@@ -695,6 +695,12 @@ function renderProgram(rollup) {
     : "";
 
   const avg = rollup.average_score == null ? "—" : `${rollup.average_score} out of 100`;
+  const shapes = rollup.shapes_readiness;
+  const measured = shapes ? shapes.total - shapes.not_measured : 0;
+  const shapesNote =
+    shapes && measured > 0
+      ? `<p class="snapshot-note">shapes.txt (NTD RY2026): ${shapes.ready} of ${measured} ready</p>`
+      : "";
   main.innerHTML = `
     <a class="backlink" href="#/programs">&larr; All rollups</a>
     <div class="score-hero reveal">
@@ -703,6 +709,7 @@ function renderProgram(rollup) {
         <p class="overall"><strong>${rollup.agency_count} agencies</strong> ·
           ${avg} average · ${rollup.needs_attention} need attention</p>
         <p class="snapshot-note">Grade mix: ${dist || "—"}</p>
+        ${shapesNote}
       </div>
     </div>
     ${routeRule()}
