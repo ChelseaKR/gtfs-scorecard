@@ -360,6 +360,14 @@ main:focus { outline: none; }
   margin: 0 0 1.8rem;
 }
 
+/* The "grade story": a short, dated plain-language paragraph above the
+   what-changed timeline, tracing how the current grade came to be. */
+.grade-story {
+  max-width: 42rem;
+  margin: 0 0 1.2rem;
+  line-height: 1.6;
+}
+
 .picker-controls {
   display: flex;
   flex-wrap: wrap;
@@ -740,6 +748,19 @@ main:focus { outline: none; }
 .ntd-not_ready { color: var(--error); }
 .ntd-unknown { color: var(--info); }
 .fineprint { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.85rem; }
+/* Measurement-confidence read (EXP-01): one quiet line plus an expandable
+   "how we measured this". A legibility layer on the grade, never a second one. */
+.confidence-note { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--ink-soft); max-width: 34rem; }
+.confidence-how { margin: 0 0 0.4rem; max-width: 40rem; font-size: 0.9rem; }
+.confidence-how > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--green);
+}
+.confidence-how ul { margin: 0; padding-left: 1.2rem; }
+.confidence-how li { margin: 0.2rem 0; }
 /* "Beyond the grade" recommendations: a quiet list, not a list of failures. */
 .recs { list-style: none; padding: 0; margin: 0; }
 .rec { padding: 0.7rem 0; border-top: 1px solid var(--line); }
@@ -1882,6 +1903,18 @@ main p,
 .download-btn:hover { filter: brightness(1.08); color: var(--paper); }
 .download-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
+/* Closed-loop guided fix flow (EXP-11): a compact three-step loop per top fix,
+   shown under "Top things to fix". Structural only; reuses existing tokens so it
+   inherits the verified AAA palette. */
+.fixloop { margin: 1.1rem 0 0; }
+.fixloop-lede { margin: 0 0 0.7rem; max-width: var(--measure); }
+.fixloop-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; counter-reset: fixloop; }
+.fixloop-item { padding: 0.8rem 0 0; border-top: 1px solid var(--line); max-width: var(--measure); }
+.fixloop-name { margin: 0 0 0.35rem; font-family: var(--font-display); font-weight: 600; }
+.fixloop-step { margin: 0 0 0.3rem; font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft); }
+.fixloop-step:last-child { margin-bottom: 0; }
+.fixloop-close { font-size: 0.9rem; line-height: 1.45; margin-top: 0.85rem; max-width: var(--measure); }
+
 /* ===================================================================
    Call-prep brief: a calm one-pager a liaison can print or screen-share.
    Black-on-white, one page, no site chrome (see the print block below).
@@ -1909,6 +1942,9 @@ main p,
 .brief-fix-do { font-weight: 600; margin: 0 0 0.2rem; }
 .brief-fix-why { margin: 0 0 0.2rem; color: var(--ink-soft); }
 .brief-fix-eta { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft); margin: 0; }
+/* Empirical fix-effort band (EXP-03), appended under the hand-authored hint. */
+.effort-band { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.15rem 0 0; }
+.alert .effort-band { color: var(--green-bright); }
 .brief-ntd-summary { margin: 0 0 0.6rem; }
 .brief-ntd, .brief-facts { margin: 0 0 0.6rem; }
 .brief-ntd dt, .brief-facts dt { font-weight: 600; margin-top: 0.4rem; }

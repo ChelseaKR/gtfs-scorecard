@@ -88,3 +88,25 @@ per-IP limit is evadable across addresses and IPs:
 - a global per-window cap on confirm emails across all addresses, or
 - a CAPTCHA / proof-of-work on the public form, or
 - requiring `SUBSCRIBE_SHARED_SECRET` behind a light proxy that can hold it.
+
+## Amendment (2026-07-02): consent now covers rollup subscriptions
+
+The weekly portfolio digest (a cohort-level rollup summary for a program
+liaison, `portfolio_digest.py`) reuses this same consent model rather than
+inventing a second one. A subscriber opts into a cohort by adding a rollup id to
+an optional `rollups: [...]` field on their record (in `subscriptions.yaml` or
+the DynamoDB store). Two properties carry over unchanged:
+
+- **Same verified gate.** `build_portfolio_emails` skips any unverified
+  subscriber exactly as `build_emails` does, so a rollup digest never reaches an
+  address that has not confirmed. Opt-in is the default-off state: no `rollups`
+  field means no cohort mail.
+- **Per-rollup opt-in.** A subscriber receives only the rollups they named, the
+  same granularity the `kinds` field gives for alert types. Following an agency
+  for expiry alerts does not enroll anyone in a cohort digest, and vice versa.
+
+The one deliberate difference from the alert digest: a scheduled portfolio digest
+is sent on its weekly cadence even when it is all-clear, because the reassurance
+of a quiet week is the point of a periodic cohort summary and the volume is low
+and opt-in. The alert digest keeps its "silence on all-clear" rule; only the
+opted-in weekly rollup sends a steady-state note.

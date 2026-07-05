@@ -180,7 +180,7 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 0
+        "worst_lag_seconds": 5
       },
       "findings": [],
       "name": "realtime",
@@ -215,7 +215,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "6a5d2a8c8fd7ae8334affeb46fe660eebbfdae4f7a936754f93685a4675af9cc",
+    "sha256": "410defb98b74e59f18d3167c8b8af4a81940cbf7130c5fb8bf180a2f2b48442f",
     "size_bytes": 67982,
     "static_url": "https://passio3.com/clovis/passioTransit/gtfs/google_transit.zip"
   },

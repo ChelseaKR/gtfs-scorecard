@@ -26,3 +26,11 @@ window.SCORECARD_SUBMIT_URL = "https://oieyqljvl1.execute-api.us-west-2.amazonaw
 // to <url>/subscribe; abuse is bounded by server-side rate limiting and double
 // opt-in, so no client secret is needed. Null disables the form.
 window.SCORECARD_SUBSCRIBE_URL = "https://5oemr66b9a.execute-api.us-west-2.amazonaws.com";
+
+// Instant scoring (infra/instant-score): an HTTP API Gateway fronting a
+// container-image Lambda that scores any GTFS URL on demand
+// (docs/decisions/0029-instant-score-funnel.md). web/try.html POSTs
+// <url>/score and polls <url>/score/<job_id>. Null falls back to the GitHub
+// Issue Form on the same page, so try.html is never a dead end. Set this once
+// the module is applied.
+window.SCORECARD_TRY_URL = null;

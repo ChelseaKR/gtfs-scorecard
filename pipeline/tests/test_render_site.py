@@ -800,6 +800,58 @@ def test_leaderboard_rows_carry_mini_sparklines() -> None:
     assert "spark-mini" not in _leaderboard_sections(board)
 
 
+def test_leaderboard_sections_omit_trips_column_without_ridership() -> None:
+    from scorecard_pipeline.render_site import _leaderboard_sections
+
+    board = {
+        "top": [{"id": "a", "name": "A Transit", "grade": "A", "score": 90}],
+        "bottom": [{"id": "z", "name": "Z Transit", "grade": "F", "score": 40}],
+        "most_improved": [],
+        "most_declined": [],
+    }
+    html = _leaderboard_sections(board)
+    assert "Riders/yr" not in html
+    assert "Lowest scoring" in html
+
+
+def test_leaderboard_sections_show_trips_column_when_present() -> None:
+    from scorecard_pipeline.render_site import _leaderboard_sections
+
+    board = {
+        "top": [{"id": "a", "name": "A Transit", "grade": "A", "score": 90}],
+        "bottom": [
+            {
+                "id": "big",
+                "name": "Big Transit",
+                "grade": "F",
+                "score": 40,
+                "annual_trips": 5000000,
+            },
+            {"id": "tiny", "name": "Tiny Transit", "grade": "F", "score": 40},
+        ],
+        "most_improved": [],
+        "most_declined": [
+            {
+                "id": "dn",
+                "name": "Down Transit",
+                "grade": "D",
+                "score": 60,
+                "score_delta": -12.0,
+                "annual_trips": 250000,
+            }
+        ],
+    }
+    html = _leaderboard_sections(board)
+    assert "Riders/yr" in html
+    # Human-formatted with thousands separators, matching the impact line.
+    assert "5,000,000" in html
+    assert "250,000" in html
+    # A row without a matched ridership record renders an empty cell, not "None".
+    assert ">None<" not in html
+    # The unweighted "top" table (no trips on any row) keeps its column shape.
+    assert html.count("Riders/yr") == 2
+
+
 def _diff_artifact(
     *,
     date: str,
@@ -918,6 +970,48 @@ def test_history_section_narrates_changes_and_is_empty_when_steady() -> None:
     ]
     assert _history_section(steady) == ""
     assert _history_section(None) == ""
+
+
+def test_history_section_leads_with_a_dated_grade_story_paragraph() -> None:
+    from scorecard_pipeline.render_site import _history_section
+
+    history = [
+        {
+            "date": "2026-06-10",
+            "score": 84.0,
+            "grade": "B",
+            "days_until_expiry": 80,
+            "categories": {"freshness": 85.0},
+        },
+        {
+            "date": "2026-06-14",
+            "score": 70.0,
+            "grade": "C",
+            "days_until_expiry": 78,
+            "categories": {"freshness": 40.0},
+        },
+    ]
+    artifacts = [
+        {
+            "snapshot_date": "2026-06-10",
+            "categories": {
+                "correctness": {
+                    "status": "measured",
+                    "findings": [{"code": "missing_feed_contact", "what": "no contact"}],
+                }
+            },
+        },
+        {
+            "snapshot_date": "2026-06-14",
+            "categories": {"correctness": {"status": "measured", "findings": []}},
+        },
+    ]
+    html = _history_section(history, artifacts)
+    assert 'class="grade-story"' in html
+    assert "On 2026-06-10 this feed started at grade B." in html
+    assert "it cleared missing_feed_contact" in html
+    # The story sits above the newest-first timeline lede.
+    assert html.index('class="grade-story"') < html.index("newest first")
 
 
 def test_embed_section_offers_a_live_badge_and_copyable_markdown() -> None:
@@ -1119,6 +1213,110 @@ def test_ntd_section_renders_id_alignment_when_present() -> None:
 
     # Absent block (older artifacts) renders no alignment row.
     assert "agency_id matches your NTD ID" not in _ntd_section(base)
+
+
+def test_ntd_section_renders_shapes_readiness_when_present() -> None:
+    from scorecard_pipeline.render_site import _ntd_section
+
+    base = {
+        "feed": {"reachable": True, "static_url": "https://ex.org/g.zip"},
+        "categories": {
+            "correctness": {"status": "measured", "findings": []},
+            "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
+        },
+    }
+    partial = {
+        **base,
+        "shapes_readiness": {
+            "status": "at_risk",
+            "detail": "stale detail baked into the fixture",
+            "fix": "stale fix baked into the fixture",
+            "total_trips": 10,
+            "trips_with_shape": 6,
+        },
+    }
+    html = _ntd_section(partial)
+    assert "shapes.txt covers your trips" in html
+    assert "Needs attention" in html
+    # Recomputed at render time from the stored counts, so wording fixes reach
+    # every page without a rescore (same pattern as agency_id alignment).
+    assert "6 of 10 trips have a shape" in html
+    assert "stale detail baked into the fixture" not in html
+    # The fineprint cites the RY2025/26 shapes.txt requirement.
+    assert "Report Year 2026" in html and "Report Year 2025" in html
+
+    # Absent block (older artifacts, or a feed scored before this check shipped)
+    # renders no shapes row.
+    assert "shapes.txt covers your trips" not in _ntd_section(base)
+
+
+def _member(agency_id: str, shapes_status: str | None, grade: str = "C") -> dict[str, Any]:
+    return {
+        "id": agency_id,
+        "name": f"{agency_id.title()} Transit",
+        "grade": grade,
+        "score": 75.0,
+        "snapshot_date": "2026-06-12",
+        "shapes_status": shapes_status,
+    }
+
+
+def test_rollup_shapes_section_lists_gaps_not_ready_first() -> None:
+    from scorecard_pipeline.render_site import _rollup_shapes_section
+
+    rollup = {
+        "members": [
+            _member("ready1", "ready"),
+            _member("risk1", "at_risk"),
+            _member("notready1", "not_ready"),
+        ],
+        "shapes_readiness": {
+            "ready": 1,
+            "at_risk": 1,
+            "not_ready": 1,
+            "not_measured": 0,
+            "total": 3,
+        },
+    }
+    html = _rollup_shapes_section(rollup)
+    assert "shapes.txt coverage" in html
+    assert "1 of 3" in html
+    assert "Notready1 Transit" in html and "Risk1 Transit" in html
+    assert "Ready1 Transit" not in html  # only the gaps are listed
+    # not_ready sorts ahead of at_risk in the worklist.
+    assert html.index("Notready1 Transit") < html.index("Risk1 Transit")
+
+
+def test_rollup_shapes_section_empty_when_all_ready() -> None:
+    from scorecard_pipeline.render_site import _rollup_shapes_section
+
+    rollup = {
+        "members": [_member("a", "ready")],
+        "shapes_readiness": {
+            "ready": 1,
+            "at_risk": 0,
+            "not_ready": 0,
+            "not_measured": 0,
+            "total": 1,
+        },
+    }
+    assert _rollup_shapes_section(rollup) == ""
+
+
+def test_rollup_shapes_section_empty_when_nothing_measured() -> None:
+    from scorecard_pipeline.render_site import _rollup_shapes_section
+
+    rollup = {
+        "members": [_member("a", None)],
+        "shapes_readiness": {
+            "ready": 0,
+            "at_risk": 0,
+            "not_ready": 0,
+            "not_measured": 1,
+            "total": 1,
+        },
+    }
+    assert _rollup_shapes_section(rollup) == ""
 
 
 def test_liveness_note_shows_checked_and_changed_freshness() -> None:
@@ -1741,3 +1939,178 @@ def test_press_page_guards_the_no_shaming_line() -> None:
     assert "worst transit agency" in html  # the unfair claim is named and refused
     assert "not covered, never failing" in html.replace("\n      ", " ")
     assert "CC BY 4.0" in html
+
+
+def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
+    conf: dict[str, Any] = {
+        "level": "medium",
+        "measured_categories": 3,
+        "total_categories": 4,
+        "fetch_source": "origin",
+        "rt_windows": 0,
+        "feed_age_days": 0,
+        "notes": [
+            "Realtime quality was not measured this run. It does not count against the grade.",
+            "The feed was downloaded from the agency's own URL.",
+        ],
+    }
+    conf.update(overrides)
+    return {"confidence": conf}
+
+
+def test_confidence_section_renders_quiet_line_and_breakdown() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    html = _confidence_section(_confidence_artifact())
+    assert "Measured 3 of 4 score categories from the agency" in html
+    assert "How we measured this" in html
+    assert "Confidence in this measurement: medium." in html
+    assert "Realtime quality was not measured this run." in html
+    # A legibility layer, never a second grade: no letter reel, no score bar.
+    assert "var(--grade" not in html and "/ 100" not in html
+    assert "It never changes the grade." in html
+
+
+def test_confidence_section_names_the_mirror_source() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    html = _confidence_section(_confidence_artifact(fetch_source="mirror"))
+    assert "from the Mobility Database" in html
+
+
+def test_confidence_section_names_the_unknown_source() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    html = _confidence_section(_confidence_artifact(fetch_source="unknown"))
+    assert "original source was not recorded" in html
+
+
+def test_confidence_section_empty_for_pre_1_5_artifacts() -> None:
+    # Artifacts published before schema 1.5 carry no confidence block; the page
+    # must render exactly as it did before the feature.
+    from scorecard_pipeline.render_site import _confidence_section
+
+    assert _confidence_section({}) == ""
+    assert _confidence_section({"confidence": {}}) == ""
+
+
+def test_agency_page_carries_the_confidence_line() -> None:
+    import datetime as dt
+    from pathlib import Path
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.fetch import FetchResult
+    from scorecard_pipeline.metrics import CategoryResult
+    from scorecard_pipeline.publish import build_artifact
+    from scorecard_pipeline.render_site import _render_agency
+    from scorecard_pipeline.score import build_scorecard
+
+    agency = Agency(id="demo", name="Demo Transit", static_gtfs_url="https://ex.org/g.zip")
+    fetch = FetchResult(
+        agency_id="demo",
+        path=Path("/tmp/g.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256="abc",
+        size_bytes=1,
+        reused=False,
+        source="origin",
+    )
+    card = build_scorecard(
+        [
+            CategoryResult(name="correctness", score=90.0, summary="s"),
+            CategoryResult(name="freshness", score=90.0, summary="s"),
+        ]
+    )
+    artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
+    html = _render_agency(artifact)
+    assert "Measured 2 of 4 score categories from the agency" in html
+    assert "How we measured this" in html
+def _guided_flow_artifact() -> dict[str, Any]:
+    return {
+        "agency": {"id": "demo", "name": "Demo Transit"},
+        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "top_fixes": [
+            {"code": "expired_calendar", "fix": "Re-export with a longer calendar."},
+            {"code": "autofix_trim_whitespace", "fix": "Trim whitespace in stop names."},
+        ],
+        "autofix": {
+            "available": True,
+            "download_url": "https://cdn.example.com/demo/corrected.zip",
+            "fixes": [
+                {"code": "autofix_trim_whitespace", "label": "Trimmed whitespace", "count": 3}
+            ],
+        },
+    }
+
+
+def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
+    from scorecard_pipeline import render_site
+    from scorecard_pipeline.render_site import _guided_fix_flow
+
+    # The /fix/<code>/ guide link only shows for codes that have a generated page;
+    # register one so the step-1 guide link is deterministic in isolation.
+    render_site.FIX_CODES_WITH_PAGES.add("expired_calendar")
+    try:
+        html = _guided_fix_flow(_guided_flow_artifact(), "demo", has_fixlog=True)
+    finally:
+        render_site.FIX_CODES_WITH_PAGES.discard("expired_calendar")
+
+    # (1) the plain-language finding with its /fix/<code>/ guide.
+    assert "Re-export with a longer calendar." in html
+    assert 'href="/fix/expired_calendar/"' in html
+    # (2) "Make the change": the tool-specific fix path (Trillium, hosted) and, for
+    # the finding an autofix covers, the corrected-feed download.
+    assert "Make the change." in html
+    assert "Trillium" in html
+    assert 'href="https://cdn.example.com/demo/corrected.zip"' in html
+    assert "Download the corrected feed for this fix" in html
+    # (3) "Prove it cleared": the receipt copy and the dated fix log link.
+    assert "Prove it cleared." in html
+    assert "mints a dated receipt" in html
+    assert 'href="/agency/demo/fixes/"' in html
+    # The explicit boundary copy.
+    assert "the scorecard shows the fix; the agency publishes it." in html
+
+
+def test_guided_fix_flow_points_to_self_check_without_a_fixlog() -> None:
+    from scorecard_pipeline.render_site import _guided_fix_flow
+
+    html = _guided_fix_flow(_guided_flow_artifact(), "demo", has_fixlog=False)
+    assert 'href="/check/"' in html
+    assert 'href="/agency/demo/fixes/"' not in html
+
+
+def test_guided_fix_flow_empty_without_fixes() -> None:
+    from scorecard_pipeline.render_site import _guided_fix_flow
+
+    art = _guided_flow_artifact()
+    art["top_fixes"] = []
+    assert _guided_fix_flow(art, "demo", has_fixlog=True) == ""
+
+
+def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
+    from scorecard_pipeline.render_site import _render_fix
+
+    html = _render_fix("expired_calendar", "# Fix expired calendars\n\nRe-export the feed.\n")
+    assert "After you republish" in html
+    assert "dated receipt" in html
+    assert "the scorecard shows the fix; the agency publishes it." in html
+
+
+def test_fixlog_page_frames_receipts_as_the_end_of_the_loop() -> None:
+    from scorecard_pipeline.render_site import _render_fixlog_page
+
+    art = {"agency": {"id": "demo", "name": "Demo Transit"}}
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "3 calendars expired.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+    html = _render_fixlog_page(art, receipts)
+    assert "end of the guided fix loop" in html
+    assert "linkable proof for a board packet or NTD" in html
+    assert 'href="/agency/demo/"' in html

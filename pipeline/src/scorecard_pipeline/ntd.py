@@ -228,6 +228,89 @@ def assess_id_alignment(feed_agency_ids: list[str], ntd_id: str) -> NtdIdAlignme
 
 
 @dataclass(frozen=True)
+class ShapesReadiness:
+    """Whether a feed's shapes.txt covers its trips, for the NTD shapes requirement.
+
+    FTA's July 2025 final rule requires shapes.txt in the GTFS that NTD reporters
+    publish: Full Reporters from Report Year 2025, and Reduced, Rural, and Tribal
+    Reporters from Report Year 2026
+    (https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026).
+    FTA estimated only just over a third of reporters already provided it when the
+    rule was finalized.
+
+    This checks the feed itself, not the agency's reporter type or reporting
+    year, so a "not ready" result is a heads-up to check against your own NTD
+    filing, never a claim that your agency is out of compliance today.
+
+    ``status`` is one of ``ready``, ``at_risk``, or ``not_ready`` (the same
+    vocabulary as the three certification pillars, so the badge styling matches).
+    """
+
+    status: str
+    detail: str
+    fix: str  # the concrete action; empty when none is needed
+    total_trips: int
+    trips_with_shape: int
+
+    def to_dict(self) -> dict[str, Any]:
+        out: dict[str, Any] = {
+            "status": self.status,
+            "detail": self.detail,
+            "total_trips": self.total_trips,
+            "trips_with_shape": self.trips_with_shape,
+        }
+        if self.fix:
+            out["fix"] = self.fix
+        return out
+
+
+def assess_shapes_readiness(total_trips: int, trips_with_shape: int) -> ShapesReadiness:
+    """Assess shape coverage from a feed's own trip/shape counts.
+
+    Takes the two counts directly (rather than a GTFS zip path) so the check is
+    trivial to unit test and to recompute at render time from stored artifact
+    fields, the same pattern ``assess_id_alignment`` uses for agency_id.
+    """
+    if total_trips == 0:
+        return ShapesReadiness(
+            NOT_READY,
+            "trips.txt has no rows, so shape coverage can't be checked.",
+            "",
+            0,
+            0,
+        )
+    if trips_with_shape == 0:
+        return ShapesReadiness(
+            NOT_READY,
+            "No trips in this feed have a shape_id linked to a row in shapes.txt.",
+            "Add shapes.txt with a shape_id for each trip's path, and set trips.shape_id "
+            "to match. Reduced, Rural, and Tribal NTD reporters need this in their "
+            "published GTFS starting Report Year 2026; Full Reporters needed it in "
+            "Report Year 2025.",
+            total_trips,
+            0,
+        )
+    if trips_with_shape < total_trips:
+        missing = total_trips - trips_with_shape
+        return ShapesReadiness(
+            AT_RISK,
+            f"{trips_with_shape} of {total_trips} trips have a shape; {missing} do not.",
+            "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip "
+            "has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by "
+            "Report Year 2026.",
+            total_trips,
+            trips_with_shape,
+        )
+    return ShapesReadiness(
+        READY,
+        f"All {total_trips} trips have a shape in shapes.txt.",
+        "",
+        total_trips,
+        trips_with_shape,
+    )
+
+
+@dataclass(frozen=True)
 class PortfolioSummary:
     """A program-level roll-up of NTD readiness across many agency feeds."""
 

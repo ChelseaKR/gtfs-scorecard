@@ -23,6 +23,7 @@ import yaml
 
 from .alerts import Digest, render_digest
 from .config import repo_root
+from .portfolio_digest import PortfolioDigest, render_portfolio_digest
 
 # Enough to catch a typo without policing addresses, but restricted to the
 # characters a real address uses, so a registered address can't smuggle URL or
@@ -45,16 +46,27 @@ class Subscriber:
     `verified` is the consent gate. It defaults to false, and an unverified
     subscriber is never emailed (see build_emails), so nothing goes to an address
     that has not confirmed. `kinds` is the opt-in granularity (None means every
-    kind), so an agency can ask for expiry warnings only."""
+    kind), so an agency can ask for expiry warnings only. `rollup_ids` is a
+    separate opt-in (ADR 0004 amendment): a liaison adds a cohort id to also
+    receive that rollup's weekly portfolio digest. It rides the same verified
+    gate — an unverified subscriber is never sent a rollup digest either."""
 
     email: str
     agency_ids: frozenset[str] | None  # None means "every tracked agency"
     verified: bool = False
     kinds: frozenset[str] | None = None  # None means "every alert kind"
     unsub_token: str = ""  # one-click unsubscribe; only set for stored subscribers
+    rollup_ids: frozenset[str] | None = None  # rollups opted into for the weekly digest
+    # An incoming-webhook URL (Slack, Teams, or a generic endpoint) that also
+    # receives this subscriber's digest as a JSON POST. Optional and additive to
+    # email: a liaison can set both, or a webhook alone. Empty means no webhook.
+    webhook_url: str = ""
 
     def follows(self, agency_id: str) -> bool:
         return self.agency_ids is None or agency_id in self.agency_ids
+
+    def follows_rollup(self, rollup_id: str) -> bool:
+        return self.rollup_ids is not None and rollup_id in self.rollup_ids
 
     def wants(self, agency_id: str, kind: str) -> bool:
         """Whether this subscriber should hear about a given agency and kind."""
@@ -109,12 +121,31 @@ def parse_subscribers(raw: object) -> list[Subscriber]:
         else:
             raise SubscriptionError(f"{label}: 'kinds' must be a non-empty list if present")
 
+        rollups_raw = entry.get("rollups")
+        if rollups_raw is None:
+            rollup_ids: frozenset[str] | None = None
+        elif isinstance(rollups_raw, list) and rollups_raw:
+            rollup_ids = frozenset(str(r) for r in rollups_raw)
+        else:
+            raise SubscriptionError(f"{label}: 'rollups' must be a non-empty list if present")
+        webhook_url = entry.get("webhook_url", "") or ""
+        if not isinstance(webhook_url, str):
+            raise SubscriptionError(f"{label}: webhook_url must be a string")
+        webhook_url = webhook_url.strip()
+        # Shape only, checked here so parsing stays pure and network-free (the
+        # module's testability guarantee); reachability and SSRF safety are
+        # checked again at send time in send_webhooks.
+        if webhook_url and not webhook_url.startswith("https://"):
+            raise SubscriptionError(f"{label}: webhook_url must be an https:// URL")
+
         subscribers.append(
             Subscriber(
                 email=email,
                 agency_ids=agency_ids,
                 verified=bool(entry.get("verified", False)),
                 kinds=kinds,
+                rollup_ids=rollup_ids,
+                webhook_url=webhook_url,
             )
         )
     return subscribers
@@ -138,12 +169,24 @@ def subscriber_from_item(item: dict[str, Any]) -> Subscriber:
         agency_ids = frozenset(str(a) for a in (item.get("agencies") or []))
     kinds_raw = item.get("kinds")
     kinds = frozenset(str(k) for k in kinds_raw) if kinds_raw else None
+    rollups_raw = item.get("rollups")
+    rollup_ids = frozenset(str(r) for r in rollups_raw) if rollups_raw else None
+    # No path stores a webhook_url in DynamoDB today (the public subscribe form
+    # is email-only); read it defensively so a future self-serve field needs no
+    # change here, but never trust an unexpected value: same https-only shape
+    # check as the YAML path, silently dropped rather than raised since a
+    # malformed stored row should not break the whole digest run.
+    webhook_url = str(item.get("webhook_url", "") or "").strip()
+    if not webhook_url.startswith("https://"):
+        webhook_url = ""
     return Subscriber(
         email=str(item["email"]),
         agency_ids=agency_ids,
         verified=bool(item.get("verified", False)),
         kinds=kinds,
         unsub_token=str(item.get("unsub_token", "")),
+        rollup_ids=rollup_ids,
+        webhook_url=webhook_url,
     )
 
 
@@ -205,6 +248,93 @@ def build_emails(
         body = render_digest(personal) + _unsubscribe_footer(subscriber, unsubscribe_base)
         emails.append(Email(to=subscriber.email, subject=_subject(personal), body=body))
     return emails
+
+
+def build_portfolio_emails(
+    subscribers: list[Subscriber],
+    digests: dict[str, PortfolioDigest],
+    unsubscribe_base: str | None = None,
+) -> list[Email]:
+    """One weekly portfolio-digest email per verified subscriber who opted into a
+    rollup that has a digest this week.
+
+    The same consent gate as the alert path applies: an unverified subscriber is
+    skipped entirely. Unlike the alert digest, a scheduled cohort digest is sent
+    on the regular cadence even when it is all-clear — that reassurance is the
+    point of a weekly rollup, and the volume is low and opt-in. A subscriber's
+    opted-in rollups are combined into one email. `digests` maps rollup id to the
+    built PortfolioDigest for the week."""
+    emails: list[Email] = []
+    for subscriber in subscribers:
+        if not subscriber.verified or not subscriber.rollup_ids:
+            continue
+        mine = [
+            digests[rollup_id]
+            for rollup_id in sorted(subscriber.rollup_ids)
+            if rollup_id in digests
+        ]
+        if not mine:
+            continue
+        body = "\n\n".join(render_portfolio_digest(digest) for digest in mine)
+        body += _unsubscribe_footer(subscriber, unsubscribe_base)
+        as_of = mine[0].as_of
+        subject = f"GTFS Scorecard: weekly portfolio digest ({as_of.isoformat()})"
+        emails.append(Email(to=subscriber.email, subject=subject, body=body))
+    return emails
+@dataclass(frozen=True)
+class WebhookNotification:
+    """A rendered digest, ready to POST to one subscriber's webhook."""
+
+    url: str
+    payload: dict[str, Any]
+
+
+def build_webhook_notifications(
+    subscribers: list[Subscriber], digest: Digest
+) -> list[WebhookNotification]:
+    """One notification per verified subscriber with a webhook_url and at least
+    one item to act on, mirroring build_emails. A single ``text`` field covers
+    Slack, Microsoft Teams (via its incoming-webhook connector), and a generic
+    endpoint alike, so one payload shape serves all three without per-service
+    branching."""
+    notifications: list[WebhookNotification] = []
+    for subscriber in subscribers:
+        if not subscriber.verified or not subscriber.webhook_url:
+            continue
+        personal = personal_digest(subscriber, digest)
+        if not personal.items:
+            continue
+        notifications.append(
+            WebhookNotification(
+                url=subscriber.webhook_url, payload={"text": render_digest(personal)}
+            )
+        )
+    return notifications
+
+
+def send_webhooks(notifications: list[WebhookNotification], timeout: float = 10.0) -> int:
+    """POST each notification's payload as JSON. Returns the count actually sent.
+
+    webhook_url is operator-curated in subscriptions.yaml (or, in the future,
+    validated at self-serve intake), but every send re-validates the URL is
+    public (net.validate_public_url) rather than trusting a value that could
+    have been repointed since it was reviewed. A redirect is not followed: a
+    webhook target should answer directly, and following one risks landing on
+    an address that was never reviewed. One bad or unreachable webhook is
+    skipped rather than aborting the rest of the digest run's sends."""
+    import requests
+
+    from .net import UnsafeURLError, validate_public_url
+
+    sent = 0
+    for note in notifications:
+        try:
+            validate_public_url(note.url)
+            requests.post(note.url, json=note.payload, timeout=timeout, allow_redirects=False)
+        except (UnsafeURLError, requests.exceptions.RequestException):
+            continue
+        sent += 1
+    return sent
 
 
 def verification_email(

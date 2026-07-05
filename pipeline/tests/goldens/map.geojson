@@ -1,1 +1,70 @@
-{"attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator", "features": [{"geometry": {"coordinates": [-79.69302, 44.37398], "type": "Point"}, "properties": {"color": "#9a7d0a", "country": "CA", "grade": "C", "has_flex": false, "id": "barrie-transit", "name": "Barrie Transit (Ontario)", "score": 72.3, "state": "", "url": "/agency/barrie-transit/"}, "type": "Feature"}, {"geometry": {"coordinates": [-121.74263, 38.55156], "type": "Point"}, "properties": {"color": "#3f7d20", "country": "", "grade": "B", "has_flex": false, "id": "unitrans", "name": "Unitrans (ASUCD / City of Davis)", "score": 80.8, "state": "", "url": "/agency/unitrans/"}, "type": "Feature"}, {"geometry": {"coordinates": [-121.71752, 38.58103], "type": "Point"}, "properties": {"color": "#3f7d20", "country": "", "grade": "B", "has_flex": false, "id": "yolobus", "name": "Yolobus (Yolo County Transportation District)", "score": 82.5, "state": "", "url": "/agency/yolobus/"}, "type": "Feature"}], "license": "CC-BY-4.0", "type": "FeatureCollection"}
+{
+  "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          -79.69302,
+          44.37398
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "color": "#9a7d0a",
+        "country": "CA",
+        "grade": "C",
+        "has_flex": false,
+        "id": "barrie-transit",
+        "name": "Barrie Transit (Ontario)",
+        "score": 72.3,
+        "state": "",
+        "url": "/agency/barrie-transit/"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -121.74263,
+          38.55156
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "color": "#3f7d20",
+        "country": "",
+        "grade": "B",
+        "has_flex": false,
+        "id": "unitrans",
+        "name": "Unitrans (ASUCD / City of Davis)",
+        "score": 80.8,
+        "state": "",
+        "url": "/agency/unitrans/"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -121.71752,
+          38.58103
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "color": "#3f7d20",
+        "country": "",
+        "grade": "B",
+        "has_flex": false,
+        "id": "yolobus",
+        "name": "Yolobus (Yolo County Transportation District)",
+        "score": 82.5,
+        "state": "",
+        "url": "/agency/yolobus/"
+      },
+      "type": "Feature"
+    }
+  ],
+  "license": "CC-BY-4.0",
+  "type": "FeatureCollection"
+}

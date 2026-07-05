@@ -9,6 +9,7 @@ scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
 scorecard shards --count 4                        # CI fan-out plan (JSON)
 scorecard alerts [--out digest.md]                # expiry/regression digest
+scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for liaisons
 scorecard rollups                                 # portfolio rollup artifacts
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
@@ -176,15 +177,22 @@ def run_agency(
     # so no hollow NTD box appears (ADR 0026). Absent keys mean the SPA and API
     # omit the section, and render_site gates its recomputed view on country too.
     if agency.country == "US":
-        from .gtfs import read_agency_ids
+        from .gtfs import read_agency_ids, read_shapes_coverage
         from .ntd import assess as assess_ntd_readiness
-        from .ntd import assess_id_alignment
+        from .ntd import assess_id_alignment, assess_shapes_readiness
 
         # NTD ID alignment: does the feed's agency_id match the agency's NTD ID?
         # A forward-looking compliance flag (FTA RY2025/26), zero-deduction, shown
         # as not-yet-checked when we have no NTD ID on file.
         artifact["ntd_id_alignment"] = assess_id_alignment(
             read_agency_ids(str(fetched.path)), agency.ntd_id
+        ).to_dict()
+        # Shapes readiness: does shapes.txt cover this feed's trips? FTA's July
+        # 2025 final rule requires shapes.txt from Reduced, Rural, and Tribal
+        # NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
+        shapes_coverage = read_shapes_coverage(str(fetched.path))
+        artifact["shapes_readiness"] = assess_shapes_readiness(
+            shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
         # NTD certification readiness (published / valid / current), precomputed so
         # the web app and API render it without re-deriving the verdict.
@@ -1438,7 +1446,14 @@ def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
-    from .notify import build_emails, load_subscribers, load_subscribers_from_dynamo, send_via_ses
+    from .notify import (
+        build_emails,
+        build_webhook_notifications,
+        load_subscribers,
+        load_subscribers_from_dynamo,
+        send_via_ses,
+        send_webhooks,
+    )
 
     table = args.table or os.environ.get("SUBSCRIPTIONS_TABLE")
     if table:
@@ -1450,25 +1465,71 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     digest = build_digest(today=args.date, expiry_days=args.expiry_days)
     unsubscribe_base = os.environ.get("ALERTS_API_BASE")
     emails = build_emails(subscribers, digest, unsubscribe_base=unsubscribe_base)
+    webhooks = build_webhook_notifications(subscribers, digest)
 
-    if not emails:
+    if not emails and not webhooks:
         log.info(
             "Nothing to send: %d subscriber(s), no followed feed needs attention.", len(subscribers)
         )
         return 0
 
     if args.send:
-        sender = args.sender or os.environ.get("SES_FROM")
-        if not sender:
-            parser.error("--send requires --from or the SES_FROM environment variable")
-        region = os.environ.get("AWS_REGION", "us-west-2")
-        sent = send_via_ses(emails, sender, region=region)
-        log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
+        if emails:
+            sender = args.sender or os.environ.get("SES_FROM")
+            if not sender:
+                parser.error("--send requires --from or the SES_FROM environment variable")
+            region = os.environ.get("AWS_REGION", "us-west-2")
+            sent = send_via_ses(emails, sender, region=region)
+            log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
+        if webhooks:
+            sent_hooks = send_webhooks(webhooks)
+            log.info("Posted %d digest webhook(s) of %d configured.", sent_hooks, len(webhooks))
         return 0
 
     for email in emails:
         print(f"=== To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
-    log.info("%d email(s) would be sent (dry run; pass --send to send via SES).", len(emails))
+    for hook in webhooks:
+        print(f"=== Webhook: {hook.url}\n\n{hook.payload['text']}")
+    log.info(
+        "%d email(s), %d webhook(s) would be sent (dry run; pass --send to send).",
+        len(emails),
+        len(webhooks),
+    )
+    return 0
+
+
+def _cmd_portfolio_digest(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .portfolio_digest import (
+        build_portfolio_digest,
+        load_snapshot,
+        render_portfolio_digest,
+        save_snapshot,
+    )
+    from .rollups import load_rollups
+
+    rollups = load_rollups()
+    if args.rollup:
+        rollups = [r for r in rollups if r.id == args.rollup]
+        if not rollups:
+            parser.error(f"no rollup with id {args.rollup!r}")
+
+    sections: list[str] = []
+    for rollup in rollups:
+        previous = load_snapshot(rollup)
+        digest = build_portfolio_digest(rollup, today=args.date, previous_snapshot=previous)
+        sections.append(render_portfolio_digest(digest))
+        if args.save:
+            # Advance the baseline so next week diffs against this run. Off by
+            # default: a preview or re-run must not consume movement the next
+            # real weekly run should report. The scheduled send passes --save.
+            save_snapshot(rollup, digest.snapshot, digest.as_of)
+
+    text = "\n".join(sections)
+    if args.out:
+        Path(args.out).write_text(text)
+        log.info("Wrote portfolio digest for %d rollup(s) to %s", len(rollups), args.out)
+    else:
+        print(text, end="" if text.endswith("\n") else "\n")
     return 0
 
 
@@ -1771,6 +1832,21 @@ def main(argv: list[str] | None = None) -> int:
     )
     notify.add_argument("--from", dest="sender", help="verified SES sender address")
 
+    portfolio = sub.add_parser(
+        "portfolio-digest", help="build the weekly cohort digest for a program liaison"
+    )
+    portfolio.add_argument("--rollup", help="scope to one rollup id (default: every rollup)")
+    portfolio.add_argument(
+        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+    )
+    portfolio.add_argument("--out", help="write the digest here instead of stdout")
+    portfolio.add_argument(
+        "--save",
+        action="store_true",
+        help="persist this run as the new weekly baseline (default: preview only, "
+        "so a re-run never silently consumes a week's movement)",
+    )
+
     sub.add_parser("rollups", help="publish portfolio rollup artifacts")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
     sub.add_parser("render-site", help="generate crawlable static HTML pages, sitemap, robots")
@@ -1909,6 +1985,7 @@ def main(argv: list[str] | None = None) -> int:
         "shards": _cmd_shards,
         "alerts": _cmd_alerts,
         "notify": _cmd_notify,
+        "portfolio-digest": _cmd_portfolio_digest,
         "rollups": _cmd_rollups,
         "reindex": _cmd_reindex,
         "render-site": _cmd_render_site,
