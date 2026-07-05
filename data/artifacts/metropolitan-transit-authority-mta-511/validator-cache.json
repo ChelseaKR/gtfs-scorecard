@@ -99,18 +99,18 @@
         "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
+            "daysAfterFeedEnd": 53,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "SIR-FA2017-SI017-Weekday-08_C69",
+            "serviceWindowEndDate": "2026-10-30",
+            "serviceWindowStartDate": "2026-05-18"
+          },
+          {
             "daysAfterFeedEnd": 54,
             "daysBeforeFeedStart": 0,
             "serviceId": "ASP26GEN-GS013-Saturday-00",
             "serviceWindowEndDate": "2026-10-31",
             "serviceWindowStartDate": "2026-05-23"
-          },
-          {
-            "daysAfterFeedEnd": 53,
-            "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-D085-Weekday-00_C29",
-            "serviceWindowEndDate": "2026-10-30",
-            "serviceWindowStartDate": "2026-05-18"
           },
           {
             "daysAfterFeedEnd": 53,
@@ -138,15 +138,52 @@
         "total": 75
       },
       {
+        "code": "big_gap_in_service",
+        "sample_notices": [
+          {
+            "gapDurationDays": 20,
+            "gapEndDate": "2026-07-18",
+            "gapStartDate": "2026-06-27",
+            "serviceId": "ASP26GEN-1039-Saturday-00_C63"
+          },
+          {
+            "gapDurationDays": 14,
+            "gapEndDate": "2026-07-18",
+            "gapStartDate": "2026-07-03",
+            "serviceId": "ASP26GEN-2043-Saturday-00_C14"
+          },
+          {
+            "gapDurationDays": 20,
+            "gapEndDate": "2026-07-18",
+            "gapStartDate": "2026-06-27",
+            "serviceId": "ASP26GEN-3043-Saturday-00_C49"
+          },
+          {
+            "gapDurationDays": 20,
+            "gapEndDate": "2026-07-18",
+            "gapStartDate": "2026-06-27",
+            "serviceId": "ASP26GEN-4044-Saturday-00_C31"
+          },
+          {
+            "gapDurationDays": 20,
+            "gapEndDate": "2026-07-18",
+            "gapStartDate": "2026-06-27",
+            "serviceId": "ASP26GEN-5044-Saturday-00_C37"
+          }
+        ],
+        "severity": "INFO",
+        "total": 20
+      },
+      {
         "code": "trip_headsign_matches_intermediate_stop",
         "sample_notices": [
           {
-            "csvRowNumber": 75950,
+            "csvRowNumber": 73540,
             "stopId1": "Q04S",
             "stopId2": "N10S",
             "stopSequence": 2,
             "tripHeadsign": "86 St",
-            "tripId": "L1S5-N-1102-S26_056850_N..S16X003"
+            "tripId": "L1S4-N-1102-S26_056850_N..S16X003"
           }
         ],
         "severity": "INFO",
@@ -155,6 +192,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "e3d2cceea37b191d0f6f56a8c34bf5ecd43db2a3a02f628287e810d32b101229",
+  "sha256": "631ee7ecdc009de4dead3a54e2b73f90a0d7de688ad8e5a86792c51d6cecc86a",
   "validator_version": "8.0.1"
 }

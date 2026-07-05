@@ -200,7 +200,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 182 days.",
+        "detail": "Service data covers the next 180 days.",
         "key": "current",
         "met": true
       },
@@ -220,7 +220,14 @@
     "size_bytes": 136837,
     "static_url": "http://macog.com/google/google_transit.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-indiana-interurban-trolley-gtfs-571.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -86.25115,
@@ -253,7 +260,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 182 days.",
+        "detail": "Service data covers the next 180 days.",
         "key": "current",
         "status": "ready"
       }
@@ -291,11 +298,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 399,
     "findings": [

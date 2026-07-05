@@ -51,8 +51,8 @@
     <header class="brief-head">
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked 2026-07-04</p>
       <h1 class="brief-title">Capital Area Transit System (CATS)</h1>
-      <p class="brief-grade">Grade F &middot; 37.4 / 100</p>
-      <p class="brief-trend">Unchanged since 2026-07-02.</p>
+      <p class="brief-grade">Grade F &middot; 46.2 / 100</p>
+      <p class="brief-trend">Up 8.8 points since 2026-07-02 (F to F).</p>
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>
@@ -63,14 +63,14 @@
     </section>
     <section aria-labelledby="board-progress-h">
       <h2 id="board-progress-h">Progress this period</h2>
-      <p>No newly cleared items this period. The score and trend above reflect where the feed stands today.</p>
+      <p>Since the previous check, 1 data issue was fixed and verified:</p><ul class="brief-cleared"><li>Service data ended 133 day(s) ago.</li></ul>
     </section>
     <section aria-labelledby="board-asks-h">
       <h2 id="board-asks-h">What needs attention next</h2>
-      <p>Three improvements, in priority order, each sized so the board can see what it is approving:</p><ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.</p><p class="brief-fix-why">Service data ended 135 day(s) ago. When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist.</p><p class="brief-fix-eta">Estimated effort: Usually one export setting; export on a schedule so it never lapses again.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">1596 of 1596 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">2372 of 2372 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Estimated effort: Often one default setting in your export.</p></li></ol>
+      <p>Three improvements, in priority order, each sized so the board can see what it is approving:</p><ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.</p><p class="brief-fix-why">The published calendar ended 135 day(s) ago at a boundary between the feed&#x27;s own scheduled service periods. The calendar encodes distinct service periods (like academic terms), so this looks like a planned transition rather than a lapse — but trip planners still show nothing until the next period is published.</p><p class="brief-fix-eta">Estimated effort: One export when the next period&#x27;s schedule is set.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">1596 of 1596 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">2372 of 2372 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Estimated effort: Often one default setting in your export.</p></li></ol>
       <p class="brief-fix-why">This feed is published from a code repository, so whoever maintains that repository regenerates the zip — often planning staff or a consultant. The fix happens in the source data, then a fresh export is committed.</p>
     </section>
-    <section aria-labelledby="board-standing-h"><h2 id="board-standing-h">Where this agency stands</h2><p>Ahead of 11% of all tracked agencies, and ahead of 21% of large agencies nationwide.</p></section>
+    <section aria-labelledby="board-standing-h"><h2 id="board-standing-h">Where this agency stands</h2><p>Ahead of 24% of all tracked agencies, and ahead of 36% of large agencies nationwide.</p></section>
     <p class="brief-foot">Produced by the GTFS Scorecard, an open-source data quality
       tool. A data-quality read to support the board conversation, not an official
       compliance determination. Live scorecard: https://gtfsscorecard.org/agency/capital-area-transit-system-cats/.

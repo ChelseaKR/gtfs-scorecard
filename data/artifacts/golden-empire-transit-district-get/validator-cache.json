@@ -77,10 +77,22 @@
         ],
         "severity": "WARNING",
         "total": 1
+      },
+      {
+        "code": "trip_coverage_not_active_for_next7_days",
+        "sample_notices": [
+          {
+            "currentDate": "20260704",
+            "serviceWindowEndDate": "20271231",
+            "serviceWindowStartDate": "20260706"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "45a080de585b376fbe64a14059b202455d67a70f4b42cac9463755cc020d6ab7",
+  "sha256": "8d7b4a6a489771c46480f36650ea0f3e2d752af5171cbcd2f77503be163564f9",
   "validator_version": "8.0.1"
 }

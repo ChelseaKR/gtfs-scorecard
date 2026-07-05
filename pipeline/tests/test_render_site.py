@@ -764,6 +764,58 @@ def test_leaderboard_rows_carry_mini_sparklines() -> None:
     assert "spark-mini" not in _leaderboard_sections(board)
 
 
+def test_leaderboard_sections_omit_trips_column_without_ridership() -> None:
+    from scorecard_pipeline.render_site import _leaderboard_sections
+
+    board = {
+        "top": [{"id": "a", "name": "A Transit", "grade": "A", "score": 90}],
+        "bottom": [{"id": "z", "name": "Z Transit", "grade": "F", "score": 40}],
+        "most_improved": [],
+        "most_declined": [],
+    }
+    html = _leaderboard_sections(board)
+    assert "Riders/yr" not in html
+    assert "Lowest scoring" in html
+
+
+def test_leaderboard_sections_show_trips_column_when_present() -> None:
+    from scorecard_pipeline.render_site import _leaderboard_sections
+
+    board = {
+        "top": [{"id": "a", "name": "A Transit", "grade": "A", "score": 90}],
+        "bottom": [
+            {
+                "id": "big",
+                "name": "Big Transit",
+                "grade": "F",
+                "score": 40,
+                "annual_trips": 5000000,
+            },
+            {"id": "tiny", "name": "Tiny Transit", "grade": "F", "score": 40},
+        ],
+        "most_improved": [],
+        "most_declined": [
+            {
+                "id": "dn",
+                "name": "Down Transit",
+                "grade": "D",
+                "score": 60,
+                "score_delta": -12.0,
+                "annual_trips": 250000,
+            }
+        ],
+    }
+    html = _leaderboard_sections(board)
+    assert "Riders/yr" in html
+    # Human-formatted with thousands separators, matching the impact line.
+    assert "5,000,000" in html
+    assert "250,000" in html
+    # A row without a matched ridership record renders an empty cell, not "None".
+    assert ">None<" not in html
+    # The unweighted "top" table (no trips on any row) keeps its column shape.
+    assert html.count("Riders/yr") == 2
+
+
 def _diff_artifact(
     *,
     date: str,

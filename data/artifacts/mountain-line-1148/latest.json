@@ -200,7 +200,7 @@
           "code": "unused_shape",
           "count": 43,
           "effort": "One setting.",
-          "fix": "Enable 'remove unused shapes' (or similar) in your export tool.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
@@ -226,7 +226,7 @@
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -248,7 +248,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -281,7 +281,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
@@ -354,20 +354,20 @@
         "feed_version": null,
         "has_feed_info": false,
         "last_service_date": "2025-12-28",
-        "seasonal_boundary": false,
+        "seasonal_boundary": true,
         "service_type": "fixed"
       },
       "findings": [
         {
-          "code": "scorecard_feed_expired",
+          "code": "scorecard_planned_service_boundary",
           "count": 1,
-          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+          "effort": "One export when the next period's schedule is set.",
+          "fix": "Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.",
           "owner": "Likely your export tool",
-          "points": 100.0,
-          "severity": "ERROR",
-          "what": "Service data ended 188 day(s) ago.",
-          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+          "points": 50.0,
+          "severity": "WARNING",
+          "what": "The published calendar ended 188 day(s) ago at a boundary between the feed's own scheduled service periods.",
+          "why": "The calendar encodes distinct service periods (like academic terms), so this looks like a planned transition rather than a lapse \u2014 but trip planners still show nothing until the next period is published."
         },
         {
           "code": "scorecard_missing_feed_info_dates",
@@ -382,9 +382,9 @@
         }
       ],
       "name": "freshness",
-      "score": 0.0,
+      "score": 35.0,
       "status": "measured",
-      "summary": "Service data ended 188 day(s) ago. Trip planners have likely already dropped this feed.",
+      "summary": "This feed's calendar reached a scheduled service boundary 188 day(s) ago. Confirm your next service period is published so riders can keep planning trips.",
       "weight": 0.2
     },
     "realtime": {
@@ -403,7 +403,7 @@
         "met": false
       },
       {
-        "detail": "Service data expired 186 days ago.",
+        "detail": "Service data expired 188 days ago.",
         "key": "current",
         "met": false
       },
@@ -414,7 +414,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 6 validator errors to resolve. Service data expired 186 days ago."
+    "summary": "This feed is close to the conformance mark. 6 validator errors to resolve. Service data expired 188 days ago."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -423,7 +423,14 @@
     "size_bytes": 218652,
     "static_url": "https://transitfeeds.com/p/mountain-line/243/latest/download"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-arizona-mountain-line-gtfs-1148.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -111.7193,
@@ -455,19 +462,19 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data expired 186 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 188 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. 6 validator errors to resolve. Service data expired 186 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. 6 validator errors to resolve. Service data expired 188 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 19.5,
-    "margin_to_next_band": 40.5,
-    "score": 19.5
+    "margin_to_lower_band": 28.3,
+    "margin_to_next_band": 31.7,
+    "score": 28.3
   },
   "recommendations": [
     {
@@ -493,11 +500,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 181,
     "findings": [
@@ -642,25 +644,13 @@
   "snapshot_date": "2026-07-04",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expired",
-      "count": 1,
-      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-      "owner": "Likely your export tool",
-      "points": 100.0,
-      "rank": 1,
-      "severity": "ERROR",
-      "what": "Service data ended 188 day(s) ago.",
-      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-    },
-    {
       "code": "trip_distance_exceeds_shape_distance",
       "count": 34,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 18.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "ERROR",
       "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
@@ -672,10 +662,22 @@
       "fix": "Review the rule documentation for 'duplicate_key' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 18.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "ERROR",
       "what": "Duplicate key (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 22,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 18.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
     }
   ],
   "validator_version": "8.0.1"

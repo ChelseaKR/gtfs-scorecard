@@ -1,6 +1,6 @@
 {
   "agency_count": 87,
-  "average_score": 54.8,
+  "average_score": 54.7,
   "common_fixes": [
     {
       "agencies": 70,
@@ -43,14 +43,14 @@
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
-      "agencies": 4,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+      "agencies": 5,
+      "code": "scorecard_rt_trip_coverage",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "agencies": 4,
-      "code": "scorecard_rt_trip_coverage",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
+      "code": "scorecard_missing_feed_info_dates",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "agencies": 3,
@@ -61,11 +61,6 @@
       "agencies": 2,
       "code": "expired_calendar",
       "fix": "Remove past service periods the next time you export the feed."
-    },
-    {
-      "agencies": 2,
-      "code": "mixed_case_recommended_field",
-      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
     },
     {
       "agencies": 2,
@@ -93,7 +88,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-04T14:25:44+00:00",
+  "generated_at": "2026-07-04T23:32:38+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 2,
@@ -314,7 +309,7 @@
       "id": "broome-county-transit-b-c-transit",
       "name": "Broome County Transit (B.C. Transit)",
       "needs_attention": true,
-      "score": 38.2,
+      "score": 38.3,
       "snapshot_date": "2026-07-04",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -686,9 +681,9 @@
       "id": "capital-district-transportation-authority-cdta",
       "name": "Capital District Transportation Authority (CDTA)",
       "needs_attention": true,
-      "score": 92.4,
+      "score": 91.1,
       "snapshot_date": "2026-07-04",
-      "top_fix": "Remove past service periods the next time you export the feed."
+      "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "attention_reason": null,
@@ -1010,7 +1005,7 @@
       "id": "metropolitan-transit-authority-mta-511",
       "name": "NYC Subway Supplemented",
       "needs_attention": false,
-      "score": 73.7,
+      "score": 73.4,
       "snapshot_date": "2026-07-04",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },

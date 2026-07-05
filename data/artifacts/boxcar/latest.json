@@ -120,10 +120,10 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 1,
+        "distinct_codes": 3,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 0,
+          "INFO": 4,
           "WARNING": 2
         },
         "validator_version": "8.0.1"
@@ -139,22 +139,44 @@
           "severity": "WARNING",
           "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
           "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "unknown_column",
+          "count": 2,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unknown_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unknown file (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 96.0,
+      "score": 95.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 1 kind of issue across 2 instances (0 error, 2 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 6 instances (0 error, 2 warning, 4 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 364,
-        "feed_end_date": "2027-07-03",
+        "days_until_expiry": 365,
+        "feed_end_date": "2027-07-04",
         "feed_start_date": "2024-07-08",
-        "feed_version": "2026-07-03",
+        "feed_version": "2026-07-04",
         "has_feed_info": true,
-        "last_service_date": "2027-07-03",
+        "last_service_date": "2027-07-04",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -162,7 +184,7 @@
       "name": "freshness",
       "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 364 days.",
+      "summary": "Service data covers the next 365 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -197,11 +219,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "bc12c8b8079cdaa0118cdb3549ca51548e644895f8f3f48a1eae5a03fb1d1449",
-    "size_bytes": 66850,
+    "sha256": "581db83995b74c0eb92472879e18abfb75be5092552512adf7c779f5eab281e1",
+    "size_bytes": 71120,
     "static_url": "https://boxcar-gtfs.vercel.app/api/gtfs"
   },
-  "generated_at": "2026-07-03T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://boxcar-gtfs.vercel.app/api/gtfs",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.4434,
@@ -243,9 +271,9 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 1.1,
-    "margin_to_next_band": 8.9,
-    "score": 81.1
+    "margin_to_lower_band": 0.6,
+    "margin_to_next_band": 9.4,
+    "score": 80.6
   },
   "recommendations": [
     {
@@ -271,11 +299,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 84,
     "findings": [],

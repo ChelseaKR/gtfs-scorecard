@@ -13,7 +13,7 @@ atlanta-streetcar,Atlanta Streetcar,F,55.7,2026-07-04,stale,-3107,yes,Service da
 xpress,Xpress,F,56.7,2026-07-04,stale,-1100,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
 xpress-1118,Xpress,F,56.7,2026-07-04,stale,-1100,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
 metropolitan-atlanta-rapid-transit-authority-marta,Metropolitan Atlanta Rapid Transit Authority (MARTA),D,60.8,2026-07-04,current,48,yes,Service data expires in 48 day(s),Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.
-cobb-community-transit-cct,Cobb Community Transit (CCT),F,26.2,2026-07-01,unknown,,no,,Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export.
-xpress-2355,Xpress,F,26.2,2026-07-02,unknown,,no,,Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export.
+cobb-community-transit-cct,Cobb Community Transit (CCT),F,26.2,2026-07-04,unknown,,no,,Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export.
+xpress-2355,Xpress,F,26.2,2026-07-04,unknown,,no,,Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export.
 cobblinc,CobbLinc,D,61.2,2026-07-04,current,180,no,,Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.
 gwinnett-county-transit-2241,Gwinnett County Transit,C,71.7,2026-07-04,current,175,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.

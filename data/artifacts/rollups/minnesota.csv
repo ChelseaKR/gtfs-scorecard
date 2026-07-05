@@ -1,6 +1,6 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix
 minnesota-valley-transit-authority-mvta,Minnesota Valley Transit Authority (MVTA),F,49.4,2026-07-04,current,36,yes,Service data expires in 36 day(s),Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.
-rochester-city-lines,Rochester City Lines,F,50.8,2026-07-04,stale,-3837,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+rochester-city-lines,Rochester City Lines,F,50.9,2026-07-04,stale,-3837,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
 duluth-transit,Duluth Transit,D,60.6,2026-07-04,current,56,yes,Service data expires in 56 day(s),"Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
 city-of-winona-mn-winona-transit-service,City of Winona MN - Winona Transit Service,D,61.7,2026-07-04,lapsed,-184,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
 the-otter-express,Flex v2 included,D,64.2,2026-07-04,expiring_soon,28,yes,Service data expires in 28 day(s),Re-export with a validity window that reaches at least 60 days out.

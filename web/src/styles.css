@@ -1902,6 +1902,9 @@ main p,
 .brief-fix-do { font-weight: 600; margin: 0 0 0.2rem; }
 .brief-fix-why { margin: 0 0 0.2rem; color: var(--ink-soft); }
 .brief-fix-eta { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft); margin: 0; }
+/* Empirical fix-effort band (EXP-03), appended under the hand-authored hint. */
+.effort-band { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.15rem 0 0; }
+.alert .effort-band { color: var(--green-bright); }
 .brief-ntd-summary { margin: 0 0 0.6rem; }
 .brief-ntd, .brief-facts { margin: 0 0 0.6rem; }
 .brief-ntd dt, .brief-facts dt { font-weight: 600; margin-top: 0.4rem; }

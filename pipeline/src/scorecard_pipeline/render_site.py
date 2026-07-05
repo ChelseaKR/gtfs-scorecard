@@ -1172,6 +1172,40 @@ def _route_map_section(
     )
 
 
+def _load_effort_bands() -> dict[str, str]:
+    """Code -> empirical effort band, from the corpus calibration file.
+
+    Only codes that clear the sample floor get an entry (band_text returns None
+    below it). A missing or unreadable file yields an empty mapping, which is
+    the gate that keeps calibration purely additive: no file, no bands, output
+    unchanged (so golden fixtures without one stay byte-identical)."""
+    from .effort_calibration import band_text
+
+    path = _repo_root() / "data" / "effort-calibration.json"
+    try:
+        data = json.loads(path.read_text())
+    except (FileNotFoundError, ValueError, OSError):
+        return {}
+    codes = data.get("codes", {}) if isinstance(data, dict) else {}
+    bands: dict[str, str] = {}
+    for code, stats in sorted(codes.items()):
+        if isinstance(stats, dict) and (text := band_text(stats)):
+            bands[str(code)] = text
+    return bands
+
+
+def _effort_band_html(code: str, effort_bands: dict[str, str] | None) -> str:
+    """Empirical effort band for a notice code, or '' when none applies.
+
+    Additive by design: the hand-authored hint always renders first, and this
+    appends the observed runs-to-clear band only when the corpus has enough
+    closed episodes for this code (effort_calibration.band_text) and the
+    calibration file exists. Absent file -> empty mapping -> no change, so
+    goldens rendered without calibration stay byte-identical."""
+    band = (effort_bands or {}).get(str(code))
+    return f'<p class="effort-band">{esc(band)}</p>' if band else ""
+
+
 def _render_agency(
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -1181,6 +1215,7 @@ def _render_agency(
     stop_names: list[str] | None = None,
     has_fixlog: bool = False,
     now: dt.datetime | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -1215,7 +1250,8 @@ def _render_agency(
                 f'<div class="alert"><span class="badge{cls}">Fix {i + 1:02d}</span>'
                 f'<div><p class="afix">{esc(f["fix"])}{owner_tag}</p>'
                 f'<p class="awhy">{esc(f["what"])} {esc(f["why"])}</p>'
-                f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p></div></div>'
+                f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p>'
+                f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</div></div>"
             )
         fixes_html = '<div class="alerts">' + "".join(alerts) + "</div>"
     else:
@@ -1281,6 +1317,7 @@ def _render_agency(
             f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
             f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
             f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
             f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
             for f in findings
         )
@@ -1455,6 +1492,7 @@ def _render_brief(
     dir_record: dict[str, Any] | None = None,
     liveness: dict[str, Any] | None = None,
     program_ids: set[str] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     """A calm, print-clean one-page brief for a program liaison to have open or
     printed during an agency check-in. Renders only precomputed artifact fields:
@@ -1475,7 +1513,8 @@ def _render_brief(
         fix_items = "".join(
             f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
-            f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p></li>'
+            f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
         fixes_html = f'<ol class="brief-fixes">{fix_items}</ol>'
@@ -1637,6 +1676,7 @@ def _render_board_page(
     history: list[dict[str, Any]] | None = None,
     prev_artifact: dict[str, Any] | None = None,
     dir_record: dict[str, Any] | None = None,
+    effort_bands: dict[str, str] | None = None,
 ) -> str:
     """A one-page summary written for an agency's board packet (docs/
     RESEARCH-ROADMAP.md E6). The call brief prepares the liaison; this page is
@@ -1672,7 +1712,8 @@ def _render_board_page(
         ask_items = "".join(
             f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
-            f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p></li>'
+            f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p>'
+            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
         asks_html = (
@@ -3944,40 +3985,53 @@ def _leaderboard_sections(
     """Best and worst standings and the biggest movers, as a two-column grid of
     tables inside the national pulse page. The same data the /api/v1 endpoints
     serve. Each row links to that agency's scorecard and carries a small score
-    sparkline from its history (an em dash until it has two checks)."""
+    sparkline from its history (an em dash until it has two checks). A
+    "Riders/yr" column appears in a table only when the NTD ridership snapshot
+    (ADR 0021) matched at least one of its rows, so an unweighted build renders
+    exactly as before."""
     hist = histories or {}
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
 
+    def _trips_cell(r: dict[str, Any]) -> str:
+        t = r.get("annual_trips")
+        return f"<td>{esc(f'{t:,}')}</td>" if t is not None else "<td></td>"
+
     def _rank_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
-            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>{_trend_cell(r)}</tr>"
+            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Trend</th></tr></thead><tbody>{items}</tbody></table></section>"
+            f"<th>Score</th>{trips_th}<th>Trend</th></tr></thead>"
+            f"<tbody>{items}</tbody></table></section>"
         )
 
     def _move_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
             return ""
+        show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
             f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
             f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
             f"<td>{'+' if r['score_delta'] > 0 else ''}{esc(r['score_delta'])}</td>"
-            f"{_trend_cell(r)}</tr>"
+            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
         )
+        trips_th = "<th>Riders/yr</th>" if show_trips else ""
         return (
             f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
             '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th><th>Change</th><th>Trend</th></tr></thead>"
+            f"<th>Score</th><th>Change</th>{trips_th}<th>Trend</th></tr></thead>"
             f"<tbody>{items}</tbody></table></section>"
         )
 
@@ -5006,6 +5060,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     root = _repo_root()
     web = root / "web"
     art = artifacts_dir()
+    # Empirical fix-effort bands, loaded once for the whole render. Empty when
+    # the corpus has not yet written a calibration file, which keeps the band
+    # purely additive (EXP-03).
+    effort_bands = _load_effort_bands()
     written: list[Path] = []
     urls: list[str] = [
         f"{BASE_URL}/",
@@ -5261,6 +5319,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 stop_names,
                 has_fixlog=bool(receipts),
                 now=now,
+                effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/",
         )
@@ -5273,6 +5332,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
                 by_id[agency_id],
                 liveness_state.get(agency_id),
                 program_ids,
+                effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/brief/",
         )
@@ -5281,7 +5341,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
         # fixes read as the asks (docs/RESEARCH-ROADMAP.md E6).
         write(
             f"agency/{agency_id}/board/index.html",
-            _render_board_page(artifact, history, prev_artifact, by_id[agency_id]),
+            _render_board_page(
+                artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
+            ),
             f"{BASE_URL}/agency/{agency_id}/board/",
         )
         # The durable fix log, only once the collect step has recorded at least
@@ -5578,12 +5640,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
     # (the daily run fetches it via `scorecard ntd-ridership --fetch`), weight
     # quality by annual unlinked passenger trips and publish the national
     # numbers. National framing only: trips on expired feeds, never a ranking.
+    from .ridership import annual_trips_for, load_ridership, weighted_impact
+
     ridership_impact: dict[str, Any] | None = None
     ridership_csv = root / "data" / "ntd-ridership.csv"
-    if ridership_csv.exists():
-        from .ridership import parse_ridership_csv, weighted_impact
-
-        rid = parse_ridership_csv(ridership_csv.read_text())
+    rid = load_ridership(ridership_csv)
+    if rid is not None:
         rid_records = []
         for a in ntd_artifacts:
             cfg = AGENCIES.get(str(a.get("agency", {}).get("id", "")))
@@ -5615,9 +5677,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
             + "\n",
         )
 
+    # Ridership-weighted standings (ADR 0021, R16): when the NTD snapshot matched
+    # any feeds, tie-break the "worst" boards toward higher-ridership agencies and
+    # give each matched row a rider-count. Resolved through the same id join as
+    # the national impact stat above, so the two agree on which feeds are matched.
+    annual_trips_by_agency: dict[str, int] | None = None
+    if rid:
+        annual_trips_by_agency = {}
+        for aid, cfg in AGENCIES.items():
+            trips = annual_trips_for({"ntd_id": cfg.ntd_id}, rid)
+            if trips is not None:
+                annual_trips_by_agency[aid] = trips
+
     # The national pulse: rankings, movers, and the trend on one page; the three
     # retired URLs redirect to their anchors so old links keep working.
-    board = leaderboard(index, build_quality_dataset(index))
+    board = leaderboard(index, build_quality_dataset(index), annual_trips_by_agency)
     write(
         "pulse/index.html",
         _render_pulse_page(

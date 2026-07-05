@@ -1,6 +1,6 @@
 {
   "agency_count": 30,
-  "average_score": 61.2,
+  "average_score": 61.5,
   "common_fixes": [
     {
       "agencies": 21,
@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 20,
+      "agencies": 19,
       "code": "scorecard_feed_expired",
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -63,7 +63,7 @@
     "stale": 12,
     "total": 20
   },
-  "generated_at": "2026-07-04T14:25:44+00:00",
+  "generated_at": "2026-07-04T23:32:38+00:00",
   "grade_distribution": {
     "A": 3,
     "B": 2,
@@ -80,9 +80,9 @@
       "id": "mountain-line-1148",
       "name": "Mountain Line",
       "needs_attention": true,
-      "score": 19.5,
+      "score": 28.3,
       "snapshot_date": "2026-07-04",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "top_fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "attention_reason": "Service data has expired",
@@ -152,7 +152,7 @@
       "id": "suntran",
       "name": "SunTran",
       "needs_attention": true,
-      "score": 47.2,
+      "score": 47.3,
       "snapshot_date": "2026-07-04",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },

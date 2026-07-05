@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/rockingham-moover/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/rockingham-moover/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -41,10 +40,14 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
-          "headsigns": 13.1,
+          "headsigns": 14.5,
           "stop_names": 14.8,
           "wheelchair_stops": 0.0,
           "wheelchair_trips": 0.0
@@ -65,7 +68,7 @@
           "has_flex": true
         },
         "has_fares": true,
-        "headsign_pct": 87.5,
+        "headsign_pct": 96.9,
         "mixed_case_stop_name_pct": 98.5,
         "pathways": {
           "has_entrances": false,
@@ -76,7 +79,7 @@
           "pathway_count": 0
         },
         "stops": 326,
-        "trips": 686,
+        "trips": 193,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -96,24 +99,24 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 686,
+          "count": 193,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "686 of 686 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "193 of 193 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 86,
+          "count": 6,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
-          "points": 1.9,
+          "points": 0.5,
           "severity": "WARNING",
-          "what": "86 of 686 trips have no headsign.",
+          "what": "6 of 193 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -140,7 +143,7 @@
         }
       ],
       "name": "completeness",
-      "score": 57.9,
+      "score": 59.3,
       "status": "measured",
       "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
@@ -151,14 +154,14 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 52,
-          "WARNING": 120
+          "WARNING": 191
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 119,
+          "count": 190,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -215,15 +218,15 @@
       "name": "correctness",
       "score": 85.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 172 instances (0 error, 120 warning, 52 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 243 instances (0 error, 191 warning, 52 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 174,
-        "feed_end_date": "2026-12-25",
-        "feed_start_date": "2026-06-09",
-        "feed_version": "UTC: 09-Jun-2026 19:02",
+        "days_until_expiry": 89,
+        "feed_end_date": "2026-10-01",
+        "feed_start_date": "2026-07-03",
+        "feed_version": "UTC: 03-Jul-2026 22:03",
         "has_feed_info": true,
         "last_service_date": "2026-12-25",
         "seasonal_boundary": false,
@@ -233,7 +236,7 @@
       "name": "freshness",
       "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 174 days.",
+      "summary": "Service data covers the next 89 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -252,7 +255,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 181 days.",
+        "detail": "Service data covers the next 89 days.",
         "key": "current",
         "met": true
       },
@@ -268,11 +271,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "70f1dc14dfae664991676d4ac68f4312ebbba5b1859264ef90d779bef0561f56",
-    "size_bytes": 830491,
+    "sha256": "b146bd40e1e1a785309cd8d833953246e7c4e9494db0dca9c9b3b367beaaee8c",
+    "size_bytes": 709136,
     "static_url": "https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.19801,
@@ -285,7 +294,7 @@
     "stop_count": 326
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "232",
       "218"
@@ -305,19 +314,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 181 days.",
+        "detail": "Service data covers the next 89 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 0.6,
-    "margin_to_next_band": 9.4,
-    "score": 80.6
+    "margin_to_lower_band": 1.0,
+    "margin_to_next_band": 9.0,
+    "score": 81.0
   },
   "recommendations": [
     {
@@ -365,29 +374,320 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 325,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 119,
+        "count": 190,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "119 of 325 boardable stops are never served by any trip.",
+        "what": "190 of 325 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 119,
+    "orphan_stops": 190,
     "single_stop_trips": 0,
-    "trips_total": 686
+    "trips_total": 193
+  },
+  "route_map": {
+    "drawn_route_count": 14,
+    "has_shapes": true,
+    "path": "data/artifacts/rockingham-moover/geometry.geojson",
+    "route_count": 26,
+    "routes": [
+      {
+        "color": "9C6052",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "1352",
+        "label": "7",
+        "long": "Wilmington-West Dover",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF830B",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "1446",
+        "label": "1",
+        "long": "Springfield In-Town",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9E7F00",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "1447",
+        "label": "2",
+        "long": "Bellows Falls In-Town",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BC1020",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1449",
+        "label": "71",
+        "long": "Bellows Falls-Lebanon & Hanover, NH",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BC1020",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1450",
+        "label": "72",
+        "long": "Bellows Falls- Lebanon, NH",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BC1020",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "1451",
+        "label": "73",
+        "long": "VA & Dartmouth College",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006931",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1453",
+        "label": "53",
+        "long": "Bellows Falls-Brattleboro",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B24EA6",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "1454",
+        "label": "57",
+        "long": "Bellows Falls-Ludlow",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D70D33",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1455",
+        "label": "4",
+        "long": "Brattleboro Red Line",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00589A",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1456",
+        "label": "5",
+        "long": "Brattleboro Blue Line",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAFBF6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "1457",
+        "label": "7",
+        "long": "Brattleboro White Line",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7394B3",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "1458",
+        "label": "61",
+        "long": "Okemo Village",
+        "short": "61",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C3D4EA",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "1461",
+        "label": "9",
+        "long": "Readsboro-W. Wilmington",
+        "short": "9",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "1462",
+        "label": "10",
+        "long": "Wilmington-Brattleboro",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C67BB",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "1464",
+        "label": "1",
+        "long": "Mount Snow Weekends & Holidays",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FBBF55",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "1465",
+        "label": "4",
+        "long": "Bears Crossing-Suntec",
+        "short": "4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B35043",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "1509",
+        "label": "6",
+        "long": "Kingswood",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AE8C",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "16819",
+        "label": "1",
+        "long": "Mount Snow Midweek Non-Holiday",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAFBF6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "19587",
+        "label": "7S",
+        "long": "Brattleboro White Line Saturday",
+        "short": "7S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "19728",
+        "label": "11",
+        "long": "Wilmington-Brattleboro",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F98A55",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "3237",
+        "label": "2",
+        "long": "Timber Creek",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC5078",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "3238",
+        "label": "3",
+        "long": "Greenspring",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "148212",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "3239",
+        "label": "1A",
+        "long": "SMV-Upper SnowTree-The Outlook Weekends & Holidays",
+        "short": "1A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E14532",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "32462",
+        "label": "14",
+        "long": "Stratton-Manchester",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7F358A",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "5438",
+        "label": "11",
+        "long": "Main Base Lodge Upper Parking Lots",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "929292",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "5439",
+        "label": "12",
+        "long": "Main Base Lodge Lower Parking Lots",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 326,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
   "schema_version": "1.4",
@@ -407,19 +707,19 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 686,
+      "count": 193,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "686 of 686 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "193 of 193 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
       "code": "stop_without_stop_time",
-      "count": 119,
+      "count": 190,
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",

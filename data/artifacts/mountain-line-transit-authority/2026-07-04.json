@@ -136,7 +136,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -169,7 +169,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -257,7 +257,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 182 days.",
+        "detail": "Service data covers the next 180 days.",
         "key": "current",
         "met": true
       },
@@ -277,7 +277,14 @@
     "size_bytes": 981599,
     "static_url": "http://site.busride.org/google/google_transit.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-west-virginia-mountain-line-transit-authority-gtfs-407.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.33818,
@@ -307,7 +314,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 182 days.",
+        "detail": "Service data covers the next 180 days.",
         "key": "current",
         "status": "ready"
       }
@@ -345,11 +352,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 191,
     "findings": [],
@@ -644,7 +646,7 @@
       "points": 6.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "Some files are missing recommended (not required) fields.",
+      "what": "Some files leave out fields that GTFS asks for but does not require.",
       "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
     },
     {

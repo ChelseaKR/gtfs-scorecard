@@ -21,6 +21,11 @@ import jsonschema
 from . import RUBRIC_VERSION, SCHEMA_VERSION
 from .badge import render_badge, render_mark
 from .config import Agency, artifacts_dir, repo_root
+from .effort_calibration import (
+    CALIBRATION_SCHEMA_NOTE,
+    agency_episodes,
+    stats_from_episodes,
+)
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog, merge_receipts
 from .metrics import expiry_status
@@ -298,6 +303,10 @@ def rebuild_index() -> Path:
         _write_json(root / "index.json", index)
         return root / "index.json"
 
+    # Runs-to-clear episodes accumulate across every agency in this one walk, so
+    # the corpus-level effort-calibration.json costs no extra artifact reads
+    # (effort_calibration.py).
+    all_episodes: list[Any] = []
     for agency_dir in sorted(
         p for p in root.iterdir() if p.is_dir() and p.name not in RESERVED_ARTIFACT_DIRS
     ):
@@ -306,6 +315,7 @@ def rebuild_index() -> Path:
         operating_note = ""
         newest: dict[str, Any] | None = None
         receipts: list[dict[str, str]] = []
+        agency_artifacts: list[dict[str, Any]] = []
         for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
             artifact = _read_artifact(dated)
             if artifact is None:
@@ -317,7 +327,11 @@ def rebuild_index() -> Path:
             # (fixlog.py); this walk is already reading every dated artifact in
             # order, so the diff costs nothing extra.
             receipts.extend(diff_receipts(newest, artifact))
+            agency_artifacts.append(artifact)
             newest = artifact
+        # Episodes are derived per agency from its own dated sequence, then
+        # pooled corpus-wide for the calibration stats.
+        all_episodes.extend(agency_episodes(agency_artifacts))
         if history and newest is not None:
             # Re-derive latest.json, badge, and mark so a clobbered copy is repaired.
             _write_json(agency_dir / "latest.json", newest)
@@ -333,9 +347,27 @@ def rebuild_index() -> Path:
                 entry["operating_note"] = operating_note
             index["agencies"][agency_dir.name] = entry
 
+    _write_calibration(stats_from_episodes(all_episodes))
+
     index_path = root / "index.json"
     _write_json(index_path, index)
     return index_path
+
+
+def _write_calibration(stats: dict[str, Any]) -> None:
+    """Write the corpus-level effort-calibration.json.
+
+    Written under data/ (a sibling of the artifacts tree) because it is a
+    cross-agency aggregate, not a per-agency file. Ordering is deterministic
+    (sort_keys) so re-running collect over unchanged history is a no-op; the
+    generated date is the only field that moves day to day.
+    """
+    payload = {
+        "schema_note": CALIBRATION_SCHEMA_NOTE,
+        "generated": dt.date.today().isoformat(),
+        "codes": stats,
+    }
+    _write_json(repo_root() / "data" / "effort-calibration.json", payload)
 
 
 def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:

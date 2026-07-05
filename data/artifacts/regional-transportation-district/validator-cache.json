@@ -5,75 +5,75 @@
         "code": "stop_time_with_only_arrival_or_departure_time",
         "sample_notices": [
           {
-            "csvRowNumber": 808232,
-            "specifiedField": "arrival_time",
-            "stopSequence": 2,
-            "tripId": "Q_WK_GMFX01_14"
+            "csvRowNumber": 808148,
+            "specifiedField": "departure_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_679_20"
           },
           {
-            "csvRowNumber": 808233,
-            "specifiedField": "arrival_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_14"
+            "csvRowNumber": 808176,
+            "specifiedField": "departure_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_32"
           },
           {
-            "csvRowNumber": 808235,
-            "specifiedField": "arrival_time",
-            "stopSequence": 2,
-            "tripId": "Q_WK_GMFX01_15"
+            "csvRowNumber": 808174,
+            "specifiedField": "departure_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_31"
           },
           {
-            "csvRowNumber": 808236,
-            "specifiedField": "arrival_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_15"
+            "csvRowNumber": 808180,
+            "specifiedField": "departure_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_34"
           },
           {
-            "csvRowNumber": 808220,
-            "specifiedField": "arrival_time",
-            "stopSequence": 2,
-            "tripId": "Q_WK_GMFX01_10"
+            "csvRowNumber": 808178,
+            "specifiedField": "departure_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_33"
           }
         ],
         "severity": "ERROR",
-        "total": 245
+        "total": 279
       },
       {
         "code": "missing_trip_edge",
         "sample_notices": [
           {
-            "csvRowNumber": 808233,
-            "specifiedField": "departure_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_14"
+            "csvRowNumber": 808148,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_679_20"
           },
           {
-            "csvRowNumber": 808236,
-            "specifiedField": "departure_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_15"
+            "csvRowNumber": 808176,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_32"
           },
           {
-            "csvRowNumber": 808221,
-            "specifiedField": "departure_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_10"
+            "csvRowNumber": 808174,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_31"
           },
           {
-            "csvRowNumber": 808224,
-            "specifiedField": "departure_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_11"
+            "csvRowNumber": 808180,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_34"
           },
           {
-            "csvRowNumber": 808227,
-            "specifiedField": "departure_time",
-            "stopSequence": 3,
-            "tripId": "Q_WK_GMFX01_12"
+            "csvRowNumber": 808178,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_33"
           }
         ],
         "severity": "ERROR",
-        "total": 239
+        "total": 267
       },
       {
         "code": "block_trips_with_overlapping_stop_times",
@@ -131,48 +131,6 @@
         ],
         "severity": "ERROR",
         "total": 63
-      },
-      {
-        "code": "stop_time_with_arrival_before_previous_departure_time",
-        "sample_notices": [
-          {
-            "arrivalTime": "05:30:00",
-            "csvRowNumber": 656000,
-            "departureTime": "05:55:00",
-            "prevCsvRowNumber": 655999,
-            "tripId": "115894986"
-          },
-          {
-            "arrivalTime": "05:30:00",
-            "csvRowNumber": 656001,
-            "departureTime": "05:55:00",
-            "prevCsvRowNumber": 656000,
-            "tripId": "115894986"
-          },
-          {
-            "arrivalTime": "05:30:00",
-            "csvRowNumber": 656002,
-            "departureTime": "05:55:00",
-            "prevCsvRowNumber": 656001,
-            "tripId": "115894986"
-          },
-          {
-            "arrivalTime": "05:30:00",
-            "csvRowNumber": 795353,
-            "departureTime": "19:00:00",
-            "prevCsvRowNumber": 795352,
-            "tripId": "115912176"
-          },
-          {
-            "arrivalTime": "05:30:00",
-            "csvRowNumber": 795351,
-            "departureTime": "19:00:00",
-            "prevCsvRowNumber": 795350,
-            "tripId": "115912175"
-          }
-        ],
-        "severity": "ERROR",
-        "total": 8
       },
       {
         "code": "fast_travel_between_consecutive_stops",
@@ -291,16 +249,11 @@
           }
         ],
         "severity": "WARNING",
-        "total": 82
+        "total": 76
       },
       {
         "code": "stop_without_stop_time",
         "sample_notices": [
-          {
-            "csvRowNumber": 942,
-            "stopId": "34893",
-            "stopName": "Superior"
-          },
           {
             "csvRowNumber": 1623,
             "stopId": "22924",
@@ -320,10 +273,15 @@
             "csvRowNumber": 3771,
             "stopId": "26346",
             "stopName": "Dry Creek Station Gate C"
+          },
+          {
+            "csvRowNumber": 3772,
+            "stopId": "26557",
+            "stopName": "Lincoln Station CnR"
           }
         ],
         "severity": "WARNING",
-        "total": 19
+        "total": 18
       },
       {
         "code": "route_long_name_contains_short_name",
@@ -711,6 +669,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "f3e2a52697523c78af6a664fd807542a5bdd52427f6fbd8c085c9aa37b3d2775",
+  "sha256": "535ac2dcb40530d84c2a2c95aa018baec4986f9fd823a83e759ca9014831803d",
   "validator_version": "8.0.1"
 }

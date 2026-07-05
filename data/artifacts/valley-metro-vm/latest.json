@@ -255,39 +255,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 96.7,
-        "covered_trips": 467,
+        "coverage_pct": 97.2,
+        "covered_trips": 246,
         "drift": {
-          "median_seconds": 59,
-          "observations": 11927,
-          "on_time_share_pct": 79.9,
-          "p90_abs_seconds": 282
+          "median_seconds": 111,
+          "observations": 7283,
+          "on_time_share_pct": 78.8,
+          "p90_abs_seconds": 346
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 483,
-        "vehicles_checked": 1442,
-        "vehicles_on_route_pct": 93.1,
-        "worst_lag_seconds": 24
+        "scheduled_trips_in_window": 253,
+        "vehicles_checked": 766,
+        "vehicles_on_route_pct": 91.0,
+        "worst_lag_seconds": 22
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 16,
+          "count": 7,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 1.2,
+          "points": 1.0,
           "severity": "WARNING",
-          "what": "16 of 483 trips scheduled during the sampling window had no live predictions.",
+          "what": "7 of 253 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 97.8,
+      "score": 97.7,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 96.7% of scheduled trips had live predictions; 93.1% of vehicles on their route; predictions ran a median of 59s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 97.2% of scheduled trips had live predictions; 91.0% of vehicles on their route; predictions ran a median of 111s behind schedule.",
       "weight": 0.2
     }
   },
@@ -300,7 +300,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 115 days.",
+        "detail": "Service data covers the next 113 days.",
         "key": "current",
         "met": true
       },
@@ -320,7 +320,13 @@
     "size_bytes": 13141743,
     "static_url": "https://phoenixopendata.com/dataset/3eae9a4a-98b9-40c8-8df7-8c00c1756235/resource/28ccc0a5-49c8-495c-b91f-193de5ce2cb7/download/googletransit.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://phoenixopendata.com/dataset/3eae9a4a-98b9-40c8-8df7-8c00c1756235/resource/28ccc0a5-49c8-495c-b91f-193de5ce2cb7/download/googletransit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -112.87219,
@@ -353,7 +359,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 115 days.",
+        "detail": "Service data covers the next 113 days.",
         "key": "current",
         "status": "ready"
       }
@@ -391,11 +397,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 7941,
     "findings": [],

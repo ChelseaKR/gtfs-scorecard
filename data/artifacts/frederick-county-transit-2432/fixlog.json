@@ -47,6 +47,12 @@
       "code": "scorecard_rt_predictions_implausible",
       "last_seen": "2026-07-02",
       "what": "Some live predictions disagree with the schedule by more than 30 minutes."
+    },
+    {
+      "cleared": "2026-07-04",
+      "code": "scorecard_rt_trip_coverage",
+      "last_seen": "2026-07-02",
+      "what": "6 of 10 trips scheduled during the sampling window had no live predictions."
     }
   ]
 }

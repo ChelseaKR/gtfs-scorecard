@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 90,
+      "agencies": 91,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -88,7 +88,7 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-04T14:25:44+00:00",
+  "generated_at": "2026-07-04T23:32:38+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 29,
@@ -597,7 +597,7 @@
       "id": "via-mobility-2395",
       "name": "Via Mobility",
       "needs_attention": true,
-      "score": 63.6,
+      "score": 63.3,
       "snapshot_date": "2026-07-04",
       "top_fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },

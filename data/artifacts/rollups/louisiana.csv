@@ -1,4 +1,4 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix
-capital-area-transit-system-cats,Capital Area Transit System (CATS),F,37.4,2026-07-04,lapsed,-135,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+capital-area-transit-system-cats,Capital Area Transit System (CATS),F,46.2,2026-07-04,lapsed,-135,yes,Service data has expired,Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.
 shreveport-and-bossier-city,Shreveport and Bossier City,F,34.7,2026-07-04,current,26843,no,,Re-generate shape distances in your export; flag to your vendor if it persists.
 capital-area-transit-system-cats-2065,Capital Area Transit System (CATS),D,64.7,2026-07-04,current,180,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.

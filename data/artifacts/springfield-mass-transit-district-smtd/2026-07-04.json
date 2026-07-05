@@ -166,7 +166,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -177,7 +177,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -264,48 +264,17 @@
     "realtime": {
       "details": {
         "coverage_pct": null,
-        "drift": {
-          "median_seconds": -6993,
-          "observations": 848,
-          "on_time_share_pct": 0.7,
-          "p90_abs_seconds": 20670
-        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 54,
-        "vehicles_on_route_pct": 14.8,
-        "worst_lag_seconds": 21
+        "worst_lag_seconds": 19
       },
-      "findings": [
-        {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 46,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
-          "owner": "",
-          "points": 12.8,
-          "severity": "WARNING",
-          "what": "46 of 54 sampled vehicle positions were far from their assigned route (worst: 10923 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
-        },
-        {
-          "code": "scorecard_rt_predictions_implausible",
-          "count": 848,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
-          "owner": "",
-          "points": 0.0,
-          "severity": "WARNING",
-          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
-          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
-        }
-      ],
+      "findings": [],
       "name": "realtime",
-      "score": 80.3,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 14.8% of vehicles on their route; predictions ran a median of 6993s ahead of schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -318,7 +287,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 26 days ago.",
+        "detail": "Service data expired 28 days ago.",
         "key": "current",
         "met": false
       },
@@ -329,7 +298,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 26 days ago. States wheelchair access on 71% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 28 days ago. States wheelchair access on 71% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -338,7 +307,14 @@
     "size_bytes": 1304602,
     "static_url": "http://data.smtd.org/gtfs/smtd_gtfs_feed.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-illinois-springfield-mass-transit-district-smtd-gtfs-385.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "SSLError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -89.75239,
@@ -370,19 +346,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 26 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 28 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 26 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 28 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 55.8,
-    "margin_to_next_band": 4.2,
-    "score": 55.8
+    "margin_to_lower_band": 59.8,
+    "margin_to_next_band": 0.2,
+    "score": 59.8
   },
   "recommendations": [
     {
@@ -408,11 +384,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1025,
     "findings": [],
@@ -778,16 +749,16 @@
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_rt_vehicles_off_route",
-      "count": 46,
-      "effort": "A vendor support ticket with the trip ids attached.",
-      "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+      "code": "leading_or_trailing_whitespaces",
+      "count": 61096,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'leading_or_trailing_whitespaces' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
-      "points": 12.8,
+      "points": 8.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "46 of 54 sampled vehicle positions were far from their assigned route (worst: 10923 m).",
-      "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+      "what": "Leading or trailing whitespaces (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
     }
   ],
   "validator_version": "8.0.1"

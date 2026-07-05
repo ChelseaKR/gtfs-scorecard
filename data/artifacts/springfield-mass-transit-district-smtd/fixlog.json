@@ -11,6 +11,18 @@
       "code": "scorecard_rt_vehicles_off_route",
       "last_seen": "2026-06-20",
       "what": "16 of 19 sampled vehicle positions were far from their assigned route (worst: 7625 m)."
+    },
+    {
+      "cleared": "2026-07-04",
+      "code": "scorecard_rt_predictions_implausible",
+      "last_seen": "2026-07-03",
+      "what": "Some live predictions disagree with the schedule by more than 30 minutes."
+    },
+    {
+      "cleared": "2026-07-04",
+      "code": "scorecard_rt_vehicles_off_route",
+      "last_seen": "2026-07-03",
+      "what": "46 of 54 sampled vehicle positions were far from their assigned route (worst: 10923 m)."
     }
   ]
 }

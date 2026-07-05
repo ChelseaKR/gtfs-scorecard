@@ -1,6 +1,6 @@
 {
   "agency_count": 17,
-  "average_score": 54.3,
+  "average_score": 54.6,
   "common_fixes": [
     {
       "agencies": 12,
@@ -53,7 +53,7 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-04T14:25:44+00:00",
+  "generated_at": "2026-07-04T23:32:38+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 3,
@@ -153,7 +153,7 @@
       "id": "springfield-mass-transit-district-smtd",
       "name": "Springfield Mass Transit District (SMTD)",
       "needs_attention": true,
-      "score": 55.8,
+      "score": 59.8,
       "snapshot_date": "2026-07-04",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -190,7 +190,7 @@
       "name": "Metra",
       "needs_attention": false,
       "score": 34.2,
-      "snapshot_date": "2026-07-01",
+      "snapshot_date": "2026-07-04",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {

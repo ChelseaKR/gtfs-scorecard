@@ -257,8 +257,8 @@
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 8,
-        "worst_lag_seconds": 4
+        "scheduled_trips_in_window": 6,
+        "worst_lag_seconds": 0
       },
       "findings": [
         {
@@ -274,13 +274,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 8,
+          "count": 6,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "8 of 8 trips scheduled during the sampling window had no live predictions.",
+          "what": "6 of 6 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -316,7 +316,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "424b2afd36aaf4c997ea507d0159b48f52919d3acb577c511ea7ef015be6b716",
+    "sha256": "c103d07b70e6d1a75e17be9186add29710630ef4689cb6dd3b2500e75b0654c9",
     "size_bytes": 373196,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -642,14 +642,14 @@
     },
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 8,
+      "count": 6,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "8 of 8 trips scheduled during the sampling window had no live predictions.",
+      "what": "6 of 6 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     }
   ],

@@ -193,7 +193,7 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
+          "why": "Route badges get hard to read, most of all for riders with low vision."
         }
       ],
       "name": "correctness",
@@ -206,8 +206,8 @@
       "details": {
         "days_until_expiry": 545,
         "feed_end_date": "2027-12-31",
-        "feed_start_date": "2026-07-01",
-        "feed_version": "20260703",
+        "feed_start_date": "2026-07-03",
+        "feed_version": "20260704",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -236,7 +236,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 546 days.",
+        "detail": "Service data covers the next 545 days.",
         "key": "current",
         "met": true
       },
@@ -252,11 +252,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "9d4856e05bfbe869da7907462732e95d74e074120aed3d3309d660ff4626504d",
-    "size_bytes": 208486,
+    "sha256": "d025d7dc14714a15cae06c31cbbdafe9e7e83d11163e590d337d9aa46d166383",
+    "size_bytes": 208483,
     "static_url": "http://kart.connexionz.net/rtt/public/utility/gtfs.aspx"
   },
-  "generated_at": "2026-07-03T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://kart.connexionz.net/rtt/public/utility/gtfs.aspx",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -120.14516,
@@ -288,7 +294,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 546 days.",
+        "detail": "Service data covers the next 545 days.",
         "key": "current",
         "status": "ready"
       }
@@ -337,11 +343,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 242,
     "findings": [],

@@ -51,24 +51,24 @@
     <header class="brief-head">
       <p class="brief-kicker">Call-prep brief &middot; checked 2026-07-04</p>
       <h1 class="brief-title">Capital District Transportation Authority (CDTA)</h1>
-      <p class="brief-grade">Grade A &middot; 92.4 / 100</p>
-      <p class="brief-trend">Down 0.6 points since 2026-07-02 (A to A).</p>
+      <p class="brief-grade">Grade A &middot; 91.1 / 100</p>
+      <p class="brief-trend">Down 1.9 points since 2026-07-02 (A to A).</p>
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
         confirm the feed is current and the NTD details line up. Each fix is framed as a next step,
         not a failure.</p>
     </header>
     <section aria-labelledby="brief-changed-h">
       <h2 id="brief-changed-h">What changed since the last check</h2>
-      <ul class="brief-deltas"><li><span class="brief-cat">Correctness</span> no change</li><li><span class="brief-cat">Freshness</span> down 3.4</li><li><span class="brief-cat">Rider experience</span> no change</li><li><span class="brief-cat">Realtime quality</span> no change</li></ul>
+      <ul class="brief-deltas"><li><span class="brief-cat">Correctness</span> no change</li><li><span class="brief-cat">Freshness</span> down 3.4</li><li><span class="brief-cat">Rider experience</span> no change</li><li><span class="brief-cat">Realtime quality</span> down 6.3</li></ul>
     </section>
     <section aria-labelledby="brief-fixes-h">
       <h2 id="brief-fixes-h">Top three things to fix</h2>
-      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Remove past service periods the next time you export the feed.</p><p class="brief-fix-why">Some service calendars in the feed have already expired. Expired calendars are dead weight and can hide real schedule problems from your staff and vendors.</p><p class="brief-fix-eta">Effort: One setting in most export tools.</p></li><li class="brief-fix"><p class="brief-fix-do">Remove retired stops from the export, or add them back to the trips that should serve them.</p><p class="brief-fix-why">Some stops exist in the feed but no trip ever stops at them. Riders may walk to a stop where no bus is scheduled to arrive.</p><p class="brief-fix-eta">Effort: A review pass in your scheduling software.</p></li><li class="brief-fix"><p class="brief-fix-do">Use mixed case for stop names and headsigns (e.g. &#x27;Main St &amp; 2nd Ave&#x27;, not &#x27;MAIN ST &amp; 2ND AVE&#x27;).</p><p class="brief-fix-why">Some rider-facing names are in ALL CAPS or all lowercase. ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers.</p><p class="brief-fix-eta">Effort: Often a bulk fix in your scheduling software.</p></li></ol>
+      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.</p><p class="brief-fix-why">12 of 54 trips scheduled during the sampling window had no live predictions. Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates.</p><p class="brief-fix-eta">Effort: A vendor data-mapping question.</p></li><li class="brief-fix"><p class="brief-fix-do">Remove past service periods the next time you export the feed.</p><p class="brief-fix-why">Some service calendars in the feed have already ended. Expired calendars are dead weight and can hide real schedule problems from your staff and vendors.</p><p class="brief-fix-eta">Effort: One setting in most export tools.</p></li><li class="brief-fix"><p class="brief-fix-do">Remove retired stops from the export, or add them back to the trips that should serve them.</p><p class="brief-fix-why">Some stops exist in the feed but no trip ever stops at them. Riders may walk to a stop where no bus is scheduled to arrive.</p><p class="brief-fix-eta">Effort: A review pass in your scheduling software.</p></li></ol>
     </section>
     
     <section aria-labelledby="brief-ntd-h">
       <h2 id="brief-ntd-h">NTD certification readiness: Ready</h2>
-      <p class="brief-ntd-summary">Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 58 days.</dd></dl>
+      <p class="brief-ntd-summary">Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 56 days.</dd></dl>
       <p class="brief-align"><strong>agency_id and NTD ID:</strong> Not checked yet. Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don&#x27;t have your NTD ID on file, so this is not checked yet.</p>
     </section>
     

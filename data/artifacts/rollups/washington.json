@@ -18,7 +18,7 @@
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 22,
+      "agencies": 21,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -128,7 +128,7 @@
     "stale": 21,
     "total": 26
   },
-  "generated_at": "2026-07-04T14:25:44+00:00",
+  "generated_at": "2026-07-04T23:32:38+00:00",
   "grade_distribution": {
     "A": 9,
     "B": 25,
@@ -1177,7 +1177,7 @@
       "id": "ben-franklin-transit-2122",
       "name": "Ben Franklin Transit",
       "needs_attention": false,
-      "score": 87.6,
+      "score": 87.9,
       "snapshot_date": "2026-07-04",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },

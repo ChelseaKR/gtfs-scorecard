@@ -5,33 +5,33 @@
         "code": "stop_without_stop_time",
         "sample_notices": [
           {
-            "csvRowNumber": 11,
-            "stopId": "2320160",
-            "stopName": "Greenspring Road"
+            "csvRowNumber": 2,
+            "stopId": "2320151",
+            "stopName": "White Oaks Loop"
           },
           {
-            "csvRowNumber": 13,
-            "stopId": "2320164",
-            "stopName": "Suntec Loop 1"
+            "csvRowNumber": 3,
+            "stopId": "2320152",
+            "stopName": "White Oaks Loop"
           },
           {
-            "csvRowNumber": 14,
-            "stopId": "2320165",
-            "stopName": "Suntec Loop 2"
+            "csvRowNumber": 4,
+            "stopId": "2320153",
+            "stopName": "White Oaks Loop and Tanglewood Road"
           },
           {
-            "csvRowNumber": 21,
-            "stopId": "2320946",
-            "stopName": "Mount Snow drop zone"
+            "csvRowNumber": 5,
+            "stopId": "2320154",
+            "stopName": "Silver Birch"
           },
           {
-            "csvRowNumber": 22,
-            "stopId": "2387290",
-            "stopName": "Walmart"
+            "csvRowNumber": 6,
+            "stopId": "2320155",
+            "stopName": "Silver Birch and Black Pine"
           }
         ],
         "severity": "WARNING",
-        "total": 119
+        "total": 190
       },
       {
         "code": "mixed_case_recommended_field",
@@ -82,36 +82,36 @@
         "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 43,
+            "daysAfterFeedEnd": 85,
+            "daysBeforeFeedStart": 67,
             "serviceId": "c_21840_b_85465_d_31",
             "serviceWindowEndDate": "2026-12-25",
             "serviceWindowStartDate": "2026-04-27"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 792,
+            "daysBeforeFeedStart": 816,
             "serviceId": "c_70018_b_81757_d_31",
             "serviceWindowEndDate": "2026-10-01",
             "serviceWindowStartDate": "2024-04-08"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 204,
+            "daysBeforeFeedStart": 228,
             "serviceId": "c_71653_b_85830_d_31",
             "serviceWindowEndDate": "2026-10-01",
             "serviceWindowStartDate": "2025-11-17"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 199,
+            "daysBeforeFeedStart": 223,
             "serviceId": "c_71653_b_85830_d_32",
             "serviceWindowEndDate": "2026-09-26",
             "serviceWindowStartDate": "2025-11-22"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 720,
+            "daysBeforeFeedStart": 744,
             "serviceId": "c_21860_b_81354_d_31",
             "serviceWindowEndDate": "2026-10-01",
             "serviceWindowStartDate": "2024-06-19"
@@ -145,6 +145,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "70f1dc14dfae664991676d4ac68f4312ebbba5b1859264ef90d779bef0561f56",
+  "sha256": "b146bd40e1e1a785309cd8d833953246e7c4e9494db0dca9c9b3b367beaaee8c",
   "validator_version": "8.0.1"
 }

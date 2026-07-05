@@ -63,7 +63,7 @@
     "stale": 8,
     "total": 8
   },
-  "generated_at": "2026-07-04T14:25:44+00:00",
+  "generated_at": "2026-07-04T23:32:38+00:00",
   "grade_distribution": {
     "B": 6,
     "C": 12,
@@ -228,6 +228,18 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
+      "attention_reason": "Service window shortened unexpectedly on 2026-07-04",
+      "days_until_expiry": 89,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "rockingham-moover",
+      "name": "Rockingham MOOver",
+      "needs_attention": true,
+      "score": 81.0,
+      "snapshot_date": "2026-07-04",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
       "attention_reason": "Score changed sharply on 2026-06-23",
       "days_until_expiry": 89,
       "expiry_status": "current",
@@ -349,18 +361,6 @@
     },
     {
       "attention_reason": null,
-      "days_until_expiry": 174,
-      "expiry_status": "current",
-      "grade": "B",
-      "id": "rockingham-moover",
-      "name": "Rockingham MOOver",
-      "needs_attention": false,
-      "score": 80.6,
-      "snapshot_date": "2026-07-04",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "attention_reason": null,
       "days_until_expiry": 89,
       "expiry_status": "current",
       "grade": "B",
@@ -408,7 +408,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
-  "needs_attention": 14,
+  "needs_attention": 15,
   "rollup": {
     "id": "vermont",
     "name": "Vermont agencies"

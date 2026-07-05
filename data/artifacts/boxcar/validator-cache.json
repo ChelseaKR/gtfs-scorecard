@@ -19,10 +19,40 @@
         ],
         "severity": "WARNING",
         "total": 2
+      },
+      {
+        "code": "unknown_column",
+        "sample_notices": [
+          {
+            "fieldName": "ticketing_deep_link_id",
+            "filename": "agency.txt",
+            "index": 6
+          },
+          {
+            "fieldName": "ticketing_trip_id",
+            "filename": "trips.txt",
+            "index": 6
+          }
+        ],
+        "severity": "INFO",
+        "total": 2
+      },
+      {
+        "code": "unknown_file",
+        "sample_notices": [
+          {
+            "filename": "ticketing_deep_links.txt"
+          },
+          {
+            "filename": "ticketing_identifiers.txt"
+          }
+        ],
+        "severity": "INFO",
+        "total": 2
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "bc12c8b8079cdaa0118cdb3549ca51548e644895f8f3f48a1eae5a03fb1d1449",
+  "sha256": "581db83995b74c0eb92472879e18abfb75be5092552512adf7c779f5eab281e1",
   "validator_version": "8.0.1"
 }

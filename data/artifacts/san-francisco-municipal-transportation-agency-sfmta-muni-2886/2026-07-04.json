@@ -6,11 +6,10 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/san-francisco-municipal-transportation-agency-sfmta-muni-2886/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/san-francisco-municipal-transportation-agency-sfmta-muni-2886/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
-        "count": 3297,
+        "count": 3307,
         "examples": [
           "'platform_code': ' ' -> ''",
           "'platform_code': ' ' -> ''",
@@ -38,7 +37,7 @@
         "label": "Recased shouting route names"
       }
     ],
-    "total": 3368
+    "total": 3378
   },
   "categories": {
     "completeness": {
@@ -52,6 +51,10 @@
           "trips_stated_pct": 93.8
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -86,7 +89,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 3228,
+        "stops": 3238,
         "trips": 53746,
         "wheelchair_accessible_pct": 93.8,
         "wheelchair_boarding_pct": 0.0,
@@ -96,13 +99,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 3228,
+          "count": 3238,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "3228 of 3228 stops don't say whether a wheelchair user can board there.",
+          "what": "3238 of 3238 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -175,8 +178,8 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
@@ -208,7 +211,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
@@ -286,7 +289,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 62 days.",
+        "detail": "Service data covers the next 55 days.",
         "key": "current",
         "met": true
       },
@@ -302,11 +305,17 @@
   "feed": {
     "license_note": "License: https://www.sfmta.com/reports/gtfs-transit-data",
     "reachable": true,
-    "sha256": "569424ec7561732e7e7640c889609ba9e2307d3f86720fab1e492c4833198f11",
-    "size_bytes": 10958900,
+    "sha256": "c4c764a116374c0ff80686e44d35d5e4caa04471924f16342b2e939a649cda30",
+    "size_bytes": 10973449,
     "static_url": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.51079,
@@ -314,16 +323,16 @@
       -122.36703,
       37.82985
     ],
-    "lat": 37.75923,
-    "lon": -122.43163,
-    "stop_count": 3228
+    "lat": 37.75907,
+    "lon": -122.43177,
+    "stop_count": 3238
   },
   "ntd_id_alignment": {
-    "detail": "Your feed uses agency_id SFMTA; the NTD asks for your five-digit NTD ID (90015) so the feed lines up with your record.",
+    "detail": "Your feed's agency_id is SFMTA; your National Transit Database ID is 90015. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
     "feed_agency_ids": [
       "SFMTA"
     ],
-    "fix": "Change the agency_id to 90015 in agency.txt and update the matching agency_id in routes.txt.",
+    "fix": "Optionally set the agency_id for your service to 90015 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.",
     "ntd_id": "90015",
     "status": "mismatch"
   },
@@ -340,7 +349,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 62 days.",
+        "detail": "Service data covers the next 55 days.",
         "key": "current",
         "status": "ready"
       }
@@ -357,27 +366,791 @@
   "recommendations": [
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 3187,
+      "count": 3195,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "3187 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"19th Avenue & Holloway St\", \"Dublin St & La Grande Ave\", \"3rd St & 4th St\", and more).",
+      "what": "3195 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"19th Avenue & Holloway St\", \"Dublin St & La Grande Ave\", \"3rd St & 4th St\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 3228,
+    "boardable_stops": 3238,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
     "trips_total": 53746
+  },
+  "route_map": {
+    "drawn_route_count": 69,
+    "has_shapes": true,
+    "path": "data/artifacts/san-francisco-municipal-transportation-agency-sfmta-muni-2886/geometry.geojson",
+    "route_count": 69,
+    "routes": [
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "CALIFORNIA",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "FOLSOM-PACIFIC",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "MISSION",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "14R",
+        "label": "14R",
+        "long": "MISSION RAPID",
+        "short": "14R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "BAYVIEW HUNTERS POINT EXPRESS",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "46TH AVENUE",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "POLK",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1X",
+        "label": "1X",
+        "long": "CALIFORNIA EXPRESS",
+        "short": "1X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "SUTTER",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "FILLMORE",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "MONTEREY",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "DIVISADERO",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "TREASURE ISLAND",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "BRYANT",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "19TH AVENUE",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "28R",
+        "label": "28R",
+        "long": "19TH AVENUE RAPID",
+        "short": "28R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "29",
+        "label": "29",
+        "long": "SUNSET",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "STOCKTON",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30X",
+        "label": "30X",
+        "long": "MARINA EXPRESS",
+        "short": "30X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "BALBOA",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "ASHBURY-18TH ST",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "EUREKA",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "36",
+        "label": "36",
+        "long": "TERESITA",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "37",
+        "label": "37",
+        "long": "CORBETT",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "38",
+        "label": "38",
+        "long": "GEARY",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "38R",
+        "label": "38R",
+        "long": "GEARY RAPID",
+        "short": "38R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "39",
+        "label": "39",
+        "long": "COIT",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "MASONIC",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "O'SHAUGHNESSY",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "45",
+        "label": "45",
+        "long": "UNION-STOCKTON",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "48",
+        "label": "48",
+        "long": "QUINTARA-24TH STREET",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "49",
+        "label": "49",
+        "long": "VAN NESS-MISSION",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "FULTON",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "EXCELSIOR",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "FELTON",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "DOGPATCH",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "RUTLAND",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "PARKMERCED",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "LAKE MERCED",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "5R",
+        "label": "5R",
+        "long": "FULTON RAPID",
+        "short": "5R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "HAYES-PARNASSUS",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "QUINTARA",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "67",
+        "label": "67",
+        "long": "BERNAL HEIGHTS",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "HAIGHT-NORIEGA",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "714",
+        "label": "714",
+        "long": "BART EARLY BIRD",
+        "short": "714",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "BAYSHORE",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8AX",
+        "label": "8AX",
+        "long": "BAYSHORE A EXPRESS",
+        "short": "8AX",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8BX",
+        "label": "8BX",
+        "long": "BAYSHORE B EXPRESS",
+        "short": "8BX",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "SAN BRUNO",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "666666",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "SAN BRUNO OWL",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "666666",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "3RD-19TH AVE OWL",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "9R",
+        "label": "9R",
+        "long": "SAN BRUNO RAPID",
+        "short": "9R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B49A36",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "CA",
+        "label": "CA",
+        "long": "CALIFORNIA STREET CABLE CAR",
+        "short": "CA",
+        "text_color": "000000",
+        "type_label": "Cable tram"
+      },
+      {
+        "color": "B49A36",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "F",
+        "label": "F",
+        "long": "MARKET & WHARVES",
+        "short": "F",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "B49A36",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "FBUS",
+        "label": "FBUS",
+        "long": "MARKET & WHARVES BUS",
+        "short": "FBUS",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A96614",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "J",
+        "label": "J",
+        "long": "CHURCH",
+        "short": "J",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "437C93",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "K",
+        "label": "K",
+        "long": "INGLESIDE",
+        "short": "K",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "437C93",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "KBUS",
+        "label": "KBUS",
+        "long": "INGLESIDE BUS",
+        "short": "KBUS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "942D83",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "L",
+        "label": "L",
+        "long": "TARAVAL",
+        "short": "L",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "666666",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "LOWL",
+        "label": "LOWL",
+        "long": "OWL TARAVAL",
+        "short": "LOWL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008547",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "M",
+        "label": "M",
+        "long": "OCEAN VIEW",
+        "short": "M",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "N",
+        "label": "N",
+        "long": "JUDAH",
+        "short": "N",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "NBUS",
+        "label": "NBUS",
+        "long": "JUDAH BUS",
+        "short": "NBUS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "666666",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "NOWL",
+        "label": "NOWL",
+        "long": "OWL JUDAH",
+        "short": "NOWL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B49A36",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "PH",
+        "label": "PH",
+        "long": "POWELL-HYDE CABLE CAR",
+        "short": "PH",
+        "text_color": "000000",
+        "type_label": "Cable tram"
+      },
+      {
+        "color": "B49A36",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "PM",
+        "label": "PM",
+        "long": "POWELL-MASON CABLE CAR",
+        "short": "PM",
+        "text_color": "000000",
+        "type_label": "Cable tram"
+      },
+      {
+        "color": "005B95",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "SF",
+        "label": "SF",
+        "long": "SHUTTLE CALTRAIN-SOMA-UNION SQ",
+        "short": "SF",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T",
+        "label": "T",
+        "long": "THIRD",
+        "short": "T",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "BF2B45",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "TBUS",
+        "label": "TBUS",
+        "long": "THIRD BUS",
+        "short": "TBUS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3238,
+    "stop_points_capped": true
   },
   "rubric_version": "1.1",
   "schema_version": "1.4",
@@ -397,14 +1170,14 @@
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 3228,
+      "count": 3238,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "3228 of 3228 stops don't say whether a wheelchair user can board there.",
+      "what": "3238 of 3238 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {

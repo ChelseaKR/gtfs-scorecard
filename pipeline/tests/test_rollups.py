@@ -28,13 +28,14 @@ def write_latest(
     state: str | None = None,
     country: str | None = None,
     shapes: tuple[int, int] | None = None,
+    ntd_id: str | None = None,
 ) -> None:
     agency: dict[str, object] = {"id": agency_id, "name": name}
     if state:
         agency["state"] = state
     if country:
         agency["country"] = country
-    artifact: dict[str, object] = {
+    payload: dict[str, object] = {
         "agency": agency,
         "snapshot_date": "2026-06-12",
         "overall": {"score": score, "grade": grade},
@@ -43,13 +44,15 @@ def write_latest(
     }
     if shapes is not None:
         total_trips, trips_with_shape = shapes
-        artifact["shapes_readiness"] = {
+        payload["shapes_readiness"] = {
             "total_trips": total_trips,
             "trips_with_shape": trips_with_shape,
         }
+    if ntd_id is not None:
+        payload["ntd_id_alignment"] = {"ntd_id": ntd_id, "status": "aligned"}
     path = artifacts_dir() / agency_id
     path.mkdir(parents=True, exist_ok=True)
-    (path / "latest.json").write_text(json.dumps(artifact))
+    (path / "latest.json").write_text(json.dumps(payload))
 
 
 def test_rollup_csv_has_header_and_rows_with_blanks_for_none() -> None:
@@ -162,6 +165,44 @@ def test_attention_flagged_agencies_sort_first_with_reason() -> None:
     assert payload["members"][1]["needs_attention"] is False
     assert payload["needs_attention"] == 1
     assert payload["average_score"] == 78.0
+
+
+def test_ridership_weights_attention_order_high_ridership_first() -> None:
+    # Two attention-flagged feeds: the big one scores slightly *better* but must
+    # still rank first once ridership weights the list (ADR 0021).
+    write_latest("big", "Big Transit", 66.0, "D", ntd_id="90001")
+    write_latest("tiny", "Tiny Transit", 64.0, "D", ntd_id="90002")
+    attention = {"big": "Feed expires in 5 days", "tiny": "Feed expires in 3 days"}
+    ridership = {"90001": 5_000_000, "90002": 10_000}
+    payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, ridership)
+    assert [m["id"] for m in payload["members"]] == ["big", "tiny"]
+    assert payload["members"][0]["annual_trips"] == 5_000_000
+    assert payload["members"][1]["annual_trips"] == 10_000
+
+
+def test_ridership_none_leaves_order_unchanged() -> None:
+    # Same feeds, no ridership map: falls back to worst-score-first, so the
+    # lower-scoring "tiny" leads despite carrying fewer riders.
+    write_latest("big", "Big Transit", 66.0, "D", ntd_id="90001")
+    write_latest("tiny", "Tiny Transit", 64.0, "D", ntd_id="90002")
+    attention = {"big": "Feed expires in 5 days", "tiny": "Feed expires in 3 days"}
+    payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, None)
+    assert [m["id"] for m in payload["members"]] == ["tiny", "big"]
+    # With no snapshot the trips field is present but None, never a guessed 0.
+    assert payload["members"][0]["annual_trips"] is None
+
+
+def test_ridership_only_reorders_within_attention_group() -> None:
+    # A high-ridership feed that is *not* flagged stays below the attention group,
+    # so ridership never promotes a feed past the "needs a call" line.
+    write_latest("huge-ok", "Huge OK", 95.0, "A", ntd_id="90001")
+    write_latest("small-flag", "Small Flagged", 60.0, "D", ntd_id="90002")
+    attention = {"small-flag": "Feed expired"}
+    ridership = {"90001": 9_000_000, "90002": 1_000}
+    payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, ridership)
+    assert payload["members"][0]["id"] == "small-flag"
+    assert payload["members"][0]["needs_attention"] is True
+    assert payload["members"][1]["id"] == "huge-ok"
 
 
 def test_common_fixes_counts_shared_codes() -> None:

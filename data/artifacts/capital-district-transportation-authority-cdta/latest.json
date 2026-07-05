@@ -114,7 +114,7 @@
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -188,39 +188,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 94.9,
-        "covered_trips": 94,
+        "coverage_pct": 77.8,
+        "covered_trips": 42,
         "drift": {
-          "median_seconds": 7,
-          "observations": 6820,
-          "on_time_share_pct": 93.2,
-          "p90_abs_seconds": 243
+          "median_seconds": 5,
+          "observations": 3353,
+          "on_time_share_pct": 86.2,
+          "p90_abs_seconds": 410
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 99,
-        "vehicles_checked": 286,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 13
+        "scheduled_trips_in_window": 54,
+        "vehicles_checked": 133,
+        "vehicles_on_route_pct": 97.7,
+        "worst_lag_seconds": 10
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 5,
+          "count": 12,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 1.8,
+          "points": 7.8,
           "severity": "WARNING",
-          "what": "5 of 99 trips scheduled during the sampling window had no live predictions.",
+          "what": "12 of 54 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 98.2,
+      "score": 91.9,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 94.9% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 7s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 77.8% of scheduled trips had live predictions; 97.7% of vehicles on their route; predictions ran a median of 5s behind schedule.",
       "weight": 0.2
     }
   },
@@ -233,7 +233,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 58 days.",
+        "detail": "Service data covers the next 56 days.",
         "key": "current",
         "met": true
       },
@@ -253,7 +253,14 @@
     "size_bytes": 4912763,
     "static_url": "http://www.cdta.org/schedules/google_transit.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.21932,
@@ -285,7 +292,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 58 days.",
+        "detail": "Service data covers the next 56 days.",
         "key": "current",
         "status": "ready"
       }
@@ -295,9 +302,9 @@
   },
   "overall": {
     "grade": "A",
-    "margin_to_lower_band": 2.4,
+    "margin_to_lower_band": 1.1,
     "margin_to_next_band": null,
-    "score": 92.4
+    "score": 91.1
   },
   "recommendations": [
     {
@@ -312,11 +319,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2930,
     "findings": [
@@ -1110,15 +1112,27 @@
   "snapshot_date": "2026-07-04",
   "top_fixes": [
     {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 12,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 7.8,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "12 of 54 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    },
+    {
       "code": "expired_calendar",
       "count": 8,
       "effort": "One setting in most export tools.",
       "fix": "Remove past service periods the next time you export the feed.",
       "owner": "Likely your export tool",
       "points": 6.0,
-      "rank": 1,
+      "rank": 2,
       "severity": "WARNING",
-      "what": "Some service calendars in the feed have already expired.",
+      "what": "Some service calendars in the feed have already ended.",
       "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
     },
     {
@@ -1128,22 +1142,10 @@
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",
       "points": 6.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "WARNING",
       "what": "Some stops exist in the feed but no trip ever stops at them.",
       "why": "Riders may walk to a stop where no bus is scheduled to arrive."
-    },
-    {
-      "code": "mixed_case_recommended_field",
-      "count": 1,
-      "effort": "Often a bulk fix in your scheduling software.",
-      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-      "owner": "Likely your export tool",
-      "points": 4.0,
-      "rank": 3,
-      "severity": "WARNING",
-      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
-      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
     }
   ],
   "validator_version": "8.0.1"

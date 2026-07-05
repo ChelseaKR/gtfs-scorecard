@@ -134,7 +134,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -156,7 +156,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -200,7 +200,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
@@ -262,20 +262,20 @@
         "feed_version": null,
         "has_feed_info": false,
         "last_service_date": "2026-02-19",
-        "seasonal_boundary": false,
+        "seasonal_boundary": true,
         "service_type": "fixed"
       },
       "findings": [
         {
-          "code": "scorecard_feed_expired",
+          "code": "scorecard_planned_service_boundary",
           "count": 1,
-          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+          "effort": "One export when the next period's schedule is set.",
+          "fix": "Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.",
           "owner": "Likely your export tool",
-          "points": 100.0,
-          "severity": "ERROR",
-          "what": "Service data ended 135 day(s) ago.",
-          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+          "points": 50.0,
+          "severity": "WARNING",
+          "what": "The published calendar ended 135 day(s) ago at a boundary between the feed's own scheduled service periods.",
+          "why": "The calendar encodes distinct service periods (like academic terms), so this looks like a planned transition rather than a lapse \u2014 but trip planners still show nothing until the next period is published."
         },
         {
           "code": "scorecard_missing_feed_info_dates",
@@ -290,9 +290,9 @@
         }
       ],
       "name": "freshness",
-      "score": 0.0,
+      "score": 35.0,
       "status": "measured",
-      "summary": "Service data ended 135 day(s) ago. Trip planners have likely already dropped this feed.",
+      "summary": "This feed's calendar reached a scheduled service boundary 135 day(s) ago. Confirm your next service period is published so riders can keep planning trips.",
       "weight": 0.2
     },
     "realtime": {
@@ -311,7 +311,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 133 days ago.",
+        "detail": "Service data expired 135 days ago.",
         "key": "current",
         "met": false
       },
@@ -322,7 +322,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 133 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 135 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -331,7 +331,14 @@
     "size_bytes": 2742493,
     "static_url": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/f-baton~rouge~cats.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-louisiana-capital-area-transit-system-cats-gtfs-222.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -91.20001,
@@ -361,19 +368,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 133 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 135 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 133 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 135 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 37.4,
-    "margin_to_next_band": 22.6,
-    "score": 37.4
+    "margin_to_lower_band": 46.2,
+    "margin_to_next_band": 13.8,
+    "score": 46.2
   },
   "recommendations": [
     {
@@ -388,11 +395,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-04",
-    "feed_fetched_date": "2026-07-03",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1596,
     "findings": [],
@@ -657,16 +659,16 @@
   "snapshot_date": "2026-07-04",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expired",
+      "code": "scorecard_planned_service_boundary",
       "count": 1,
-      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "effort": "One export when the next period's schedule is set.",
+      "fix": "Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.",
       "owner": "Likely your export tool",
-      "points": 100.0,
+      "points": 50.0,
       "rank": 1,
-      "severity": "ERROR",
-      "what": "Service data ended 135 day(s) ago.",
-      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+      "severity": "WARNING",
+      "what": "The published calendar ended 135 day(s) ago at a boundary between the feed's own scheduled service periods.",
+      "why": "The calendar encodes distinct service periods (like academic terms), so this looks like a planned transition rather than a lapse \u2014 but trip planners still show nothing until the next period is published."
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
