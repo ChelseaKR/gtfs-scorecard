@@ -4,11 +4,11 @@
     {
       "date": "2026-07-06",
       "from_grade": "D",
-      "from_score": 66.2,
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
+      "from_score": 66.7,
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
       "regressed": true,
-      "score_delta": -6.5,
+      "score_delta": -7.0,
       "since": "2026-07-05",
       "to_grade": "F",
       "to_score": 59.7
@@ -16,14 +16,14 @@
     {
       "date": "2026-07-06",
       "from_grade": "D",
-      "from_score": 66.7,
-      "id": "spirit-bus-2202",
-      "name": "Spirit Bus",
+      "from_score": 66.2,
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
       "regressed": true,
-      "score_delta": -3.5,
+      "score_delta": -3.4,
       "since": "2026-07-05",
       "to_grade": "D",
-      "to_score": 63.2
+      "to_score": 62.8
     },
     {
       "date": "2026-07-06",
@@ -32,10 +32,10 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "regressed": true,
-      "score_delta": -3.0,
+      "score_delta": -2.6,
       "since": "2026-07-05",
       "to_grade": "D",
-      "to_score": 67.9
+      "to_score": 68.3
     },
     {
       "date": "2026-07-06",
@@ -280,18 +280,6 @@
     {
       "date": "2026-07-06",
       "from_grade": "F",
-      "from_score": 59.7,
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "regressed": false,
-      "score_delta": 5.6,
-      "since": "2026-07-05",
-      "to_grade": "D",
-      "to_score": 65.3
-    },
-    {
-      "date": "2026-07-06",
-      "from_grade": "F",
       "from_score": 53.1,
       "id": "capital-metro",
       "name": "Capital Metro",
@@ -300,6 +288,18 @@
       "since": "2026-07-05",
       "to_grade": "F",
       "to_score": 58.2
+    },
+    {
+      "date": "2026-07-06",
+      "from_grade": "F",
+      "from_score": 59.7,
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "regressed": false,
+      "score_delta": 5.0,
+      "since": "2026-07-05",
+      "to_grade": "D",
+      "to_score": 64.7
     },
     {
       "date": "2026-07-06",
@@ -387,7 +387,7 @@
     }
   ],
   "count": 32,
-  "generated_at": "2026-07-06T16:48:38+00:00",
+  "generated_at": "2026-07-06T19:25:33+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

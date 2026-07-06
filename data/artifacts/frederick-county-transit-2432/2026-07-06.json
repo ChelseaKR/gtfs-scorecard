@@ -121,7 +121,7 @@
         "instances_by_severity": {
           "ERROR": 3,
           "INFO": 11,
-          "WARNING": 59
+          "WARNING": 58
         },
         "validator_version": "8.0.1"
       },
@@ -182,17 +182,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "stops_match_shape_out_of_order",
-          "count": 2,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
           "code": "fast_travel_between_far_stops",
           "count": 1,
           "effort": "Varies.",
@@ -213,6 +202,17 @@
           "severity": "WARNING",
           "what": "Some stops sit far from the route line they belong to.",
           "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         },
         {
           "code": "big_gap_in_service",
@@ -240,7 +240,7 @@
       "name": "correctness",
       "score": 54.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 73 instances (3 error, 59 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 72 instances (3 error, 58 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -263,20 +263,20 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 60.0,
-        "covered_trips": 9,
+        "coverage_pct": 63.2,
+        "covered_trips": 12,
         "drift": {
-          "median_seconds": -96,
-          "observations": 142,
-          "on_time_share_pct": 26.8,
-          "p90_abs_seconds": 2913
+          "median_seconds": -94,
+          "observations": 145,
+          "on_time_share_pct": 31.0,
+          "p90_abs_seconds": 2811
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 15,
-        "vehicles_checked": 31,
-        "vehicles_on_route_pct": 100.0,
+        "scheduled_trips_in_window": 19,
+        "vehicles_checked": 39,
+        "vehicles_on_route_pct": 92.3,
         "worst_lag_seconds": 4
       },
       "findings": [
@@ -293,18 +293,18 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 6,
+          "count": 7,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 14.0,
+          "points": 12.9,
           "severity": "WARNING",
-          "what": "6 of 15 trips scheduled during the sampling window had no live predictions.",
+          "what": "7 of 19 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         },
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 142,
+          "count": 145,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -315,9 +315,9 @@
         }
       ],
       "name": "realtime",
-      "score": 77.7,
+      "score": 77.6,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 60.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 96s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 63.2% of scheduled trips had live predictions; 92.3% of vehicles on their route; predictions ran a median of 94s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -359,8 +359,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "b103d55bea95995e23fca3583e50851a4d85c97af690ee0d2b1956988ab1a308",
-    "size_bytes": 380129,
+    "sha256": "41330c6c78b41ec8c3e170df20facc5f8a46066b6e40183881f7b7b890eb3f7a",
+    "size_bytes": 380186,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {

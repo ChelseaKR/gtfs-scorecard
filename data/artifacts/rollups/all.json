@@ -373,7 +373,7 @@
     "stale": 488,
     "total": 619
   },
-  "generated_at": "2026-07-06T16:48:21+00:00",
+  "generated_at": "2026-07-06T19:25:16+00:00",
   "grade_distribution": {
     "A": 49,
     "B": 241,
@@ -9628,13 +9628,13 @@
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "F",
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
       "needs_attention": true,
       "score": 59.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
-      "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+      "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "annual_trips": null,
@@ -10170,6 +10170,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Score fell 3.4 points since 2026-07-05",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
+      "needs_attention": true,
+      "score": 62.8,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 19 day(s)",
       "days_until_expiry": 19,
       "expiry_status": "expiring_soon",
@@ -10237,20 +10251,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Score fell 3.5 points since 2026-07-05",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "spirit-bus-2202",
-      "name": "Spirit Bus",
-      "needs_attention": true,
-      "score": 63.2,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -10478,6 +10478,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "needs_attention": true,
+      "score": 64.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -552,
       "expiry_status": "stale",
@@ -10545,20 +10559,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "needs_attention": true,
-      "score": 65.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -10800,6 +10800,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "clackco-connects-clackamas-county-2740",
+      "name": "Static feed for realtime",
+      "needs_attention": true,
+      "score": 67.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 26 day(s)",
       "days_until_expiry": 26,
       "expiry_status": "expiring_soon",
@@ -10853,20 +10867,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "clackco-connects-clackamas-county-2740",
-      "name": "Static feed for realtime",
-      "needs_attention": true,
-      "score": 67.5,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -10954,20 +10954,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Grade slipped from C to D",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "towson-loop",
-      "name": "Towson Loop",
-      "needs_attention": true,
-      "score": 67.9,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 27 day(s)",
       "days_until_expiry": 27,
       "expiry_status": "expiring_soon",
@@ -11033,6 +11019,20 @@
       "needs_attention": true,
       "score": 68.3,
       "shapes_status": null,
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Grade slipped from C to D",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "needs_attention": true,
+      "score": 68.3,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -15407,6 +15407,20 @@
     {
       "annual_trips": null,
       "attention_reason": null,
+      "days_until_expiry": 68,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "riverside-transit-agency",
+      "name": "Riverside Transit Agency",
+      "needs_attention": false,
+      "score": 73.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
       "days_until_expiry": 148,
       "expiry_status": "current",
       "grade": "C",
@@ -15487,20 +15501,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 68,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "riverside-transit-agency",
-      "name": "Riverside Transit Agency",
-      "needs_attention": false,
-      "score": 73.8,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,

@@ -20,9 +20,9 @@
           },
           {
             "arrivalTime": "06:40:00",
-            "csvRowNumber": 13620,
+            "csvRowNumber": 13638,
             "departureTime": "30:20:00",
-            "prevCsvRowNumber": 13618,
+            "prevCsvRowNumber": 13636,
             "tripId": "714468"
           }
         ],
@@ -103,8 +103,8 @@
         "sample_notices": [
           {
             "arrivalTime2": "06:40:00",
-            "csvRowNumber1": 13618,
-            "csvRowNumber2": 13620,
+            "csvRowNumber1": 13636,
+            "csvRowNumber2": 13638,
             "departureTime1": "30:20:00",
             "distanceKm": 22.278062103667757,
             "routeId": "6163",
@@ -202,7 +202,7 @@
             "shapeId": "51830",
             "stopId": "162939",
             "stopName": "Baughman's Lane at Walgreens",
-            "stopTimeCsvRowNumber": 14329,
+            "stopTimeCsvRowNumber": 14347,
             "tripCsvRowNumber": 812,
             "tripId": "714501"
           },
@@ -215,7 +215,7 @@
             "shapeId": "51830",
             "stopId": "163125",
             "stopName": "Mt. Zion Road Park and Ride",
-            "stopTimeCsvRowNumber": 14330,
+            "stopTimeCsvRowNumber": 14348,
             "tripCsvRowNumber": 812,
             "tripId": "714501"
           },
@@ -228,7 +228,7 @@
             "shapeId": "51830",
             "stopId": "163126",
             "stopName": "Point of Rocks MARC Train Station",
-            "stopTimeCsvRowNumber": 14331,
+            "stopTimeCsvRowNumber": 14349,
             "tripCsvRowNumber": 812,
             "tripId": "714501"
           }
@@ -237,57 +237,12 @@
         "total": 3
       },
       {
-        "code": "stops_match_shape_out_of_order",
-        "sample_notices": [
-          {
-            "match1": [
-              39.44879612742427,
-              -77.41126569521823
-            ],
-            "match2": [
-              39.431081856191646,
-              -77.41901525167619
-            ],
-            "shapeId": "51806",
-            "stopId1": "162970",
-            "stopId2": "162969",
-            "stopName1": "Fairview Avenue at College Park Plaza (The Common Market)",
-            "stopName2": "Frederick Shopping Center South- Giant Eagle",
-            "stopTimeCsvRowNumber1": 9293,
-            "stopTimeCsvRowNumber2": 9292,
-            "tripCsvRowNumber": 501,
-            "tripId": "1139964"
-          },
-          {
-            "match1": [
-              39.3790231536472,
-              -77.42139148541713
-            ],
-            "match2": [
-              39.41022907480635,
-              -77.44559659961938
-            ],
-            "shapeId": "51783",
-            "stopId1": "162843",
-            "stopId2": "162842",
-            "stopName1": "Hillcrest Drive at Hill Street",
-            "stopName2": "Seneca Drive at Hillcrest Drive",
-            "stopTimeCsvRowNumber1": 343,
-            "stopTimeCsvRowNumber2": 342,
-            "tripCsvRowNumber": 19,
-            "tripId": "713825"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
         "code": "fast_travel_between_far_stops",
         "sample_notices": [
           {
             "arrivalTime2": "06:40:00",
-            "csvRowNumber1": 13618,
-            "csvRowNumber2": 13620,
+            "csvRowNumber1": 13636,
+            "csvRowNumber2": 13638,
             "departureTime1": "30:20:00",
             "distanceKm": 22.40454342506966,
             "routeId": "6163",
@@ -317,9 +272,35 @@
             "shapeId": "51829",
             "stopId": "163156",
             "stopName": "Jefferson Tech Park (Jefferson Station Boulevard at Mary Lou Lane)",
-            "stopTimeCsvRowNumber": 12870,
+            "stopTimeCsvRowNumber": 12888,
             "tripCsvRowNumber": 715,
             "tripId": "714491"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "stops_match_shape_out_of_order",
+        "sample_notices": [
+          {
+            "match1": [
+              39.3790231536472,
+              -77.42139148541713
+            ],
+            "match2": [
+              39.41022907480635,
+              -77.44559659961938
+            ],
+            "shapeId": "51783",
+            "stopId1": "162843",
+            "stopId2": "162842",
+            "stopName1": "Hillcrest Drive at Hill Street",
+            "stopName2": "Seneca Drive at Hillcrest Drive",
+            "stopTimeCsvRowNumber1": 343,
+            "stopTimeCsvRowNumber2": 342,
+            "tripCsvRowNumber": 19,
+            "tripId": "713825"
           }
         ],
         "severity": "WARNING",
@@ -407,6 +388,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "b103d55bea95995e23fca3583e50851a4d85c97af690ee0d2b1956988ab1a308",
+  "sha256": "41330c6c78b41ec8c3e170df20facc5f8a46066b6e40183881f7b7b890eb3f7a",
   "validator_version": "8.0.1"
 }
