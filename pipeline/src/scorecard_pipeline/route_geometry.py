@@ -26,6 +26,7 @@ reproduces the artifact byte-for-byte.
 
 from __future__ import annotations
 
+import itertools
 import math
 from dataclasses import dataclass
 from typing import Any
@@ -98,7 +99,7 @@ _NAMED_COLORS: list[tuple[str, tuple[int, int, int]]] = [
 ]
 
 
-def _route_type_family(raw: str) -> int | None:
+def _route_type_family(raw: str) -> int | None:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Map a route_type string to a basic family int, folding extended types.
 
     Extended route types (GTFS spec, the 100-1700 ranges) collapse to the closest
@@ -194,7 +195,7 @@ def _shape_length(points: list[tuple[float, float]]) -> float:
     approximate metric is enough.
     """
     total = 0.0
-    for (lat1, lon1), (lat2, lon2) in zip(points, points[1:], strict=False):
+    for (lat1, lon1), (lat2, lon2) in itertools.pairwise(points):
         scale = math.cos(math.radians((lat1 + lat2) / 2))
         total += math.hypot(lat2 - lat1, (lon2 - lon1) * scale)
     return total
@@ -254,7 +255,8 @@ def _ordered_shapes(shape_rows: list[dict[str, str]]) -> dict[str, list[tuple[fl
             seq = int((row.get("shape_pt_sequence") or "0").strip())
         except ValueError:
             continue
-        assert lat is not None and lon is not None
+        if lat is None or lon is None:  # guaranteed by _valid_lonlat(); not assert (-O strips it)
+            raise AssertionError("lat/lon None despite _valid_lonlat() passing")
         raw.setdefault(shape_id, []).append((seq, lat, lon))
     return {
         shape_id: [(lat, lon) for _, lat, lon in sorted(pts)]
@@ -386,7 +388,8 @@ def build_route_geometry(
         lat = _coord(row, "stop_lat")
         if not _valid_lonlat(lon, lat):
             continue
-        assert lon is not None and lat is not None
+        if lon is None or lat is None:  # guaranteed by _valid_lonlat(); not assert (-O strips it)
+            raise AssertionError("lon/lat None despite _valid_lonlat() passing")
         stop_id = (row.get("stop_id") or "").strip()
         name = (row.get("stop_name") or "").strip() or stop_id or "Unnamed stop"
         located.append((stop_id, name, lat, lon))

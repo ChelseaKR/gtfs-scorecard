@@ -52,7 +52,7 @@ is in [docs/product-roadmap.md](docs/product-roadmap.md).
 
 ## Quickstart
 
-Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Java 17+
+Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
 (the validator jar is downloaded automatically on first run).
 
 ```sh
@@ -64,10 +64,10 @@ uv run scorecard run --all
 This fetches today's snapshot of each pilot feed, validates and scores it,
 and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
 `latest.json` and a cross-agency `index.json`. Re-running a day is
-idempotent. Checks:
+idempotent. Checks (from the repo root; mirrors the CI gate):
 
 ```sh
-uv run pytest && uv run ruff check src tests && uv run mypy
+make verify
 ```
 
 ### Run the web app locally
@@ -162,6 +162,58 @@ Any agency with a public GTFS feed can be added with one YAML block in
 [docs/add-your-agency.md](docs/add-your-agency.md). The web form at
 [`web/submit.html`](web/submit.html) does the same without YAML once its
 serverless endpoint (`infra/submit`) is deployed.
+
+## Standards conformance
+
+This repo is governed by the shared portfolio standards vendored at
+[`docs/standards/`](docs/standards/) (pinned to a tag — never edited locally;
+see the integrity note in that directory's history). Per
+`docs/standards/README.md`'s conformance rule, every applicable standard is
+declared here; none is silently skipped.
+
+| Standard | Applies? |
+|---|---|
+| [CODE-QUALITY](docs/standards/CODE-QUALITY-STANDARD.md) | Applies (Python; TS/Node N/A — `web/` is no-build vanilla JS) |
+| [SECURITY & SUPPLY-CHAIN](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth, no PII store) |
+| [CI/CD](docs/standards/CI-CD-STANDARD.md) | Applies |
+| [OBSERVABILITY](docs/standards/OBSERVABILITY-STANDARD.md) | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) |
+| [ACCESSIBILITY](docs/standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) |
+| [INTERNATIONALIZATION](docs/standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; N/A path unavailable |
+| AI-EVALUATION | **N/A** — no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
+| [QUALITY & METRICS](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
+| [DOCUMENTATION](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
+| [RELEASE & VERSIONING](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — marketplace action tags (`v1`/`v1.0.0`), monthly dataset releases, MCP registry entry |
+| [RESPONSIBLE-TECH](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
+
+Open gaps per standard, as of the most recent conformance audit, are tracked
+in [docs/standards-conformance-gaps.md](docs/standards-conformance-gaps.md)
+rather than restated here.
+
+## Observability
+
+**Tier B (frontend) + Tier C (batch pipeline)** — not the
+`OBSERVABILITY-STANDARD`'s default Tier-A mapping for this repo's class;
+see [ADR 0031](docs/decisions/0031-observability-tier.md) for why. In short:
+the deployed system is a scheduled Actions batch job plus a static site, not
+a long-lived hosted service (`infra/compute`, the piece that would make this
+Tier A, is built but not applied). Tier C's health/tracing/SLO controls are
+N/A (no network surface to probe); Tier B's Core Web Vitals lab gate applies
+and is tracked as open work (Lighthouse currently asserts accessibility only).
+Real-user-monitoring beacons are declined by design — see the ADR.
+
+## Versioning
+
+SemVer. The public API surface is the published JSON schema
+(`schema_version`), the GitHub Action's inputs (`action.yml`), and the CLI
+(`docs/api.md`). `pipeline/pyproject.toml`'s `[project].version` is the single
+source of truth; `CITATION.cff` and `server.json` mirror it, and
+`pipeline/scripts/check_versions.py` fails `make verify` if they drift.
+Supported-version policy: latest major only — this is a single-deployment
+civic tool, not a library with multiple consumers pinned to old majors.
+
+This repo also **produces releases**: the marketplace GitHub Action (tagged
+`v1`), monthly citable dataset releases (`dataset-release.yml`), and an MCP
+registry entry (`server.json`).
 
 ## Layout
 

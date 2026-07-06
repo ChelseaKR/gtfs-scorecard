@@ -57,7 +57,8 @@ def _load(con: duckdb.DuckDBPyConnection, rows: list[dict[str, Any]]) -> None:
         # is a false positive here.
         # nosemgrep
         con.execute(
-            f"CREATE TABLE {TABLE} AS SELECT * FROM read_json(?, format='array')", [tmp_path]
+            f"CREATE TABLE {TABLE} AS SELECT * FROM read_json(?, format='array')",  # noqa: S608
+            [tmp_path],
         )
     finally:
         Path(tmp_path).unlink(missing_ok=True)
@@ -94,7 +95,10 @@ def to_parquet(rows: list[dict[str, Any]], out_path: str) -> str:
         # output path is a bound parameter, so Semgrep's
         # sqlalchemy-execute-raw-query rule is a false positive here.
         # nosemgrep
-        con.execute(f"COPY (SELECT * FROM {TABLE}) TO ? (FORMAT PARQUET)", [out_path])
+        con.execute(
+            f"COPY (SELECT * FROM {TABLE}) TO ? (FORMAT PARQUET)",  # noqa: S608
+            [out_path],
+        )
     finally:
         con.close()
     return out_path

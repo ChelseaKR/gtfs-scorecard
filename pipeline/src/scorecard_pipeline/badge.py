@@ -48,7 +48,7 @@ _PAD = 8.0
 
 
 def _segment_width(text: str) -> int:
-    return int(round(len(text) * _CHAR_PX + 2 * _PAD))
+    return round(len(text) * _CHAR_PX + 2 * _PAD)
 
 
 def render_badge(grade: str, score: float | None = None, expiry_status: str | None = None) -> str:

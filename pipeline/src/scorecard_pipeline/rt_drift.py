@@ -80,7 +80,7 @@ def _schedule_lookup(
     return by_seq, by_stop, tz
 
 
-def compute_drift(samples: list[RtSample], gtfs_zip_path: str) -> DriftStats | None:
+def compute_drift(samples: list[RtSample], gtfs_zip_path: str) -> DriftStats | None:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Compare sampled TripUpdates predictions against the static schedule.
 
     Per (trip, stop) the latest sample wins. Predictions given as absolute

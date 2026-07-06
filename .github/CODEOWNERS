@@ -1,0 +1,15 @@
+# CODEOWNERS (CODE-QUALITY-STANDARD CQ-39, CI-CD-STANDARD CICD-17/18).
+#
+# Solo-maintainer repo: every path resolves to the same owner today. This file
+# exists so a required-review ruleset (P0-2) has something to enforce against,
+# and so the workflow/standards paths below get an explicit second look if a
+# co-maintainer ever joins. The solo-maintainer self-review exception is
+# recorded in docs/RESPONSIBLE-TECH-AUDITS.md (P2-2) once that artifact lands.
+
+* @ChelseaKR
+
+# Anything that can change what's merge-blocking deserves its own line even
+# though it resolves to the same owner today.
+/.github/workflows/ @ChelseaKR
+/.github/rulesets/ @ChelseaKR
+/docs/standards/ @ChelseaKR

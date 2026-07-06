@@ -53,7 +53,7 @@ def _norm(header: str) -> str:
     return "".join(ch for ch in header.lower() if ch.isalnum())
 
 
-def parse_ridership_csv(text: str) -> dict[str, int]:
+def parse_ridership_csv(text: str) -> dict[str, int]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Parse an NTD ridership CSV into annual trips (UPT) per NTD ID.
 
     The NTD publishes ridership in several layouts, so the columns are found by
@@ -108,7 +108,7 @@ def parse_ridership_csv(text: str) -> dict[str, int]:
         if not raw:
             continue
         try:
-            trips = int(round(float(raw)))
+            trips = round(float(raw))
         except ValueError:
             continue
         out[ntd] = out.get(ntd, 0) + trips

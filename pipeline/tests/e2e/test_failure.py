@@ -9,7 +9,7 @@ import pytest
 
 pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is not installed")
 
-from playwright.sync_api import Page, Route, expect  # noqa: E402
+from playwright.sync_api import Page, Route, expect
 
 pytestmark = pytest.mark.e2e
 

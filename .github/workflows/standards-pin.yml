@@ -1,0 +1,81 @@
+# DOC-01 / regression guard for DOC-03 (the P0-1 finding: a vendored standard
+# was edited in-repo instead of upstreamed). Confirms docs/standards/*.md are
+# byte-identical to the pinned tag in docs/standards/.standards-version, so
+# that class of silent edit can never land again.
+#
+# ChelseaKR/portfolio-standards is a PRIVATE repo, so this job needs a token
+# with read access to it — `secrets.STANDARDS_REPO_TOKEN` (a fine-grained PAT,
+# read-only "Contents" permission, scoped to just that one repository).
+# That secret does not exist yet (adding repo secrets is a live write action
+# a human must take, not something an automated pass should do — see
+# audit-2026-07-05/gtfs-scorecard-REMEDIATION.md, P1-8). Until it's added,
+# this job prints a clear notice and exits 0 (non-blocking) rather than
+# failing every PR for a gap nobody can close from inside a workflow run.
+# Once the secret exists, remove the early-exit block below and add this
+# job's name to `.github/rulesets/main.json`'s required-status-checks list —
+# a check that only sometimes runs must not be "required" in the meantime.
+name: Standards pin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "docs/standards/**"
+
+permissions:
+  contents: read
+
+jobs:
+  standards-pin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Check for STANDARDS_REPO_TOKEN
+        id: gate
+        run: echo "has_token=${{ secrets.STANDARDS_REPO_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Skip notice (no token configured yet)
+        if: steps.gate.outputs.has_token == 'false'
+        run: |
+          echo "::warning::STANDARDS_REPO_TOKEN is not set, so the standards byte-identity check cannot run (portfolio-standards is private). Add a read-only fine-grained PAT for ChelseaKR/portfolio-standards as this repo's STANDARDS_REPO_TOKEN secret to activate this gate. See docs/decisions/ (P1-8 note) and the remediation log."
+          exit 0
+
+      - name: Parse pinned version
+        if: steps.gate.outputs.has_token == 'true'
+        id: pin
+        run: |
+          line="$(cat docs/standards/.standards-version | grep '^standards_version=')"
+          version="${line#standards_version=}"
+          if ! echo "$version" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::docs/standards/.standards-version does not look like a tag pin: $line"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Download the pinned tag and diff
+        if: steps.gate.outputs.has_token == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.STANDARDS_REPO_TOKEN }}
+          VERSION: ${{ steps.pin.outputs.version }}
+        run: |
+          mkdir -p /tmp/standards-upstream
+          curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/ChelseaKR/portfolio-standards/tarball/$VERSION" \
+            -o /tmp/standards.tar.gz
+          tar -xzf /tmp/standards.tar.gz -C /tmp/standards-upstream --strip-components=1
+          status=0
+          for f in docs/standards/*.md; do
+            name="$(basename "$f")"
+            if [ ! -f "/tmp/standards-upstream/$name" ]; then
+              continue # not every upstream file is necessarily vendored here
+            fi
+            if ! diff -u "/tmp/standards-upstream/$name" "$f"; then
+              echo "::error::docs/standards/$name has drifted from $VERSION"
+              status=1
+            fi
+          done
+          exit $status

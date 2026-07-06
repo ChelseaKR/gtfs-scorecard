@@ -114,7 +114,7 @@ def _s3_key(agency_id: str) -> str:
 
 def _s3_client() -> Any:  # pragma: no cover - thin boto3 wrapper, faked in tests
     # Lazy: boto3 is an optional dependency, present only when caching to S3.
-    import boto3  # type: ignore[import-not-found]  # noqa: PLC0415 - lazy, optional dep
+    import boto3  # type: ignore[import-not-found]
 
     return boto3.client("s3", region_name=os.environ.get("AWS_REGION") or "us-west-2")
 
@@ -124,7 +124,7 @@ def _s3_load(bucket: str, agency_id: str) -> dict[str, Any] | None:
         obj = _s3_client().get_object(Bucket=bucket, Key=_s3_key(agency_id))
         data = json.loads(obj["Body"].read())
         return data if isinstance(data, dict) else None
-    except Exception as exc:  # noqa: BLE001 - cache is best-effort; never fail a score
+    except Exception as exc:
         log.debug("validator cache S3 read miss for %s: %s", agency_id, exc)
         return None
 
@@ -137,7 +137,7 @@ def _s3_store(bucket: str, agency_id: str, payload: dict[str, Any]) -> None:
             Body=(json.dumps(payload, sort_keys=True) + "\n").encode(),
             ContentType="application/json",
         )
-    except Exception as exc:  # noqa: BLE001 - a cache write failure must not fail a score
+    except Exception as exc:
         log.warning("validator cache S3 write failed for %s: %s", agency_id, exc)
 
 

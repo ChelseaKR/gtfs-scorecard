@@ -1,0 +1,29 @@
+# SEC-19: weekly full-history scan for *verified* live credentials.
+# Complements the existing blocking gitleaks diff gate in security.yml
+# (SEC-18, pattern-based on each push/PR) with a slower, broader,
+# verification-based sweep across the whole repo history.
+name: TruffleHog verified-secrets scan
+
+on:
+  schedule:
+    - cron: "13 4 * * 1" # weekly, Monday
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # The action's own composite script already passes --fail unconditionally
+      # and picks BASE/HEAD for this trigger type (both empty on schedule/
+      # workflow_dispatch, which scans the full default-branch history).
+      - name: TruffleHog (verified only, full history)
+        uses: trufflesecurity/trufflehog@00155c9dc586f34d189adc83d3ac2698c2ec551f # v3.95.8
+        with:
+          extra_args: --results=verified

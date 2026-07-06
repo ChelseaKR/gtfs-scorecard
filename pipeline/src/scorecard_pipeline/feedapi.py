@@ -205,10 +205,11 @@ def report_from_api(
     if reason is not None:
         log.info("feedapi: not reusing MobilityData report (%s)", reason)
         return None
-    assert dataset.validation is not None  # reuse_reason guarantees this
+    if dataset.validation is None:  # reuse_reason guarantees this; explicit so -O never skips it
+        raise AssertionError("dataset.validation is None despite reuse_reason() passing")
     try:
         data = fetch_report(dataset.validation.url_json)
-    except Exception as exc:  # noqa: BLE001 - a fetch hiccup must not break a score
+    except Exception as exc:
         log.warning("feedapi: report fetch failed, validating locally (%s)", exc)
         return None
     return parse_report_data(data)
@@ -228,7 +229,7 @@ def try_cached_report(
         return None
     try:
         dataset = fetch_latest_dataset(feed_id, token)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.warning("feedapi: dataset lookup failed for %s (%s)", feed_id, exc)
         return None
     return report_from_api(

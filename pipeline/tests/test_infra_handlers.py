@@ -41,13 +41,13 @@ class FakeTable:
         self.updated = False
         self.deleted = False
 
-    def get_item(self, Key: dict[str, Any]) -> dict[str, Any]:  # noqa: N803 - boto3 kwarg name
+    def get_item(self, Key: dict[str, Any]) -> dict[str, Any]:
         return {"Item": self._item} if self._item else {}
 
     def update_item(self, **_: Any) -> None:
         self.updated = True
 
-    def delete_item(self, Key: dict[str, Any]) -> None:  # noqa: N803 - boto3 kwarg name
+    def delete_item(self, Key: dict[str, Any]) -> None:
         self.deleted = True
 
 

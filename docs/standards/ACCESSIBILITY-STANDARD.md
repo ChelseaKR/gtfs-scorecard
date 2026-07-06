@@ -2,7 +2,7 @@
 
 The canonical accessibility floor for everything in this portfolio that renders HTML to a human — the three frontends (`personal-site`, `davis-bike-hazard-map`, `trans-docs-navigator`) **and** any HTML a Python repo emits (eval-harness report pages, RAG answer pages, GTFS scorecards, generated `index.html`). Repos override the *values* (a civic transit tool serves a Spanish-dominant California public; a local-only CLI may render no HTML at all) but not the *structure* or the *gates*.
 
-**Floor:** WCAG 2.2 Level AA. Not 2.0, not 2.1 — 2.2, because it is backward-compatible (2.2 AA ⊇ 2.1 AA ⊇ 2.0 AA) and is the standard EN 301 549 v4.1.1 will harmonize to under the EU EAA. Where a repo already exceeds this (`personal-site` ships some AAA; `gtfs-scorecard` is fully WCAG 2.2 AAA across its site, with a per-criterion Accessibility Conformance Report at its `docs/accessibility.md`), the higher bar is enforced, not relaxed. *Rejected: targeting 2.1 AA "because that's what ADA Title II mandates today" — the 6 new 2.2 SC are cheap to meet on greenfield and expensive to retrofit; we pay now.*
+**Floor:** WCAG 2.2 Level AA. Not 2.0, not 2.1 — 2.2, because it is backward-compatible (2.2 AA ⊇ 2.1 AA ⊇ 2.0 AA) and is the standard EN 301 549 v4.1.1 will harmonize to under the EU EAA. Where a repo already exceeds this (`personal-site` ships some AAA), the higher bar is enforced, not relaxed. *Rejected: targeting 2.1 AA "because that's what ADA Title II mandates today" — the 6 new 2.2 SC are cheap to meet on greenfield and expensive to retrofit; we pay now.*
 
 **Enforcement is binary.** Automated tooling mechanically catches ~30–57% of WCAG violations. That ~30–57% is **AUTO-GATED** (merge-blocking CI). The remainder requires human judgment and is **REVIEW-GATED** (a checklist item + a committed, dated artifact). There is no "aspirational" third category. A control that is neither auto-gated nor backed by a committed review artifact does not exist.
 
@@ -38,7 +38,7 @@ Every gate below either blocks the merge or it is not a gate. `make verify` runs
 | Metric | Target | Measured by | Gate |
 |---|---|---|---|
 | axe-core violations (WCAG 2.2 AA) | **0** of impact `critical`, `serious`, `moderate` | `@axe-core/playwright` (frontends) / `@axe-core/cli` against built HTML (Python report pages); `--tags wcag2a,wcag2aa,wcag22aa` | merge-blocking |
-| Lighthouse CI accessibility score | **≥ 0.90**; `gtfs-scorecard` **≥ 0.95** (now ships its ACR and a merge-blocking design-token contrast gate in CI; LHCI, axe-core, and pa11y still to wire) | `@lhci/cli autorun`, assertion budget | merge-blocking |
+| Lighthouse CI accessibility score | **≥ 0.90**; `gtfs-scorecard` **≥ 0.95** (it self-declares ≥95 in `CLAUDE.md` but runs **no** a11y CI — it MUST wire LHCI) | `@lhci/cli autorun`, assertion budget | merge-blocking |
 | pa11y-ci errors | **0** errors; `--standard WCAG2AA`, `--level-cap-when-needs-review=AA`; warnings logged, not blocking | `pa11y-ci` over the route list | merge-blocking |
 | Lint-time a11y (React) | **0** `jsx-a11y` errors | `eslint-plugin-jsx-a11y` `recommended` + key rules to `error` | merge-blocking (pre-commit + CI) |
 | Color contrast | text ≥ **4.5:1** (large ≥ 3:1); non-text/UI ≥ **3:1** (SC 1.4.11) | axe `color-contrast` rule + design-token contrast unit test | merge-blocking |
@@ -196,7 +196,7 @@ These are new in 2.2 and most are partly review-gated because tooling under-cove
 | **3.3.7 Redundant Entry** | previously entered info auto-populated/selectable | REVIEW (forms/auth checklist) |
 | **3.3.8 Accessible Authentication (Min)** | no cognitive-function-test gate without an alternative | REVIEW (auth flows; N/A where no auth) |
 
-> SC **4.1.1 Parsing** is obsolete in 2.2 — do **not** gate on it. The three AAA additions (2.4.12, 2.4.13, 3.3.9) are not required at AA; `personal-site` may opt in where already met, and `gtfs-scorecard` meets 2.4.12 and 2.4.13 site-wide (3.3.9 is N/A: no authentication).
+> SC **4.1.1 Parsing** is obsolete in 2.2 — do **not** gate on it. The three AAA additions (2.4.12, 2.4.13, 3.3.9) are not required at AA; `personal-site` may opt in where already met.
 
 ---
 

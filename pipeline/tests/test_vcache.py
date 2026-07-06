@@ -72,14 +72,14 @@ class _FakeS3:
         self.get_calls = 0
         self.put_calls = 0
 
-    def get_object(self, Bucket: str, Key: str):  # type: ignore[no-untyped-def]  # noqa: N803
+    def get_object(self, Bucket: str, Key: str):  # type: ignore[no-untyped-def]
         self.get_calls += 1
         try:
             return {"Body": _FakeBody(self.store[(Bucket, Key)])}
         except KeyError as exc:
             raise RuntimeError("NoSuchKey") from exc
 
-    def put_object(self, Bucket: str, Key: str, Body: bytes, **_: object):  # type: ignore[no-untyped-def]  # noqa: N803
+    def put_object(self, Bucket: str, Key: str, Body: bytes, **_: object):  # type: ignore[no-untyped-def]
         self.put_calls += 1
         self.store[(Bucket, Key)] = Body
 
@@ -132,10 +132,10 @@ def test_s3_errors_never_fail_a_score(tmp_path, monkeypatch) -> None:  # type: i
     _point_cache_at(tmp_path, monkeypatch)
 
     class _Broken(_FakeS3):
-        def get_object(self, Bucket, Key):  # type: ignore[no-untyped-def]  # noqa: N803
+        def get_object(self, Bucket, Key):  # type: ignore[no-untyped-def]
             raise RuntimeError("S3 down")
 
-        def put_object(self, Bucket, Key, Body, **_):  # type: ignore[no-untyped-def]  # noqa: N803
+        def put_object(self, Bucket, Key, Body, **_):  # type: ignore[no-untyped-def]
             raise RuntimeError("S3 down")
 
     _use_s3(monkeypatch, _Broken())

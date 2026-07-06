@@ -49,14 +49,29 @@ determination.
 
 The repository carries a `server.json` manifest for the
 [official MCP Registry](https://registry.modelcontextprotocol.io/), naming the
-server `io.github.chelseakr/gtfs-scorecard` with a `uvx` run recipe against
-this repository. Publishing requires an interactive GitHub login, so it is a
-one-time operator step:
+server `io.github.chelseakr/gtfs-scorecard`. Publishing requires an interactive
+GitHub login, so it is a one-time operator step:
 
 ```sh
 brew install mcp-publisher   # or download from modelcontextprotocol/registry releases
 mcp-publisher login github   # device-code flow, authorizes the io.github.chelseakr namespace
 mcp-publisher publish        # reads server.json at the repo root
+```
+
+**As of 2026-07-05, `server.json` carries no `packages[]` entry** (see its
+`_meta["dev.chelseakr/gap"]` note). An earlier revision declared
+`registryType: pypi`, which was false: `scorecard-pipeline` has never been
+published to PyPI, and the MCP registry schema's `registryType` enum (`npm`,
+`pypi`, `oci`, `nuget`, `mcpb`) has no value for "installed from a git
+subdirectory via `uvx --from`," which is what actually happens. Rather than
+leave that false claim in a public registry listing, the packages entry was
+removed; the registry listing is metadata-only until either `scorecard-pipeline`
+is genuinely published to PyPI (tracked with the release-pipeline work) or the
+schema adds a git-source registry type. Until then, use the "Install and
+connect" recipe above (a local checkout), or the direct `uvx` invocation:
+
+```sh
+uvx --from git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline scorecard-mcp
 ```
 
 The Claude Connectors Directory is a separate, heavier bar (a remote server, a
