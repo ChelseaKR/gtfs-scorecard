@@ -18,10 +18,6 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
-        "cemv": {
-          "declared": false,
-          "supported": false
-        },
         "components": {
           "contact": 15.0,
           "fares": 0.0,
@@ -134,8 +130,8 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips move faster between stops than a bus can.",
-          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+          "what": "Some scheduled trips travel implausibly fast between stops.",
+          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
         },
         {
           "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
@@ -236,18 +232,6 @@
       "weight": 0.2
     }
   },
-  "confidence": {
-    "feed_age_days": 0,
-    "fetch_source": "origin",
-    "level": "medium",
-    "measured_categories": 3,
-    "notes": [
-      "Realtime quality was not measured this run. It does not count against the grade.",
-      "The feed was downloaded from the agency's own URL."
-    ],
-    "rt_windows": 0,
-    "total_categories": 4
-  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -257,9 +241,9 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 26 days; renew to qualify.",
+        "detail": "Service data covers the next 35 days.",
         "key": "current",
-        "met": false
+        "met": true
       },
       {
         "detail": "States wheelchair access on 72% of stops and 0% of trips; the mark needs 90% of each.",
@@ -268,7 +252,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 26 days; renew to qualify. States wheelchair access on 72% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 72% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -277,13 +261,7 @@
     "size_bytes": 994591,
     "static_url": "http://gotriangle.org/gtfs"
   },
-  "fetch": {
-    "final_url": "http://gotriangle.org/gtfs",
-    "max_attempts": 4,
-    "source": "origin",
-    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-  },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-06-27T00:00:00+00:00",
   "geo": {
     "bbox": [
       -79.27003,
@@ -296,11 +274,11 @@
     "stop_count": 404
   },
   "ntd_id_alignment": {
-    "detail": "Your feed's agency_id is f42c368f-0d16-403f-9c7c-493c9beb84ef; your National Transit Database ID is 40108. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
+    "detail": "Your feed uses agency_id f42c368f-0d16-403f-9c7c-493c9beb84ef; the NTD asks for your five-digit NTD ID (40108) so the feed lines up with your record.",
     "feed_agency_ids": [
       "f42c368f-0d16-403f-9c7c-493c9beb84ef"
     ],
-    "fix": "Optionally set the agency_id for your service to 40108 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.",
+    "fix": "Change the agency_id to 40108 in agency.txt and update the matching agency_id in routes.txt.",
     "ntd_id": "40108",
     "status": "mismatch"
   },
@@ -317,13 +295,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 26 days; renew before you certify.",
+        "detail": "Service data covers the next 35 days.",
         "key": "current",
-        "status": "at_risk"
+        "status": "ready"
       }
     ],
-    "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 26 days; renew before you certify."
+    "status": "ready",
+    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
   },
   "overall": {
     "grade": "F",
@@ -355,6 +333,11 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
+  "recompute": {
+    "as_of": "2026-07-06",
+    "feed_fetched_date": "2026-07-05",
+    "kind": "freshness"
+  },
   "routability": {
     "boardable_stops": 404,
     "findings": [],
@@ -362,200 +345,8 @@
     "single_stop_trips": 0,
     "trips_total": 1569
   },
-  "route_map": {
-    "drawn_route_count": 16,
-    "has_shapes": true,
-    "path": "data/artifacts/gotriangle-3183/geometry.geojson",
-    "route_count": 16,
-    "routes": [
-      {
-        "color": "A20F15",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "3534",
-        "label": "100",
-        "long": "Route 100",
-        "short": "100",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "A5E5D9",
-        "color_name": "white",
-        "has_shape": true,
-        "id": "3535",
-        "label": "300",
-        "long": "Route 300",
-        "short": "300",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "007D78",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "3536",
-        "label": "305",
-        "long": "Route 305",
-        "short": "305",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FFCD00",
-        "color_name": "yellow",
-        "has_shape": true,
-        "id": "3537",
-        "label": "310",
-        "long": "Route 310",
-        "short": "310",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "77297D",
-        "color_name": "purple",
-        "has_shape": true,
-        "id": "3538",
-        "label": "400",
-        "long": "Route 400",
-        "short": "400",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "D89BC5",
-        "color_name": "pink",
-        "has_shape": true,
-        "id": "3539",
-        "label": "405",
-        "long": "Route 405",
-        "short": "405",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "ED218A",
-        "color_name": "pink",
-        "has_shape": true,
-        "id": "3540",
-        "label": "700",
-        "long": "Route 700",
-        "short": "700",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00A94F",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "3541",
-        "label": "800",
-        "long": "Route 800",
-        "short": "800",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "046937",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "3542",
-        "label": "805",
-        "long": "Route 805",
-        "short": "805",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "65BAAF",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "3543",
-        "label": "CRX",
-        "long": "Route CRX",
-        "short": "CRX",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "0D1F2C",
-        "color_name": "black",
-        "has_shape": true,
-        "id": "3544",
-        "label": "DRX",
-        "long": "Route DRX",
-        "short": "DRX",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "EC8423",
-        "color_name": "orange",
-        "has_shape": true,
-        "id": "3545",
-        "label": "ODX",
-        "long": "Route ODX",
-        "short": "ODX",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "4E7BBE",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "3546",
-        "label": "RDU",
-        "long": "RDU Shuttle",
-        "short": "RDU",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "E7A614",
-        "color_name": "yellow",
-        "has_shape": true,
-        "id": "3547",
-        "label": "WRX",
-        "long": "Route WRX",
-        "short": "WRX",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "5A7838",
-        "color_name": "brown",
-        "has_shape": true,
-        "id": "3548",
-        "label": "ZWX",
-        "long": "Route ZWX",
-        "short": "ZWX",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "991D6A",
-        "color_name": "purple",
-        "has_shape": true,
-        "id": "3565",
-        "label": "705",
-        "long": "Route 705",
-        "short": "705",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      }
-    ],
-    "stop_count": 404,
-    "stop_points_capped": false
-  },
   "rubric_version": "1.1",
-  "schema_version": "1.7",
-  "shapes_readiness": {
-    "detail": "All 1569 trips have a shape in shapes.txt.",
-    "status": "ready",
-    "total_trips": 1569,
-    "trips_with_shape": 1569
-  },
+  "schema_version": "1.4",
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

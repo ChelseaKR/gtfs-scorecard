@@ -1,6 +1,6 @@
 {
   "agency_count": 17,
-  "average_score": 54.1,
+  "average_score": 54.4,
   "common_fixes": [
     {
       "agencies": 12,
@@ -23,7 +23,7 @@
       "fix": "Populate trip_headsign to match what the bus displays."
     },
     {
-      "agencies": 3,
+      "agencies": 4,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -53,7 +53,7 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 3,
@@ -99,7 +99,7 @@
       "name": "Connect Transit",
       "needs_attention": true,
       "score": 37.4,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -127,7 +127,7 @@
       "name": "Pace Bus",
       "needs_attention": true,
       "score": 46.9,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -161,15 +161,15 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Score fell 4.4 points since 2026-07-05",
+      "attention_reason": "Service data has expired",
       "days_until_expiry": -30,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "springfield-mass-transit-district-smtd",
       "name": "Springfield Mass Transit District (SMTD)",
       "needs_attention": true,
-      "score": 55.4,
-      "shapes_status": "ready",
+      "score": 59.8,
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -202,7 +202,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 35051943,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": null,
       "expiry_status": "unknown",
@@ -211,12 +211,12 @@
       "name": "Metra",
       "needs_attention": false,
       "score": 34.2,
-      "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-06",
+      "shapes_status": null,
+      "snapshot_date": "2026-07-04",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
-      "annual_trips": 35051943,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": null,
       "expiry_status": "unknown",
@@ -239,7 +239,7 @@
       "name": "Connect Transit",
       "needs_attention": false,
       "score": 64.4,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -308,9 +308,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 12,
-    "not_ready": 1,
-    "ready": 4,
+    "not_measured": 17,
+    "not_ready": 0,
+    "ready": 0,
     "total": 17
   },
   "state_percentile": 39

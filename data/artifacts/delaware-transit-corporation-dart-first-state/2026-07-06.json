@@ -33,10 +33,6 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
-        "cemv": {
-          "declared": false,
-          "supported": false
-        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -182,8 +178,8 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips move faster between stops than a bus can.",
-          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+          "what": "Some scheduled trips travel implausibly fast between stops.",
+          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
@@ -204,7 +200,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "what": "Some files are missing recommended (not required) fields.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -216,7 +212,7 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges get hard to read, most of all for riders with low vision."
+          "why": "Route badges become unreadable, especially for riders with low vision."
         },
         {
           "code": "stop_too_far_from_shape",
@@ -305,18 +301,6 @@
       "weight": 0.2
     }
   },
-  "confidence": {
-    "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "provisional",
-    "measured_categories": 3,
-    "notes": [
-      "Realtime quality was not measured this run. It does not count against the grade.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
-    ],
-    "rt_windows": 0,
-    "total_categories": 4
-  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -326,7 +310,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 131 days.",
+        "detail": "Service data covers the next 140 days.",
         "key": "current",
         "met": true
       },
@@ -346,14 +330,7 @@
     "size_bytes": 3186805,
     "static_url": "http://dartfirststate.com/RiderInfo/Routes/gtfs_data/dartfirststate_de_us.zip"
   },
-  "fetch": {
-    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-delaware-dart-first-state-gtfs-1235.zip?alt=media",
-    "max_attempts": 1,
-    "origin_error": "ConnectTimeout",
-    "source": "mirror",
-    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-  },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-06-27T00:00:00+00:00",
   "geo": {
     "bbox": [
       -75.76963,
@@ -366,7 +343,7 @@
     "stop_count": 2334
   },
   "ntd_id_alignment": {
-    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
+    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
     "feed_agency_ids": [
       "DART_DE"
     ],
@@ -385,7 +362,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 131 days.",
+        "detail": "Service data covers the next 140 days.",
         "key": "current",
         "status": "ready"
       }
@@ -423,6 +400,11 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
+  "recompute": {
+    "as_of": "2026-07-06",
+    "feed_fetched_date": "2026-07-05",
+    "kind": "freshness"
+  },
   "routability": {
     "boardable_stops": 2334,
     "findings": [],
@@ -430,530 +412,8 @@
     "single_stop_trips": 0,
     "trips_total": 4123
   },
-  "route_map": {
-    "drawn_route_count": 46,
-    "has_shapes": true,
-    "path": "data/artifacts/delaware-transit-corporation-dart-first-state/geometry.geojson",
-    "route_count": 46,
-    "routes": [
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8143",
-        "label": "002",
-        "long": "Concord Pike",
-        "short": "002",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008000",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8144",
-        "label": "004",
-        "long": "W 4th Street / Governor Printz Blvd",
-        "short": "004",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FFFF",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "8145",
-        "label": "005",
-        "long": "Maryland Ave / Christiana Mall",
-        "short": "005",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8146",
-        "label": "006",
-        "long": "Kirkwood Highway",
-        "short": "006",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FFFF00",
-        "color_name": "yellow",
-        "has_shape": true,
-        "id": "8147",
-        "label": "008",
-        "long": "8th and 9th Streets",
-        "short": "008",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "0000FF",
-        "color_name": "blue",
-        "has_shape": true,
-        "id": "8148",
-        "label": "009",
-        "long": "Boxwood Rd / Broom St / Vandever Ave",
-        "short": "009",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008000",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8149",
-        "label": "010",
-        "long": "Wilmington / Univ Plz / Newark",
-        "short": "010",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8150",
-        "label": "011",
-        "long": "Washington Street / Arden",
-        "short": "011",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008000",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8151",
-        "label": "013",
-        "long": "Philadelphia Pike / Market St",
-        "short": "013",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "0000FF",
-        "color_name": "blue",
-        "has_shape": true,
-        "id": "8152",
-        "label": "014",
-        "long": "Baylor/DHSS / Miller Rd Shop Ctr",
-        "short": "014",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "0000FF",
-        "color_name": "blue",
-        "has_shape": true,
-        "id": "8153",
-        "label": "015",
-        "long": "New Castle Av / Jeff Farm / Ch Mall",
-        "short": "015",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008000",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8154",
-        "label": "018",
-        "long": "Pike Creek / Wilmington / Foulk Rd",
-        "short": "018",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8155",
-        "label": "020",
-        "long": "Lancaster Pike / Hockessin",
-        "short": "020",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8156",
-        "label": "025",
-        "long": "Wrangle Hill / Miller Road Shop Ctr",
-        "short": "025",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8157",
-        "label": "028",
-        "long": "Nemours / Riveredge Ind Pk",
-        "short": "028",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8158",
-        "label": "033",
-        "long": "Christiana Mall / Newark",
-        "short": "033",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8159",
-        "label": "035",
-        "long": "Brandywine Town Center / Shipley Rd",
-        "short": "035",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8160",
-        "label": "040",
-        "long": "Glasgow / Wilmington",
-        "short": "040",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8161",
-        "label": "046",
-        "long": "Newark / Glasgow / Middletown",
-        "short": "046",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "0000FF",
-        "color_name": "blue",
-        "has_shape": true,
-        "id": "8162",
-        "label": "051",
-        "long": "New Castle Av / DE 273 / Ch Mall",
-        "short": "051",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8163",
-        "label": "053",
-        "long": "Wrangle Hill P&R / Newark Hub",
-        "short": "053",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8164",
-        "label": "055",
-        "long": "Ch Mall / Old Baltimore Pk / Newark",
-        "short": "055",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008080",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "8165",
-        "label": "061",
-        "long": "Naamans Road",
-        "short": "061",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008080",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "8166",
-        "label": "064",
-        "long": "Glasgow / Christiana Mall",
-        "short": "064",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FF00",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8167",
-        "label": "101",
-        "long": "Walker Road",
-        "short": "101",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FF00",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8168",
-        "label": "104",
-        "long": "Camden Walmart",
-        "short": "104",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FF00",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8169",
-        "label": "105",
-        "long": "Dover AFB",
-        "short": "105",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FF00",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8170",
-        "label": "107",
-        "long": "Luther Village",
-        "short": "107",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF00FF",
-        "color_name": "pink",
-        "has_shape": true,
-        "id": "8171",
-        "label": "108",
-        "long": "Persimmon Tree / Town Point",
-        "short": "108",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FF00",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8172",
-        "label": "109",
-        "long": "Dover Mall",
-        "short": "109",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF00FF",
-        "color_name": "pink",
-        "has_shape": true,
-        "id": "8173",
-        "label": "112",
-        "long": "DelTech / West Dover",
-        "short": "112",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FF00",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8174",
-        "label": "117",
-        "long": "Harrington / Dover",
-        "short": "117",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF0000",
-        "color_name": "red",
-        "has_shape": true,
-        "id": "8175",
-        "label": "201",
-        "long": "Lewes TC / Rehoboth Beach",
-        "short": "201",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FFFF00",
-        "color_name": "yellow",
-        "has_shape": true,
-        "id": "8176",
-        "label": "204",
-        "long": "Lewes TC / Lewes-Ferry",
-        "short": "204",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008000",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8177",
-        "label": "206",
-        "long": "Georgetown / Lewes TC",
-        "short": "206",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "00FFFF",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "8178",
-        "label": "208",
-        "long": "Lewes / Ocean City, MD",
-        "short": "208",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8179",
-        "label": "210",
-        "long": "Milford",
-        "short": "210",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8180",
-        "label": "212",
-        "long": "Georgetown / Seaford / Laurel",
-        "short": "212",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "8000FF",
-        "color_name": "purple",
-        "has_shape": true,
-        "id": "8181",
-        "label": "215",
-        "long": "Rehoboth P&R / Millsboro",
-        "short": "215",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008000",
-        "color_name": "green",
-        "has_shape": true,
-        "id": "8182",
-        "label": "301",
-        "long": "Intercounty Wilmington / Dover",
-        "short": "301",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF00FF",
-        "color_name": "pink",
-        "has_shape": true,
-        "id": "8183",
-        "label": "302",
-        "long": "Intercounty Dover / Middletown",
-        "short": "302",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "C0DCC0",
-        "color_name": "white",
-        "has_shape": true,
-        "id": "8184",
-        "label": "303",
-        "long": "Intercounty Dover / Milford / Georgetown",
-        "short": "303",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "FF00FF",
-        "color_name": "pink",
-        "has_shape": true,
-        "id": "8185",
-        "label": "305",
-        "long": "Intercounty Wilmington / Rehoboth",
-        "short": "305",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8186",
-        "label": "307",
-        "long": "Intercounty Lewes TC / Dover",
-        "short": "307",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "008080",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "8187",
-        "label": "903",
-        "long": "Seaford Flex",
-        "short": "903",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "808080",
-        "color_name": "gray",
-        "has_shape": true,
-        "id": "8189",
-        "label": "207",
-        "long": "Rehoboth / Massey's Landing",
-        "short": "207",
-        "text_color": "000000",
-        "type_label": "Bus"
-      }
-    ],
-    "stop_count": 2334,
-    "stop_points_capped": true
-  },
   "rubric_version": "1.1",
-  "schema_version": "1.7",
-  "shapes_readiness": {
-    "detail": "All 4123 trips have a shape in shapes.txt.",
-    "status": "ready",
-    "total_trips": 4123,
-    "trips_with_shape": 4123
-  },
+  "schema_version": "1.4",
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

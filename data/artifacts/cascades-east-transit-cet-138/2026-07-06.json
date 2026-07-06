@@ -304,18 +304,6 @@
       "weight": 0.2
     }
   },
-  "confidence": {
-    "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "provisional",
-    "measured_categories": 3,
-    "notes": [
-      "Realtime quality was not measured this run. It does not count against the grade.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
-    ],
-    "rt_windows": 0,
-    "total_categories": 4
-  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -325,7 +313,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 804 days ago.",
+        "detail": "Service data expired 802 days ago.",
         "key": "current",
         "met": false
       },
@@ -336,7 +324,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 804 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 802 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -352,7 +340,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -121.67869,
@@ -384,13 +372,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 804 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 802 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 804 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 802 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -444,6 +432,11 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
+  "recompute": {
+    "as_of": "2026-07-06",
+    "feed_fetched_date": "2026-07-05",
+    "kind": "freshness"
+  },
   "routability": {
     "boardable_stops": 322,
     "findings": [
@@ -705,13 +698,7 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.7",
-  "shapes_readiness": {
-    "detail": "All 574 trips have a shape in shapes.txt.",
-    "status": "ready",
-    "total_trips": 574,
-    "trips_with_shape": 574
-  },
+  "schema_version": "1.4",
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

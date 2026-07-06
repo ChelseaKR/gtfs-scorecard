@@ -23,7 +23,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "C": 1,
     "F": 2
@@ -39,7 +39,7 @@
       "name": "MATBUS",
       "needs_attention": true,
       "score": 41.2,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -52,8 +52,8 @@
       "id": "cities-area-transit",
       "name": "Cities Area Transit",
       "needs_attention": true,
-      "score": 44.4,
-      "shapes_status": "ready",
+      "score": 44.3,
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -80,9 +80,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 1,
+    "not_measured": 3,
     "not_ready": 0,
-    "ready": 2,
+    "ready": 0,
     "total": 3
   },
   "state_percentile": 22

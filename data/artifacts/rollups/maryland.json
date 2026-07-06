@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 21
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 2,
@@ -72,20 +72,6 @@
     "F": 25
   },
   "members": [
-    {
-      "annual_trips": 262474117,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1740,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "washington-county-transit",
-      "name": "Washington County Transit",
-      "needs_attention": true,
-      "score": 29.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -124,6 +110,20 @@
       "name": "Cecil Transit",
       "needs_attention": true,
       "score": 26.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1740,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "washington-county-transit",
+      "name": "Washington County Transit",
+      "needs_attention": true,
+      "score": 29.4,
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -194,7 +194,7 @@
       "name": "Frederick County TransIT",
       "needs_attention": true,
       "score": 34.3,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -250,7 +250,7 @@
       "name": "Saint Mary\u02bcs Transit System",
       "needs_attention": true,
       "score": 42.6,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -320,7 +320,7 @@
       "name": "Bethesda Circulator",
       "needs_attention": true,
       "score": 49.9,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -354,6 +354,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "needs_attention": true,
+      "score": 59.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -2013,
       "expiry_status": "stale",
@@ -382,20 +396,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "needs_attention": true,
-      "score": 59.4,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Grade slipped from C to D",
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
@@ -403,7 +403,7 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "needs_attention": true,
-      "score": 66.6,
+      "score": 67.9,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -521,7 +521,7 @@
       "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
-      "annual_trips": 262474117,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 179,
       "expiry_status": "current",
@@ -585,9 +585,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 30,
+    "not_measured": 33,
     "not_ready": 0,
-    "ready": 6,
+    "ready": 3,
     "total": 36
   },
   "state_percentile": 26

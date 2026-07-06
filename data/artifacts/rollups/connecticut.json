@@ -43,7 +43,7 @@
     "stale": 7,
     "total": 7
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 5,
@@ -60,8 +60,8 @@
       "id": "norwalk-transit-district",
       "name": "Norwalk Transit District",
       "needs_attention": true,
-      "score": 20.9,
-      "shapes_status": "ready",
+      "score": 20.8,
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -131,7 +131,7 @@
       "name": "Shore Line East",
       "needs_attention": true,
       "score": 47.9,
-      "shapes_status": "not_ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -145,7 +145,7 @@
       "name": "Hartford Line - Rail",
       "needs_attention": true,
       "score": 58.3,
-      "shapes_status": "not_ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -164,7 +164,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 12658139,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 187,
       "expiry_status": "current",
@@ -248,7 +248,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 12658139,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 116,
       "expiry_status": "current",
@@ -270,9 +270,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 12,
-    "not_ready": 2,
-    "ready": 1,
+    "not_measured": 15,
+    "not_ready": 0,
+    "ready": 0,
     "total": 15
   },
   "state_percentile": 63

@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/metro-north-railroad/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/metro-north-railroad/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -247,10 +246,10 @@
         "coverage_pct": 0.0,
         "covered_trips": 0,
         "drift": {
-          "median_seconds": 240,
-          "observations": 250,
-          "on_time_share_pct": 63.2,
-          "p90_abs_seconds": 840
+          "median_seconds": 120,
+          "observations": 336,
+          "on_time_share_pct": 66.4,
+          "p90_abs_seconds": 540
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
@@ -285,7 +284,7 @@
       "name": "realtime",
       "score": 49.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 240s behind schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 120s behind schedule.",
       "weight": 0.2
     }
   },

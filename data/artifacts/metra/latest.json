@@ -295,18 +295,6 @@
       "weight": 0.2
     }
   },
-  "confidence": {
-    "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "provisional",
-    "measured_categories": 3,
-    "notes": [
-      "Realtime quality was not measured this run. It does not count against the grade.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
-    ],
-    "rt_windows": 0,
-    "total_categories": 4
-  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -343,7 +331,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "ntd_id_alignment": {
     "detail": "Your feed's agency_id is METRA; your National Transit Database ID is 50118. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
     "feed_agency_ids": [
@@ -531,15 +519,8 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.7",
-  "shapes_readiness": {
-    "detail": "No trips in this feed have a shape_id linked to a row in shapes.txt.",
-    "fix": "Add shapes.txt with a shape_id for each trip's path, and set trips.shape_id to match. Reduced, Rural, and Tribal NTD reporters need this in their published GTFS starting Report Year 2026; Full Reporters needed it in Report Year 2025.",
-    "status": "not_ready",
-    "total_trips": 4928,
-    "trips_with_shape": 0
-  },
-  "snapshot_date": "2026-07-06",
+  "schema_version": "1.4",
+  "snapshot_date": "2026-07-04",
   "top_fixes": [
     {
       "code": "scorecard_no_expiry_date",

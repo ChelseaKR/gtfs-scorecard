@@ -255,54 +255,41 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 96.5,
-        "covered_trips": 385,
+        "coverage_pct": 97.2,
+        "covered_trips": 246,
         "drift": {
-          "median_seconds": 76,
-          "observations": 10573,
-          "on_time_share_pct": 81.2,
-          "p90_abs_seconds": 303
+          "median_seconds": 111,
+          "observations": 7283,
+          "on_time_share_pct": 78.8,
+          "p90_abs_seconds": 346
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 399,
-        "vehicles_checked": 1168,
-        "vehicles_on_route_pct": 94.3,
-        "worst_lag_seconds": 20
+        "scheduled_trips_in_window": 253,
+        "vehicles_checked": 766,
+        "vehicles_on_route_pct": 91.0,
+        "worst_lag_seconds": 22
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 14,
+          "count": 7,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 1.2,
+          "points": 1.0,
           "severity": "WARNING",
-          "what": "14 of 399 trips scheduled during the sampling window had no live predictions.",
+          "what": "7 of 253 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 97.9,
+      "score": 97.7,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 96.5% of scheduled trips had live predictions; 94.3% of vehicles on their route; predictions ran a median of 76s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 97.2% of scheduled trips had live predictions; 91.0% of vehicles on their route; predictions ran a median of 111s behind schedule.",
       "weight": 0.2
     }
-  },
-  "confidence": {
-    "feed_age_days": 0,
-    "fetch_source": "origin",
-    "level": "high",
-    "measured_categories": 4,
-    "notes": [
-      "All four score categories were measured this run.",
-      "Realtime was sampled in one bounded window of 9 snapshots.",
-      "The feed was downloaded from the agency's own URL."
-    ],
-    "rt_windows": 1,
-    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -313,7 +300,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 111 days.",
+        "detail": "Service data covers the next 113 days.",
         "key": "current",
         "met": true
       },
@@ -339,7 +326,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -112.87219,
@@ -372,7 +359,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 111 days.",
+        "detail": "Service data covers the next 113 days.",
         "key": "current",
         "status": "ready"
       }
@@ -382,9 +369,9 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 10.0,
-    "margin_to_next_band": 0.0,
-    "score": 80.0
+    "margin_to_lower_band": 9.9,
+    "margin_to_next_band": 0.1,
+    "score": 79.9
   },
   "recommendations": [
     {
@@ -410,6 +397,11 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
+  "recompute": {
+    "as_of": "2026-07-06",
+    "feed_fetched_date": "2026-07-05",
+    "kind": "freshness"
+  },
   "routability": {
     "boardable_stops": 7941,
     "findings": [],
@@ -1660,13 +1652,7 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.7",
-  "shapes_readiness": {
-    "detail": "All 35993 trips have a shape in shapes.txt.",
-    "status": "ready",
-    "total_trips": 35993,
-    "trips_with_shape": 35993
-  },
+  "schema_version": "1.4",
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

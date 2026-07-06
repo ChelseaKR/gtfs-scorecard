@@ -3,39 +3,15 @@
   "changes": [
     {
       "date": "2026-07-06",
-      "from_grade": "C",
-      "from_score": 73.4,
-      "id": "detroit-department-of-transportation-ddot",
-      "name": "Detroit Department of Transportation (DDOT)",
-      "regressed": true,
-      "score_delta": -37.4,
-      "since": "2026-07-05",
-      "to_grade": "F",
-      "to_score": 36.0
-    },
-    {
-      "date": "2026-07-06",
-      "from_grade": "F",
-      "from_score": 56.8,
-      "id": "port-authority-of-allegheny-county",
-      "name": "Port Authority of Allegheny County",
-      "regressed": true,
-      "score_delta": -7.7,
-      "since": "2026-07-05",
-      "to_grade": "F",
-      "to_score": 49.1
-    },
-    {
-      "date": "2026-07-06",
       "from_grade": "D",
       "from_score": 66.2,
       "id": "via-mobility-2395",
       "name": "Via Mobility",
       "regressed": true,
-      "score_delta": -6.9,
+      "score_delta": -6.5,
       "since": "2026-07-05",
       "to_grade": "F",
-      "to_score": 59.3
+      "to_score": 59.7
     },
     {
       "date": "2026-07-06",
@@ -44,22 +20,10 @@
       "id": "spirit-bus-2202",
       "name": "Spirit Bus",
       "regressed": true,
-      "score_delta": -4.6,
+      "score_delta": -3.5,
       "since": "2026-07-05",
       "to_grade": "D",
-      "to_score": 62.1
-    },
-    {
-      "date": "2026-07-06",
-      "from_grade": "F",
-      "from_score": 59.8,
-      "id": "springfield-mass-transit-district-smtd",
-      "name": "Springfield Mass Transit District (SMTD)",
-      "regressed": true,
-      "score_delta": -4.4,
-      "since": "2026-07-05",
-      "to_grade": "F",
-      "to_score": 55.4
+      "to_score": 63.2
     },
     {
       "date": "2026-07-06",
@@ -68,10 +32,10 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "regressed": true,
-      "score_delta": -4.3,
+      "score_delta": -3.0,
       "since": "2026-07-05",
       "to_grade": "D",
-      "to_score": 66.6
+      "to_score": 67.9
     },
     {
       "date": "2026-07-06",
@@ -316,26 +280,14 @@
     {
       "date": "2026-07-06",
       "from_grade": "F",
-      "from_score": 46.3,
-      "id": "chautauqua-area-regional-transit-system-carts",
-      "name": "Chautauqua Area Regional Transit System (CARTS)",
-      "regressed": false,
-      "score_delta": 7.9,
-      "since": "2026-07-05",
-      "to_grade": "F",
-      "to_score": 54.2
-    },
-    {
-      "date": "2026-07-06",
-      "from_grade": "F",
       "from_score": 59.7,
       "id": "sandy-area-metro-sam-2739",
       "name": "Static feed for realtime",
       "regressed": false,
-      "score_delta": 5.8,
+      "score_delta": 5.6,
       "since": "2026-07-05",
       "to_grade": "D",
-      "to_score": 65.5
+      "to_score": 65.3
     },
     {
       "date": "2026-07-06",
@@ -411,18 +363,6 @@
     },
     {
       "date": "2026-07-06",
-      "from_grade": "F",
-      "from_score": 48.2,
-      "id": "lewis-county-public-transportation",
-      "name": "Lewis County Public Transportation",
-      "regressed": false,
-      "score_delta": 1.7,
-      "since": "2026-07-05",
-      "to_grade": "F",
-      "to_score": 49.9
-    },
-    {
-      "date": "2026-07-06",
       "from_grade": "B",
       "from_score": 83.9,
       "id": "nyc-ferry",
@@ -446,8 +386,8 @@
       "to_score": 52.5
     }
   ],
-  "count": 37,
-  "generated_at": "2026-07-06T16:47:44+00:00",
+  "count": 32,
+  "generated_at": "2026-07-06T16:48:38+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

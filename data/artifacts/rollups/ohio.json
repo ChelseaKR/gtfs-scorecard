@@ -48,7 +48,7 @@
     "stale": 8,
     "total": 9
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 6,
@@ -56,34 +56,6 @@
     "F": 11
   },
   "members": [
-    {
-      "annual_trips": 13578716,
-      "attention_reason": "Service data expires in 40 day(s)",
-      "days_until_expiry": 40,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "cincinnati-metro",
-      "name": "Cincinnati Metro",
-      "needs_attention": true,
-      "score": 77.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": 192142,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1878,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "butler-county-regional-transit-authority",
-      "name": "Butler County Regional Transit Authority",
-      "needs_attention": true,
-      "score": 36.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -94,7 +66,7 @@
       "name": "Western Reserve Transit Authority",
       "needs_attention": true,
       "score": 16.9,
-      "shapes_status": "at_risk",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -122,7 +94,7 @@
       "name": "Stark Area Regional Transit Authority (SARTA)",
       "needs_attention": true,
       "score": 29.2,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -136,7 +108,21 @@
       "name": "Akron Metro Regional Transit Authority (METRO)",
       "needs_attention": true,
       "score": 33.4,
-      "shapes_status": "ready",
+      "shapes_status": null,
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1878,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "butler-county-regional-transit-authority",
+      "name": "Butler County Regional Transit Authority",
+      "needs_attention": true,
+      "score": 36.8,
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -192,7 +178,7 @@
       "name": "Athens Public Transit",
       "needs_attention": true,
       "score": 50.3,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -234,9 +220,23 @@
       "name": "Cuyahoga Valley Scenic Railroad",
       "needs_attention": true,
       "score": 60.7,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 40 day(s)",
+      "days_until_expiry": 40,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "cincinnati-metro",
+      "name": "Cincinnati Metro",
+      "needs_attention": true,
+      "score": 77.5,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -267,7 +267,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 12349881,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 62,
       "expiry_status": "current",
@@ -358,11 +358,11 @@
   },
   "schema_version": "1.7",
   "shapes_readiness": {
-    "at_risk": 1,
-    "not_measured": 15,
+    "at_risk": 0,
+    "not_measured": 20,
     "not_ready": 0,
-    "ready": 5,
+    "ready": 1,
     "total": 21
   },
-  "state_percentile": 52
+  "state_percentile": 50
 }

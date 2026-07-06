@@ -63,7 +63,7 @@
     "stale": 12,
     "total": 20
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "A": 3,
     "B": 2,
@@ -82,7 +82,7 @@
       "name": "Mountain Line",
       "needs_attention": true,
       "score": 28.3,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -165,8 +165,8 @@
       "id": "suntran",
       "name": "SunTran",
       "needs_attention": true,
-      "score": 47.3,
-      "shapes_status": "ready",
+      "score": 47.2,
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -278,7 +278,7 @@
       "name": "SunTran",
       "needs_attention": true,
       "score": 55.7,
-      "shapes_status": "ready",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -417,8 +417,8 @@
       "id": "valley-metro-vm",
       "name": "Valley Metro (VM)",
       "needs_attention": false,
-      "score": 80.0,
-      "shapes_status": "ready",
+      "score": 79.9,
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -501,9 +501,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 25,
+    "not_measured": 29,
     "not_ready": 0,
-    "ready": 5,
+    "ready": 1,
     "total": 30
   },
   "state_percentile": 65

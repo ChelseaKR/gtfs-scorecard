@@ -33,7 +33,7 @@
     "stale": 0,
     "total": 2
   },
-  "generated_at": "2026-07-06T16:47:27+00:00",
+  "generated_at": "2026-07-06T16:48:21+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 1,
@@ -78,12 +78,12 @@
       "name": "PATCO Speedline",
       "needs_attention": true,
       "score": 94.8,
-      "shapes_status": "at_risk",
+      "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Remove past service periods the next time you export the feed."
     },
     {
-      "annual_trips": 222475309,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 172,
       "expiry_status": "current",
@@ -97,7 +97,7 @@
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
     {
-      "annual_trips": 222475309,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 172,
       "expiry_status": "current",
@@ -146,8 +146,8 @@
   },
   "schema_version": "1.7",
   "shapes_readiness": {
-    "at_risk": 1,
-    "not_measured": 5,
+    "at_risk": 0,
+    "not_measured": 6,
     "not_ready": 1,
     "ready": 0,
     "total": 7

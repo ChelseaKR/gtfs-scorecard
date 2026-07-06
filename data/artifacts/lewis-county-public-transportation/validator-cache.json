@@ -354,6 +354,17 @@
         "total": 2
       },
       {
+        "code": "expired_calendar",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "serviceId": "OF-OB 2000 WD"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
         "code": "missing_feed_contact_email_and_url",
         "sample_notices": [
           {
@@ -423,13 +434,14 @@
         "total": 3
       },
       {
-        "code": "big_gap_in_service",
+        "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
-            "gapDurationDays": 21,
-            "gapEndDate": "2026-07-30",
-            "gapStartDate": "2026-07-08",
-            "serviceId": "OF-OB 2000 WD"
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 772,
+            "serviceId": "OF-OB 2000 WD",
+            "serviceWindowEndDate": "2025-09-01",
+            "serviceWindowStartDate": "2024-05-20"
           }
         ],
         "severity": "INFO",
@@ -450,6 +462,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "ab0d7964ab2e9e137dbd7b06334c31f78b64e184fd5fdbdeedc817ddcad9e05a",
+  "sha256": "738ffbf9ad8ec1792560c65b3b015f8adb71192345e6213f6228315e8e43799f",
   "validator_version": "8.0.1"
 }

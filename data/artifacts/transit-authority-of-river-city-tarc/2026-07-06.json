@@ -335,19 +335,6 @@
       "weight": 0.2
     }
   },
-  "confidence": {
-    "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "medium",
-    "measured_categories": 4,
-    "notes": [
-      "All four score categories were measured this run.",
-      "Realtime was sampled in one bounded window of 9 snapshots.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
-    ],
-    "rt_windows": 1,
-    "total_categories": 4
-  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -357,7 +344,7 @@
         "met": false
       },
       {
-        "detail": "Service data expired 394 days ago.",
+        "detail": "Service data expired 392 days ago.",
         "key": "current",
         "met": false
       },
@@ -368,7 +355,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 394 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 392 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -384,7 +371,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-04T00:00:00+00:00",
   "geo": {
     "bbox": [
       -85.89713,
@@ -414,13 +401,13 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data expired 394 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 392 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 394 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 392 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -441,6 +428,11 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
+  "recompute": {
+    "as_of": "2026-07-06",
+    "feed_fetched_date": "2026-07-05",
+    "kind": "freshness"
+  },
   "routability": {
     "boardable_stops": 3460,
     "findings": [],
@@ -723,13 +715,7 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.7",
-  "shapes_readiness": {
-    "detail": "All 2901 trips have a shape in shapes.txt.",
-    "status": "ready",
-    "total_trips": 2901,
-    "trips_with_shape": 2901
-  },
+  "schema_version": "1.4",
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
