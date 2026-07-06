@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 23,
-        "trips": 976,
+        "trips": 508,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 69.6,
         "wheelchair_marked_accessible_pct": 69.6,
@@ -73,13 +77,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 976,
+          "count": 508,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "976 of 976 trips have no headsign.",
+          "what": "508 of 508 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -177,8 +181,8 @@
       "details": {
         "days_until_expiry": 118,
         "feed_end_date": "2026-11-01",
-        "feed_start_date": "2026-06-24",
-        "feed_version": "UTC: 24-Jun-2026 19:51",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "UTC: 06-Jul-2026 18:44",
         "has_feed_info": true,
         "last_service_date": "2026-11-01",
         "seasonal_boundary": false,
@@ -198,6 +202,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -207,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 127 days.",
+        "detail": "Service data covers the next 118 days.",
         "key": "current",
         "met": true
       },
@@ -223,11 +239,17 @@
   "feed": {
     "license_note": "License: http://assets.511.org/pdf/nextgen/developers/511_Data_Agreement_Final.pdf",
     "reachable": true,
-    "sha256": "c35f1a16f0a1ef6cef772b9f158dbbbaaebb4b6c01aa0ccda76bf4298c795d31",
-    "size_bytes": 67880,
+    "sha256": "5cacc732794e02ffe8be5ea2c977595865e193334cd30465ccc1605956cef652",
+    "size_bytes": 55664,
     "static_url": "https://data.trilliumtransit.com/gtfs/sfbayferry-ca-us/sfbayferry-ca-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/sfbayferry-ca-us/sfbayferry-ca-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.41209,
@@ -240,7 +262,7 @@
     "stop_count": 23
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "873"
     ],
@@ -259,13 +281,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 127 days.",
+        "detail": "Service data covers the next 118 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "A",
@@ -297,11 +319,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 15,
     "findings": [
@@ -319,22 +336,115 @@
     ],
     "orphan_stops": 2,
     "single_stop_trips": 0,
-    "trips_total": 976
+    "trips_total": 508
+  },
+  "route_map": {
+    "drawn_route_count": 7,
+    "has_shapes": true,
+    "path": "data/artifacts/san-francisco-bay-area-water-emergency-transportation-authority-weta/geometry.geojson",
+    "route_count": 7,
+    "routes": [
+      {
+        "color": "008C99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11110",
+        "label": "VJO",
+        "long": "Vallejo",
+        "short": "VJO",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "851F83",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "11112",
+        "label": "SSF",
+        "long": "South San Francisco",
+        "short": "SSF",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "C74A5D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "11113",
+        "label": "HB",
+        "long": "Harbor Bay",
+        "short": "HB",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "4FAB47",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11114",
+        "label": "OA",
+        "long": "Oakland & Alameda",
+        "short": "OA",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "004576",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "12419",
+        "label": "RCH",
+        "long": "Richmond",
+        "short": "RCH",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "DF7A1C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "19417",
+        "label": "SEA",
+        "long": "Alameda Seaplane",
+        "short": "SEA",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "FFD400",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "77075",
+        "label": "OAS",
+        "long": "Oakland Alameda Water Shuttle",
+        "short": "OAS",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      }
+    ],
+    "stop_count": 23,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 508 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 508,
+    "trips_with_shape": 508
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
       "code": "scorecard_missing_headsigns",
-      "count": 976,
+      "count": 508,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "976 of 976 trips have no headsign.",
+      "what": "508 of 508 trips have no headsign.",
       "why": "Riders at the stop can't tell which direction a bus is going."
     },
     {

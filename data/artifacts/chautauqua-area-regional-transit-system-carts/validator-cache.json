@@ -2,48 +2,6 @@
   "report": {
     "notices": [
       {
-        "code": "trip_distance_exceeds_shape_distance",
-        "sample_notices": [
-          {
-            "geoDistanceToShape": 21.988574323857566,
-            "maxShapeDistanceTraveled": 18377.805031293425,
-            "maxTripDistanceTraveled": 18377.81,
-            "shapeId": "f66dff84-fe25-4723-b595-c9b09d3bc9e5",
-            "tripId": "CARTS-Green-01-01"
-          },
-          {
-            "geoDistanceToShape": 21.988574323857566,
-            "maxShapeDistanceTraveled": 18377.805031293425,
-            "maxTripDistanceTraveled": 18377.81,
-            "shapeId": "f66dff84-fe25-4723-b595-c9b09d3bc9e5",
-            "tripId": "CARTS-Green-01-02"
-          },
-          {
-            "geoDistanceToShape": 21.988574323857566,
-            "maxShapeDistanceTraveled": 18377.805031293425,
-            "maxTripDistanceTraveled": 18377.81,
-            "shapeId": "f66dff84-fe25-4723-b595-c9b09d3bc9e5",
-            "tripId": "CARTS-Green-01-03"
-          },
-          {
-            "geoDistanceToShape": 21.988574323857566,
-            "maxShapeDistanceTraveled": 18377.805031293425,
-            "maxTripDistanceTraveled": 18377.81,
-            "shapeId": "f66dff84-fe25-4723-b595-c9b09d3bc9e5",
-            "tripId": "CARTS-Green-01-04"
-          },
-          {
-            "geoDistanceToShape": 21.988574323857566,
-            "maxShapeDistanceTraveled": 18377.805031293425,
-            "maxTripDistanceTraveled": 18377.81,
-            "shapeId": "f66dff84-fe25-4723-b595-c9b09d3bc9e5",
-            "tripId": "CARTS-Green-01-06"
-          }
-        ],
-        "severity": "ERROR",
-        "total": 10
-      },
-      {
         "code": "missing_timepoint_value",
         "sample_notices": [
           {
@@ -67,7 +25,7 @@
             "tripId": "CARTS-Falconer-04-02"
           },
           {
-            "csvRowNumber": 137,
+            "csvRowNumber": 17,
             "stopSequence": 1,
             "tripId": "CARTS-Pink-01-01"
           }
@@ -250,7 +208,7 @@
           {
             "fieldName": "route_branding_url",
             "filename": "routes.txt",
-            "index": 8
+            "index": 11
           }
         ],
         "severity": "INFO",
@@ -259,6 +217,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "d173ad173782a43863b5277e9bb93e10124d281854392b67e8cf91754660380a",
+  "sha256": "8de0e0ceb668c0fc96a843cad655fdecfe2ed548f58c2e446eb29448a031dfed",
   "validator_version": "8.0.1"
 }

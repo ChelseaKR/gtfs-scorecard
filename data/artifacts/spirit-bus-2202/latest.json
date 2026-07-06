@@ -200,18 +200,18 @@
         "coverage_pct": 0.0,
         "covered_trips": 0,
         "drift": {
-          "median_seconds": -18,
+          "median_seconds": 144,
           "observations": 6,
-          "on_time_share_pct": 66.7,
-          "p90_abs_seconds": 271
+          "on_time_share_pct": 33.3,
+          "p90_abs_seconds": 447
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 2,
-        "vehicles_checked": 1,
+        "vehicles_checked": 3,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 3
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
@@ -229,7 +229,7 @@
       "name": "realtime",
       "score": 65.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 18s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 144s behind schedule.",
       "weight": 0.2
     }
   },
@@ -271,7 +271,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "8563710a6ebc2ee51d4f29bcf6ec6fc3f8e58793193db9e3309a3c8fd7fe90d9",
+    "sha256": "1076058fd177dc959a5105473381bd2e84323cbc1367d36d62fa0bd216eee7bd",
     "size_bytes": 34985,
     "static_url": "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
   },

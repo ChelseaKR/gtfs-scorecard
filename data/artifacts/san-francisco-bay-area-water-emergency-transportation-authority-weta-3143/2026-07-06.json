@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 23,
-        "trips": 982,
+        "trips": 508,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 69.6,
         "wheelchair_marked_accessible_pct": 69.6,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 982,
+          "count": 508,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "982 of 982 trips have no headsign.",
+          "what": "508 of 508 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -117,26 +117,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 49,
-          "WARNING": 6
+          "WARNING": 2
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "expired_calendar",
-          "count": 4,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
         {
           "code": "stop_without_stop_time",
           "count": 2,
@@ -183,17 +172,17 @@
         }
       ],
       "name": "correctness",
-      "score": 90.0,
+      "score": 94.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 55 instances (0 error, 6 warning, 49 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 51 instances (0 error, 2 warning, 49 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 118,
         "feed_end_date": "2026-11-01",
-        "feed_start_date": "2026-06-24",
-        "feed_version": "UTC: 24-Jun-2026 19:51",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "UTC: 06-Jul-2026 18:44",
         "has_feed_info": true,
         "last_service_date": "2026-11-01",
         "seasonal_boundary": false,
@@ -213,6 +202,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -222,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 121 days.",
+        "detail": "Service data covers the next 118 days.",
         "key": "current",
         "met": true
       },
@@ -238,11 +239,17 @@
   "feed": {
     "license_note": "License: https://opendatacommons.org/licenses/by/summary/",
     "reachable": true,
-    "sha256": "8c10f2ea37edb0fe33f7571394e481c0c9a798c393e8b1ddd217d06c36b2c15d",
-    "size_bytes": 72555,
+    "sha256": "657ac4c4f92697b94f1f8f1bbd0f66dad678773fd87eb19be720f72c0a5436fc",
+    "size_bytes": 58758,
     "static_url": "https://gtfs.sanfranciscobayferry.com/gtfs.zip"
   },
-  "generated_at": "2026-07-03T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.41209,
@@ -274,7 +281,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 121 days.",
+        "detail": "Service data covers the next 118 days.",
         "key": "current",
         "status": "ready"
       }
@@ -283,10 +290,10 @@
     "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "B",
-    "margin_to_lower_band": 8.6,
-    "margin_to_next_band": 1.4,
-    "score": 88.6
+    "grade": "A",
+    "margin_to_lower_band": 0.3,
+    "margin_to_next_band": null,
+    "score": 90.3
   },
   "recommendations": [
     {
@@ -312,11 +319,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 15,
     "findings": [
@@ -334,7 +336,7 @@
     ],
     "orphan_stops": 2,
     "single_stop_trips": 0,
-    "trips_total": 982
+    "trips_total": 508
   },
   "route_map": {
     "drawn_route_count": 7,
@@ -424,19 +426,25 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 508 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 508,
+    "trips_with_shape": 508
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
       "code": "scorecard_missing_headsigns",
-      "count": 982,
+      "count": 508,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "982 of 982 trips have no headsign.",
+      "what": "508 of 508 trips have no headsign.",
       "why": "Riders at the stop can't tell which direction a bus is going."
     },
     {
@@ -452,16 +460,16 @@
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
-      "code": "expired_calendar",
-      "count": 4,
-      "effort": "One setting in most export tools.",
-      "fix": "Remove past service periods the next time you export the feed.",
+      "code": "stop_without_stop_time",
+      "count": 2,
+      "effort": "A review pass in your scheduling software.",
+      "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",
       "points": 4.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "Some service calendars in the feed have already expired.",
-      "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+      "what": "Some stops exist in the feed but no trip ever stops at them.",
+      "why": "Riders may walk to a stop where no bus is scheduled to arrive."
     }
   ],
   "validator_version": "8.0.1"

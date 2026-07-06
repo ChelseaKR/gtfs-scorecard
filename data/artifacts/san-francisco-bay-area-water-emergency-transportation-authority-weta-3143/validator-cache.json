@@ -2,29 +2,6 @@
   "report": {
     "notices": [
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "serviceId": "c_71963_b_86947_d_96"
-          },
-          {
-            "csvRowNumber": 8,
-            "serviceId": "c_71765_b_86232_d_96"
-          },
-          {
-            "csvRowNumber": 9,
-            "serviceId": "c_71765_b_86232_d_31"
-          },
-          {
-            "csvRowNumber": 10,
-            "serviceId": "20260309_20260627_ssf_pm2_2_deadhead"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 4
-      },
-      {
         "code": "stop_without_stop_time",
         "sample_notices": [
           {
@@ -100,28 +77,28 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 102,
-            "serviceId": "c_71765_b_86232_d_96",
-            "serviceWindowEndDate": "2026-06-27",
-            "serviceWindowStartDate": "2026-03-14"
+            "daysBeforeFeedStart": 2,
+            "serviceId": "c_71765_b_86948_d_96",
+            "serviceWindowEndDate": "2026-11-01",
+            "serviceWindowStartDate": "2026-07-04"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 107,
-            "serviceId": "c_71765_b_86232_d_31",
-            "serviceWindowEndDate": "2026-06-25",
-            "serviceWindowStartDate": "2026-03-09"
+            "daysBeforeFeedStart": 7,
+            "serviceId": "c_71765_b_86948_d_31",
+            "serviceWindowEndDate": "2026-10-30",
+            "serviceWindowStartDate": "2026-06-29"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 103,
+            "daysBeforeFeedStart": 115,
             "serviceId": "c_71798_b_86549_d_112",
             "serviceWindowEndDate": "2026-11-01",
             "serviceWindowStartDate": "2026-03-13"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 106,
+            "daysBeforeFeedStart": 118,
             "serviceId": "c_71798_b_86549_d_14",
             "serviceWindowEndDate": "2026-10-29",
             "serviceWindowStartDate": "2026-03-10"
@@ -133,6 +110,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "8c10f2ea37edb0fe33f7571394e481c0c9a798c393e8b1ddd217d06c36b2c15d",
+  "sha256": "657ac4c4f92697b94f1f8f1bbd0f66dad678773fd87eb19be720f72c0a5436fc",
   "validator_version": "8.0.1"
 }

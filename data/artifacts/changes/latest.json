@@ -3,6 +3,18 @@
   "changes": [
     {
       "date": "2026-07-06",
+      "from_grade": "C",
+      "from_score": 78.6,
+      "id": "valley-regional-transit",
+      "name": "Valley Regional Transit",
+      "regressed": true,
+      "score_delta": -32.4,
+      "since": "2026-07-05",
+      "to_grade": "F",
+      "to_score": 46.2
+    },
+    {
+      "date": "2026-07-06",
       "from_grade": "D",
       "from_score": 66.7,
       "id": "spirit-bus-2202",
@@ -15,15 +27,15 @@
     },
     {
       "date": "2026-07-06",
-      "from_grade": "D",
-      "from_score": 66.2,
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
+      "from_grade": "F",
+      "from_score": 59.9,
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
       "regressed": true,
-      "score_delta": -3.4,
+      "score_delta": -4.3,
       "since": "2026-07-05",
-      "to_grade": "D",
-      "to_score": 62.8
+      "to_grade": "F",
+      "to_score": 55.6
     },
     {
       "date": "2026-07-06",
@@ -36,6 +48,18 @@
       "since": "2026-07-05",
       "to_grade": "D",
       "to_score": 68.3
+    },
+    {
+      "date": "2026-07-06",
+      "from_grade": "F",
+      "from_score": 58.7,
+      "id": "cecil-transit-3034",
+      "name": "Cecil Transit",
+      "regressed": true,
+      "score_delta": -1.5,
+      "since": "2026-07-05",
+      "to_grade": "F",
+      "to_score": 57.2
     },
     {
       "date": "2026-07-06",
@@ -280,6 +304,18 @@
     {
       "date": "2026-07-06",
       "from_grade": "F",
+      "from_score": 46.3,
+      "id": "chautauqua-area-regional-transit-system-carts",
+      "name": "Chautauqua Area Regional Transit System (CARTS)",
+      "regressed": false,
+      "score_delta": 7.9,
+      "since": "2026-07-05",
+      "to_grade": "F",
+      "to_score": 54.2
+    },
+    {
+      "date": "2026-07-06",
+      "from_grade": "F",
       "from_score": 53.1,
       "id": "capital-metro",
       "name": "Capital Metro",
@@ -292,18 +328,6 @@
     {
       "date": "2026-07-06",
       "from_grade": "F",
-      "from_score": 59.7,
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "regressed": false,
-      "score_delta": 5.0,
-      "since": "2026-07-05",
-      "to_grade": "D",
-      "to_score": 64.7
-    },
-    {
-      "date": "2026-07-06",
-      "from_grade": "F",
       "from_score": 52.1,
       "id": "radford-transit",
       "name": "Radford Transit",
@@ -312,6 +336,30 @@
       "since": "2026-07-05",
       "to_grade": "F",
       "to_score": 54.8
+    },
+    {
+      "date": "2026-07-06",
+      "from_grade": "D",
+      "from_score": 66.8,
+      "id": "palm-tran",
+      "name": "Palm Tran",
+      "regressed": false,
+      "score_delta": 2.6,
+      "since": "2026-07-05",
+      "to_grade": "D",
+      "to_score": 69.4
+    },
+    {
+      "date": "2026-07-06",
+      "from_grade": "F",
+      "from_score": 59.7,
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "regressed": false,
+      "score_delta": 2.6,
+      "since": "2026-07-05",
+      "to_grade": "D",
+      "to_score": 62.3
     },
     {
       "date": "2026-07-06",
@@ -363,6 +411,30 @@
     },
     {
       "date": "2026-07-06",
+      "from_grade": "F",
+      "from_score": 48.2,
+      "id": "lewis-county-public-transportation",
+      "name": "Lewis County Public Transportation",
+      "regressed": false,
+      "score_delta": 1.7,
+      "since": "2026-07-05",
+      "to_grade": "F",
+      "to_score": 49.9
+    },
+    {
+      "date": "2026-07-06",
+      "from_grade": "B",
+      "from_score": 88.6,
+      "id": "san-francisco-bay-area-water-emergency-transportation-authority-weta-3143",
+      "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+      "regressed": false,
+      "score_delta": 1.7,
+      "since": "2026-07-05",
+      "to_grade": "A",
+      "to_score": 90.3
+    },
+    {
+      "date": "2026-07-06",
       "from_grade": "B",
       "from_score": 83.9,
       "id": "nyc-ferry",
@@ -386,8 +458,8 @@
       "to_score": 52.5
     }
   ],
-  "count": 32,
-  "generated_at": "2026-07-06T19:25:33+00:00",
+  "count": 38,
+  "generated_at": "2026-07-06T21:26:34+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

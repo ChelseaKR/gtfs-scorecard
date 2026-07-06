@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/palm-tran/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/palm-tran/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -43,6 +42,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -77,8 +80,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 2695,
-        "trips": 5148,
+        "stops": 2688,
+        "trips": 2824,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -87,24 +90,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 2695,
+          "count": 2688,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "2695 of 2695 stops don't say whether a wheelchair user can board there.",
+          "what": "2688 of 2688 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 5148,
+          "count": 2824,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "5148 of 5148 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2824 of 2824 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -127,18 +130,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 7,
+        "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 0,
-          "WARNING": 4936
+          "WARNING": 3776
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 2718,
+          "count": 2710,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -149,7 +152,7 @@
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 2093,
+          "count": 1021,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -160,18 +163,18 @@
         },
         {
           "code": "fast_travel_between_consecutive_stops",
-          "count": 109,
+          "count": 37,
           "effort": "A few minutes per flagged trip.",
           "fix": "Check the flagged stop times for transposed minutes.",
           "owner": "",
-          "points": 8.0,
+          "points": 6.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "stops_match_shape_out_of_order",
-          "count": 12,
+          "count": 6,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -179,17 +182,6 @@
           "severity": "WARNING",
           "what": "Stops match shape out of order (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "expired_calendar",
-          "count": 2,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
           "code": "missing_feed_contact_email_and_url",
@@ -215,17 +207,17 @@
         }
       ],
       "name": "correctness",
-      "score": 58.0,
+      "score": 64.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 4936 instances (0 error, 4936 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 3776 instances (0 error, 3776 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 75,
         "feed_end_date": "2026-09-19",
-        "feed_start_date": "2026-05-11",
-        "feed_version": "20260511",
+        "feed_start_date": "2026-06-26",
+        "feed_version": "20260626",
         "has_feed_info": true,
         "last_service_date": "2026-09-19",
         "seasonal_boundary": false,
@@ -245,6 +237,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -254,7 +258,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 75 days.",
         "key": "current",
         "met": true
       },
@@ -270,11 +274,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "82b225be5db64eb0301510d28553f3609183b23c3a4855f1b7c199b95565ed34",
-    "size_bytes": 6226665,
+    "sha256": "6e03c07b2252863ac00b5ad0e7e79f38d05e3c4abbf7d4b230c931148e8e39f3",
+    "size_bytes": 3425915,
     "static_url": "http://www.palmtran.org/feed/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://www.palmtran.org/feed/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.7209,
@@ -282,12 +292,12 @@
       -80.03366,
       27.26379
     ],
-    "lat": 26.62856,
-    "lon": -80.09499,
-    "stop_count": 2695
+    "lat": 26.62864,
+    "lon": -80.09492,
+    "stop_count": 2688
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "820"
     ],
@@ -306,87 +316,417 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 75 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 6.8,
-    "margin_to_next_band": 3.2,
-    "score": 66.8
+    "margin_to_lower_band": 9.4,
+    "margin_to_next_band": 0.6,
+    "score": 69.4
   },
   "recommendations": [
     {
       "code": "scorecard_route_color_low_contrast",
-      "count": 10,
+      "count": 9,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (3, 4, 10, 40, 43, and more).",
+      "what": "9 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (3, 4, 10, 40, 43, and more).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 2535,
+      "count": 2528,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "2535 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"DIXIE HWY at 8TH ST\", \"MILITARY TRL at  LARCH AVE\", \"MILITARY TRL at JOHNSON DAIRY RD\", and more).",
+      "what": "2528 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"DIXIE HWY at 8TH ST\", \"MILITARY TRL at  LARCH AVE\", \"MILITARY TRL at JOHNSON DAIRY RD\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 2695,
+    "boardable_stops": 2688,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 5148
+    "trips_total": 2824
+  },
+  "route_map": {
+    "drawn_route_count": 29,
+    "has_shapes": true,
+    "path": "data/artifacts/palm-tran/geometry.geojson",
+    "route_count": 29,
+    "routes": [
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "PBG - BCR via US-1",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF4400",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "N COUNTY X-TOWN via MILITARY",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "WPB - BCR via CONGRESS",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "11FF99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "PBG - WPB VIA CONGRESS",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "PBG - BCR via MILITARY",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "884400",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "RVB X-TOWN via BLUE HERON",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007700",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "WPB X-TOWN via 45TH",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660066",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "PBG -WPB via AUSTRALN/PBL",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "WPB - BYB via HAVERHILL",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAAA00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "WPB - BLG via SR-80 [Ltd Stop Svc]",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA44AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "WPB - PALM BCH INLET",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008888",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "WPB X-TOWN via OKEECHOBEE",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "554433",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "WPB X-TOWN via BELVEDERE",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF44AA",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "46",
+        "label": "46",
+        "long": "WPB - WLN via FOREST HILL",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660055",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "PAHOKEE-S BAY via BELLE GLADE",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "446600",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "GRN - WPB via PURDY/PARKER",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "GRN - LKW via CRESTHAVEN/10TH AVE N",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA00AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "WLN - LKW via LAKE WORTH",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1177FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "VISTA CTR-US1 via JOG/LANTANA",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "118888",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "GRN - LNT via MELALEUCA/6TH AVE S",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "665588",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "LNT - DLB via SEACREST",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA2244",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "BYB X-TOWN via BOYNTON BEACH",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "880077",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "DLB X-TWN via LAKE IDA",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "11CC77",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "DLB X-TWN via ATLANTIC",
+        "short": "81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31780E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "DLB X-TWN via LINTON",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF2222",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "BCR X-TOWN via GLADES",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA8800",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "BCR X-TOWN via PALMETTO PARK",
+        "short": "92",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BB00FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "94",
+        "label": "94",
+        "long": "BOCA RATON-TRS VIA FAU",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "95",
+        "label": "95",
+        "long": "PORT ST LUCIE EXPRESS",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2688,
+    "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 2824 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2824,
+    "trips_with_shape": 2824
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 2695,
+      "count": 2688,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "2695 of 2695 stops don't say whether a wheelchair user can board there.",
+      "what": "2688 of 2688 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 5148,
+      "count": 2824,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "5148 of 5148 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "2824 of 2824 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
       "code": "mixed_case_recommended_field",
-      "count": 2718,
+      "count": 2710,
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
       "owner": "Likely your export tool",

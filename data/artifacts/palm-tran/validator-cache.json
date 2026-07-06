@@ -36,88 +36,88 @@
           }
         ],
         "severity": "WARNING",
-        "total": 2718
+        "total": 2710
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
         "sample_notices": [
           {
-            "geoDistanceToShape": 189.86590976246782,
+            "geoDistanceToShape": 135.9356210318664,
             "match": [
-              26.588169807088548,
-              -80.05206746408211
+              26.711489999999998,
+              -80.0629
             ],
-            "shapeId": "37778_shp-v68",
-            "stopId": "341",
-            "stopName": "DIXIE HWY at VIEW ST",
-            "stopTimeCsvRowNumber": 174115,
-            "tripCsvRowNumber": 95,
-            "tripId": "t7EF-b6B-sl2-v68"
+            "shapeId": "37917_shp-v68",
+            "stopId": "60214",
+            "stopName": "WPB ITC at BAY N",
+            "stopTimeCsvRowNumber": 175239,
+            "tripCsvRowNumber": 324,
+            "tripId": "t7F8-bD3-sl2-v68"
           },
           {
-            "geoDistanceToShape": 190.1750303441925,
+            "geoDistanceToShape": 102.4618895683845,
             "match": [
-              26.59109914085236,
-              -80.05217975134475
+              26.605969995615922,
+              -80.08949966681364
             ],
-            "shapeId": "37778_shp-v68",
-            "stopId": "343",
-            "stopName": "DIXIE HWY at FEDERAL HWY",
-            "stopTimeCsvRowNumber": 174116,
-            "tripCsvRowNumber": 95,
-            "tripId": "t7EF-b6B-sl2-v68"
+            "shapeId": "37917_shp-v68",
+            "stopId": "653",
+            "stopName": "CONGRESS AVE at JFK MEDICAL PLAZA",
+            "stopTimeCsvRowNumber": 175267,
+            "tripCsvRowNumber": 324,
+            "tripId": "t7F8-bD3-sl2-v68"
           },
           {
-            "geoDistanceToShape": 185.31325591177537,
+            "geoDistanceToShape": 117.19446562174231,
             "match": [
-              26.594718140837458,
-              -80.0537095012213
+              26.46154733621957,
+              -80.08157329852037
             ],
-            "shapeId": "37778_shp-v68",
-            "stopId": "346",
-            "stopName": "DIXIE HWY at WASHINGTON AVE",
-            "stopTimeCsvRowNumber": 174117,
-            "tripCsvRowNumber": 95,
-            "tripId": "t7EF-b6B-sl2-v68"
+            "shapeId": "38604_shp-v68",
+            "stopId": "7674",
+            "stopName": "ATLANTIC AVE at  SW 7TH AVE",
+            "stopTimeCsvRowNumber": 166875,
+            "tripCsvRowNumber": 2268,
+            "tripId": "t776-b1901-sl2-v68"
           },
           {
-            "geoDistanceToShape": 190.10613630110268,
+            "geoDistanceToShape": 119.73013920603779,
             "match": [
-              26.597150009339618,
-              -80.05501518297919
+              26.597629999296323,
+              -80.06659986667691
             ],
-            "shapeId": "37778_shp-v68",
-            "stopId": "347",
-            "stopName": "DIXIE HWY at 14TH AVE S",
-            "stopTimeCsvRowNumber": 174118,
-            "tripCsvRowNumber": 95,
-            "tripId": "t7EF-b6B-sl2-v68"
+            "shapeId": "38527_shp-v68",
+            "stopId": "6510",
+            "stopName": "BARTON RD at BARTON ELEM",
+            "stopTimeCsvRowNumber": 7745,
+            "tripCsvRowNumber": 2214,
+            "tripId": "t267-b191F-sl4-v68"
           },
           {
-            "geoDistanceToShape": 190.33651823872674,
+            "geoDistanceToShape": 135.65150008775984,
             "match": [
-              26.598434609365437,
-              -80.05570770840266
+              26.769775147174595,
+              -80.08131143312069
             ],
-            "shapeId": "37778_shp-v68",
-            "stopId": "348",
-            "stopName": "DIXIE HWY at 12TH AVE S",
-            "stopTimeCsvRowNumber": 174119,
-            "tripCsvRowNumber": 95,
-            "tripId": "t7EF-b6B-sl2-v68"
+            "shapeId": "38649_shp-v68",
+            "stopId": "2544",
+            "stopName": "MLK BLVD at AVE S",
+            "stopTimeCsvRowNumber": 7235,
+            "tripCsvRowNumber": 984,
+            "tripId": "t262-bCE7-sl2-v68"
           }
         ],
         "severity": "WARNING",
-        "total": 2093
+        "total": 1021
       },
       {
         "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
-            "arrivalTime2": "17:45:02",
-            "csvRowNumber1": 153227,
-            "csvRowNumber2": 153228,
-            "departureTime1": "17:45:00",
+            "arrivalTime2": "11:44:02",
+            "csvRowNumber1": 74241,
+            "csvRowNumber2": 74242,
+            "departureTime1": "11:44:00",
             "distanceKm": 0.21092929364647647,
             "routeId": "44",
             "speedKph": 379.67272856365764,
@@ -127,14 +127,14 @@
             "stopName2": "JOG RD at VISTA PKWY S",
             "stopSequence1": 0,
             "stopSequence2": 2,
-            "tripCsvRowNumber": 1503,
-            "tripId": "t6D1-b1132-sl2-v68"
+            "tripCsvRowNumber": 1517,
+            "tripId": "t478-b1150-sl4-v68"
           },
           {
-            "arrivalTime2": "17:44:02",
-            "csvRowNumber1": 296965,
-            "csvRowNumber2": 296966,
-            "departureTime1": "17:44:00",
+            "arrivalTime2": "06:41:02",
+            "csvRowNumber1": 11755,
+            "csvRowNumber2": 11756,
+            "departureTime1": "06:41:00",
             "distanceKm": 0.21092929364647647,
             "routeId": "44",
             "speedKph": 379.67272856365764,
@@ -144,14 +144,14 @@
             "stopName2": "JOG RD at VISTA PKWY S",
             "stopSequence1": 0,
             "stopSequence2": 2,
-            "tripCsvRowNumber": 4055,
-            "tripId": "t6D0-b1150-sl4-v67"
+            "tripCsvRowNumber": 1481,
+            "tripId": "t281-b1131-sl2-v68"
           },
           {
-            "arrivalTime2": "18:45:02",
-            "csvRowNumber1": 305389,
-            "csvRowNumber2": 305390,
-            "departureTime1": "18:45:00",
+            "arrivalTime2": "13:40:02",
+            "csvRowNumber1": 99091,
+            "csvRowNumber2": 99092,
+            "departureTime1": "13:40:00",
             "distanceKm": 0.21092929364647647,
             "routeId": "44",
             "speedKph": 379.67272856365764,
@@ -161,14 +161,14 @@
             "stopName2": "JOG RD at VISTA PKWY S",
             "stopSequence1": 0,
             "stopSequence2": 2,
-            "tripCsvRowNumber": 4031,
-            "tripId": "t735-b1133-sl2-v67"
+            "tripCsvRowNumber": 1495,
+            "tripId": "t53C-b1132-sl2-v68"
           },
           {
-            "arrivalTime2": "13:38:02",
-            "csvRowNumber1": 256324,
-            "csvRowNumber2": 256325,
-            "departureTime1": "13:38:00",
+            "arrivalTime2": "14:40:02",
+            "csvRowNumber1": 112988,
+            "csvRowNumber2": 112989,
+            "departureTime1": "14:40:00",
             "distanceKm": 0.21092929364647647,
             "routeId": "44",
             "speedKph": 379.67272856365764,
@@ -178,14 +178,14 @@
             "stopName2": "JOG RD at VISTA PKWY S",
             "stopSequence1": 0,
             "stopSequence2": 2,
-            "tripCsvRowNumber": 4020,
-            "tripId": "t53A-b1131-sl2-v67"
+            "tripCsvRowNumber": 1496,
+            "tripId": "t5A0-b1131-sl2-v68"
           },
           {
-            "arrivalTime2": "06:45:02",
-            "csvRowNumber1": 189810,
-            "csvRowNumber2": 189811,
-            "departureTime1": "06:45:00",
+            "arrivalTime2": "08:44:02",
+            "csvRowNumber1": 34658,
+            "csvRowNumber2": 34659,
+            "departureTime1": "08:44:00",
             "distanceKm": 0.21092929364647647,
             "routeId": "44",
             "speedKph": 379.67272856365764,
@@ -195,12 +195,12 @@
             "stopName2": "JOG RD at VISTA PKWY S",
             "stopSequence1": 0,
             "stopSequence2": 2,
-            "tripCsvRowNumber": 4007,
-            "tripId": "t285-b1132-sl2-v67"
+            "tripCsvRowNumber": 1511,
+            "tripId": "t34C-b114F-sl4-v68"
           }
         ],
         "severity": "WARNING",
-        "total": 109
+        "total": 37
       },
       {
         "code": "stops_match_shape_out_of_order",
@@ -226,44 +226,6 @@
           },
           {
             "match1": [
-              26.71258,
-              -80.06264
-            ],
-            "match2": [
-              26.71153983079644,
-              -80.06291960717375
-            ],
-            "shapeId": "37857_shp-v67",
-            "stopId1": "60208",
-            "stopId2": "602",
-            "stopName1": "WPB ITC at BAY H",
-            "stopName2": "WPB ITC at TRI RAIL",
-            "stopTimeCsvRowNumber1": 178310,
-            "stopTimeCsvRowNumber2": 178309,
-            "tripCsvRowNumber": 3829,
-            "tripId": "t1FE-b10CD-sl2-v67"
-          },
-          {
-            "match1": [
-              26.71258,
-              -80.06264
-            ],
-            "match2": [
-              26.71153983079644,
-              -80.06291960717375
-            ],
-            "shapeId": "37857_shp-v68",
-            "stopId1": "60208",
-            "stopId2": "602",
-            "stopName1": "WPB ITC at BAY H",
-            "stopName2": "WPB ITC at TRI RAIL",
-            "stopTimeCsvRowNumber1": 292,
-            "stopTimeCsvRowNumber2": 291,
-            "tripCsvRowNumber": 1259,
-            "tripId": "t1FE-b10CD-sl2-v68"
-          },
-          {
-            "match1": [
               26.712709999699552,
               -80.06280000001234
             ],
@@ -271,15 +233,15 @@
               26.711537497299652,
               -80.06291705025878
             ],
-            "shapeId": "37780_shp-v67",
+            "shapeId": "38623_shp-v68",
             "stopId1": "60214",
             "stopId2": "602",
             "stopName1": "WPB ITC at BAY N",
             "stopName2": "WPB ITC at TRI RAIL",
-            "stopTimeCsvRowNumber1": 316785,
-            "stopTimeCsvRowNumber2": 316784,
-            "tripCsvRowNumber": 3103,
-            "tripId": "t7F8-bCD-sl2-v67"
+            "stopTimeCsvRowNumber1": 1292,
+            "stopTimeCsvRowNumber2": 1291,
+            "tripCsvRowNumber": 264,
+            "tripId": "t208-bC9-sl2-v68"
           },
           {
             "match1": [
@@ -290,7 +252,7 @@
               26.711533715711177,
               -80.06293171699305
             ],
-            "shapeId": "37854_shp-v68",
+            "shapeId": "38652_shp-v68",
             "stopId1": "60206",
             "stopId2": "602",
             "stopName1": "WPB ITC at BAY F",
@@ -299,25 +261,48 @@
             "stopTimeCsvRowNumber2": 10533,
             "tripCsvRowNumber": 1243,
             "tripId": "t27B-b1005-sl2-v68"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 12
-      },
-      {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 5,
-            "serviceId": "2-v67"
           },
           {
-            "csvRowNumber": 6,
-            "serviceId": "4-v67"
+            "match1": [
+              26.71258,
+              -80.06264
+            ],
+            "match2": [
+              26.71153983079644,
+              -80.06291960717375
+            ],
+            "shapeId": "38601_shp-v68",
+            "stopId1": "60208",
+            "stopId2": "602",
+            "stopName1": "WPB ITC at BAY H",
+            "stopName2": "WPB ITC at TRI RAIL",
+            "stopTimeCsvRowNumber1": 177654,
+            "stopTimeCsvRowNumber2": 177653,
+            "tripCsvRowNumber": 1376,
+            "tripId": "t85C-b10D2-sl2-v68"
+          },
+          {
+            "match1": [
+              26.71258,
+              -80.06264
+            ],
+            "match2": [
+              26.71153983079644,
+              -80.06291960717375
+            ],
+            "shapeId": "38655_shp-v68",
+            "stopId1": "60208",
+            "stopId2": "602",
+            "stopName1": "WPB ITC at BAY H",
+            "stopName2": "WPB ITC at TRI RAIL",
+            "stopTimeCsvRowNumber1": 292,
+            "stopTimeCsvRowNumber2": 291,
+            "tripCsvRowNumber": 1259,
+            "tripId": "t1FE-b10CD-sl2-v68"
           }
         ],
         "severity": "WARNING",
-        "total": 2
+        "total": 6
       },
       {
         "code": "missing_feed_contact_email_and_url",
@@ -345,6 +330,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "82b225be5db64eb0301510d28553f3609183b23c3a4855f1b7c199b95565ed34",
+  "sha256": "6e03c07b2252863ac00b5ad0e7e79f38d05e3c4abbf7d4b230c931148e8e39f3",
   "validator_version": "8.0.1"
 }

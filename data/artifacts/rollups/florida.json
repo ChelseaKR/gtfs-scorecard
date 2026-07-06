@@ -1,6 +1,6 @@
 {
   "agency_count": 52,
-  "average_score": 53.6,
+  "average_score": 53.7,
   "common_fixes": [
     {
       "agencies": 39,
@@ -93,7 +93,7 @@
     "stale": 26,
     "total": 30
   },
-  "generated_at": "2026-07-06T19:25:16+00:00",
+  "generated_at": "2026-07-06T21:26:19+00:00",
   "grade_distribution": {
     "A": 4,
     "C": 6,
@@ -678,20 +678,6 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 75,
-      "expiry_status": "current",
-      "grade": "D",
-      "id": "palm-tran",
-      "name": "Palm Tran",
-      "needs_attention": false,
-      "score": 66.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
       "days_until_expiry": 507,
       "expiry_status": "current",
       "grade": "D",
@@ -700,6 +686,20 @@
       "needs_attention": false,
       "score": 67.4,
       "shapes_status": null,
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 75,
+      "expiry_status": "current",
+      "grade": "D",
+      "id": "palm-tran",
+      "name": "Palm Tran",
+      "needs_attention": false,
+      "score": 69.4,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -838,9 +838,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 49,
+    "not_measured": 48,
     "not_ready": 0,
-    "ready": 3,
+    "ready": 4,
     "total": 52
   },
   "state_percentile": 37

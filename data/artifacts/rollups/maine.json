@@ -33,7 +33,7 @@
     "stale": 3,
     "total": 4
   },
-  "generated_at": "2026-07-06T19:25:16+00:00",
+  "generated_at": "2026-07-06T21:26:19+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 1,
@@ -78,7 +78,7 @@
       "name": "South Portland",
       "needs_attention": true,
       "score": 37.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -147,9 +147,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 6,
+    "not_measured": 5,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 2,
     "total": 7
   },
   "state_percentile": 17

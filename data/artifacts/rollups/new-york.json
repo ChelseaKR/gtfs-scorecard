@@ -1,6 +1,6 @@
 {
   "agency_count": 87,
-  "average_score": 54.9,
+  "average_score": 55.0,
   "common_fixes": [
     {
       "agencies": 70,
@@ -23,12 +23,12 @@
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
     {
-      "agencies": 14,
+      "agencies": 13,
       "code": "trip_distance_exceeds_shape_distance",
       "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 12,
+      "agencies": 13,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
@@ -88,7 +88,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-06T19:25:16+00:00",
+  "generated_at": "2026-07-06T21:26:19+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 2,
@@ -828,28 +828,14 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 178,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "chautauqua-area-regional-transit-system-carts",
-      "name": "Chautauqua Area Regional Transit System (CARTS)",
-      "needs_attention": false,
-      "score": 46.3,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
       "days_until_expiry": 360,
       "expiry_status": "current",
       "grade": "F",
       "id": "lewis-county-public-transportation",
       "name": "Lewis County Public Transportation",
       "needs_attention": false,
-      "score": 48.2,
-      "shapes_status": null,
+      "score": 49.9,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -878,6 +864,20 @@
       "needs_attention": false,
       "score": 53.3,
       "shapes_status": null,
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 178,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "chautauqua-area-regional-transit-system-carts",
+      "name": "Chautauqua Area Regional Transit System (CARTS)",
+      "needs_attention": false,
+      "score": 54.2,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -1324,9 +1324,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 2,
-    "not_measured": 77,
+    "not_measured": 75,
     "not_ready": 0,
-    "ready": 8,
+    "ready": 10,
     "total": 87
   },
   "state_percentile": 41

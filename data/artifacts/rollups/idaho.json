@@ -1,6 +1,6 @@
 {
   "agency_count": 4,
-  "average_score": 64.1,
+  "average_score": 56.0,
   "common_fixes": [
     {
       "agencies": 4,
@@ -13,21 +13,20 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 2,
+      "agencies": 3,
       "code": "scorecard_feed_expired",
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     }
   ],
   "expired": {
-    "lapsed": 0,
+    "lapsed": 1,
     "stale": 2,
-    "total": 2
+    "total": 3
   },
-  "generated_at": "2026-07-06T19:25:16+00:00",
+  "generated_at": "2026-07-06T21:26:19+00:00",
   "grade_distribution": {
     "A": 1,
-    "C": 1,
-    "F": 2
+    "F": 3
   },
   "members": [
     {
@@ -60,17 +59,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 338,
-      "expiry_status": "current",
-      "grade": "C",
+      "attention_reason": "Service window shortened unexpectedly on 2026-07-06",
+      "days_until_expiry": -280,
+      "expiry_status": "lapsed",
+      "grade": "F",
       "id": "valley-regional-transit",
       "name": "Valley Regional Transit",
-      "needs_attention": false,
-      "score": 78.6,
+      "needs_attention": true,
+      "score": 46.2,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
@@ -87,7 +86,7 @@
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     }
   ],
-  "needs_attention": 2,
+  "needs_attention": 3,
   "rollup": {
     "id": "idaho",
     "name": "Idaho agencies"
@@ -100,5 +99,5 @@
     "ready": 1,
     "total": 4
   },
-  "state_percentile": 80
+  "state_percentile": 50
 }

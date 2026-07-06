@@ -178,18 +178,18 @@
         "coverage_pct": 62.5,
         "covered_trips": 5,
         "drift": {
-          "median_seconds": -186,
-          "observations": 18,
-          "on_time_share_pct": 27.8,
-          "p90_abs_seconds": 664
+          "median_seconds": -9,
+          "observations": 21,
+          "on_time_share_pct": 33.3,
+          "p90_abs_seconds": 5630
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 8,
-        "vehicles_checked": 18,
+        "vehicles_checked": 16,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 3
       },
       "findings": [
         {
@@ -202,12 +202,23 @@
           "severity": "WARNING",
           "what": "3 of 8 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 21,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
       "score": 86.9,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 62.5% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 186s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 62.5% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 9s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -249,7 +260,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "f388e18fb5c4a67dd8b0d942098f4e2e53a555cc0c5dc7ce534eed87571a9be6",
+    "sha256": "42be7f92f94ebc4bf528f44c17264f61802b359997d9a3b175554f7422214585",
     "size_bytes": 39754,
     "static_url": "https://passio3.com/towson/passioTransit/gtfs/google_transit.zip"
   },
