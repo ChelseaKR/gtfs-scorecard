@@ -127,14 +127,14 @@
       },
       "findings": [
         {
-          "code": "foreign_key_violation",
+          "code": "empty_file",
           "count": 1,
           "effort": "Varies.",
-          "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
           "points": 12.0,
           "severity": "ERROR",
-          "what": "Foreign key violation (flagged by the MobilityData validator).",
+          "what": "Empty file (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
@@ -219,39 +219,50 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
-        "covered_trips": 1,
+        "coverage_pct": 0.0,
+        "covered_trips": 0,
         "drift": {
-          "median_seconds": 19,
-          "observations": 17,
-          "on_time_share_pct": 52.9,
-          "p90_abs_seconds": 1518
+          "median_seconds": -86,
+          "observations": 42,
+          "on_time_share_pct": 38.1,
+          "p90_abs_seconds": 240
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 1,
-        "vehicles_checked": 6,
-        "vehicles_on_route_pct": 83.3,
-        "worst_lag_seconds": 4
+        "scheduled_trips_in_window": 2,
+        "vehicles_checked": 15,
+        "vehicles_on_route_pct": 86.7,
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 2,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 35.0,
+          "severity": "WARNING",
+          "what": "2 of 2 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
           "code": "scorecard_rt_vehicles_off_route",
-          "count": 1,
+          "count": 2,
           "effort": "A vendor support ticket with the trip ids attached.",
           "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
           "owner": "",
-          "points": 2.5,
+          "points": 2.0,
           "severity": "WARNING",
-          "what": "1 of 6 sampled vehicle positions were far from their assigned route (worst: 266 m).",
+          "what": "2 of 15 sampled vehicle positions were far from their assigned route (worst: 473 m).",
           "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         }
       ],
       "name": "realtime",
-      "score": 97.5,
+      "score": 63.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 83.3% of vehicles on their route; predictions ran a median of 19s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; 86.7% of vehicles on their route; predictions ran a median of 86s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -293,8 +304,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "8aafc90e43a4192da0c848ff81b64714714f0e8f5651147889565270cc02b3ec",
-    "size_bytes": 217793,
+    "sha256": "a55ff775fd25d7ee4f5143a49b20235b479cbc8d95d5a0d5849b224c30c3b8f5",
+    "size_bytes": 217733,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -344,10 +355,10 @@
     "summary": "This feed is close to NTD-ready. 1 validator error to resolve. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 6.2,
-    "margin_to_next_band": 3.8,
-    "score": 66.2
+    "grade": "F",
+    "margin_to_lower_band": 59.3,
+    "margin_to_next_band": 0.7,
+    "score": 59.3
   },
   "recommendations": [
     {
@@ -512,16 +523,28 @@
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
-      "code": "foreign_key_violation",
+      "code": "empty_file",
       "count": 1,
       "effort": "Varies.",
-      "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 12.0,
       "rank": 1,
       "severity": "ERROR",
-      "what": "Foreign key violation (flagged by the MobilityData validator).",
+      "what": "Empty file (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 2,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 35.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2 of 2 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
@@ -530,22 +553,10 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "WARNING",
       "what": "169 of 169 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
-    },
-    {
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 397,
-      "effort": "Often one default setting in your export.",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "owner": "Likely your export tool",
-      "points": 15.0,
-      "rank": 3,
-      "severity": "WARNING",
-      "what": "397 of 397 trips don't say whether the vehicle is wheelchair accessible.",
-      "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],
   "validator_version": "8.0.1"

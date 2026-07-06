@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 14,
-        "trips": 143,
+        "trips": 151,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 143,
+          "count": 151,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "143 of 143 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "151 of 151 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -181,8 +181,8 @@
       "details": {
         "days_until_expiry": 52,
         "feed_end_date": "2026-08-27",
-        "feed_start_date": "2026-07-02",
-        "feed_version": "UTC: 02-Jul-2026 17:40",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "UTC: 06-Jul-2026 15:23",
         "has_feed_info": true,
         "last_service_date": "2026-08-27",
         "seasonal_boundary": false,
@@ -202,6 +202,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -211,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 54 days.",
+        "detail": "Service data covers the next 52 days.",
         "key": "current",
         "met": true
       },
@@ -227,8 +239,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d39919a7a828025200682281862d78bdfb922af69b84e073feebc3727f1f878e",
-    "size_bytes": 35536,
+    "sha256": "4fee7f411bc9e82a465bcd98d4bf1897566e2e275520ae027aea28a8775acc64",
+    "size_bytes": 36039,
     "static_url": "https://data.trilliumtransit.com/gtfs/dartmouth-vt-us/dartmouth-vt-us.zip"
   },
   "fetch": {
@@ -237,7 +249,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -72.28963,
@@ -269,7 +281,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 54 days.",
+        "detail": "Service data covers the next 52 days.",
         "key": "current",
         "status": "ready"
       }
@@ -318,17 +330,12 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 14,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 143
+    "trips_total": 151
   },
   "route_map": {
     "drawn_route_count": 2,
@@ -363,7 +370,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 151 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 151,
+    "trips_with_shape": 151
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
@@ -380,14 +393,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 143,
+      "count": 151,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "143 of 143 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "151 of 151 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

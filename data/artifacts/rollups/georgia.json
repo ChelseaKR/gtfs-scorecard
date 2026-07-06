@@ -58,7 +58,7 @@
     "stale": 12,
     "total": 13
   },
-  "generated_at": "2026-07-06T13:27:44+00:00",
+  "generated_at": "2026-07-06T16:47:27+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 2,
@@ -75,7 +75,7 @@
       "name": "Chatham Area Transit (CAT)",
       "needs_attention": true,
       "score": 8.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -229,7 +229,7 @@
       "name": "Xpress",
       "needs_attention": true,
       "score": 56.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -243,7 +243,7 @@
       "name": "Xpress",
       "needs_attention": true,
       "score": 56.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -271,8 +271,8 @@
       "name": "Cobb Community Transit (CCT)",
       "needs_attention": false,
       "score": 26.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-04",
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-07-06",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
@@ -285,8 +285,8 @@
       "name": "Xpress",
       "needs_attention": false,
       "score": 26.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-04",
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-07-06",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
@@ -326,9 +326,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 17,
-    "not_ready": 0,
-    "ready": 1,
+    "not_measured": 12,
+    "not_ready": 2,
+    "ready": 4,
     "total": 18
   },
   "state_percentile": 9

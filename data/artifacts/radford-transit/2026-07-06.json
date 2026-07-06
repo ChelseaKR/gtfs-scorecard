@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/radford-transit/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/radford-transit/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -69,7 +70,7 @@
           "pathway_count": 0
         },
         "stops": 142,
-        "trips": 431,
+        "trips": 374,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -89,13 +90,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 431,
+          "count": 374,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "431 of 431 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "374 of 374 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -111,13 +112,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 431,
+          "count": 374,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "431 of 431 trips have no headsign.",
+          "what": "374 of 374 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         }
       ],
@@ -129,22 +130,22 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 7,
+        "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 7,
-          "WARNING": 70
+          "INFO": 6,
+          "WARNING": 65
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 53,
+          "count": 50,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
-          "points": 8.0,
+          "points": 6.0,
           "severity": "WARNING",
           "what": "Some stops exist in the feed but no trip ever stops at them.",
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
@@ -158,17 +159,6 @@
           "points": 6.0,
           "severity": "WARNING",
           "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "stops_match_shape_out_of_order",
-          "count": 2,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
@@ -194,19 +184,19 @@
           "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
         },
         {
-          "code": "stop_too_far_from_shape",
+          "code": "stops_match_shape_out_of_order",
           "count": 1,
-          "effort": "A few minutes per flagged stop.",
-          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
-          "owner": "Likely your export tool",
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some stops sit far from the route line they belong to.",
-          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 7,
+          "count": 6,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -217,9 +207,9 @@
         }
       ],
       "name": "correctness",
-      "score": 69.2,
+      "score": 75.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 77 instances (0 error, 70 warning, 7 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 71 instances (0 error, 65 warning, 6 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -284,8 +274,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "c28c10c9f0515ce5decb6ce504dcdec35632e0b121445cdb6d8893c3cecd77ed",
-    "size_bytes": 103127,
+    "sha256": "a8315f421d275f0601a13a58e7a23b415d1a588bbe614c2d448a4d8752e1078a",
+    "size_bytes": 87792,
     "static_url": "https://passio3.com/radford/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -336,9 +326,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 52.1,
-    "margin_to_next_band": 7.9,
-    "score": 52.1
+    "margin_to_lower_band": 54.8,
+    "margin_to_next_band": 5.2,
+    "score": 54.8
   },
   "recommendations": [
     {
@@ -369,22 +359,22 @@
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 53,
+        "count": 50,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "53 of 142 boardable stops are never served by any trip.",
+        "what": "50 of 142 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 53,
+    "orphan_stops": 50,
     "single_stop_trips": 0,
-    "trips_total": 431
+    "trips_total": 374
   },
   "route_map": {
-    "drawn_route_count": 12,
+    "drawn_route_count": 10,
     "has_shapes": true,
     "path": "data/artifacts/radford-transit/geometry.geojson",
     "route_count": 14,
@@ -469,7 +459,7 @@
       {
         "color": "A55194",
         "color_name": "purple",
-        "has_shape": true,
+        "has_shape": false,
         "id": "7303",
         "label": "40",
         "long": "Route 40",
@@ -491,7 +481,7 @@
       {
         "color": "813B73",
         "color_name": "purple",
-        "has_shape": true,
+        "has_shape": false,
         "id": "7305",
         "label": "Route 41",
         "long": "Route 41",
@@ -550,10 +540,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 431 trips have a shape in shapes.txt.",
+    "detail": "All 374 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 431,
-    "trips_with_shape": 431
+    "total_trips": 374,
+    "trips_with_shape": 374
   },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
@@ -571,26 +561,26 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 431,
+      "count": 374,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "431 of 431 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "374 of 374 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
       "code": "scorecard_missing_headsigns",
-      "count": 431,
+      "count": 374,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "431 of 431 trips have no headsign.",
+      "what": "374 of 374 trips have no headsign.",
       "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],

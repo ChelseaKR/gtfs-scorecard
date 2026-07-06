@@ -1,0 +1,46 @@
+{
+  "receipts": [
+    {
+      "cleared": "2026-07-06",
+      "code": "duplicate_route_name",
+      "last_seen": "2026-07-05",
+      "what": "Two or more routes share the same name."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "fast_travel_between_consecutive_stops",
+      "last_seen": "2026-07-05",
+      "what": "Some scheduled trips travel implausibly fast between stops."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "missing_recommended_file",
+      "last_seen": "2026-07-05",
+      "what": "A recommended GTFS file (usually feed_info.txt) is missing."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "missing_timepoint_value",
+      "last_seen": "2026-07-05",
+      "what": "Missing timepoint value (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "scorecard_missing_feed_info_dates",
+      "last_seen": "2026-07-05",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)"
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "stop_too_far_from_shape",
+      "last_seen": "2026-07-05",
+      "what": "Some stops sit far from the route line they belong to."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "stops_match_shape_out_of_order",
+      "last_seen": "2026-07-05",
+      "what": "Stops match shape out of order (flagged by the MobilityData validator)."
+    }
+  ]
+}

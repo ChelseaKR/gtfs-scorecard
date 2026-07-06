@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 1488,
-        "trips": 80728,
+        "trips": 80731,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 80728,
+          "count": 80731,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "80728 of 80728 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "80731 of 80731 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -272,8 +272,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "6912af53c4f40f88418bec405ec1a7140f9a64a2ef62824ad7e091b031dc395d",
-    "size_bytes": 20078122,
+    "sha256": "4280a6a2422163f90438d71c68671af2c2b92b0123961bad74eee9a0b8dca8b1",
+    "size_bytes": 20088605,
     "static_url": "http://web.mta.info/developers/files/google_transit_supplemented.zip"
   },
   "fetch": {
@@ -380,7 +380,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 80728
+    "trips_total": 80731
   },
   "route_map": {
     "drawn_route_count": 29,
@@ -714,11 +714,11 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "73697 of 80728 trips have a shape; 7031 do not.",
+    "detail": "69686 of 80731 trips have a shape; 11045 do not.",
     "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
     "status": "at_risk",
-    "total_trips": 80728,
-    "trips_with_shape": 73697
+    "total_trips": 80731,
+    "trips_with_shape": 69686
   },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
@@ -736,14 +736,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 80728,
+      "count": 80731,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "80728 of 80728 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "80731 of 80731 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

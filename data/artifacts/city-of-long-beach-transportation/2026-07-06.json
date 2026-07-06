@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -124,11 +128,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 2,
-          "WARNING": 4638
+          "INFO": 3,
+          "WARNING": 4639
         },
         "validator_version": "8.0.1"
       },
@@ -167,19 +171,30 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "missing_recommended_file",
+          "code": "missing_feed_contact_email_and_url",
           "count": 1,
-          "effort": "One small file, set once in export settings.",
-          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
-          "owner": "Likely your export tool",
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_feed_contact_email_and_url' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
-          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+          "what": "Missing feed contact email and url (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
           "code": "unknown_column",
-          "count": 2,
+          "count": 3,
           "effort": "A quick look at the flagged files.",
           "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
           "owner": "",
@@ -190,37 +205,25 @@
         }
       ],
       "name": "correctness",
-      "score": 77.5,
+      "score": 73.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 4640 instances (0 error, 4638 warning, 2 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 4642 instances (0 error, 4639 warning, 3 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 178,
-        "feed_end_date": null,
-        "feed_start_date": null,
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2025-11-13",
         "feed_version": null,
-        "has_feed_info": false,
+        "has_feed_info": true,
         "last_service_date": "2026-12-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_missing_feed_info_dates",
-          "count": 1,
-          "effort": "Two fields, set once in export settings.",
-          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
-          "owner": "Likely your export tool",
-          "points": 15.0,
-          "severity": "WARNING",
-          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
-          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 85.0,
+      "score": 100.0,
       "status": "measured",
       "summary": "Service data covers the next 178 days.",
       "weight": 0.2
@@ -232,6 +235,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -241,7 +256,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 187 days.",
+        "detail": "Service data covers the next 178 days.",
         "key": "current",
         "met": true
       },
@@ -257,11 +272,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "f4cd19773bc48de12a9f61c7d9f3f17bbd34128a1fa49194e54d12684cd3335b",
-    "size_bytes": 55340,
+    "sha256": "d6b11e9d0e01c58aad8aff547515d493b953120848ad7897021591a61d1b19c9",
+    "size_bytes": 55609,
     "static_url": "https://s3.amazonaws.com/datatools-511ny/public/City_of_Long_Beach.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://s3.amazonaws.com/datatools-511ny/public/City_of_Long_Beach.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.70119,
@@ -274,7 +295,7 @@
     "stop_count": 135
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "CLBT-Nassau-ny-us"
     ],
@@ -293,19 +314,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 187 days.",
+        "detail": "Service data covers the next 178 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 2.2,
-    "margin_to_next_band": 7.8,
-    "score": 62.2
+    "margin_to_lower_band": 4.2,
+    "margin_to_next_band": 5.8,
+    "score": 64.2
   },
   "recommendations": [
     {
@@ -320,11 +341,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 135,
     "findings": [
@@ -344,8 +360,90 @@
     "single_stop_trips": 0,
     "trips_total": 170
   },
+  "route_map": {
+    "drawn_route_count": 6,
+    "has_shapes": true,
+    "path": "data/artifacts/city-of-long-beach-transportation/geometry.geojson",
+    "route_count": 6,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "EL",
+        "label": "East Loop",
+        "long": "East Loop",
+        "short": "East Loop",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LNE",
+        "label": "Express",
+        "long": "Late Night Express",
+        "short": "Express",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PL",
+        "label": "Point",
+        "long": "Pt. Lookout",
+        "short": "Point",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SSE",
+        "label": "Special",
+        "long": "Shoppers Special East",
+        "short": "Special",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SSW",
+        "label": "Special",
+        "long": "Shoppers Special West",
+        "short": "Special",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "WL",
+        "label": "West Loop",
+        "long": "West Loop",
+        "short": "West Loop",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 135,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 170 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 170,
+    "trips_with_shape": 170
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

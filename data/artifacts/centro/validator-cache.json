@@ -2,477 +2,194 @@
   "report": {
     "notices": [
       {
-        "code": "missing_timepoint_value",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "stopSequence": 1,
-            "tripId": "1802448"
-          },
-          {
-            "csvRowNumber": 3,
-            "stopSequence": 2,
-            "tripId": "1802448"
-          },
-          {
-            "csvRowNumber": 4,
-            "stopSequence": 3,
-            "tripId": "1802448"
-          },
-          {
-            "csvRowNumber": 5,
-            "stopSequence": 4,
-            "tripId": "1802448"
-          },
-          {
-            "csvRowNumber": 6,
-            "stopSequence": 5,
-            "tripId": "1802448"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 396293
-      },
-      {
         "code": "same_name_and_description_for_stop",
         "sample_notices": [
           {
-            "csvRowNumber": 47,
-            "stopDesc": "7376 OSWEGO RD",
-            "stopId": "17827"
+            "csvRowNumber": 10,
+            "stopDesc": "S SALINA ST & TEMPLE ST",
+            "stopId": "110"
           },
           {
-            "csvRowNumber": 59,
-            "stopDesc": "MCCOOL AVE & E YATES ST",
-            "stopId": "1179"
+            "csvRowNumber": 11,
+            "stopDesc": "S SALINA ST & E TAYLOR ST",
+            "stopId": "116"
           },
           {
-            "csvRowNumber": 82,
-            "stopDesc": "S SALINA ST & S WARREN ST",
-            "stopId": "8290"
+            "csvRowNumber": 12,
+            "stopDesc": "S SALINA ST & W TAYLOR ST",
+            "stopId": "121"
           },
           {
-            "csvRowNumber": 222,
-            "stopDesc": "BRIDGE ST & E 2ND ST",
-            "stopId": "14862"
+            "csvRowNumber": 13,
+            "stopDesc": "S SALINA ST & TALLMAN ST",
+            "stopId": "128"
           },
           {
-            "csvRowNumber": 312,
-            "stopDesc": "S SALINA ST & KIRK AVE",
-            "stopId": "153"
+            "csvRowNumber": 14,
+            "stopDesc": "S SALINA ST & E RAYNOR AVE",
+            "stopId": "134"
           }
         ],
         "severity": "WARNING",
-        "total": 217
+        "total": 193
       },
       {
-        "code": "duplicate_route_name",
+        "code": "stop_without_stop_time",
         "sample_notices": [
           {
-            "agencyId": "Centro",
-            "csvRowNumber1": 7,
-            "csvRowNumber2": 8,
-            "routeId1": "21644",
-            "routeId2": "21861",
-            "routeLongName": "Oswego - Syracuse",
-            "routeShortName": "Osw46",
-            "routeTypeValue": 3
+            "csvRowNumber": 153,
+            "stopId": "659",
+            "stopName": "Milton Ave & W Genesee St"
           },
           {
-            "agencyId": "Centro",
-            "csvRowNumber1": 2,
-            "csvRowNumber2": 12,
-            "routeId1": "21866",
-            "routeId2": "21649",
-            "routeLongName": "Black River Blvd",
-            "routeShortName": "Rome5",
-            "routeTypeValue": 3
+            "csvRowNumber": 279,
+            "stopId": "1093",
+            "stopName": "Milton Ave & Erie Blvd W"
           },
           {
-            "agencyId": "Centro",
-            "csvRowNumber1": 11,
-            "csvRowNumber2": 17,
-            "routeId1": "21648",
-            "routeId2": "21865",
-            "routeLongName": "WalMart",
-            "routeShortName": "Rome2",
-            "routeTypeValue": 3
+            "csvRowNumber": 931,
+            "stopId": "4386",
+            "stopName": "Milton Ave & Ulster St"
           },
           {
-            "agencyId": "Centro",
-            "csvRowNumber1": 3,
-            "csvRowNumber2": 18,
-            "routeId1": "21643",
-            "routeId2": "21860",
-            "routeLongName": "Brandonwood East",
-            "routeShortName": "Osw19",
-            "routeTypeValue": 3
+            "csvRowNumber": 964,
+            "stopId": "4492",
+            "stopName": "Milton Ave & Schuyler St"
           },
           {
-            "agencyId": "Centro",
-            "csvRowNumber1": 4,
-            "csvRowNumber2": 24,
-            "routeId1": "21640",
-            "routeId2": "21857",
-            "routeLongName": "SUNY Oswego Green Route",
-            "routeShortName": "Osw11",
-            "routeTypeValue": 3
+            "csvRowNumber": 968,
+            "stopId": "4506",
+            "stopName": "Milton Ave & Hamilton St"
           }
         ],
         "severity": "WARNING",
-        "total": 76
-      },
-      {
-        "code": "stop_too_far_from_shape_using_user_distance",
-        "sample_notices": [
-          {
-            "geoDistanceToShape": 217.36476670030555,
-            "match": [
-              43.047106620864575,
-              -76.20944302336001
-            ],
-            "shapeId": "149846",
-            "stopId": "17824",
-            "stopName": "Westvale Church",
-            "stopTimeCsvRowNumber": 187762,
-            "tripCsvRowNumber": 6855,
-            "tripId": "1790086"
-          },
-          {
-            "geoDistanceToShape": 217.46492599841238,
-            "match": [
-              43.04710656319413,
-              -76.20944425346377
-            ],
-            "shapeId": "149847",
-            "stopId": "17824",
-            "stopName": "Westvale Church",
-            "stopTimeCsvRowNumber": 307066,
-            "tripCsvRowNumber": 10982,
-            "tripId": "1790192"
-          },
-          {
-            "geoDistanceToShape": 217.46492599841238,
-            "match": [
-              43.04710656319413,
-              -76.20944425346377
-            ],
-            "shapeId": "149842",
-            "stopId": "17824",
-            "stopName": "Westvale Church",
-            "stopTimeCsvRowNumber": 25081,
-            "tripCsvRowNumber": 945,
-            "tripId": "1790161"
-          },
-          {
-            "geoDistanceToShape": 217.46492599841238,
-            "match": [
-              43.04710656319413,
-              -76.20944425346377
-            ],
-            "shapeId": "149843",
-            "stopId": "17824",
-            "stopName": "Westvale Church",
-            "stopTimeCsvRowNumber": 53954,
-            "tripCsvRowNumber": 1966,
-            "tripId": "1790129"
-          },
-          {
-            "geoDistanceToShape": 217.46492599841238,
-            "match": [
-              43.04710656319413,
-              -76.20944425346377
-            ],
-            "shapeId": "149845",
-            "stopId": "17824",
-            "stopName": "Westvale Church",
-            "stopTimeCsvRowNumber": 307249,
-            "tripCsvRowNumber": 10986,
-            "tripId": "1790196"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 16
-      },
-      {
-        "code": "stops_match_shape_out_of_order",
-        "sample_notices": [
-          {
-            "match1": [
-              43.04716062348887,
-              -76.20829014025995
-            ],
-            "match2": [
-              43.04723011296587,
-              -76.20677354158312
-            ],
-            "shapeId": "149846",
-            "stopId1": "694",
-            "stopId2": "17824",
-            "stopName1": "W Genesee St & Manchester Rd",
-            "stopName2": "Westvale Church",
-            "stopTimeCsvRowNumber1": 187763,
-            "stopTimeCsvRowNumber2": 187762,
-            "tripCsvRowNumber": 6855,
-            "tripId": "1790086"
-          },
-          {
-            "match1": [
-              43.04716062348887,
-              -76.20829014025995
-            ],
-            "match2": [
-              43.04723011296587,
-              -76.20677354158312
-            ],
-            "shapeId": "149847",
-            "stopId1": "694",
-            "stopId2": "17824",
-            "stopName1": "W Genesee St & Manchester Rd",
-            "stopName2": "Westvale Church",
-            "stopTimeCsvRowNumber1": 307067,
-            "stopTimeCsvRowNumber2": 307066,
-            "tripCsvRowNumber": 10982,
-            "tripId": "1790192"
-          },
-          {
-            "match1": [
-              43.04716062348887,
-              -76.20829014025995
-            ],
-            "match2": [
-              43.04723011296587,
-              -76.20677354158312
-            ],
-            "shapeId": "149842",
-            "stopId1": "694",
-            "stopId2": "17824",
-            "stopName1": "W Genesee St & Manchester Rd",
-            "stopName2": "Westvale Church",
-            "stopTimeCsvRowNumber1": 25082,
-            "stopTimeCsvRowNumber2": 25081,
-            "tripCsvRowNumber": 945,
-            "tripId": "1790161"
-          },
-          {
-            "match1": [
-              43.04716062348887,
-              -76.20829014025995
-            ],
-            "match2": [
-              43.04723011296587,
-              -76.20677354158312
-            ],
-            "shapeId": "149843",
-            "stopId1": "694",
-            "stopId2": "17824",
-            "stopName1": "W Genesee St & Manchester Rd",
-            "stopName2": "Westvale Church",
-            "stopTimeCsvRowNumber1": 53955,
-            "stopTimeCsvRowNumber2": 53954,
-            "tripCsvRowNumber": 1966,
-            "tripId": "1790129"
-          },
-          {
-            "match1": [
-              43.04716062348887,
-              -76.20829014025995
-            ],
-            "match2": [
-              43.04723011296587,
-              -76.20677354158312
-            ],
-            "shapeId": "149845",
-            "stopId1": "694",
-            "stopId2": "17824",
-            "stopName1": "W Genesee St & Manchester Rd",
-            "stopName2": "Westvale Church",
-            "stopTimeCsvRowNumber1": 307250,
-            "stopTimeCsvRowNumber2": 307249,
-            "tripCsvRowNumber": 10986,
-            "tripId": "1790196"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 12
+        "total": 26
       },
       {
         "code": "unused_shape",
         "sample_notices": [
           {
-            "csvRowNumber": 26220,
-            "shapeId": "151180"
-          },
-          {
-            "csvRowNumber": 38863,
-            "shapeId": "151194"
-          },
-          {
-            "csvRowNumber": 45102,
+            "csvRowNumber": 2814,
             "shapeId": "150989"
           },
           {
-            "csvRowNumber": 77928,
+            "csvRowNumber": 44416,
             "shapeId": "151143"
           },
           {
-            "csvRowNumber": 220321,
+            "csvRowNumber": 52225,
+            "shapeId": "151180"
+          },
+          {
+            "csvRowNumber": 55608,
+            "shapeId": "151194"
+          },
+          {
+            "csvRowNumber": 85881,
             "shapeId": "151325"
           }
         ],
         "severity": "WARNING",
-        "total": 7
+        "total": 5
       },
       {
-        "code": "stop_too_far_from_shape",
+        "code": "stop_too_far_from_shape_using_user_distance",
         "sample_notices": [
-          {
-            "geoDistanceToShape": 248.5821241532929,
-            "match": [
-              43.043827,
-              -76.151692
-            ],
-            "shapeId": "149927",
-            "stopId": "5418",
-            "stopName": "Harrison St & Montgomery St",
-            "stopTimeCsvRowNumber": 21778,
-            "tripCsvRowNumber": 823,
-            "tripId": "1790945"
-          },
           {
             "geoDistanceToShape": 109.18191469505659,
             "match": [
               43.048986,
               -76.114835
             ],
-            "shapeId": "149948",
+            "shapeId": "151315",
             "stopId": "8864",
             "stopName": "Westmoreland St & Dakin St",
-            "stopTimeCsvRowNumber": 78195,
-            "tripCsvRowNumber": 2765,
-            "tripId": "1791283"
+            "stopTimeCsvRowNumber": 65891,
+            "tripCsvRowNumber": 2456,
+            "tripId": "1806915"
           },
           {
-            "geoDistanceToShape": 129.60334267372608,
+            "geoDistanceToShape": 203.84725782348661,
             "match": [
-              43.029355,
-              -76.152839
+              43.06254506441416,
+              -76.06197453706186
             ],
-            "shapeId": "150095",
-            "stopId": "3834",
-            "stopName": "Midland Ave & Furman St",
-            "stopTimeCsvRowNumber": 197851,
-            "tripCsvRowNumber": 7160,
-            "tripId": "1792837"
+            "shapeId": "151157",
+            "stopId": "7888",
+            "stopName": "Walmart - East Syracuse",
+            "stopTimeCsvRowNumber": 43258,
+            "tripCsvRowNumber": 1930,
+            "tripId": "1805471"
           },
           {
-            "geoDistanceToShape": 256.6280273107836,
+            "geoDistanceToShape": 151.83436545116652,
             "match": [
-              43.033631,
-              -76.15561000000001
+              43.116604,
+              -76.249188
             ],
-            "shapeId": "150095",
-            "stopId": "9475",
-            "stopName": "Midland Ave & W Castle St",
-            "stopTimeCsvRowNumber": 197852,
-            "tripCsvRowNumber": 7160,
-            "tripId": "1792837"
+            "shapeId": "151451",
+            "stopId": "18367",
+            "stopName": "Long Branch Park PnR Arrive",
+            "stopTimeCsvRowNumber": 84242,
+            "tripCsvRowNumber": 3882,
+            "tripId": "1812821"
           }
         ],
         "severity": "WARNING",
-        "total": 4
-      },
-      {
-        "code": "fast_travel_between_consecutive_stops",
-        "sample_notices": [
-          {
-            "arrivalTime2": "14:45:02",
-            "csvRowNumber1": 197850,
-            "csvRowNumber2": 197851,
-            "departureTime1": "14:45:01",
-            "distanceKm": 0.1392520024536505,
-            "routeId": "21695",
-            "speedKph": 501.3072088331418,
-            "stopId1": "3842",
-            "stopId2": "3834",
-            "stopName1": "Midland Ave & W Kennedy St",
-            "stopName2": "Midland Ave & Furman St",
-            "stopSequence1": 61,
-            "stopSequence2": 62,
-            "tripCsvRowNumber": 7160,
-            "tripId": "1792837"
-          },
-          {
-            "arrivalTime2": "14:07:34",
-            "csvRowNumber1": 379520,
-            "csvRowNumber2": 379521,
-            "departureTime1": "14:07:33",
-            "distanceKm": 0.05087326901132479,
-            "routeId": "21696",
-            "speedKph": 183.14376844076924,
-            "stopId1": "11049",
-            "stopId2": "11355",
-            "stopName1": "Glenwood Ave & Clyde Ave",
-            "stopName2": "Clyde Ave & W Brighton Ave",
-            "stopSequence1": 10,
-            "stopSequence2": 11,
-            "tripCsvRowNumber": 13692,
-            "tripId": "1792861"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
-        "code": "route_color_contrast",
-        "sample_notices": [
-          {
-            "csvRowNumber": 98,
-            "routeColor": "#FFFF00",
-            "routeId": "21633",
-            "routeTextColor": "#FFFFFF"
-          },
-          {
-            "csvRowNumber": 116,
-            "routeColor": "#FFFF00",
-            "routeId": "21850",
-            "routeTextColor": "#FFFFFF"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
-        "code": "service_has_no_active_day_of_the_week",
-        "sample_notices": [
-          {
-            "csvRowNumber": 6,
-            "serviceId": "5_merged_1813996"
-          },
-          {
-            "csvRowNumber": 7,
-            "serviceId": "5_merged_1813972"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
+        "total": 3
       },
       {
         "code": "expired_calendar",
         "sample_notices": [
           {
-            "csvRowNumber": 7,
-            "serviceId": "5_merged_1813972"
+            "csvRowNumber": 5,
+            "serviceId": "5"
           }
         ],
         "severity": "WARNING",
         "total": 1
       },
       {
-        "code": "missing_recommended_file",
+        "code": "missing_feed_contact_email_and_url",
         "sample_notices": [
           {
-            "filename": "feed_info.txt"
+            "csvRowNumber": 2
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "route_color_contrast",
+        "sample_notices": [
+          {
+            "csvRowNumber": 13,
+            "routeColor": "#FFFF00",
+            "routeId": "21850",
+            "routeTextColor": "#FFFFFF"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "service_has_no_active_day_of_the_week",
+        "sample_notices": [
+          {
+            "csvRowNumber": 5,
+            "serviceId": "5"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "trip_coverage_not_active_for_next7_days",
+        "sample_notices": [
+          {
+            "currentDate": "20260706",
+            "serviceWindowEndDate": "20260904",
+            "serviceWindowStartDate": "20260824"
           }
         ],
         "severity": "WARNING",
@@ -482,7 +199,7 @@
         "code": "trip_headsign_matches_intermediate_stop",
         "sample_notices": [
           {
-            "csvRowNumber": 4315,
+            "csvRowNumber": 350,
             "stopId1": "18505",
             "stopId2": "18424",
             "stopSequence": 18,
@@ -490,7 +207,7 @@
             "tripId": "1802215"
           },
           {
-            "csvRowNumber": 4315,
+            "csvRowNumber": 350,
             "stopId1": "18506",
             "stopId2": "18424",
             "stopSequence": 19,
@@ -498,36 +215,46 @@
             "tripId": "1802215"
           },
           {
-            "csvRowNumber": 4317,
-            "stopId1": "18505",
-            "stopId2": "18424",
-            "stopSequence": 18,
-            "tripHeadsign": "Route 11",
-            "tripId": "1802217"
-          },
-          {
-            "csvRowNumber": 4317,
-            "stopId1": "18506",
-            "stopId2": "18424",
-            "stopSequence": 19,
-            "tripHeadsign": "Route 11",
-            "tripId": "1802217"
-          },
-          {
-            "csvRowNumber": 4318,
+            "csvRowNumber": 351,
             "stopId1": "18505",
             "stopId2": "18424",
             "stopSequence": 18,
             "tripHeadsign": "Route 11",
             "tripId": "1802216"
+          },
+          {
+            "csvRowNumber": 351,
+            "stopId1": "18506",
+            "stopId2": "18424",
+            "stopSequence": 19,
+            "tripHeadsign": "Route 11",
+            "tripId": "1802216"
+          },
+          {
+            "csvRowNumber": 352,
+            "stopId1": "18505",
+            "stopId2": "18424",
+            "stopSequence": 18,
+            "tripHeadsign": "Route 11",
+            "tripId": "1802217"
           }
         ],
         "severity": "INFO",
-        "total": 16
+        "total": 8
+      },
+      {
+        "code": "unknown_file",
+        "sample_notices": [
+          {
+            "filename": "google.log"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "15a15472e187682aa01ddfd75bb8c5a5d5c1fdd73919cb622f8e0095e749fbd1",
+  "sha256": "4814f6f784ad7f39cb223dce20b55b67c439d5c7cd811861484c4b4bee88793b",
   "validator_version": "8.0.1"
 }

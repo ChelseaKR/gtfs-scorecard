@@ -73,7 +73,7 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-06T13:27:44+00:00",
+  "generated_at": "2026-07-06T16:47:27+00:00",
   "grade_distribution": {
     "B": 11,
     "C": 16,
@@ -81,6 +81,20 @@
     "F": 25
   },
   "members": [
+    {
+      "annual_trips": 1589693,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -584,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "virginia-railway-express-vre",
+      "name": "Virginia Railway Express (VRE)",
+      "needs_attention": true,
+      "score": 28.3,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -91,7 +105,7 @@
       "name": "Potomac and Rappahannock Transportation Commission (PRTC)",
       "needs_attention": true,
       "score": 19.0,
-      "shapes_status": null,
+      "shapes_status": "at_risk",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -105,21 +119,7 @@
       "name": "Fredericksburg Regional Transit",
       "needs_attention": true,
       "score": 25.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -584,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "virginia-railway-express-vre",
-      "name": "Virginia Railway Express (VRE)",
-      "needs_attention": true,
-      "score": 28.3,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -133,7 +133,7 @@
       "name": "HDPT",
       "needs_attention": true,
       "score": 30.4,
-      "shapes_status": null,
+      "shapes_status": "at_risk",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -146,8 +146,8 @@
       "id": "grtc-transit-system",
       "name": "GRTC Transit System",
       "needs_attention": true,
-      "score": 31.7,
-      "shapes_status": null,
+      "score": 31.8,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -231,7 +231,7 @@
       "name": "Pulaski Area Transit (PAT)",
       "needs_attention": true,
       "score": 42.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -328,7 +328,7 @@
       "id": "radford-transit",
       "name": "Radford Transit",
       "needs_attention": true,
-      "score": 52.1,
+      "score": 54.8,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -343,7 +343,7 @@
       "name": "Blacksburg Transit",
       "needs_attention": true,
       "score": 58.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -749,8 +749,8 @@
       "name": "JAUNT Inc",
       "needs_attention": false,
       "score": 26.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-04",
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-07-06",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
@@ -763,7 +763,7 @@
       "name": "Valley Metro",
       "needs_attention": false,
       "score": 33.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
@@ -833,7 +833,7 @@
       "name": "Fairfax CUE Bus (CUE)",
       "needs_attention": false,
       "score": 68.3,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -847,12 +847,12 @@
       "name": "Fairfax CUE Bus (CUE)",
       "needs_attention": false,
       "score": 68.3,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 2458738,
       "attention_reason": null,
       "days_until_expiry": 329,
       "expiry_status": "current",
@@ -1139,10 +1139,10 @@
   },
   "schema_version": "1.7",
   "shapes_readiness": {
-    "at_risk": 0,
-    "not_measured": 73,
-    "not_ready": 0,
-    "ready": 2,
+    "at_risk": 2,
+    "not_measured": 62,
+    "not_ready": 1,
+    "ready": 10,
     "total": 75
   },
   "state_percentile": 67

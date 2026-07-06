@@ -43,6 +43,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -166,8 +170,8 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "stops_match_shape_out_of_order",
@@ -188,7 +192,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -245,6 +249,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -254,7 +270,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 75 days.",
         "key": "current",
         "met": true
       },
@@ -274,7 +290,14 @@
     "size_bytes": 6226665,
     "static_url": "http://www.palmtran.org/feed/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-florida-palm-tran-gtfs-332.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.7209,
@@ -287,7 +310,7 @@
     "stop_count": 2695
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "820"
     ],
@@ -306,13 +329,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 75 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "D",
@@ -344,11 +367,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2695,
     "findings": [],
@@ -356,8 +374,354 @@
     "single_stop_trips": 0,
     "trips_total": 5148
   },
+  "route_map": {
+    "drawn_route_count": 30,
+    "has_shapes": true,
+    "path": "data/artifacts/palm-tran/geometry.geojson",
+    "route_count": 30,
+    "routes": [
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "PBG - BCR via US-1",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF4400",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "N COUNTY X-TOWN via MILITARY",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "WPB - BCR via CONGRESS",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "11FF99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "PBG - WPB VIA CONGRESS",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "PBG - BCR via MILITARY",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "884400",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "RVB X-TOWN via BLUE HERON",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007700",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "WPB X-TOWN via 45TH",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660066",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "PBG -WPB via AUSTRALN/PBL",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "WPB - BYB via HAVERHILL",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAAA00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "WPB - BLG via SR-80 [Ltd Stop Svc]",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA44AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "WPB - PALM BCH INLET",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008888",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "WPB X-TOWN via OKEECHOBEE",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "554433",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "WPB X-TOWN via BELVEDERE",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF44AA",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "46",
+        "label": "46",
+        "long": "WPB - WLN via FOREST HILL",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660055",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "PAHOKEE-S BAY via BELLE GLADE",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "446600",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "GRN - WPB via PURDY/PARKER",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "GRN - LKW via CRESTHAVEN/10TH AVE N",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA00AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "WLN - LKW via LAKE WORTH",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1177FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "VISTA CTR-US1 via JOG/LANTANA",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "118888",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "GRN - LNT via MELALEUCA/6TH AVE S",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "665588",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "LNT - DLB via SEACREST",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE5511",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "BYB X-TOWN via LAWRENCE",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA2244",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "BYB X-TOWN via BOYNTON BEACH",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "880077",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "DLB X-TWN via LAKE IDA",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "11CC77",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "DLB X-TWN via ATLANTIC",
+        "short": "81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31780E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "DLB X-TWN via LINTON",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF2222",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "BCR X-TOWN via GLADES",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA8800",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "BCR X-TOWN via PALMETTO PARK",
+        "short": "92",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BB00FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "94",
+        "label": "94",
+        "long": "BOCA RATON-TRS VIA FAU",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "95",
+        "label": "95",
+        "long": "PORT ST LUCIE EXPRESS",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2695,
+    "stop_points_capped": true
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 5148 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 5148,
+    "trips_with_shape": 5148
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/lewis-county-public-transportation/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/lewis-county-public-transportation/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -30,6 +31,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -147,11 +152,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 16,
+        "distinct_codes": 15,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 5,
-          "WARNING": 257
+          "WARNING": 256
         },
         "validator_version": "8.0.1"
       },
@@ -208,8 +213,8 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "fast_travel_between_far_stops",
@@ -245,17 +250,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "expired_calendar",
-          "count": 1,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
-        {
           "code": "missing_feed_contact_email_and_url",
           "count": 1,
           "effort": "Varies.",
@@ -274,7 +268,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -286,7 +280,7 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
+          "why": "Route badges get hard to read, most of all for riders with low vision."
         },
         {
           "code": "same_name_and_description_for_stop",
@@ -311,14 +305,14 @@
           "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
         },
         {
-          "code": "service_window_outside_feed_period",
+          "code": "big_gap_in_service",
           "count": 1,
           "effort": "Varies.",
-          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
           "points": 0.5,
           "severity": "INFO",
-          "what": "Service window outside feed period (flagged by the MobilityData validator).",
+          "what": "Big gap in service (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
@@ -334,9 +328,9 @@
         }
       ],
       "name": "correctness",
-      "score": 34.5,
+      "score": 38.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 16 kinds of issue across 262 instances (0 error, 257 warning, 5 informational).",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 261 instances (0 error, 256 warning, 5 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -364,6 +358,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -373,7 +379,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 364 days.",
+        "detail": "Service data covers the next 360 days.",
         "key": "current",
         "met": true
       },
@@ -389,11 +395,17 @@
   "feed": {
     "license_note": "License: https://data.ny.gov/download/77gx-ii52/application/pdf",
     "reachable": true,
-    "sha256": "738ffbf9ad8ec1792560c65b3b015f8adb71192345e6213f6228315e8e43799f",
-    "size_bytes": 597322,
+    "sha256": "ab0d7964ab2e9e137dbd7b06334c31f78b64e184fd5fdbdeedc817ddcad9e05a",
+    "size_bytes": 597377,
     "static_url": "https://s3.amazonaws.com/datatools-511ny/public/Lewis_County.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://s3.amazonaws.com/datatools-511ny/public/Lewis_County.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.02338,
@@ -425,7 +437,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 364 days.",
+        "detail": "Service data covers the next 360 days.",
         "key": "current",
         "status": "ready"
       }
@@ -435,9 +447,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 48.2,
-    "margin_to_next_band": 11.8,
-    "score": 48.2
+    "margin_to_lower_band": 49.9,
+    "margin_to_next_band": 10.1,
+    "score": 49.9
   },
   "recommendations": [
     {
@@ -474,11 +486,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 137,
     "findings": [
@@ -740,7 +747,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 63 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 63,
+    "trips_with_shape": 63
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

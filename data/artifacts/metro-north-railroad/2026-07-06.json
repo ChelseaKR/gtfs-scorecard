@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/metro-north-railroad/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/metro-north-railroad/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -27,7 +28,7 @@
           "stops_marked_accessible_pct": 82.5,
           "stops_marked_not_accessible_pct": 15.8,
           "stops_stated_pct": 98.2,
-          "trips_stated_pct": 22.9
+          "trips_stated_pct": 22.8
         },
         "accessibility_measures": "presence_not_usability",
         "cemv": {
@@ -69,8 +70,8 @@
           "pathway_count": 0
         },
         "stops": 114,
-        "trips": 42163,
-        "wheelchair_accessible_pct": 22.9,
+        "trips": 42385,
+        "wheelchair_accessible_pct": 22.8,
         "wheelchair_boarding_pct": 98.2,
         "wheelchair_marked_accessible_pct": 82.5,
         "wheelchair_marked_not_accessible_pct": 15.8
@@ -89,13 +90,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 32499,
+          "count": 32721,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 11.6,
           "severity": "WARNING",
-          "what": "32499 of 42163 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "32721 of 42385 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -133,14 +134,14 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 4,
-          "WARNING": 24
+          "WARNING": 22
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "unused_shape",
-          "count": 18,
+          "count": 16,
           "effort": "One setting.",
           "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
           "owner": "Likely your export tool",
@@ -208,7 +209,7 @@
       "name": "correctness",
       "score": 81.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 28 instances (0 error, 24 warning, 4 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 26 instances (0 error, 22 warning, 4 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -246,16 +247,16 @@
         "coverage_pct": 0.0,
         "covered_trips": 0,
         "drift": {
-          "median_seconds": 300,
-          "observations": 492,
-          "on_time_share_pct": 54.1,
-          "p90_abs_seconds": 1080
+          "median_seconds": 240,
+          "observations": 250,
+          "on_time_share_pct": 63.2,
+          "p90_abs_seconds": 840
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 51,
-        "worst_lag_seconds": 23
+        "scheduled_trips_in_window": 27,
+        "worst_lag_seconds": 11
       },
       "findings": [
         {
@@ -271,20 +272,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 51,
+          "count": 27,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "51 of 51 trips scheduled during the sampling window had no live predictions.",
+          "what": "27 of 27 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
       "score": 49.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 300s behind schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 240s behind schedule.",
       "weight": 0.2
     }
   },
@@ -326,8 +327,8 @@
   "feed": {
     "license_note": "License: http://web.mta.info/developers/developer-data-terms.html",
     "reachable": true,
-    "sha256": "2d2fe91e9b365ec707f9aa4109dfc8a64325160fbad747db5f001e5145c8eb01",
-    "size_bytes": 5239484,
+    "sha256": "9059b0c494ce467b4167e93af5869b689d541e6bce72bb4f1734775ccb0c3df0",
+    "size_bytes": 5248969,
     "static_url": "http://web.mta.info/developers/data/mnr/google_transit.zip"
   },
   "fetch": {
@@ -423,7 +424,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 42163
+    "trips_total": 42385
   },
   "route_map": {
     "drawn_route_count": 6,
@@ -504,10 +505,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 42163 trips have a shape in shapes.txt.",
+    "detail": "All 42385 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 42163,
-    "trips_with_shape": 42163
+    "total_trips": 42385,
+    "trips_with_shape": 42385
   },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
@@ -525,14 +526,14 @@
     },
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 51,
+      "count": 27,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "51 of 51 trips scheduled during the sampling window had no live predictions.",
+      "what": "27 of 27 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {

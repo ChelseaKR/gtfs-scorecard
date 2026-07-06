@@ -32,6 +32,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -138,26 +142,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 10,
+        "distinct_codes": 9,
         "instances_by_severity": {
-          "ERROR": 10,
+          "ERROR": 0,
           "INFO": 3,
           "WARNING": 291
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "trip_distance_exceeds_shape_distance",
-          "count": 10,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 18.0,
-          "severity": "ERROR",
-          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
         {
           "code": "missing_timepoint_value",
           "count": 233,
@@ -210,7 +203,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -244,7 +237,7 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
+          "why": "Route badges get hard to read, most of all for riders with low vision."
         },
         {
           "code": "unknown_column",
@@ -259,9 +252,9 @@
         }
       ],
       "name": "correctness",
-      "score": 41.5,
+      "score": 59.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 304 instances (10 error, 291 warning, 3 informational).",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 294 instances (0 error, 291 warning, 3 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -301,16 +294,28 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
       {
-        "detail": "1 validator error to resolve.",
+        "detail": "Passes validation with no errors.",
         "key": "valid",
-        "met": false
+        "met": true
       },
       {
-        "detail": "Service data covers the next 187 days.",
+        "detail": "Service data covers the next 178 days.",
         "key": "current",
         "met": true
       },
@@ -321,16 +326,22 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d173ad173782a43863b5277e9bb93e10124d281854392b67e8cf91754660380a",
-    "size_bytes": 70490,
+    "sha256": "8de0e0ceb668c0fc96a843cad655fdecfe2ed548f58c2e446eb29448a031dfed",
+    "size_bytes": 71065,
     "static_url": "https://s3.amazonaws.com/datatools-511ny/public/CARTS_Chautauqua_Area_Regional_Transit_System_-_City_Routes.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://s3.amazonaws.com/datatools-511ny/public/CARTS_Chautauqua_Area_Regional_Transit_System_-_City_Routes.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -79.57648,
@@ -343,7 +354,7 @@
     "stop_count": 111
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "CARTS-Chautauqua-ny-us"
     ],
@@ -357,24 +368,24 @@
         "status": "ready"
       },
       {
-        "detail": "1 validator error to resolve.",
+        "detail": "Passes validation with no errors.",
         "key": "valid",
-        "status": "at_risk"
+        "status": "ready"
       },
       {
-        "detail": "Service data covers the next 187 days.",
+        "detail": "Service data covers the next 178 days.",
         "key": "current",
         "status": "ready"
       }
     ],
-    "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
+    "status": "ready",
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 46.3,
-    "margin_to_next_band": 13.7,
-    "score": 46.3
+    "margin_to_lower_band": 54.2,
+    "margin_to_next_band": 5.8,
+    "score": 54.2
   },
   "recommendations": [
     {
@@ -385,7 +396,7 @@
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Baker, Green, North Main, Red).",
+      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Baker, North Main, Green, Red).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
@@ -400,11 +411,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 111,
     "findings": [
@@ -424,22 +430,125 @@
     "single_stop_trips": 0,
     "trips_total": 88
   },
+  "route_map": {
+    "drawn_route_count": 9,
+    "has_shapes": true,
+    "path": "data/artifacts/chautauqua-area-regional-transit-system-carts/geometry.geojson",
+    "route_count": 9,
+    "routes": [
+      {
+        "color": "417505",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "12433",
+        "label": "Green",
+        "long": "Dunkirk City Route - Green",
+        "short": "Green",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D0021B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "12434",
+        "label": "Baker",
+        "long": "City of Jamestown- Baker Route",
+        "short": "Baker",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7A2D8C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ROUTE_314ef596-f49f-49dc-b1f1-a6a1a39f0dd8",
+        "label": "North Main",
+        "long": "City of Jamestown- North Main Route",
+        "short": "North Main",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4A90E2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ROUTE_6df536dc-6a68-4a89-87cb-4750df70e2e6",
+        "label": "Lakewood via Fairmount",
+        "long": "City of Jamestown- Lakewood via Fairmount",
+        "short": "Lakewood via Fairmount",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5A623",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ROUTE_8c355458-0941-453c-a986-3556d9724836",
+        "label": "Falconer Route",
+        "long": "Jamestown- Falconer Route",
+        "short": "Falconer Route",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50E3C2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ROUTE_8e7bf696-4cfa-43c1-b463-7a6989a0a8b5",
+        "label": "Lakewood via Jones & Gifford",
+        "long": "City of Jamestown- Lakewood via Jones & Gifford",
+        "short": "Lakewood via Jones & Gifford",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D0021B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ROUTE_bb320423-50d7-4b30-9d24-86edd4c1b02f",
+        "label": "Red",
+        "long": "Dunkirk City - Red Route",
+        "short": "Red",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F9C7C7",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ROUTE_d16fbdb8-642b-4274-ae49-1513ff3fac90",
+        "label": "Southwest Express",
+        "long": "City of Jamestown- Southwest Express",
+        "short": "Southwest Express",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "417505",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "Willard",
+        "label": "Willard",
+        "long": "City of Jamestown-Willard Route",
+        "short": "Willard",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 111,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 88 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 88,
+    "trips_with_shape": 88
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
-    {
-      "code": "trip_distance_exceeds_shape_distance",
-      "count": 10,
-      "effort": "Varies.",
-      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "owner": "",
-      "points": 18.0,
-      "rank": 1,
-      "severity": "ERROR",
-      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
-      "why": "See the linked rule for what this affects."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 111,
@@ -447,7 +556,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "111 of 111 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -459,10 +568,22 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "88 of 88 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 88,
+      "effort": "Usually a bulk edit in your scheduling software.",
+      "fix": "Populate trip_headsign to match what the bus displays.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "88 of 88 trips have no headsign.",
+      "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],
   "validator_version": "8.0.1"

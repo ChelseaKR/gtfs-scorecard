@@ -68,6 +68,12 @@
     },
     {
       "cleared": "2026-07-06",
+      "code": "foreign_key_violation",
+      "last_seen": "2026-07-05",
+      "what": "Foreign key violation (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
       "code": "scorecard_rt_vehicles_off_route",
       "last_seen": "2026-07-05",
       "what": "6 of 28 sampled vehicle positions were far from their assigned route (worst: 4908 m)."

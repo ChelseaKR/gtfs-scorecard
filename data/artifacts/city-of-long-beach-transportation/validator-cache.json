@@ -85,9 +85,21 @@
         "total": 2
       },
       {
-        "code": "missing_recommended_file",
+        "code": "missing_feed_contact_email_and_url",
         "sample_notices": [
           {
+            "csvRowNumber": 2
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "missing_recommended_field",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "fieldName": "feed_version",
             "filename": "feed_info.txt"
           }
         ],
@@ -103,17 +115,22 @@
             "index": 7
           },
           {
+            "fieldName": "feed_id",
+            "filename": "feed_info.txt",
+            "index": 2
+          },
+          {
             "fieldName": "route_branding_url",
             "filename": "routes.txt",
-            "index": 8
+            "index": 11
           }
         ],
         "severity": "INFO",
-        "total": 2
+        "total": 3
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "f4cd19773bc48de12a9f61c7d9f3f17bbd34128a1fa49194e54d12684cd3335b",
+  "sha256": "d6b11e9d0e01c58aad8aff547515d493b953120848ad7897021591a61d1b19c9",
   "validator_version": "8.0.1"
 }

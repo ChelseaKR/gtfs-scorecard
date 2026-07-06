@@ -11,11 +11,11 @@
       "details": {
         "accessibility": {
           "measures": "presence_not_usability",
-          "score": 33.2,
+          "score": 32.9,
           "stops_marked_accessible_pct": 0.0,
           "stops_marked_not_accessible_pct": 0.0,
           "stops_stated_pct": 0.0,
-          "trips_stated_pct": 88.5
+          "trips_stated_pct": 87.6
         },
         "accessibility_measures": "presence_not_usability",
         "cemv": {
@@ -28,7 +28,7 @@
           "headsigns": 15.0,
           "stop_names": 15.0,
           "wheelchair_stops": 0.0,
-          "wheelchair_trips": 13.3
+          "wheelchair_trips": 13.1
         },
         "fare_free": false,
         "fares": {
@@ -58,7 +58,7 @@
         },
         "stops": 392,
         "trips": 833,
-        "wheelchair_accessible_pct": 88.5,
+        "wheelchair_accessible_pct": 87.6,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
         "wheelchair_marked_not_accessible_pct": 0.0
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 96,
+          "count": 103,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
-          "points": 1.7,
+          "points": 1.9,
           "severity": "WARNING",
-          "what": "96 of 833 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "103 of 833 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -110,7 +110,7 @@
         }
       ],
       "name": "completeness",
-      "score": 58.3,
+      "score": 58.1,
       "status": "measured",
       "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
       "weight": 0.25
@@ -263,19 +263,19 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 20.0,
-        "covered_trips": 1,
+        "coverage_pct": 63.2,
+        "covered_trips": 12,
         "drift": {
-          "median_seconds": -100,
-          "observations": 109,
-          "on_time_share_pct": 18.3,
-          "p90_abs_seconds": 6932
+          "median_seconds": -99,
+          "observations": 125,
+          "on_time_share_pct": 30.4,
+          "p90_abs_seconds": 471
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 5,
-        "vehicles_checked": 22,
+        "scheduled_trips_in_window": 19,
+        "vehicles_checked": 35,
         "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 4
       },
@@ -293,31 +293,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 4,
+          "count": 7,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 28.0,
+          "points": 12.9,
           "severity": "WARNING",
-          "what": "4 of 5 trips scheduled during the sampling window had no live predictions.",
+          "what": "7 of 19 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
-        },
-        {
-          "code": "scorecard_rt_predictions_implausible",
-          "count": 109,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
-          "owner": "",
-          "points": 0.0,
-          "severity": "WARNING",
-          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
-          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 63.7,
+      "score": 78.8,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 20.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 100s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 63.2% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 99s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -359,8 +348,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "9289c7028da96f28dcc9277fb597a6a3529ef8bdac2cc1fdd3150557f18a1e25",
-    "size_bytes": 380002,
+    "sha256": "b103d55bea95995e23fca3583e50851a4d85c97af690ee0d2b1956988ab1a308",
+    "size_bytes": 380129,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -411,9 +400,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 56.5,
-    "margin_to_next_band": 3.5,
-    "score": 56.5
+    "margin_to_lower_band": 59.4,
+    "margin_to_next_band": 0.6,
+    "score": 59.4
   },
   "recommendations": [
     {
@@ -690,16 +679,16 @@
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
     },
     {
-      "code": "scorecard_rt_trip_coverage",
-      "count": 4,
-      "effort": "A vendor data-mapping question.",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-      "owner": "",
-      "points": 28.0,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 392,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "4 of 5 trips scheduled during the sampling window had no live predictions.",
-      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+      "what": "392 of 392 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     }
   ],
   "validator_version": "8.0.1"

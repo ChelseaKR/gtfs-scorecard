@@ -18,7 +18,7 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 8,
+      "agencies": 6,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -26,6 +26,11 @@
       "agencies": 5,
       "code": "missing_required_column",
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "agencies": 4,
+      "code": "scorecard_missing_feed_info_dates",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "agencies": 3,
@@ -69,11 +74,6 @@
     },
     {
       "agencies": 2,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
-    },
-    {
-      "agencies": 2,
       "code": "scorecard_rt_trip_updates_unreachable",
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
@@ -93,7 +93,7 @@
     "stale": 26,
     "total": 30
   },
-  "generated_at": "2026-07-06T13:27:44+00:00",
+  "generated_at": "2026-07-06T16:47:27+00:00",
   "grade_distribution": {
     "A": 4,
     "C": 6,
@@ -153,7 +153,7 @@
       "name": "Breeze Transit",
       "needs_attention": true,
       "score": 31.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -167,7 +167,7 @@
       "name": "Pinellas Suncoast Transit Authority (PSTA)",
       "needs_attention": true,
       "score": 34.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -363,7 +363,7 @@
       "name": "Citrus County Transit",
       "needs_attention": true,
       "score": 48.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -559,7 +559,7 @@
       "name": "Sanford Trolley",
       "needs_attention": true,
       "score": 57.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -685,7 +685,7 @@
       "name": "Palm Tran",
       "needs_attention": false,
       "score": 66.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -699,7 +699,7 @@
       "name": "South Florida Regional Transportation Authority (Tri-Rail)",
       "needs_attention": false,
       "score": 67.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -838,9 +838,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 49,
+    "not_measured": 43,
     "not_ready": 0,
-    "ready": 3,
+    "ready": 9,
     "total": 52
   },
   "state_percentile": 37

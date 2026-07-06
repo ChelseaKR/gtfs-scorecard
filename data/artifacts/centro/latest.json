@@ -4,7 +4,22 @@
     "name": "Centro"
   },
   "autofix": {
-    "available": false
+    "available": true,
+    "download_path": "data/artifacts/centro/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/centro/corrected.zip",
+    "fixes": [
+      {
+        "code": "autofix_trim_whitespace",
+        "count": 5,
+        "examples": [
+          "'stop_desc': '0 ' -> '0'",
+          "'stop_desc': '0 ' -> '0'",
+          "'stop_desc': '0 ' -> '0'"
+        ],
+        "label": "Trimmed surrounding whitespace"
+      }
+    ],
+    "total": 5
   },
   "categories": {
     "completeness": {
@@ -18,6 +33,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -52,8 +71,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 5555,
-        "trips": 14354,
+        "stops": 4831,
+        "trips": 9088,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -62,24 +81,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 5555,
+          "count": 4831,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "5555 of 5555 stops don't say whether a wheelchair user can board there.",
+          "what": "4831 of 4831 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 14354,
+          "count": 9088,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "14354 of 14354 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "9088 of 9088 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -113,29 +132,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 13,
+        "distinct_codes": 11,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 16,
-          "WARNING": 396633
+          "INFO": 9,
+          "WARNING": 232
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
-          "code": "missing_timepoint_value",
-          "count": 396293,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 8.0,
-          "severity": "WARNING",
-          "what": "Missing timepoint value (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
           "code": "same_name_and_description_for_stop",
-          "count": 217,
+          "count": 193,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -145,92 +153,37 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "duplicate_route_name",
-          "count": 76,
-          "effort": "One field per route.",
-          "fix": "Give each route a distinct short or long name.",
-          "owner": "",
-          "points": 8.0,
-          "severity": "WARNING",
-          "what": "Two or more routes share the same name.",
-          "why": "Riders can't tell the routes apart in apps."
-        },
-        {
-          "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 16,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
+          "code": "stop_without_stop_time",
+          "count": 26,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "stops_match_shape_out_of_order",
-          "count": 12,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
           "code": "unused_shape",
-          "count": 7,
+          "count": 5,
           "effort": "One setting.",
-          "fix": "Enable 'remove unused shapes' (or similar) in your export tool.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
           "owner": "Likely your export tool",
-          "points": 6.0,
+          "points": 4.0,
           "severity": "WARNING",
           "what": "The feed contains route shapes no trip uses.",
           "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
         },
         {
-          "code": "stop_too_far_from_shape",
-          "count": 4,
-          "effort": "A few minutes per flagged stop.",
-          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some stops sit far from the route line they belong to.",
-          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
-        },
-        {
-          "code": "fast_travel_between_consecutive_stops",
-          "count": 2,
-          "effort": "A few minutes per flagged trip.",
-          "fix": "Check the flagged stop times for transposed minutes.",
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
-        },
-        {
-          "code": "route_color_contrast",
-          "count": 2,
-          "effort": "One field per route.",
-          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
-        },
-        {
-          "code": "service_has_no_active_day_of_the_week",
-          "count": 2,
-          "effort": "A few minutes in your scheduling software.",
-          "fix": "Delete the empty calendars or set their service days.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars have no days of the week switched on.",
-          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+          "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         },
         {
           "code": "expired_calendar",
@@ -240,23 +193,56 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
-          "code": "missing_recommended_file",
+          "code": "missing_feed_contact_email_and_url",
           "count": 1,
-          "effort": "One small file, set once in export settings.",
-          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_feed_contact_email_and_url' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Missing feed contact email and url (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 1,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
-          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
         },
         {
           "code": "trip_headsign_matches_intermediate_stop",
-          "count": 16,
+          "count": 8,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'trip_headsign_matches_intermediate_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -264,40 +250,39 @@
           "severity": "INFO",
           "what": "Trip headsign matches intermediate stop (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unknown_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unknown file (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 33.2,
+      "score": 56.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 13 kinds of issue across 396649 instances (0 error, 396633 warning, 16 informational).",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 241 instances (0 error, 232 warning, 9 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 62,
-        "feed_end_date": null,
-        "feed_start_date": null,
-        "feed_version": null,
-        "has_feed_info": false,
+        "feed_end_date": "2026-09-06",
+        "feed_start_date": "2026-06-29",
+        "feed_version": "2026-06 Centro_20260616",
+        "has_feed_info": true,
         "last_service_date": "2026-09-06",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_missing_feed_info_dates",
-          "count": 1,
-          "effort": "Two fields, set once in export settings.",
-          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
-          "owner": "Likely your export tool",
-          "points": 15.0,
-          "severity": "WARNING",
-          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
-          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 85.0,
+      "score": 100.0,
       "status": "measured",
       "summary": "Service data covers the next 62 days.",
       "weight": 0.2
@@ -309,6 +294,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -318,7 +315,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 71 days.",
+        "detail": "Service data covers the next 62 days.",
         "key": "current",
         "met": true
       },
@@ -334,11 +331,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "15a15472e187682aa01ddfd75bb8c5a5d5c1fdd73919cb622f8e0095e749fbd1",
-    "size_bytes": 6937339,
+    "sha256": "4814f6f784ad7f39cb223dce20b55b67c439d5c7cd811861484c4b4bee88793b",
+    "size_bytes": 2903899,
     "static_url": "https://www.centro.org/CentroGTFS/CentroGTFS.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.61147,
@@ -346,12 +349,12 @@
       -75.16453,
       43.4796
     ],
-    "lat": 43.06159,
-    "lon": -76.14608,
-    "stop_count": 5555
+    "lat": 43.0689,
+    "lon": -76.14559,
+    "stop_count": 4831
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "Centro"
     ],
@@ -370,82 +373,1007 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 71 days.",
+        "detail": "Service data covers the next 62 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 47.5,
-    "margin_to_next_band": 12.5,
-    "score": 47.5
+    "grade": "D",
+    "margin_to_lower_band": 1.5,
+    "margin_to_next_band": 8.5,
+    "score": 61.5
   },
   "recommendations": [
     {
       "code": "scorecard_route_color_low_contrast",
-      "count": 113,
+      "count": 57,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "113 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Rome5, Osw19, Osw11, Sy901, Sy 86, and more).",
+      "what": "57 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Aub 1, Aub 4, Aub 6, Aub38, Cor 4, and more).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 5158,
+      "count": 4451,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "5158 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Teall Ave & Short St\", \"S Wilbur Ave & Conservation Pl\", \"S Wilbur Ave & Coleridge Ave\", and more).",
+      "what": "4451 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Thurber St & Alden St\", \"Thompson Rd & Springfield Rd\", \"S Salina St & Washington St\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 5555,
-    "findings": [],
-    "orphan_stops": 0,
+    "boardable_stops": 4831,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 26,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "26 of 4831 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 26,
     "single_stop_trips": 0,
-    "trips_total": 14354
+    "trips_total": 9088
+  },
+  "route_map": {
+    "drawn_route_count": 79,
+    "has_shapes": true,
+    "path": "data/artifacts/centro/geometry.geojson",
+    "route_count": 82,
+    "routes": [
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21839",
+        "label": "Aub 1",
+        "long": "West Genesee",
+        "short": "Aub 1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3C62AE",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21840",
+        "label": "Aub 2",
+        "long": "Franklin",
+        "short": "Aub 2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E3092",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "21841",
+        "label": "Aub 3",
+        "long": "North Street",
+        "short": "Aub 3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21842",
+        "label": "Aub 4",
+        "long": "State Street",
+        "short": "Aub 4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21843",
+        "label": "Aub 6",
+        "long": "Wegmans Shoppers",
+        "short": "Aub 6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8ABB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "21844",
+        "label": "Aub38",
+        "long": "Auburn - Syracuse via Elbridge",
+        "short": "Aub38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21845",
+        "label": "Cor 1",
+        "long": "Route 1",
+        "short": "Cor 1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21846",
+        "label": "Cor 2",
+        "long": "Route 2",
+        "short": "Cor 2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21847",
+        "label": "Cor 3",
+        "long": "Route 3",
+        "short": "Cor 3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21848",
+        "label": "Cor 4",
+        "long": "Route 4",
+        "short": "Cor 4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21849",
+        "label": "Cor 5",
+        "long": "Route 5",
+        "short": "Cor 5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21850",
+        "label": "Cor 6",
+        "long": "Route 6",
+        "short": "Cor 6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21851",
+        "label": "Cor11",
+        "long": "Route 11",
+        "short": "Cor11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21852",
+        "label": "Ful14",
+        "long": "Fulton - East",
+        "short": "Ful14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC1D65",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21853",
+        "label": "Ful15",
+        "long": "Fulton - West",
+        "short": "Ful15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21854",
+        "label": "Mex16",
+        "long": "Mexico - Fulton",
+        "short": "Mex16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21855",
+        "label": "Osw09",
+        "long": "Price Chopper Shopper",
+        "short": "Osw09",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82D3F2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "21856",
+        "label": "Osw10",
+        "long": "SUNY Oswego Blue Route",
+        "short": "Osw10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AC767",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21857",
+        "label": "Osw11",
+        "long": "SUNY Oswego Green Route",
+        "short": "Osw11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "57E8C7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21858",
+        "label": "Osw17",
+        "long": "Bridge Street",
+        "short": "Osw17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E3E923",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21859",
+        "label": "Osw18",
+        "long": "Sunrise West",
+        "short": "Osw18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B1098",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21860",
+        "label": "Osw19",
+        "long": "Brandonwood East",
+        "short": "Osw19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0C94A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21861",
+        "label": "Osw46",
+        "long": "Oswego - Syracuse",
+        "short": "Osw46",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED2224",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21865",
+        "label": "Rome2",
+        "long": "WalMart",
+        "short": "Rome2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21866",
+        "label": "Rome5",
+        "long": "Black River Blvd",
+        "short": "Rome5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21867",
+        "label": "Rome6",
+        "long": "MVCC - Griffiss",
+        "short": "Rome6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21868",
+        "label": "SU 43",
+        "long": "Waverly Ave",
+        "short": "SU 43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21869",
+        "label": "SU 44",
+        "long": "Skytop Rd",
+        "short": "SU 44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "21870",
+        "label": "SU 45",
+        "long": "SU - Destiny USA",
+        "short": "SU 45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "21871",
+        "label": "SU243",
+        "long": "East Campus",
+        "short": "SU243",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21872",
+        "label": "SU244",
+        "long": "Slocum Heights",
+        "short": "SU244",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21873",
+        "label": "SU343",
+        "long": "Genesee St - Westcott St",
+        "short": "SU343",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21874",
+        "label": "SU344",
+        "long": "South Campus",
+        "short": "SU344",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21875",
+        "label": "SU345",
+        "long": "Thurber St",
+        "short": "SU345",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21876",
+        "label": "SU443",
+        "long": "Connective Corridor",
+        "short": "SU443",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21877",
+        "label": "SU444",
+        "long": "Small Road",
+        "short": "SU444",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21878",
+        "label": "Sy 10",
+        "long": "South Salina St - Nedrow",
+        "short": "Sy 10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E3092",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "21879",
+        "label": "Sy 16",
+        "long": "North Salina St - Buckley Rd",
+        "short": "Sy 16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0C94A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21880",
+        "label": "Sy 20",
+        "long": "James St",
+        "short": "Sy 20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8ABB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "21881",
+        "label": "Sy 26",
+        "long": "South Ave",
+        "short": "Sy 26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED2224",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21882",
+        "label": "Sy 30",
+        "long": "Westcott St - SU",
+        "short": "Sy 30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8ABB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "21883",
+        "label": "Sy 36",
+        "long": "Camillus",
+        "short": "Sy 36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "917164",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21884",
+        "label": "Sy 40",
+        "long": "Drumlins - Nob Hill",
+        "short": "Sy 40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0C94A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21885",
+        "label": "Sy 46",
+        "long": "Liverpool - Route 57",
+        "short": "Sy 46",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AC767",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21886",
+        "label": "Sy 48",
+        "long": "Liverpool - Morgan Rd",
+        "short": "Sy 48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21887",
+        "label": "Sy 50",
+        "long": "Destiny USA",
+        "short": "Sy 50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8ABB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "21888",
+        "label": "Sy 52",
+        "long": "Court St",
+        "short": "Sy 52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3C62AE",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21889",
+        "label": "Sy 54",
+        "long": "Midland Ave - Valley Dr",
+        "short": "Sy 54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "917164",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21890",
+        "label": "Sy 58",
+        "long": "Park Hill",
+        "short": "Sy 58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3C62AE",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21891",
+        "label": "Sy 62",
+        "long": "Manlius",
+        "short": "Sy 62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AC767",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21892",
+        "label": "Sy 64",
+        "long": "Western Lights",
+        "short": "Sy 64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AC767",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21893",
+        "label": "Sy 68",
+        "long": "East Fayette St - Erie Blvd",
+        "short": "Sy 68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E3092",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "21894",
+        "label": "Sy 72",
+        "long": "Townsend St - East Colvin St",
+        "short": "Sy 72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82D3F2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "21895",
+        "label": "Sy 74",
+        "long": "Solvay",
+        "short": "Sy 74",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82D3F2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "21896",
+        "label": "Sy 76",
+        "long": "Salt Springs Rd",
+        "short": "Sy 76",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21897",
+        "label": "Sy 80",
+        "long": "Grant Blvd",
+        "short": "Sy 80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED2224",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21898",
+        "label": "Sy 82",
+        "long": "Baldwinsville",
+        "short": "Sy 82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0C94A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21899",
+        "label": "Sy 84",
+        "long": "Mattydale",
+        "short": "Sy 84",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AC767",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21900",
+        "label": "Sy 86",
+        "long": "Henry Clay Blvd",
+        "short": "Sy 86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82D3F2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "21901",
+        "label": "Sy 88",
+        "long": "North Syracuse - Central Square",
+        "short": "Sy 88",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21902",
+        "label": "Sy 90",
+        "long": "Wegmans Shopper",
+        "short": "Sy 90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED2224",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21903",
+        "label": "Sy 92",
+        "long": "Tops Shoppers",
+        "short": "Sy 92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21904",
+        "label": "Sy510",
+        "long": "Lafayette - Tully",
+        "short": "Sy510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21905",
+        "label": "Sy582",
+        "long": "Orange Lot",
+        "short": "Sy582",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21906",
+        "label": "Sy782",
+        "long": "Willis Ave Lot",
+        "short": "Sy782",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "21907",
+        "label": "Sy882",
+        "long": "Lakeview Park Special Events",
+        "short": "Sy882",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21908",
+        "label": "Sy901",
+        "long": "State Fair - Hub",
+        "short": "Sy901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21909",
+        "label": "Sy907",
+        "long": "Long Branch Park",
+        "short": "Sy907",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21910",
+        "label": "Sy909",
+        "long": "Destiny USA",
+        "short": "Sy909",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21924",
+        "label": "Ut 11",
+        "long": "Whitesboro",
+        "short": "Ut 11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E3092",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "21925",
+        "label": "Ut 12",
+        "long": "Bleeker St",
+        "short": "Ut 12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0C94A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "21926",
+        "label": "Ut 14",
+        "long": "Mohawk",
+        "short": "Ut 14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82D3F2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "21927",
+        "label": "Ut 15",
+        "long": "James Street",
+        "short": "Ut 15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21928",
+        "label": "Ut 20",
+        "long": "Lenox - Business Park",
+        "short": "Ut 20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D98C27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21929",
+        "label": "Ut 22",
+        "long": "South Street",
+        "short": "Ut 22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED2224",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "21930",
+        "label": "Ut 24",
+        "long": "Genesee Street",
+        "short": "Ut 24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "917164",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21931",
+        "label": "Ut 28",
+        "long": "Herkimer Rd",
+        "short": "Ut 28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3C62AE",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21932",
+        "label": "Ut 29",
+        "long": "Riverside Drive",
+        "short": "Ut 29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AC767",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "21933",
+        "label": "Ut 30",
+        "long": "Clinton",
+        "short": "Ut 30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8ABB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "21934",
+        "label": "Ut 31",
+        "long": "Oneida - Chadwicks",
+        "short": "Ut 31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21935",
+        "label": "Ut 33",
+        "long": "Rome - Turning Stone",
+        "short": "Ut 33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A848",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21936",
+        "label": "Ut111",
+        "long": "New York Mills",
+        "short": "Ut111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 4831,
+    "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 9088 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 9088,
+    "trips_with_shape": 9088
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 5555,
+      "count": 4831,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "5555 of 5555 stops don't say whether a wheelchair user can board there.",
+      "what": "4831 of 4831 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 14354,
+      "count": 9088,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "14354 of 14354 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "9088 of 9088 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

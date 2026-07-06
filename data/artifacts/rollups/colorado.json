@@ -1,6 +1,6 @@
 {
   "agency_count": 126,
-  "average_score": 67.7,
+  "average_score": 67.6,
   "common_fixes": [
     {
       "agencies": 117,
@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 91,
+      "agencies": 90,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -74,11 +74,6 @@
     },
     {
       "agencies": 2,
-      "code": "foreign_key_violation",
-      "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 2,
       "code": "unknown_column",
       "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras."
     }
@@ -88,13 +83,13 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-06T13:27:44+00:00",
+  "generated_at": "2026-07-06T16:47:27+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 29,
     "C": 40,
-    "D": 18,
-    "F": 37
+    "D": 17,
+    "F": 38
   },
   "members": [
     {
@@ -121,7 +116,7 @@
       "name": "Mountain Metropolitan Transit",
       "needs_attention": true,
       "score": 26.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -135,7 +130,7 @@
       "name": "Transfort \u2013 City of Fort Collins (Transfort)",
       "needs_attention": true,
       "score": 39.9,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -177,7 +172,7 @@
       "name": "Mountain Metropolitan Transit",
       "needs_attention": true,
       "score": 44.3,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -233,7 +228,7 @@
       "name": "ECO Transit",
       "needs_attention": true,
       "score": 45.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -247,7 +242,7 @@
       "name": "ECO Transit",
       "needs_attention": true,
       "score": 45.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -527,7 +522,7 @@
       "name": "Grand Valley Transit",
       "needs_attention": true,
       "score": 55.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -555,7 +550,7 @@
       "name": "Mountain Express (MtnExp)",
       "needs_attention": true,
       "score": 55.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -569,7 +564,7 @@
       "name": "Mountain Express (MtnExp)",
       "needs_attention": true,
       "score": 55.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -600,6 +595,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Grade slipped from D to F",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
+      "needs_attention": true,
+      "score": 59.3,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -827,20 +836,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
-      "needs_attention": true,
-      "score": 66.2,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 26 day(s)",
       "days_until_expiry": 26,
       "expiry_status": "expiring_soon",
@@ -966,7 +961,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 64291997,
       "attention_reason": null,
       "days_until_expiry": 82,
       "expiry_status": "current",
@@ -1120,7 +1115,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 64291997,
       "attention_reason": null,
       "days_until_expiry": 82,
       "expiry_status": "current",
@@ -1870,9 +1865,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 125,
+    "not_measured": 117,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 9,
     "total": 126
   },
   "state_percentile": 91

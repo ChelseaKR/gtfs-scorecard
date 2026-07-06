@@ -1,11 +1,11 @@
 {
   "agency_count": 16,
-  "average_score": 53.2,
+  "average_score": 52.8,
   "common_fixes": [
     {
-      "agencies": 11,
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
+      "agencies": 10,
+      "code": "scorecard_feed_expired",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "agencies": 10,
@@ -13,9 +13,9 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 9,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "agencies": 10,
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
       "agencies": 3,
@@ -34,11 +34,11 @@
     }
   ],
   "expired": {
-    "lapsed": 0,
+    "lapsed": 1,
     "stale": 9,
-    "total": 9
+    "total": 10
   },
-  "generated_at": "2026-07-06T13:27:44+00:00",
+  "generated_at": "2026-07-06T16:47:27+00:00",
   "grade_distribution": {
     "A": 1,
     "C": 3,
@@ -70,7 +70,7 @@
       "name": "CATABUS",
       "needs_attention": true,
       "score": 22.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -83,8 +83,8 @@
       "id": "rabbit-transit",
       "name": "Rabbit Transit",
       "needs_attention": true,
-      "score": 34.6,
-      "shapes_status": null,
+      "score": 34.5,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -98,7 +98,7 @@
       "name": "Beaver County Transit Authority",
       "needs_attention": true,
       "score": 45.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -112,7 +112,7 @@
       "name": "Berks Area Regional Transportation Authority (BARTA)",
       "needs_attention": true,
       "score": 45.4,
-      "shapes_status": null,
+      "shapes_status": "not_ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -154,7 +154,21 @@
       "name": "Red Rose Transit Authority (RRTA)",
       "needs_attention": true,
       "score": 48.0,
-      "shapes_status": null,
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service window shortened unexpectedly on 2026-07-06",
+      "days_until_expiry": -9,
+      "expiry_status": "lapsed",
+      "grade": "F",
+      "id": "port-authority-of-allegheny-county",
+      "name": "Port Authority of Allegheny County",
+      "needs_attention": true,
+      "score": 49.1,
+      "shapes_status": "at_risk",
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -199,20 +213,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 110,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "port-authority-of-allegheny-county",
-      "name": "Port Authority of Allegheny County",
-      "needs_attention": false,
-      "score": 56.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -271,18 +271,18 @@
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     }
   ],
-  "needs_attention": 11,
+  "needs_attention": 12,
   "rollup": {
     "id": "pennsylvania",
     "name": "Pennsylvania agencies"
   },
   "schema_version": "1.7",
   "shapes_readiness": {
-    "at_risk": 0,
-    "not_measured": 16,
-    "not_ready": 0,
-    "ready": 0,
+    "at_risk": 1,
+    "not_measured": 10,
+    "not_ready": 2,
+    "ready": 3,
     "total": 16
   },
-  "state_percentile": 33
+  "state_percentile": 28
 }

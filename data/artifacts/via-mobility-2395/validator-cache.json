@@ -2,15 +2,10 @@
   "report": {
     "notices": [
       {
-        "code": "foreign_key_violation",
+        "code": "empty_file",
         "sample_notices": [
           {
-            "childFieldName": "trip_id",
-            "childFilename": "frequencies.txt",
-            "csvRowNumber": 2,
-            "fieldValue": "1139960",
-            "parentFieldName": "trip_id",
-            "parentFilename": "trips.txt"
+            "filename": "frequencies.txt"
           }
         ],
         "severity": "ERROR",
@@ -156,6 +151,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "8aafc90e43a4192da0c848ff81b64714714f0e8f5651147889565270cc02b3ec",
+  "sha256": "a55ff775fd25d7ee4f5143a49b20235b479cbc8d95d5a0d5849b224c30c3b8f5",
   "validator_version": "8.0.1"
 }

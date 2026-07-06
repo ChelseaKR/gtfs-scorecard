@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/mta/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/mta/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -27,7 +28,7 @@
           "stops_marked_accessible_pct": 82.5,
           "stops_marked_not_accessible_pct": 15.8,
           "stops_stated_pct": 98.2,
-          "trips_stated_pct": 22.9
+          "trips_stated_pct": 22.8
         },
         "accessibility_measures": "presence_not_usability",
         "cemv": {
@@ -69,8 +70,8 @@
           "pathway_count": 0
         },
         "stops": 114,
-        "trips": 42163,
-        "wheelchair_accessible_pct": 22.9,
+        "trips": 42385,
+        "wheelchair_accessible_pct": 22.8,
         "wheelchair_boarding_pct": 98.2,
         "wheelchair_marked_accessible_pct": 82.5,
         "wheelchair_marked_not_accessible_pct": 15.8
@@ -89,13 +90,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 32499,
+          "count": 32721,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 11.6,
           "severity": "WARNING",
-          "what": "32499 of 42163 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "32721 of 42385 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -133,16 +134,16 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 4,
-          "WARNING": 24
+          "WARNING": 22
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "unused_shape",
-          "count": 18,
+          "count": 16,
           "effort": "One setting.",
-          "fix": "Enable 'remove unused shapes' (or similar) in your export tool.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
@@ -168,7 +169,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
@@ -208,7 +209,7 @@
       "name": "correctness",
       "score": 81.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 28 instances (0 error, 24 warning, 4 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 26 instances (0 error, 22 warning, 4 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -248,6 +249,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -257,7 +270,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 177 days.",
+        "detail": "Service data covers the next 173 days.",
         "key": "current",
         "met": true
       },
@@ -273,11 +286,17 @@
   "feed": {
     "license_note": "License: http://web.mta.info/developers/developer-data-terms.html",
     "reachable": true,
-    "sha256": "8860996949fdc18a70be1fc3ff499310f7b50e577205a14ed0cd7c9f4763789b",
-    "size_bytes": 5239545,
+    "sha256": "9059b0c494ce467b4167e93af5869b689d541e6bce72bb4f1734775ccb0c3df0",
+    "size_bytes": 5248969,
     "static_url": "https://rrgtfsfeeds.s3.amazonaws.com/gtfsmnr.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://rrgtfsfeeds.s3.amazonaws.com/gtfsmnr.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.98453,
@@ -311,7 +330,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 177 days.",
+        "detail": "Service data covers the next 173 days.",
         "key": "current",
         "status": "ready"
       }
@@ -349,11 +368,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 114,
     "findings": [
@@ -371,7 +385,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 42163
+    "trips_total": 42385
   },
   "route_map": {
     "drawn_route_count": 6,
@@ -450,21 +464,15 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 42385 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 42385,
+    "trips_with_shape": 42385
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
-    {
-      "code": "scorecard_no_fare_data",
-      "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
-      "points": 15.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
-    },
     {
       "code": "scorecard_missing_feed_info_dates",
       "count": 1,
@@ -472,21 +480,33 @@
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
       "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     },
     {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 32499,
+      "count": 32721,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 11.6,
       "rank": 3,
       "severity": "WARNING",
-      "what": "32499 of 42163 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "32721 of 42385 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],

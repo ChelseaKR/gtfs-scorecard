@@ -35,6 +35,54 @@
       "code": "unsorted_stop_times",
       "last_seen": "2026-06-26",
       "what": "Unsorted stop times (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "fast_travel_between_consecutive_stops",
+      "last_seen": "2026-07-05",
+      "what": "Some scheduled trips travel implausibly fast between stops."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "fast_travel_between_far_stops",
+      "last_seen": "2026-07-05",
+      "what": "Fast travel between far stops (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "future_calendar",
+      "last_seen": "2026-07-05",
+      "what": "Future calendar (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "future_feed",
+      "last_seen": "2026-07-05",
+      "what": "Future feed (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "leading_or_trailing_whitespaces",
+      "last_seen": "2026-07-05",
+      "what": "Leading or trailing whitespaces (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "last_seen": "2026-07-05",
+      "what": "17870 of 17870 trips don't say whether the vehicle is wheelchair accessible."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "stop_too_far_from_shape",
+      "last_seen": "2026-07-05",
+      "what": "Some stops sit far from the route line they belong to."
+    },
+    {
+      "cleared": "2026-07-06",
+      "code": "stop_without_stop_time",
+      "last_seen": "2026-07-05",
+      "what": "Some stops exist in the feed but no trip ever stops at them."
     }
   ]
 }
