@@ -15,7 +15,7 @@
           "stops_marked_accessible_pct": 0.0,
           "stops_marked_not_accessible_pct": 0.0,
           "stops_stated_pct": 0.0,
-          "trips_stated_pct": 88.6
+          "trips_stated_pct": 88.5
         },
         "accessibility_measures": "presence_not_usability",
         "cemv": {
@@ -46,7 +46,7 @@
           "has_flex": false
         },
         "has_fares": false,
-        "headsign_pct": 100.0,
+        "headsign_pct": 99.9,
         "mixed_case_stop_name_pct": 100.0,
         "pathways": {
           "has_entrances": false,
@@ -57,8 +57,8 @@
           "pathway_count": 0
         },
         "stops": 392,
-        "trips": 832,
-        "wheelchair_accessible_pct": 88.6,
+        "trips": 833,
+        "wheelchair_accessible_pct": 88.5,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
         "wheelchair_marked_not_accessible_pct": 0.0
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 95,
+          "count": 96,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 1.7,
           "severity": "WARNING",
-          "what": "95 of 832 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "96 of 833 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -96,6 +96,17 @@
           "severity": "WARNING",
           "what": "The feed contains no fare information.",
           "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 1,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Populate trip_headsign to match what the bus displays.",
+          "owner": "Likely your export tool",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "1 of 833 trips have no headsign.",
+          "why": "Riders at the stop can't tell which direction a bus is going."
         }
       ],
       "name": "completeness",
@@ -108,16 +119,16 @@
       "details": {
         "distinct_codes": 10,
         "instances_by_severity": {
-          "ERROR": 1,
+          "ERROR": 3,
           "INFO": 11,
-          "WARNING": 56
+          "WARNING": 59
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_time_with_arrival_before_previous_departure_time",
-          "count": 1,
+          "count": 3,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -128,7 +139,7 @@
         },
         {
           "code": "stop_without_stop_time",
-          "count": 35,
+          "count": 37,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -171,6 +182,17 @@
           "why": "See the linked rule for what this affects."
         },
         {
+          "code": "stops_match_shape_out_of_order",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
           "code": "fast_travel_between_far_stops",
           "count": 1,
           "effort": "Varies.",
@@ -191,17 +213,6 @@
           "severity": "WARNING",
           "what": "Some stops sit far from the route line they belong to.",
           "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
-        },
-        {
-          "code": "stops_match_shape_out_of_order",
-          "count": 1,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         },
         {
           "code": "big_gap_in_service",
@@ -229,7 +240,7 @@
       "name": "correctness",
       "score": 54.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 68 instances (1 error, 56 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 73 instances (3 error, 59 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -252,21 +263,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
+        "coverage_pct": 20.0,
         "covered_trips": 1,
         "drift": {
-          "median_seconds": -169,
-          "observations": 22,
-          "on_time_share_pct": 27.3,
-          "p90_abs_seconds": 372
+          "median_seconds": -100,
+          "observations": 109,
+          "on_time_share_pct": 18.3,
+          "p90_abs_seconds": 6932
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 1,
-        "vehicles_checked": 6,
-        "vehicles_on_route_pct": 50.0,
-        "worst_lag_seconds": 3
+        "scheduled_trips_in_window": 5,
+        "vehicles_checked": 22,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -281,21 +292,32 @@
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
         },
         {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 3,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "code": "scorecard_rt_trip_coverage",
+          "count": 4,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 7.5,
+          "points": 28.0,
           "severity": "WARNING",
-          "what": "3 of 6 sampled vehicle positions were far from their assigned route (worst: 2148 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+          "what": "4 of 5 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 109,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 84.2,
+      "score": 63.7,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 50.0% of vehicles on their route; predictions ran a median of 169s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 20.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 100s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -326,19 +348,19 @@
         "met": false
       },
       {
-        "detail": "States wheelchair access on 0% of stops and 89% of trips; the mark needs 90% of each.",
+        "detail": "States wheelchair access on 0% of stops and 88% of trips; the mark needs 90% of each.",
         "key": "accessible",
         "met": false
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 89% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 88% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "fd2a8c977bb28717d91a196979964b2ce958d39268c451b3f7e7c8e4d967b490",
-    "size_bytes": 385034,
+    "sha256": "9289c7028da96f28dcc9277fb597a6a3529ef8bdac2cc1fdd3150557f18a1e25",
+    "size_bytes": 380002,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -388,10 +410,10 @@
     "summary": "This feed is close to NTD-ready. 1 validator error to resolve. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 0.6,
-    "margin_to_next_band": 9.4,
-    "score": 60.6
+    "grade": "F",
+    "margin_to_lower_band": 56.5,
+    "margin_to_next_band": 3.5,
+    "score": 56.5
   },
   "recommendations": [
     {
@@ -422,19 +444,19 @@
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 35,
+        "count": 37,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "35 of 392 boardable stops are never served by any trip.",
+        "what": "37 of 392 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 35,
+    "orphan_stops": 37,
     "single_stop_trips": 0,
-    "trips_total": 832
+    "trips_total": 833
   },
   "route_map": {
     "drawn_route_count": 17,
@@ -636,16 +658,16 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 832 trips have a shape in shapes.txt.",
+    "detail": "All 833 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 832,
-    "trips_with_shape": 832
+    "total_trips": 833,
+    "trips_with_shape": 833
   },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
       "code": "stop_time_with_arrival_before_previous_departure_time",
-      "count": 1,
+      "count": 3,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
@@ -668,16 +690,16 @@
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
     },
     {
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 392,
-      "effort": "A column in stops.txt; your scheduling software likely has it.",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
-      "owner": "Likely your team",
-      "points": 25.0,
+      "code": "scorecard_rt_trip_coverage",
+      "count": 4,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 28.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "392 of 392 stops don't say whether a wheelchair user can board there.",
-      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+      "what": "4 of 5 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     }
   ],
   "validator_version": "8.0.1"

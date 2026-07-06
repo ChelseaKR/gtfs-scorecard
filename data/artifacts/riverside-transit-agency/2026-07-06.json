@@ -239,21 +239,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 85.7,
-        "covered_trips": 6,
+        "coverage_pct": 98.4,
+        "covered_trips": 62,
         "drift": {
-          "median_seconds": 75,
-          "observations": 251,
-          "on_time_share_pct": 71.7,
-          "p90_abs_seconds": 331
+          "median_seconds": 17,
+          "observations": 2960,
+          "on_time_share_pct": 64.4,
+          "p90_abs_seconds": 303
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 7,
-        "vehicles_checked": 21,
+        "scheduled_trips_in_window": 63,
+        "vehicles_checked": 174,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 29
+        "worst_lag_seconds": 12
       },
       "findings": [
         {
@@ -262,16 +262,16 @@
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 5.0,
+          "points": 0.6,
           "severity": "WARNING",
-          "what": "1 of 7 trips scheduled during the sampling window had no live predictions.",
+          "what": "1 of 63 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 95.0,
+      "score": 99.4,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 85.7% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 75s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 98.4% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 17s behind schedule.",
       "weight": 0.2
     }
   },
@@ -365,9 +365,9 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 2.9,
-    "margin_to_next_band": 7.1,
-    "score": 72.9
+    "margin_to_lower_band": 3.8,
+    "margin_to_next_band": 6.2,
+    "score": 73.8
   },
   "recommendations": [
     {

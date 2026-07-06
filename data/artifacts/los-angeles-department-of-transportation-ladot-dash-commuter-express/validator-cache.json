@@ -322,6 +322,21 @@
         "total": 5
       },
       {
+        "code": "expired_calendar",
+        "sample_notices": [
+          {
+            "csvRowNumber": 3,
+            "serviceId": "183-2"
+          },
+          {
+            "csvRowNumber": 4,
+            "serviceId": "183-3"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 2
+      },
+      {
         "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
@@ -363,17 +378,6 @@
         "total": 2
       },
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 3,
-            "serviceId": "183-2"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "unknown_file",
         "sample_notices": [
           {
@@ -392,6 +396,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "b4623d3d7a6589f28321c64471e58d31dadcafcbf5bff6724fbc60c56a6a53cd",
+  "sha256": "3e95d76c2dd19a097412dbc4b576dfb30bed2fde4eb356f27836e4aa9e2f4ea8",
   "validator_version": "8.0.1"
 }

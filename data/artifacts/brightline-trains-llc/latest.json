@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 6,
-        "trips": 495,
+        "trips": 436,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 100.0,
@@ -99,7 +99,7 @@
         "instances_by_severity": {
           "ERROR": 2,
           "INFO": 0,
-          "WARNING": 28
+          "WARNING": 18
         },
         "validator_version": "8.0.1"
       },
@@ -117,7 +117,7 @@
         },
         {
           "code": "expired_calendar",
-          "count": 27,
+          "count": 17,
           "effort": "One setting in most export tools.",
           "fix": "Remove past service periods the next time you export the feed.",
           "owner": "Likely your export tool",
@@ -141,7 +141,7 @@
       "name": "correctness",
       "score": 78.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 3 kinds of issue across 30 instances (2 error, 28 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 20 instances (2 error, 18 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -181,6 +181,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -190,7 +202,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 300 days.",
+        "detail": "Service data covers the next 298 days.",
         "key": "current",
         "met": true
       },
@@ -206,8 +218,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "500517812acc8277573482d1902d542b4794f1a132e472fb1b896cd29add2e15",
-    "size_bytes": 30338,
+    "sha256": "01e2280b93ff5921074de10b12aeb9474164a23ba1a6de78425f20689c1d36c0",
+    "size_bytes": 28339,
     "static_url": "http://feed.gobrightline.com/bl_gtfs.zip"
   },
   "fetch": {
@@ -216,7 +228,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -81.30762,
@@ -249,7 +261,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 300 days.",
+        "detail": "Service data covers the next 298 days.",
         "key": "current",
         "status": "ready"
       }
@@ -264,17 +276,12 @@
     "score": 79.6
   },
   "recommendations": [],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 6,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 495
+    "trips_total": 436
   },
   "route_map": {
     "drawn_route_count": 1,
@@ -298,7 +305,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 436 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 436,
+    "trips_with_shape": 436
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {
@@ -314,28 +327,28 @@
       "why": "See the linked rule for what this affects."
     },
     {
-      "code": "scorecard_no_fare_data",
-      "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
-      "points": 15.0,
-      "rank": 2,
-      "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
-    },
-    {
       "code": "scorecard_missing_feed_info_dates",
       "count": 1,
       "effort": "Two fields, set once in export settings.",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
       "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
     }
   ],
   "validator_version": "8.0.1"

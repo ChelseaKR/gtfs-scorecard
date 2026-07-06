@@ -93,7 +93,7 @@
     "stale": 26,
     "total": 30
   },
-  "generated_at": "2026-07-06T09:32:39+00:00",
+  "generated_at": "2026-07-06T13:27:44+00:00",
   "grade_distribution": {
     "A": 4,
     "C": 6,
@@ -783,7 +783,7 @@
       "name": "Brightline Trains LLC",
       "needs_attention": false,
       "score": 79.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Review the rule documentation for 'invalid_phone_number' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -838,9 +838,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 50,
+    "not_measured": 49,
     "not_ready": 0,
-    "ready": 2,
+    "ready": 3,
     "total": 52
   },
   "state_percentile": 37

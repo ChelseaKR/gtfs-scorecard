@@ -176,17 +176,37 @@
     "realtime": {
       "details": {
         "coverage_pct": null,
+        "drift": {
+          "median_seconds": 20430,
+          "observations": 15,
+          "on_time_share_pct": 0.0,
+          "p90_abs_seconds": 20743
+        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 4
+        "vehicles_checked": 41,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 5
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 15,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+        }
+      ],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route; predictions ran a median of 20430s behind schedule.",
       "weight": 0.2
     }
   },
@@ -228,7 +248,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "3f977b3c3b7ecd4763716828cb8f0535c8139e9f01cbfc8700bc075e50449992",
+    "sha256": "507d2b1d1d04b7b31e0475bac892756dee3a460db68d75d96963c0564963c579",
     "size_bytes": 67981,
     "static_url": "https://passio3.com/clovis/passioTransit/gtfs/google_transit.zip"
   },

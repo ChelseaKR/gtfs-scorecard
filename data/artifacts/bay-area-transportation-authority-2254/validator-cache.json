@@ -115,17 +115,17 @@
           },
           {
             "csvRowNumber": 15,
-            "stopId": "11287528",
-            "stopName": "Union St at Grandview Pkwy (TC Tourism)"
-          },
-          {
-            "csvRowNumber": 16,
             "stopId": "11301741",
             "stopName": "TC West Senior High 2025"
+          },
+          {
+            "csvRowNumber": 78,
+            "stopId": "8414183",
+            "stopName": "State St. East of Union"
           }
         ],
         "severity": "WARNING",
-        "total": 27
+        "total": 23
       },
       {
         "code": "leading_or_trailing_whitespaces",
@@ -137,25 +137,25 @@
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 22,
+            "csvRowNumber": 21,
             "fieldName": "stop_name",
             "fieldValue": "M-22 at M-72 (Lakeside) ",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 23,
+            "csvRowNumber": 22,
             "fieldName": "stop_name",
             "fieldValue": "M-22 at Discovery Pier ",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 42,
+            "csvRowNumber": 41,
             "fieldName": "stop_name",
             "fieldValue": "Meijer Park and Ride ",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 57,
+            "csvRowNumber": 56,
             "fieldName": "stop_name",
             "fieldValue": "Union St. at 7th St. ",
             "filename": "stops.txt"
@@ -263,18 +263,6 @@
         "total": 1
       },
       {
-        "code": "trip_coverage_not_active_for_next7_days",
-        "sample_notices": [
-          {
-            "currentDate": "20260704",
-            "serviceWindowEndDate": "20991231",
-            "serviceWindowStartDate": "20260706"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "service_extends_far_in_the_future",
         "sample_notices": [
           {
@@ -316,6 +304,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "50f9f50953094f8ca541815375f4c4d4f0e19fa323078176b60ddd3f4170c721",
+  "sha256": "b3075ab43cbff2fe89f85aef5fef805214b16deaebd2338c47ae6ebf086b5e2f",
   "validator_version": "8.0.1"
 }

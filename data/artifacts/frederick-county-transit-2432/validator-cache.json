@@ -5,19 +5,38 @@
         "code": "stop_time_with_arrival_before_previous_departure_time",
         "sample_notices": [
           {
+            "arrivalTime": "07:55:00",
+            "csvRowNumber": 8946,
+            "departureTime": "25:45:00",
+            "prevCsvRowNumber": 8943,
+            "tripId": "714273"
+          },
+          {
+            "arrivalTime": "20:55:00",
+            "csvRowNumber": 9284,
+            "departureTime": "21:45:00",
+            "prevCsvRowNumber": 9281,
+            "tripId": "714286"
+          },
+          {
             "arrivalTime": "06:40:00",
-            "csvRowNumber": 13864,
+            "csvRowNumber": 13620,
             "departureTime": "30:20:00",
-            "prevCsvRowNumber": 13862,
+            "prevCsvRowNumber": 13618,
             "tripId": "714468"
           }
         ],
         "severity": "ERROR",
-        "total": 1
+        "total": 3
       },
       {
         "code": "stop_without_stop_time",
         "sample_notices": [
+          {
+            "csvRowNumber": 24,
+            "stopId": "162922",
+            "stopName": "75 Monocacy Boulevard- Royal Farms"
+          },
           {
             "csvRowNumber": 43,
             "stopId": "163181",
@@ -37,15 +56,10 @@
             "csvRowNumber": 83,
             "stopId": "162822",
             "stopName": "Clarion Inn Frederick Event Center"
-          },
-          {
-            "csvRowNumber": 86,
-            "stopId": "162820",
-            "stopName": "Corporate Drive at New Design Road"
           }
         ],
         "severity": "WARNING",
-        "total": 35
+        "total": 37
       },
       {
         "code": "route_long_name_contains_short_name",
@@ -89,8 +103,8 @@
         "sample_notices": [
           {
             "arrivalTime2": "06:40:00",
-            "csvRowNumber1": 13862,
-            "csvRowNumber2": 13864,
+            "csvRowNumber1": 13618,
+            "csvRowNumber2": 13620,
             "departureTime1": "30:20:00",
             "distanceKm": 22.278062103667757,
             "routeId": "6163",
@@ -101,7 +115,7 @@
             "stopName2": "Church St at CVS",
             "stopSequence1": 4,
             "stopSequence2": 6,
-            "tripCsvRowNumber": 771,
+            "tripCsvRowNumber": 772,
             "tripId": "714468"
           },
           {
@@ -188,8 +202,8 @@
             "shapeId": "51830",
             "stopId": "162939",
             "stopName": "Baughman's Lane at Walgreens",
-            "stopTimeCsvRowNumber": 14573,
-            "tripCsvRowNumber": 811,
+            "stopTimeCsvRowNumber": 14329,
+            "tripCsvRowNumber": 812,
             "tripId": "714501"
           },
           {
@@ -201,8 +215,8 @@
             "shapeId": "51830",
             "stopId": "163125",
             "stopName": "Mt. Zion Road Park and Ride",
-            "stopTimeCsvRowNumber": 14574,
-            "tripCsvRowNumber": 811,
+            "stopTimeCsvRowNumber": 14330,
+            "tripCsvRowNumber": 812,
             "tripId": "714501"
           },
           {
@@ -214,8 +228,8 @@
             "shapeId": "51830",
             "stopId": "163126",
             "stopName": "Point of Rocks MARC Train Station",
-            "stopTimeCsvRowNumber": 14575,
-            "tripCsvRowNumber": 811,
+            "stopTimeCsvRowNumber": 14331,
+            "tripCsvRowNumber": 812,
             "tripId": "714501"
           }
         ],
@@ -223,52 +237,27 @@
         "total": 3
       },
       {
-        "code": "fast_travel_between_far_stops",
-        "sample_notices": [
-          {
-            "arrivalTime2": "06:40:00",
-            "csvRowNumber1": 13862,
-            "csvRowNumber2": 13864,
-            "departureTime1": "30:20:00",
-            "distanceKm": 22.40454342506966,
-            "routeId": "6163",
-            "speedKph": 1344.2726055041796,
-            "stopId1": "162970",
-            "stopId2": "163122",
-            "stopName1": "Fairview Avenue at College Park Plaza (The Common Market)",
-            "stopName2": "Church St at CVS",
-            "stopSequence1": 4,
-            "stopSequence2": 6,
-            "tripCsvRowNumber": 771,
-            "tripId": "714468"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
-        "code": "stop_too_far_from_shape",
-        "sample_notices": [
-          {
-            "geoDistanceToShape": 318.28558766777377,
-            "match": [
-              39.391202107585556,
-              -77.44953970750211
-            ],
-            "shapeId": "51829",
-            "stopId": "163156",
-            "stopName": "Jefferson Tech Park (Jefferson Station Boulevard at Mary Lou Lane)",
-            "stopTimeCsvRowNumber": 13114,
-            "tripCsvRowNumber": 714,
-            "tripId": "714491"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "stops_match_shape_out_of_order",
         "sample_notices": [
+          {
+            "match1": [
+              39.44879612742427,
+              -77.41126569521823
+            ],
+            "match2": [
+              39.431081856191646,
+              -77.41901525167619
+            ],
+            "shapeId": "51806",
+            "stopId1": "162970",
+            "stopId2": "162969",
+            "stopName1": "Fairview Avenue at College Park Plaza (The Common Market)",
+            "stopName2": "Frederick Shopping Center South- Giant Eagle",
+            "stopTimeCsvRowNumber1": 9293,
+            "stopTimeCsvRowNumber2": 9292,
+            "tripCsvRowNumber": 501,
+            "tripId": "1139964"
+          },
           {
             "match1": [
               39.3790231536472,
@@ -287,6 +276,50 @@
             "stopTimeCsvRowNumber2": 342,
             "tripCsvRowNumber": 19,
             "tripId": "713825"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 2
+      },
+      {
+        "code": "fast_travel_between_far_stops",
+        "sample_notices": [
+          {
+            "arrivalTime2": "06:40:00",
+            "csvRowNumber1": 13618,
+            "csvRowNumber2": 13620,
+            "departureTime1": "30:20:00",
+            "distanceKm": 22.40454342506966,
+            "routeId": "6163",
+            "speedKph": 1344.2726055041796,
+            "stopId1": "162970",
+            "stopId2": "163122",
+            "stopName1": "Fairview Avenue at College Park Plaza (The Common Market)",
+            "stopName2": "Church St at CVS",
+            "stopSequence1": 4,
+            "stopSequence2": 6,
+            "tripCsvRowNumber": 772,
+            "tripId": "714468"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "stop_too_far_from_shape",
+        "sample_notices": [
+          {
+            "geoDistanceToShape": 318.28558766777377,
+            "match": [
+              39.391202107585556,
+              -77.44953970750211
+            ],
+            "shapeId": "51829",
+            "stopId": "163156",
+            "stopName": "Jefferson Tech Park (Jefferson Station Boulevard at Mary Lou Lane)",
+            "stopTimeCsvRowNumber": 12870,
+            "tripCsvRowNumber": 715,
+            "tripId": "714491"
           }
         ],
         "severity": "WARNING",
@@ -374,6 +407,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "fd2a8c977bb28717d91a196979964b2ce958d39268c451b3f7e7c8e4d967b490",
+  "sha256": "9289c7028da96f28dcc9277fb597a6a3529ef8bdac2cc1fdd3150557f18a1e25",
   "validator_version": "8.0.1"
 }

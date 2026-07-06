@@ -236,8 +236,8 @@
         "kinds_reachable": 0,
         "rt_freshness": "stale",
         "samples": 9,
-        "scheduled_trips_in_window": 151,
-        "worst_lag_seconds": 2661
+        "scheduled_trips_in_window": 238,
+        "worst_lag_seconds": 104
       },
       "findings": [
         {
@@ -279,25 +279,25 @@
           "effort": "A vendor configuration question.",
           "fix": "Ask your AVL vendor to publish updates at least every 20 seconds (the Caltrans guideline).",
           "owner": "",
-          "points": 25.0,
+          "points": 2.0,
           "severity": "WARNING",
-          "what": "Realtime data was up to 2661 seconds old when sampled.",
+          "what": "Realtime data was up to 104 seconds old when sampled.",
           "why": "Stale positions and predictions are worse than none: riders watch a bus that already left."
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 151,
+          "count": 238,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "151 of 151 trips scheduled during the sampling window had no live predictions.",
+          "what": "238 of 238 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 0.0,
+      "score": 27.0,
       "status": "measured",
       "summary": "Sampled 9 times: 0 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
       "weight": 0.2
@@ -325,7 +325,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 41 days.",
+        "detail": "Service data covers the next 40 days.",
         "key": "current",
         "met": true
       },
@@ -352,7 +352,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-05T00:00:00+00:00",
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -97.9911,
@@ -386,7 +386,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 41 days.",
+        "detail": "Service data covers the next 40 days.",
         "key": "current",
         "status": "ready"
       }
@@ -396,9 +396,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 52.8,
-    "margin_to_next_band": 7.2,
-    "score": 52.8
+    "margin_to_lower_band": 58.2,
+    "margin_to_next_band": 1.8,
+    "score": 58.2
   },
   "recommendations": [
     {
@@ -424,11 +424,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2355,
     "findings": [

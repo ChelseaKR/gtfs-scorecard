@@ -1,6 +1,6 @@
 {
   "agency_count": 17,
-  "average_score": 55.3,
+  "average_score": 55.7,
   "common_fixes": [
     {
       "agencies": 14,
@@ -43,7 +43,7 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-06T09:32:39+00:00",
+  "generated_at": "2026-07-06T13:27:44+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 3,
@@ -137,20 +137,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Score changed sharply on 2026-07-05",
-      "days_until_expiry": 40,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "capital-metro",
-      "name": "Capital Metro",
-      "needs_attention": true,
-      "score": 52.8,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 48 day(s)",
       "days_until_expiry": 48,
       "expiry_status": "current",
@@ -176,6 +162,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-06",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Score changed sharply on 2026-07-05",
+      "days_until_expiry": 40,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "capital-metro",
+      "name": "Capital Metro",
+      "needs_attention": true,
+      "score": 58.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-06",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -303,5 +303,5 @@
     "ready": 2,
     "total": 17
   },
-  "state_percentile": 43
+  "state_percentile": 48
 }

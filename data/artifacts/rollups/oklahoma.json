@@ -1,6 +1,6 @@
 {
   "agency_count": 4,
-  "average_score": 55.6,
+  "average_score": 55.2,
   "common_fixes": [
     {
       "agencies": 3,
@@ -28,7 +28,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-06T09:32:39+00:00",
+  "generated_at": "2026-07-06T13:27:44+00:00",
   "grade_distribution": {
     "B": 1,
     "D": 1,
@@ -73,21 +73,21 @@
       "name": "Campus Area Rapid Transit (CART)",
       "needs_attention": false,
       "score": 66.9,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 361,
+      "days_until_expiry": 365,
       "expiry_status": "current",
       "grade": "B",
       "id": "embark-2062",
       "name": "Embark",
       "needs_attention": false,
-      "score": 83.4,
-      "shapes_status": null,
+      "score": 81.9,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     }
@@ -100,10 +100,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 4,
+    "not_measured": 2,
     "not_ready": 0,
-    "ready": 0,
+    "ready": 2,
     "total": 4
   },
-  "state_percentile": 48
+  "state_percentile": 43
 }

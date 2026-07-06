@@ -79,7 +79,7 @@
           "pathway_count": 0
         },
         "stops": 1055,
-        "trips": 2250,
+        "trips": 1951,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 91.4,
         "wheelchair_marked_accessible_pct": 91.4,
@@ -117,11 +117,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 0,
-          "WARNING": 21
+          "WARNING": 20
         },
         "validator_version": "8.0.1"
       },
@@ -169,31 +169,20 @@
           "severity": "WARNING",
           "what": "Missing feed contact email and url (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "trip_coverage_not_active_for_next7_days",
-          "count": 1,
-          "effort": "One setting in most export tools.",
-          "fix": "Trim past service periods the next time you export.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Many of the feed's trips don't run at all in the next 7 days.",
-          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
         }
       ],
       "name": "correctness",
-      "score": 78.0,
+      "score": 82.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 21 instances (0 error, 21 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 20 instances (0 error, 20 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 543,
         "feed_end_date": "2027-12-31",
-        "feed_start_date": "2026-07-04",
-        "feed_version": "20260704",
+        "feed_start_date": "2026-07-05",
+        "feed_version": "20260705",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -213,6 +202,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": true,
     "criteria": [
@@ -222,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 545 days.",
+        "detail": "Service data covers the next 543 days.",
         "key": "current",
         "met": true
       },
@@ -238,8 +239,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "8d7b4a6a489771c46480f36650ea0f3e2d752af5171cbcd2f77503be163564f9",
-    "size_bytes": 737988,
+    "sha256": "1e764040ebf7ef0bfa19941a0c1cf892d85a717bf6730f47a8455affa6db9fb8",
+    "size_bytes": 645857,
     "static_url": "http://eta.getbus.org/rtt/public/utility/gtfs.aspx"
   },
   "fetch": {
@@ -248,7 +249,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -119.14572,
@@ -280,7 +281,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 545 days.",
+        "detail": "Service data covers the next 543 days.",
         "key": "current",
         "status": "ready"
       }
@@ -290,9 +291,9 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 7.3,
-    "margin_to_next_band": 2.7,
-    "score": 87.3
+    "margin_to_lower_band": 9.1,
+    "margin_to_next_band": 0.9,
+    "score": 89.1
   },
   "recommendations": [
     {
@@ -318,11 +319,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1055,
     "findings": [
@@ -340,7 +336,7 @@
     ],
     "orphan_stops": 2,
     "single_stop_trips": 0,
-    "trips_total": 2250
+    "trips_total": 1951
   },
   "route_map": {
     "drawn_route_count": 16,
@@ -540,7 +536,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 1951 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1951,
+    "trips_with_shape": 1951
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

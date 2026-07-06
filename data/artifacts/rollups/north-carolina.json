@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 24
   },
-  "generated_at": "2026-07-06T09:32:39+00:00",
+  "generated_at": "2026-07-06T13:27:44+00:00",
   "grade_distribution": {
     "B": 4,
     "C": 5,
@@ -515,7 +515,7 @@
       "name": "Link Transit",
       "needs_attention": false,
       "score": 75.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-06",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -584,9 +584,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 34,
+    "not_measured": 33,
     "not_ready": 0,
-    "ready": 2,
+    "ready": 3,
     "total": 36
   },
   "state_percentile": 46

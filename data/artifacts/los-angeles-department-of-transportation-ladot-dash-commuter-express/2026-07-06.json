@@ -134,7 +134,7 @@
         "instances_by_severity": {
           "ERROR": 1,
           "INFO": 3,
-          "WARNING": 2104
+          "WARNING": 2105
         },
         "validator_version": "8.0.1"
       },
@@ -239,6 +239,17 @@
           "why": "Route badges get hard to read, most of all for riders with low vision."
         },
         {
+          "code": "expired_calendar",
+          "count": 2,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
           "code": "fast_travel_between_consecutive_stops",
           "count": 2,
           "effort": "A few minutes per flagged trip.",
@@ -248,17 +259,6 @@
           "severity": "WARNING",
           "what": "Some scheduled trips move faster between stops than a bus can.",
           "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
-        },
-        {
-          "code": "expired_calendar",
-          "count": 1,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already ended.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
           "code": "unknown_file",
@@ -275,7 +275,7 @@
       "name": "correctness",
       "score": 25.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 12 kinds of issue across 2108 instances (1 error, 2104 warning, 3 informational).",
+      "summary": "The MobilityData validator flagged 12 kinds of issue across 2109 instances (1 error, 2105 warning, 3 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -303,6 +303,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -312,7 +324,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 545 days.",
+        "detail": "Service data covers the next 543 days.",
         "key": "current",
         "met": true
       },
@@ -328,8 +340,8 @@
   "feed": {
     "license_note": "License: https://www.ladottransit.com/dla.html",
     "reachable": true,
-    "sha256": "b4623d3d7a6589f28321c64471e58d31dadcafcbf5bff6724fbc60c56a6a53cd",
-    "size_bytes": 4033313,
+    "sha256": "3e95d76c2dd19a097412dbc4b576dfb30bed2fde4eb356f27836e4aa9e2f4ea8",
+    "size_bytes": 4033314,
     "static_url": "https://ladotbus.com/gtfs"
   },
   "fetch": {
@@ -338,7 +350,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-06T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.88283,
@@ -373,7 +385,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 545 days.",
+        "detail": "Service data covers the next 543 days.",
         "key": "current",
         "status": "ready"
       }
@@ -411,11 +423,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-06",
-    "feed_fetched_date": "2026-07-05",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2789,
     "findings": [
@@ -1172,7 +1179,13 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 7788 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 7788,
+    "trips_with_shape": 7788
+  },
   "snapshot_date": "2026-07-06",
   "top_fixes": [
     {

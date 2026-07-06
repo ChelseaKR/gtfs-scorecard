@@ -41,6 +41,22 @@
     <summary>On 2026-07-06, Vermont Translines's GTFS data quality went from 70.2 (C) to 69.8 (D). Trip planners read the same feed, so a drop is worth a look.</summary>
   </entry>
   <entry>
+    <title>Towson Loop: grade dropped C to D</title>
+    <id>tag:gtfsscorecard.org,2026:agency/towson-loop/2026-07-06</id>
+    <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/towson-loop/"/>
+    <updated>2026-07-06T00:00:00Z</updated>
+    <category term="grade_drop"/>
+    <summary>On 2026-07-06, Towson Loop's GTFS data quality went from 70.9 (C) to 65.9 (D). Trip planners read the same feed, so a drop is worth a look.</summary>
+  </entry>
+  <entry>
+    <title>Spirit Bus: grade dropped D to F</title>
+    <id>tag:gtfsscorecard.org,2026:agency/spirit-bus-2202/2026-07-06</id>
+    <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/spirit-bus-2202/"/>
+    <updated>2026-07-06T00:00:00Z</updated>
+    <category term="grade_drop"/>
+    <summary>On 2026-07-06, Spirit Bus's GTFS data quality went from 66.7 (D) to 59.7 (F). Trip planners read the same feed, so a drop is worth a look.</summary>
+  </entry>
+  <entry>
     <title>Santa Clara Valley Transportation Authority (VTA): grade dropped C to D</title>
     <id>tag:gtfsscorecard.org,2026:agency/santa-clara-valley-transportation-authority-vta/2026-07-06</id>
     <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/santa-clara-valley-transportation-authority-vta/"/>
@@ -57,12 +73,12 @@
     <summary>On 2026-07-06, Static feed for realtime's GTFS data quality went from 59.7 (F) to 66.7 (D). A step in the right direction.</summary>
   </entry>
   <entry>
-    <title>Rogue Valley Transportation District (RVTD): grade dropped D to F</title>
+    <title>Rogue Valley Transportation District (RVTD): score rose 2.4 points</title>
     <id>tag:gtfsscorecard.org,2026:agency/rogue-valley-transportation-district-rvtd-3219/2026-07-06</id>
     <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/rogue-valley-transportation-district-rvtd-3219/"/>
     <updated>2026-07-06T00:00:00Z</updated>
-    <category term="grade_drop"/>
-    <summary>On 2026-07-06, Rogue Valley Transportation District (RVTD)'s GTFS data quality went from 66.0 (D) to 56.1 (F). Trip planners read the same feed, so a drop is worth a look.</summary>
+    <category term="score_rise"/>
+    <summary>On 2026-07-06, Rogue Valley Transportation District (RVTD)'s GTFS data quality went from 66.0 (D) to 68.4 (D). A step in the right direction.</summary>
   </entry>
   <entry>
     <title>RADAR: grade dropped C to D</title>
@@ -145,12 +161,28 @@
     <summary>On 2026-07-06, Greater Portland Metro Bus's GTFS data quality went from 51.3 (F) to 52.5 (F). A step in the right direction.</summary>
   </entry>
   <entry>
-    <title>Frederick County TransIT: grade improved F to D</title>
+    <title>Golden Empire Transit District (GET): score rose 1.8 points</title>
+    <id>tag:gtfsscorecard.org,2026:agency/golden-empire-transit-district-get/2026-07-06</id>
+    <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/golden-empire-transit-district-get/"/>
+    <updated>2026-07-06T00:00:00Z</updated>
+    <category term="score_rise"/>
+    <summary>On 2026-07-06, Golden Empire Transit District (GET)'s GTFS data quality went from 87.3 (B) to 89.1 (B). A step in the right direction.</summary>
+  </entry>
+  <entry>
+    <title>Frederick County TransIT: score fell 3.4 points</title>
     <id>tag:gtfsscorecard.org,2026:agency/frederick-county-transit-2432/2026-07-06</id>
     <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/frederick-county-transit-2432/"/>
     <updated>2026-07-06T00:00:00Z</updated>
-    <category term="grade_rise"/>
-    <summary>On 2026-07-06, Frederick County TransIT's GTFS data quality went from 59.9 (F) to 60.6 (D). A step in the right direction.</summary>
+    <category term="score_drop"/>
+    <summary>On 2026-07-06, Frederick County TransIT's GTFS data quality went from 59.9 (F) to 56.5 (F). Trip planners read the same feed, so a drop is worth a look.</summary>
+  </entry>
+  <entry>
+    <title>Embark: score fell 1.5 points</title>
+    <id>tag:gtfsscorecard.org,2026:agency/embark-2062/2026-07-06</id>
+    <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/embark-2062/"/>
+    <updated>2026-07-06T00:00:00Z</updated>
+    <category term="score_drop"/>
+    <summary>On 2026-07-06, Embark's GTFS data quality went from 83.4 (B) to 81.9 (B). Trip planners read the same feed, so a drop is worth a look.</summary>
   </entry>
   <entry>
     <title>Duluth Transit: grade dropped D to F</title>
@@ -177,6 +209,14 @@
     <summary>On 2026-07-06, City of Madera's GTFS data quality went from 60.3 (D) to 59.9 (F). Trip planners read the same feed, so a drop is worth a look.</summary>
   </entry>
   <entry>
+    <title>Capital Metro: score rose 5.1 points</title>
+    <id>tag:gtfsscorecard.org,2026:agency/capital-metro/2026-07-06</id>
+    <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/capital-metro/"/>
+    <updated>2026-07-06T00:00:00Z</updated>
+    <category term="score_rise"/>
+    <summary>On 2026-07-06, Capital Metro's GTFS data quality went from 53.1 (F) to 58.2 (F). A step in the right direction.</summary>
+  </entry>
+  <entry>
     <title>Bristol Virginia Transit: grade dropped C to D</title>
     <id>tag:gtfsscorecard.org,2026:agency/bristol-virginia-transit/2026-07-06</id>
     <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/bristol-virginia-transit/"/>
@@ -191,5 +231,13 @@
     <updated>2026-07-06T00:00:00Z</updated>
     <category term="grade_drop"/>
     <summary>On 2026-07-06, Bristol Virginia Transit's GTFS data quality went from 70.2 (C) to 69.8 (D). Trip planners read the same feed, so a drop is worth a look.</summary>
+  </entry>
+  <entry>
+    <title>Bay Area Transportation Authority: score rose 1.7 points</title>
+    <id>tag:gtfsscorecard.org,2026:agency/bay-area-transportation-authority-2254/2026-07-06</id>
+    <link rel="alternate" type="text/html" href="https://gtfsscorecard.org/agency/bay-area-transportation-authority-2254/"/>
+    <updated>2026-07-06T00:00:00Z</updated>
+    <category term="score_rise"/>
+    <summary>On 2026-07-06, Bay Area Transportation Authority's GTFS data quality went from 53.1 (F) to 54.8 (F). A step in the right direction.</summary>
   </entry>
 </feed>
