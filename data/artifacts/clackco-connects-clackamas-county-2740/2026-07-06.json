@@ -210,26 +210,26 @@
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 4,
+        "covered_trips": 3,
         "drift": {
-          "median_seconds": -19,
-          "observations": 96,
-          "on_time_share_pct": 71.9,
-          "p90_abs_seconds": 184
+          "median_seconds": -50,
+          "observations": 66,
+          "on_time_share_pct": 51.5,
+          "p90_abs_seconds": 242
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 4,
-        "vehicles_checked": 13,
+        "scheduled_trips_in_window": 3,
+        "vehicles_checked": 8,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 2
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 19s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 50s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -271,7 +271,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "2610b62c0b9b06f9b5eedb0310952e8605902424c1b24a38375dd82f25c095b8",
+    "sha256": "1aa21f55d9783579c687ed9b16012d4b0191e1afb20b763656fc9b47cfdbe2ac",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },

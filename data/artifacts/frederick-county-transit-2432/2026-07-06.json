@@ -263,21 +263,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 11.1,
-        "covered_trips": 1,
+        "coverage_pct": 69.2,
+        "covered_trips": 9,
         "drift": {
-          "median_seconds": -175,
-          "observations": 91,
-          "on_time_share_pct": 14.3,
-          "p90_abs_seconds": 610
+          "median_seconds": -102,
+          "observations": 87,
+          "on_time_share_pct": 41.4,
+          "p90_abs_seconds": 298
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 9,
-        "vehicles_checked": 24,
-        "vehicles_on_route_pct": 91.7,
-        "worst_lag_seconds": 5
+        "scheduled_trips_in_window": 13,
+        "vehicles_checked": 26,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -293,20 +293,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 8,
+          "count": 4,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 31.1,
+          "points": 10.8,
           "severity": "WARNING",
-          "what": "8 of 9 trips scheduled during the sampling window had no live predictions.",
+          "what": "4 of 13 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 59.3,
+      "score": 80.9,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 11.1% of scheduled trips had live predictions; 91.7% of vehicles on their route; predictions ran a median of 175s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 69.2% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 102s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -348,7 +348,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "75a393515f1b5755b225b6aa77a0151b2a0a97170f72772804013b5d885c3ba4",
+    "sha256": "2aa60e7565d23138aecae9946bf5e6c444dd9750e0c251b3f5a9ad7b6cbf85e0",
     "size_bytes": 380186,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -400,9 +400,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 55.6,
-    "margin_to_next_band": 4.4,
-    "score": 55.6
+    "margin_to_lower_band": 59.9,
+    "margin_to_next_band": 0.1,
+    "score": 59.9
   },
   "recommendations": [
     {
@@ -679,16 +679,16 @@
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
     },
     {
-      "code": "scorecard_rt_trip_coverage",
-      "count": 8,
-      "effort": "A vendor data-mapping question.",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-      "owner": "",
-      "points": 31.1,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 392,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "8 of 9 trips scheduled during the sampling window had no live predictions.",
-      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+      "what": "392 of 392 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     }
   ],
   "validator_version": "8.0.1"

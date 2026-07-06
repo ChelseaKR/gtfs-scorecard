@@ -205,12 +205,12 @@
   },
   "confidence": {
     "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "provisional",
+    "fetch_source": "origin",
+    "level": "medium",
     "measured_categories": 3,
     "notes": [
       "Realtime quality was not measured this run. It does not count against the grade.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+      "The feed was downloaded from the agency's own URL."
     ],
     "rt_windows": 0,
     "total_categories": 4
@@ -245,10 +245,9 @@
     "static_url": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip"
   },
   "fetch": {
-    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-joaquin-regional-transit-district-rtd-gtfs-886.zip?alt=media",
-    "max_attempts": 1,
-    "origin_error": "HTTPError",
-    "source": "mirror",
+    "final_url": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
   "generated_at": "2026-07-06T00:00:00+00:00",
