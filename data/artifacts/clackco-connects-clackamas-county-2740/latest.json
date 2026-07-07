@@ -209,18 +209,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 100.0,
+        "covered_trips": 1,
+        "drift": {
+          "median_seconds": -13,
+          "observations": 39,
+          "on_time_share_pct": 74.4,
+          "p90_abs_seconds": 1046
+        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 1
+        "scheduled_trips_in_window": 1,
+        "vehicles_checked": 6,
+        "vehicles_on_route_pct": 66.7,
+        "worst_lag_seconds": 5
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 2,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 5.0,
+          "severity": "WARNING",
+          "what": "2 of 6 sampled vehicle positions were far from their assigned route (worst: 929 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+        }
+      ],
       "name": "realtime",
-      "score": 100.0,
+      "score": 95.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 66.7% of vehicles on their route; predictions ran a median of 13s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -262,7 +283,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "bc94d5c27a725be8d868617f51f8d7d139cbd700096e7bf1a3d4c4873166de0e",
+    "sha256": "53bf9da5c7bfe44b8150957f3b3c657a28844f9e164f3b5e0606f4bbe9a0aba5",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },
@@ -314,9 +335,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 7.5,
-    "margin_to_next_band": 2.5,
-    "score": 67.5
+    "margin_to_lower_band": 6.5,
+    "margin_to_next_band": 3.5,
+    "score": 66.5
   },
   "recommendations": [
     {

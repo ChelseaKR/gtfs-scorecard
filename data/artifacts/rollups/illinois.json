@@ -23,7 +23,7 @@
       "fix": "Populate trip_headsign to match what the bus displays."
     },
     {
-      "agencies": 4,
+      "agencies": 3,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -53,7 +53,7 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-07T09:09:28+00:00",
+  "generated_at": "2026-07-07T12:25:45+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 3,
@@ -253,7 +253,7 @@
       "name": "Connect Transit",
       "needs_attention": false,
       "score": 64.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -308,9 +308,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 17,
+    "not_measured": 16,
     "not_ready": 0,
-    "ready": 0,
+    "ready": 1,
     "total": 17
   },
   "state_percentile": 39

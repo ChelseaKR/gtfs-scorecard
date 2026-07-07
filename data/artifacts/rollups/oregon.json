@@ -1,6 +1,6 @@
 {
   "agency_count": 92,
-  "average_score": 63.7,
+  "average_score": 63.8,
   "common_fixes": [
     {
       "agencies": 85,
@@ -79,11 +79,6 @@
     },
     {
       "agencies": 2,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
-    },
-    {
-      "agencies": 2,
       "code": "decreasing_or_equal_stop_time_distance",
       "fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     }
@@ -93,12 +88,12 @@
     "stale": 30,
     "total": 35
   },
-  "generated_at": "2026-07-07T09:09:28+00:00",
+  "generated_at": "2026-07-07T12:25:45+00:00",
   "grade_distribution": {
     "B": 24,
     "C": 22,
-    "D": 4,
-    "F": 42
+    "D": 5,
+    "F": 41
   },
   "members": [
     {
@@ -607,20 +602,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Grade slipped from D to F",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "rogue-valley-transportation-district-rvtd-3219",
-      "name": "Rogue Valley Transportation District (RVTD)",
-      "needs_attention": true,
-      "score": 56.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 31 day(s)",
       "days_until_expiry": 31,
       "expiry_status": "current",
@@ -632,6 +613,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "clackco-connects-clackamas-county-2740",
+      "name": "Static feed for realtime",
+      "needs_attention": true,
+      "score": 66.5,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -653,10 +648,10 @@
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "D",
-      "id": "clackco-connects-clackamas-county-2740",
-      "name": "Static feed for realtime",
+      "id": "rogue-valley-transportation-district-rvtd-3219",
+      "name": "Rogue Valley Transportation District (RVTD)",
       "needs_attention": true,
-      "score": 67.5,
+      "score": 68.4,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."

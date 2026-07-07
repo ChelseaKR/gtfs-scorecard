@@ -88,7 +88,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-07T09:09:28+00:00",
+  "generated_at": "2026-07-07T12:25:45+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 2,
@@ -765,9 +765,9 @@
       "name": "Metro-North Railroad",
       "needs_attention": true,
       "score": 77.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
-      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
+      "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "annual_trips": null,
@@ -1324,9 +1324,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 2,
-    "not_measured": 75,
+    "not_measured": 74,
     "not_ready": 0,
-    "ready": 10,
+    "ready": 11,
     "total": 87
   },
   "state_percentile": 41

@@ -219,18 +219,27 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 100.0,
+        "covered_trips": 1,
+        "drift": {
+          "median_seconds": 12,
+          "observations": 14,
+          "on_time_share_pct": 64.3,
+          "p90_abs_seconds": 223
+        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 0,
+        "scheduled_trips_in_window": 1,
+        "vehicles_checked": 3,
+        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 4
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 12s behind schedule.",
       "weight": 0.2
     }
   },
@@ -272,7 +281,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "ee42feca25bd08d6512f76590df0f880786a1a387565fd89dfa9fabb50754a3a",
+    "sha256": "6b8994d9c72a877bde5a464a072a18a7727ba0e1aaa182b868583938b0ea2950",
     "size_bytes": 200718,
     "static_url": "https://passio3.com/sandyor/passioTransit/gtfs/google_transit.zip"
   },

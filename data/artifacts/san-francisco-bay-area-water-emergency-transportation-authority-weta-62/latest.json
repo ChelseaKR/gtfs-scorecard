@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 23,
-        "trips": 976,
+        "trips": 508,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 69.6,
         "wheelchair_marked_accessible_pct": 69.6,
@@ -73,13 +77,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 976,
+          "count": 508,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "976 of 976 trips have no headsign.",
+          "what": "508 of 508 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -113,26 +117,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 46,
-          "WARNING": 5
+          "WARNING": 2
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "expired_calendar",
-          "count": 3,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
         {
           "code": "stop_without_stop_time",
           "count": 2,
@@ -179,17 +172,17 @@
         }
       ],
       "name": "correctness",
-      "score": 90.0,
+      "score": 94.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 51 instances (0 error, 5 warning, 46 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 48 instances (0 error, 2 warning, 46 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 117,
         "feed_end_date": "2026-11-01",
-        "feed_start_date": "2026-06-24",
-        "feed_version": "UTC: 24-Jun-2026 19:51",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "UTC: 06-Jul-2026 18:44",
         "has_feed_info": true,
         "last_service_date": "2026-11-01",
         "seasonal_boundary": false,
@@ -209,6 +202,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -218,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 124 days.",
+        "detail": "Service data covers the next 117 days.",
         "key": "current",
         "met": true
       },
@@ -234,11 +239,17 @@
   "feed": {
     "license_note": "License: http://assets.511.org/pdf/nextgen/developers/511_Data_Agreement_Final.pdf",
     "reachable": true,
-    "sha256": "c35f1a16f0a1ef6cef772b9f158dbbbaaebb4b6c01aa0ccda76bf4298c795d31",
-    "size_bytes": 67880,
+    "sha256": "5cacc732794e02ffe8be5ea2c977595865e193334cd30465ccc1605956cef652",
+    "size_bytes": 55664,
     "static_url": "http://data.trilliumtransit.com/gtfs/sfbayferry-ca-us/sfbayferry-ca-us.zip"
   },
-  "generated_at": "2026-06-30T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://data.trilliumtransit.com/gtfs/sfbayferry-ca-us/sfbayferry-ca-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.41209,
@@ -251,7 +262,7 @@
     "stop_count": 23
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "873"
     ],
@@ -270,19 +281,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 124 days.",
+        "detail": "Service data covers the next 117 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "B",
-    "margin_to_lower_band": 8.6,
-    "margin_to_next_band": 1.4,
-    "score": 88.6
+    "grade": "A",
+    "margin_to_lower_band": 0.3,
+    "margin_to_next_band": null,
+    "score": 90.3
   },
   "recommendations": [
     {
@@ -308,11 +319,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 15,
     "findings": [
@@ -330,7 +336,7 @@
     ],
     "orphan_stops": 2,
     "single_stop_trips": 0,
-    "trips_total": 976
+    "trips_total": 508
   },
   "route_map": {
     "drawn_route_count": 7,
@@ -420,19 +426,25 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 508 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 508,
+    "trips_with_shape": 508
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
       "code": "scorecard_missing_headsigns",
-      "count": 976,
+      "count": 508,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "976 of 976 trips have no headsign.",
+      "what": "508 of 508 trips have no headsign.",
       "why": "Riders at the stop can't tell which direction a bus is going."
     },
     {
@@ -448,16 +460,16 @@
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
-      "code": "expired_calendar",
-      "count": 3,
-      "effort": "One setting in most export tools.",
-      "fix": "Remove past service periods the next time you export the feed.",
+      "code": "stop_without_stop_time",
+      "count": 2,
+      "effort": "A review pass in your scheduling software.",
+      "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",
       "points": 4.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "Some service calendars in the feed have already expired.",
-      "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+      "what": "Some stops exist in the feed but no trip ever stops at them.",
+      "why": "Riders may walk to a stop where no bus is scheduled to arrive."
     }
   ],
   "validator_version": "8.0.1"
