@@ -52,14 +52,26 @@
     {
       "date": "2026-07-07",
       "from_grade": "D",
-      "from_score": 66.7,
-      "id": "spirit-bus-2202",
-      "name": "Spirit Bus",
+      "from_score": 68.3,
+      "id": "towson-loop",
+      "name": "Towson Loop",
       "regressed": true,
-      "score_delta": -3.1,
+      "score_delta": -3.0,
       "since": "2026-07-06",
       "to_grade": "D",
-      "to_score": 63.6
+      "to_score": 65.3
+    },
+    {
+      "date": "2026-07-07",
+      "from_grade": "D",
+      "from_score": 65.4,
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "regressed": true,
+      "score_delta": -2.2,
+      "since": "2026-07-06",
+      "to_grade": "D",
+      "to_score": 63.2
     },
     {
       "date": "2026-07-07",
@@ -216,10 +228,22 @@
       "since": "2026-07-06",
       "to_grade": "B",
       "to_score": 80.2
+    },
+    {
+      "date": "2026-07-07",
+      "from_grade": "F",
+      "from_score": 59.9,
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "regressed": false,
+      "score_delta": 0.4,
+      "since": "2026-07-06",
+      "to_grade": "D",
+      "to_score": 60.3
     }
   ],
-  "count": 18,
-  "generated_at": "2026-07-07T22:01:38+00:00",
+  "count": 20,
+  "generated_at": "2026-07-07T23:30:48+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

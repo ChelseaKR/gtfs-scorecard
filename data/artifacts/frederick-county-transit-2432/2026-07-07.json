@@ -263,21 +263,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 66.7,
-        "covered_trips": 10,
+        "coverage_pct": 75.0,
+        "covered_trips": 9,
         "drift": {
-          "median_seconds": -78,
-          "observations": 94,
-          "on_time_share_pct": 34.0,
-          "p90_abs_seconds": 1751
+          "median_seconds": -123,
+          "observations": 101,
+          "on_time_share_pct": 30.7,
+          "p90_abs_seconds": 434
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 15,
-        "vehicles_checked": 30,
+        "scheduled_trips_in_window": 12,
+        "vehicles_checked": 28,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 2
       },
       "findings": [
         {
@@ -293,20 +293,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 5,
+          "count": 3,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 11.7,
+          "points": 8.8,
           "severity": "WARNING",
-          "what": "5 of 15 trips scheduled during the sampling window had no live predictions.",
+          "what": "3 of 12 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 80.0,
+      "score": 82.9,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 66.7% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 78s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 75.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 123s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -348,7 +348,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d87d834692c939c3b3426552b133032d3b108f796c3ab0dbfc4af9411a218cfc",
+    "sha256": "e491ede969321fa917018281d6d9115e3c41cf6e87f6b316857ee9ee2d7dfda9",
     "size_bytes": 380186,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -399,10 +399,10 @@
     "summary": "This feed is close to NTD-ready. 1 validator error to resolve. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 59.7,
-    "margin_to_next_band": 0.3,
-    "score": 59.7
+    "grade": "D",
+    "margin_to_lower_band": 0.3,
+    "margin_to_next_band": 9.7,
+    "score": 60.3
   },
   "recommendations": [
     {
