@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 463,
-        "trips": 6413,
+        "trips": 6104,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,24 +77,24 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 6413,
+          "count": 6104,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "6413 of 6413 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "6104 of 6104 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 6413,
+          "count": 6104,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "6413 of 6413 trips have no headsign.",
+          "what": "6104 of 6104 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -168,12 +168,12 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 11,
+        "days_until_expiry": 14,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": true,
-        "last_service_date": "2026-07-18",
+        "last_service_date": "2026-07-21",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -184,9 +184,9 @@
           "effort": "One export setting.",
           "fix": "Re-export with a validity window that reaches at least 60 days out.",
           "owner": "Likely your export tool",
-          "points": 69.0,
+          "points": 66.0,
           "severity": "WARNING",
-          "what": "Service data runs out in 11 day(s).",
+          "what": "Service data runs out in 14 day(s).",
           "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
         },
         {
@@ -202,9 +202,9 @@
         }
       ],
       "name": "freshness",
-      "score": 3.3,
+      "score": 8.3,
       "status": "measured",
-      "summary": "Service data runs out in 11 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data runs out in 14 day(s). Publish an updated feed soon or riders will lose trip planning.",
       "weight": 0.2
     },
     "realtime": {
@@ -213,6 +213,18 @@
       "summary": "This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -239,8 +251,8 @@
   "feed": {
     "license_note": "License: https://developer.metro.net/terms-conditions/",
     "reachable": true,
-    "sha256": "f52bdad170746a93d3d599b79d7d59bd3e75e0fce13049931a683ea17c4b49fb",
-    "size_bytes": 1221796,
+    "sha256": "aef4f4c80680e7e731e55b5bb2555f9e5cd3dfbc43c6aa793691915ca062eedb",
+    "size_bytes": 1068478,
     "static_url": "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
   },
   "fetch": {
@@ -249,7 +261,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.49189,
@@ -293,9 +305,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 53.0,
-    "margin_to_next_band": 7.0,
-    "score": 53.0
+    "margin_to_lower_band": 54.3,
+    "margin_to_next_band": 5.7,
+    "score": 54.3
   },
   "recommendations": [
     {
@@ -332,17 +344,12 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 114,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 6413
+    "trips_total": 6104
   },
   "route_map": {
     "drawn_route_count": 6,
@@ -421,7 +428,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 6104 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 6104,
+    "trips_with_shape": 6104
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
@@ -430,10 +443,10 @@
       "effort": "One export setting.",
       "fix": "Re-export with a validity window that reaches at least 60 days out.",
       "owner": "Likely your export tool",
-      "points": 69.0,
+      "points": 66.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "Service data runs out in 11 day(s).",
+      "what": "Service data runs out in 14 day(s).",
       "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
     },
     {
@@ -450,14 +463,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 6413,
+      "count": 6104,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "6413 of 6413 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "6104 of 6104 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],

@@ -1,14 +1,14 @@
 {
   "agency_count": 1449,
-  "average_score": 60.6,
+  "average_score": 60.7,
   "common_fixes": [
     {
-      "agencies": 1187,
+      "agencies": 1190,
       "code": "scorecard_wheelchair_boarding_unknown",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 868,
+      "agencies": 870,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -28,17 +28,17 @@
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 180,
+      "agencies": 184,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
     {
-      "agencies": 126,
+      "agencies": 127,
       "code": "stop_without_stop_time",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
     },
     {
-      "agencies": 117,
+      "agencies": 106,
       "code": "scorecard_feed_expiring_soon",
       "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -78,7 +78,7 @@
       "fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
     {
-      "agencies": 27,
+      "agencies": 31,
       "code": "scorecard_missing_feed_info_dates",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
@@ -103,14 +103,14 @@
       "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 22,
-      "code": "scorecard_rt_trip_coverage",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
-    },
-    {
       "agencies": 21,
       "code": "scorecard_no_expiry_date",
       "fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
+    },
+    {
+      "agencies": 20,
+      "code": "scorecard_rt_trip_coverage",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "agencies": 19,
@@ -129,13 +129,13 @@
     },
     {
       "agencies": 16,
-      "code": "missing_bike_allowance",
-      "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 16,
       "code": "missing_required_file",
       "fix": "Review the rule documentation for 'missing_required_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "agencies": 15,
+      "code": "missing_bike_allowance",
+      "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "agencies": 15,
@@ -373,13 +373,13 @@
     "stale": 488,
     "total": 619
   },
-  "generated_at": "2026-07-07T05:31:30+00:00",
+  "generated_at": "2026-07-07T09:09:28+00:00",
   "grade_distribution": {
     "A": 50,
     "B": 235,
-    "C": 267,
-    "D": 174,
-    "F": 723
+    "C": 270,
+    "D": 170,
+    "F": 724
   },
   "members": [
     {
@@ -8084,20 +8084,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 11 day(s)",
-      "days_until_expiry": 11,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "los-angeles-county-metropolitan-transportation-authority-la-metro-30",
-      "name": "Rail",
-      "needs_attention": true,
-      "score": 53.0,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -219,
       "expiry_status": "lapsed",
@@ -8137,34 +8123,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Score fell 6.4 points since 2026-07-06",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "needs_attention": true,
-      "score": 53.5,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "roadrunner-transit-2075",
-      "name": "RoadRUNNER Transit",
-      "needs_attention": true,
-      "score": 53.6,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -8375,6 +8333,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 14 day(s)",
+      "days_until_expiry": 14,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "los-angeles-county-metropolitan-transportation-authority-la-metro-30",
+      "name": "Rail",
+      "needs_attention": true,
+      "score": 54.3,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -8602,6 +8574,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Score fell 4.9 points since 2026-07-06",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "needs_attention": true,
+      "score": 55.0,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 33 day(s)",
       "days_until_expiry": 33,
       "expiry_status": "current",
@@ -8613,20 +8599,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "rosemead-explorer-3098",
-      "name": "Rosemead Explorer",
-      "needs_attention": true,
-      "score": 55.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -8854,6 +8826,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "roadrunner-transit-2075",
+      "name": "RoadRUNNER Transit",
+      "needs_attention": true,
+      "score": 55.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 25 day(s)",
       "days_until_expiry": 25,
       "expiry_status": "expiring_soon",
@@ -8963,6 +8949,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Grade slipped from D to F",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "rogue-valley-transportation-district-rvtd-3219",
+      "name": "Rogue Valley Transportation District (RVTD)",
+      "needs_attention": true,
+      "score": 56.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -9246,20 +9246,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "arcadia-transit-2243",
-      "name": "Arcadia Transit",
-      "needs_attention": true,
-      "score": 57.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -280,
       "expiry_status": "lapsed",
@@ -9313,6 +9299,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "rosemead-explorer-3098",
+      "name": "Rosemead Explorer",
+      "needs_attention": true,
+      "score": 57.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -9621,6 +9621,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "arcadia-transit-2243",
+      "name": "Arcadia Transit",
+      "needs_attention": true,
+      "score": 59.3,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -10072,20 +10086,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Score fell 3.9 points since 2026-07-06",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "needs_attention": true,
-      "score": 61.5,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -187,
       "expiry_status": "lapsed",
@@ -10394,20 +10394,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "ku-on-wheels-lawrence-transit-system-2063",
-      "name": "KU on Wheels & Lawrence Transit System",
-      "needs_attention": true,
-      "score": 63.5,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 24 day(s)",
       "days_until_expiry": 24,
       "expiry_status": "expiring_soon",
@@ -10559,34 +10545,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "spirit-bus-2202",
-      "name": "Spirit Bus",
-      "needs_attention": true,
-      "score": 65.0,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
-      "needs_attention": true,
-      "score": 65.0,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -10758,6 +10716,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "ku-on-wheels-lawrence-transit-system-2063",
+      "name": "KU on Wheels & Lawrence Transit System",
+      "needs_attention": true,
+      "score": 65.6,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Populate trip_headsign to match what the bus displays."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 25 day(s)",
       "days_until_expiry": 25,
       "expiry_status": "expiring_soon",
@@ -10795,20 +10767,6 @@
       "needs_attention": true,
       "score": 65.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "clackco-connects-clackamas-county-2740",
-      "name": "Static feed for realtime",
-      "needs_attention": true,
-      "score": 65.7,
-      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -10853,6 +10811,48 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "needs_attention": true,
+      "score": 66.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
+      "needs_attention": true,
+      "score": 66.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
+      "needs_attention": true,
+      "score": 66.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -10996,6 +10996,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "clackco-connects-clackamas-county-2740",
+      "name": "Static feed for realtime",
+      "needs_attention": true,
+      "score": 67.5,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 26 day(s)",
       "days_until_expiry": 26,
       "expiry_status": "expiring_soon",
@@ -11063,20 +11077,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "rogue-valley-transportation-district-rvtd-3219",
-      "name": "Rogue Valley Transportation District (RVTD)",
-      "needs_attention": true,
-      "score": 68.0,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -11159,20 +11159,6 @@
       "needs_attention": true,
       "score": 68.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Grade slipped from C to D",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "city-of-jackson-jtran",
-      "name": "City of Jackson (JTRAN)",
-      "needs_attention": true,
-      "score": 68.9,
-      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -11472,17 +11458,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "C",
-      "id": "clovis-transit-2894",
-      "name": "Clovis Transit",
+      "id": "city-of-jackson-jtran",
+      "name": "City of Jackson (JTRAN)",
       "needs_attention": true,
-      "score": 71.0,
+      "score": 71.1,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -11721,6 +11707,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "C",
+      "id": "clovis-transit-2894",
+      "name": "Clovis Transit",
+      "needs_attention": true,
+      "score": 72.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
       "annual_trips": null,
@@ -12138,7 +12138,7 @@
       "name": "Dartmouth College",
       "needs_attention": true,
       "score": 76.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -12225,6 +12225,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Grade slipped from B to C",
+      "days_until_expiry": 542,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "nyc-ferry",
+      "name": "NYC Ferry",
+      "needs_attention": true,
+      "score": 77.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -13664,7 +13678,7 @@
       "name": "Valley Metro",
       "needs_attention": false,
       "score": 33.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
@@ -14763,34 +14777,6 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 341,
-      "expiry_status": "current",
-      "grade": "D",
-      "id": "thousand-oaks-transit",
-      "name": "Thousand Oaks Transit",
-      "needs_attention": false,
-      "score": 68.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 341,
-      "expiry_status": "current",
-      "grade": "D",
-      "id": "thousand-oaks-transit-33",
-      "name": "Thousand Oaks Transit",
-      "needs_attention": false,
-      "score": 68.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
       "days_until_expiry": 117,
       "expiry_status": "current",
       "grade": "D",
@@ -15277,6 +15263,34 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 341,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "thousand-oaks-transit",
+      "name": "Thousand Oaks Transit",
+      "needs_attention": false,
+      "score": 72.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 341,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "thousand-oaks-transit-33",
+      "name": "Thousand Oaks Transit",
+      "needs_attention": false,
+      "score": 72.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -17059,20 +17073,6 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 542,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "ny-waterway-3192",
-      "name": "NY Waterway",
-      "needs_attention": false,
-      "score": 78.8,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
       "days_until_expiry": 177,
       "expiry_status": "current",
       "grade": "C",
@@ -17557,6 +17557,20 @@
       "needs_attention": false,
       "score": 80.2,
       "shapes_status": null,
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 542,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "ny-waterway-3192",
+      "name": "NY Waterway",
+      "needs_attention": false,
+      "score": 80.2,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -19568,20 +19582,6 @@
       "days_until_expiry": 542,
       "expiry_status": "current",
       "grade": "B",
-      "id": "nyc-ferry",
-      "name": "NYC Ferry",
-      "needs_attention": false,
-      "score": 85.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 542,
-      "expiry_status": "current",
-      "grade": "B",
       "id": "star-transit",
       "name": "STAR Transit",
       "needs_attention": false,
@@ -20669,7 +20669,7 @@
       "top_fix": null
     }
   ],
-  "needs_attention": 931,
+  "needs_attention": 932,
   "rollup": {
     "id": "all",
     "name": "All tracked agencies"
@@ -20677,9 +20677,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 3,
-    "not_measured": 1380,
+    "not_measured": 1375,
     "not_ready": 2,
-    "ready": 64,
+    "ready": 69,
     "total": 1449
   },
   "state_percentile": null

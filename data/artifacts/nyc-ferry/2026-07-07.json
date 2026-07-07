@@ -170,8 +170,8 @@
       "details": {
         "days_until_expiry": 542,
         "feed_end_date": "2027-12-31",
-        "feed_start_date": "2026-07-05",
-        "feed_version": "20260706",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "20260707",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -186,19 +186,13 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
-        "covered_trips": 4,
-        "drift": {
-          "median_seconds": -63,
-          "observations": 23,
-          "on_time_share_pct": 17.4,
-          "p90_abs_seconds": 1061
-        },
+        "coverage_pct": 0.0,
+        "covered_trips": 0,
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 4,
-        "worst_lag_seconds": 5
+        "scheduled_trips_in_window": 2,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -211,12 +205,23 @@
           "severity": "ERROR",
           "what": "The vehicle positions realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 2,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 35.0,
+          "severity": "WARNING",
+          "what": "2 of 2 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 90.2,
+      "score": 49.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; predictions ran a median of 63s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
       "weight": 0.2
     }
   },
@@ -242,7 +247,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 543 days.",
+        "detail": "Service data covers the next 542 days.",
         "key": "current",
         "met": true
       },
@@ -258,8 +263,8 @@
   "feed": {
     "license_note": "License: https://www.ferry.nyc/developer-tools/",
     "reachable": true,
-    "sha256": "e2f6f92677d80672541218f12def4fc9b0020d08f11c56dae0b89c9ede45e342",
-    "size_bytes": 44337,
+    "sha256": "743cca7c4187170d351f01af4c3eff8c95db1ef9143343a8b0f7e45f68d96c93",
+    "size_bytes": 44336,
     "static_url": "http://nycferry.connexionz.net/rtt/public/utility/gtfs.aspx"
   },
   "fetch": {
@@ -268,7 +273,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.07423,
@@ -300,7 +305,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 543 days.",
+        "detail": "Service data covers the next 542 days.",
         "key": "current",
         "status": "ready"
       }
@@ -309,10 +314,10 @@
     "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "B",
-    "margin_to_lower_band": 5.3,
-    "margin_to_next_band": 4.7,
-    "score": 85.3
+    "grade": "C",
+    "margin_to_lower_band": 7.1,
+    "margin_to_next_band": 2.9,
+    "score": 77.1
   },
   "recommendations": [
     {
@@ -338,11 +343,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 50,
     "findings": [],
@@ -482,28 +482,28 @@
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
     },
     {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 2,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 35.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2 of 2 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    },
+    {
       "code": "scorecard_wheelchair_accessible_unknown",
       "count": 723,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "WARNING",
       "what": "723 of 723 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
-    },
-    {
-      "code": "missing_bike_allowance",
-      "count": 563,
-      "effort": "Varies.",
-      "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "owner": "",
-      "points": 8.0,
-      "rank": 3,
-      "severity": "WARNING",
-      "what": "Missing bike allowance (flagged by the MobilityData validator).",
-      "why": "See the linked rule for what this affects."
     }
   ],
   "validator_version": "8.0.1"

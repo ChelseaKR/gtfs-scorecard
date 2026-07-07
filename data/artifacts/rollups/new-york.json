@@ -1,6 +1,6 @@
 {
   "agency_count": 87,
-  "average_score": 55.0,
+  "average_score": 54.9,
   "common_fixes": [
     {
       "agencies": 70,
@@ -43,7 +43,7 @@
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
-      "agencies": 5,
+      "agencies": 6,
       "code": "scorecard_rt_trip_coverage",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
@@ -88,7 +88,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-07T05:31:30+00:00",
+  "generated_at": "2026-07-07T09:09:28+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 2,
@@ -743,6 +743,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Grade slipped from B to C",
+      "days_until_expiry": 542,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "nyc-ferry",
+      "name": "NYC Ferry",
+      "needs_attention": true,
+      "score": 77.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
       "days_until_expiry": 172,
       "expiry_status": "current",
@@ -1208,11 +1222,11 @@
       "attention_reason": null,
       "days_until_expiry": 542,
       "expiry_status": "current",
-      "grade": "C",
+      "grade": "B",
       "id": "ny-waterway-3192",
       "name": "NY Waterway",
       "needs_attention": false,
-      "score": 78.8,
+      "score": 80.2,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -1230,20 +1244,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 542,
-      "expiry_status": "current",
-      "grade": "B",
-      "id": "nyc-ferry",
-      "name": "NYC Ferry",
-      "needs_attention": false,
-      "score": 85.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -1316,7 +1316,7 @@
       "top_fix": "Remove past service periods the next time you export the feed."
     }
   ],
-  "needs_attention": 48,
+  "needs_attention": 49,
   "rollup": {
     "id": "new-york",
     "name": "New York agencies"

@@ -56,7 +56,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 147,
+        "stops": 155,
         "trips": 407,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
@@ -66,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 147,
+          "count": 155,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "147 of 147 stops don't say whether a wheelchair user can board there.",
+          "what": "155 of 155 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -181,8 +181,8 @@
       "details": {
         "days_until_expiry": 341,
         "feed_end_date": "2027-06-13",
-        "feed_start_date": "2026-07-02",
-        "feed_version": "UTC: 02-Jul-2026 15:55",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "UTC: 07-Jul-2026 04:25",
         "has_feed_info": true,
         "last_service_date": "2027-06-13",
         "seasonal_boundary": false,
@@ -197,12 +197,11 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 0.0,
-        "covered_trips": 0,
+        "coverage_pct": null,
         "kinds_reachable": 1,
         "rt_freshness": null,
         "samples": 3,
-        "scheduled_trips_in_window": 8,
+        "scheduled_trips_in_window": 0,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -238,25 +237,27 @@
           "severity": "INFO",
           "what": "Realtime feeds didn't include a header timestamp, so freshness couldn't be checked.",
           "why": "Without a header timestamp, apps and this scorecard can't tell how old the data is."
-        },
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 8,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 35.0,
-          "severity": "WARNING",
-          "what": "8 of 8 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 13.9,
+      "score": 33.3,
       "status": "measured",
-      "summary": "Sampled 3 times: 1 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
+      "summary": "Sampled 3 times outside service hours: 1 of 3 feeds healthy.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 3 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -267,7 +268,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 346 days.",
+        "detail": "Service data covers the next 341 days.",
         "key": "current",
         "met": true
       },
@@ -283,11 +284,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "787e6be8f55f3102d50bd6ebcfe0ada3b22b68cd88f835a952c210b2113ba26c",
-    "size_bytes": 439974,
+    "sha256": "b56db8513d492a7323e5c2420ade9d5d276191ca8d051c180a4ce848aa2325dc",
+    "size_bytes": 442668,
     "static_url": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -119.26691,
@@ -295,9 +302,9 @@
       -118.81567,
       34.28534
     ],
-    "lat": 34.1827,
-    "lon": -118.87206,
-    "stop_count": 147
+    "lat": 34.18302,
+    "lon": -118.87024,
+    "stop_count": 155
   },
   "ntd_id_alignment": {
     "detail": "Your feed's agency_id is 526; your National Transit Database ID is 90165. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
@@ -321,7 +328,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 346 days.",
+        "detail": "Service data covers the next 341 days.",
         "key": "current",
         "status": "ready"
       }
@@ -330,10 +337,10 @@
     "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 8.8,
-    "margin_to_next_band": 1.2,
-    "score": 68.8
+    "grade": "C",
+    "margin_to_lower_band": 2.7,
+    "margin_to_next_band": 7.3,
+    "score": 72.7
   },
   "recommendations": [
     {
@@ -360,23 +367,18 @@
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 132,
+      "count": 140,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "132 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Janss Rd. & Montgomery Rd.\", \"Janss Rd. at Conejo Valley High School\", \"Erbes Rd. & Ave. de las Flores\", and more).",
+      "what": "140 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Teller Road west of Lawrence Dr. (W/B)\", \"Janss Rd. & Montgomery Rd..\", \"Janss Rd. at Conejo Valley High School.\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 147,
+    "boardable_stops": 155,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
@@ -386,7 +388,7 @@
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "32 of 147 boardable stops are never served by any trip.",
+        "what": "32 of 155 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
@@ -478,11 +480,17 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 147,
+    "stop_count": 155,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 407 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 407,
+    "trips_with_shape": 407
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
@@ -510,16 +518,16 @@
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
     },
     {
-      "code": "scorecard_rt_trip_coverage",
-      "count": 8,
-      "effort": "A vendor data-mapping question.",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-      "owner": "",
-      "points": 35.0,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 155,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "8 of 8 trips scheduled during the sampling window had no live predictions.",
-      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+      "what": "155 of 155 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     }
   ],
   "validator_version": "8.0.1"

@@ -224,7 +224,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 1639 days.",
+        "detail": "Service data covers the next 1638 days.",
         "key": "current",
         "met": true
       },
@@ -240,7 +240,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "cc8035f4db69fb75dde6ef8fa8dbbfdf4294d781565e44284346d298ecb96e1b",
+    "sha256": "19dc196d73bb2b4693ecdad1a30a82267d7b3358c42aa7a0c0bb5bf1417b50dc",
     "size_bytes": 77722,
     "static_url": "https://citycommbus.com/gtfs"
   },
@@ -250,7 +250,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.26425,
@@ -282,7 +282,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 1639 days.",
+        "detail": "Service data covers the next 1638 days.",
         "key": "current",
         "status": "ready"
       }
@@ -320,11 +320,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 225,
     "findings": [],

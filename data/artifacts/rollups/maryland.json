@@ -1,6 +1,6 @@
 {
   "agency_count": 36,
-  "average_score": 52.2,
+  "average_score": 52.3,
   "common_fixes": [
     {
       "agencies": 28,
@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 21
   },
-  "generated_at": "2026-07-07T05:31:30+00:00",
+  "generated_at": "2026-07-07T09:09:28+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 2,
@@ -340,14 +340,14 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Score fell 6.4 points since 2026-07-06",
+      "attention_reason": "Score fell 4.9 points since 2026-07-06",
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "needs_attention": true,
-      "score": 53.5,
+      "score": 55.0,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."

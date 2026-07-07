@@ -73,7 +73,7 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-07T05:31:30+00:00",
+  "generated_at": "2026-07-07T09:09:28+00:00",
   "grade_distribution": {
     "B": 11,
     "C": 16,
@@ -763,7 +763,7 @@
       "name": "Valley Metro",
       "needs_attention": false,
       "score": 33.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
@@ -1140,9 +1140,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 73,
+    "not_measured": 72,
     "not_ready": 0,
-    "ready": 2,
+    "ready": 3,
     "total": 75
   },
   "state_percentile": 67

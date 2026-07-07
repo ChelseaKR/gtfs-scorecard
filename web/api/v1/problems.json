@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-07T05:31:52+00:00",
+  "generated_at": "2026-07-07T09:09:52+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.7
     },
     "feed_expiration_date30_days": {
-      "agencies": 31,
-      "instances": 31,
-      "prevalence_pct": 2.1
+      "agencies": 21,
+      "instances": 21,
+      "prevalence_pct": 1.4
     },
     "feed_expiration_date7_days": {
       "agencies": 508,
@@ -90,9 +90,9 @@
       "prevalence_pct": 35.1
     },
     "feed_valid_beyond_total_service_window": {
-      "agencies": 61,
-      "instances": 61,
-      "prevalence_pct": 4.2
+      "agencies": 60,
+      "instances": 60,
+      "prevalence_pct": 4.1
     },
     "foreign_key_violation": {
       "agencies": 16,
@@ -171,7 +171,7 @@
     },
     "missing_bike_allowance": {
       "agencies": 48,
-      "instances": 101018,
+      "instances": 100806,
       "prevalence_pct": 3.3
     },
     "missing_calendar_and_calendar_date_files": {
@@ -210,9 +210,9 @@
       "prevalence_pct": 16.4
     },
     "missing_recommended_file": {
-      "agencies": 151,
-      "instances": 151,
-      "prevalence_pct": 10.4
+      "agencies": 152,
+      "instances": 152,
+      "prevalence_pct": 10.5
     },
     "missing_required_agency_id": {
       "agencies": 2,
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.6
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 117,
-      "instances": 117,
-      "prevalence_pct": 8.1
+      "agencies": 106,
+      "instances": 106,
+      "prevalence_pct": 7.3
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -360,13 +360,13 @@
       "prevalence_pct": 6.1
     },
     "scorecard_missing_feed_info_dates": {
-      "agencies": 181,
-      "instances": 181,
-      "prevalence_pct": 12.5
+      "agencies": 182,
+      "instances": 182,
+      "prevalence_pct": 12.6
     },
     "scorecard_missing_headsigns": {
       "agencies": 722,
-      "instances": 417822,
+      "instances": 417513,
       "prevalence_pct": 49.8
     },
     "scorecard_no_expiry_date": {
@@ -375,14 +375,14 @@
       "prevalence_pct": 1.4
     },
     "scorecard_no_fare_data": {
-      "agencies": 538,
-      "instances": 538,
-      "prevalence_pct": 37.1
+      "agencies": 539,
+      "instances": 539,
+      "prevalence_pct": 37.2
     },
     "scorecard_no_feed_contact": {
-      "agencies": 415,
-      "instances": 415,
-      "prevalence_pct": 28.6
+      "agencies": 416,
+      "instances": 416,
+      "prevalence_pct": 28.7
     },
     "scorecard_planned_service_boundary": {
       "agencies": 2,
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 4,
-      "instances": 2213,
-      "prevalence_pct": 0.3
+      "agencies": 3,
+      "instances": 2199,
+      "prevalence_pct": 0.2
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -415,9 +415,9 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 48,
-      "instances": 1875,
-      "prevalence_pct": 3.3
+      "agencies": 46,
+      "instances": 1859,
+      "prevalence_pct": 3.2
     },
     "scorecard_rt_trip_updates_unreachable": {
       "agencies": 45,
@@ -451,12 +451,12 @@
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1239,
-      "instances": 2137745,
+      "instances": 2137232,
       "prevalence_pct": 85.5
     },
     "scorecard_wheelchair_boarding_unknown": {
       "agencies": 1356,
-      "instances": 644400,
+      "instances": 644416,
       "prevalence_pct": 93.6
     },
     "service_extends_far_in_the_future": {
@@ -530,8 +530,8 @@
       "prevalence_pct": 6.9
     },
     "trip_coverage_not_active_for_next7_days": {
-      "agencies": 644,
-      "instances": 644,
+      "agencies": 643,
+      "instances": 643,
       "prevalence_pct": 44.4
     },
     "trip_distance_exceeds_shape_distance": {
@@ -601,7 +601,7 @@
       "code": "scorecard_wheelchair_boarding_unknown",
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
-      "instances": 644400,
+      "instances": 644416,
       "prevalence_pct": 93.6,
       "severity": "WARNING",
       "source": "scorecard",
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2137745,
+      "instances": 2137232,
       "prevalence_pct": 85.5,
       "severity": "WARNING",
       "source": "scorecard",
@@ -661,7 +661,7 @@
       "code": "scorecard_missing_headsigns",
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
-      "instances": 417822,
+      "instances": 417513,
       "prevalence_pct": 49.8,
       "severity": "WARNING",
       "source": "scorecard",
@@ -693,11 +693,11 @@
       "why": "Riders may walk to a stop where no bus is scheduled to arrive."
     },
     {
-      "agencies": 644,
+      "agencies": 643,
       "code": "trip_coverage_not_active_for_next7_days",
       "effort": "One setting in most export tools.",
       "fix": "Trim past service periods the next time you export.",
-      "instances": 644,
+      "instances": 643,
       "prevalence_pct": 44.4,
       "severity": "WARNING",
       "source": "validator",
@@ -717,12 +717,12 @@
       "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
     },
     {
-      "agencies": 538,
+      "agencies": 539,
       "code": "scorecard_no_fare_data",
       "effort": "A small file for most flat-fare systems.",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "instances": 538,
-      "prevalence_pct": 37.1,
+      "instances": 539,
+      "prevalence_pct": 37.2,
       "severity": "WARNING",
       "source": "scorecard",
       "what": "The feed contains no fare information.",
@@ -765,12 +765,12 @@
       "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
     },
     {
-      "agencies": 415,
+      "agencies": 416,
       "code": "scorecard_no_feed_contact",
       "effort": "One field.",
       "fix": "Add feed_contact_email to feed_info.txt.",
-      "instances": 415,
-      "prevalence_pct": 28.6,
+      "instances": 416,
+      "prevalence_pct": 28.7,
       "severity": "INFO",
       "source": "scorecard",
       "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
@@ -825,12 +825,12 @@
       "why": "See the linked rule for what this affects."
     },
     {
-      "agencies": 181,
+      "agencies": 182,
       "code": "scorecard_missing_feed_info_dates",
       "effort": "Two fields, set once in export settings.",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
-      "instances": 181,
-      "prevalence_pct": 12.5,
+      "instances": 182,
+      "prevalence_pct": 12.6,
       "severity": "WARNING",
       "source": "scorecard",
       "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
@@ -861,12 +861,12 @@
       "why": "See the linked rule for what this affects."
     },
     {
-      "agencies": 151,
+      "agencies": 152,
       "code": "missing_recommended_file",
       "effort": "One small file, set once in export settings.",
       "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
-      "instances": 151,
-      "prevalence_pct": 10.4,
+      "instances": 152,
+      "prevalence_pct": 10.5,
       "severity": "WARNING",
       "source": "validator",
       "what": "A recommended GTFS file (usually feed_info.txt) is missing.",

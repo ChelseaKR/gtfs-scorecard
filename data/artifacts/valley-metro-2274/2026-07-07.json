@@ -382,6 +382,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -391,7 +403,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 26843 days.",
+        "detail": "Service data covers the next 26840 days.",
         "key": "current",
         "met": true
       },
@@ -407,7 +419,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "4721df1fe204b2b9371bda67a3c07d73790d176b7eb2cbd8ac518c649dd29bee",
+    "sha256": "92487d9e6b9cf944fe2be0c6c5ea87a8eeb6bf20916a2fc0376fd36c1215f382",
     "size_bytes": 371063,
     "static_url": "https://vmgoapp.com/gtfs"
   },
@@ -417,7 +429,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.42503,
@@ -449,7 +461,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 26843 days.",
+        "detail": "Service data covers the next 26840 days.",
         "key": "current",
         "status": "ready"
       }
@@ -487,11 +499,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 815,
     "findings": [
@@ -885,7 +892,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 589 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 589,
+    "trips_with_shape": 589
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {

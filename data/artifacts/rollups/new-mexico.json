@@ -1,6 +1,6 @@
 {
   "agency_count": 20,
-  "average_score": 59.5,
+  "average_score": 59.6,
   "common_fixes": [
     {
       "agencies": 17,
@@ -24,6 +24,11 @@
     },
     {
       "agencies": 2,
+      "code": "scorecard_missing_headsigns",
+      "fix": "Populate trip_headsign to match what the bus displays."
+    },
+    {
+      "agencies": 2,
       "code": "unused_shape",
       "fix": "Enable 'remove unused shapes' (or similar) in your export tool."
     },
@@ -43,7 +48,7 @@
     "stale": 9,
     "total": 16
   },
-  "generated_at": "2026-07-07T05:31:30+00:00",
+  "generated_at": "2026-07-07T09:09:28+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 1,
@@ -109,20 +114,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "roadrunner-transit-2075",
-      "name": "RoadRUNNER Transit",
-      "needs_attention": true,
-      "score": 53.6,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -188,
       "expiry_status": "lapsed",
@@ -134,6 +125,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "roadrunner-transit-2075",
+      "name": "RoadRUNNER Transit",
+      "needs_attention": true,
+      "score": 55.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
