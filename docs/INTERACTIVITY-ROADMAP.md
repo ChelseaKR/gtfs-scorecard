@@ -138,15 +138,14 @@ work ships first.
    checks). The three-part accessible pattern is a shared helper
    (`_spark_svg`/`_spark_mini` in `render_site.py`), which both trend charts
    and the row minis now draw through.
-4. **Equity choropleth.** Link the existing static SVG choropleth to its state
-   table with the same brushing used on the route map (the choropleth already
-   renders).
-5. **National trend chart.** The trend page already draws this line, so the work
-   is to enhance it: a hover dot at every date and a visible score-range caption.
-6. **Deep-link URL state.** Encode the current view (filters, sort, search) in
-   the URL so a specific view can be pre-staged or shared before a call. Lower
-   confidence, high call-day value.
-7. **Compare two agencies.** A no-dependency side-by-side comparison table
+4. **Equity choropleth.** Done. The static SVG choropleth is linked to its
+   state table with the same brushing used on the route map.
+5. **National trend chart.** Done. The trend line carries a hover dot at every
+   date and a visible score-range caption.
+6. **Deep-link URL state.** Partially done. The compare page encodes its two
+   agencies in the URL; the general filters/sort/search encoding on the pulse
+   and directory views has not landed. Lower confidence, high call-day value.
+7. **Compare two agencies.** Done. A no-dependency side-by-side comparison table
    (overall grade, category bars, top fixes), shareable by URL. This replaced the
    planned `maplibre-gl-compare` swipe: that plugin is built for two overlapping
    layers of the same area, but the data keeps only current per-agency geometry

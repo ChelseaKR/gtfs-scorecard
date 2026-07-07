@@ -82,6 +82,10 @@ than invented.
   headsigns) that an automated validator cannot catch. The Rider-experience
   category should align with it explicitly and automate what it can.
 
+**Built so far:** the crosswalk is written ([crosswalk.md](crosswalk.md)) and
+rendered as an on-site page at `/crosswalk/`, and agency pages carry the
+California Minimum GTFS Guidelines checklist.
+
 ### Stage 3 — The supporter workspace
 
 For liaisons and customer-success roles: a cohort dashboard (the rollups exist),
@@ -90,6 +94,10 @@ one-click call-prep export, private notes per agency, and shared-fix detection
 across a portfolio ("one export setting fixes these five agencies"). This is the
 feature that puts the supporter audience in the tool daily, and they are the
 distribution channel to agencies.
+
+**Built so far:** the weekly portfolio digest for liaisons, the call-prep brief
+at `/agency/<id>/brief/`, and shared-fix detection on every program page.
+Private notes and saved custom cohorts remain open.
 
 ### Stage 4 — Close the loop on fixes
 

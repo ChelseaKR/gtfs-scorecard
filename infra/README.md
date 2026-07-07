@@ -54,10 +54,11 @@ terraform init
 terraform apply -var="bucket_name=gtfs-scorecard-artifacts" -var="project=gtfs-scorecard"
 ```
 
-Outputs the bucket name and the CloudFront domain. Put the domain in the
-`deploy` GitHub environment as `ARTIFACTS_CDN`, and add `aws s3 sync` of
-`data/artifacts` to the daily workflow's collect job (gated on AWS secrets;
-the step is a no-op without them, so forks and the pilot keep working).
+Outputs the bucket name and the CloudFront domain. Set the `ARTIFACTS_BUCKET`
+and `ARTIFACTS_CDN` repository **variables** (Settings → Secrets and variables
+→ Actions) and the `AWS_ROLE_ARN` secret; the daily workflow's collect job
+already carries the `aws s3 sync` of `data/artifacts`, gated on those
+variables, so it is a no-op until they are set and forks keep working.
 
 ## Cost
 

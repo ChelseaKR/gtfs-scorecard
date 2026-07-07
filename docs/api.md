@@ -48,7 +48,7 @@ the covered set, not the universe of US agencies.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.5`). The rule for
+Every artifact carries a `schema_version` (currently `1.7`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -78,11 +78,19 @@ the bytes analysed. Releases:
 
 Changelog:
 
-- `1.5` adds a `confidence` block to every scorecard: a `level`
+- `1.7` adds `state_percentile` to per-state rollup payloads (`null` on the
+  "all" rollup and named cohorts, which are not peers of a 50-state
+  comparison), so a program page can say how its average compares to other
+  states' programs. A neutral distribution read, never a rank. Additive.
+- `1.6` adds a `confidence` block to every scorecard: a `level`
   (`provisional`, `medium`, or `high`) reading how much of the grade this run
   could measure, plus the measured category count, fetch source, realtime
   sampling depth, and snapshot age behind it. A legibility layer on the one
   grade, never a second grade. Additive.
+- `1.5` adds `shapes_readiness` to every US agency artifact: shapes.txt
+  coverage of trips, mapped onto FTA's July 2025 shapes.txt requirement
+  (Full Reporters RY2025; Reduced, Rural, and Tribal Reporters RY2026).
+  Additive.
 - `1.4` carries identity and provenance on every catalog and directory row
   (`mdb_id`, `validator_version`, `rubric_version`, `retrieved_at`,
   `feed_sha256`) and a `license`/`attribution` on the catalog and directory
@@ -94,7 +102,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.5",
+  "schema_version": "1.7",
   "rubric_version": "1.1",
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
   "agency": { "id": "yolobus", "name": "Yolobus (...)",
@@ -116,7 +124,9 @@ Changelog:
                   "measured_categories": 4, "total_categories": 4,
                   "fetch_source": "origin", "rt_windows": 1, "feed_age_days": 0,
                   "notes": [ "All four score categories were measured this run.", "..." ] },
-  "overall": { "score": 84.1, "grade": "B" },
+  "shapes_readiness": { "status": "ready",   // or "at_risk" / "not_ready"; US agencies only
+                        "detail": "plain language", "fix": "present unless ready",
+                        "total_trips": 0, "trips_with_shape": 0 },
   "categories": {
     "correctness":  { "name": "...", "status": "measured", "score": 0, "weight": 0.35,
                       "summary": "plain language", "findings": [ /* see below */ ],
@@ -148,8 +158,15 @@ state the breadth measured; `fetch_source` mirrors `fetch.source` above;
 `rt_windows` is `1` when realtime was sampled this run; `feed_age_days` is how
 old the scored snapshot was at scoring time; `notes` are the same
 plain-language sentences shown in the scorecard page's "How we measured this"
-panel. Absent on artifacts published before schema 1.5. Additive within schema
-1.5.
+panel. Absent on artifacts published before schema 1.6. Additive within schema
+1.6.
+
+The `shapes_readiness` block (US agencies only, schema 1.5) reads the feed's
+shapes.txt coverage against FTA's NTD shapes requirement: `status` is `ready`
+(every trip has a shape), `at_risk` (partial coverage), or `not_ready` (no
+shapes), with a plain-language `detail` and, when not ready, a concrete `fix`.
+Like `ntd_ready`, it is a data-quality heads-up, never an official
+determination.
 
 ## Freshness fields
 
@@ -178,7 +195,7 @@ a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.5",
+  "schema_version": "1.7",
   "rubric_version": "1.1",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -244,6 +261,13 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/equity.json` | Per-state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades, with the high-need states that carry many low-grade feeds. Refreshed weekly from Census ACS. |
 | `api/v1/ids.json` | Identity crosswalk: every agency's scorecard slug joined to its Mobility Database id, NTD id, and feed URL, so grades join to either registry (or FTA data) without fuzzy matching. |
 | `api/v1/ridership-impact.json` | National quality weighted by NTD annual rider-trips (ADR 0021): trips covered, trips by grade, and the share of trips on expired feeds, with the matched coverage stated. Present when the daily run's NTD fetch succeeded. |
+| `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
+| `api/v1/accessibility.json` | National accessibility-data completeness: how many feeds populate wheelchair fields, and where the gaps sit. Backs the `/accessibility` data-coverage view. |
+| `api/v1/adoption.json` | Which newer GTFS capabilities (Flex, Fares v2, pathways, cEMV) feeds actually publish. Backs `/adoption/`. |
+| `api/v1/realtime.json` | National realtime reliability: uptime and freshness of RT feeds over the sampled windows. Backs `/realtime/`. |
+| `api/v1/problems.json` | The most common validator findings nationally, with prevalence counts. Backs `/problems/`. |
+| `api/v1/trend.json` | The national quality time series: is the covered set improving? Backs `/pulse/` and the trend view. |
+| `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run. |
 
 Per-agency detail stays the published artifact (`<agency>/latest.json`); the API
 does not duplicate it. The human standings render on
@@ -282,7 +306,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.5",
+  "schema_version": "1.7",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "count": 2,
@@ -298,10 +322,11 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.5",
+  "schema_version": "1.7",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
+  "state_percentile": 64,             // per-state rollups only (schema 1.7); null on "all" and named cohorts
   "grade_distribution": { "B": 1, "C": 1 },
   "needs_attention": 1,
   "expired": { "lapsed": 1, "stale": 0, "total": 1 },
