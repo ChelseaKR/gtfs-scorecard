@@ -23,7 +23,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-06T23:03:22+00:00",
+  "generated_at": "2026-07-07T01:32:06+00:00",
   "grade_distribution": {
     "C": 1,
     "F": 2
@@ -32,7 +32,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1237,
+      "days_until_expiry": -1238,
       "expiry_status": "stale",
       "grade": "F",
       "id": "matbus",
@@ -40,13 +40,13 @@
       "needs_attention": true,
       "score": 41.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -705,
+      "days_until_expiry": -706,
       "expiry_status": "stale",
       "grade": "F",
       "id": "cities-area-transit",
@@ -54,13 +54,13 @@
       "needs_attention": true,
       "score": 44.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 178,
+      "days_until_expiry": 177,
       "expiry_status": "current",
       "grade": "C",
       "id": "cities-area-transit-2199",
@@ -68,7 +68,7 @@
       "needs_attention": false,
       "score": 71.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
@@ -85,5 +85,5 @@
     "ready": 0,
     "total": 3
   },
-  "state_percentile": 22
+  "state_percentile": 26
 }

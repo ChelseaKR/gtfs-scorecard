@@ -43,7 +43,7 @@
     "stale": 7,
     "total": 7
   },
-  "generated_at": "2026-07-06T23:03:22+00:00",
+  "generated_at": "2026-07-07T01:32:06+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 5,
@@ -54,7 +54,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1648,
+      "days_until_expiry": -1649,
       "expiry_status": "stale",
       "grade": "F",
       "id": "norwalk-transit-district",
@@ -62,13 +62,13 @@
       "needs_attention": true,
       "score": 20.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1135,
+      "days_until_expiry": -1136,
       "expiry_status": "stale",
       "grade": "F",
       "id": "southeast-area-transit-district",
@@ -76,13 +76,13 @@
       "needs_attention": true,
       "score": 44.5,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1135,
+      "days_until_expiry": -1136,
       "expiry_status": "stale",
       "grade": "F",
       "id": "southeast-area-transit-district-552",
@@ -90,13 +90,13 @@
       "needs_attention": true,
       "score": 44.5,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1102,
+      "days_until_expiry": -1103,
       "expiry_status": "stale",
       "grade": "F",
       "id": "middletown-area-transit",
@@ -104,13 +104,13 @@
       "needs_attention": true,
       "score": 44.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1102,
+      "days_until_expiry": -1103,
       "expiry_status": "stale",
       "grade": "F",
       "id": "middletown-area-transit-576",
@@ -118,13 +118,13 @@
       "needs_attention": true,
       "score": 44.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -552,
+      "days_until_expiry": -553,
       "expiry_status": "stale",
       "grade": "F",
       "id": "shore-line-east",
@@ -132,13 +132,13 @@
       "needs_attention": true,
       "score": 47.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1137,
+      "days_until_expiry": -1138,
       "expiry_status": "stale",
       "grade": "F",
       "id": "connecticut-transit-597",
@@ -146,13 +146,13 @@
       "needs_attention": true,
       "score": 58.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Score changed sharply on 2026-06-25",
-      "days_until_expiry": 357,
+      "days_until_expiry": 356,
       "expiry_status": "current",
       "grade": "D",
       "id": "lower-hudson-valley-transit",
@@ -160,13 +160,13 @@
       "needs_attention": true,
       "score": 69.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 187,
+      "days_until_expiry": 186,
       "expiry_status": "current",
       "grade": "F",
       "id": "connecticut-transit",
@@ -174,13 +174,13 @@
       "needs_attention": false,
       "score": 53.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 174,
+      "days_until_expiry": 173,
       "expiry_status": "current",
       "grade": "C",
       "id": "greater-bridgeport-transit",
@@ -188,13 +188,13 @@
       "needs_attention": false,
       "score": 75.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 174,
+      "days_until_expiry": 173,
       "expiry_status": "current",
       "grade": "C",
       "id": "greater-bridgeport-transit-530",
@@ -202,13 +202,13 @@
       "needs_attention": false,
       "score": 75.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 325,
+      "days_until_expiry": 324,
       "expiry_status": "current",
       "grade": "C",
       "id": "middletown-area-transit-mat",
@@ -216,13 +216,13 @@
       "needs_attention": false,
       "score": 77.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 325,
+      "days_until_expiry": 324,
       "expiry_status": "current",
       "grade": "C",
       "id": "middletown-area-transit-mat-551",
@@ -230,13 +230,13 @@
       "needs_attention": false,
       "score": 77.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 356,
+      "days_until_expiry": 355,
       "expiry_status": "current",
       "grade": "C",
       "id": "southeast-area-transit-district-2240",
@@ -244,13 +244,13 @@
       "needs_attention": false,
       "score": 78.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 116,
+      "days_until_expiry": 115,
       "expiry_status": "current",
       "grade": "B",
       "id": "connecticut-transit-2840",
@@ -258,7 +258,7 @@
       "needs_attention": false,
       "score": 83.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     }
   ],

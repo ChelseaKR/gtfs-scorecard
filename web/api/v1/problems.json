@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-06T23:03:44+00:00",
+  "generated_at": "2026-07-07T01:32:30+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.7
     },
     "feed_expiration_date30_days": {
-      "agencies": 21,
-      "instances": 21,
-      "prevalence_pct": 1.4
+      "agencies": 40,
+      "instances": 40,
+      "prevalence_pct": 2.8
     },
     "feed_expiration_date7_days": {
       "agencies": 508,
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.6
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 106,
-      "instances": 106,
-      "prevalence_pct": 7.3
+      "agencies": 127,
+      "instances": 127,
+      "prevalence_pct": 8.8
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 4,
-      "instances": 2218,
-      "prevalence_pct": 0.3
+      "agencies": 6,
+      "instances": 2396,
+      "prevalence_pct": 0.4
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -415,9 +415,9 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 52,
-      "instances": 1937,
-      "prevalence_pct": 3.6
+      "agencies": 51,
+      "instances": 1938,
+      "prevalence_pct": 3.5
     },
     "scorecard_rt_trip_updates_unreachable": {
       "agencies": 45,
@@ -430,9 +430,9 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 7,
-      "instances": 166,
-      "prevalence_pct": 0.5
+      "agencies": 6,
+      "instances": 163,
+      "prevalence_pct": 0.4
     },
     "scorecard_station_no_pathways": {
       "agencies": 143,
@@ -713,7 +713,7 @@
       "prevalence_pct": 42.6,
       "severity": "ERROR",
       "source": "scorecard",
-      "what": "Service data ended 2743 day(s) ago.",
+      "what": "Service data ended 2744 day(s) ago.",
       "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
     },
     {

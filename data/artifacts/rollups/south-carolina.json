@@ -1,6 +1,6 @@
 {
   "agency_count": 7,
-  "average_score": 53.1,
+  "average_score": 52.9,
   "common_fixes": [
     {
       "agencies": 5,
@@ -33,7 +33,7 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-06T23:03:22+00:00",
+  "generated_at": "2026-07-07T01:32:06+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 2,
@@ -43,7 +43,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1578,
+      "days_until_expiry": -1579,
       "expiry_status": "stale",
       "grade": "F",
       "id": "the-comet",
@@ -51,13 +51,13 @@
       "needs_attention": true,
       "score": 36.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1578,
+      "days_until_expiry": -1579,
       "expiry_status": "stale",
       "grade": "F",
       "id": "the-comet-1197",
@@ -65,13 +65,13 @@
       "needs_attention": true,
       "score": 36.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2397,
+      "days_until_expiry": -2398,
       "expiry_status": "stale",
       "grade": "F",
       "id": "clemson-area-transit-cat",
@@ -79,13 +79,13 @@
       "needs_attention": true,
       "score": 46.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2397,
+      "days_until_expiry": -2398,
       "expiry_status": "stale",
       "grade": "F",
       "id": "clemson-area-transit-cat-798",
@@ -93,49 +93,49 @@
       "needs_attention": true,
       "score": 46.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
-      "days_until_expiry": 40,
+      "days_until_expiry": 39,
       "expiry_status": "current",
       "grade": "D",
       "id": "charleston-area-regional-transportation-authority-carta",
       "name": "Charleston Area Regional Transportation Authority (CARTA)",
       "needs_attention": true,
-      "score": 61.2,
+      "score": 60.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 40 day(s)",
-      "days_until_expiry": 40,
+      "attention_reason": "Service data expires in 39 day(s)",
+      "days_until_expiry": 39,
       "expiry_status": "current",
       "grade": "D",
       "id": "charleston-area-regional-transportation-authority-carta-352",
       "name": "Charleston Area Regional Transportation Authority (CARTA)",
       "needs_attention": true,
-      "score": 65.1,
+      "score": 64.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 54 day(s)",
-      "days_until_expiry": 54,
+      "attention_reason": "Service data expires in 53 day(s)",
+      "days_until_expiry": 53,
       "expiry_status": "current",
       "grade": "C",
       "id": "the-comet-2209",
       "name": "The Comet",
       "needs_attention": true,
-      "score": 79.4,
+      "score": 79.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     }
   ],
@@ -152,5 +152,5 @@
     "ready": 0,
     "total": 7
   },
-  "state_percentile": 30
+  "state_percentile": 28
 }

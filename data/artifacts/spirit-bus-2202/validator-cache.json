@@ -58,6 +58,19 @@
         "total": 1
       },
       {
+        "code": "feed_expiration_date30_days",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "currentDate": "20260707",
+            "feedEndDate": "20260805",
+            "suggestedExpirationDate": "20260806"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
         "code": "stops_match_shape_out_of_order",
         "sample_notices": [
           {
@@ -100,6 +113,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "d452da3987bed42cf8f86bb9b8ad76580f14a6894e692f37373ca2987c5d1100",
+  "sha256": "83da9b76b51e67e240538bf4a2f598679c13019f37ceac0bbe2a64a0343da707",
   "validator_version": "8.0.1"
 }

@@ -1,16 +1,16 @@
 {
   "agency_count": 6,
-  "average_score": 45.0,
+  "average_score": 44.6,
   "common_fixes": [
-    {
-      "agencies": 5,
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
     {
       "agencies": 4,
       "code": "scorecard_feed_expired",
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "agencies": 4,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "agencies": 3,
@@ -28,7 +28,7 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-06T23:03:22+00:00",
+  "generated_at": "2026-07-07T01:32:06+00:00",
   "grade_distribution": {
     "D": 2,
     "F": 4
@@ -37,7 +37,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1053,
+      "days_until_expiry": -1054,
       "expiry_status": "stale",
       "grade": "F",
       "id": "wichita-transit",
@@ -45,13 +45,13 @@
       "needs_attention": true,
       "score": 11.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1982,
+      "days_until_expiry": -1983,
       "expiry_status": "stale",
       "grade": "F",
       "id": "ku-on-wheels-lawrence-transit-system",
@@ -59,13 +59,13 @@
       "needs_attention": true,
       "score": 35.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2593,
+      "days_until_expiry": -2594,
       "expiry_status": "stale",
       "grade": "F",
       "id": "the-jo",
@@ -73,13 +73,13 @@
       "needs_attention": true,
       "score": 40.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -918,
+      "days_until_expiry": -919,
       "expiry_status": "stale",
       "grade": "F",
       "id": "81-connection-citygo-kanconnect",
@@ -87,27 +87,27 @@
       "needs_attention": true,
       "score": 50.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
       "grade": "D",
       "id": "ku-on-wheels-lawrence-transit-system-2063",
       "name": "KU on Wheels & Lawrence Transit System",
       "needs_attention": true,
-      "score": 65.6,
+      "score": 63.5,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Populate trip_headsign to match what the bus displays."
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 178,
+      "days_until_expiry": 177,
       "expiry_status": "current",
       "grade": "D",
       "id": "johnson-county-transit",
@@ -115,7 +115,7 @@
       "needs_attention": false,
       "score": 66.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],

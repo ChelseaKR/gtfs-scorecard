@@ -1,6 +1,6 @@
 {
   "agency_count": 4,
-  "average_score": 65.0,
+  "average_score": 64.5,
   "common_fixes": [
     {
       "agencies": 3,
@@ -23,17 +23,17 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-06T23:03:22+00:00",
+  "generated_at": "2026-07-07T01:32:06+00:00",
   "grade_distribution": {
     "A": 1,
-    "C": 1,
+    "D": 1,
     "F": 2
   },
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1648,
+      "days_until_expiry": -1649,
       "expiry_status": "stale",
       "grade": "F",
       "id": "jtran",
@@ -41,13 +41,13 @@
       "needs_attention": true,
       "score": 45.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1648,
+      "days_until_expiry": -1649,
       "expiry_status": "stale",
       "grade": "F",
       "id": "jtran-155",
@@ -55,27 +55,27 @@
       "needs_attention": true,
       "score": 45.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
+      "attention_reason": "Grade slipped from C to D",
+      "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
-      "grade": "C",
+      "grade": "D",
       "id": "city-of-jackson-jtran",
       "name": "City of Jackson (JTRAN)",
       "needs_attention": true,
-      "score": 71.1,
+      "score": 68.9,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-06",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 118,
+      "days_until_expiry": 117,
       "expiry_status": "current",
       "grade": "A",
       "id": "gulf-islands-national-seashore-3210",
@@ -83,7 +83,7 @@
       "needs_attention": false,
       "score": 98.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-06",
+      "snapshot_date": "2026-07-07",
       "top_fix": "Remove past service periods the next time you export the feed."
     }
   ],
