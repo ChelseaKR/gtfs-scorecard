@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-07T01:32:30+00:00",
+  "generated_at": "2026-07-07T05:31:52+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.7
     },
     "feed_expiration_date30_days": {
-      "agencies": 40,
-      "instances": 40,
-      "prevalence_pct": 2.8
+      "agencies": 31,
+      "instances": 31,
+      "prevalence_pct": 2.1
     },
     "feed_expiration_date7_days": {
       "agencies": 508,
@@ -246,7 +246,7 @@
     },
     "mixed_case_recommended_field": {
       "agencies": 443,
-      "instances": 762488,
+      "instances": 762434,
       "prevalence_pct": 30.6
     },
     "more_than_one_entity": {
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.6
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 127,
-      "instances": 127,
-      "prevalence_pct": 8.8
+      "agencies": 117,
+      "instances": 117,
+      "prevalence_pct": 8.1
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 6,
-      "instances": 2396,
-      "prevalence_pct": 0.4
+      "agencies": 4,
+      "instances": 2213,
+      "prevalence_pct": 0.3
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -415,9 +415,9 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 51,
-      "instances": 1938,
-      "prevalence_pct": 3.5
+      "agencies": 48,
+      "instances": 1875,
+      "prevalence_pct": 3.3
     },
     "scorecard_rt_trip_updates_unreachable": {
       "agencies": 45,
@@ -430,9 +430,9 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 6,
-      "instances": 163,
-      "prevalence_pct": 0.4
+      "agencies": 7,
+      "instances": 167,
+      "prevalence_pct": 0.5
     },
     "scorecard_station_no_pathways": {
       "agencies": 143,
@@ -446,7 +446,7 @@
     },
     "scorecard_stop_names_all_caps": {
       "agencies": 131,
-      "instances": 176079,
+      "instances": 176029,
       "prevalence_pct": 9.0
     },
     "scorecard_wheelchair_accessible_unknown": {
@@ -456,7 +456,7 @@
     },
     "scorecard_wheelchair_boarding_unknown": {
       "agencies": 1356,
-      "instances": 644454,
+      "instances": 644400,
       "prevalence_pct": 93.6
     },
     "service_extends_far_in_the_future": {
@@ -516,7 +516,7 @@
     },
     "stop_without_stop_time": {
       "agencies": 697,
-      "instances": 37026,
+      "instances": 36999,
       "prevalence_pct": 48.1
     },
     "stop_without_zone_id": {
@@ -580,8 +580,8 @@
       "prevalence_pct": 2.0
     },
     "unused_shape": {
-      "agencies": 86,
-      "instances": 1886,
+      "agencies": 85,
+      "instances": 1878,
       "prevalence_pct": 5.9
     },
     "unused_station": {
@@ -601,7 +601,7 @@
       "code": "scorecard_wheelchair_boarding_unknown",
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
-      "instances": 644454,
+      "instances": 644400,
       "prevalence_pct": 93.6,
       "severity": "WARNING",
       "source": "scorecard",
@@ -685,7 +685,7 @@
       "code": "stop_without_stop_time",
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
-      "instances": 37026,
+      "instances": 36999,
       "prevalence_pct": 48.1,
       "severity": "WARNING",
       "source": "validator",
@@ -757,7 +757,7 @@
       "code": "mixed_case_recommended_field",
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-      "instances": 762488,
+      "instances": 762434,
       "prevalence_pct": 30.6,
       "severity": "WARNING",
       "source": "validator",

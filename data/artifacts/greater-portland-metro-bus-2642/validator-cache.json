@@ -36,15 +36,15 @@
           }
         ],
         "severity": "WARNING",
-        "total": 2410
+        "total": 2356
       },
       {
         "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
         "sample_notices": [
           {
             "actualDistanceBetweenShapePoints": 0.8044157784080564,
-            "csvRowNumber": 16341,
-            "prevCsvRowNumber": 16340,
+            "csvRowNumber": 17229,
+            "prevCsvRowNumber": 17228,
             "prevShapeDistTraveled": 2213.0,
             "prevShapePtSequence": 213,
             "shapeDistTraveled": 2213.0,
@@ -53,8 +53,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 0.7963714871372028,
-            "csvRowNumber": 16344,
-            "prevCsvRowNumber": 16343,
+            "csvRowNumber": 17232,
+            "prevCsvRowNumber": 17231,
             "prevShapeDistTraveled": 2216.0,
             "prevShapePtSequence": 216,
             "shapeDistTraveled": 2216.0,
@@ -63,8 +63,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 0.8044155083863148,
-            "csvRowNumber": 16347,
-            "prevCsvRowNumber": 16346,
+            "csvRowNumber": 17235,
+            "prevCsvRowNumber": 17234,
             "prevShapeDistTraveled": 2219.0,
             "prevShapePtSequence": 219,
             "shapeDistTraveled": 2219.0,
@@ -73,8 +73,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 0.8044153764455921,
-            "csvRowNumber": 16350,
-            "prevCsvRowNumber": 16349,
+            "csvRowNumber": 17238,
+            "prevCsvRowNumber": 17237,
             "prevShapeDistTraveled": 2222.0,
             "prevShapePtSequence": 222,
             "shapeDistTraveled": 2222.0,
@@ -83,8 +83,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 0.8124596643298296,
-            "csvRowNumber": 16357,
-            "prevCsvRowNumber": 16356,
+            "csvRowNumber": 17245,
+            "prevCsvRowNumber": 17244,
             "prevShapeDistTraveled": 2229.0,
             "prevShapePtSequence": 229,
             "shapeDistTraveled": 2229.0,
@@ -96,69 +96,22 @@
         "total": 186
       },
       {
-        "code": "stop_without_stop_time",
-        "sample_notices": [
-          {
-            "csvRowNumber": 40,
-            "stopId": "0:374",
-            "stopName": "MIDDLE ST + FRANKLIN ST"
-          },
-          {
-            "csvRowNumber": 41,
-            "stopId": "0:376",
-            "stopName": "MIDDLE ST + PEARL ST"
-          },
-          {
-            "csvRowNumber": 504,
-            "stopId": "0:114",
-            "stopName": "Garage"
-          },
-          {
-            "csvRowNumber": 624,
-            "stopId": "0:494",
-            "stopName": "RAY ST + JOSEPH AVE"
-          },
-          {
-            "csvRowNumber": 625,
-            "stopId": "0:493",
-            "stopName": "RAY ST + IVALOO ST"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 28
-      },
-      {
-        "code": "unused_shape",
-        "sample_notices": [
-          {
-            "csvRowNumber": 17512,
-            "shapeId": "9B_20_140"
-          },
-          {
-            "csvRowNumber": 17809,
-            "shapeId": "9A_121_518"
-          },
-          {
-            "csvRowNumber": 18088,
-            "shapeId": "9A_121_18"
-          },
-          {
-            "csvRowNumber": 64344,
-            "shapeId": "9B_140_608_1"
-          },
-          {
-            "csvRowNumber": 64923,
-            "shapeId": "9A_636_121"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 8
-      },
-      {
         "code": "missing_recommended_file",
         "sample_notices": [
           {
             "filename": "feed_info.txt"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "stop_without_stop_time",
+        "sample_notices": [
+          {
+            "csvRowNumber": 502,
+            "stopId": "0:114",
+            "stopName": "Garage"
           }
         ],
         "severity": "WARNING",
@@ -179,6 +132,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "78492486acc5229f6e95b434e7d5630c3abc561a7ad4b31c472e9ceca2682b78",
+  "sha256": "56ad0c32b808db42c45455747c01e89f09c9dde2faa973f4e9880e2b8db3583e",
   "validator_version": "8.0.1"
 }

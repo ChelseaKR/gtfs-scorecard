@@ -221,25 +221,17 @@
     "realtime": {
       "details": {
         "coverage_pct": null,
-        "drift": {
-          "median_seconds": 564,
-          "observations": 1,
-          "on_time_share_pct": 0.0,
-          "p90_abs_seconds": 564
-        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 3,
-        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 4
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route; predictions ran a median of 564s behind schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -281,7 +273,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "83da9b76b51e67e240538bf4a2f598679c13019f37ceac0bbe2a64a0343da707",
+    "sha256": "a31e396e60a220e39de5abc7ddb1a0a66317d56b2565abaf90ef92f7bf3f2c39",
     "size_bytes": 34985,
     "static_url": "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
   },

@@ -9,7 +9,7 @@
     "fixes": [
       {
         "code": "autofix_stop_name_case",
-        "count": 1330,
+        "count": 1280,
         "examples": [
           "WESTBROOK ST + UPPER  COACH RD -> Westbrook St + Upper Coach Rd",
           "WESTBROOK ST + LOWER COACH RD -> Westbrook St + Lower Coach Rd",
@@ -18,7 +18,7 @@
         "label": "Recased shouting stop names"
       }
     ],
-    "total": 1330
+    "total": 1280
   },
   "categories": {
     "completeness": {
@@ -61,7 +61,7 @@
         },
         "has_fares": false,
         "headsign_pct": 85.4,
-        "mixed_case_stop_name_pct": 2.8,
+        "mixed_case_stop_name_pct": 2.6,
         "pathways": {
           "has_entrances": false,
           "has_levels": false,
@@ -70,7 +70,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 1368,
+        "stops": 1314,
         "trips": 1345,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
@@ -80,13 +80,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 1368,
+          "count": 1314,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "1368 of 1368 stops don't say whether a wheelchair user can board there.",
+          "what": "1314 of 1314 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -113,13 +113,13 @@
         },
         {
           "code": "scorecard_stop_names_all_caps",
-          "count": 1330,
+          "count": 1280,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Rename stops to mixed case (e.g. 'Main St & 2nd Ave').",
           "owner": "Likely your export tool",
           "points": 14.6,
           "severity": "INFO",
-          "what": "About 1330 stop names are written in ALL CAPS.",
+          "what": "About 1280 stop names are written in ALL CAPS.",
           "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
         },
         {
@@ -164,18 +164,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 6,
+        "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 1,
-          "WARNING": 2633
+          "WARNING": 2544
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 2410,
+          "count": 2356,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -196,28 +196,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "stop_without_stop_time",
-          "count": 28,
-          "effort": "A review pass in your scheduling software.",
-          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some stops exist in the feed but no trip ever stops at them.",
-          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
-        },
-        {
-          "code": "unused_shape",
-          "count": 8,
-          "effort": "One setting.",
-          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "The feed contains route shapes no trip uses.",
-          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
-        },
-        {
           "code": "missing_recommended_file",
           "count": 1,
           "effort": "One small file, set once in export settings.",
@@ -227,6 +205,17 @@
           "severity": "WARNING",
           "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 1,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
           "code": "unknown_column",
@@ -241,34 +230,23 @@
         }
       ],
       "name": "correctness",
-      "score": 67.5,
+      "score": 75.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 2634 instances (0 error, 2633 warning, 1 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 2545 instances (0 error, 2544 warning, 1 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 29,
+        "days_until_expiry": 30,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-08-05",
+        "last_service_date": "2026-08-06",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 51.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 29 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        },
         {
           "code": "scorecard_missing_feed_info_dates",
           "count": 1,
@@ -282,9 +260,9 @@
         }
       ],
       "name": "freshness",
-      "score": 33.3,
+      "score": 35.0,
       "status": "measured",
-      "summary": "Service data runs out in 29 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 30 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -294,6 +272,8 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
+        "vehicles_checked": 5,
+        "vehicles_on_route_pct": 20.0,
         "worst_lag_seconds": 3
       },
       "findings": [
@@ -307,12 +287,23 @@
           "severity": "ERROR",
           "what": "The trip updates realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 4,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "WARNING",
+          "what": "4 of 5 sampled vehicle positions were far from their assigned route (worst: 1541 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         }
       ],
       "name": "realtime",
-      "score": 83.3,
+      "score": 68.7,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 2 of 3 feeds healthy.",
+      "summary": "Sampled 9 times outside service hours: 2 of 3 feeds healthy; 20.0% of vehicles on their route.",
       "weight": 0.2
     }
   },
@@ -354,8 +345,8 @@
   "feed": {
     "license_note": "License: https://www.gpmetro.org/about-us/projects-initiatives/developers/",
     "reachable": true,
-    "sha256": "78492486acc5229f6e95b434e7d5630c3abc561a7ad4b31c472e9ceca2682b78",
-    "size_bytes": 1174011,
+    "sha256": "56ad0c32b808db42c45455747c01e89f09c9dde2faa973f4e9880e2b8db3583e",
+    "size_bytes": 1145681,
     "static_url": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip"
   },
   "fetch": {
@@ -364,7 +355,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -70.44817,
@@ -372,9 +363,9 @@
       -69.81391,
       43.91378
     ],
-    "lat": 43.66546,
-    "lon": -70.28739,
-    "stop_count": 1368
+    "lat": 43.66431,
+    "lon": -70.28911,
+    "stop_count": 1314
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -406,9 +397,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 52.1,
-    "margin_to_next_band": 7.9,
-    "score": 52.1
+    "margin_to_lower_band": 52.3,
+    "margin_to_next_band": 7.7,
+    "score": 52.3
   },
   "recommendations": [
     {
@@ -424,13 +415,13 @@
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 1278,
+      "count": 1224,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "1278 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"WESTBROOK ST + UPPER  COACH RD\", \"WESTBROOK ST + LOWER COACH RD\", \"COTTAGE RD + SOULE ST\", and more).",
+      "what": "1224 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"WESTBROOK ST + UPPER  COACH RD\", \"WESTBROOK ST + LOWER COACH RD\", \"COTTAGE RD + SOULE ST\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
@@ -445,27 +436,22 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 684,
+    "boardable_stops": 657,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 28,
+        "count": 1,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "28 of 684 boardable stops are never served by any trip.",
+        "what": "1 of 657 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 28,
+    "orphan_stops": 1,
     "single_stop_trips": 0,
     "trips_total": 1345
   },
@@ -630,7 +616,7 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 1368,
+    "stop_count": 1314,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
@@ -644,40 +630,40 @@
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 51.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 29 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
-    {
       "code": "scorecard_rt_trip_updates_unreachable",
       "count": 1,
       "effort": "Usually a vendor support ticket.",
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
       "owner": "",
       "points": 8.3,
-      "rank": 2,
+      "rank": 1,
       "severity": "ERROR",
       "what": "The trip updates realtime feed failed during sampling.",
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 1368,
+      "count": 1314,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1314 of 1314 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1345,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "1368 of 1368 stops don't say whether a wheelchair user can board there.",
-      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+      "what": "1345 of 1345 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],
   "validator_version": "8.0.1"

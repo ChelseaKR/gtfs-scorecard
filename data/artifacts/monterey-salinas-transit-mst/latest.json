@@ -144,12 +144,11 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 0.0,
-        "covered_trips": 0,
+        "coverage_pct": null,
         "kinds_reachable": 0,
         "rt_freshness": null,
         "samples": 9,
-        "scheduled_trips_in_window": 52,
+        "scheduled_trips_in_window": 0,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -185,23 +184,12 @@
           "severity": "ERROR",
           "what": "The service alerts realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
-        },
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 52,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 35.0,
-          "severity": "WARNING",
-          "what": "52 of 52 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
       "score": 0.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 0 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
+      "summary": "Sampled 9 times outside service hours: 0 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -227,7 +215,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 53 days.",
+        "detail": "Service data covers the next 52 days.",
         "key": "current",
         "met": true
       },
@@ -253,7 +241,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -121.93603,
@@ -287,7 +275,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 53 days.",
+        "detail": "Service data covers the next 52 days.",
         "key": "current",
         "status": "ready"
       }
@@ -314,11 +302,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 975,
     "findings": [],
