@@ -18,7 +18,7 @@
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 28,
+      "agencies": 27,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -48,7 +48,7 @@
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
-      "agencies": 3,
+      "agencies": 4,
       "code": "scorecard_missing_feed_info_dates",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
@@ -88,7 +88,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-07T12:25:45+00:00",
+  "generated_at": "2026-07-07T15:34:13+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 2,
@@ -918,7 +918,7 @@
       "id": "suffolk-county-transit-3115",
       "name": "Suffolk County Transit",
       "needs_attention": false,
-      "score": 56.7,
+      "score": 56.6,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."

@@ -70,7 +70,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 243,
+        "stops": 242,
         "trips": 368,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
@@ -80,13 +80,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 243,
+          "count": 242,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "243 of 243 stops don't say whether a wheelchair user can board there.",
+          "what": "242 of 242 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -207,7 +207,7 @@
         "days_until_expiry": 542,
         "feed_end_date": "2027-12-31",
         "feed_start_date": "2026-07-03",
-        "feed_version": "20260704",
+        "feed_version": "20260706",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -227,6 +227,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -236,7 +248,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 545 days.",
+        "detail": "Service data covers the next 542 days.",
         "key": "current",
         "met": true
       },
@@ -252,8 +264,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d025d7dc14714a15cae06c31cbbdafe9e7e83d11163e590d337d9aa46d166383",
-    "size_bytes": 208483,
+    "sha256": "6beb1a34ba51f3416f9626a5666a176868e8ceec5a2d385cc10f3f3133d91f31",
+    "size_bytes": 208439,
     "static_url": "http://kart.connexionz.net/rtt/public/utility/gtfs.aspx"
   },
   "fetch": {
@@ -262,7 +274,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -120.14516,
@@ -270,9 +282,9 @@
       -119.28823,
       36.77263
     ],
-    "lat": 36.32335,
-    "lon": -119.66464,
-    "stop_count": 243
+    "lat": 36.32319,
+    "lon": -119.66488,
+    "stop_count": 242
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -294,7 +306,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 545 days.",
+        "detail": "Service data covers the next 542 days.",
         "key": "current",
         "status": "ready"
       }
@@ -322,13 +334,13 @@
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 216,
+      "count": 215,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "216 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Hume & Echo Lane\", \"Hume & Butternut\", \"Hanford Armona Road & Leslie Lane\", and more).",
+      "what": "215 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Hume & Echo Lane\", \"Hume & Butternut\", \"Hanford Armona Road & Leslie Lane\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
@@ -343,13 +355,8 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 242,
+    "boardable_stops": 241,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
@@ -549,23 +556,29 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 243,
+    "stop_count": 242,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 368 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 368,
+    "trips_with_shape": 368
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 243,
+      "count": 242,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "243 of 243 stops don't say whether a wheelchair user can board there.",
+      "what": "242 of 242 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {

@@ -197,18 +197,50 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 66.7,
+        "covered_trips": 2,
+        "drift": {
+          "median_seconds": 0,
+          "observations": 22,
+          "on_time_share_pct": 22.7,
+          "p90_abs_seconds": 7488
+        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 4
+        "scheduled_trips_in_window": 3,
+        "vehicles_checked": 12,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 5
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 1,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 11.7,
+          "severity": "WARNING",
+          "what": "1 of 3 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 22,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+        }
+      ],
       "name": "realtime",
-      "score": 100.0,
+      "score": 88.3,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 66.7% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 0s behind schedule.",
       "weight": 0.2
     }
   },
@@ -250,7 +282,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "bdd869985e5f3accf31560ccc97feed3eb14b91d23f12a2fa6f049a6dd193f47",
+    "sha256": "fc2e3b7d1ea19facdbf654ac277b884eed379b2e128cf1a065636fb35023c568",
     "size_bytes": 34985,
     "static_url": "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
   },
@@ -302,9 +334,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 6.7,
-    "margin_to_next_band": 3.3,
-    "score": 66.7
+    "margin_to_lower_band": 4.4,
+    "margin_to_next_band": 5.6,
+    "score": 64.4
   },
   "recommendations": [
     {

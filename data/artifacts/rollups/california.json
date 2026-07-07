@@ -33,7 +33,7 @@
       "fix": "Populate trip_headsign to match what the bus displays."
     },
     {
-      "agencies": 11,
+      "agencies": 10,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -74,13 +74,13 @@
     },
     {
       "agencies": 4,
-      "code": "missing_required_field",
-      "fix": "Review the rule documentation for 'missing_required_field' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 3,
       "code": "scorecard_missing_feed_info_dates",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+    },
+    {
+      "agencies": 4,
+      "code": "missing_required_field",
+      "fix": "Review the rule documentation for 'missing_required_field' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "agencies": 3,
@@ -143,7 +143,7 @@
     "stale": 44,
     "total": 65
   },
-  "generated_at": "2026-07-07T12:25:45+00:00",
+  "generated_at": "2026-07-07T15:34:13+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 32,
