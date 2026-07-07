@@ -5,9 +5,21 @@
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
-            "csvRowNumber": 5,
+            "csvRowNumber": 4,
             "fieldName": "route_long_name",
             "fieldValue": "SILVER LINE",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 5,
+            "fieldName": "route_long_name",
+            "fieldValue": "DUQUESNE INCLINE",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 6,
+            "fieldName": "route_long_name",
+            "fieldValue": "MONONGAHELA INCLINE",
             "filename": "routes.txt"
           },
           {
@@ -21,300 +33,32 @@
             "fieldName": "route_long_name",
             "fieldValue": "OHIO VALLEY",
             "filename": "routes.txt"
-          },
-          {
-            "csvRowNumber": 16,
-            "fieldName": "route_long_name",
-            "fieldValue": "EMSWORTH LIMITED",
-            "filename": "routes.txt"
-          },
-          {
-            "csvRowNumber": 17,
-            "fieldName": "route_long_name",
-            "fieldValue": "MOUNT ROYAL",
-            "filename": "routes.txt"
           }
         ],
         "severity": "WARNING",
-        "total": 14081
-      },
-      {
-        "code": "fast_travel_between_consecutive_stops",
-        "sample_notices": [
-          {
-            "arrivalTime2": "18:01:43",
-            "csvRowNumber1": 24111,
-            "csvRowNumber2": 24112,
-            "departureTime1": "18:00:54",
-            "distanceKm": 10.586425623495716,
-            "routeId": "RED",
-            "speedKph": 777.7782090731547,
-            "stopId1": "104",
-            "stopId2": "31",
-            "stopName1": "OVERBROOK JUNCTION",
-            "stopName2": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopSequence1": 9,
-            "stopSequence2": 10,
-            "tripCsvRowNumber": 487,
-            "tripId": "1074608010"
-          },
-          {
-            "arrivalTime2": "18:01:43",
-            "csvRowNumber1": 24111,
-            "csvRowNumber2": 24112,
-            "departureTime1": "18:00:54",
-            "distanceKm": 10.586425623495716,
-            "routeId": "RED",
-            "speedKph": 777.7782090731547,
-            "stopId1": "104",
-            "stopId2": "31",
-            "stopName1": "OVERBROOK JUNCTION",
-            "stopName2": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopSequence1": 9,
-            "stopSequence2": 10,
-            "tripCsvRowNumber": 336,
-            "tripId": "1074804090"
-          },
-          {
-            "arrivalTime2": "18:02:25",
-            "csvRowNumber1": 24112,
-            "csvRowNumber2": 24113,
-            "departureTime1": "18:01:43",
-            "distanceKm": 10.545659619067685,
-            "routeId": "RED",
-            "speedKph": 903.913681634373,
-            "stopId1": "31",
-            "stopId2": "23",
-            "stopName1": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopName2": "ARLINGTON",
-            "stopSequence1": 10,
-            "stopSequence2": 11,
-            "tripCsvRowNumber": 487,
-            "tripId": "1074608010"
-          },
-          {
-            "arrivalTime2": "18:02:25",
-            "csvRowNumber1": 24112,
-            "csvRowNumber2": 24113,
-            "departureTime1": "18:01:43",
-            "distanceKm": 10.545659619067685,
-            "routeId": "RED",
-            "speedKph": 903.913681634373,
-            "stopId1": "31",
-            "stopId2": "23",
-            "stopName1": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopName2": "ARLINGTON",
-            "stopSequence1": 10,
-            "stopSequence2": 11,
-            "tripCsvRowNumber": 336,
-            "tripId": "1074804090"
-          },
-          {
-            "arrivalTime2": "18:15:06",
-            "csvRowNumber1": 24121,
-            "csvRowNumber2": 24122,
-            "departureTime1": "18:14:37",
-            "distanceKm": 5.976827532530926,
-            "routeId": "RED",
-            "speedKph": 741.9510040383219,
-            "stopId1": "19",
-            "stopId2": "39",
-            "stopName1": "BROADWAY AVE AT HAMPSHIRE",
-            "stopName2": "CRAFT AVE + FIFTH FS (DIALYSIS CTR)",
-            "stopSequence1": 19,
-            "stopSequence2": 20,
-            "tripCsvRowNumber": 487,
-            "tripId": "1074608010"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1843
-      },
-      {
-        "code": "fast_travel_between_far_stops",
-        "sample_notices": [
-          {
-            "arrivalTime2": "18:01:43",
-            "csvRowNumber1": 24111,
-            "csvRowNumber2": 24112,
-            "departureTime1": "18:00:54",
-            "distanceKm": 10.586425623495716,
-            "routeId": "RED",
-            "speedKph": 777.7782090731547,
-            "stopId1": "104",
-            "stopId2": "31",
-            "stopName1": "OVERBROOK JUNCTION",
-            "stopName2": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopSequence1": 9,
-            "stopSequence2": 10,
-            "tripCsvRowNumber": 487,
-            "tripId": "1074608010"
-          },
-          {
-            "arrivalTime2": "18:01:43",
-            "csvRowNumber1": 28958,
-            "csvRowNumber2": 28959,
-            "departureTime1": "18:00:54",
-            "distanceKm": 10.586425623495716,
-            "routeId": "RED",
-            "speedKph": 777.7782090731547,
-            "stopId1": "104",
-            "stopId2": "31",
-            "stopName1": "OVERBROOK JUNCTION",
-            "stopName2": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopSequence1": 9,
-            "stopSequence2": 10,
-            "tripCsvRowNumber": 336,
-            "tripId": "1074804090"
-          },
-          {
-            "arrivalTime2": "14:13:58",
-            "csvRowNumber1": 28140,
-            "csvRowNumber2": 28141,
-            "departureTime1": "14:13:04",
-            "distanceKm": 10.857051501685044,
-            "routeId": "RED",
-            "speedKph": 723.8034334456696,
-            "stopId1": "32",
-            "stopId2": "105",
-            "stopName1": "BELLEFIELD AVE + BOARD OF EDUCATION",
-            "stopName2": "OVERBROOK JUNCTION",
-            "stopSequence1": 22,
-            "stopSequence2": 23,
-            "tripCsvRowNumber": 834,
-            "tripId": "1074770070"
-          },
-          {
-            "arrivalTime2": "10:25:35",
-            "csvRowNumber1": 30395,
-            "csvRowNumber2": 30396,
-            "departureTime1": "10:24:22",
-            "distanceKm": 10.305302409129828,
-            "routeId": "BLUE",
-            "speedKph": 508.2066941488682,
-            "stopId1": "30",
-            "stopId2": "42",
-            "stopName1": "CASSWELL",
-            "stopName2": "BLVD OF ALLIES + MARKET ST",
-            "stopSequence1": 20,
-            "stopSequence2": 21,
-            "tripCsvRowNumber": 176,
-            "tripId": "1074860080"
-          },
-          {
-            "arrivalTime2": "23:44:43",
-            "csvRowNumber1": 6363,
-            "csvRowNumber2": 6364,
-            "departureTime1": "23:43:54",
-            "distanceKm": 10.586425623495716,
-            "routeId": "RED",
-            "speedKph": 777.7782090731547,
-            "stopId1": "104",
-            "stopId2": "31",
-            "stopName1": "OVERBROOK JUNCTION",
-            "stopName2": "FORBES AVE + BIGELOW BLVD (SCHENLEY DR)",
-            "stopSequence1": 9,
-            "stopSequence2": 10,
-            "tripCsvRowNumber": 342,
-            "tripId": "1073963080"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 784
-      },
-      {
-        "code": "stop_too_far_from_shape",
-        "sample_notices": [
-          {
-            "geoDistanceToShape": 9726.732030130263,
-            "match": [
-              40.353933,
-              -80.028173
-            ],
-            "shapeId": "shp-SLVR-03",
-            "stopId": "43",
-            "stopName": "BLVD OF ALLIES + STANWIX ST",
-            "stopTimeCsvRowNumber": 26745,
-            "tripCsvRowNumber": 1245,
-            "tripId": "1074715020"
-          },
-          {
-            "geoDistanceToShape": 210.7965064571066,
-            "match": [
-              40.441364,
-              -80.003962
-            ],
-            "shapeId": "shp-SLVR-02",
-            "stopId": "43",
-            "stopName": "BLVD OF ALLIES + STANWIX ST",
-            "stopTimeCsvRowNumber": 8937,
-            "tripCsvRowNumber": 1069,
-            "tripId": "1074060020"
-          },
-          {
-            "geoDistanceToShape": 297.03838051005386,
-            "match": [
-              40.44801776811525,
-              -80.01337302550385
-            ],
-            "shapeId": "shp-SLVR-02",
-            "stopId": "7",
-            "stopName": "BRIGHTON RD + RIDGE (CCAC)",
-            "stopTimeCsvRowNumber": 8951,
-            "tripCsvRowNumber": 1069,
-            "tripId": "1074060020"
-          },
-          {
-            "geoDistanceToShape": 442.0386362160297,
-            "match": [
-              40.44792705308784,
-              -80.0164976600222
-            ],
-            "shapeId": "shp-SLVR-02",
-            "stopId": "5",
-            "stopName": "WESTERN AVE + GALVESTON",
-            "stopTimeCsvRowNumber": 8955,
-            "tripCsvRowNumber": 1069,
-            "tripId": "1074060020"
-          },
-          {
-            "geoDistanceToShape": 484.6015003861835,
-            "match": [
-              40.448000454627184,
-              -80.0139741154755
-            ],
-            "shapeId": "shp-SLVR-02",
-            "stopId": "6",
-            "stopName": "WESTERN AVE + BRIGHTON",
-            "stopTimeCsvRowNumber": 8956,
-            "tripCsvRowNumber": 1069,
-            "tripId": "1074060020"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 43
+        "total": 29882
       },
       {
         "code": "unused_shape",
         "sample_notices": [
           {
-            "csvRowNumber": 2392,
+            "csvRowNumber": 500697,
             "shapeId": "shp-MISC-21"
           },
           {
-            "csvRowNumber": 2399,
+            "csvRowNumber": 500704,
             "shapeId": "shp-MISC-22"
           },
           {
-            "csvRowNumber": 2419,
+            "csvRowNumber": 500724,
             "shapeId": "shp-MISC-23"
           },
           {
-            "csvRowNumber": 2427,
+            "csvRowNumber": 500732,
             "shapeId": "shp-MISC-24"
           },
           {
-            "csvRowNumber": 2437,
+            "csvRowNumber": 500742,
             "shapeId": "shp-MISC-25"
           }
         ],
@@ -322,73 +66,31 @@
         "total": 29
       },
       {
-        "code": "stop_without_stop_time",
+        "code": "expired_calendar",
         "sample_notices": [
           {
             "csvRowNumber": 2,
-            "stopId": "99999",
-            "stopName": "NORTH SIDE STATION"
+            "serviceId": "1"
           },
           {
             "csvRowNumber": 3,
-            "stopId": "99998",
-            "stopName": "ALLEGHENY STATION"
+            "serviceId": "2"
           },
           {
             "csvRowNumber": 4,
-            "stopId": "99997",
-            "stopName": "FIRST AVENUE STATION"
+            "serviceId": "3"
           },
           {
             "csvRowNumber": 5,
-            "stopId": "99996",
-            "stopName": "FIRST AVENUE STATION"
+            "serviceId": "4"
           },
           {
-            "csvRowNumber": 18,
-            "stopId": "99983",
-            "stopName": "ARLINGTON"
+            "csvRowNumber": 6,
+            "serviceId": "5"
           }
         ],
         "severity": "WARNING",
-        "total": 28
-      },
-      {
-        "code": "leading_or_trailing_whitespaces",
-        "sample_notices": [
-          {
-            "csvRowNumber": 9022,
-            "fieldName": "trip_headsign",
-            "fieldValue": "NORTH BRADDOCK ",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 9023,
-            "fieldName": "trip_headsign",
-            "fieldValue": "NORTH BRADDOCK ",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 9024,
-            "fieldName": "trip_headsign",
-            "fieldValue": "NORTH BRADDOCK ",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 9025,
-            "fieldName": "trip_headsign",
-            "fieldValue": "NORTH BRADDOCK ",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 9026,
-            "fieldName": "trip_headsign",
-            "fieldValue": "NORTH BRADDOCK ",
-            "filename": "trips.txt"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 19
+        "total": 9
       },
       {
         "code": "route_color_contrast",
@@ -418,7 +120,7 @@
             "routeTextColor": "#000000"
           },
           {
-            "csvRowNumber": 87,
+            "csvRowNumber": 91,
             "routeColor": "#CC0000",
             "routeId": "P16",
             "routeTextColor": "#000000"
@@ -445,6 +147,19 @@
         "total": 2
       },
       {
+        "code": "feed_expiration_date7_days",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "currentDate": "20260706",
+            "feedEndDate": "20260627",
+            "suggestedExpirationDate": "20260713"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
         "code": "missing_feed_contact_email_and_url",
         "sample_notices": [
           {
@@ -458,39 +173,49 @@
         "code": "trip_coverage_not_active_for_next7_days",
         "sample_notices": [
           {
-            "currentDate": "20260627",
-            "serviceWindowEndDate": "20261023",
-            "serviceWindowStartDate": "20260629"
+            "currentDate": "20260706",
+            "serviceWindowEndDate": "20260626",
+            "serviceWindowStartDate": "20260223"
           }
         ],
         "severity": "WARNING",
         "total": 1
       },
       {
-        "code": "future_calendar",
+        "code": "unsorted_stop_times",
         "sample_notices": [
           {
-            "currentDate": "2026-06-27",
-            "minServiceStartDate": "2026-06-28"
+            "endCsvRowNumber": 559310,
+            "startCsvRowNumber": 559277,
+            "tripId": "18190020"
+          },
+          {
+            "endCsvRowNumber": 639852,
+            "startCsvRowNumber": 639812,
+            "tripId": "19478090"
+          },
+          {
+            "endCsvRowNumber": 302890,
+            "startCsvRowNumber": 302821,
+            "tripId": "14114100"
+          },
+          {
+            "endCsvRowNumber": 87926,
+            "startCsvRowNumber": 87896,
+            "tripId": "1075307100"
+          },
+          {
+            "endCsvRowNumber": 892707,
+            "startCsvRowNumber": 892656,
+            "tripId": "3878010"
           }
         ],
         "severity": "INFO",
-        "total": 1
-      },
-      {
-        "code": "future_feed",
-        "sample_notices": [
-          {
-            "currentDate": "20260627",
-            "feedStartDate": "20260628"
-          }
-        ],
-        "severity": "INFO",
-        "total": 1
+        "total": 23892
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "3e040cbf8db38083886a00105defdeb63321555e87029a86e3f3dea56c2f16b3",
+  "sha256": "f5cabff93bca657ce1a8c6bd5c67b718454a0312e8fab5d092210e206b7682fd",
   "validator_version": "8.0.1"
 }

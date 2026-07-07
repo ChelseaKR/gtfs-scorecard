@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/chittenden-county-transportation-authority-ccta-629/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/chittenden-county-transportation-authority-ccta-629/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -32,6 +33,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -66,7 +71,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 1174,
+        "stops": 1177,
         "trips": 893,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
@@ -76,13 +81,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 1174,
+          "count": 1177,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "1174 of 1174 stops don't say whether a wheelchair user can board there.",
+          "what": "1177 of 1177 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -141,15 +146,15 @@
         "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 43,
-          "WARNING": 652
+          "INFO": 48,
+          "WARNING": 656
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 651,
+          "count": 655,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -193,28 +198,28 @@
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 1,
+          "count": 6,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
-          "points": 0.5,
+          "points": 0.8,
           "severity": "INFO",
           "what": "Service window outside feed period (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 86.0,
+      "score": 85.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 695 instances (0 error, 652 warning, 43 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 704 instances (0 error, 656 warning, 48 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 86,
         "feed_end_date": "2026-10-01",
-        "feed_start_date": "2026-06-30",
-        "feed_version": "UTC: 30-Jun-2026 19:14",
+        "feed_start_date": "2026-07-07",
+        "feed_version": "UTC: 07-Jul-2026 14:39",
         "has_feed_info": true,
         "last_service_date": "2026-10-01",
         "seasonal_boundary": false,
@@ -234,6 +239,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -243,7 +260,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 93 days.",
+        "detail": "Service data covers the next 86 days.",
         "key": "current",
         "met": true
       },
@@ -259,11 +276,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "fc160f66f923974d9b7969b913349ad03182805fd81988815984677aa3f12865",
-    "size_bytes": 1180869,
+    "sha256": "5e794d8aac26c2dfa3f7bb46e08f6ec6819eefe933a995d4f5c4fe161677f919",
+    "size_bytes": 1182179,
     "static_url": "http://data.trilliumtransit.com/gtfs/ccta-vt-us/ccta-vt-us.zip"
   },
-  "generated_at": "2026-06-30T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://data.trilliumtransit.com/gtfs/ccta-vt-us/ccta-vt-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.29892,
@@ -271,12 +294,12 @@
       -72.02065,
       44.99747
     ],
-    "lat": 44.47086,
-    "lon": -73.13411,
-    "stop_count": 1174
+    "lat": 44.47075,
+    "lon": -73.13438,
+    "stop_count": 1177
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "885",
       "461"
@@ -296,19 +319,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 93 days.",
+        "detail": "Service data covers the next 86 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 1.2,
-    "margin_to_next_band": 8.8,
-    "score": 81.2
+    "margin_to_lower_band": 1.1,
+    "margin_to_next_band": 8.9,
+    "score": 81.1
   },
   "recommendations": [
     {
@@ -356,27 +379,22 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 1173,
+    "boardable_stops": 1176,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 651,
+        "count": 655,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "651 of 1173 boardable stops are never served by any trip.",
+        "what": "655 of 1176 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 651,
+    "orphan_stops": 655,
     "single_stop_trips": 0,
     "trips_total": 893
   },
@@ -695,23 +713,29 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 1174,
+    "stop_count": 1177,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 893 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 893,
+    "trips_with_shape": 893
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 1174,
+      "count": 1177,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "1174 of 1174 stops don't say whether a wheelchair user can board there.",
+      "what": "1177 of 1177 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
@@ -728,7 +752,7 @@
     },
     {
       "code": "stop_without_stop_time",
-      "count": 651,
+      "count": 655,
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",

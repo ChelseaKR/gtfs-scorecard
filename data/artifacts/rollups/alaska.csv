@@ -1,6 +1,6 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix,shapes_txt_status
 metropolitan-area-commuter-system,Metropolitan Area Commuter System,F,36.3,2026-07-07,stale,-2564,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-ride-sitka,RIDE Sitka,F,52.9,2026-07-07,stale,-1649,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+ride-sitka,RIDE Sitka,F,52.9,2026-07-07,stale,-1649,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",ready
 inter-island-ferry,Inter-Island Ferry,B,83.7,2026-07-07,current,55,yes,Service data expires in 55 day(s),Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 inter-island-ferry-243,Inter-Island Ferry,B,83.7,2026-07-07,current,55,yes,Service data expires in 55 day(s),Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 anchorage-people-mover,Anchorage People Mover,D,65.8,2026-07-07,current,325,no,,Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.,

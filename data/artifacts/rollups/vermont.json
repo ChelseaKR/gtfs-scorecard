@@ -63,7 +63,7 @@
     "stale": 8,
     "total": 8
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "B": 6,
     "C": 10,
@@ -416,8 +416,8 @@
       "id": "chittenden-county-transportation-authority-ccta-629",
       "name": "Chittenden County Transportation Authority (CCTA)",
       "needs_attention": false,
-      "score": 81.2,
-      "shapes_status": null,
+      "score": 81.1,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -472,9 +472,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 27,
+    "not_measured": 26,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 2,
     "total": 28
   },
   "state_percentile": 78

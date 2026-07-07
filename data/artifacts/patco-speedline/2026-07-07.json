@@ -124,6 +124,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": true,
     "criteria": [
@@ -133,7 +145,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 58 days.",
+        "detail": "Service data covers the next 55 days.",
         "key": "current",
         "met": true
       },
@@ -160,7 +172,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -75.16779,
@@ -192,7 +204,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 58 days.",
+        "detail": "Service data covers the next 55 days.",
         "key": "current",
         "status": "ready"
       }
@@ -207,11 +219,6 @@
     "score": 94.4
   },
   "recommendations": [],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 14,
     "findings": [],
@@ -252,7 +259,14 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "6333 of 10475 trips have a shape; 4142 do not.",
+    "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
+    "status": "at_risk",
+    "total_trips": 10475,
+    "trips_with_shape": 6333
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {

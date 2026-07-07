@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/shreveport-and-bossier-city/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/shreveport-and-bossier-city/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -212,8 +213,8 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "same_name_and_description_for_route",
@@ -235,7 +236,7 @@
           "points": 6.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
+          "why": "Route badges get hard to read, most of all for riders with low vision."
         },
         {
           "code": "route_long_name_contains_short_name",
@@ -267,7 +268,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -329,7 +330,7 @@
         "feed_version": "Service 10/13/2024",
         "has_feed_info": true,
         "last_service_date": "2099-12-31",
-        "seasonal_boundary": false,
+        "seasonal_boundary": true,
         "service_type": "fixed"
       },
       "findings": [
@@ -353,11 +354,12 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 0.0,
+        "covered_trips": 0,
         "kinds_reachable": 0,
         "rt_freshness": null,
         "samples": 9,
-        "scheduled_trips_in_window": 0,
+        "scheduled_trips_in_window": 29,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -393,14 +395,38 @@
           "severity": "ERROR",
           "what": "The service alerts realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 29,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 35.0,
+          "severity": "WARNING",
+          "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
       "score": 0.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 0 of 3 feeds healthy.",
+      "summary": "Sampled 9 times: 0 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "medium",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -411,7 +437,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 26844 days.",
+        "detail": "Service data covers the next 26840 days.",
         "key": "current",
         "met": true
       },
@@ -431,7 +457,14 @@
     "size_bytes": 487028,
     "static_url": "http://sportranbus.com/gtfs"
   },
-  "generated_at": "2026-07-03T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-louisiana-shreveport-and-bossier-city-gtfs-1060.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -93.90023,
@@ -463,7 +496,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 26844 days.",
+        "detail": "Service data covers the next 26840 days.",
         "key": "current",
         "status": "ready"
       }
@@ -501,11 +534,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 906,
     "findings": [
@@ -822,7 +850,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 1565 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1565,
+    "trips_with_shape": 1565
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {

@@ -1,0 +1,28 @@
+{
+  "receipts": [
+    {
+      "cleared": "2026-07-07",
+      "code": "missing_feed_info_date",
+      "last_seen": "2026-07-06",
+      "what": "feed_info.txt does not state when this feed starts and ends."
+    },
+    {
+      "cleared": "2026-07-07",
+      "code": "missing_recommended_field",
+      "last_seen": "2026-07-06",
+      "what": "Some files leave out fields that GTFS asks for but does not require."
+    },
+    {
+      "cleared": "2026-07-07",
+      "code": "scorecard_missing_feed_info_dates",
+      "last_seen": "2026-07-06",
+      "what": "feed_info.txt is missing its start/end dates"
+    },
+    {
+      "cleared": "2026-07-07",
+      "code": "service_extends_far_in_the_future",
+      "last_seen": "2026-07-06",
+      "what": "Service extends far in the future (flagged by the MobilityData validator)."
+    }
+  ]
+}

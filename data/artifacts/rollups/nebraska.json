@@ -28,7 +28,7 @@
     "stale": 2,
     "total": 3
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 1,
@@ -73,7 +73,7 @@
       "name": "StarTran",
       "needs_attention": true,
       "score": 52.1,
-      "shapes_status": null,
+      "shapes_status": "at_risk",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -113,8 +113,8 @@
   },
   "schema_version": "1.7",
   "shapes_readiness": {
-    "at_risk": 0,
-    "not_measured": 5,
+    "at_risk": 1,
+    "not_measured": 4,
     "not_ready": 0,
     "ready": 0,
     "total": 5

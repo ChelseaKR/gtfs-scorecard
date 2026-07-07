@@ -28,13 +28,13 @@
     "stale": 6,
     "total": 6
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "F": 6
   },
   "members": [
     {
-      "annual_trips": null,
+      "annual_trips": 262474117,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -634,
       "expiry_status": "stale",
@@ -43,7 +43,21 @@
       "name": "Rail",
       "needs_attention": true,
       "score": 26.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": 262474117,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -563,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "washington-metropolitan-area-transit-authority-wmata",
+      "name": "Bus",
+      "needs_attention": true,
+      "score": 39.9,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -57,20 +71,6 @@
       "name": "Service Discontinued",
       "needs_attention": true,
       "score": 39.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -563,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "washington-metropolitan-area-transit-authority-wmata",
-      "name": "Bus",
-      "needs_attention": true,
-      "score": 39.9,
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -113,7 +113,7 @@
       "name": "DC Streetcar",
       "needs_attention": true,
       "score": 57.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     }
@@ -126,9 +126,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 6,
+    "not_measured": 3,
     "not_ready": 0,
-    "ready": 0,
+    "ready": 3,
     "total": 6
   },
   "state_percentile": 7

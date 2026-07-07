@@ -18,7 +18,7 @@
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 22,
+      "agencies": 21,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -128,7 +128,7 @@
     "stale": 21,
     "total": 26
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "A": 9,
     "B": 23,
@@ -273,7 +273,7 @@
       "name": "Wahkiakum Ferry",
       "needs_attention": true,
       "score": 48.5,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -287,7 +287,7 @@
       "name": "Wahkiakum Ferry",
       "needs_attention": true,
       "score": 48.5,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -329,7 +329,7 @@
       "name": "Makah Public Transit",
       "needs_attention": true,
       "score": 53.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -343,7 +343,7 @@
       "name": "Makah Public Transit",
       "needs_attention": true,
       "score": 53.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -357,7 +357,7 @@
       "name": "Puget Sound Express",
       "needs_attention": true,
       "score": 53.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -371,7 +371,7 @@
       "name": "Puget Sound Express",
       "needs_attention": true,
       "score": 53.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -385,7 +385,7 @@
       "name": "Squaxin Island Transit",
       "needs_attention": true,
       "score": 53.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -399,7 +399,7 @@
       "name": "Squaxin Island Transit",
       "needs_attention": true,
       "score": 53.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -441,7 +441,7 @@
       "name": "Jamestown S'klallam",
       "needs_attention": true,
       "score": 55.5,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -455,7 +455,7 @@
       "name": "Jamestown S'klallam",
       "needs_attention": true,
       "score": 55.5,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -469,7 +469,7 @@
       "name": "Ben Franklin Transit",
       "needs_attention": true,
       "score": 55.9,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -964,7 +964,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 162099,
       "attention_reason": null,
       "days_until_expiry": 181,
       "expiry_status": "current",
@@ -1476,9 +1476,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 94,
+    "not_measured": 83,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 12,
     "total": 95
   },
   "state_percentile": 93

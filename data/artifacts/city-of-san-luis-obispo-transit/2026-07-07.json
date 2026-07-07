@@ -180,6 +180,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -189,7 +201,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 181 days.",
+        "detail": "Service data covers the next 178 days.",
         "key": "current",
         "met": true
       },
@@ -216,7 +228,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -120.7091,
@@ -248,7 +260,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 181 days.",
+        "detail": "Service data covers the next 178 days.",
         "key": "current",
         "status": "ready"
       }
@@ -286,11 +298,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 165,
     "findings": [],
@@ -430,7 +437,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 171 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 171,
+    "trips_with_shape": 171
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {

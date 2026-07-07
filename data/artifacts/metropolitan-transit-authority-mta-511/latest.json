@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 1488,
-        "trips": 80729,
+        "trips": 83320,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 80729,
+          "count": 83320,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "80729 of 80729 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "83320 of 83320 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -128,10 +128,10 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 6,
+        "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 94,
+          "INFO": 75,
           "WARNING": 14
         },
         "validator_version": "8.0.1"
@@ -182,17 +182,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "big_gap_in_service",
-          "count": 19,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.8,
-          "severity": "INFO",
-          "what": "Big gap in service (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
           "code": "trip_headsign_matches_intermediate_stop",
           "count": 1,
           "effort": "Varies.",
@@ -205,9 +194,9 @@
         }
       ],
       "name": "correctness",
-      "score": 83.8,
+      "score": 84.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 108 instances (0 error, 14 warning, 94 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 89 instances (0 error, 14 warning, 75 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -256,7 +245,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 63 days.",
+        "detail": "Service data covers the next 62 days.",
         "key": "current",
         "met": true
       },
@@ -272,8 +261,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "33a1ea82c3a27cc62181d9ef1919c7375ca9c9d1b033fda75c22610b13eda3ff",
-    "size_bytes": 20093963,
+    "sha256": "0e8ba44c39fcab6be4f41660352a6d88a7afafa670ac0835f034dc3caed67f9d",
+    "size_bytes": 20758529,
     "static_url": "http://web.mta.info/developers/files/google_transit_supplemented.zip"
   },
   "fetch": {
@@ -282,7 +271,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.25196,
@@ -314,7 +303,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 63 days.",
+        "detail": "Service data covers the next 62 days.",
         "key": "current",
         "status": "ready"
       }
@@ -324,9 +313,9 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 3.4,
-    "margin_to_next_band": 6.6,
-    "score": 73.4
+    "margin_to_lower_band": 3.7,
+    "margin_to_next_band": 6.3,
+    "score": 73.7
   },
   "recommendations": [
     {
@@ -363,11 +352,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 992,
     "findings": [
@@ -385,7 +369,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 80729
+    "trips_total": 83320
   },
   "route_map": {
     "drawn_route_count": 29,
@@ -719,11 +703,11 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "69633 of 80729 trips have a shape; 11096 do not.",
+    "detail": "72440 of 83320 trips have a shape; 10880 do not.",
     "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
     "status": "at_risk",
-    "total_trips": 80729,
-    "trips_with_shape": 69633
+    "total_trips": 83320,
+    "trips_with_shape": 72440
   },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
@@ -741,14 +725,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 80729,
+      "count": 83320,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "80729 of 80729 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "83320 of 83320 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

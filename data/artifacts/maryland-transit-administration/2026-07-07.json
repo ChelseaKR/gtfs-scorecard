@@ -6,10 +6,11 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/maryland-transit-administration/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/maryland-transit-administration/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
-        "count": 235,
+        "count": 236,
         "examples": [
           "LANIER AVE & BELVEDERE AVE -> Lanier Ave & Belvedere Ave",
           "LIGHT ST & PRATT ST -> Light St & Pratt St",
@@ -18,7 +19,7 @@
         "label": "Recased shouting stop names"
       }
     ],
-    "total": 235
+    "total": 236
   },
   "categories": {
     "completeness": {
@@ -61,7 +62,7 @@
         },
         "has_fares": true,
         "headsign_pct": 100.0,
-        "mixed_case_stop_name_pct": 94.1,
+        "mixed_case_stop_name_pct": 94.0,
         "pathways": {
           "has_entrances": false,
           "has_levels": false,
@@ -70,7 +71,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 3963,
+        "stops": 3964,
         "trips": 13733,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 0.0,
@@ -80,24 +81,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 3963,
+          "count": 3964,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "3963 of 3963 stops don't say whether a wheelchair user can board there.",
+          "what": "3964 of 3964 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_stop_names_all_caps",
-          "count": 235,
+          "count": 236,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Rename stops to mixed case (e.g. 'Main St & 2nd Ave').",
           "owner": "Likely your export tool",
           "points": 0.9,
           "severity": "INFO",
-          "what": "About 235 stop names are written in ALL CAPS.",
+          "what": "About 236 stop names are written in ALL CAPS.",
           "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
         }
       ],
@@ -113,14 +114,14 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 11,
-          "WARNING": 14001
+          "WARNING": 14002
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 13012,
+          "count": 13013,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -137,8 +138,8 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
@@ -221,15 +222,15 @@
       "name": "correctness",
       "score": 58.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 9 kinds of issue across 14012 instances (0 error, 14001 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 14013 instances (0 error, 14002 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 46,
         "feed_end_date": "2026-08-22",
-        "feed_start_date": "2026-07-01",
-        "feed_version": "20260701",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "20260706",
         "has_feed_info": true,
         "last_service_date": "2026-08-22",
         "seasonal_boundary": false,
@@ -249,6 +250,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -258,7 +271,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 50 days.",
+        "detail": "Service data covers the next 46 days.",
         "key": "current",
         "met": true
       },
@@ -274,11 +287,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "1a08302f1cfe03b48c18513505b9edadac64f15b1c40dcd986493f753846412c",
-    "size_bytes": 5921210,
+    "sha256": "6608a628fb4727d6605cdfa8dc04c86fed9c9bf11679620f5cd4f4e0f571a85a",
+    "size_bytes": 5925419,
     "static_url": "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_localbus.zip"
   },
-  "generated_at": "2026-07-03T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_localbus.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.88946,
@@ -286,9 +305,9 @@
       -76.37931,
       39.49673
     ],
-    "lat": 39.31182,
-    "lon": -76.62281,
-    "stop_count": 3963
+    "lat": 39.3118,
+    "lon": -76.6228,
+    "stop_count": 3964
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -310,7 +329,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 50 days.",
+        "detail": "Service data covers the next 46 days.",
         "key": "current",
         "status": "ready"
       }
@@ -349,23 +368,18 @@
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 3854,
+      "count": 3855,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "3854 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Cylburn Ave & Greenspring Ave\", \"Lanier Ave & Sinai Hospital\", \"LANIER AVE & BELVEDERE AVE\", and more).",
+      "what": "3855 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Cylburn Ave & Greenspring Ave\", \"Lanier Ave & Sinai Hospital\", \"LANIER AVE & BELVEDERE AVE\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 3963,
+    "boardable_stops": 3964,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
@@ -768,7 +782,7 @@
         "has_shape": true,
         "id": "11674",
         "label": "85",
-        "long": "Penn-North - Milford Mill",
+        "long": "North Ave LR - Milford Mill",
         "short": "85",
         "text_color": "FFFFFF",
         "type_label": "Bus"
@@ -1093,28 +1107,34 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 3963,
+    "stop_count": 3964,
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 13733 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 13733,
+    "trips_with_shape": 13733
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 3963,
+      "count": 3964,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "3963 of 3963 stops don't say whether a wheelchair user can board there.",
+      "what": "3964 of 3964 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "mixed_case_recommended_field",
-      "count": 13012,
+      "count": 13013,
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
       "owner": "Likely your export tool",
@@ -1133,8 +1153,8 @@
       "points": 8.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "Some scheduled trips travel implausibly fast between stops.",
-      "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
     }
   ],
   "validator_version": "8.0.1"

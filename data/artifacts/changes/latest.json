@@ -3,6 +3,30 @@
   "changes": [
     {
       "date": "2026-07-07",
+      "from_grade": "C",
+      "from_score": 73.4,
+      "id": "detroit-department-of-transportation-ddot",
+      "name": "Detroit Department of Transportation (DDOT)",
+      "regressed": true,
+      "score_delta": -37.4,
+      "since": "2026-07-06",
+      "to_grade": "F",
+      "to_score": 36.0
+    },
+    {
+      "date": "2026-07-07",
+      "from_grade": "F",
+      "from_score": 59.4,
+      "id": "burbankbus",
+      "name": "BurbankBus",
+      "regressed": true,
+      "score_delta": -15.1,
+      "since": "2026-07-06",
+      "to_grade": "F",
+      "to_score": 44.3
+    },
+    {
+      "date": "2026-07-07",
       "from_grade": "B",
       "from_score": 85.3,
       "id": "nyc-ferry",
@@ -15,15 +39,15 @@
     },
     {
       "date": "2026-07-07",
-      "from_grade": "D",
-      "from_score": 68.3,
-      "id": "towson-loop",
-      "name": "Towson Loop",
+      "from_grade": "F",
+      "from_score": 56.8,
+      "id": "port-authority-of-allegheny-county",
+      "name": "Port Authority of Allegheny County",
       "regressed": true,
-      "score_delta": -3.5,
+      "score_delta": -7.8,
       "since": "2026-07-06",
-      "to_grade": "D",
-      "to_score": 64.8
+      "to_grade": "F",
+      "to_score": 49.0
     },
     {
       "date": "2026-07-07",
@@ -32,10 +56,34 @@
       "id": "spirit-bus-2202",
       "name": "Spirit Bus",
       "regressed": true,
-      "score_delta": -2.3,
+      "score_delta": -7.0,
+      "since": "2026-07-06",
+      "to_grade": "F",
+      "to_score": 59.7
+    },
+    {
+      "date": "2026-07-07",
+      "from_grade": "F",
+      "from_score": 59.8,
+      "id": "springfield-mass-transit-district-smtd",
+      "name": "Springfield Mass Transit District (SMTD)",
+      "regressed": true,
+      "score_delta": -4.3,
+      "since": "2026-07-06",
+      "to_grade": "F",
+      "to_score": 55.5
+    },
+    {
+      "date": "2026-07-07",
+      "from_grade": "D",
+      "from_score": 68.3,
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "regressed": true,
+      "score_delta": -1.3,
       "since": "2026-07-06",
       "to_grade": "D",
-      "to_score": 64.4
+      "to_score": 67.0
     },
     {
       "date": "2026-07-07",
@@ -48,18 +96,6 @@
       "since": "2026-07-06",
       "to_grade": "F",
       "to_score": 51.9
-    },
-    {
-      "date": "2026-07-07",
-      "from_grade": "D",
-      "from_score": 65.4,
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "regressed": true,
-      "score_delta": -1.0,
-      "since": "2026-07-06",
-      "to_grade": "D",
-      "to_score": 64.4
     },
     {
       "date": "2026-07-07",
@@ -218,8 +254,8 @@
       "to_score": 60.4
     }
   ],
-  "count": 18,
-  "generated_at": "2026-07-07T15:34:28+00:00",
+  "count": 21,
+  "generated_at": "2026-07-07T16:14:00+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

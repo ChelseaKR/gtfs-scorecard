@@ -48,7 +48,7 @@
     "stale": 9,
     "total": 16
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 1,
@@ -94,7 +94,7 @@
       "name": "Sandia Shuttle",
       "needs_attention": true,
       "score": 49.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -108,7 +108,7 @@
       "name": "Sandia Shuttle",
       "needs_attention": true,
       "score": 49.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -149,8 +149,8 @@
       "id": "navajo-transit-system",
       "name": "Navajo Transit System",
       "needs_attention": true,
-      "score": 56.6,
-      "shapes_status": null,
+      "score": 56.5,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -163,8 +163,8 @@
       "id": "navajo-transit-system-157",
       "name": "Navajo Transit System",
       "needs_attention": true,
-      "score": 56.6,
-      "shapes_status": null,
+      "score": 56.5,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -234,7 +234,7 @@
       "name": "RoadRUNNER Transit",
       "needs_attention": true,
       "score": 61.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -248,7 +248,7 @@
       "name": "RoadRUNNER Transit",
       "needs_attention": true,
       "score": 61.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -345,9 +345,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 19,
+    "not_measured": 13,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 7,
     "total": 20
   },
   "state_percentile": 61

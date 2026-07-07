@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -152,7 +156,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         }
       ],
@@ -187,6 +191,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -196,7 +212,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 187 days.",
+        "detail": "Service data covers the next 177 days.",
         "key": "current",
         "met": true
       },
@@ -212,11 +228,17 @@
   "feed": {
     "license_note": "License: https://creativecommons.org/licenses/by/4.0/",
     "reachable": true,
-    "sha256": "74c1a552a7941b8deae1592ee203e91db43b69bd6c784beaa77d0e5e7a69ac25",
-    "size_bytes": 309737,
+    "sha256": "bf6e829f771708d13934d17436f11ba8dda0690214a312f8cec3e45c1cbed2aa",
+    "size_bytes": 314280,
     "static_url": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5137/gtfs.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5137/gtfs.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.29852,
@@ -229,7 +251,7 @@
     "stop_count": 185
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "PART"
     ],
@@ -248,13 +270,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 187 days.",
+        "detail": "Service data covers the next 177 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "B",
@@ -297,11 +319,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 184,
     "findings": [
@@ -321,8 +338,112 @@
     "single_stop_trips": 0,
     "trips_total": 342
   },
+  "route_map": {
+    "drawn_route_count": 8,
+    "has_shapes": true,
+    "path": "data/artifacts/piedmont-authority-for-regional-transportation-part/geometry.geojson",
+    "route_count": 8,
+    "routes": [
+      {
+        "color": "9A3ABA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Winston Salem Express",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E87F0E",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Randolph Express",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "272EF5",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Kernersville Express",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3ABA62",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Greensboro Express",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6C6CC1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "High Point Express",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D4260F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Alamance Burlington Express",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5D1010",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "Winston Salem High Point Express",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "07875C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "Davidson County Greensboro Express",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 185,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 342 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 342,
+    "trips_with_shape": 342
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {

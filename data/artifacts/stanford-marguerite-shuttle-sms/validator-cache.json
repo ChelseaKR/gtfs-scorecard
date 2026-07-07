@@ -51,7 +51,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 244
+        "total": 257
       },
       {
         "code": "mixed_case_recommended_field",
@@ -132,6 +132,18 @@
             "serviceId": "18757150"
           },
           {
+            "gapDurationDays": 16,
+            "gapEndDate": "2026-01-05",
+            "gapStartDate": "2025-12-19",
+            "serviceId": "25810667"
+          },
+          {
+            "gapDurationDays": 16,
+            "gapEndDate": "2027-01-04",
+            "gapStartDate": "2026-12-18",
+            "serviceId": "10808205"
+          },
+          {
             "gapDurationDays": 20,
             "gapEndDate": "2026-01-09",
             "gapStartDate": "2025-12-19",
@@ -141,23 +153,11 @@
             "gapDurationDays": 16,
             "gapEndDate": "2026-01-05",
             "gapStartDate": "2025-12-19",
-            "serviceId": "25810667"
-          },
-          {
-            "gapDurationDays": 16,
-            "gapEndDate": "2026-01-05",
-            "gapStartDate": "2025-12-19",
             "serviceId": "26089052"
-          },
-          {
-            "gapDurationDays": 16,
-            "gapEndDate": "2027-01-04",
-            "gapStartDate": "2026-12-18",
-            "serviceId": "10808205"
           }
         ],
         "severity": "INFO",
-        "total": 6
+        "total": 5
       },
       {
         "code": "platform_without_parent_station",
@@ -194,6 +194,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "f4c7342ae3a956adb9980f5f09bc481c10b3bba7e3ea6dde230e5217a3e0efd9",
+  "sha256": "71089bae39efe5c684ca5cc542e3952a9b1b790594a1244b5831b5f9478a8ba7",
   "validator_version": "8.0.1"
 }

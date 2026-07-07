@@ -101,6 +101,20 @@
           {
             "daysAfterFeedEnd": 53,
             "daysBeforeFeedStart": 0,
+            "serviceId": "SIR-FA2017-SI017-Weekday-08_C69",
+            "serviceWindowEndDate": "2026-10-30",
+            "serviceWindowStartDate": "2026-05-18"
+          },
+          {
+            "daysAfterFeedEnd": 48,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "BSP26GEN-D044-Sunday-00_C49",
+            "serviceWindowEndDate": "2026-10-25",
+            "serviceWindowStartDate": "2026-05-17"
+          },
+          {
+            "daysAfterFeedEnd": 53,
+            "daysBeforeFeedStart": 0,
             "serviceId": "SIR-FA2017-SI017-Weekday-08_C68",
             "serviceWindowEndDate": "2026-10-30",
             "serviceWindowStartDate": "2026-05-18"
@@ -118,67 +132,16 @@
             "serviceId": "BSP26GEN-D085-Weekday-00_C27",
             "serviceWindowEndDate": "2026-10-30",
             "serviceWindowStartDate": "2026-05-18"
-          },
-          {
-            "daysAfterFeedEnd": 53,
-            "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-F081-Weekday-00_C30",
-            "serviceWindowEndDate": "2026-10-30",
-            "serviceWindowStartDate": "2026-05-18"
-          },
-          {
-            "daysAfterFeedEnd": 48,
-            "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-D044-Sunday-00_C50",
-            "serviceWindowEndDate": "2026-10-25",
-            "serviceWindowStartDate": "2026-05-17"
           }
         ],
         "severity": "INFO",
         "total": 74
       },
       {
-        "code": "big_gap_in_service",
-        "sample_notices": [
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-07-19",
-            "gapStartDate": "2026-06-28",
-            "serviceId": "ASP26GEN-1038-Sunday-00_C39"
-          },
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-07-19",
-            "gapStartDate": "2026-06-28",
-            "serviceId": "ASP26GEN-3044-Sunday-00_C26"
-          },
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-07-19",
-            "gapStartDate": "2026-06-28",
-            "serviceId": "ASP26GEN-4050-Sunday-00_C18"
-          },
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-07-19",
-            "gapStartDate": "2026-06-28",
-            "serviceId": "ASP26GEN-5049-Sunday-00_C64"
-          },
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-07-19",
-            "gapStartDate": "2026-06-28",
-            "serviceId": "ASP26GEN-6031-Sunday-00_C24"
-          }
-        ],
-        "severity": "INFO",
-        "total": 19
-      },
-      {
         "code": "trip_headsign_matches_intermediate_stop",
         "sample_notices": [
           {
-            "csvRowNumber": 73295,
+            "csvRowNumber": 74743,
             "stopId1": "Q04S",
             "stopId2": "N10S",
             "stopSequence": 2,
@@ -192,6 +155,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "33a1ea82c3a27cc62181d9ef1919c7375ca9c9d1b033fda75c22610b13eda3ff",
+  "sha256": "0e8ba44c39fcab6be4f41660352a6d88a7afafa670ac0835f034dc3caed67f9d",
   "validator_version": "8.0.1"
 }

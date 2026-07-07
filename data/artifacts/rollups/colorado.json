@@ -83,7 +83,7 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 29,
@@ -116,7 +116,7 @@
       "name": "Mountain Metropolitan Transit",
       "needs_attention": true,
       "score": 26.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -130,7 +130,7 @@
       "name": "Transfort \u2013 City of Fort Collins (Transfort)",
       "needs_attention": true,
       "score": 39.9,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -172,7 +172,7 @@
       "name": "Mountain Metropolitan Transit",
       "needs_attention": true,
       "score": 44.3,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -228,7 +228,7 @@
       "name": "ECO Transit",
       "needs_attention": true,
       "score": 45.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -242,7 +242,7 @@
       "name": "ECO Transit",
       "needs_attention": true,
       "score": 45.6,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -522,7 +522,7 @@
       "name": "Grand Valley Transit",
       "needs_attention": true,
       "score": 55.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -564,7 +564,7 @@
       "name": "Mountain Express (MtnExp)",
       "needs_attention": true,
       "score": 55.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -578,7 +578,7 @@
       "name": "Mountain Express (MtnExp)",
       "needs_attention": true,
       "score": 55.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -961,7 +961,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 64291997,
       "attention_reason": null,
       "days_until_expiry": 81,
       "expiry_status": "current",
@@ -1115,7 +1115,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 64291997,
       "attention_reason": null,
       "days_until_expiry": 81,
       "expiry_status": "current",
@@ -1865,9 +1865,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 125,
+    "not_measured": 117,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 9,
     "total": 126
   },
   "state_percentile": 91

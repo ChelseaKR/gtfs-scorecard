@@ -43,7 +43,7 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-07T15:34:13+00:00",
+  "generated_at": "2026-07-07T16:13:42+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 3,
@@ -52,7 +52,7 @@
   },
   "members": [
     {
-      "annual_trips": null,
+      "annual_trips": 30716511,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -793,
       "expiry_status": "stale",
@@ -61,9 +61,37 @@
       "name": "VIA Metropolitan Transit (VIA)",
       "needs_attention": true,
       "score": 12.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": 30716511,
+      "attention_reason": "Service data expires in 47 day(s)",
+      "days_until_expiry": 47,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "via-metropolitan-transit-via-2348",
+      "name": "VIA Metropolitan Transit (VIA)",
+      "needs_attention": true,
+      "score": 51.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": 26473441,
+      "attention_reason": "Score changed sharply on 2026-07-05",
+      "days_until_expiry": 39,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "capital-metro",
+      "name": "Capital Metro",
+      "needs_attention": true,
+      "score": 57.8,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -103,7 +131,7 @@
       "name": "Corpus Christi Regional Transportation Authority",
       "needs_attention": true,
       "score": 40.0,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -137,20 +165,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 47 day(s)",
-      "days_until_expiry": 47,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "via-metropolitan-transit-via-2348",
-      "name": "VIA Metropolitan Transit (VIA)",
-      "needs_attention": true,
-      "score": 51.9,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 7 day(s)",
       "days_until_expiry": 7,
       "expiry_status": "expiring_soon",
@@ -162,20 +176,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Score changed sharply on 2026-07-05",
-      "days_until_expiry": 39,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "capital-metro",
-      "name": "Capital Metro",
-      "needs_attention": true,
-      "score": 57.8,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -298,10 +298,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 14,
+    "not_measured": 12,
     "not_ready": 0,
-    "ready": 3,
+    "ready": 5,
     "total": 17
   },
-  "state_percentile": 46
+  "state_percentile": 48
 }

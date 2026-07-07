@@ -36,7 +36,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 13012
+        "total": 13013
       },
       {
         "code": "fast_travel_between_consecutive_stops",
@@ -94,8 +94,8 @@
           },
           {
             "arrivalTime2": "05:58:25",
-            "csvRowNumber1": 438607,
-            "csvRowNumber2": 438608,
+            "csvRowNumber1": 439126,
+            "csvRowNumber2": 439127,
             "departureTime1": "05:58:22",
             "distanceKm": 0.6498164176974496,
             "routeId": "14498",
@@ -181,7 +181,7 @@
             "shapeId": "170081",
             "stopId": "3788",
             "stopName": "2500 BROENING HWY sb",
-            "stopTimeCsvRowNumber": 437365,
+            "stopTimeCsvRowNumber": 437884,
             "tripCsvRowNumber": 3787,
             "tripId": "4062003"
           },
@@ -194,7 +194,7 @@
             "shapeId": "170540",
             "stopId": "2303",
             "stopName": "WASHINGTON BLVD & ELK fs nb",
-            "stopTimeCsvRowNumber": 685570,
+            "stopTimeCsvRowNumber": 686089,
             "tripCsvRowNumber": 5781,
             "tripId": "4067956"
           }
@@ -257,8 +257,8 @@
             "stopId2": "12513",
             "stopName1": "CLINTON ST & DANVILLE AVE mid nb",
             "stopName2": "HIGHLAND AVE & CARDIFF ST sb",
-            "stopTimeCsvRowNumber1": 487523,
-            "stopTimeCsvRowNumber2": 487522,
+            "stopTimeCsvRowNumber1": 488042,
+            "stopTimeCsvRowNumber2": 488041,
             "tripCsvRowNumber": 4242,
             "tripId": "4064373"
           },
@@ -276,8 +276,8 @@
             "stopId2": "12513",
             "stopName1": "CLINTON ST & DANVILLE AVE mid nb",
             "stopName2": "HIGHLAND AVE & CARDIFF ST sb",
-            "stopTimeCsvRowNumber1": 487523,
-            "stopTimeCsvRowNumber2": 487522,
+            "stopTimeCsvRowNumber1": 488042,
+            "stopTimeCsvRowNumber2": 488041,
             "tripCsvRowNumber": 4242,
             "tripId": "4064373"
           },
@@ -374,7 +374,7 @@
             "shapeId": "170522",
             "stopId": "14149",
             "stopName": "MORGAN STATE UNIVERSITY",
-            "stopTimeCsvRowNumber": 664016,
+            "stopTimeCsvRowNumber": 664535,
             "tripCsvRowNumber": 5578,
             "tripId": "4067538"
           },
@@ -387,7 +387,7 @@
             "shapeId": "170061",
             "stopId": "13748",
             "stopName": "GAY ST & MONTFORD AVE nb",
-            "stopTimeCsvRowNumber": 434646,
+            "stopTimeCsvRowNumber": 435165,
             "tripCsvRowNumber": 3679,
             "tripId": "4061895"
           },
@@ -400,7 +400,7 @@
             "shapeId": "170006",
             "stopId": "14176",
             "stopName": "FARRINGDON RD & BAYTHORNE RD eb",
-            "stopTimeCsvRowNumber": 411953,
+            "stopTimeCsvRowNumber": 412472,
             "tripCsvRowNumber": 3475,
             "tripId": "4055177"
           }
@@ -417,16 +417,6 @@
             "index": 11
           },
           {
-            "fieldName": "min_age",
-            "filename": "rider_categories.txt",
-            "index": 4
-          },
-          {
-            "fieldName": "max_age",
-            "filename": "rider_categories.txt",
-            "index": 5
-          },
-          {
             "fieldName": "direction",
             "filename": "stops.txt",
             "index": 13
@@ -435,6 +425,16 @@
             "fieldName": "position",
             "filename": "stops.txt",
             "index": 14
+          },
+          {
+            "fieldName": "min_age",
+            "filename": "rider_categories.txt",
+            "index": 4
+          },
+          {
+            "fieldName": "max_age",
+            "filename": "rider_categories.txt",
+            "index": 5
           }
         ],
         "severity": "INFO",
@@ -445,21 +445,21 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 4,
+            "daysBeforeFeedStart": 9,
             "serviceId": "2232",
             "serviceWindowEndDate": "2026-08-22",
             "serviceWindowStartDate": "2026-06-27"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 9,
+            "daysBeforeFeedStart": 14,
             "serviceId": "2231",
             "serviceWindowEndDate": "2026-08-21",
             "serviceWindowStartDate": "2026-06-22"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 10,
+            "daysBeforeFeedStart": 15,
             "serviceId": "2233",
             "serviceWindowEndDate": "2026-08-16",
             "serviceWindowStartDate": "2026-06-21"
@@ -487,6 +487,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "1a08302f1cfe03b48c18513505b9edadac64f15b1c40dcd986493f753846412c",
+  "sha256": "6608a628fb4727d6605cdfa8dc04c86fed9c9bf11679620f5cd4f4e0f571a85a",
   "validator_version": "8.0.1"
 }

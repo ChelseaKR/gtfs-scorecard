@@ -2,13 +2,70 @@
   "report": {
     "notices": [
       {
+        "code": "block_trips_with_overlapping_stop_times",
+        "sample_notices": [
+          {
+            "blockId": "900-1",
+            "csvRowNumberA": 566,
+            "csvRowNumberB": 1506,
+            "intersection": "20260503",
+            "serviceIdA": "1",
+            "serviceIdB": "1",
+            "tripIdA": "5279010",
+            "tripIdB": "3613010"
+          },
+          {
+            "blockId": "900-1",
+            "csvRowNumberA": 501,
+            "csvRowNumberB": 1181,
+            "intersection": "20260503",
+            "serviceIdA": "1",
+            "serviceIdB": "1",
+            "tripIdA": "5790010",
+            "tripIdB": "1617010"
+          },
+          {
+            "blockId": "900-1",
+            "csvRowNumberA": 4857,
+            "csvRowNumberB": 1176,
+            "intersection": "20260502",
+            "serviceIdA": "3",
+            "serviceIdB": "3",
+            "tripIdA": "1536070",
+            "tripIdB": "1622070"
+          },
+          {
+            "blockId": "900-1",
+            "csvRowNumberA": 1181,
+            "csvRowNumberB": 584,
+            "intersection": "20260503",
+            "serviceIdA": "1",
+            "serviceIdB": "1",
+            "tripIdA": "1617010",
+            "tripIdB": "5697010"
+          },
+          {
+            "blockId": "900-1",
+            "csvRowNumberA": 1176,
+            "csvRowNumberB": 4873,
+            "intersection": "20260502",
+            "serviceIdA": "3",
+            "serviceIdB": "3",
+            "tripIdA": "1622070",
+            "tripIdB": "4374070"
+          }
+        ],
+        "severity": "ERROR",
+        "total": 104
+      },
+      {
         "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
-            "arrivalTime2": "21:30:17",
-            "csvRowNumber1": 444652,
-            "csvRowNumber2": 444653,
-            "departureTime1": "21:30:11",
+            "arrivalTime2": "07:30:17",
+            "csvRowNumber1": 141112,
+            "csvRowNumber2": 141113,
+            "departureTime1": "07:30:11",
             "distanceKm": 0.3571815329640396,
             "routeId": "32",
             "speedKph": 214.30891977842376,
@@ -18,14 +75,14 @@
             "stopName2": "Mack & Warren",
             "stopSequence1": 2,
             "stopSequence2": 3,
-            "tripCsvRowNumber": 2956,
-            "tripId": "5832010"
+            "tripCsvRowNumber": 2871,
+            "tripId": "1807010"
           },
           {
-            "arrivalTime2": "21:30:22",
-            "csvRowNumber1": 444653,
-            "csvRowNumber2": 444654,
-            "departureTime1": "21:30:17",
+            "arrivalTime2": "07:30:22",
+            "csvRowNumber1": 141113,
+            "csvRowNumber2": 141114,
+            "departureTime1": "07:30:17",
             "distanceKm": 0.3146999917895005,
             "routeId": "32",
             "speedKph": 226.58399408844033,
@@ -35,14 +92,14 @@
             "stopName2": "Mack & Canyon",
             "stopSequence1": 3,
             "stopSequence2": 4,
-            "tripCsvRowNumber": 2956,
-            "tripId": "5832010"
+            "tripCsvRowNumber": 2871,
+            "tripId": "1807010"
           },
           {
-            "arrivalTime2": "21:30:31",
-            "csvRowNumber1": 444654,
-            "csvRowNumber2": 444655,
-            "departureTime1": "21:30:22",
+            "arrivalTime2": "07:30:31",
+            "csvRowNumber1": 141114,
+            "csvRowNumber2": 141115,
+            "departureTime1": "07:30:22",
             "distanceKm": 0.43729744184258124,
             "routeId": "32",
             "speedKph": 174.9189767370325,
@@ -52,14 +109,14 @@
             "stopName2": "Mack & Radnor",
             "stopSequence1": 4,
             "stopSequence2": 5,
-            "tripCsvRowNumber": 2956,
-            "tripId": "5832010"
+            "tripCsvRowNumber": 2871,
+            "tripId": "1807010"
           },
           {
-            "arrivalTime2": "21:30:43",
-            "csvRowNumber1": 444656,
-            "csvRowNumber2": 444657,
-            "departureTime1": "21:30:38",
+            "arrivalTime2": "07:30:43",
+            "csvRowNumber1": 141116,
+            "csvRowNumber2": 141117,
+            "departureTime1": "07:30:38",
             "distanceKm": 0.21207280033808143,
             "routeId": "32",
             "speedKph": 152.69241624341862,
@@ -69,14 +126,14 @@
             "stopName2": "Mack & University",
             "stopSequence1": 6,
             "stopSequence2": 7,
-            "tripCsvRowNumber": 2956,
-            "tripId": "5832010"
+            "tripCsvRowNumber": 2871,
+            "tripId": "1807010"
           },
           {
-            "arrivalTime2": "21:30:46",
-            "csvRowNumber1": 444657,
-            "csvRowNumber2": 444658,
-            "departureTime1": "21:30:43",
+            "arrivalTime2": "07:30:46",
+            "csvRowNumber1": 141117,
+            "csvRowNumber2": 141118,
+            "departureTime1": "07:30:43",
             "distanceKm": 0.15277537129184268,
             "routeId": "32",
             "speedKph": 183.33044555021124,
@@ -86,40 +143,40 @@
             "stopName2": "Mack & Hereford",
             "stopSequence1": 7,
             "stopSequence2": 8,
-            "tripCsvRowNumber": 2956,
-            "tripId": "5832010"
+            "tripCsvRowNumber": 2871,
+            "tripId": "1807010"
           }
         ],
         "severity": "WARNING",
-        "total": 255
+        "total": 225
       },
       {
         "code": "stop_without_stop_time",
         "sample_notices": [
           {
-            "csvRowNumber": 833,
-            "stopId": "940",
-            "stopName": "Junction & I-75 Service Dr"
+            "csvRowNumber": 1082,
+            "stopId": "5445",
+            "stopName": "Clairmount & Linwood"
           },
           {
-            "csvRowNumber": 1322,
-            "stopId": "1505",
-            "stopName": "Junction & McGraw"
-          },
-          {
-            "csvRowNumber": 2952,
+            "csvRowNumber": 2177,
             "stopId": "3212",
             "stopName": "Junction & Christiancy"
           },
           {
-            "csvRowNumber": 2959,
+            "csvRowNumber": 2184,
             "stopId": "3220",
             "stopName": "Junction & Toledo"
           },
           {
-            "csvRowNumber": 2968,
+            "csvRowNumber": 2193,
             "stopId": "3233",
             "stopName": "35th & I-94 Service Dr"
+          },
+          {
+            "csvRowNumber": 2194,
+            "stopId": "3234",
+            "stopName": "35th & Horatio"
           }
         ],
         "severity": "WARNING",
@@ -148,6 +205,19 @@
         "total": 3
       },
       {
+        "code": "feed_expiration_date30_days",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "currentDate": "20260625",
+            "feedEndDate": "20260703",
+            "suggestedExpirationDate": "20260725"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
         "code": "missing_feed_contact_email_and_url",
         "sample_notices": [
           {
@@ -161,7 +231,7 @@
         "code": "unused_shape",
         "sample_notices": [
           {
-            "csvRowNumber": 6823,
+            "csvRowNumber": 6749,
             "shapeId": "shp-11-57"
           }
         ],
@@ -172,52 +242,80 @@
         "code": "trip_headsign_matches_intermediate_stop",
         "sample_notices": [
           {
-            "csvRowNumber": 3740,
+            "csvRowNumber": 3594,
             "stopId1": "2",
             "stopId2": "1128",
             "stopSequence": 1,
             "tripHeadsign": "Manchester & Woodward",
-            "tripId": "3694020"
+            "tripId": "3981070"
           },
           {
-            "csvRowNumber": 3741,
+            "csvRowNumber": 3597,
             "stopId1": "2",
             "stopId2": "1128",
             "stopSequence": 1,
             "tripHeadsign": "Manchester & Woodward",
-            "tripId": "3434070"
+            "tripId": "4951020"
           },
           {
-            "csvRowNumber": 3744,
+            "csvRowNumber": 3599,
             "stopId1": "2",
             "stopId2": "1128",
             "stopSequence": 1,
             "tripHeadsign": "Manchester & Woodward",
-            "tripId": "1641020"
+            "tripId": "4925070"
           },
           {
-            "csvRowNumber": 3745,
+            "csvRowNumber": 3600,
             "stopId1": "2",
             "stopId2": "1128",
             "stopSequence": 1,
             "tripHeadsign": "Manchester & Woodward",
-            "tripId": "5830010"
+            "tripId": "5756020"
           },
           {
-            "csvRowNumber": 3746,
+            "csvRowNumber": 3602,
             "stopId1": "2",
             "stopId2": "1128",
             "stopSequence": 1,
             "tripHeadsign": "Manchester & Woodward",
-            "tripId": "1695070"
+            "tripId": "5856070"
           }
         ],
         "severity": "INFO",
         "total": 40
+      },
+      {
+        "code": "service_window_outside_feed_period",
+        "sample_notices": [
+          {
+            "daysAfterFeedEnd": 9,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "1",
+            "serviceWindowEndDate": "2026-07-12",
+            "serviceWindowStartDate": "2026-05-03"
+          },
+          {
+            "daysAfterFeedEnd": 7,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "2",
+            "serviceWindowEndDate": "2026-07-10",
+            "serviceWindowStartDate": "2026-04-27"
+          },
+          {
+            "daysAfterFeedEnd": 8,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "3",
+            "serviceWindowEndDate": "2026-07-11",
+            "serviceWindowStartDate": "2026-05-02"
+          }
+        ],
+        "severity": "INFO",
+        "total": 3
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "4e4d271e9fd044ff65e614ee9e53d46954ffc2566eaca7429adbe22ebad4fe6e",
+  "sha256": "591650d1b6dfc5fe4b80690c48783d577d34419947334d6a3d46f2ce7f781b1a",
   "validator_version": "8.0.1"
 }

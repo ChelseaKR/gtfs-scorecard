@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/bay-area-transportation-authority-2254/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/bay-area-transportation-authority-2254/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -326,7 +327,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 26841 days.",
+        "detail": "Service data covers the next 26840 days.",
         "key": "current",
         "met": true
       },
@@ -342,7 +343,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "b3075ab43cbff2fe89f85aef5fef805214b16deaebd2338c47ae6ebf086b5e2f",
+    "sha256": "12d3e54eb9f9a2a50e508b6e6bac28cf2877db208d742f9986a123f4d9e05e71",
     "size_bytes": 408709,
     "static_url": "https://batabustracker.com/gtfs"
   },
@@ -352,7 +353,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -85.98567,
@@ -384,7 +385,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 26841 days.",
+        "detail": "Service data covers the next 26840 days.",
         "key": "current",
         "status": "ready"
       }
@@ -422,11 +423,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 236,
     "findings": [
@@ -634,16 +630,16 @@
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

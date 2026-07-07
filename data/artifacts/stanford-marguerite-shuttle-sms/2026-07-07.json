@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 186,
-        "trips": 685,
+        "trips": 764,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 100.0,
@@ -83,15 +87,15 @@
         "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 26,
-          "WARNING": 250
+          "INFO": 25,
+          "WARNING": 263
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "equal_shape_distance_same_coordinates",
-          "count": 244,
+          "count": 257,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -124,11 +128,11 @@
         },
         {
           "code": "big_gap_in_service",
-          "count": 6,
+          "count": 5,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
-          "points": 0.8,
+          "points": 0.5,
           "severity": "INFO",
           "what": "Big gap in service (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
@@ -157,9 +161,9 @@
         }
       ],
       "name": "correctness",
-      "score": 83.5,
+      "score": 83.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 276 instances (0 error, 250 warning, 26 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 288 instances (0 error, 263 warning, 25 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -167,7 +171,7 @@
         "days_until_expiry": 346,
         "feed_end_date": "2027-06-18",
         "feed_start_date": "2025-08-01",
-        "feed_version": "2026-06-16T21:38:12Z",
+        "feed_version": "2026-07-07T04:40:49Z",
         "has_feed_info": true,
         "last_service_date": "2027-06-18",
         "seasonal_boundary": false,
@@ -187,6 +191,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": true,
     "criteria": [
@@ -196,7 +212,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 356 days.",
+        "detail": "Service data covers the next 346 days.",
         "key": "current",
         "met": true
       },
@@ -212,11 +228,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "f4c7342ae3a956adb9980f5f09bc481c10b3bba7e3ea6dde230e5217a3e0efd9",
-    "size_bytes": 145336,
+    "sha256": "71089bae39efe5c684ca5cc542e3952a9b1b790594a1244b5831b5f9478a8ba7",
+    "size_bytes": 160012,
     "static_url": "https://transportation-forms.stanford.edu/google/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://transportation-forms.stanford.edu/google/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.23089,
@@ -229,7 +251,7 @@
     "stop_count": 186
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "10747950"
     ],
@@ -248,19 +270,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 356 days.",
+        "detail": "Service data covers the next 346 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "A",
-    "margin_to_lower_band": 2.8,
+    "margin_to_lower_band": 2.9,
     "margin_to_next_band": null,
-    "score": 92.8
+    "score": 92.9
   },
   "recommendations": [
     {
@@ -297,25 +319,300 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 185,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 685
+    "trips_total": 764
+  },
+  "route_map": {
+    "drawn_route_count": 24,
+    "has_shapes": true,
+    "path": "data/artifacts/stanford-marguerite-shuttle-sms/geometry.geojson",
+    "route_count": 24,
+    "routes": [
+      {
+        "color": "EC7174",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "11273689",
+        "label": "RWC Line",
+        "long": "RWC Line",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D174AF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "12881950",
+        "label": "SE",
+        "long": "Shopping Express",
+        "short": "SE",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008579",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14602095",
+        "label": "RP PM",
+        "long": "Research Park",
+        "short": "RP PM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D174AF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "18",
+        "label": "SE",
+        "long": "Shopping Express - Weekend",
+        "short": "SE",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2",
+        "label": "Y Line",
+        "long": "Y Line",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AFDBBD",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20",
+        "label": "P Line",
+        "long": "P Line",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "91268F",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "22",
+        "label": "MC",
+        "long": "Medical Center",
+        "short": "MC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "954A35",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "28",
+        "label": "1050A",
+        "long": "1050 Arastradero",
+        "short": "1050A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3",
+        "label": "X Line",
+        "long": "X Line",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "666733",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "33",
+        "label": "S Line",
+        "long": "S Line",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAAAAA",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "36",
+        "label": "AE-F Line",
+        "long": "AE-F Line",
+        "short": "",
+        "text_color": "900000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008579",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "38",
+        "label": "RP AM",
+        "long": "Research Park",
+        "short": "RP AM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6DCFF6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "4",
+        "label": "C Line",
+        "long": "C Line",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "44",
+        "label": "YL-AM",
+        "long": "Y Limited AM",
+        "short": "YL-AM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "45",
+        "label": "XL-AM",
+        "long": "X Limited AM",
+        "short": "XL-AM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6DCFF6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "46",
+        "label": "C Line Limited AM/PM",
+        "long": "C Line Limited AM/PM",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "47",
+        "label": "YL-PM",
+        "long": "Y Limited PM",
+        "short": "YL-PM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "48",
+        "label": "XL-PM",
+        "long": "X Limited PM",
+        "short": "XL-PM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "51",
+        "label": "X Express AM",
+        "long": "X Express AM",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1C24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "52",
+        "label": "Y Express PM",
+        "long": "Y Express PM",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "73909F",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "56",
+        "label": "OCA",
+        "long": "Oak Creek Apartments",
+        "short": "OCA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2DBCB5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "59",
+        "label": "HD",
+        "long": "Hospital: Direct",
+        "short": "HD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A650",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8",
+        "label": "SLAC",
+        "long": "S L A C",
+        "short": "SLAC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EDE80C",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "CAX",
+        "label": "CAX",
+        "long": "California Ave Caltrain",
+        "short": "CAX",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 186,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 764 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 764,
+    "trips_with_shape": 764
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
       "code": "equal_shape_distance_same_coordinates",
-      "count": 244,
+      "count": 257,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",

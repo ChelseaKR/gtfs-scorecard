@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/los-angeles-department-of-transportation-ladot-dash-commuter-express/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/los-angeles-department-of-transportation-ladot-dash-commuter-express/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -324,7 +325,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 543 days.",
+        "detail": "Service data covers the next 542 days.",
         "key": "current",
         "met": true
       },
@@ -340,8 +341,8 @@
   "feed": {
     "license_note": "License: https://www.ladottransit.com/dla.html",
     "reachable": true,
-    "sha256": "3e95d76c2dd19a097412dbc4b576dfb30bed2fde4eb356f27836e4aa9e2f4ea8",
-    "size_bytes": 4033314,
+    "sha256": "c9981b6bcf099b109a7414ca00a5d2620390d68d90db4349d5245d4d136a51bf",
+    "size_bytes": 4033317,
     "static_url": "https://ladotbus.com/gtfs"
   },
   "fetch": {
@@ -350,7 +351,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.88283,
@@ -385,7 +386,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 543 days.",
+        "detail": "Service data covers the next 542 days.",
         "key": "current",
         "status": "ready"
       }
@@ -423,11 +424,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2789,
     "findings": [

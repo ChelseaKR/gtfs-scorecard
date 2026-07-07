@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/embark-2062/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/embark-2062/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -244,12 +245,12 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 364,
-        "feed_end_date": "2027-07-06",
-        "feed_start_date": "2026-05-07",
-        "feed_version": "05/07/2026-22:30",
+        "days_until_expiry": 365,
+        "feed_end_date": "2027-07-07",
+        "feed_start_date": "2026-05-08",
+        "feed_version": "06/07/2026-22:30",
         "has_feed_info": true,
-        "last_service_date": "2027-07-06",
+        "last_service_date": "2027-07-07",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -257,7 +258,7 @@
       "name": "freshness",
       "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 364 days.",
+      "summary": "Service data covers the next 365 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -304,8 +305,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "8db43c4c0649452de5fce00949e569db9912a4491bcfc5f670696b9313631060",
-    "size_bytes": 2779085,
+    "sha256": "021352b82d1d45d7dd2ce4f46e0f5bf6b2d759e6d4c2f07e62d1c279dfaad5f0",
+    "size_bytes": 2778950,
     "static_url": "https://mna.mecatran.com/utw/ws/gtfsfeed/static/okc?apiKey=6a3b186a334d1e3e064f42782f6002520e60394c"
   },
   "fetch": {
@@ -314,7 +315,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -97.65613,
@@ -388,11 +389,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1644,
     "findings": [
