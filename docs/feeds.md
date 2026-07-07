@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the two pilot agencies,
 Unitrans and Yolobus. This page is the hand-verified reference for the pilots;
-the full national registry (~1,100 agencies) lives in `agencies.yaml`, with the
+the full registry (~1,490 agencies across the US and Canada) lives in `agencies.yaml`, with the
 discovery process documented in `docs/feed-discovery.md`. Every URL below was
 verified with a live request on the date stamped at the bottom of this page.
 

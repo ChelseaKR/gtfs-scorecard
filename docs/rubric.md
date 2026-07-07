@@ -147,7 +147,7 @@ a values statement and the most common real gap in small-agency feeds.
 
 ### Reported but not graded
 
-Five further signals are computed and shown on the agency page, but carry no
+Six further signals are computed and shown on the agency page, but carry no
 points in this version, so they never move the grade. They surface real,
 rider-facing detail and are framed as fixes. Each stays ungraded on purpose until
 there are enough real feeds to calibrate a fair weight, and each has an ADR.
@@ -175,6 +175,11 @@ there are enough real feeds to calibrate a fair weight, and each has an ADR.
   (elevator) route. A station feed with no pathways gets a finding; a flat
   stop-only feed, which is most small agencies, is never flagged. Shown with a
   "Station pathways" chip.
+- **Shapes readiness** (US agencies, schema 1.5). Whether every trip carries a
+  shape in shapes.txt, read against FTA's NTD shapes requirement (Full
+  Reporters RY2025; Reduced, Rural, and Tribal Reporters RY2026). Like the
+  NTD-readiness pillars, it is a data-quality heads-up, never an official
+  determination.
 
 
 ## Realtime quality (20%)
@@ -248,5 +253,11 @@ that changed band, and the notice-code drivers, plus a ready-to-paste
 same commit keeps every historical grade discontinuity attributable: a trend
 reader can always tell a feed change apart from a methodology change.
 
-Last verified: 2026-06-11 (guidelines v4.0, validator v8.0.1) ·
+The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.1`
+(`pipeline/src/scorecard_pipeline/__init__.py`), stamped on every artifact,
+and the dated `METHODOLOGY_CHANGELOG` in `score.py` records what each version
+changed, so a trend reader can tell a feed change apart from a methodology
+change.
+
+Last verified: 2026-07-06 (guidelines v4.0, validator v8.0.1, rubric v1.1) ·
 Recheck cadence: before each phase and before the rubric is cited publicly.
