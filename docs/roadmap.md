@@ -51,9 +51,10 @@ below is checked against them.
 
 ## Year 1 — from two feeds to a region (target: 50 to 200 agencies)
 
-> Status (2026-06): the registry passed this target ahead of plan and now scores
-> ~1,100 agencies nationally. The Year 1 work below is largely done; what remains
-> is the storage/serving move (see `docs/follow-ups.md`).
+> Status (2026-07): the registry passed this target ahead of plan and now
+> tracks ~1,490 agencies across the US and Canada (~1,450 scored with published
+> pages). The Year 1 work below is done; what remains is the storage/serving
+> move (see `docs/follow-ups.md`).
 
 The goal of year one is to prove the tool works unattended across a whole
 region's worth of feeds, and to move off the parts of the pilot architecture

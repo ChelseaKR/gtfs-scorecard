@@ -40,13 +40,20 @@ Every item below is checked against these.
 
 ## Where the product is today
 
-Small and rural California agencies scored daily; per-agency scorecards with a
-grade, top-three fixes, and a full findings list; an "over time" trend with a
-per-category "what changed since your last check" summary; program rollups;
-opt-in feed-health email digests; embeddable badges; a notice-to-fix knowledge
-base; a searchable directory; self-serve submission; crawlable pages on its own
-domain; and a security-hardened pipeline. The next three years make it a habit,
-then a reference, then infrastructure.
+About 1,450 US and Canadian agencies scored daily (piloted with Unitrans and
+Yolobus, first cohort drawn from California); per-agency scorecards with a
+grade, top-three fixes, a full findings list, and a named "fixed since last
+check" diff; companion pages per agency for a board packet, call prep, and the
+fix log; an "over time" trend with a per-category "what changed" summary;
+program rollups for 46 states plus DC and named cohorts; opt-in feed-health
+email digests and webhooks, with a weekly portfolio digest for liaisons;
+embeddable badges and conformance marks; a notice-to-fix knowledge base with
+per-vendor tool profiles; a searchable national directory; self-serve
+submission and on-the-spot feed scoring; a versioned read API with a Parquet
+table and a read-only MCP server; national views of problems, adoption,
+realtime reliability, equity, and NTD readiness; crawlable pages on its own
+domain; and a security-hardened pipeline. The next three years make it a
+habit, then a reference, then infrastructure.
 
 ## Year 1: deepen and retain
 
@@ -56,15 +63,16 @@ checked monthly is a tool.
 - **The retention loop.** Expiry and regression email digests, and the trend and
   "what changed" view on each scorecard, are the reasons someone comes back.
   These are shipped; the work now is tuning what counts as worth an alert.
-- **Close the fix loop further.** Beyond category deltas, show which findings
+- **Close the fix loop further.** Shipped: the scorecard names which findings
   cleared between runs, so a manager sees a specific fix land.
 - **The knowledge base toward the whole taxonomy.** Each validator notice gets a
   plain-language page with the setting to change in the common scheduling tools.
   This is the durable differentiator and the main organic-search entry point.
-- **Per-vendor fix instructions.** Where the export tool is known, name the exact
-  setting in that tool rather than describing it generically.
-- **Two-minute onboarding.** The self-serve form opens a pull request without the
-  submitter knowing what YAML is.
+  The highest-prevalence notices are covered; the long tail remains open work.
+- **Per-vendor fix instructions.** Shipped as tool profiles: where the export
+  tool is detected, the fix names that tool.
+- **Two-minute onboarding.** Shipped: the self-serve form and the instant-score
+  funnel open a pull request without the submitter knowing what YAML is.
 
 Signals of success: agencies returning month over month, fix pages as the top
 organic entry points, and the first agencies that visibly raise their grade.

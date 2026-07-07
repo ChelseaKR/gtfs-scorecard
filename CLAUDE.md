@@ -2,6 +2,14 @@
 
 > Root instruction file for the `gtfs-scorecard` repo. Read fully before writing code.
 
+> **Status (2026-07):** the four build phases below have shipped, and the pilot
+> grew into a live service: ~1,490 agencies tracked across the US and Canada,
+> scored daily at gtfsscorecard.org, with a versioned read API, a GitHub
+> Marketplace action, and an MCP server. This file remains the product spec
+> (framing, rubric, quality bar — those hold). For what exists now, read
+> `README.md`; for what's next, `docs/roadmap.md`, `docs/product-roadmap.md`,
+> and `docs/ideation/`.
+
 ## What this is
 
 A web dashboard plus ingestion pipeline that scores the quality of a transit agency's GTFS
@@ -112,6 +120,10 @@ software export settings").
 
 ## Build plan
 
+> All four phases are done, including Phase 4's `agencies.yaml`
+> generalization. The phases stay here as the record of the intended shape;
+> current work is tracked in the roadmap docs named at the top.
+
 ### Phase 1 — Pipeline to first artifact (week 1)
 - Feed discovery and `docs/feeds.md`. Fetch + archive static GTFS for both agencies.
 - gtfs-validator integration; parse notices into a normalized findings model.
@@ -156,9 +168,9 @@ rule-of-three constructions. No hype adjectives. UI copy addresses the agency re
 and respectfully; findings are framed as fixes, never as failures. Vary paragraph and sentence
 openings; do not over-polish.
 
-## Open questions to resolve early
+## Open questions to resolve early (all resolved)
 
-1. Exact feed URLs + licenses for Unitrans and Yolobus (Mobility Database / transit.land).
-2. Does either pilot agency publish GTFS-RT? Shape Phase 3 accordingly.
-3. gtfs-validator runtime needs → Lambda vs Fargate vs Actions-cron decision (write the ADR).
-4. Confirm current Caltrans/Cal-ITP GTFS guidance documents to cite in the rubric.
+1. Feed URLs and licenses for Unitrans and Yolobus — resolved in `docs/feeds.md`.
+2. Pilot GTFS-RT — Yolobus publishes all three RT feeds and the Realtime category scores them; Unitrans publishes none and is shown neutrally, per the rubric.
+3. Validator runtime — Actions-cron with a sharded matrix; see `docs/decisions/0001-validator-runtime.md`.
+4. Caltrans/Cal-ITP guidance — cited throughout `docs/rubric.md` and mapped in `docs/crosswalk.md`.

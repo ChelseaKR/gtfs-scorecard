@@ -18,14 +18,15 @@ manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the scorecard now scores ~1,100 agencies across
-the United States, all refreshed daily.
+District). Beyond the pilots, the scorecard now tracks ~1,490 agencies across
+the United States and Canada (~1,450 with published scorecard pages), all
+refreshed daily.
 
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — refreshed daily by
 a scheduled pipeline run.
 
-**Status:** Beta. All four rubric categories score for ~1,100 agencies
-nationally; any agency can be added via `agencies.yaml`.
+**Status:** Beta. All four rubric categories score for ~1,450 agencies across
+the US and Canada; any agency can be added via `agencies.yaml`.
 
 ## What an agency gets
 
@@ -45,10 +46,36 @@ Guidelines v4.0 and the validator's rule taxonomy, is in
 validator-version bump must attach the shadow-run impact report from
 `scorecard canary` before it lands (rubric.md, "Governed upgrades").
 Feed sources and licenses are in
-[docs/feeds.md](docs/feeds.md). The plan for taking this from two pilots to
-many agencies is split in two: the infrastructure and scaling plan is in
-[docs/roadmap.md](docs/roadmap.md), and what the product becomes for its users
-is in [docs/product-roadmap.md](docs/product-roadmap.md).
+[docs/feeds.md](docs/feeds.md). Forward planning is split in two: the
+infrastructure and scaling plan is in [docs/roadmap.md](docs/roadmap.md), and
+what the product becomes for its users is in
+[docs/product-roadmap.md](docs/product-roadmap.md).
+
+## What's on the site
+
+Each agency gets a scorecard page, plus three companion pages written for the
+different seats at an agency check-in: a board one-pager
+(`/agency/<id>/board/`), a call-prep brief (`/brief/`), and a fix log
+(`/fixes/`). Around those sit:
+
+- **National views** — the national pulse (`/pulse/`), most common problems
+  (`/problems/`), realtime reliability (`/realtime/`), newer-capability
+  adoption and accessibility data coverage (`/adoption/`), NTD readiness
+  (`/ntd/`), US and Canada equity overlays (`/equity/`), and national route
+  maps (`/map/`, `/routes/`).
+- **Program pages** (`/program/<state>/`) for 46 states plus DC and named
+  cohorts from [`rollups.yaml`](rollups.yaml), each with the fixes shared
+  across the group.
+- **Practitioner tools** — score any feed on the spot (`/try.html`), check a
+  feed before publishing (`/check/`), compare two agencies (`/compare/`),
+  query the dataset with SQL in the browser (`/query/`), and put feed quality
+  in a vendor contract (`/procurement/`).
+- **A fix knowledge base** (`/fix/<rule>/`, one plain-language page per common
+  validator finding) and the standards crosswalk (`/crosswalk/`).
+- **Machine-readable surfaces** — the versioned read API
+  ([docs/api.md](docs/api.md)), a Parquet table for bulk SQL, per-agency
+  badges and conformance marks, Atom change feeds, monthly citable dataset
+  releases, and a read-only MCP server ([docs/mcp.md](docs/mcp.md)).
 
 ## Quickstart
 
@@ -138,22 +165,23 @@ and `/catalog.csv` so a consumer needs one request, not one per agency.
 ### Roadmap status: built vs deployed
 
 The [roadmap](docs/roadmap.md) plans the path from two pilot feeds to a national
-service. The Year 1 software is built and tested. What remains is operator work
-that needs an AWS account, a verified sending domain, and a decision to spend
-(single-digit dollars a month); the [deploy runbook](docs/deploy.md) walks
-through it stack by stack.
+service. The Year 1 software is built, tested, and mostly deployed; the
+[deploy runbook](docs/deploy.md) walks through the AWS stacks and carries the
+current deployment status.
 
 | Roadmap piece | In the repo | State |
 | --- | --- | --- |
 | Mobility Database sync | `scorecard sync` (`mobilitydb.py`) | run on demand |
 | Sharded daily run | `scorecard shards` + CI matrix | live in Actions |
-| Expiry/regression alerts | `scorecard alerts`, `notify --send`, `infra/alerts` | subscribe API live; send wired and gated on the `SES_FROM` variable, off until a sender is verified |
+| Expiry/regression alerts | `scorecard alerts`, `notify --send`, `infra/alerts` | applied and live; SES sender verified, digest sends daily |
+| Artifacts on S3 + CloudFront | `infra/artifacts` | applied and live; daily mirror on, site still serves from Pages |
 | Self-serve submission form | `web/submit.html`, `infra/submit` | built; endpoint needs `terraform apply` |
-| Artifacts on S3 + CloudFront | `infra/artifacts` | built; daily mirror gated on `ARTIFACTS_BUCKET`; site serves from Pages until applied |
+| Instant scoring | `web/try.html`, `infra/instant-score` | built; falls back to the issue-form path until applied (ADR 0029) |
 | Fan-out compute (Year 2) | `infra/compute` (SQS + worker) | built; apply when the daily run outgrows the Actions matrix |
 
-The first California cohort drafted from the Mobility Database is already curated
-into [`agencies.yaml`](agencies.yaml) and scored daily.
+The cohort drafted from the Mobility Database has grown well past the first
+California pass: [`agencies.yaml`](agencies.yaml) now carries ~1,490 curated
+agencies across the US and Canada, scored daily.
 
 ## Add your agency
 
@@ -177,9 +205,10 @@ data/           raw snapshots (ignored) and published artifacts (committed)
 
 ## For Claude Code
 
-`CLAUDE.md` is the build spec: product framing, rubric, phased plan, and
-quality bar. Execute phases in order. Hard rules: every metric ships with
-its plain-language explanation; accessibility (WCAG 2.2 AAA) is
+`CLAUDE.md` is the build spec: product framing, rubric, and quality bar. The
+original four build phases have shipped; current direction lives in the
+roadmaps and [docs/ideation/](docs/ideation/). Hard rules: every metric ships
+with its plain-language explanation; accessibility (WCAG 2.2 AAA) is
 non-negotiable in the web app; agencies without realtime are shown
 neutrally, never shamed.
 
