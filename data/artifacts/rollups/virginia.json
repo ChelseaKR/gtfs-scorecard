@@ -73,7 +73,7 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-07T16:13:42+00:00",
+  "generated_at": "2026-07-07T17:48:04+00:00",
   "grade_distribution": {
     "B": 11,
     "C": 16,
@@ -81,20 +81,6 @@
     "F": 25
   },
   "members": [
-    {
-      "annual_trips": 1589693,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -585,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "virginia-railway-express-vre",
-      "name": "Virginia Railway Express (VRE)",
-      "needs_attention": true,
-      "score": 28.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -119,6 +105,20 @@
       "name": "Fredericksburg Regional Transit",
       "needs_attention": true,
       "score": 25.8,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -585,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "virginia-railway-express-vre",
+      "name": "Virginia Railway Express (VRE)",
+      "needs_attention": true,
+      "score": 28.3,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -852,7 +852,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 2458738,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 328,
       "expiry_status": "current",

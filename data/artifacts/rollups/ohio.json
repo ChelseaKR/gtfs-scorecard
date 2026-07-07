@@ -48,7 +48,7 @@
     "stale": 8,
     "total": 9
   },
-  "generated_at": "2026-07-07T16:13:42+00:00",
+  "generated_at": "2026-07-07T17:48:04+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 6,
@@ -56,34 +56,6 @@
     "F": 11
   },
   "members": [
-    {
-      "annual_trips": 13578716,
-      "attention_reason": "Service data expires in 39 day(s)",
-      "days_until_expiry": 39,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "cincinnati-metro",
-      "name": "Cincinnati Metro",
-      "needs_attention": true,
-      "score": 77.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": 192142,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1879,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "butler-county-regional-transit-authority",
-      "name": "Butler County Regional Transit Authority",
-      "needs_attention": true,
-      "score": 36.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -137,6 +109,20 @@
       "needs_attention": true,
       "score": 33.4,
       "shapes_status": "ready",
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1879,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "butler-county-regional-transit-authority",
+      "name": "Butler County Regional Transit Authority",
+      "needs_attention": true,
+      "score": 36.8,
+      "shapes_status": null,
       "snapshot_date": "2026-07-07",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -240,6 +226,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 39 day(s)",
+      "days_until_expiry": 39,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "cincinnati-metro",
+      "name": "Cincinnati Metro",
+      "needs_attention": true,
+      "score": 77.2,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-07",
+      "top_fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 60 day(s)",
       "days_until_expiry": 60,
       "expiry_status": "current",
@@ -281,7 +281,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 12349881,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 61,
       "expiry_status": "current",

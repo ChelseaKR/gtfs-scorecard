@@ -1,5 +1,4 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix,shapes_txt_status
-metro-transit,Metro Transit,B,80.8,2026-07-07,current,45,yes,Service data expires in 45 day(s),"Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
 minnesota-valley-transit-authority-mvta,Minnesota Valley Transit Authority (MVTA),F,48.4,2026-07-07,current,33,yes,Service data expires in 33 day(s),Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.,
 rochester-city-lines,Rochester City Lines,F,50.9,2026-07-07,stale,-3840,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",ready
 duluth-transit,Duluth Transit,F,59.6,2026-07-07,current,53,yes,Service data expires in 53 day(s),"Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
@@ -7,4 +6,5 @@ city-of-winona-mn-winona-transit-service,City of Winona MN - Winona Transit Serv
 the-otter-express,Flex v2 included,D,63.0,2026-07-07,expiring_soon,25,yes,Service data expires in 25 day(s),Re-export with a validity window that reaches at least 60 days out.,
 brown-county-heartland-express,Flex v2 included,D,63.9,2026-07-07,expiring_soon,25,yes,Service data expires in 25 day(s),Re-export with a validity window that reaches at least 60 days out.,
 brown-county-heartland-express-2296,Fixed route + flex,D,65.6,2026-07-07,expiring_soon,25,yes,Service data expires in 25 day(s),Re-export with a validity window that reaches at least 60 days out.,
+metro-transit,Metro Transit,B,80.8,2026-07-07,current,45,yes,Service data expires in 45 day(s),"Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
 central-community-transit,Central Community Transit,B,83.6,2026-07-07,current,178,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,

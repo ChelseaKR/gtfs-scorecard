@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/monterey-salinas-transit-mst/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/monterey-salinas-transit-mst/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -150,7 +149,7 @@
         "kinds_reachable": 0,
         "rt_freshness": null,
         "samples": 9,
-        "scheduled_trips_in_window": 38,
+        "scheduled_trips_in_window": 33,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -189,13 +188,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 38,
+          "count": 33,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "38 of 38 trips scheduled during the sampling window had no live predictions.",
+          "what": "33 of 33 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
