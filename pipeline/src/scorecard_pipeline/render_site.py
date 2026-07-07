@@ -5332,7 +5332,8 @@ def _render_ntd_page(
         "report year 2026, which brings most of the small agencies this site tracks into "
         "the requirement for the first time. An agency that cannot comply yet can request "
         "a one-year waiver by showing it is pursuing technical assistance to establish "
-        "its GTFS data.</p>"
+        "its GTFS data. The same rule adds shapes.txt to the published feed: "
+        '<a href="/ntd/shapes/">does your feed need shapes.txt, explained</a>.</p>'
         f"{one_fix_table}"
         '<p class="fineprint">Source: FTA\'s '
         '<a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/'
@@ -5372,6 +5373,176 @@ def _render_ntd_page(
     <a href="https://www.transit.dot.gov/ntd">D-10 certification</a> is the official one.
     The same numbers are published as <abbr title="JavaScript Object Notation">JSON</abbr>
     at <a href="/ntd.json">ntd.json</a>.</p>""",
+    )
+
+
+_FEDERAL_REGISTER_RY2026 = (
+    "https://www.federalregister.gov/documents/2025/07/10/2025-12813/"
+    "national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026"
+)
+
+
+def _render_shapes_page(shapes: dict[str, Any]) -> str:
+    """The shapes.txt RY2026 explainer (/ntd/shapes/): does your GTFS feed need
+    shapes.txt, who FTA's requirement covers and when, how to check and fix a
+    feed, and where tracked feeds stand nationally and per state.
+
+    One page for two readers on the same external clock: the small-agency
+    manager hearing about the requirement for the first time, and the reporter
+    covering it (the for-reporters section is the story-shaped cut). The numbers
+    come from the shapes rollup published in ntd.json and stay population-level;
+    per-agency worklists live on the program pages, never here. Like every
+    readiness surface, it states what a feed contains and does not certify
+    anything; reporter type and waiver status live in the agency's own NTD
+    filing.
+    """
+    canonical = f"{BASE_URL}/ntd/shapes/"
+    total = shapes.get("total", 0)
+    pct_ready = shapes.get("pct_ready", 0)
+    by_state = shapes.get("by_state", {}) or {}
+    if total:
+        state_rows = "".join(
+            f"<tr><td>{esc(state)}</td><td>{esc(c.get('ready', 0))}</td>"
+            f"<td>{esc(c.get('at_risk', 0))}</td><td>{esc(c.get('not_ready', 0))}</td>"
+            f"<td>{esc(c.get('total', 0))}</td></tr>"
+            for state, c in sorted(by_state.items())
+        )
+        numbers = (
+            '<section class="feed-details"><h2 class="section-title">Where tracked feeds '
+            "stand</h2>"
+            f'<p class="page-lede">Across the {esc(total)} US feeds this site tracks and '
+            f"checks, <strong>{esc(pct_ready)}% carry a shape for every trip</strong>. "
+            "The rest have the file to add or finish before their report year.</p>"
+            '<table class="leaderboard"><thead><tr><th>Coverage</th><th>Feeds</th></tr></thead>'
+            "<tbody>"
+            f"<tr><td>Every trip has a shape</td><td>{esc(shapes.get('ready', 0))}</td></tr>"
+            "<tr><td>Some trips are missing one</td>"
+            f"<td>{esc(shapes.get('at_risk', 0))}</td></tr>"
+            f"<tr><td>No shapes yet</td><td>{esc(shapes.get('not_ready', 0))}</td></tr>"
+            "</tbody></table>"
+            '<h3 class="section-title">By state</h3>'
+            '<table class="leaderboard"><thead><tr><th>State</th><th>Full</th>'
+            "<th>Partial</th><th>None</th><th>Checked</th></tr></thead>"
+            f"<tbody>{state_rows}</tbody></table></section>"
+        )
+        reporter_numbers = (
+            f"<p>&ldquo;Of {esc(total)} tracked US transit feeds checked, "
+            f"{esc(pct_ready)}% include a shape for every trip.&rdquo; "
+            "The per-state counts above support a local cut, counted over the covered "
+            "set with the state named. The same numbers are machine-readable in "
+            '<a href="/ntd.json">ntd.json</a>.</p>'
+        )
+    else:
+        numbers = (
+            '<section class="feed-details"><h2 class="section-title">Where tracked feeds '
+            'stand</h2><p class="page-lede">No feeds have been checked for shape coverage '
+            "yet.</p></section>"
+        )
+        reporter_numbers = (
+            "<p>Once the coverage rollup has run, this page carries the national and "
+            "per-state numbers; the machine-readable copy lives in "
+            '<a href="/ntd.json">ntd.json</a>.</p>'
+        )
+    body = f"""    {_breadcrumb([("Home", "/"), ("NTD readiness", "/ntd/"), ("shapes.txt, explained", None)])}
+    <a class="backlink" href="/ntd/">&larr; NTD readiness</a>
+    <h1 class="page-title">Does your GTFS feed need shapes.txt?</h1>
+    <p class="page-lede">If your agency reports fixed-route or deviated-fixed-route service
+    to the <abbr title="Federal Transit Administration">FTA</abbr>'s National Transit
+    Database, yes: the GTFS feed you publish needs to include shapes.txt. Full Reporters
+    have needed it since Report Year 2025, and Reduced, Rural, and Tribal Reporters join
+    in Report Year 2026.</p>
+
+    <section class="feed-details"><h2 class="section-title">What shapes.txt is</h2>
+    <p>shapes.txt is the file in a GTFS feed that traces each trip's path along the street
+    or rail line, point by point. Trip planners use it to draw your routes on the map.
+    A feed without it still lists stops and times, but an app can only connect the stops
+    with straight lines, so the map shows vehicles cutting across blocks they never
+    travel.</p>
+    <p>Each row in trips.txt points at a path through its shape_id column. Full coverage
+    means every trip carries a shape_id that matches a path in shapes.txt.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">Who needs it, and when</h2>
+    <p>FTA's July 2025 final rule added shapes.txt to the GTFS that
+    <abbr title="National Transit Database">NTD</abbr> reporters with fixed-route or
+    deviated-fixed-route service publish and certify each year on the D-10 form. The
+    requirement phases in by reporter type:</p>
+    <table class="leaderboard"><thead><tr><th>NTD reporter type</th>
+    <th>shapes.txt required from</th></tr></thead><tbody>
+      <tr><td>Full Reporters</td><td>Report Year 2025</td></tr>
+      <tr><td>Reduced, Rural, and Tribal Reporters</td><td>Report Year 2026</td></tr>
+    </tbody></table>
+    <p>Report Year 2026 is the step that reaches most small agencies, many of them
+    publishing GTFS under the NTD requirement for the first time. An agency that cannot
+    comply yet can request a one-year waiver by showing it is pursuing technical
+    assistance to establish its GTFS data. Your reporter type and any waiver live in your
+    own NTD filing, not on this site.</p>
+    <p class="fineprint">Source: FTA's
+    <a href="{_FEDERAL_REGISTER_RY2026}">NTD reporting changes for report years 2025 and
+    2026</a>. Reporters with no fixed-route or deviated-fixed-route service are outside
+    the GTFS requirement.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">Check whether your feed has it</h2>
+    <p>The shapes.txt check already runs on every US feed this site tracks: open
+    <a href="/agencies/">your agency's scorecard page</a> and look for &ldquo;shapes.txt
+    covers your trips&rdquo; in the NTD certification readiness section. If your agency is
+    not tracked here, <a href="/try.html">paste your feed's URL</a> to grade it in about a
+    minute, or run <a href="/check/">the pre-publish check</a> on an export you have not
+    published yet; that one reads the zip in your browser and uploads nothing.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">How to add it</h2>
+    <p>Shape data usually comes from the software that builds your feed, not from
+    hand-drawn maps. If a vendor or scheduling tool produces your GTFS export, ask for
+    shapes.txt in the export, with trips.shape_id set to match. If some trips already have
+    shapes, the remaining work is to fill in the rest so every trip has a path.</p>
+    <p>After you republish, the next daily run re-checks your feed and the readiness line
+    on your agency's page updates on its own.</p></section>
+
+    {numbers}
+
+    <section class="feed-details"><h2 class="section-title">For reporters: the Report Year
+    2026 story</h2>
+    <p>The story here is population-level: a federal data requirement reaches the smallest
+    transit agencies in Report Year 2026, and a measurable share of published feeds do not
+    carry the file yet. When FTA finalized the rule in July 2025, it estimated that just
+    over a third of reporters already provided shapes.txt.</p>
+    {reporter_numbers}
+    <p>Two claims these numbers do not support. First, &ldquo;Agency X is out of
+    compliance&rdquo;: reporter type and waiver status live in an agency's own NTD filing,
+    and this site reads published feeds, not filings; it states what a feed contains and
+    certifies nothing. Second, a worst-agencies ranking: the site covers the feeds it
+    tracks, so absence means not covered, never failing, and these denominators differ
+    from FTA's (tracked feeds, not all NTD reporters). Attribution and more guidance:
+    <a href="/press/">writing about this data</a>.</p></section>
+
+    <p class="fineprint">This page is a data-quality heads-up, not an official compliance
+    determination or legal advice. The official record is each agency's own NTD filing and
+    annual <a href="https://www.transit.dot.gov/ntd">D-10 certification</a>.</p>"""
+    jsonld = {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained",
+        "description": (
+            "Who FTA's shapes.txt requirement covers, the Report Year 2026 phase-in for "
+            "small transit agencies, and how to check and fix a GTFS feed."
+        ),
+        "url": canonical,
+        "about": {"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
+        "publisher": {"@type": "Organization", "name": "GTFS Scorecard", "url": BASE_URL},
+    }
+    return _page(
+        title=(
+            "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained "
+            "— GTFS Scorecard"
+        ),
+        description=(
+            "Who FTA's shapes.txt requirement covers and when it starts, the Report Year "
+            "2026 phase-in for small transit agencies, how to check your feed, and where "
+            "tracked feeds stand."
+        ),
+        canonical=canonical,
+        wide=True,
+        body=body,
+        jsonld=jsonld,
     )
 
 
@@ -5629,7 +5800,9 @@ def _render_press_page() -> str:
     rather than the live site, which changes daily. Methodology, rubric weights, and
     the validator version are all published:
     <a href="/how-to-read/">how to read a scorecard</a> and
-    <a href="/data/">the open dataset</a>.</p></section>
+    <a href="/data/">the open dataset</a>. For the Report Year 2026 shapes.txt
+    requirement, <a href="/ntd/shapes/">the explainer</a> carries the national and
+    per-state numbers and the claims they support.</p></section>
 
     <p class="fineprint">Questions about a specific number, or a correction? Open an
     issue on <a href="https://github.com/ChelseaKR/gtfs-scorecard">the repository</a>;
@@ -6364,12 +6537,24 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
 
     # NTD certification-readiness portfolio (national + per state), so a program
     # lead can see "% ready to certify" without opening each scorecard.
-    from .ntd import one_fix_from_ready, portfolio_summary
+    from .ntd import one_fix_from_ready, portfolio_summary, shapes_portfolio_summary
 
     # portfolio_summary excludes non-US feeds itself (NTD is US-federal); the full
     # ntd_artifacts list still feeds the GTFS-quality rollups below. See ADR 0026.
     summary = portfolio_summary(ntd_artifacts)
     one_fix = one_fix_from_ready(ntd_artifacts)
+    # Additive: shapes.txt coverage rolled up the same way (FTA requires the file
+    # from Full Reporters in RY2025 and Reduced, Rural, and Tribal Reporters in
+    # RY2026), counted only over feeds where the check ran.
+    shapes_summary = shapes_portfolio_summary(ntd_artifacts)
+    shapes_payload: dict[str, Any] = {
+        "total": shapes_summary.total,
+        "ready": shapes_summary.ready,
+        "at_risk": shapes_summary.at_risk,
+        "not_ready": shapes_summary.not_ready,
+        "pct_ready": shapes_summary.pct_ready,
+        "by_state": shapes_summary.by_state,
+    }
     ntd_payload = {
         "total": summary.total,
         "ready": summary.ready,
@@ -6382,10 +6567,19 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:
         # stays small; the count is the real total.
         "one_fix_from_ready": one_fix[:40],
         "one_fix_total": len(one_fix),
+        "shapes": shapes_payload,
     }
     write("ntd.json", json.dumps(ntd_payload, indent=2, sort_keys=True) + "\n")
     # The human page over the same readiness numbers, for an FTA or state-DOT lead.
     write("ntd/index.html", _render_ntd_page(ntd_payload, histories), f"{BASE_URL}/ntd/")
+    # The shapes.txt explainer: the RY2026 requirement in plain language, with the
+    # national and per-state coverage numbers, for the manager hearing about the
+    # requirement for the first time and the reporter covering it.
+    write(
+        "ntd/shapes/index.html",
+        _render_shapes_page(shapes_payload),
+        f"{BASE_URL}/ntd/shapes/",
+    )
 
     # National accessibility-data coverage (how many feeds let a wheelchair user
     # plan a trip at all), for advocates and the programs that support them. Built

@@ -364,6 +364,62 @@ def portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummary:
     return PortfolioSummary(total, ready, at_risk, not_ready, pct_ready, by_state)
 
 
+def shapes_status(artifact: dict[str, Any]) -> str | None:
+    """This feed's current shapes.txt readiness status, or None when the check
+    has not run for it (non-US feeds, or artifacts that predate the check).
+
+    Recomputed from the stored trip counts when they are present (the same
+    pattern render_site's ``_current_shapes_readiness`` uses), so a threshold or
+    wording change reaches every rollup without a rescore. Falls back to the
+    stored status for older artifacts that kept only the verdict.
+    """
+    shapes = artifact.get("shapes_readiness")
+    if not shapes:
+        return None
+    total = shapes.get("total_trips")
+    with_shape = shapes.get("trips_with_shape")
+    if isinstance(total, int) and isinstance(with_shape, int):
+        return assess_shapes_readiness(total, with_shape).status
+    stored = str(shapes.get("status", ""))
+    return stored if stored in _RANK else None
+
+
+def shapes_portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummary:
+    """Roll up shapes.txt readiness across a portfolio of agency feeds.
+
+    The FTA shapes.txt requirement phases in by NTD reporter type (Full
+    Reporters in Report Year 2025; Reduced, Rural, and Tribal Reporters in
+    Report Year 2026), and a state program or a reporter wants the population
+    picture: how many tracked feeds already carry a shape for every trip.
+    Same shape as ``portfolio_summary`` so the two read identically: US-only
+    (the requirement is FTA's; see ADR 0026), counted only where the check ran,
+    grouped by state with unlocated feeds kept rather than dropped.
+    """
+    counted = [
+        (status, _state_of(artifact))
+        for artifact in artifacts
+        if artifact.get("agency", {}).get("country", "US") == "US"
+        and (status := shapes_status(artifact)) is not None
+    ]
+    total = len(counted)
+    ready = at_risk = not_ready = 0
+    by_state: dict[str, dict[str, int]] = {}
+    for status, state in counted:
+        bucket = by_state.setdefault(state, {"ready": 0, "at_risk": 0, "not_ready": 0, "total": 0})
+        bucket["total"] += 1
+        if status == READY:
+            ready += 1
+            bucket["ready"] += 1
+        elif status == AT_RISK:
+            at_risk += 1
+            bucket["at_risk"] += 1
+        else:
+            not_ready += 1
+            bucket["not_ready"] += 1
+    pct_ready = round(ready / total * 100, 1) if total else 0.0
+    return PortfolioSummary(total, ready, at_risk, not_ready, pct_ready, by_state)
+
+
 def one_fix_from_ready(artifacts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Feeds where a single fix would make the feed look ready to certify.
 
