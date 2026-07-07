@@ -32,6 +32,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -66,8 +70,8 @@
           "has_step_free": true,
           "pathway_count": 9317
         },
-        "stops": 10308,
-        "trips": 122191,
+        "stops": 10309,
+        "trips": 112578,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 95.3,
         "wheelchair_marked_accessible_pct": 91.9,
@@ -82,7 +86,7 @@
           "owner": "Likely your team",
           "points": 1.2,
           "severity": "WARNING",
-          "what": "486 of 10308 stops don't say whether a wheelchair user can board there.",
+          "what": "486 of 10309 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -108,7 +112,7 @@
         "distinct_codes": 14,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 2351,
+          "INFO": 2099,
           "WARNING": 846
         },
         "validator_version": "8.0.1"
@@ -149,14 +153,14 @@
         },
         {
           "code": "fast_travel_between_consecutive_stops",
-          "count": 67,
+          "count": 69,
           "effort": "A few minutes per flagged trip.",
           "fix": "Check the flagged stop times for transposed minutes.",
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "fast_travel_between_far_stops",
@@ -170,17 +174,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "service_has_no_active_day_of_the_week",
-          "count": 19,
-          "effort": "A few minutes in your scheduling software.",
-          "fix": "Delete the empty calendars or set their service days.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some service calendars have no days of the week switched on.",
-          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
-        },
-        {
           "code": "expired_calendar",
           "count": 18,
           "effort": "One setting in most export tools.",
@@ -188,8 +181,19 @@
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 17,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
         },
         {
           "code": "stop_too_far_from_shape",
@@ -215,7 +219,7 @@
         },
         {
           "code": "trip_headsign_matches_intermediate_stop",
-          "count": 2290,
+          "count": 2053,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'trip_headsign_matches_intermediate_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -234,17 +238,6 @@
           "severity": "INFO",
           "what": "Some files contain columns that are not part of the GTFS spec.",
           "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
-        },
-        {
-          "code": "big_gap_in_service",
-          "count": 16,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.8,
-          "severity": "INFO",
-          "what": "Big gap in service (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         },
         {
           "code": "unknown_file",
@@ -267,20 +260,31 @@
           "severity": "INFO",
           "what": "Platform without parent station (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Big gap in service (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 34.2,
+      "score": 34.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 14 kinds of issue across 3197 instances (0 error, 846 warning, 2351 informational).",
+      "summary": "The MobilityData validator flagged 14 kinds of issue across 2945 instances (0 error, 846 warning, 2099 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 60,
         "feed_end_date": "2026-09-05",
-        "feed_start_date": "2026-06-24",
-        "feed_version": "Summer 2026, 2026-07-01T18:03:11+00:00, version D",
+        "feed_start_date": "2026-06-30",
+        "feed_version": "Summer 2026, 2026-07-07T21:07:54+00:00, version D",
         "has_feed_info": true,
         "last_service_date": "2026-09-05",
         "seasonal_boundary": false,
@@ -295,41 +299,54 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 88.3,
-        "covered_trips": 534,
+        "coverage_pct": 90.8,
+        "covered_trips": 574,
         "drift": {
-          "median_seconds": 31,
-          "observations": 32527,
-          "on_time_share_pct": 56.5,
-          "p90_abs_seconds": 486
+          "median_seconds": 58,
+          "observations": 32621,
+          "on_time_share_pct": 57.4,
+          "p90_abs_seconds": 546
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 605,
-        "vehicles_checked": 1822,
-        "vehicles_on_route_pct": 95.9,
-        "worst_lag_seconds": 4
+        "scheduled_trips_in_window": 632,
+        "vehicles_checked": 1824,
+        "vehicles_on_route_pct": 98.7,
+        "worst_lag_seconds": 3
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 71,
+          "count": 58,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 4.1,
+          "points": 3.2,
           "severity": "WARNING",
-          "what": "71 of 605 trips scheduled during the sampling window had no live predictions.",
+          "what": "58 of 632 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 95.3,
+      "score": 96.6,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 88.3% of scheduled trips had live predictions; 95.9% of vehicles on their route; predictions ran a median of 31s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 90.8% of scheduled trips had live predictions; 98.7% of vehicles on their route; predictions ran a median of 58s behind schedule.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": true,
@@ -340,7 +357,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 66 days.",
+        "detail": "Service data covers the next 60 days.",
         "key": "current",
         "met": true
       },
@@ -356,11 +373,17 @@
   "feed": {
     "license_note": "License: https://www.mass.gov/files/documents/2017/10/27/develop_license_agree_0.pdf",
     "reachable": true,
-    "sha256": "6f9e63615cebd021df037e16e8635032ef6c2c7b2955b16505d73959df70c0fe",
-    "size_bytes": 25924808,
+    "sha256": "48dc427161314d54c9eb10138bd630202dfc15f30d8923815dc7a0b86ffa7817",
+    "size_bytes": 24135209,
     "static_url": "https://cdn.mbta.com/MBTA_GTFS.zip"
   },
-  "generated_at": "2026-07-01T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://cdn.mbta.com/MBTA_GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -71.84849,
@@ -368,17 +391,17 @@
       -70.27658,
       42.79784
     ],
-    "lat": 42.35642,
+    "lat": 42.35644,
     "lon": -71.07411,
-    "stop_count": 9617
+    "stop_count": 9618
   },
   "ntd_id_alignment": {
-    "detail": "Your feed uses agency_id 3, 1; the NTD asks for your five-digit NTD ID (10003) so the feed lines up with your record.",
+    "detail": "Your feed's agency_id is 3, 1; your National Transit Database ID is 10003. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
     "feed_agency_ids": [
       "3",
       "1"
     ],
-    "fix": "Change the agency_ids to 10003 in agency.txt and update the matching agency_id in routes.txt.",
+    "fix": "Optionally set the agency_id for your service to 10003 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.",
     "ntd_id": "10003",
     "status": "mismatch"
   },
@@ -395,19 +418,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 66 days.",
+        "detail": "Service data covers the next 60 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 5.7,
-    "margin_to_next_band": 4.3,
-    "score": 75.7
+    "margin_to_lower_band": 6.1,
+    "margin_to_next_band": 3.9,
+    "score": 76.1
   },
   "recommendations": [
     {
@@ -444,13 +467,8 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 7782,
+    "boardable_stops": 7783,
     "findings": [
       {
         "code": "scorecard_single_stop_trips",
@@ -460,7 +478,7 @@
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "WARNING",
-        "what": "7 of 122191 trips list fewer than two stops.",
+        "what": "7 of 112578 trips list fewer than two stops.",
         "why": "A trip with one stop has no leg a rider can ride; trip planners can't route anyone on it, so the service effectively does not exist."
       },
       {
@@ -471,13 +489,13 @@
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "139 of 7782 boardable stops are never served by any trip.",
+        "what": "139 of 7783 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
     "orphan_stops": 139,
     "single_stop_trips": 7,
-    "trips_total": 122191
+    "trips_total": 112578
   },
   "route_map": {
     "drawn_route_count": 373,
@@ -3328,9 +3346,9 @@
         "color_name": "yellow",
         "has_shape": true,
         "id": "Shuttle-CastleIslandJFK",
-        "label": "Castle Island Shuttle",
-        "long": "Castle Island - JFK/UMass",
-        "short": "Castle Island Shuttle",
+        "label": "Parade of Sail Shuttle",
+        "long": "JFK/UMass - Castle Island",
+        "short": "Parade of Sail Shuttle",
         "text_color": "000000",
         "type_label": "Bus"
       },
@@ -4461,9 +4479,9 @@
         "color_name": "yellow",
         "has_shape": true,
         "id": "Shuttle-NavyYardSullivan",
-        "label": "Navy Yard Shuttle",
-        "long": "Navy Yard - Sullivan Square",
-        "short": "Navy Yard Shuttle",
+        "label": "Parade of Sail Shuttle",
+        "long": "Sullivan Square - Navy Yard",
+        "short": "Parade of Sail Shuttle",
         "text_color": "000000",
         "type_label": "Bus"
       },
@@ -4919,11 +4937,17 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 9617,
+    "stop_count": 9618,
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 112578 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 112578,
+    "trips_with_shape": 112578
+  },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {

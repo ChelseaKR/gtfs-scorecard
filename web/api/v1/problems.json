@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-07T20:37:11+00:00",
+  "generated_at": "2026-07-07T22:01:44+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -11,7 +11,7 @@
     },
     "big_gap_in_service": {
       "agencies": 157,
-      "instances": 868,
+      "instances": 853,
       "prevalence_pct": 10.8
     },
     "block_trips_with_overlapping_stop_times": {
@@ -71,7 +71,7 @@
     },
     "fast_travel_between_consecutive_stops": {
       "agencies": 230,
-      "instances": 169393,
+      "instances": 169395,
       "prevalence_pct": 15.9
     },
     "fast_travel_between_far_stops": {
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 5,
-      "instances": 2825,
-      "prevalence_pct": 0.3
+      "agencies": 6,
+      "instances": 2821,
+      "prevalence_pct": 0.4
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -416,7 +416,7 @@
     },
     "scorecard_rt_trip_coverage": {
       "agencies": 53,
-      "instances": 1984,
+      "instances": 1968,
       "prevalence_pct": 3.7
     },
     "scorecard_rt_trip_updates_unreachable": {
@@ -466,7 +466,7 @@
     },
     "service_has_no_active_day_of_the_week": {
       "agencies": 53,
-      "instances": 844,
+      "instances": 842,
       "prevalence_pct": 3.7
     },
     "service_window_outside_feed_period": {
@@ -546,7 +546,7 @@
     },
     "trip_headsign_matches_intermediate_stop": {
       "agencies": 81,
-      "instances": 5786,
+      "instances": 5549,
       "prevalence_pct": 5.6
     },
     "trip_with_shape_dist_traveled_but_no_shape_distances": {
@@ -805,7 +805,7 @@
       "code": "fast_travel_between_consecutive_stops",
       "effort": "A few minutes per flagged trip.",
       "fix": "Check the flagged stop times for transposed minutes.",
-      "instances": 169393,
+      "instances": 169395,
       "prevalence_pct": 15.9,
       "severity": "WARNING",
       "source": "validator",
@@ -853,7 +853,7 @@
       "code": "big_gap_in_service",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 868,
+      "instances": 853,
       "prevalence_pct": 10.8,
       "severity": "INFO",
       "source": "validator",

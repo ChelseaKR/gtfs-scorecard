@@ -83,7 +83,7 @@
     "stale": 19,
     "total": 28
   },
-  "generated_at": "2026-07-07T20:36:48+00:00",
+  "generated_at": "2026-07-07T22:01:20+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 18,
@@ -591,8 +591,8 @@
       "id": "massachusetts-bay-transportation-authority-mbta",
       "name": "Massachusetts Bay Transportation Authority (MBTA)",
       "needs_attention": true,
-      "score": 75.7,
-      "shapes_status": null,
+      "score": 76.1,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-07",
       "top_fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -1039,9 +1039,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 63,
+    "not_measured": 62,
     "not_ready": 1,
-    "ready": 3,
+    "ready": 4,
     "total": 67
   },
   "state_percentile": 72

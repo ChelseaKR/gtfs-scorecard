@@ -210,26 +210,38 @@
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 2,
+        "covered_trips": 1,
         "drift": {
-          "median_seconds": -30,
-          "observations": 85,
-          "on_time_share_pct": 56.5,
-          "p90_abs_seconds": 184
+          "median_seconds": -4,
+          "observations": 21,
+          "on_time_share_pct": 52.4,
+          "p90_abs_seconds": 6823
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 2,
-        "vehicles_checked": 10,
+        "scheduled_trips_in_window": 1,
+        "vehicles_checked": 3,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 3
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 21,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+        }
+      ],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 30s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 4s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -271,7 +283,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "f58bcfe0e836e2e0265ea4c28ce651f67f1167daac719ad0f5bc1393a64d8db6",
+    "sha256": "0e800f2d36be9725c489c70edf8d7c172accf31965f048daa3e0a5a44e1f9fdc",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },

@@ -219,39 +219,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 40.0,
-        "covered_trips": 4,
+        "coverage_pct": 58.3,
+        "covered_trips": 7,
         "drift": {
-          "median_seconds": -111,
-          "observations": 45,
-          "on_time_share_pct": 33.3,
-          "p90_abs_seconds": 260
+          "median_seconds": -126,
+          "observations": 44,
+          "on_time_share_pct": 31.8,
+          "p90_abs_seconds": 524
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 10,
+        "scheduled_trips_in_window": 12,
         "vehicles_checked": 16,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "vehicles_on_route_pct": 93.8,
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 6,
+          "count": 5,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 21.0,
+          "points": 14.6,
           "severity": "WARNING",
-          "what": "6 of 10 trips scheduled during the sampling window had no live predictions.",
+          "what": "5 of 12 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 79.0,
+      "score": 84.5,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 40.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 111s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 58.3% of scheduled trips had live predictions; 93.8% of vehicles on their route; predictions ran a median of 126s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -293,7 +293,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "24843bc89a19be56666ad3f518ec8ce52f3c535d9ef3c4858f89791277688b40",
+    "sha256": "09b83e284a21cbae4e3919e4747aedb3ef687da7823cd8d467a32ec592c8bbfd",
     "size_bytes": 217566,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },
@@ -345,9 +345,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 2.5,
-    "margin_to_next_band": 7.5,
-    "score": 62.5
+    "margin_to_lower_band": 3.6,
+    "margin_to_next_band": 6.4,
+    "score": 63.6
   },
   "recommendations": [
     {
@@ -536,16 +536,16 @@
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
-      "code": "scorecard_rt_trip_coverage",
-      "count": 6,
-      "effort": "A vendor data-mapping question.",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-      "owner": "",
-      "points": 21.0,
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 397,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "6 of 10 trips scheduled during the sampling window had no live predictions.",
-      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+      "what": "397 of 397 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],
   "validator_version": "8.0.1"
