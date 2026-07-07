@@ -68,6 +68,18 @@
     },
     {
       "cleared": "2026-07-07",
+      "code": "scorecard_rt_predictions_implausible",
+      "last_seen": "2026-07-06",
+      "what": "Some live predictions disagree with the schedule by more than 30 minutes."
+    },
+    {
+      "cleared": "2026-07-07",
+      "code": "scorecard_rt_vehicles_off_route",
+      "last_seen": "2026-07-06",
+      "what": "41 of 46 sampled vehicle positions were far from their assigned route (worst: 18209 m)."
+    },
+    {
+      "cleared": "2026-07-07",
       "code": "scorecard_wheelchair_accessible_unknown",
       "last_seen": "2026-07-06",
       "what": "17870 of 17870 trips don't say whether the vehicle is wheelchair accessible."
@@ -83,6 +95,12 @@
       "code": "stop_without_stop_time",
       "last_seen": "2026-07-06",
       "what": "Some stops exist in the feed but no trip ever stops at them."
+    },
+    {
+      "cleared": "2026-07-07",
+      "code": "trip_coverage_not_active_for_next7_days",
+      "last_seen": "2026-07-06",
+      "what": "Many of the feed's trips don't run at all in the next 7 days."
     }
   ]
 }

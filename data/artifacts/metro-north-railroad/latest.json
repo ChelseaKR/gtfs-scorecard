@@ -89,13 +89,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 32713,
+          "count": 32710,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 11.6,
           "severity": "WARNING",
-          "what": "32713 of 42385 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "32710 of 42385 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -247,14 +247,14 @@
         "covered_trips": 0,
         "drift": {
           "median_seconds": 120,
-          "observations": 508,
-          "on_time_share_pct": 86.6,
+          "observations": 395,
+          "on_time_share_pct": 84.8,
           "p90_abs_seconds": 420
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 57,
+        "scheduled_trips_in_window": 52,
         "worst_lag_seconds": 11
       },
       "findings": [
@@ -271,13 +271,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 57,
+          "count": 52,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "57 of 57 trips scheduled during the sampling window had no live predictions.",
+          "what": "52 of 52 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -310,7 +310,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 173 days.",
+        "detail": "Service data covers the next 172 days.",
         "key": "current",
         "met": true
       },
@@ -326,8 +326,8 @@
   "feed": {
     "license_note": "License: http://web.mta.info/developers/developer-data-terms.html",
     "reachable": true,
-    "sha256": "57dd3c7cd1f6baec9464c2ba591367e27c2868ea521a2fbc18de5b338e8ee5d6",
-    "size_bytes": 5251472,
+    "sha256": "ff5dbfc81eb024fe46e5210eeeb3fb514e2c94c8367257db1fd8e35170be8c49",
+    "size_bytes": 5256637,
     "static_url": "http://web.mta.info/developers/data/mnr/google_transit.zip"
   },
   "fetch": {
@@ -336,7 +336,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-07T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.98453,
@@ -368,7 +368,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 173 days.",
+        "detail": "Service data covers the next 172 days.",
         "key": "current",
         "status": "ready"
       }
@@ -406,11 +406,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-07",
-    "feed_fetched_date": "2026-07-06",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 114,
     "findings": [
@@ -530,27 +525,27 @@
     },
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 57,
+      "count": 52,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "57 of 57 trips scheduled during the sampling window had no live predictions.",
+      "what": "52 of 52 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

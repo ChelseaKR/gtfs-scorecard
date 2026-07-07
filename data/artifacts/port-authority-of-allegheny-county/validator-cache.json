@@ -5,19 +5,13 @@
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
-            "csvRowNumber": 4,
-            "fieldName": "route_long_name",
-            "fieldValue": "SILVER LINE",
-            "filename": "routes.txt"
-          },
-          {
-            "csvRowNumber": 5,
+            "csvRowNumber": 2,
             "fieldName": "route_long_name",
             "fieldValue": "DUQUESNE INCLINE",
             "filename": "routes.txt"
           },
           {
-            "csvRowNumber": 6,
+            "csvRowNumber": 3,
             "fieldName": "route_long_name",
             "fieldValue": "MONONGAHELA INCLINE",
             "filename": "routes.txt"
@@ -25,45 +19,88 @@
           {
             "csvRowNumber": 7,
             "fieldName": "route_long_name",
+            "fieldValue": "SILVER LINE",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 9,
+            "fieldName": "route_long_name",
             "fieldValue": "FREEPORT ROAD",
             "filename": "routes.txt"
           },
           {
-            "csvRowNumber": 11,
+            "csvRowNumber": 13,
             "fieldName": "route_long_name",
             "fieldValue": "OHIO VALLEY",
             "filename": "routes.txt"
           }
         ],
         "severity": "WARNING",
-        "total": 29882
+        "total": 24290
       },
       {
         "code": "unused_shape",
         "sample_notices": [
           {
-            "csvRowNumber": 500697,
+            "csvRowNumber": 2392,
             "shapeId": "shp-MISC-21"
           },
           {
-            "csvRowNumber": 500704,
+            "csvRowNumber": 2399,
             "shapeId": "shp-MISC-22"
           },
           {
-            "csvRowNumber": 500724,
+            "csvRowNumber": 2419,
             "shapeId": "shp-MISC-23"
           },
           {
-            "csvRowNumber": 500732,
+            "csvRowNumber": 2427,
             "shapeId": "shp-MISC-24"
           },
           {
-            "csvRowNumber": 500742,
+            "csvRowNumber": 2437,
             "shapeId": "shp-MISC-25"
           }
         ],
         "severity": "WARNING",
         "total": 29
+      },
+      {
+        "code": "route_color_contrast",
+        "sample_notices": [
+          {
+            "csvRowNumber": 9,
+            "routeColor": "#3300CC",
+            "routeId": "1",
+            "routeTextColor": "#000000"
+          },
+          {
+            "csvRowNumber": 24,
+            "routeColor": "#006666",
+            "routeId": "26",
+            "routeTextColor": "#000000"
+          },
+          {
+            "csvRowNumber": 39,
+            "routeColor": "#3300FF",
+            "routeId": "51L",
+            "routeTextColor": "#000000"
+          },
+          {
+            "csvRowNumber": 73,
+            "routeColor": "#0000FF",
+            "routeId": "86",
+            "routeTextColor": "#000000"
+          },
+          {
+            "csvRowNumber": 89,
+            "routeColor": "#CC0000",
+            "routeId": "P16",
+            "routeTextColor": "#000000"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 7
       },
       {
         "code": "expired_calendar",
@@ -73,61 +110,20 @@
             "serviceId": "1"
           },
           {
-            "csvRowNumber": 3,
-            "serviceId": "2"
-          },
-          {
-            "csvRowNumber": 4,
-            "serviceId": "3"
-          },
-          {
-            "csvRowNumber": 5,
-            "serviceId": "4"
-          },
-          {
-            "csvRowNumber": 6,
-            "serviceId": "5"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 9
-      },
-      {
-        "code": "route_color_contrast",
-        "sample_notices": [
-          {
             "csvRowNumber": 7,
-            "routeColor": "#3300CC",
-            "routeId": "1",
-            "routeTextColor": "#000000"
+            "serviceId": "W"
           },
           {
-            "csvRowNumber": 22,
-            "routeColor": "#006666",
-            "routeId": "26",
-            "routeTextColor": "#000000"
+            "csvRowNumber": 8,
+            "serviceId": "U"
           },
           {
-            "csvRowNumber": 37,
-            "routeColor": "#3300FF",
-            "routeId": "51L",
-            "routeTextColor": "#000000"
-          },
-          {
-            "csvRowNumber": 71,
-            "routeColor": "#0000FF",
-            "routeId": "86",
-            "routeTextColor": "#000000"
-          },
-          {
-            "csvRowNumber": 91,
-            "routeColor": "#CC0000",
-            "routeId": "P16",
-            "routeTextColor": "#000000"
+            "csvRowNumber": 9,
+            "serviceId": "S"
           }
         ],
         "severity": "WARNING",
-        "total": 7
+        "total": 4
       },
       {
         "code": "missing_recommended_field",
@@ -147,19 +143,6 @@
         "total": 2
       },
       {
-        "code": "feed_expiration_date7_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260706",
-            "feedEndDate": "20260627",
-            "suggestedExpirationDate": "20260713"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "missing_feed_contact_email_and_url",
         "sample_notices": [
           {
@@ -170,52 +153,82 @@
         "total": 1
       },
       {
-        "code": "trip_coverage_not_active_for_next7_days",
-        "sample_notices": [
-          {
-            "currentDate": "20260706",
-            "serviceWindowEndDate": "20260626",
-            "serviceWindowStartDate": "20260223"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "unsorted_stop_times",
         "sample_notices": [
           {
-            "endCsvRowNumber": 559310,
-            "startCsvRowNumber": 559277,
-            "tripId": "18190020"
+            "endCsvRowNumber": 14927,
+            "startCsvRowNumber": 14879,
+            "tripId": "10232010"
           },
           {
-            "endCsvRowNumber": 639852,
-            "startCsvRowNumber": 639812,
-            "tripId": "19478090"
+            "endCsvRowNumber": 80218,
+            "startCsvRowNumber": 80188,
+            "tripId": "1074932010"
           },
           {
-            "endCsvRowNumber": 302890,
-            "startCsvRowNumber": 302821,
-            "tripId": "14114100"
+            "endCsvRowNumber": 881950,
+            "startCsvRowNumber": 881865,
+            "tripId": "8088020"
           },
           {
-            "endCsvRowNumber": 87926,
-            "startCsvRowNumber": 87896,
-            "tripId": "1075307100"
+            "endCsvRowNumber": 952081,
+            "startCsvRowNumber": 952070,
+            "tripId": "9173020"
           },
           {
-            "endCsvRowNumber": 892707,
-            "startCsvRowNumber": 892656,
-            "tripId": "3878010"
+            "endCsvRowNumber": 878259,
+            "startCsvRowNumber": 878171,
+            "tripId": "8039090"
           }
         ],
         "severity": "INFO",
-        "total": 23892
+        "total": 18344
+      },
+      {
+        "code": "service_window_outside_feed_period",
+        "sample_notices": [
+          {
+            "daysAfterFeedEnd": 9,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "2",
+            "serviceWindowEndDate": "2026-10-23",
+            "serviceWindowStartDate": "2026-06-29"
+          },
+          {
+            "daysAfterFeedEnd": 10,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "3",
+            "serviceWindowEndDate": "2026-10-24",
+            "serviceWindowStartDate": "2026-07-11"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 246,
+            "serviceId": "S",
+            "serviceWindowEndDate": "2026-02-21",
+            "serviceWindowStartDate": "2025-10-25"
+          },
+          {
+            "daysAfterFeedEnd": 4,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "5",
+            "serviceWindowEndDate": "2026-10-18",
+            "serviceWindowStartDate": "2026-06-28"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 252,
+            "serviceId": "U",
+            "serviceWindowEndDate": "2026-02-15",
+            "serviceWindowStartDate": "2025-10-19"
+          }
+        ],
+        "severity": "INFO",
+        "total": 6
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "f5cabff93bca657ce1a8c6bd5c67b718454a0312e8fab5d092210e206b7682fd",
+  "sha256": "7da2f0604a782a2ce53034ec96d0fd5bbb5c5c1e04a6f6fc3e804e1b92b0787e",
   "validator_version": "8.0.1"
 }

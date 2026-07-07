@@ -6,11 +6,10 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/port-authority-of-allegheny-county/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/port-authority-of-allegheny-county/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
-        "count": 6406,
+        "count": 6366,
         "examples": [
           "STEEL PLAZA STATION -> Steel Plaza Station",
           "WILLOW STATION -> Willow Station",
@@ -20,16 +19,16 @@
       },
       {
         "code": "autofix_route_name_case",
-        "count": 102,
+        "count": 98,
         "examples": [
-          "SILVER LINE -> Silver Line",
           "DUQUESNE INCLINE -> Duquesne Incline",
-          "MONONGAHELA INCLINE -> Monongahela Incline"
+          "MONONGAHELA INCLINE -> Monongahela Incline",
+          "SILVER LINE -> Silver Line"
         ],
         "label": "Recased shouting route names"
       }
     ],
-    "total": 6508
+    "total": 6464
   },
   "categories": {
     "completeness": {
@@ -81,8 +80,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 6428,
-        "trips": 24365,
+        "stops": 6388,
+        "trips": 18817,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -91,24 +90,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 6428,
+          "count": 6388,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "6428 of 6428 stops don't say whether a wheelchair user can board there.",
+          "what": "6388 of 6388 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_stop_names_all_caps",
-          "count": 6406,
+          "count": 6366,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Rename stops to mixed case (e.g. 'Main St & 2nd Ave').",
           "owner": "Likely your export tool",
           "points": 14.9,
           "severity": "INFO",
-          "what": "About 6406 stop names are written in ALL CAPS.",
+          "what": "About 6366 stop names are written in ALL CAPS.",
           "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
         },
         {
@@ -131,18 +130,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 9,
+        "distinct_codes": 8,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 23892,
-          "WARNING": 29932
+          "INFO": 18350,
+          "WARNING": 24333
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 29882,
+          "count": 24290,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -163,17 +162,6 @@
           "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
         },
         {
-          "code": "expired_calendar",
-          "count": 9,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already ended.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
-        {
           "code": "route_color_contrast",
           "count": 7,
           "effort": "One field per route.",
@@ -183,6 +171,17 @@
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
           "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 4,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
           "code": "missing_recommended_field",
@@ -196,17 +195,6 @@
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
-          "code": "feed_expiration_date7_days",
-          "count": 1,
-          "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Export and publish an updated GTFS feed that covers at least the next 30 days of service.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 7 days.",
-          "why": "When the calendar ends, Google Maps and other trip planners drop your agency entirely. Riders see no service at all."
-        },
-        {
           "code": "missing_feed_contact_email_and_url",
           "count": 1,
           "effort": "Varies.",
@@ -218,19 +206,8 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "trip_coverage_not_active_for_next7_days",
-          "count": 1,
-          "effort": "One setting in most export tools.",
-          "fix": "Trim past service periods the next time you export.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Many of the feed's trips don't run at all in the next 7 days.",
-          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
-        },
-        {
           "code": "unsorted_stop_times",
-          "count": 23892,
+          "count": 18344,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -238,101 +215,90 @@
           "severity": "INFO",
           "what": "Unsorted stop times (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 6,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Service window outside feed period (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 57.0,
+      "score": 66.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 9 kinds of issue across 53824 instances (0 error, 29932 warning, 23892 informational).",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 42683 instances (0 error, 24333 warning, 18350 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": -10,
-        "feed_end_date": "2026-06-27",
-        "feed_start_date": "2026-02-22",
-        "feed_version": "2602-BusRailCombined-Clever_NFL",
+        "days_until_expiry": 99,
+        "feed_end_date": "2026-10-14",
+        "feed_start_date": "2026-06-28",
+        "feed_version": "Merged_Clever_2606_2",
         "has_feed_info": true,
-        "last_service_date": "2026-06-27",
+        "last_service_date": "2026-10-24",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expired",
-          "count": 1,
-          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-          "owner": "Likely your export tool",
-          "points": 100.0,
-          "severity": "ERROR",
-          "what": "Service data ended 10 day(s) ago.",
-          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 0.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data ended 10 day(s) ago. Trip planners have likely already dropped this feed.",
+      "summary": "Service data covers the next 99 days.",
       "weight": 0.2
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 86.3,
+        "covered_trips": 303,
         "drift": {
-          "median_seconds": -476,
-          "observations": 687,
-          "on_time_share_pct": 2.5,
-          "p90_abs_seconds": 18382
+          "median_seconds": 233,
+          "observations": 9329,
+          "on_time_share_pct": 50.0,
+          "p90_abs_seconds": 732
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 0,
-        "vehicles_checked": 97,
-        "vehicles_on_route_pct": 12.4,
-        "worst_lag_seconds": 24
+        "scheduled_trips_in_window": 351,
+        "vehicles_checked": 860,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 28
       },
       "findings": [
         {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 85,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
-          "owner": "",
-          "points": 13.1,
-          "severity": "WARNING",
-          "what": "85 of 97 sampled vehicle positions were far from their assigned route (worst: 22781 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
-        },
-        {
-          "code": "scorecard_rt_predictions_implausible",
-          "count": 687,
+          "code": "scorecard_rt_trip_coverage",
+          "count": 48,
           "effort": "A vendor data-mapping question.",
-          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 0.0,
+          "points": 4.8,
           "severity": "WARNING",
-          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
-          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+          "what": "48 of 351 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 79.8,
+      "score": 95.2,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 12.4% of vehicles on their route; predictions ran a median of 476s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 86.3% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 233s behind schedule.",
       "weight": 0.2
     }
   },
   "confidence": {
     "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "medium",
+    "fetch_source": "origin",
+    "level": "high",
     "measured_categories": 4,
     "notes": [
       "All four score categories were measured this run.",
       "Realtime was sampled in one bounded window of 9 snapshots.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+      "The feed was downloaded from the agency's own URL."
     ],
     "rt_windows": 1,
     "total_categories": 4
@@ -346,9 +312,9 @@
         "met": true
       },
       {
-        "detail": "Service data expired 10 days ago.",
+        "detail": "Service data covers the next 99 days.",
         "key": "current",
-        "met": false
+        "met": true
       },
       {
         "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
@@ -357,20 +323,19 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 10 days ago. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "License: https://www.portauthority.org/business-center/developer-resources/developer-license-agreement/",
     "reachable": true,
-    "sha256": "f5cabff93bca657ce1a8c6bd5c67b718454a0312e8fab5d092210e206b7682fd",
-    "size_bytes": 22825185,
+    "sha256": "7da2f0604a782a2ce53034ec96d0fd5bbb5c5c1e04a6f6fc3e804e1b92b0787e",
+    "size_bytes": 22512403,
     "static_url": "https://www.portauthority.org/developerresources/GTFS.zip"
   },
   "fetch": {
-    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-pennsylvania-port-authority-of-allegheny-county-gtfs-409.zip?alt=media",
-    "max_attempts": 1,
-    "origin_error": "HTTPError",
-    "source": "mirror",
+    "final_url": "https://www.portauthority.org/developerresources/GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
   "generated_at": "2026-07-07T00:00:00+00:00",
@@ -381,9 +346,9 @@
       -79.70545,
       40.6676
     ],
-    "lat": 40.44582,
-    "lon": -79.95954,
-    "stop_count": 6428
+    "lat": 40.44571,
+    "lon": -79.95908,
+    "stop_count": 6388
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -405,56 +370,56 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 10 days ago, so FTA would find the link out of date.",
+        "detail": "Service data covers the next 99 days.",
         "key": "current",
-        "status": "not_ready"
+        "status": "ready"
       }
     ],
-    "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 10 days ago, so FTA would find the link out of date."
+    "status": "ready",
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 49.0,
-    "margin_to_next_band": 11.0,
-    "score": 49.0
+    "grade": "C",
+    "margin_to_lower_band": 5.4,
+    "margin_to_next_band": 4.6,
+    "score": 75.4
   },
   "recommendations": [
     {
       "code": "scorecard_route_color_low_contrast",
-      "count": 26,
+      "count": 23,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "26 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (1, 12, 26, 28X, 29, and more).",
+      "what": "23 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (1, 12, 26, 28X, 29, and more).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 6295,
+      "count": 6257,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "6295 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"KEEPORT DR + YOUNGRIDGE\", \"BROWNSVILLE RD + NOBLES LN\", \"BROWNSVILLE RD + THE BOULEVARD\", and more).",
+      "what": "6257 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"KEEPORT DR + YOUNGRIDGE\", \"BROWNSVILLE RD + NOBLES LN\", \"BROWNSVILLE RD + THE BOULEVARD\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
   "routability": {
-    "boardable_stops": 6428,
+    "boardable_stops": 6388,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 24365
+    "trips_total": 18817
   },
   "route_map": {
-    "drawn_route_count": 102,
+    "drawn_route_count": 98,
     "has_shapes": true,
     "path": "data/artifacts/port-authority-of-allegheny-county/geometry.geojson",
-    "route_count": 104,
+    "route_count": 102,
     "routes": [
       {
         "color": "3300CC",
@@ -1227,50 +1192,6 @@
         "type_label": "Bus"
       },
       {
-        "color": "8A5425",
-        "color_name": "brown",
-        "has_shape": true,
-        "id": "99E",
-        "label": "99E",
-        "long": "FOOTBALL FLYER EAST",
-        "short": "99E",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "733F12",
-        "color_name": "brown",
-        "has_shape": true,
-        "id": "99N",
-        "label": "99N",
-        "long": "FOOTBALL FLYER NORTH",
-        "short": "99N",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "AD6628",
-        "color_name": "brown",
-        "has_shape": true,
-        "id": "99S",
-        "label": "99S",
-        "long": "FOOTBALL FLYER SOUTH",
-        "short": "99S",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "A8560D",
-        "color_name": "brown",
-        "has_shape": true,
-        "id": "99W",
-        "label": "99W",
-        "long": "FLYER FOOTBALL WEST",
-        "short": "99W",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
         "color": "00E9FF",
         "color_name": "teal",
         "has_shape": true,
@@ -1335,6 +1256,17 @@
         "short": "MI",
         "text_color": "FFFFFF",
         "type_label": "Funicular"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "MISC",
+        "label": "MISC",
+        "long": "Miscellaneous for TCH display",
+        "short": "MISC",
+        "text_color": "000000",
+        "type_label": "Bus"
       },
       {
         "color": "FF6600",
@@ -1546,6 +1478,17 @@
         "type_label": "Rail"
       },
       {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "TEST",
+        "label": "TEST",
+        "long": "",
+        "short": "TEST",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
         "color": "FFFF33",
         "color_name": "yellow",
         "has_shape": true,
@@ -1601,55 +1544,55 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 6428,
+    "stop_count": 6388,
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "23418 of 24365 trips have a shape; 947 do not.",
+    "detail": "17870 of 18817 trips have a shape; 947 do not.",
     "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
     "status": "at_risk",
-    "total_trips": 24365,
-    "trips_with_shape": 23418
+    "total_trips": 18817,
+    "trips_with_shape": 17870
   },
   "snapshot_date": "2026-07-07",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expired",
-      "count": 1,
-      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-      "owner": "Likely your export tool",
-      "points": 100.0,
-      "rank": 1,
-      "severity": "ERROR",
-      "what": "Service data ended 10 day(s) ago.",
-      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-    },
-    {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 6428,
+      "count": 6388,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
-      "what": "6428 of 6428 stops don't say whether a wheelchair user can board there.",
+      "what": "6388 of 6388 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
-      "code": "scorecard_rt_vehicles_off_route",
-      "count": 85,
-      "effort": "A vendor support ticket with the trip ids attached.",
-      "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
-      "owner": "",
-      "points": 13.1,
+      "code": "mixed_case_recommended_field",
+      "count": 24290,
+      "effort": "Often a bulk fix in your scheduling software.",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+    },
+    {
+      "code": "unused_shape",
+      "count": 29,
+      "effort": "One setting.",
+      "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+      "owner": "Likely your export tool",
+      "points": 6.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "85 of 97 sampled vehicle positions were far from their assigned route (worst: 22781 m).",
-      "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+      "what": "The feed contains route shapes no trip uses.",
+      "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
     }
   ],
   "validator_version": "8.0.1"

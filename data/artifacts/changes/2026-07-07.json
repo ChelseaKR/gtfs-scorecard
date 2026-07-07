@@ -40,18 +40,6 @@
     {
       "date": "2026-07-07",
       "from_grade": "F",
-      "from_score": 56.8,
-      "id": "port-authority-of-allegheny-county",
-      "name": "Port Authority of Allegheny County",
-      "regressed": true,
-      "score_delta": -7.8,
-      "since": "2026-07-06",
-      "to_grade": "F",
-      "to_score": 49.0
-    },
-    {
-      "date": "2026-07-07",
-      "from_grade": "F",
       "from_score": 59.8,
       "id": "springfield-mass-transit-district-smtd",
       "name": "Springfield Mass Transit District (SMTD)",
@@ -68,10 +56,10 @@
       "id": "spirit-bus-2202",
       "name": "Spirit Bus",
       "regressed": true,
-      "score_delta": -3.1,
+      "score_delta": -2.5,
       "since": "2026-07-06",
       "to_grade": "D",
-      "to_score": 63.6
+      "to_score": 64.2
     },
     {
       "date": "2026-07-07",
@@ -80,10 +68,10 @@
       "id": "sandy-area-metro-sam-2739",
       "name": "Static feed for realtime",
       "regressed": true,
-      "score_delta": -2.6,
+      "score_delta": -1.3,
       "since": "2026-07-06",
       "to_grade": "D",
-      "to_score": 62.8
+      "to_score": 64.1
     },
     {
       "date": "2026-07-07",
@@ -183,6 +171,18 @@
     },
     {
       "date": "2026-07-07",
+      "from_grade": "F",
+      "from_score": 56.8,
+      "id": "port-authority-of-allegheny-county",
+      "name": "Port Authority of Allegheny County",
+      "regressed": false,
+      "score_delta": 18.6,
+      "since": "2026-07-06",
+      "to_grade": "C",
+      "to_score": 75.4
+    },
+    {
+      "date": "2026-07-07",
       "from_grade": "D",
       "from_score": 68.8,
       "id": "thousand-oaks-transit",
@@ -204,18 +204,6 @@
       "since": "2026-07-06",
       "to_grade": "C",
       "to_score": 72.7
-    },
-    {
-      "date": "2026-07-07",
-      "from_grade": "D",
-      "from_score": 63.2,
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
-      "regressed": false,
-      "score_delta": 3.5,
-      "since": "2026-07-06",
-      "to_grade": "D",
-      "to_score": 66.7
     },
     {
       "date": "2026-07-07",
@@ -242,8 +230,8 @@
       "to_score": 80.2
     }
   ],
-  "count": 20,
-  "generated_at": "2026-07-07T17:48:21+00:00",
+  "count": 19,
+  "generated_at": "2026-07-07T20:37:04+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }
