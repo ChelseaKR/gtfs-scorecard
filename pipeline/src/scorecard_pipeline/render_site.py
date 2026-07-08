@@ -3268,7 +3268,7 @@ def _rollup_shapes_section(rollup: dict[str, Any]) -> str:
         f'<span class="grade-count">{shapes["ready"]} of {measured}</span></h2>'
         '<p class="page-lede">The FTA National Transit Database requires shapes.txt covering '
         "every trip (Reduced, Rural, and Tribal reporters by Report Year 2026; Full Reporters "
-        "already). These agencies are not fully covered yet — check each one against its own "
+        "already). These agencies are not fully covered yet. Check each one against its own "
         "NTD filing.</p>"
         f'<ul class="program-list">{rows}</ul></section>'
     )
@@ -3306,8 +3306,8 @@ def _rollup_common_fixes_section(rollup: dict[str, Any]) -> str:
         '<section aria-labelledby="rollup-common-fixes-h">'
         '<h2 class="section-title" id="rollup-common-fixes-h">Fixes shared across this group'
         "</h2>"
-        '<p class="page-lede">The same fix shows up in more than one agency\'s top 3 here — '
-        "often the same export setting or scheduling-software step, worth raising once with "
+        '<p class="page-lede">The same fix shows up in more than one agency\'s top 3 here, '
+        "often the same export setting or scheduling-software step. Worth raising once with "
         "every agency it touches.</p>"
         f'<ul class="events">{rows}</ul>{more}</section>'
     )
