@@ -46,7 +46,7 @@
         "components": {
           "contact": 15.0,
           "fares": 15.0,
-          "headsigns": 12.8,
+          "headsigns": 12.9,
           "stop_names": 14.9,
           "wheelchair_stops": 0.0,
           "wheelchair_trips": 0.0
@@ -67,7 +67,7 @@
           "has_flex": true
         },
         "has_fares": true,
-        "headsign_pct": 85.3,
+        "headsign_pct": 85.8,
         "mixed_case_stop_name_pct": 99.6,
         "pathways": {
           "has_entrances": false,
@@ -78,7 +78,7 @@
           "pathway_count": 0
         },
         "stops": 509,
-        "trips": 402,
+        "trips": 394,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -98,24 +98,24 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 402,
+          "count": 394,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "402 of 402 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "394 of 394 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 59,
+          "count": 56,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
-          "points": 2.2,
+          "points": 2.1,
           "severity": "WARNING",
-          "what": "59 of 402 trips have no headsign.",
+          "what": "56 of 394 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -131,7 +131,7 @@
         }
       ],
       "name": "completeness",
-      "score": 57.7,
+      "score": 57.8,
       "status": "measured",
       "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
@@ -141,15 +141,15 @@
         "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 46,
-          "WARNING": 194
+          "INFO": 54,
+          "WARNING": 196
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 191,
+          "count": 193,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -178,7 +178,7 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
+          "why": "Route badges get hard to read, most of all for riders with low vision."
         },
         {
           "code": "unknown_column",
@@ -192,6 +192,17 @@
           "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
         },
         {
+          "code": "service_window_outside_feed_period",
+          "count": 12,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Service window outside feed period (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
           "code": "unknown_file",
           "count": 8,
           "effort": "Varies.",
@@ -201,31 +212,20 @@
           "severity": "INFO",
           "what": "Unknown file (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "service_window_outside_feed_period",
-          "count": 4,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.5,
-          "severity": "INFO",
-          "what": "Service window outside feed period (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 82.0,
+      "score": 81.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 240 instances (0 error, 194 warning, 46 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 250 instances (0 error, 196 warning, 54 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 116,
         "feed_end_date": "2026-11-01",
-        "feed_start_date": "2026-07-01",
-        "feed_version": "UTC: 30-Jun-2026 19:49",
+        "feed_start_date": "2026-07-08",
+        "feed_version": "UTC: 08-Jul-2026 15:47",
         "has_feed_info": true,
         "last_service_date": "2026-11-01",
         "seasonal_boundary": false,
@@ -245,6 +245,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -254,7 +266,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 122 days.",
+        "detail": "Service data covers the next 116 days.",
         "key": "current",
         "met": true
       },
@@ -270,11 +282,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "0612d41378c61d7d04a0774b86c64b21e093b17fdd26e83ab2a48e795a2ecc4c",
-    "size_bytes": 1570358,
+    "sha256": "a9f0e80dc5367ec5c80b66d1390d693e11f228bf38614e93d0805669e94087e9",
+    "size_bytes": 1269214,
     "static_url": "https://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.34502,
@@ -306,7 +324,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 122 days.",
+        "detail": "Service data covers the next 116 days.",
         "key": "current",
         "status": "ready"
       }
@@ -316,9 +334,9 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 8.9,
-    "margin_to_next_band": 1.1,
-    "score": 78.9
+    "margin_to_lower_band": 8.8,
+    "margin_to_next_band": 1.2,
+    "score": 78.8
   },
   "recommendations": [
     {
@@ -355,35 +373,30 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 509,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 191,
+        "count": 193,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "191 of 509 boardable stops are never served by any trip.",
+        "what": "193 of 509 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 191,
+    "orphan_stops": 193,
     "single_stop_trips": 0,
-    "trips_total": 402
+    "trips_total": 394
   },
   "route_map": {
-    "drawn_route_count": 24,
+    "drawn_route_count": 23,
     "has_shapes": true,
     "path": "data/artifacts/tri-valley-transit/geometry.geojson",
-    "route_count": 30,
+    "route_count": 29,
     "routes": [
       {
         "color": "E12727",
@@ -562,17 +575,6 @@
         "type_label": "Bus"
       },
       {
-        "color": "35C2E0",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "77111",
-        "label": "Strafford Extension",
-        "long": "Strafford Extension",
-        "short": "",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
         "color": "3D6C65",
         "color_name": "green",
         "has_shape": true,
@@ -720,7 +722,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 394 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 394,
+    "trips_with_shape": 394
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
@@ -737,19 +745,19 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 402,
+      "count": 394,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "402 of 402 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "394 of 394 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
       "code": "stop_without_stop_time",
-      "count": 191,
+      "count": 193,
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",

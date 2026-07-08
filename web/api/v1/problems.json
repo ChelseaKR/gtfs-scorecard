@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-08T17:07:28+00:00",
+  "generated_at": "2026-07-08T19:06:23+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.7
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 105,
-      "instances": 105,
-      "prevalence_pct": 7.2
+      "agencies": 103,
+      "instances": 103,
+      "prevalence_pct": 7.1
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -366,7 +366,7 @@
     },
     "scorecard_missing_headsigns": {
       "agencies": 722,
-      "instances": 417513,
+      "instances": 417507,
       "prevalence_pct": 49.8
     },
     "scorecard_no_expiry_date": {
@@ -401,7 +401,7 @@
     },
     "scorecard_rt_predictions_implausible": {
       "agencies": 8,
-      "instances": 3215,
+      "instances": 3251,
       "prevalence_pct": 0.6
     },
     "scorecard_rt_service_alerts_unreachable": {
@@ -415,9 +415,9 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 55,
-      "instances": 2008,
-      "prevalence_pct": 3.8
+      "agencies": 54,
+      "instances": 1964,
+      "prevalence_pct": 3.7
     },
     "scorecard_rt_trip_updates_unreachable": {
       "agencies": 45,
@@ -471,7 +471,7 @@
     },
     "service_window_outside_feed_period": {
       "agencies": 724,
-      "instances": 3062,
+      "instances": 3078,
       "prevalence_pct": 50.0
     },
     "single_shape_point": {
@@ -516,7 +516,7 @@
     },
     "stop_without_stop_time": {
       "agencies": 696,
-      "instances": 36987,
+      "instances": 36991,
       "prevalence_pct": 48.0
     },
     "stop_without_zone_id": {
@@ -661,7 +661,7 @@
       "code": "service_window_outside_feed_period",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 3062,
+      "instances": 3078,
       "prevalence_pct": 50.0,
       "severity": "INFO",
       "source": "validator",
@@ -673,7 +673,7 @@
       "code": "scorecard_missing_headsigns",
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
-      "instances": 417513,
+      "instances": 417507,
       "prevalence_pct": 49.8,
       "severity": "WARNING",
       "source": "scorecard",
@@ -685,7 +685,7 @@
       "code": "stop_without_stop_time",
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
-      "instances": 36987,
+      "instances": 36991,
       "prevalence_pct": 48.0,
       "severity": "WARNING",
       "source": "validator",

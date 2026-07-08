@@ -212,23 +212,23 @@
         "coverage_pct": 100.0,
         "covered_trips": 2,
         "drift": {
-          "median_seconds": 17,
-          "observations": 95,
-          "on_time_share_pct": 35.8,
-          "p90_abs_seconds": 7254
+          "median_seconds": -1850,
+          "observations": 66,
+          "on_time_share_pct": 12.1,
+          "p90_abs_seconds": 7966
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 2,
-        "vehicles_checked": 9,
+        "vehicles_checked": 6,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 2
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 95,
+          "count": 66,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -241,7 +241,7 @@
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 17s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 1850s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -283,7 +283,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "3002bcc5b43b0bef69fe0cdd40572e144766d549ea13476f95951e794746a7b8",
+    "sha256": "a169177311015041900bb35af66142b81f7133d37bee6628fdaf69b528a91979",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },

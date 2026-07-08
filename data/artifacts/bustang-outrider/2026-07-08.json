@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -197,32 +201,20 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 24,
-        "feed_end_date": "2026-08-01",
-        "feed_start_date": "2026-01-29",
-        "feed_version": "UTC: 29-Jan-2026 21:32",
+        "days_until_expiry": 208,
+        "feed_end_date": "2027-02-01",
+        "feed_start_date": "2026-07-08",
+        "feed_version": "UTC: 08-Jul-2026 18:21",
         "has_feed_info": true,
-        "last_service_date": "2026-08-01",
+        "last_service_date": "2027-02-01",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 56.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 24 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 40.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data runs out in 24 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 208 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -231,6 +223,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -241,7 +245,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 208 days.",
         "key": "current",
         "met": true
       },
@@ -257,11 +261,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "3412c9e58f1283410f820de03487b07a18ecd9f576554dcfe120bf8efc9a575e",
-    "size_bytes": 1083371,
+    "sha256": "d6b93d3671488d626b7a1fdd1f5caa210d9a306818151d79a44e65a66b2cfcf5",
+    "size_bytes": 1083376,
     "static_url": "https://data.trilliumtransit.com/gtfs/outrider-co-us/outrider-co-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/outrider-co-us/outrider-co-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -108.56424,
@@ -274,7 +284,7 @@
     "stop_count": 83
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "249"
     ],
@@ -293,19 +303,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 208 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 5.7,
-    "margin_to_next_band": 4.3,
-    "score": 65.7
+    "grade": "B",
+    "margin_to_lower_band": 0.7,
+    "margin_to_next_band": 9.3,
+    "score": 80.7
   },
   "recommendations": [
     {
@@ -353,11 +363,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 82,
     "findings": [
@@ -377,22 +382,114 @@
     "single_stop_trips": 0,
     "trips_total": 20
   },
+  "route_map": {
+    "drawn_route_count": 8,
+    "has_shapes": true,
+    "path": "data/artifacts/bustang-outrider/geometry.geojson",
+    "route_count": 8,
+    "routes": [
+      {
+        "color": "EC881E",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "15554",
+        "label": "CDOT Outrider",
+        "long": "Crested Butte - Denver",
+        "short": "CDOT Outrider",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "41AD49",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "15565",
+        "label": "CDOT Outrider",
+        "long": "Lamar - Colorado Springs",
+        "short": "CDOT Outrider",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E7BB20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "15566",
+        "label": "CDOT Outrider",
+        "long": "Alamosa - Pueblo",
+        "short": "CDOT Outrider",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DE0079",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "15570",
+        "label": "CDOT Outrider",
+        "long": "Durango - Grand Junction",
+        "short": "CDOT Outrider",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36667F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "32590",
+        "label": "CDOT Outrider",
+        "long": "Craig - Denver",
+        "short": "CDOT Outrider",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C52134",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "32592",
+        "label": "CDOT Outrider",
+        "long": "Trinidad - Pueblo",
+        "short": "CDOT Outrider",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "68532D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "32593",
+        "label": "CDOT Outrider",
+        "long": "Sterling - Greeley",
+        "short": "CDOT Outrider",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A96513",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "74969",
+        "label": "CDOT Outrider",
+        "long": "Sterling - Denver",
+        "short": "CDOT Outrider",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 83,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 20 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 20,
+    "trips_with_shape": 20
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
-    {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 56.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 24 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 83,
@@ -400,7 +497,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "83 of 83 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -412,10 +509,22 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "20 of 20 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "route_short_name_too_long",
+      "count": 8,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 6.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Route short name too long (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
     }
   ],
   "validator_version": "8.0.1"

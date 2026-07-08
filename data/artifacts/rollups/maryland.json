@@ -1,6 +1,6 @@
 {
   "agency_count": 36,
-  "average_score": 52.2,
+  "average_score": 52.3,
   "common_fixes": [
     {
       "agencies": 28,
@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 21
   },
-  "generated_at": "2026-07-08T17:07:03+00:00",
+  "generated_at": "2026-07-08T19:05:58+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 2,
@@ -361,7 +361,7 @@
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "needs_attention": true,
-      "score": 56.5,
+      "score": 56.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
@@ -417,10 +417,10 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "needs_attention": true,
-      "score": 63.7,
+      "score": 66.5,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
-      "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,

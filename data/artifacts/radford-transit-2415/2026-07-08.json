@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/radford-transit-2415/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/radford-transit-2415/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -39,6 +38,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 0.0,
@@ -207,32 +210,20 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 24,
-        "feed_end_date": "2026-08-01",
-        "feed_start_date": "2026-03-02",
-        "feed_version": "UTC: 02-Mar-2026 22:49",
+        "days_until_expiry": 208,
+        "feed_end_date": "2027-02-01",
+        "feed_start_date": "2026-07-08",
+        "feed_version": "UTC: 08-Jul-2026 17:43",
         "has_feed_info": true,
-        "last_service_date": "2026-08-01",
+        "last_service_date": "2027-02-01",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 56.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 24 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 40.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data runs out in 24 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 208 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -241,6 +232,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -251,7 +254,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 208 days.",
         "key": "current",
         "met": true
       },
@@ -267,11 +270,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "bd2aad260d52ac55a2db032413c25941e8631ffad7bd1b013c6d025238c5e2ce",
-    "size_bytes": 255309,
+    "sha256": "491c89e78e0ad8f2367f1c2883ea83620435634b8c14ea8bc64da99a94907ff7",
+    "size_bytes": 255299,
     "static_url": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.69635,
@@ -284,7 +293,7 @@
     "stop_count": 120
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "5050"
     ],
@@ -303,19 +312,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 208 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 0.5,
-    "margin_to_next_band": 9.5,
-    "score": 60.5
+    "grade": "C",
+    "margin_to_lower_band": 5.5,
+    "margin_to_next_band": 4.5,
+    "score": 75.5
   },
   "recommendations": [
     {
@@ -352,11 +361,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 120,
     "findings": [
@@ -376,22 +380,180 @@
     "single_stop_trips": 0,
     "trips_total": 336
   },
+  "route_map": {
+    "drawn_route_count": 13,
+    "has_shapes": true,
+    "path": "data/artifacts/radford-transit-2415/geometry.geojson",
+    "route_count": 14,
+    "routes": [
+      {
+        "color": "3182BD",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "77238",
+        "label": "100",
+        "long": "NRCC",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "17BECF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "77239",
+        "label": "60",
+        "long": "South Beech Express",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F77B4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "77240",
+        "label": "50",
+        "long": "Highlander Circle",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A55194",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "77242",
+        "label": "41",
+        "long": "NRV Connect",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A55194",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "77243",
+        "label": "40",
+        "long": "NRV Connect Late Night",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A55194",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "77244",
+        "label": "40",
+        "long": "NRV Connect",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2CA02C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "77245",
+        "label": "35",
+        "long": "New River Rapid",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "637939",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "77246",
+        "label": "30",
+        "long": "New River Rapid",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6550D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "77247",
+        "label": "25",
+        "long": "New River Rapid",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDAE6B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "77248",
+        "label": "20",
+        "long": "New River Rapid",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF55",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "77249",
+        "label": "15",
+        "long": "University Express",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "756BB1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "77250",
+        "label": "11",
+        "long": "University Express",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D62728",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "77251",
+        "label": "10",
+        "long": "University Express Sunday",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D62728",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "77252",
+        "label": "10",
+        "long": "University Express",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 120,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 336 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 336,
+    "trips_with_shape": 336
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
-    {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 56.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 24 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 120,
@@ -399,7 +561,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "120 of 120 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -411,10 +573,22 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "336 of 336 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 336,
+      "effort": "Usually a bulk edit in your scheduling software.",
+      "fix": "Populate trip_headsign to match what the bus displays.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "336 of 336 trips have no headsign.",
+      "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],
   "validator_version": "8.0.1"
