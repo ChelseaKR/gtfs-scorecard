@@ -167,6 +167,7 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/submit.html">Add your agency</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
+      <a href="/status/">Pipeline status</a> ·
       <a href="/support/">Support this project</a> ·
       <a href="/how-to-read/">How to read a scorecard</a> ·
       <a href="/how-to-read/#glossary">Glossary</a> ·

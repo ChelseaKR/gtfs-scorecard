@@ -5967,6 +5967,178 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     )
 
 
+_STALENESS_BUCKETS: tuple[tuple[str, Callable[[float], bool]], ...] = (
+    ("under 1 day", lambda d: d < 1),
+    ("1-2 days", lambda d: 1 <= d < 3),
+    ("3-7 days", lambda d: 3 <= d < 8),
+    ("over 7 days", lambda d: d >= 8),
+)
+
+
+def _staleness_distribution(
+    catalog: list[dict[str, Any]], now: dt.datetime
+) -> list[tuple[str, int]]:
+    """Bucket every tracked agency's snapshot age (catalog[i]["retrieved_at"],
+    which is the artifact's generated_at) so /status/ can answer "how fresh is
+    this dataset right now" without trusting the maintainer's word (FIX-11's
+    "excellent looks like" bar). An unparsable or missing timestamp counts as
+    "unknown" rather than being silently dropped."""
+    counts: dict[str, int] = {label: 0 for label, _ in _STALENESS_BUCKETS}
+    unknown = 0
+    for row in catalog:
+        raw = row.get("retrieved_at")
+        try:
+            when = dt.datetime.fromisoformat(str(raw))
+            if when.tzinfo is None:
+                when = when.replace(tzinfo=dt.UTC)
+        except (TypeError, ValueError):
+            unknown += 1
+            continue
+        age_days = max(0.0, (now - when).total_seconds() / 86400)
+        for label, test in _STALENESS_BUCKETS:
+            if test(age_days):
+                counts[label] += 1
+                break
+    result = [(label, counts[label]) for label, _ in _STALENESS_BUCKETS]
+    if unknown:
+        result.append(("unknown", unknown))
+    return result
+
+
+def _status_shard_rows(shards: list[dict[str, Any]]) -> str:
+    rows = []
+    for s in shards:
+        rows.append(
+            "<tr>"
+            f"<td>{esc(str(s.get('shard', '')))}</td>"
+            f"<td>{s.get('scored', 0)}</td>"
+            f"<td>{s.get('reused', 0)}</td>"
+            f"<td>{s.get('unreachable', 0)}</td>"
+            f"<td>{s.get('mirrored', 0)}</td>"
+            f"<td>{s.get('cache_hit', 0)}</td>"
+            f"<td>{s.get('wall_clock_seconds', 0):.0f}s</td>"
+            "</tr>"
+        )
+    return "".join(rows)
+
+
+def _render_status_page(
+    run_summary: dict[str, Any] | None, catalog: list[dict[str, Any]], now: dt.datetime
+) -> str:
+    """The public pipeline-health surface (FIX-11,
+    docs/ideation/02-large-scale-fixes.md): what the daily run itself did --
+    shard outcomes, unreachable feeds, mirror fallbacks, validator cache hits --
+    plus how stale the published catalog is right now. Users are asked to trust
+    the daily numbers; the operational evidence used to live only in private
+    Actions logs, so one shard failing left ~1/12 of agencies silently showing
+    yesterday's data with no signal anywhere on the site. This page is that
+    signal, built entirely from data/artifacts/run/latest.json (merged by
+    `scorecard run-summary merge` in the collect job) and the same catalog the
+    directory page reads -- no separate trust required."""
+    canonical = f"{BASE_URL}/status/"
+    staleness = _staleness_distribution(catalog, now)
+    staleness_rows = "".join(
+        f"<tr><td>{esc(label)}</td><td>{count}</td></tr>" for label, count in staleness
+    )
+
+    if run_summary is None:
+        run_section = """    <section class="feed-details"><h2 class="section-title">Last daily run</h2>
+    <p>No run-health summary has been published yet. This page fills in the day after the
+    first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>"""
+    else:
+        generated_at = dt.datetime.fromisoformat(run_summary["generated_at"])
+        degraded = bool(run_summary.get("degraded"))
+        threshold_pct = round(run_summary.get("degraded_threshold", 0) * 100)
+        badge_class = "pill-warn" if degraded else "pill-ok"
+        badge_text = "Degraded" if degraded else "Healthy"
+        unreachable_agencies = run_summary.get("unreachable_agencies", [])
+        names_by_id = {row["id"]: row["name"] for row in catalog}
+        unreachable_list = (
+            "<ul>"
+            + "".join(
+                f'<li><a href="/agency/{esc(aid)}/">{esc(names_by_id.get(aid, aid))}</a></li>'
+                for aid in unreachable_agencies
+            )
+            + "</ul>"
+            if unreachable_agencies
+            else "<p>No agencies were unreachable this run.</p>"
+        )
+        degraded_note = (
+            f"""<p><span class="{badge_class}">Degraded run</span>. More than
+        {threshold_pct}% of agencies could not be refreshed. The agencies below are still
+        showing their last good scorecard, not today's data.</p>"""
+            if degraded
+            else ""
+        )
+        shard_count = run_summary.get("shard_count", 0)
+        shard_word = "shard" if shard_count == 1 else "shards"
+        run_section = f"""    <section class="feed-details"><h2 class="section-title">Last daily run</h2>
+    <p><span class="{badge_class}">{badge_text}</span>
+    Generated {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}),
+    across {shard_count} {shard_word}, {run_summary.get("agency_count", 0)}
+    agencies attempted.</p>
+    {degraded_note}
+    <dl>
+      <dt>Scored (fresh data this run)</dt><dd>{run_summary.get("scored", 0)}</dd>
+      <dt>Reused (feed unchanged since last check)</dt><dd>{run_summary.get("reused", 0)}</dd>
+      <dt>Unreachable (kept last good artifact)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
+      <dt>Fell back to the Mobility Database mirror</dt><dd>{run_summary.get("mirrored", 0)}</dd>
+      <dt>Validator cache hits</dt><dd>{run_summary.get("cache_hit", 0)}</dd>
+    </dl>
+    </section>
+
+    <section class="feed-details"><h2 class="section-title">Per-shard breakdown</h2>
+    <div style="overflow-x:auto"><table class="trend-table">
+      <caption class="visually-hidden">Outcome counts by CI shard</caption>
+      <thead><tr><th scope="col">Shard</th><th scope="col">Scored</th>
+      <th scope="col">Reused</th><th scope="col">Unreachable</th><th scope="col">Mirrored</th>
+      <th scope="col">Cache hit</th><th scope="col">Wall clock</th></tr></thead>
+      <tbody>{_status_shard_rows(run_summary.get("shards", []))}</tbody>
+    </table></div>
+    </section>
+
+    <section class="feed-details"><h2 class="section-title">Agencies unreachable this run</h2>
+    <p>The pipeline could not fetch or validate these feeds today; each is still showing its
+    last successful scorecard. This is usually the agency's feed host being down, not a
+    pipeline bug -- if a name stays on this list for several days running, its own feed URL
+    is worth checking.</p>
+    {unreachable_list}
+    </section>"""
+
+    body = f"""    {_breadcrumb([("Home", "/"), ("Pipeline status", None)])}
+    <a class="backlink" href="/">&larr; Home</a>
+    <h1 class="page-title">Pipeline status.</h1>
+    <p class="page-lede">What the daily pipeline itself did, published the same way the
+    scorecards are: shard outcomes, feeds it could not reach, and how stale the catalog is
+    right now. No part of this page requires trusting the maintainer's word.</p>
+
+{run_section}
+
+    <section class="feed-details"><h2 class="section-title">Catalog freshness</h2>
+    <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
+    (not just this run -- an agency scored successfully days ago still counts here if nothing
+    has re-triggered a fetch since).</p>
+    <div style="overflow-x:auto"><table class="trend-table">
+      <caption class="visually-hidden">Agency count by snapshot age</caption>
+      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
+      <tbody>{staleness_rows}</tbody>
+    </table></div>
+    </section>
+
+    <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
+    refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
+    the grades themselves mean.</p>"""
+    return _page(
+        title="Pipeline status — GTFS Scorecard",
+        description=(
+            "Daily pipeline run health: shard outcomes, unreachable feeds, mirror "
+            "fallbacks, and how fresh the published catalog is right now."
+        ),
+        canonical=canonical,
+        body=body,
+    )
+
+
 def _render_press_page() -> str:
     """The reporter's page (/press/): how to cite the data, the claims it does
     and does not support, and where the story-ready cuts live. Guards the
@@ -6624,6 +6796,26 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # over same-origin HTTP. One source (score.methodology), two byte-identical
     # copies, so the interactive widget and the pipeline agree by construction.
     write("api/v1/scoring.json", scoring_json)
+
+    # Public pipeline-health surface (FIX-11): what the daily run itself did,
+    # merged by `scorecard run-summary merge` into data/artifacts/run/latest.json
+    # in the collect job. Absent on the first render after this shipped (no run
+    # has published a summary yet); the page and API both degrade to an
+    # explicit "not published yet" rather than a broken page.
+    run_summary_path = art / "run" / "latest.json"
+    run_summary: dict[str, Any] | None = None
+    if run_summary_path.exists():
+        try:
+            run_summary = json.loads(run_summary_path.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            print(
+                f"::warning title=unreadable run summary::{run_summary_path}: {exc}",
+                file=sys.stderr,
+            )
+    write("api/v1/run-status.json", json.dumps(run_summary, indent=2, sort_keys=True) + "\n")
+    write(
+        "status/index.html", _render_status_page(run_summary, catalog, now), f"{BASE_URL}/status/"
+    )
 
     # liveness_state was loaded earlier (with the directory page); each agency
     # page below reuses that same read.
