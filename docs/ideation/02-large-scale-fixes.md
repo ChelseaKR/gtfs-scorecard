@@ -461,6 +461,22 @@ never conflicts with an unrelated agency's edit.
 
 ## FIX-13 — Repository data-plane remediation beyond the planned S3 cutover
 
+**Status: ADR written (2026-07-08) — decision made, execution still gated on
+the S3 cutover.** `docs/decisions/0030-data-plane-history-remediation.md`
+decides: (a) no orphan `data` branch or separate repo — the S3 cutover already
+in flight (`follow-ups.md`) is the one mechanism needed to stop future data
+commits; (b) prerendered `web/agency/**` pages move to a CI render step in
+`pages.yml` instead of staying committed, once the cutover lands; (c) no
+history rewrite — existing SHAs, PR links, and the not-yet-started
+`dataset-YYYY-MM` tag scheme must keep resolving. Re-measured at write time:
+`.git` is now 884 MB (up from the 521 MB noted below a week earlier),
+`data/artifacts` is 534 MB, `web/agency/` still carries 1,449 committed
+directories. Execution (the actual `pages.yml` change and dropping
+`web/agency/**` from the collect job's `git add`) is deferred until
+`follow-ups.md` steps 1–3 (the S3 cutover itself) ship, per the sequencing
+this item always called for — that part remains a maintainer-scheduled
+migration, not done here.
+
 **Pitch.** Decide, once and deliberately, what to do about the data already in
 git — 521 MB of `.git`, 382 MB of committed artifacts, 1,449 prerendered pages,
 and hourly `chore(data)` commits — not just about future writes.

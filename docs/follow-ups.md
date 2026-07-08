@@ -43,7 +43,17 @@ Remaining steps, in order:
 The web app's runtime data source does not change: it keeps reading same-origin
 from Pages, so there is no CDN-staleness risk (see the note in
 `web/src/config.js`). The prerendered SEO pages under `web/` still deploy via
-Pages and stay committed.
+Pages and stay committed for now.
+
+**Fold in when executing step 3.** `docs/decisions/0030-data-plane-history-remediation.md`
+(ADR 0030) decided that stopping `web/agency/**` from being committed —
+building it in `pages.yml` from `render-site` instead, the same way `_site/`
+is already assembled — should happen in the same cutover as step 3, so there
+is one migration story instead of two. Add that `pages.yml` render step and
+drop `web/agency/**` from the collect job's `git add` path list alongside step
+3, not as a separate follow-up. ADR 0030 also covers (and rejects, for now) an
+orphan `data` branch / separate data repo and any history rewrite — see that
+ADR for the reasoning.
 
 ## Fan-out compute (`infra/compute`, roadmap Year 2)
 
