@@ -240,26 +240,26 @@
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 19,
+        "covered_trips": 35,
         "drift": {
-          "median_seconds": 42,
-          "observations": 553,
-          "on_time_share_pct": 57.1,
-          "p90_abs_seconds": 383
+          "median_seconds": 51,
+          "observations": 1228,
+          "on_time_share_pct": 66.3,
+          "p90_abs_seconds": 293
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 19,
-        "vehicles_checked": 53,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 15
+        "scheduled_trips_in_window": 35,
+        "vehicles_checked": 100,
+        "vehicles_on_route_pct": 97.0,
+        "worst_lag_seconds": 17
       },
       "findings": [],
       "name": "realtime",
-      "score": 100.0,
+      "score": 99.5,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 42s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 97.0% of vehicles on their route; predictions ran a median of 51s behind schedule.",
       "weight": 0.2
     }
   },
@@ -285,7 +285,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 67 days.",
+        "detail": "Service data covers the next 66 days.",
         "key": "current",
         "met": true
       },
@@ -311,7 +311,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -117.91555,
@@ -343,7 +343,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 67 days.",
+        "detail": "Service data covers the next 66 days.",
         "key": "current",
         "status": "ready"
       }
@@ -353,9 +353,9 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 3.9,
-    "margin_to_next_band": 6.1,
-    "score": 73.9
+    "margin_to_lower_band": 3.8,
+    "margin_to_next_band": 6.2,
+    "score": 73.8
   },
   "recommendations": [
     {
@@ -381,11 +381,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2326,
     "findings": [

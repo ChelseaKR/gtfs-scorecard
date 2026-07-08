@@ -286,21 +286,13 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 83.3,
-        "covered_trips": 10,
-        "drift": {
-          "median_seconds": -124,
-          "observations": 92,
-          "on_time_share_pct": 31.5,
-          "p90_abs_seconds": 417
-        },
+        "coverage_pct": 0.0,
+        "covered_trips": 0,
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 12,
-        "vehicles_checked": 27,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 2
+        "scheduled_trips_in_window": 2,
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
@@ -320,16 +312,16 @@
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 5.8,
+          "points": 35.0,
           "severity": "WARNING",
-          "what": "2 of 12 trips scheduled during the sampling window had no live predictions.",
+          "what": "2 of 2 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 85.8,
+      "score": 49.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 83.3% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 124s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
       "weight": 0.2
     }
   },
@@ -371,7 +363,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "eb561ee68214d95d9c3f8e415b38db9990eaa0a048883732ee010de7b3d24035",
+    "sha256": "ceb792e575ae94094f908471f08465e7cc3f42484ece02f1f1e3002f0e4c7588",
     "size_bytes": 380186,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -423,9 +415,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 59.1,
-    "margin_to_next_band": 0.9,
-    "score": 59.1
+    "margin_to_lower_band": 51.8,
+    "margin_to_next_band": 8.2,
+    "score": 51.8
   },
   "recommendations": [
     {

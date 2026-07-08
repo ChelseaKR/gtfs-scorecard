@@ -151,11 +151,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 2,
+        "distinct_codes": 3,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 2,
-          "WARNING": 80
+          "WARNING": 81
         },
         "validator_version": "8.0.1"
       },
@@ -172,6 +172,17 @@
           "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
         },
         {
+          "code": "feed_expiration_date30_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 30 days.",
+          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+        },
+        {
           "code": "service_window_outside_feed_period",
           "count": 2,
           "effort": "Varies.",
@@ -184,9 +195,9 @@
         }
       ],
       "name": "correctness",
-      "score": 91.5,
+      "score": 87.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 2 kinds of issue across 82 instances (0 error, 80 warning, 2 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 83 instances (0 error, 81 warning, 2 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -247,7 +258,7 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 30 days; renew to qualify.",
+        "detail": "Service data runs out in 29 days; renew to qualify.",
         "key": "current",
         "met": false
       },
@@ -258,12 +269,12 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data runs out in 29 days; renew to qualify. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "96f9b4db6f3c200418835dcba338c9342641788f660fe096b6374c5bf6acf6f7",
+    "sha256": "4d3c855956821229655bb3f9c22dc7b21f99b0665047799efc5d5defb27cc6f4",
     "size_bytes": 27630,
     "static_url": "https://passio3.com/rosemead/passioTransit/gtfs/google_transit.zip"
   },
@@ -273,7 +284,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.10379,
@@ -305,19 +316,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 30 days; renew before you certify.",
+        "detail": "Service data runs out in 29 days; renew before you certify.",
         "key": "current",
         "status": "at_risk"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 30 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. Service data runs out in 29 days; renew before you certify."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 56.8,
-    "margin_to_next_band": 3.2,
-    "score": 56.8
+    "margin_to_lower_band": 55.1,
+    "margin_to_next_band": 4.9,
+    "score": 55.1
   },
   "recommendations": [
     {
@@ -343,11 +354,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 80,
     "findings": [],

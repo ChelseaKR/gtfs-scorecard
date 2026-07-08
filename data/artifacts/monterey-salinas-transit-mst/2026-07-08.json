@@ -149,7 +149,7 @@
         "kinds_reachable": 0,
         "rt_freshness": null,
         "samples": 9,
-        "scheduled_trips_in_window": 33,
+        "scheduled_trips_in_window": 9,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -188,13 +188,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 33,
+          "count": 9,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "33 of 33 trips scheduled during the sampling window had no live predictions.",
+          "what": "9 of 9 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -227,7 +227,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 52 days.",
+        "detail": "Service data covers the next 51 days.",
         "key": "current",
         "met": true
       },
@@ -253,7 +253,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -121.93603,
@@ -287,7 +287,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 52 days.",
+        "detail": "Service data covers the next 51 days.",
         "key": "current",
         "status": "ready"
       }
@@ -314,11 +314,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 975,
     "findings": [],

@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 63,
+      "agencies": 62,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -79,6 +79,11 @@
     },
     {
       "agencies": 2,
+      "code": "scorecard_rt_trip_coverage",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
+    },
+    {
+      "agencies": 2,
       "code": "trip_distance_exceeds_shape_distance",
       "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -93,12 +98,12 @@
     "stale": 30,
     "total": 35
   },
-  "generated_at": "2026-07-08T00:36:09+00:00",
+  "generated_at": "2026-07-08T04:10:31+00:00",
   "grade_distribution": {
     "B": 24,
     "C": 22,
-    "D": 5,
-    "F": 41
+    "D": 4,
+    "F": 42
   },
   "members": [
     {
@@ -621,14 +626,14 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
+      "attention_reason": "Grade slipped from D to F",
       "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
-      "grade": "D",
+      "grade": "F",
       "id": "sandy-area-metro-sam-2739",
       "name": "Static feed for realtime",
       "needs_attention": true,
-      "score": 63.0,
+      "score": 60.0,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
@@ -642,7 +647,7 @@
       "id": "clackco-connects-clackamas-county-2740",
       "name": "Static feed for realtime",
       "needs_attention": true,
-      "score": 65.7,
+      "score": 65.0,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."

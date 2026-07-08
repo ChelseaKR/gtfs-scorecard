@@ -1,6 +1,6 @@
 {
   "agency_count": 4,
-  "average_score": 64.9,
+  "average_score": 64.5,
   "common_fixes": [
     {
       "agencies": 3,
@@ -23,10 +23,10 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-08T00:36:09+00:00",
+  "generated_at": "2026-07-08T04:10:31+00:00",
   "grade_distribution": {
     "A": 1,
-    "C": 1,
+    "D": 1,
     "F": 2
   },
   "members": [
@@ -60,14 +60,14 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
+      "attention_reason": "Grade slipped from C to D",
       "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
-      "grade": "C",
+      "grade": "D",
       "id": "city-of-jackson-jtran",
       "name": "City of Jackson (JTRAN)",
       "needs_attention": true,
-      "score": 70.6,
+      "score": 68.9,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."

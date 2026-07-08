@@ -129,11 +129,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 7,
+        "distinct_codes": 8,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 14,
-          "WARNING": 38
+          "WARNING": 39
         },
         "validator_version": "8.0.1"
       },
@@ -194,6 +194,17 @@
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
+          "code": "feed_expiration_date30_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 30 days.",
+          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+        },
+        {
           "code": "service_window_outside_feed_period",
           "count": 11,
           "effort": "Varies.",
@@ -217,9 +228,9 @@
         }
       ],
       "name": "correctness",
-      "score": 72.8,
+      "score": 68.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 52 instances (0 error, 38 warning, 14 informational).",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 53 instances (0 error, 39 warning, 14 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -280,7 +291,7 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 30 days; renew to qualify.",
+        "detail": "Service data runs out in 29 days; renew to qualify.",
         "key": "current",
         "met": false
       },
@@ -291,12 +302,12 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 17% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data runs out in 29 days; renew to qualify. States wheelchair access on 0% of stops and 17% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "License: https://data.ny.gov/download/77gx-ii52/application/pdf",
     "reachable": true,
-    "sha256": "f19f78138b078a43f08792589556259f5e9a073eacc2a0256a719725366ef841",
+    "sha256": "df8e2e4154575e6122c5d3eae4eec4d4dc43988fe7a3b04a98d1a77578ebd63a",
     "size_bytes": 933200,
     "static_url": "https://passio3.com/stlawrence/passioTransit/gtfs/google_transit.zip"
   },
@@ -306,7 +317,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -75.75632,
@@ -338,19 +349,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 30 days; renew before you certify.",
+        "detail": "Service data runs out in 29 days; renew before you certify.",
         "key": "current",
         "status": "at_risk"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 30 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. Service data runs out in 29 days; renew before you certify."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 55.1,
-    "margin_to_next_band": 4.9,
-    "score": 55.1
+    "margin_to_lower_band": 53.3,
+    "margin_to_next_band": 6.7,
+    "score": 53.3
   },
   "recommendations": [
     {
@@ -376,11 +387,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 153,
     "findings": [

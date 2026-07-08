@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-08T00:36:34+00:00",
+  "generated_at": "2026-07-08T04:10:56+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.6
     },
     "feed_expiration_date30_days": {
-      "agencies": 36,
-      "instances": 36,
-      "prevalence_pct": 2.5
+      "agencies": 41,
+      "instances": 41,
+      "prevalence_pct": 2.8
     },
     "feed_expiration_date7_days": {
       "agencies": 508,
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.7
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 129,
-      "instances": 129,
-      "prevalence_pct": 8.9
+      "agencies": 128,
+      "instances": 128,
+      "prevalence_pct": 8.8
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -400,8 +400,8 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 5,
-      "instances": 2798,
+      "agencies": 4,
+      "instances": 2744,
       "prevalence_pct": 0.3
     },
     "scorecard_rt_service_alerts_unreachable": {
@@ -415,9 +415,9 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 53,
-      "instances": 1968,
-      "prevalence_pct": 3.7
+      "agencies": 50,
+      "instances": 1931,
+      "prevalence_pct": 3.5
     },
     "scorecard_rt_trip_updates_unreachable": {
       "agencies": 45,
@@ -430,8 +430,8 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 8,
-      "instances": 171,
+      "agencies": 9,
+      "instances": 172,
       "prevalence_pct": 0.6
     },
     "scorecard_station_no_pathways": {

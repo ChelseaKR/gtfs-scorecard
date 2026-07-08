@@ -83,7 +83,7 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-08T00:36:09+00:00",
+  "generated_at": "2026-07-08T04:10:31+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 29,
@@ -668,20 +668,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
-      "needs_attention": true,
-      "score": 61.7,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 24 day(s)",
       "days_until_expiry": 24,
       "expiry_status": "expiring_soon",
@@ -733,6 +719,20 @@
       "needs_attention": true,
       "score": 63.2,
       "shapes_status": null,
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
+      "needs_attention": true,
+      "score": 65.0,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
