@@ -18,10 +18,14 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 0.0,
-          "headsigns": 0.8,
+          "headsigns": 1.1,
           "stop_names": 15.0,
           "wheelchair_stops": 0.0,
           "wheelchair_trips": 0.0
@@ -42,7 +46,7 @@
           "has_flex": true
         },
         "has_fares": false,
-        "headsign_pct": 5.7,
+        "headsign_pct": 7.3,
         "mixed_case_stop_name_pct": 100.0,
         "pathways": {
           "has_entrances": false,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 90,
-        "trips": 53,
+        "trips": 41,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -73,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 53,
+          "count": 41,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "53 of 53 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "41 of 41 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -95,13 +99,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 50,
+          "count": 38,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
-          "points": 14.2,
+          "points": 13.9,
           "severity": "WARNING",
-          "what": "50 of 53 trips have no headsign.",
+          "what": "38 of 41 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -117,18 +121,18 @@
         }
       ],
       "name": "completeness",
-      "score": 30.8,
+      "score": 31.1,
       "status": "measured",
       "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
       "weight": 0.25
     },
     "correctness": {
       "details": {
-        "distinct_codes": 7,
+        "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 44,
-          "WARNING": 42
+          "WARNING": 37
         },
         "validator_version": "8.0.1"
       },
@@ -145,17 +149,6 @@
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
-          "code": "expired_calendar",
-          "count": 5,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
-        {
           "code": "fast_travel_between_consecutive_stops",
           "count": 1,
           "effort": "A few minutes per flagged trip.",
@@ -163,8 +156,8 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "fast_travel_between_far_stops",
@@ -212,39 +205,27 @@
         }
       ],
       "name": "correctness",
-      "score": 80.0,
+      "score": 84.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 86 instances (0 error, 42 warning, 44 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 81 instances (0 error, 37 warning, 44 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 23,
-        "feed_end_date": "2026-07-31",
-        "feed_start_date": "2026-01-13",
-        "feed_version": "UTC: 13-Jan-2026 13:38",
+        "days_until_expiry": 207,
+        "feed_end_date": "2027-01-31",
+        "feed_start_date": "2026-07-08",
+        "feed_version": "UTC: 08-Jul-2026 19:52",
         "has_feed_info": true,
-        "last_service_date": "2026-07-31",
+        "last_service_date": "2027-01-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 57.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 23 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 38.3,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data runs out in 23 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 207 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -253,6 +234,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -263,7 +256,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 34 days.",
+        "detail": "Service data covers the next 207 days.",
         "key": "current",
         "met": true
       },
@@ -279,11 +272,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d32e553fd0877ca58a3c1cd1273e4b96413cd76c4c0a97452b2a2111f8253f3e",
-    "size_bytes": 153265,
+    "sha256": "c8c69e81a6b929c4ce5e538632ffe3784f9f2687444be0be705572e1ce26747c",
+    "size_bytes": 144673,
     "static_url": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/morrowcounty-or-us/morrowcounty-or-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/morrowcounty-or-us/morrowcounty-or-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -120.02417,
@@ -296,7 +295,7 @@
     "stop_count": 90
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1749"
     ],
@@ -315,19 +314,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 34 days.",
+        "detail": "Service data covers the next 207 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 54.2,
-    "margin_to_next_band": 5.8,
-    "score": 54.2
+    "grade": "C",
+    "margin_to_lower_band": 1.5,
+    "margin_to_next_band": 8.5,
+    "score": 71.5
   },
   "recommendations": [
     {
@@ -364,11 +363,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 90,
     "findings": [
@@ -386,24 +380,72 @@
     ],
     "orphan_stops": 35,
     "single_stop_trips": 0,
-    "trips_total": 53
+    "trips_total": 41
+  },
+  "route_map": {
+    "drawn_route_count": 4,
+    "has_shapes": true,
+    "path": "data/artifacts/morrow-county-public-transit/geometry.geojson",
+    "route_count": 4,
+    "routes": [
+      {
+        "color": "0A9250",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "77214",
+        "label": "Verde",
+        "long": "Verde",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5E17EB",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "77351",
+        "label": "Morado",
+        "long": "Morado",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E2190F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "77384",
+        "label": "Rojo",
+        "long": "Rojo",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EEEE24",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "77389",
+        "label": "Amarillo",
+        "long": "Amarillo",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 90,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 41 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 41,
+    "trips_with_shape": 41
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
-    {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 57.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 23 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 90,
@@ -411,22 +453,34 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "90 of 90 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 53,
+      "count": 41,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "41 of 41 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "53 of 53 trips don't say whether the vehicle is wheelchair accessible.",
-      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
     }
   ],
   "validator_version": "8.0.1"

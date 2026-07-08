@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 31,
-        "trips": 390,
+        "trips": 60,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -73,24 +77,24 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 390,
+          "count": 60,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "390 of 390 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "60 of 60 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 390,
+          "count": 60,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "390 of 390 trips have no headsign.",
+          "what": "60 of 60 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -113,26 +117,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 43,
-          "WARNING": 13
+          "WARNING": 2
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "expired_calendar",
-          "count": 11,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
         {
           "code": "stop_without_stop_time",
           "count": 2,
@@ -179,39 +172,27 @@
         }
       ],
       "name": "correctness",
-      "score": 88.0,
+      "score": 94.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 56 instances (0 error, 13 warning, 43 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 45 instances (0 error, 2 warning, 43 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 24,
-        "feed_end_date": "2026-08-01",
-        "feed_start_date": "2025-07-29",
-        "feed_version": "UTC: 29-Jul-2025 23:51",
+        "days_until_expiry": 208,
+        "feed_end_date": "2027-02-01",
+        "feed_start_date": "2026-07-08",
+        "feed_version": "UTC: 08-Jul-2026 19:30",
         "has_feed_info": true,
-        "last_service_date": "2026-08-01",
+        "last_service_date": "2027-02-01",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 56.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 24 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 40.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data runs out in 24 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 208 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -220,6 +201,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -230,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 208 days.",
         "key": "current",
         "met": true
       },
@@ -246,11 +239,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "eec334f8070dae21b5dd39ea29f607e3a8dbaab0871a08bc641a7f20ab43a293",
-    "size_bytes": 112366,
+    "sha256": "a7168d93ff03e8124a15c096c55358f8de28fc6fe04b561a771fc4fc2f2a45b8",
+    "size_bytes": 79395,
     "static_url": "https://data.trilliumtransit.com/gtfs/grahamtransit-va-us/grahamtransit-va-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/grahamtransit-va-us/grahamtransit-va-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -81.346,
@@ -263,7 +262,7 @@
     "stop_count": 31
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1765"
     ],
@@ -282,19 +281,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 208 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 2.6,
-    "margin_to_next_band": 7.4,
-    "score": 62.6
+    "grade": "B",
+    "margin_to_lower_band": 0.2,
+    "margin_to_next_band": 9.8,
+    "score": 80.2
   },
   "recommendations": [
     {
@@ -320,11 +319,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 31,
     "findings": [
@@ -342,24 +336,61 @@
     ],
     "orphan_stops": 2,
     "single_stop_trips": 0,
-    "trips_total": 390
+    "trips_total": 60
+  },
+  "route_map": {
+    "drawn_route_count": 3,
+    "has_shapes": true,
+    "path": "data/artifacts/graham-transit/geometry.geojson",
+    "route_count": 3,
+    "routes": [
+      {
+        "color": "B3414F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "19128",
+        "label": "Main",
+        "long": "Main",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "806432",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "19163",
+        "label": "Gold",
+        "long": "Gold",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "453C4F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "19164",
+        "label": "Pocahontas",
+        "long": "Pocahontas",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 31,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 60 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 60,
+    "trips_with_shape": 60
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
-    {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 56.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 24 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 31,
@@ -367,22 +398,34 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "31 of 31 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 390,
+      "count": 60,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "60 of 60 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 60,
+      "effort": "Usually a bulk edit in your scheduling software.",
+      "fix": "Populate trip_headsign to match what the bus displays.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "390 of 390 trips don't say whether the vehicle is wheelchair accessible.",
-      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+      "what": "60 of 60 trips have no headsign.",
+      "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],
   "validator_version": "8.0.1"

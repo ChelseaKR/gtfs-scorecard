@@ -197,27 +197,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
+        "coverage_pct": 75.0,
         "covered_trips": 3,
         "drift": {
-          "median_seconds": -160,
-          "observations": 21,
-          "on_time_share_pct": 28.6,
-          "p90_abs_seconds": 874
+          "median_seconds": -166,
+          "observations": 19,
+          "on_time_share_pct": 15.8,
+          "p90_abs_seconds": 1135
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 3,
-        "vehicles_checked": 10,
+        "scheduled_trips_in_window": 4,
+        "vehicles_checked": 12,
         "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 5
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 1,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 8.8,
+          "severity": "WARNING",
+          "what": "1 of 4 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
       "name": "realtime",
-      "score": 100.0,
+      "score": 91.2,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 160s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 75.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 166s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -259,7 +271,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "85428ae8b06010e512d13bb2ae8f498abb7d01df7370f9d084db891d35392897",
+    "sha256": "3e4ba747e69abe328b03a9c94db78ea8a3d273be5c788f5aa6433aeefe2c2325",
     "size_bytes": 34985,
     "static_url": "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
   },
@@ -311,9 +323,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 6.7,
-    "margin_to_next_band": 3.3,
-    "score": 66.7
+    "margin_to_lower_band": 5.0,
+    "margin_to_next_band": 5.0,
+    "score": 65.0
   },
   "recommendations": [
     {

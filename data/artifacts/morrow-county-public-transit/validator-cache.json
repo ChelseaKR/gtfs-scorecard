@@ -34,33 +34,6 @@
         "total": 35
       },
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 3,
-            "serviceId": "c_71739_b_86188_d_2"
-          },
-          {
-            "csvRowNumber": 4,
-            "serviceId": "c_71739_b_86187_d_2"
-          },
-          {
-            "csvRowNumber": 5,
-            "serviceId": "c_71739_b_86186_d_2"
-          },
-          {
-            "csvRowNumber": 6,
-            "serviceId": "c_71739_b_86185_d_2"
-          },
-          {
-            "csvRowNumber": 8,
-            "serviceId": "c_71739_b_86183_d_2"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 5
-      },
-      {
         "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
@@ -77,7 +50,7 @@
             "stopName2": "Lexington Sinclair Station",
             "stopSequence1": 10,
             "stopSequence2": 11,
-            "tripCsvRowNumber": 18,
+            "tripCsvRowNumber": 6,
             "tripId": "t_6140448_b_86181_tn_0"
           }
         ],
@@ -101,7 +74,7 @@
             "stopName2": "Lexington Sinclair Station",
             "stopSequence1": 10,
             "stopSequence2": 11,
-            "tripCsvRowNumber": 18,
+            "tripCsvRowNumber": 6,
             "tripId": "t_6140448_b_86181_tn_0"
           }
         ],
@@ -112,24 +85,24 @@
         "code": "unknown_column",
         "sample_notices": [
           {
-            "fieldName": "wkt",
-            "filename": "areas.txt",
-            "index": 2
-          },
-          {
             "fieldName": "tts_agency_name",
             "filename": "agency.txt",
             "index": 8
           },
           {
-            "fieldName": "service_name",
-            "filename": "calendar.txt",
+            "fieldName": "wkt",
+            "filename": "areas.txt",
             "index": 2
           },
           {
             "fieldName": "holiday_name",
             "filename": "calendar_dates.txt",
             "index": 3
+          },
+          {
+            "fieldName": "service_name",
+            "filename": "calendar.txt",
+            "index": 2
           },
           {
             "fieldName": "feed_license",
@@ -153,10 +126,10 @@
             "filename": "farezone_attributes.txt"
           },
           {
-            "filename": "runcut.txt"
+            "filename": "linked_datasets.txt"
           },
           {
-            "filename": "stop_attributes.txt"
+            "filename": "runcut.txt"
           }
         ],
         "severity": "INFO",
@@ -167,16 +140,16 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 8,
+            "daysBeforeFeedStart": 184,
             "serviceId": "c_71737_b_86181_d_31",
-            "serviceWindowEndDate": "2026-07-31",
+            "serviceWindowEndDate": "2027-01-29",
             "serviceWindowStartDate": "2026-01-05"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 8,
+            "daysBeforeFeedStart": 184,
             "serviceId": "c_71737_b_86181_d_63",
-            "serviceWindowEndDate": "2026-07-31",
+            "serviceWindowEndDate": "2027-01-30",
             "serviceWindowStartDate": "2026-01-05"
           }
         ],
@@ -186,6 +159,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "d32e553fd0877ca58a3c1cd1273e4b96413cd76c4c0a97452b2a2111f8253f3e",
+  "sha256": "c8c69e81a6b929c4ce5e538632ffe3784f9f2687444be0be705572e1ce26747c",
   "validator_version": "8.0.1"
 }

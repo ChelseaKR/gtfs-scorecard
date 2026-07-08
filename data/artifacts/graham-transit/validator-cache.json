@@ -2,33 +2,6 @@
   "report": {
     "notices": [
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 3,
-            "serviceId": "c_21467_b_85293_d_32"
-          },
-          {
-            "csvRowNumber": 4,
-            "serviceId": "c_21467_b_85292_d_32"
-          },
-          {
-            "csvRowNumber": 5,
-            "serviceId": "c_21467_b_85291_d_32"
-          },
-          {
-            "csvRowNumber": 6,
-            "serviceId": "c_21467_b_85290_d_32"
-          },
-          {
-            "csvRowNumber": 7,
-            "serviceId": "c_21467_b_85289_d_32"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 11
-      },
-      {
         "code": "stop_without_stop_time",
         "sample_notices": [
           {
@@ -49,24 +22,24 @@
         "code": "unknown_column",
         "sample_notices": [
           {
-            "fieldName": "wkt",
-            "filename": "areas.txt",
-            "index": 2
-          },
-          {
             "fieldName": "tts_agency_name",
             "filename": "agency.txt",
             "index": 8
           },
           {
-            "fieldName": "service_name",
-            "filename": "calendar.txt",
+            "fieldName": "wkt",
+            "filename": "areas.txt",
             "index": 2
           },
           {
             "fieldName": "holiday_name",
             "filename": "calendar_dates.txt",
             "index": 3
+          },
+          {
+            "fieldName": "service_name",
+            "filename": "calendar.txt",
+            "index": 2
           },
           {
             "fieldName": "feed_license",
@@ -90,10 +63,10 @@
             "filename": "farezone_attributes.txt"
           },
           {
-            "filename": "runcut.txt"
+            "filename": "linked_datasets.txt"
           },
           {
-            "filename": "stop_attributes.txt"
+            "filename": "runcut.txt"
           }
         ],
         "severity": "INFO",
@@ -104,9 +77,9 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 575,
+            "daysBeforeFeedStart": 919,
             "serviceId": "c_21466_b_29990_d_31",
-            "serviceWindowEndDate": "2026-07-31",
+            "serviceWindowEndDate": "2027-02-01",
             "serviceWindowStartDate": "2024-01-01"
           }
         ],
@@ -116,6 +89,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "eec334f8070dae21b5dd39ea29f607e3a8dbaab0871a08bc641a7f20ab43a293",
+  "sha256": "a7168d93ff03e8124a15c096c55358f8de28fc6fe04b561a771fc4fc2f2a45b8",
   "validator_version": "8.0.1"
 }

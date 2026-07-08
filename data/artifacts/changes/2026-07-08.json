@@ -3,6 +3,18 @@
   "changes": [
     {
       "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 60.3,
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "regressed": true,
+      "score_delta": -4.8,
+      "since": "2026-07-07",
+      "to_grade": "F",
+      "to_score": 55.5
+    },
+    {
+      "date": "2026-07-08",
       "from_grade": "B",
       "from_score": 80.2,
       "id": "ny-waterway-3192",
@@ -15,18 +27,6 @@
     },
     {
       "date": "2026-07-08",
-      "from_grade": "D",
-      "from_score": 60.3,
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "regressed": true,
-      "score_delta": -3.6,
-      "since": "2026-07-07",
-      "to_grade": "F",
-      "to_score": 56.7
-    },
-    {
-      "date": "2026-07-08",
       "from_grade": "C",
       "from_score": 70.3,
       "id": "lextran-2067",
@@ -36,6 +36,18 @@
       "since": "2026-07-07",
       "to_grade": "D",
       "to_score": 67.7
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 66.7,
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
+      "regressed": true,
+      "score_delta": -1.7,
+      "since": "2026-07-07",
+      "to_grade": "D",
+      "to_score": 65.0
     },
     {
       "date": "2026-07-08",
@@ -148,6 +160,90 @@
     {
       "date": "2026-07-08",
       "from_grade": "D",
+      "from_score": 63.0,
+      "id": "graham-transit",
+      "name": "Graham Transit",
+      "regressed": false,
+      "score_delta": 17.2,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 80.2
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 63.0,
+      "id": "graham-transit-611",
+      "name": "Graham Transit",
+      "regressed": false,
+      "score_delta": 17.2,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 80.2
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 69.3,
+      "id": "radar",
+      "name": "RADAR",
+      "regressed": false,
+      "score_delta": 17.2,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 86.5
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 69.3,
+      "id": "radar-832",
+      "name": "RADAR",
+      "regressed": false,
+      "score_delta": 17.2,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 86.5
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "F",
+      "from_score": 54.6,
+      "id": "morrow-county-public-transit",
+      "name": "Morrow County Public Transit",
+      "regressed": false,
+      "score_delta": 16.9,
+      "since": "2026-07-07",
+      "to_grade": "C",
+      "to_score": 71.5
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 69.4,
+      "id": "bristol-virginia-transit",
+      "name": "Bristol Virginia Transit",
+      "regressed": false,
+      "score_delta": 14.6,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 84.0
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 69.4,
+      "id": "bristol-virginia-transit-238",
+      "name": "Bristol Virginia Transit",
+      "regressed": false,
+      "score_delta": 14.6,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 84.0
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
       "from_score": 66.1,
       "id": "bustang-outrider",
       "name": "Bustang Outrider",
@@ -196,6 +292,30 @@
     {
       "date": "2026-07-08",
       "from_grade": "D",
+      "from_score": 67.8,
+      "id": "blossom-express",
+      "name": "Blossom Express",
+      "regressed": false,
+      "score_delta": 14.1,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 81.9
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 67.8,
+      "id": "blossom-express-236",
+      "name": "Blossom Express",
+      "regressed": false,
+      "score_delta": 14.1,
+      "since": "2026-07-07",
+      "to_grade": "B",
+      "to_score": 81.9
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
       "from_score": 62.6,
       "id": "gtrans-2270",
       "name": "GTrans",
@@ -220,26 +340,26 @@
     {
       "date": "2026-07-08",
       "from_grade": "D",
-      "from_score": 63.2,
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "regressed": false,
-      "score_delta": 2.5,
-      "since": "2026-07-07",
-      "to_grade": "D",
-      "to_score": 65.7
-    },
-    {
-      "date": "2026-07-08",
-      "from_grade": "D",
       "from_score": 65.3,
       "id": "towson-loop",
       "name": "Towson Loop",
       "regressed": false,
-      "score_delta": 1.2,
+      "score_delta": 3.2,
       "since": "2026-07-07",
       "to_grade": "D",
-      "to_score": 66.5
+      "to_score": 68.5
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 63.2,
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "regressed": false,
+      "score_delta": 3.1,
+      "since": "2026-07-07",
+      "to_grade": "D",
+      "to_score": 66.3
     },
     {
       "date": "2026-07-08",
@@ -266,8 +386,8 @@
       "to_score": 80.1
     }
   ],
-  "count": 22,
-  "generated_at": "2026-07-08T19:06:16+00:00",
+  "count": 32,
+  "generated_at": "2026-07-08T20:55:33+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

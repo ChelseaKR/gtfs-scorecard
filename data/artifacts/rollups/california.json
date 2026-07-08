@@ -1,6 +1,6 @@
 {
   "agency_count": 135,
-  "average_score": 61.8,
+  "average_score": 61.9,
   "common_fixes": [
     {
       "agencies": 105,
@@ -28,7 +28,7 @@
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
     },
     {
-      "agencies": 15,
+      "agencies": 16,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
@@ -43,7 +43,7 @@
       "fix": "Review the rule documentation for 'invalid_currency_amount' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 7,
+      "agencies": 6,
       "code": "scorecard_feed_expiring_soon",
       "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -143,12 +143,12 @@
     "stale": 44,
     "total": 65
   },
-  "generated_at": "2026-07-08T19:05:58+00:00",
+  "generated_at": "2026-07-08T20:55:17+00:00",
   "grade_distribution": {
     "A": 6,
-    "B": 30,
+    "B": 31,
     "C": 19,
-    "D": 11,
+    "D": 10,
     "F": 69
   },
   "members": [
@@ -1148,20 +1148,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 25 day(s)",
-      "days_until_expiry": 25,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "blossom-express",
-      "name": "Blossom Express",
-      "needs_attention": true,
-      "score": 67.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 31 day(s)",
       "days_until_expiry": 31,
       "expiry_status": "current",
@@ -1765,6 +1751,20 @@
     {
       "annual_trips": null,
       "attention_reason": null,
+      "days_until_expiry": 209,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "blossom-express",
+      "name": "Blossom Express",
+      "needs_attention": false,
+      "score": 81.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
       "days_until_expiry": 61,
       "expiry_status": "current",
       "grade": "B",
@@ -2043,7 +2043,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
-  "needs_attention": 89,
+  "needs_attention": 88,
   "rollup": {
     "id": "california",
     "name": "California agencies"
@@ -2051,9 +2051,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 126,
+    "not_measured": 125,
     "not_ready": 0,
-    "ready": 9,
+    "ready": 10,
     "total": 135
   },
   "state_percentile": null
