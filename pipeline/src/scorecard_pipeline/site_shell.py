@@ -76,6 +76,7 @@ _NAV_SECTION_PREFIXES = {
     "/data/": "/how-to-read/",
     "/concept/": "/how-to-read/",
     "/press/": "/how-to-read/",
+    "/support/": "/about/",
 }
 
 
@@ -139,6 +140,7 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     "app/index.html": "/agencies/",
     "about/index.html": "/about/",
     "data/index.html": None,
+    "support/index.html": "/about/",
 }
 
 # The one shared footer, single-sourced here so the generated pages and the
@@ -165,6 +167,7 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/submit.html">Add your agency</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
+      <a href="/support/">Support this project</a> ·
       <a href="/how-to-read/">How to read a scorecard</a> ·
       <a href="/how-to-read/#glossary">Glossary</a> ·
       <a href="/crosswalk/">Standards crosswalk</a> ·
