@@ -20,10 +20,46 @@
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "regressed": true,
-      "score_delta": -1.4,
+      "score_delta": -3.2,
       "since": "2026-07-07",
       "to_grade": "F",
-      "to_score": 58.9
+      "to_score": 57.1
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "C",
+      "from_score": 70.3,
+      "id": "lextran-2067",
+      "name": "Lextran",
+      "regressed": true,
+      "score_delta": -2.6,
+      "since": "2026-07-07",
+      "to_grade": "D",
+      "to_score": 67.7
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 66.7,
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
+      "regressed": true,
+      "score_delta": -1.7,
+      "since": "2026-07-07",
+      "to_grade": "D",
+      "to_score": 65.0
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
+      "from_score": 65.3,
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "regressed": true,
+      "score_delta": -1.2,
+      "since": "2026-07-07",
+      "to_grade": "D",
+      "to_score": 64.1
     },
     {
       "date": "2026-07-08",
@@ -60,18 +96,6 @@
       "since": "2026-07-07",
       "to_grade": "C",
       "to_score": 79.8
-    },
-    {
-      "date": "2026-07-08",
-      "from_grade": "C",
-      "from_score": 70.3,
-      "id": "lextran-2067",
-      "name": "Lextran",
-      "regressed": true,
-      "score_delta": -0.4,
-      "since": "2026-07-07",
-      "to_grade": "D",
-      "to_score": 69.9
     },
     {
       "date": "2026-07-08",
@@ -159,15 +183,15 @@
     },
     {
       "date": "2026-07-08",
-      "from_grade": "D",
-      "from_score": 63.1,
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
+      "from_grade": "C",
+      "from_score": 70.8,
+      "id": "maryland-transit-administration-469",
+      "name": "Light Rail",
       "regressed": false,
-      "score_delta": 3.6,
+      "score_delta": 4.1,
       "since": "2026-07-07",
-      "to_grade": "D",
-      "to_score": 66.7
+      "to_grade": "C",
+      "to_score": 74.9
     },
     {
       "date": "2026-07-08",
@@ -176,10 +200,10 @@
       "id": "sandy-area-metro-sam-2739",
       "name": "Static feed for realtime",
       "regressed": false,
-      "score_delta": 3.5,
+      "score_delta": 2.0,
       "since": "2026-07-07",
       "to_grade": "D",
-      "to_score": 66.7
+      "to_score": 65.2
     },
     {
       "date": "2026-07-08",
@@ -194,8 +218,8 @@
       "to_score": 76.0
     }
   ],
-  "count": 16,
-  "generated_at": "2026-07-08T12:18:09+00:00",
+  "count": 18,
+  "generated_at": "2026-07-08T15:09:40+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

@@ -93,7 +93,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-08T12:17:51+00:00",
+  "generated_at": "2026-07-08T15:09:26+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 1,
@@ -140,7 +140,7 @@
       "name": "Steuben Area Rides",
       "needs_attention": true,
       "score": 18.2,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -1329,9 +1329,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 3,
-    "not_measured": 68,
+    "not_measured": 67,
     "not_ready": 0,
-    "ready": 16,
+    "ready": 17,
     "total": 87
   },
   "state_percentile": 41

@@ -120,7 +120,7 @@
         "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 1,
-          "INFO": 11,
+          "INFO": 10,
           "WARNING": 25
         },
         "validator_version": "8.0.1"
@@ -172,7 +172,7 @@
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 8,
+          "count": 7,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -196,7 +196,7 @@
       "name": "correctness",
       "score": 72.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 37 instances (1 error, 25 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 36 instances (1 error, 25 warning, 10 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -219,27 +219,50 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
-        "covered_trips": 1,
+        "coverage_pct": 41.7,
+        "covered_trips": 5,
         "drift": {
-          "median_seconds": -343,
-          "observations": 25,
-          "on_time_share_pct": 16.0,
-          "p90_abs_seconds": 1733
+          "median_seconds": -628,
+          "observations": 57,
+          "on_time_share_pct": 21.1,
+          "p90_abs_seconds": 3165
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 1,
-        "vehicles_checked": 3,
+        "scheduled_trips_in_window": 12,
+        "vehicles_checked": 14,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 0
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 7,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 20.4,
+          "severity": "WARNING",
+          "what": "7 of 12 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 57,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+        }
+      ],
       "name": "realtime",
-      "score": 100.0,
+      "score": 79.6,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 343s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 41.7% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 628s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -281,8 +304,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "9b4ee70c5441193c9e71d71b270e94438ae59c83e52e27a75af43b3caa2d85a7",
-    "size_bytes": 217776,
+    "sha256": "e4b2440b7c1306a427656d0b837be1aa855efbaf15c1cffd94e8deb99adbfa69",
+    "size_bytes": 217546,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -333,9 +356,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 6.7,
-    "margin_to_next_band": 3.3,
-    "score": 66.7
+    "margin_to_lower_band": 2.6,
+    "margin_to_next_band": 7.4,
+    "score": 62.6
   },
   "recommendations": [
     {
@@ -524,16 +547,16 @@
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 397,
-      "effort": "Often one default setting in your export.",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "owner": "Likely your export tool",
-      "points": 15.0,
+      "code": "scorecard_rt_trip_coverage",
+      "count": 7,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 20.4,
       "rank": 3,
       "severity": "WARNING",
-      "what": "397 of 397 trips don't say whether the vehicle is wheelchair accessible.",
-      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+      "what": "7 of 12 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     }
   ],
   "validator_version": "8.0.1"

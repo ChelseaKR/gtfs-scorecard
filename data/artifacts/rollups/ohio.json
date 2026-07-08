@@ -48,7 +48,7 @@
     "stale": 8,
     "total": 9
   },
-  "generated_at": "2026-07-08T12:17:51+00:00",
+  "generated_at": "2026-07-08T15:09:26+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 6,
@@ -234,7 +234,7 @@
       "name": "Central Ohio Transit Authority (COTA)",
       "needs_attention": true,
       "score": 66.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
@@ -359,9 +359,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 1,
-    "not_measured": 15,
+    "not_measured": 14,
     "not_ready": 0,
-    "ready": 5,
+    "ready": 6,
     "total": 21
   },
   "state_percentile": 52

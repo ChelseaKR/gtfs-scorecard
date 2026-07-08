@@ -59,6 +59,12 @@
       "code": "scorecard_rt_trip_coverage",
       "last_seen": "2026-07-04",
       "what": "6 of 6 trips scheduled during the sampling window had no live predictions."
+    },
+    {
+      "cleared": "2026-07-08",
+      "code": "fast_travel_between_far_stops",
+      "last_seen": "2026-07-07",
+      "what": "Fast travel between far stops (flagged by the MobilityData validator)."
     }
   ]
 }

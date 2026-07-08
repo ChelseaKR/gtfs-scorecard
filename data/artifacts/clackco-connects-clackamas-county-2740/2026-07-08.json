@@ -210,38 +210,38 @@
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 1,
+        "covered_trips": 4,
         "drift": {
-          "median_seconds": 454,
-          "observations": 29,
-          "on_time_share_pct": 34.5,
-          "p90_abs_seconds": 958
+          "median_seconds": -348,
+          "observations": 96,
+          "on_time_share_pct": 22.9,
+          "p90_abs_seconds": 1848
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 1,
-        "vehicles_checked": 4,
-        "vehicles_on_route_pct": 75.0,
-        "worst_lag_seconds": 3
+        "scheduled_trips_in_window": 4,
+        "vehicles_checked": 11,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 1,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 96,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
-          "points": 3.8,
+          "points": 0.0,
           "severity": "WARNING",
-          "what": "1 of 4 sampled vehicle positions were far from their assigned route (worst: 1816 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 96.2,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 75.0% of vehicles on their route; predictions ran a median of 454s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 348s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -283,7 +283,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "524ecfb0915b1226732355c9f433b1c9761df78b208426e7c37a37ea63e581d9",
+    "sha256": "eb6b8029edb7bdea83b0bc158ec670126dcd3f4e1be16ac6442aedaa82df86ec",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },
@@ -335,9 +335,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 6.7,
-    "margin_to_next_band": 3.3,
-    "score": 66.7
+    "margin_to_lower_band": 7.5,
+    "margin_to_next_band": 2.5,
+    "score": 67.5
   },
   "recommendations": [
     {

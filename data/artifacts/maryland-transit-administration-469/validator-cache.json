@@ -11,32 +11,32 @@
             "filename": "routes.txt"
           },
           {
-            "csvRowNumber": 2,
+            "csvRowNumber": 179,
             "fieldName": "trip_headsign",
             "fieldValue": "PENN STATION",
             "filename": "trips.txt"
           },
           {
-            "csvRowNumber": 3,
-            "fieldName": "trip_headsign",
-            "fieldValue": "HUNT VALLEY",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 4,
-            "fieldName": "trip_headsign",
-            "fieldValue": "HUNT VALLEY",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 5,
+            "csvRowNumber": 180,
             "fieldName": "trip_headsign",
             "fieldValue": "PENN STATION",
+            "filename": "trips.txt"
+          },
+          {
+            "csvRowNumber": 181,
+            "fieldName": "trip_headsign",
+            "fieldValue": "NORTH AVE STATION",
+            "filename": "trips.txt"
+          },
+          {
+            "csvRowNumber": 182,
+            "fieldName": "trip_headsign",
+            "fieldValue": "NORTH AVE STATION",
             "filename": "trips.txt"
           }
         ],
         "severity": "WARNING",
-        "total": 700
+        "total": 782
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -50,8 +50,8 @@
             "shapeId": "BWI_FG",
             "stopId": "7627",
             "stopName": "BWI Airport (Northbound)",
-            "stopTimeCsvRowNumber": 1663,
-            "tripCsvRowNumber": 95,
+            "stopTimeCsvRowNumber": 6811,
+            "tripCsvRowNumber": 354,
             "tripId": "3891538"
           },
           {
@@ -63,8 +63,8 @@
             "shapeId": "BWI_FG",
             "stopId": "7630",
             "stopName": "Linthicum (Northbound)",
-            "stopTimeCsvRowNumber": 1665,
-            "tripCsvRowNumber": 95,
+            "stopTimeCsvRowNumber": 6813,
+            "tripCsvRowNumber": 354,
             "tripId": "3891538"
           },
           {
@@ -76,8 +76,8 @@
             "shapeId": "BWI_FG",
             "stopId": "7632",
             "stopName": "Nursery Road (Northbound)",
-            "stopTimeCsvRowNumber": 1667,
-            "tripCsvRowNumber": 95,
+            "stopTimeCsvRowNumber": 6815,
+            "tripCsvRowNumber": 354,
             "tripId": "3891538"
           },
           {
@@ -89,8 +89,8 @@
             "shapeId": "BWI_FG",
             "stopId": "7634",
             "stopName": "Baltimore Highlands (Northbound)",
-            "stopTimeCsvRowNumber": 1668,
-            "tripCsvRowNumber": 95,
+            "stopTimeCsvRowNumber": 6816,
+            "tripCsvRowNumber": 354,
             "tripId": "3891538"
           },
           {
@@ -102,13 +102,13 @@
             "shapeId": "BWI_FG",
             "stopId": "7635",
             "stopName": "Patapsco (Northbound)",
-            "stopTimeCsvRowNumber": 1669,
-            "tripCsvRowNumber": 95,
+            "stopTimeCsvRowNumber": 6817,
+            "tripCsvRowNumber": 354,
             "tripId": "3891538"
           }
         ],
         "severity": "WARNING",
-        "total": 165
+        "total": 240
       },
       {
         "code": "trip_distance_exceeds_shape_distance_below_threshold",
@@ -185,14 +185,49 @@
         "total": 60
       },
       {
-        "code": "missing_recommended_file",
+        "code": "stops_match_shape_out_of_order",
         "sample_notices": [
           {
-            "filename": "feed_info.txt"
+            "match1": [
+              39.18395610780334,
+              -76.67104255663826
+            ],
+            "match2": [
+              39.21464582298146,
+              -76.6458309487724
+            ],
+            "shapeId": "BWI_NA",
+            "stopId1": "7632",
+            "stopId2": "7631",
+            "stopName1": "Nursery Road (Northbound)",
+            "stopName2": "North Linthicum (Northbound)",
+            "stopTimeCsvRowNumber1": 4157,
+            "stopTimeCsvRowNumber2": 4156,
+            "tripCsvRowNumber": 160,
+            "tripId": "7008233700"
+          },
+          {
+            "match1": [
+              39.18395610780334,
+              -76.67104255663826
+            ],
+            "match2": [
+              39.21464582298146,
+              -76.6458309487724
+            ],
+            "shapeId": "BWI_HV",
+            "stopId1": "7632",
+            "stopId2": "7631",
+            "stopName1": "Nursery Road (Northbound)",
+            "stopName2": "North Linthicum (Northbound)",
+            "stopTimeCsvRowNumber1": 139,
+            "stopTimeCsvRowNumber2": 138,
+            "tripCsvRowNumber": 12,
+            "tripId": "7001050700"
           }
         ],
         "severity": "WARNING",
-        "total": 1
+        "total": 2
       },
       {
         "code": "route_short_name_too_long",
@@ -201,6 +236,17 @@
             "csvRowNumber": 2,
             "routeId": "11693",
             "routeShortName": "LIGHT RAILLINK"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "service_has_no_active_day_of_the_week",
+        "sample_notices": [
+          {
+            "csvRowNumber": 5,
+            "serviceId": "311SplitWeekday"
           }
         ],
         "severity": "WARNING",
@@ -218,8 +264,8 @@
             "shapeId": "NA_PENN",
             "stopId": "7676",
             "stopName": "North Avenue (Southbound)",
-            "stopTimeCsvRowNumber": 4300,
-            "tripCsvRowNumber": 227,
+            "stopTimeCsvRowNumber": 9448,
+            "tripCsvRowNumber": 486,
             "tripId": "3891670"
           }
         ],
@@ -262,6 +308,19 @@
         "total": 2
       },
       {
+        "code": "feed_valid_beyond_total_service_window",
+        "sample_notices": [
+          {
+            "feedEndDate": "2050-12-31",
+            "feedStartDate": "2025-06-08",
+            "serviceWindowEndDate": "2026-12-31",
+            "serviceWindowStartDate": "2025-06-15"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
+      },
+      {
         "code": "unused_station",
         "sample_notices": [
           {
@@ -276,6 +335,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "5b02678ddfa192539ea09344b06b7e029f441d0df9b59e94e7da8fb554325884",
+  "sha256": "35770254526f117d0f4df8c870380584ff806f12cab55586a82590c5a5e6af0b",
   "validator_version": "8.0.1"
 }

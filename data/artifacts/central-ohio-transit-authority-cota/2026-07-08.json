@@ -201,7 +201,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -247,19 +247,19 @@
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 152,
-        "worst_lag_seconds": 8
+        "scheduled_trips_in_window": 134,
+        "worst_lag_seconds": 15
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 152,
+          "count": 134,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "152 of 152 trips scheduled during the sampling window had no live predictions.",
+          "what": "134 of 134 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -270,6 +270,19 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -279,7 +292,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 66 days.",
+        "detail": "Service data covers the next 60 days.",
         "key": "current",
         "met": true
       },
@@ -299,7 +312,13 @@
     "size_bytes": 3854370,
     "static_url": "http://www.cota.com/data/cota.gtfs.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://www.cota.com/data/cota.gtfs.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -83.16265,
@@ -333,7 +352,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 66 days.",
+        "detail": "Service data covers the next 60 days.",
         "key": "current",
         "status": "ready"
       }
@@ -360,11 +379,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2949,
     "findings": [],
@@ -845,19 +859,25 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 5435 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 5435,
+    "trips_with_shape": 5435
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 152,
+      "count": 134,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "152 of 152 trips scheduled during the sampling window had no live predictions.",
+      "what": "134 of 134 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {

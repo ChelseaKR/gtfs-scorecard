@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -52,8 +56,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 878,
-        "trips": 3025,
+        "stops": 880,
+        "trips": 2405,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -62,24 +66,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 878,
+          "count": 880,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "878 of 878 stops don't say whether a wheelchair user can board there.",
+          "what": "880 of 880 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 3025,
+          "count": 2405,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "3025 of 3025 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2405 of 2405 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -102,25 +106,25 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 3,
+        "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 0,
-          "WARNING": 39
+          "INFO": 2,
+          "WARNING": 22
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "fast_travel_between_consecutive_stops",
-          "count": 36,
+          "count": 18,
           "effort": "A few minutes per flagged trip.",
           "fix": "Check the flagged stop times for transposed minutes.",
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "mixed_case_recommended_field",
@@ -143,20 +147,53 @@
           "severity": "WARNING",
           "what": "Missing feed contact email and url (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "future_calendar",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'future_calendar' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Future calendar (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "future_feed",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'future_feed' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Future feed (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 86.0,
+      "score": 81.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 3 kinds of issue across 39 instances (0 error, 39 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 24 instances (0 error, 22 warning, 2 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 38,
         "feed_end_date": "2026-08-15",
-        "feed_start_date": "2026-06-12",
-        "feed_version": "20260612",
+        "feed_start_date": "2026-07-09",
+        "feed_version": "20260708",
         "has_feed_info": true,
         "last_service_date": "2026-08-15",
         "seasonal_boundary": false,
@@ -176,6 +213,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -185,7 +234,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 49 days.",
+        "detail": "Service data covers the next 38 days.",
         "key": "current",
         "met": true
       },
@@ -201,11 +250,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "0b651a48773a1eee9e3d577265469e109f1a96a181311628e0d423cd3134530b",
-    "size_bytes": 1311768,
+    "sha256": "7539e172056019811ae66609aba0354efbafa27447067c3186df475bcbe923b6",
+    "size_bytes": 1150255,
     "static_url": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -84.60483,
@@ -213,12 +268,12 @@
       -84.40556,
       38.11016
     ],
-    "lat": 38.03865,
-    "lon": -84.49293,
-    "stop_count": 878
+    "lat": 38.03892,
+    "lon": -84.49313,
+    "stop_count": 880
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "0"
     ],
@@ -237,19 +292,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 49 days.",
+        "detail": "Service data covers the next 38 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 9.9,
-    "margin_to_next_band": 0.1,
-    "score": 69.9
+    "margin_to_lower_band": 7.7,
+    "margin_to_next_band": 2.3,
+    "score": 67.7
   },
   "recommendations": [
     {
@@ -265,67 +320,375 @@
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 834,
+      "count": 836,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "834 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"North Broadway @ Loudon Outbound\", \"West Main @ 707\", \"Mount Tabor @ 633 Outbound\", and more).",
+      "what": "836 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"North Broadway @ Loudon Outbound\", \"West Main @ 707\", \"Mount Tabor @ 633 Outbound\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 878,
+    "boardable_stops": 880,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 3025
+    "trips_total": 2405
+  },
+  "route_map": {
+    "drawn_route_count": 27,
+    "has_shapes": true,
+    "path": "data/artifacts/lextran-2067/geometry.geojson",
+    "route_count": 27,
+    "routes": [
+      {
+        "color": "A32638",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Woodhill",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Hamburg Pavilion",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BAAFD3",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Richmond Road",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F47C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Leestown Road",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A3A8A3",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "South Broadway",
+        "short": "13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0033A0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "141",
+        "label": "141",
+        "long": "UK Blue Route",
+        "short": "141",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ABA9A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "142",
+        "label": "142",
+        "long": "UK White Route",
+        "short": "142",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7AA891",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Red Mile",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6A1B32",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "Southland Drive",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4597CB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Northside Connector",
+        "short": "17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AF99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "Centre Parkway Connector",
+        "short": "18",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "996007",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Georgetown Road",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Mercer Road",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A25CBF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "Old Frankfort Pike",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "173862",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Tates Creek Road",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4E008C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Newtown Pike",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5F6AFC",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "LexRide Distillery Loop",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A9D5C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "LexRide Warehouse Loop",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B6BD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Nicholasville Road",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E8112D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Night Woodhill-Richmond",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F98E6D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Night Georgetown-Leestown",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "646569",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Night Versailles-S Broadway",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E8878E",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Night Eastland-N Limestone",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA852",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "North Broadway",
+        "short": "6",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E22882",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "North Limestone",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "275D38",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Versailles Road",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "28C4D8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "Eastland",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 880,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 2405 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2405,
+    "trips_with_shape": 2405
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 878,
+      "count": 880,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "878 of 878 stops don't say whether a wheelchair user can board there.",
+      "what": "880 of 880 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 3025,
+      "count": 2405,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "3025 of 3025 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "2405 of 2405 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
       "code": "fast_travel_between_consecutive_stops",
-      "count": 36,
+      "count": 18,
       "effort": "A few minutes per flagged trip.",
       "fix": "Check the flagged stop times for transposed minutes.",
       "owner": "",
       "points": 6.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "Some scheduled trips travel implausibly fast between stops.",
-      "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
     }
   ],
   "validator_version": "8.0.1"

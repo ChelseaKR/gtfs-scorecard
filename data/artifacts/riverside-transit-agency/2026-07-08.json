@@ -239,27 +239,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
-        "covered_trips": 35,
+        "coverage_pct": 98.9,
+        "covered_trips": 90,
         "drift": {
-          "median_seconds": 51,
-          "observations": 1228,
-          "on_time_share_pct": 66.3,
-          "p90_abs_seconds": 293
+          "median_seconds": 41,
+          "observations": 3430,
+          "on_time_share_pct": 68.8,
+          "p90_abs_seconds": 285
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 35,
-        "vehicles_checked": 100,
-        "vehicles_on_route_pct": 97.0,
-        "worst_lag_seconds": 17
+        "scheduled_trips_in_window": 91,
+        "vehicles_checked": 249,
+        "vehicles_on_route_pct": 99.2,
+        "worst_lag_seconds": 16
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 1,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 0.4,
+          "severity": "WARNING",
+          "what": "1 of 91 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
       "name": "realtime",
       "score": 99.5,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 97.0% of vehicles on their route; predictions ran a median of 51s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 98.9% of scheduled trips had live predictions; 99.2% of vehicles on their route; predictions ran a median of 41s behind schedule.",
       "weight": 0.2
     }
   },

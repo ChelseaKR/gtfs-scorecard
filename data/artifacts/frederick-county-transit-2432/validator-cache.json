@@ -17,17 +17,27 @@
             "departureTime": "21:45:00",
             "prevCsvRowNumber": 9281,
             "tripId": "714286"
-          },
-          {
-            "arrivalTime": "06:40:00",
-            "csvRowNumber": 13638,
-            "departureTime": "30:20:00",
-            "prevCsvRowNumber": 13636,
-            "tripId": "714468"
           }
         ],
         "severity": "ERROR",
-        "total": 3
+        "total": 2
+      },
+      {
+        "code": "block_trips_with_overlapping_stop_times",
+        "sample_notices": [
+          {
+            "blockId": "26521",
+            "csvRowNumberA": 769,
+            "csvRowNumberB": 776,
+            "intersection": "20250102",
+            "serviceIdA": "51783.134013",
+            "serviceIdB": "51783.134013",
+            "tripIdA": "1140732",
+            "tripIdB": "1139863"
+          }
+        ],
+        "severity": "ERROR",
+        "total": 1
       },
       {
         "code": "stop_without_stop_time",
@@ -102,23 +112,6 @@
         "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
-            "arrivalTime2": "06:40:00",
-            "csvRowNumber1": 13636,
-            "csvRowNumber2": 13638,
-            "departureTime1": "30:20:00",
-            "distanceKm": 22.278062103667757,
-            "routeId": "6163",
-            "speedKph": 1336.6837262200654,
-            "stopId1": "162970",
-            "stopId2": "163122",
-            "stopName1": "Fairview Avenue at College Park Plaza (The Common Market)",
-            "stopName2": "Church St at CVS",
-            "stopSequence1": 4,
-            "stopSequence2": 6,
-            "tripCsvRowNumber": 772,
-            "tripId": "714468"
-          },
-          {
             "arrivalTime2": "16:55:00",
             "csvRowNumber1": 4021,
             "csvRowNumber2": 4028,
@@ -188,7 +181,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 5
+        "total": 4
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -202,8 +195,8 @@
             "shapeId": "51830",
             "stopId": "162939",
             "stopName": "Baughman's Lane at Walgreens",
-            "stopTimeCsvRowNumber": 14347,
-            "tripCsvRowNumber": 812,
+            "stopTimeCsvRowNumber": 14377,
+            "tripCsvRowNumber": 814,
             "tripId": "714501"
           },
           {
@@ -215,8 +208,8 @@
             "shapeId": "51830",
             "stopId": "163125",
             "stopName": "Mt. Zion Road Park and Ride",
-            "stopTimeCsvRowNumber": 14348,
-            "tripCsvRowNumber": 812,
+            "stopTimeCsvRowNumber": 14378,
+            "tripCsvRowNumber": 814,
             "tripId": "714501"
           },
           {
@@ -228,37 +221,13 @@
             "shapeId": "51830",
             "stopId": "163126",
             "stopName": "Point of Rocks MARC Train Station",
-            "stopTimeCsvRowNumber": 14349,
-            "tripCsvRowNumber": 812,
+            "stopTimeCsvRowNumber": 14379,
+            "tripCsvRowNumber": 814,
             "tripId": "714501"
           }
         ],
         "severity": "WARNING",
         "total": 3
-      },
-      {
-        "code": "fast_travel_between_far_stops",
-        "sample_notices": [
-          {
-            "arrivalTime2": "06:40:00",
-            "csvRowNumber1": 13636,
-            "csvRowNumber2": 13638,
-            "departureTime1": "30:20:00",
-            "distanceKm": 22.40454342506966,
-            "routeId": "6163",
-            "speedKph": 1344.2726055041796,
-            "stopId1": "162970",
-            "stopId2": "163122",
-            "stopName1": "Fairview Avenue at College Park Plaza (The Common Market)",
-            "stopName2": "Church St at CVS",
-            "stopSequence1": 4,
-            "stopSequence2": 6,
-            "tripCsvRowNumber": 772,
-            "tripId": "714468"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
       },
       {
         "code": "stop_too_far_from_shape",
@@ -388,6 +357,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "254df5857dd170fae21ad60f27dae3eb9a905022d38d0dd60573e47ac0559d04",
+  "sha256": "bc26f7e7eaa9131400a9f6d25641c09f792a63fa9dcd1a4f440233474fbe9b8f",
   "validator_version": "8.0.1"
 }

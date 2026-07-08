@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/milwaukee-county-transit-system-mcts-2127/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/milwaukee-county-transit-system-mcts-2127/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -33,6 +32,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -178,7 +181,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -189,7 +192,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
@@ -242,41 +245,54 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 77.2,
-        "covered_trips": 95,
+        "coverage_pct": 75.7,
+        "covered_trips": 115,
         "drift": {
-          "median_seconds": 60,
-          "observations": 3306,
-          "on_time_share_pct": 92.6,
-          "p90_abs_seconds": 254
+          "median_seconds": 33,
+          "observations": 5000,
+          "on_time_share_pct": 79.6,
+          "p90_abs_seconds": 319
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 123,
-        "vehicles_checked": 361,
-        "vehicles_on_route_pct": 97.2,
-        "worst_lag_seconds": 28
+        "scheduled_trips_in_window": 152,
+        "vehicles_checked": 482,
+        "vehicles_on_route_pct": 94.4,
+        "worst_lag_seconds": 21
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 28,
+          "count": 37,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 8.0,
+          "points": 8.5,
           "severity": "WARNING",
-          "what": "28 of 123 trips scheduled during the sampling window had no live predictions.",
+          "what": "37 of 152 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 91.6,
+      "score": 90.6,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 77.2% of scheduled trips had live predictions; 97.2% of vehicles on their route; predictions ran a median of 60s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 75.7% of scheduled trips had live predictions; 94.4% of vehicles on their route; predictions ran a median of 33s behind schedule.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -287,7 +303,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 56 days.",
+        "detail": "Service data covers the next 45 days.",
         "key": "current",
         "met": true
       },
@@ -307,7 +323,13 @@
     "size_bytes": 9205930,
     "static_url": "https://kamino.mcts.org/gtfs/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://kamino.mcts.org/gtfs/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -88.07006,
@@ -320,7 +342,7 @@
     "stop_count": 3694
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "MCTS"
     ],
@@ -339,19 +361,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 56 days.",
+        "detail": "Service data covers the next 45 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 5.4,
-    "margin_to_next_band": 4.6,
-    "score": 65.4
+    "margin_to_lower_band": 5.2,
+    "margin_to_next_band": 4.8,
+    "score": 65.2
   },
   "recommendations": [
     {
@@ -377,11 +399,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 3694,
     "findings": [],
@@ -389,8 +406,596 @@
     "single_stop_trips": 0,
     "trips_total": 19100
   },
+  "route_map": {
+    "drawn_route_count": 52,
+    "has_shapes": true,
+    "path": "data/artifacts/milwaukee-county-transit-system-mcts-2127/geometry.geojson",
+    "route_count": 52,
+    "routes": [
+      {
+        "color": "00B451",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Hampton Avenue",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Teutonia Avenue",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0055B8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Humboldt Blvd - Wisconsin",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Holton - Kinnickinnic",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "National - Greenfield",
+        "short": "18",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "M.L. King - S.13th Street",
+        "short": "19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "S. 20th Street",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "North Avenue",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Center Street",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "Forest Home - 16th Street",
+        "short": "24",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "108th Street",
+        "short": "28",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AF9A",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Sherman - Wisconsin",
+        "short": "30",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B451",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "State - Highland",
+        "short": "31",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFBE00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "Vliet - 84th Street",
+        "short": "33",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "34",
+        "label": "34",
+        "long": "Hopkins - Congress",
+        "short": "34",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "35th Street",
+        "short": "35",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40S",
+        "label": "40",
+        "long": "College Ave Summerfest Flyer",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40U",
+        "label": "40U",
+        "long": "College   UBUS",
+        "short": "40U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "43S",
+        "label": "43",
+        "long": "Hales Corners Summerfest Flyer",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "44U",
+        "label": "44U",
+        "long": "Fair Park - Whitnall  UBUS",
+        "short": "44U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "49S",
+        "label": "49",
+        "long": "Brown Deer East - Summerfest Flyer",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E50695",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Oklahoma Avenue",
+        "short": "51",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Clement - Pennsylvania",
+        "short": "52",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "53",
+        "label": "53",
+        "long": "Lincoln Avenue",
+        "short": "53",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "Mitchell - Burnham",
+        "short": "54",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "Layton Avenue",
+        "short": "55",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "863399",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "Greenfield  Avenue - Beloit",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0075C9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "Walnut - Appleton",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Villard Avenue",
+        "short": "58",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Drexel Avenue",
+        "short": "59",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "60th Street",
+        "short": "60",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "Silver Spring Drive",
+        "short": "63",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "863399",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "Burleigh Street",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "Port Washington - Capitol",
+        "short": "68",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Mill Road",
+        "short": "73",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B451",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "S. 43rd Street",
+        "short": "74",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B31983",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "76th Street",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E50695",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "6th Street",
+        "short": "80",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "Amazon Oak Creek",
+        "short": "81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0075C9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "82",
+        "label": "82",
+        "long": "S. 13th Street - Howell Avenue",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "Brown Deer Road",
+        "short": "88",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "92nd Street",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "153E83",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "BLU",
+        "label": "BLU",
+        "long": "BlueLine",
+        "short": "BLU",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "379ED7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "CN1",
+        "label": "CN1",
+        "long": "Connect 1 Wisconsin Ave",
+        "short": "CN1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008B73",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GRE",
+        "label": "GRE",
+        "long": "GreenLine",
+        "short": "GRE",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HF1",
+        "label": "HF1",
+        "long": "Via Rt 12",
+        "short": "HF1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HF2",
+        "label": "HF2",
+        "long": "Via Rt 30 & Blueline",
+        "short": "HF2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "533073",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "PUR",
+        "label": "PUR",
+        "long": "PurpleLine",
+        "short": "PUR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C33223",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RED",
+        "label": "RED",
+        "long": "RedLine",
+        "short": "RED",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RR1",
+        "label": "RR1",
+        "long": "Via Rt 19",
+        "short": "RR1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RR2",
+        "label": "RR2",
+        "long": "Via PurpleLine",
+        "short": "RR2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RR3",
+        "label": "RR3",
+        "long": "Via Rt 20 & Blueline",
+        "short": "RR3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3694,
+    "stop_points_capped": true
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 19100 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 19100,
+    "trips_with_shape": 19100
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {

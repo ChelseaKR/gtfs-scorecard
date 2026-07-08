@@ -1,6 +1,6 @@
 {
   "agency_count": 8,
-  "average_score": 52.0,
+  "average_score": 51.7,
   "common_fixes": [
     {
       "agencies": 6,
@@ -38,7 +38,7 @@
     "stale": 3,
     "total": 3
   },
-  "generated_at": "2026-07-08T12:17:51+00:00",
+  "generated_at": "2026-07-08T15:09:26+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 4,
@@ -138,8 +138,8 @@
       "id": "lextran-2067",
       "name": "Lextran",
       "needs_attention": true,
-      "score": 69.9,
-      "shapes_status": null,
+      "score": 67.7,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -166,9 +166,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 5,
+    "not_measured": 4,
     "not_ready": 0,
-    "ready": 3,
+    "ready": 4,
     "total": 8
   },
   "state_percentile": 22
