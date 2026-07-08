@@ -1,6 +1,6 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-07T23:30:55+00:00",
+  "generated_at": "2026-07-08T00:36:34+00:00",
   "license": "CC-BY-4.0",
   "points": [
     {
@@ -106,6 +106,19 @@
         "D": 173,
         "F": 722
       }
+    },
+    {
+      "agency_count": 1449,
+      "average_score": 60.5,
+      "date": "2026-07-08",
+      "expired_pct": 42.8,
+      "grade_distribution": {
+        "A": 50,
+        "B": 231,
+        "C": 271,
+        "D": 172,
+        "F": 725
+      }
     }
   ],
   "summary": {
@@ -114,15 +127,15 @@
       "date": "2026-06-30"
     },
     "last": {
-      "average_score": 60.6,
-      "date": "2026-07-07"
+      "average_score": 60.5,
+      "date": "2026-07-08"
     },
-    "points": 8,
-    "score_delta": -0.4
+    "points": 9,
+    "score_delta": -0.5
   },
   "top_improvers": [
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-16",
       "delta": 34.9,
       "grade_end": "B",
@@ -132,7 +145,7 @@
       "score_start": 50.7
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
       "delta": 34.5,
       "grade_end": "B",
@@ -142,17 +155,17 @@
       "score_start": 49.2
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
-      "delta": 31.3,
-      "grade_end": "C",
+      "delta": 30.9,
+      "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-513",
       "name": "Manhattan Bus",
-      "score_end": 70.4,
+      "score_end": 70.0,
       "score_start": 39.1
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
       "delta": 28.6,
       "grade_end": "B",
@@ -162,17 +175,7 @@
       "score_start": 52.7
     },
     {
-      "date_end": "2026-07-07",
-      "date_start": "2026-06-19",
-      "delta": 27.8,
-      "grade_end": "D",
-      "id": "metropolitan-transit-authority-mta-512",
-      "name": "Brooklyn Bus",
-      "score_end": 69.2,
-      "score_start": 41.4
-    },
-    {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-16",
       "delta": 27.7,
       "grade_end": "B",
@@ -182,43 +185,53 @@
       "score_start": 54.2
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
-      "delta": 26.1,
+      "delta": 27.4,
+      "grade_end": "D",
+      "id": "metropolitan-transit-authority-mta-512",
+      "name": "Brooklyn Bus",
+      "score_end": 68.8,
+      "score_start": 41.4
+    },
+    {
+      "date_end": "2026-07-08",
+      "date_start": "2026-06-19",
+      "delta": 25.8,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-510",
       "name": "NYC Bus Company",
-      "score_end": 63.2,
+      "score_end": 62.9,
       "score_start": 37.1
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
-      "delta": 26.0,
+      "delta": 25.6,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-528",
       "name": "Bronx Bus",
-      "score_end": 69.1,
+      "score_end": 68.7,
       "score_start": 43.1
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
-      "delta": 26.0,
+      "delta": 25.6,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-520",
       "name": "Queens Bus",
-      "score_end": 69.5,
+      "score_end": 69.1,
       "score_start": 43.5
     },
     {
-      "date_end": "2026-07-07",
+      "date_end": "2026-07-08",
       "date_start": "2026-06-19",
-      "delta": 26.0,
+      "delta": 25.6,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-514",
       "name": "Staten Island Bus",
-      "score_end": 69.2,
+      "score_end": 68.8,
       "score_start": 43.2
     }
   ]

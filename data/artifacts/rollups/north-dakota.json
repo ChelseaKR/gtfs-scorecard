@@ -23,7 +23,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-07T23:30:31+00:00",
+  "generated_at": "2026-07-08T00:36:09+00:00",
   "grade_distribution": {
     "C": 1,
     "F": 2
@@ -32,7 +32,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1238,
+      "days_until_expiry": -1239,
       "expiry_status": "stale",
       "grade": "F",
       "id": "matbus",
@@ -40,27 +40,27 @@
       "needs_attention": true,
       "score": 41.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -706,
+      "days_until_expiry": -707,
       "expiry_status": "stale",
       "grade": "F",
       "id": "cities-area-transit",
       "name": "Cities Area Transit",
       "needs_attention": true,
-      "score": 44.4,
+      "score": 44.3,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 177,
+      "days_until_expiry": 176,
       "expiry_status": "current",
       "grade": "C",
       "id": "cities-area-transit-2199",
@@ -68,7 +68,7 @@
       "needs_attention": false,
       "score": 71.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
@@ -85,5 +85,5 @@
     "ready": 2,
     "total": 3
   },
-  "state_percentile": 24
+  "state_percentile": 26
 }

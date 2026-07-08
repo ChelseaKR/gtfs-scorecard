@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 5,
+      "agencies": 4,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -33,7 +33,7 @@
     "stale": 3,
     "total": 4
   },
-  "generated_at": "2026-07-07T23:30:31+00:00",
+  "generated_at": "2026-07-08T00:36:09+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 1,
@@ -43,7 +43,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1158,
+      "days_until_expiry": -1159,
       "expiry_status": "stale",
       "grade": "F",
       "id": "greater-portland-metro-bus",
@@ -51,13 +51,13 @@
       "needs_attention": true,
       "score": 23.5,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -275,
+      "days_until_expiry": -276,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "south-portland-2641",
@@ -65,13 +65,13 @@
       "needs_attention": true,
       "score": 37.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1559,
+      "days_until_expiry": -1560,
       "expiry_status": "stale",
       "grade": "F",
       "id": "south-portland",
@@ -79,13 +79,13 @@
       "needs_attention": true,
       "score": 37.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1401,
+      "days_until_expiry": -1402,
       "expiry_status": "stale",
       "grade": "F",
       "id": "casco-bay-lines",
@@ -93,27 +93,27 @@
       "needs_attention": true,
       "score": 46.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "greater-portland-metro-bus-2642",
       "name": "Greater Portland Metro Bus",
       "needs_attention": true,
-      "score": 52.3,
+      "score": 52.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-07",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 1027,
+      "days_until_expiry": 1026,
       "expiry_status": "current",
       "grade": "D",
       "id": "lakes-region-explorer",
@@ -121,13 +121,13 @@
       "needs_attention": false,
       "score": 62.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 177,
+      "days_until_expiry": 176,
       "expiry_status": "current",
       "grade": "C",
       "id": "biddeford-saco-old-orchard-beach-transit",
@@ -135,7 +135,7 @@
       "needs_attention": false,
       "score": 78.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-07",
+      "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
