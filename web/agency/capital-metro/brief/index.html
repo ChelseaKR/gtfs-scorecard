@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Capital Metro call-prep brief — GTFS Scorecard</title>
-  <meta name="description" content="Call-prep brief for Capital Metro: grade F, top fixes, NTD readiness, and key feed facts on one page.">
+  <meta name="description" content="Call-prep brief for Capital Metro: grade C, top fixes, NTD readiness, and key feed facts on one page.">
   <link rel="canonical" href="https://gtfsscorecard.org/agency/capital-metro/brief/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Capital Metro call-prep brief — GTFS Scorecard">
-  <meta property="og:description" content="Call-prep brief for Capital Metro: grade F, top fixes, NTD readiness, and key feed facts on one page.">
+  <meta property="og:description" content="Call-prep brief for Capital Metro: grade C, top fixes, NTD readiness, and key feed facts on one page.">
   <meta property="og:url" content="https://gtfsscorecard.org/agency/capital-metro/brief/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -51,30 +51,30 @@
     <header class="brief-head">
       <p class="brief-kicker">Call-prep brief &middot; checked 2026-07-08</p>
       <h1 class="brief-title">Capital Metro</h1>
-      <p class="brief-grade">Grade F &middot; 57.5 / 100</p>
-      <p class="brief-trend">Down 0.3 points since 2026-07-07 (F to F).</p>
+      <p class="brief-grade">Grade C &middot; 73.6 / 100</p>
+      <p class="brief-trend">Up 15.8 points since 2026-07-07 (F to C).</p>
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
         confirm the feed is current and the NTD details line up. Each fix is framed as a next step,
         not a failure.</p>
     </header>
     <section aria-labelledby="brief-changed-h">
       <h2 id="brief-changed-h">What changed since the last check</h2>
-      <ul class="brief-deltas"><li><span class="brief-cat">Correctness</span> no change</li><li><span class="brief-cat">Freshness</span> down 1.7</li><li><span class="brief-cat">Rider experience</span> no change</li><li><span class="brief-cat">Realtime quality</span> no change</li></ul>
+      <ul class="brief-deltas"><li><span class="brief-cat">Correctness</span> up 10.0</li><li><span class="brief-cat">Freshness</span> down 1.7</li><li><span class="brief-cat">Rider experience</span> no change</li><li><span class="brief-cat">Realtime quality</span> up 62.6</li></ul><p class="brief-sub">Fixed since the last check (4 findings):</p><ul class="brief-cleared"><li>Some trips serve fewer than two stops. (unusable_trip)</li><li>Stops match shape out of order (flagged by the MobilityData validator). (stops_match_shape_out_of_order)</li><li>The trip updates realtime feed failed during sampling. (scorecard_rt_trip_updates_unreachable)</li><li>The vehicle positions realtime feed failed during sampling. (scorecard_rt_vehicle_positions_unreachable)</li></ul>
     </section>
     <section aria-labelledby="brief-fixes-h">
       <h2 id="brief-fixes-h">Top three things to fix</h2>
-      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The trip updates realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 10 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The vehicle positions realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 8 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The service alerts realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 5 observed fixes).</p></li></ol>
+      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The service alerts realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 5 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">2343 of 2343 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Use mixed case for stop names and headsigns (e.g. &#x27;Main St &amp; 2nd Ave&#x27;, not &#x27;MAIN ST &amp; 2ND AVE&#x27;).</p><p class="brief-fix-why">Some rider-facing names are in ALL CAPS or all lowercase. ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers.</p><p class="brief-fix-eta">Effort: Often a bulk fix in your scheduling software.</p></li></ol>
     </section>
     
     <section aria-labelledby="brief-ntd-h">
       <h2 id="brief-ntd-h">NTD certification readiness: Ready</h2>
-      <p class="brief-ntd-summary">Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 40 days.</dd></dl>
+      <p class="brief-ntd-summary">Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 38 days.</dd></dl>
       <p class="brief-align"><strong>agency_id and NTD ID:</strong> Not aligned. Your feed&#x27;s agency_id is CM; your National Transit Database ID is 60048. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error. Optionally set the agency_id for your service to 60048 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.</p>
     </section>
     
     <section aria-labelledby="brief-facts-h">
       <h2 id="brief-facts-h">Key facts</h2>
-      <dl class="brief-facts"><dt>Feed URL</dt><dd>https://data.texas.gov/download/r4v4-vz24/application/zip</dd><dt>Last checked</dt><dd>2026-07-08</dd><dt>Service window</dt><dd>38 days of service data remain. Last service date 2026-08-15.</dd><dt>Feed version</dt><dd>260507_1240</dd><dt>State</dt><dd>Texas</dd></dl>
+      <dl class="brief-facts"><dt>Feed URL</dt><dd>https://data.texas.gov/download/r4v4-vz24/application/zip</dd><dt>Last checked</dt><dd>2026-07-08</dd><dt>Service window</dt><dd>38 days of service data remain. Last service date 2026-08-15.</dd><dt>Feed version</dt><dd>260630_1449</dd><dt>State</dt><dd>Texas</dd></dl>
     </section>
     <p class="brief-portfolio no-print">Part of the <a href="/program/texas/">Texas portfolio</a>: see where this agency sits among the state's feeds before the call.</p>
     <p class="brief-foot">A data-quality and completeness read to support an agency conversation.

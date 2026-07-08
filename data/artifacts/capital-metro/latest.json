@@ -79,8 +79,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 2367,
-        "trips": 29291,
+        "stops": 2343,
+        "trips": 21787,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -89,13 +89,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 2367,
+          "count": 2343,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "2367 of 2367 stops don't say whether a wheelchair user can board there.",
+          "what": "2343 of 2343 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -118,18 +118,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 7,
+        "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 6,
-          "WARNING": 3435
+          "WARNING": 3666
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 2586,
+          "count": 3125,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -140,7 +140,7 @@
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 717,
+          "count": 458,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -151,7 +151,7 @@
         },
         {
           "code": "route_long_name_contains_short_name",
-          "count": 72,
+          "count": 70,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'route_long_name_contains_short_name' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -161,19 +161,8 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "unusable_trip",
-          "count": 36,
-          "effort": "Worth a vendor question if it appears often.",
-          "fix": "Check the flagged trips in your scheduling software; remove them or restore their missing stops.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some trips serve fewer than two stops.",
-          "why": "A trip with one stop can't be ridden; planners ignore it and it may signal an export problem."
-        },
-        {
           "code": "stop_too_far_from_shape",
-          "count": 21,
+          "count": 13,
           "effort": "A few minutes per flagged stop.",
           "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
           "owner": "Likely your export tool",
@@ -181,17 +170,6 @@
           "severity": "WARNING",
           "what": "Some stops sit far from the route line they belong to.",
           "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
-        },
-        {
-          "code": "stops_match_shape_out_of_order",
-          "count": 3,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         },
         {
           "code": "unknown_column",
@@ -206,17 +184,17 @@
         }
       ],
       "name": "correctness",
-      "score": 59.2,
+      "score": 69.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 3441 instances (0 error, 3435 warning, 6 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 3672 instances (0 error, 3666 warning, 6 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 38,
         "feed_end_date": "2026-08-15",
-        "feed_start_date": "2026-05-07",
-        "feed_version": "260507_1240",
+        "feed_start_date": "2026-06-30",
+        "feed_version": "260630_1449",
         "has_feed_info": true,
         "last_service_date": "2026-08-15",
         "seasonal_boundary": false,
@@ -231,37 +209,23 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 0.0,
-        "covered_trips": 0,
-        "kinds_reachable": 0,
+        "coverage_pct": 96.4,
+        "covered_trips": 241,
+        "drift": {
+          "median_seconds": -25,
+          "observations": 15087,
+          "on_time_share_pct": 50.7,
+          "p90_abs_seconds": 394
+        },
+        "kinds_reachable": 2,
         "rt_freshness": "stale",
         "samples": 9,
-        "scheduled_trips_in_window": 238,
-        "worst_lag_seconds": 104
+        "scheduled_trips_in_window": 250,
+        "vehicles_checked": 714,
+        "vehicles_on_route_pct": 98.0,
+        "worst_lag_seconds": 71
       },
       "findings": [
-        {
-          "code": "scorecard_rt_trip_updates_unreachable",
-          "count": 1,
-          "effort": "Usually a vendor support ticket.",
-          "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
-          "owner": "",
-          "points": 8.3,
-          "severity": "ERROR",
-          "what": "The trip updates realtime feed failed during sampling.",
-          "why": "When this feed is down, riders see scheduled times presented as if they were live."
-        },
-        {
-          "code": "scorecard_rt_vehicle_positions_unreachable",
-          "count": 1,
-          "effort": "Usually a vendor support ticket.",
-          "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
-          "owner": "",
-          "points": 8.3,
-          "severity": "ERROR",
-          "what": "The vehicle positions realtime feed failed during sampling.",
-          "why": "When this feed is down, riders see scheduled times presented as if they were live."
-        },
         {
           "code": "scorecard_rt_service_alerts_unreachable",
           "count": 1,
@@ -279,39 +243,39 @@
           "effort": "A vendor configuration question.",
           "fix": "Ask your AVL vendor to publish updates at least every 20 seconds (the Caltrans guideline).",
           "owner": "",
-          "points": 2.0,
+          "points": 0.5,
           "severity": "WARNING",
-          "what": "Realtime data was up to 104 seconds old when sampled.",
+          "what": "Realtime data was up to 71 seconds old when sampled.",
           "why": "Stale positions and predictions are worse than none: riders watch a bus that already left."
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 238,
+          "count": 9,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 35.0,
+          "points": 1.3,
           "severity": "WARNING",
-          "what": "238 of 238 trips scheduled during the sampling window had no live predictions.",
+          "what": "9 of 250 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 27.0,
+      "score": 89.6,
       "status": "measured",
-      "summary": "Sampled 9 times: 0 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
+      "summary": "Sampled 9 times: 2 of 3 feeds healthy; 96.4% of scheduled trips had live predictions; 98.0% of vehicles on their route; predictions ran a median of 25s ahead of schedule.",
       "weight": 0.2
     }
   },
   "confidence": {
     "feed_age_days": 0,
-    "fetch_source": "mirror",
-    "level": "medium",
+    "fetch_source": "origin",
+    "level": "high",
     "measured_categories": 4,
     "notes": [
       "All four score categories were measured this run.",
       "Realtime was sampled in one bounded window of 9 snapshots.",
-      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+      "The feed was downloaded from the agency's own URL."
     ],
     "rt_windows": 1,
     "total_categories": 4
@@ -325,7 +289,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 40 days.",
+        "detail": "Service data covers the next 38 days.",
         "key": "current",
         "met": true
       },
@@ -341,18 +305,17 @@
   "feed": {
     "license_note": "License: https://www.capmetro.org/metrolabs/",
     "reachable": true,
-    "sha256": "9ed2934bf62169b4053d92f1efc7c5a68790211323b4a57009cb6e4b22e8048a",
-    "size_bytes": 13611889,
+    "sha256": "09cc6d8700e14dbce373a557b9a307425f2ac5f57fa24da72e208b76909083f0",
+    "size_bytes": 9865866,
     "static_url": "https://data.texas.gov/download/r4v4-vz24/application/zip"
   },
   "fetch": {
-    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-texas-capital-metro-gtfs-150.zip?alt=media",
-    "max_attempts": 1,
-    "origin_error": "HTTPError",
-    "source": "mirror",
+    "final_url": "https://data.texas.gov/download/r4v4-vz24/application/zip",
+    "max_attempts": 4,
+    "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-06T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -97.9911,
@@ -361,8 +324,8 @@
       30.5879
     ],
     "lat": 30.2833,
-    "lon": -97.73175,
-    "stop_count": 2367
+    "lon": -97.73181,
+    "stop_count": 2343
   },
   "ntd_id_alignment": {
     "detail": "Your feed's agency_id is CM; your National Transit Database ID is 60048. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
@@ -386,7 +349,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 40 days.",
+        "detail": "Service data covers the next 38 days.",
         "key": "current",
         "status": "ready"
       }
@@ -395,21 +358,21 @@
     "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 57.5,
-    "margin_to_next_band": 2.5,
-    "score": 57.5
+    "grade": "C",
+    "margin_to_lower_band": 3.6,
+    "margin_to_next_band": 6.4,
+    "score": 73.6
   },
   "recommendations": [
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 2171,
+      "count": 2148,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "2171 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Riverside/Burton\", \"2237 Riverside/Willow Creek\", \"2507 Riverside/Pleasant Valley\", and more).",
+      "what": "2148 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Riverside/Burton\", \"2237 Riverside/Willow Creek\", \"2507 Riverside/Pleasant Valley\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
@@ -424,35 +387,18 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 2355,
-    "findings": [
-      {
-        "code": "scorecard_single_stop_trips",
-        "count": 36,
-        "effort": "Usually an export setting or a stop_times mapping in your software.",
-        "fix": "Check your scheduling export: every trip should list each stop it calls at, in order, with times.",
-        "owner": "Likely your export tool",
-        "points": 0.0,
-        "severity": "WARNING",
-        "what": "36 of 29291 trips list fewer than two stops.",
-        "why": "A trip with one stop has no leg a rider can ride; trip planners can't route anyone on it, so the service effectively does not exist."
-      }
-    ],
+    "boardable_stops": 2331,
+    "findings": [],
     "orphan_stops": 0,
-    "single_stop_trips": 36,
-    "trips_total": 29291
+    "single_stop_trips": 0,
+    "trips_total": 21787
   },
   "route_map": {
-    "drawn_route_count": 72,
+    "drawn_route_count": 70,
     "has_shapes": true,
     "path": "data/artifacts/capital-metro/geometry.geojson",
-    "route_count": 72,
+    "route_count": 70,
     "routes": [
       {
         "color": "004A97",
@@ -645,17 +591,6 @@
         "color": "004A97",
         "color_name": "teal",
         "has_shape": true,
-        "id": "237",
-        "label": "237",
-        "long": "237-Northeast Feeder",
-        "short": "237",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "004A97",
-        "color_name": "teal",
-        "has_shape": true,
         "id": "243",
         "label": "243",
         "long": "243-Wells Branch",
@@ -770,17 +705,6 @@
         "label": "322",
         "long": "322-Chicon/Cherrywood",
         "short": "322",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "004A97",
-        "color_name": "teal",
-        "has_shape": true,
-        "id": "323",
-        "label": "323",
-        "long": "323-Anderson",
-        "short": "323",
         "text_color": "FFFFFF",
         "type_label": "Bus"
       },
@@ -1247,43 +1171,19 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 2367,
+    "stop_count": 2343,
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 29291 trips have a shape in shapes.txt.",
+    "detail": "All 21787 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 29291,
-    "trips_with_shape": 29291
+    "total_trips": 21787,
+    "trips_with_shape": 21787
   },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
-    {
-      "code": "scorecard_rt_trip_updates_unreachable",
-      "count": 1,
-      "effort": "Usually a vendor support ticket.",
-      "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
-      "owner": "",
-      "points": 8.3,
-      "rank": 1,
-      "severity": "ERROR",
-      "what": "The trip updates realtime feed failed during sampling.",
-      "why": "When this feed is down, riders see scheduled times presented as if they were live."
-    },
-    {
-      "code": "scorecard_rt_vehicle_positions_unreachable",
-      "count": 1,
-      "effort": "Usually a vendor support ticket.",
-      "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
-      "owner": "",
-      "points": 8.3,
-      "rank": 2,
-      "severity": "ERROR",
-      "what": "The vehicle positions realtime feed failed during sampling.",
-      "why": "When this feed is down, riders see scheduled times presented as if they were live."
-    },
     {
       "code": "scorecard_rt_service_alerts_unreachable",
       "count": 1,
@@ -1291,10 +1191,34 @@
       "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
       "owner": "",
       "points": 8.3,
-      "rank": 3,
+      "rank": 1,
       "severity": "ERROR",
       "what": "The service alerts realtime feed failed during sampling.",
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2343,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2343 of 2343 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "mixed_case_recommended_field",
+      "count": 3125,
+      "effort": "Often a bulk fix in your scheduling software.",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
     }
   ],
   "validator_version": "8.0.1"

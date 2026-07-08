@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-08T20:55:41+00:00",
+  "generated_at": "2026-07-08T22:43:41+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -245,9 +245,9 @@
       "prevalence_pct": 0.2
     },
     "mixed_case_recommended_field": {
-      "agencies": 443,
-      "instances": 772669,
-      "prevalence_pct": 30.6
+      "agencies": 442,
+      "instances": 773206,
+      "prevalence_pct": 30.5
     },
     "more_than_one_entity": {
       "agencies": 1,
@@ -296,7 +296,7 @@
     },
     "route_long_name_contains_short_name": {
       "agencies": 115,
-      "instances": 1020,
+      "instances": 1018,
       "prevalence_pct": 7.9
     },
     "route_short_name_too_long": {
@@ -401,7 +401,7 @@
     },
     "scorecard_rt_predictions_implausible": {
       "agencies": 6,
-      "instances": 3078,
+      "instances": 3050,
       "prevalence_pct": 0.4
     },
     "scorecard_rt_service_alerts_unreachable": {
@@ -415,24 +415,24 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 54,
-      "instances": 1965,
-      "prevalence_pct": 3.7
+      "agencies": 55,
+      "instances": 1735,
+      "prevalence_pct": 3.8
     },
     "scorecard_rt_trip_updates_unreachable": {
-      "agencies": 45,
-      "instances": 45,
-      "prevalence_pct": 3.1
-    },
-    "scorecard_rt_vehicle_positions_unreachable": {
       "agencies": 44,
       "instances": 44,
       "prevalence_pct": 3.0
     },
+    "scorecard_rt_vehicle_positions_unreachable": {
+      "agencies": 43,
+      "instances": 43,
+      "prevalence_pct": 3.0
+    },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 10,
-      "instances": 188,
-      "prevalence_pct": 0.7
+      "agencies": 8,
+      "instances": 176,
+      "prevalence_pct": 0.6
     },
     "scorecard_station_no_pathways": {
       "agencies": 143,
@@ -451,12 +451,12 @@
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1238,
-      "instances": 2121026,
+      "instances": 2121024,
       "prevalence_pct": 85.4
     },
     "scorecard_wheelchair_boarding_unknown": {
       "agencies": 1356,
-      "instances": 644421,
+      "instances": 644397,
       "prevalence_pct": 93.6
     },
     "service_extends_far_in_the_future": {
@@ -506,12 +506,12 @@
     },
     "stop_too_far_from_shape": {
       "agencies": 132,
-      "instances": 2584,
+      "instances": 2576,
       "prevalence_pct": 9.1
     },
     "stop_too_far_from_shape_using_user_distance": {
       "agencies": 172,
-      "instances": 64526,
+      "instances": 64267,
       "prevalence_pct": 11.9
     },
     "stop_without_stop_time": {
@@ -525,9 +525,9 @@
       "prevalence_pct": 1.3
     },
     "stops_match_shape_out_of_order": {
-      "agencies": 100,
-      "instances": 437,
-      "prevalence_pct": 6.9
+      "agencies": 99,
+      "instances": 434,
+      "prevalence_pct": 6.8
     },
     "trip_coverage_not_active_for_next7_days": {
       "agencies": 643,
@@ -575,9 +575,9 @@
       "prevalence_pct": 2.7
     },
     "unusable_trip": {
-      "agencies": 29,
-      "instances": 493,
-      "prevalence_pct": 2.0
+      "agencies": 28,
+      "instances": 457,
+      "prevalence_pct": 1.9
     },
     "unused_shape": {
       "agencies": 85,
@@ -601,7 +601,7 @@
       "code": "scorecard_wheelchair_boarding_unknown",
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
-      "instances": 644421,
+      "instances": 644397,
       "prevalence_pct": 93.6,
       "severity": "WARNING",
       "source": "scorecard",
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2121026,
+      "instances": 2121024,
       "prevalence_pct": 85.4,
       "severity": "WARNING",
       "source": "scorecard",
@@ -753,12 +753,12 @@
       "why": "When the calendar ends, Google Maps and other trip planners drop your agency entirely. Riders see no service at all."
     },
     {
-      "agencies": 443,
+      "agencies": 442,
       "code": "mixed_case_recommended_field",
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-      "instances": 772669,
-      "prevalence_pct": 30.6,
+      "instances": 773206,
+      "prevalence_pct": 30.5,
       "severity": "WARNING",
       "source": "validator",
       "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
@@ -841,7 +841,7 @@
       "code": "stop_too_far_from_shape_using_user_distance",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 64526,
+      "instances": 64267,
       "prevalence_pct": 11.9,
       "severity": "WARNING",
       "source": "validator",

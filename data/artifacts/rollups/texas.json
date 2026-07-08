@@ -1,9 +1,9 @@
 {
   "agency_count": 17,
-  "average_score": 55.3,
+  "average_score": 56.2,
   "common_fixes": [
     {
-      "agencies": 14,
+      "agencies": 15,
       "code": "scorecard_wheelchair_boarding_unknown",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -36,6 +36,11 @@
       "agencies": 2,
       "code": "scorecard_rt_service_alerts_unreachable",
       "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "agencies": 2,
+      "code": "mixed_case_recommended_field",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
     }
   ],
   "expired": {
@@ -43,12 +48,12 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-08T20:55:17+00:00",
+  "generated_at": "2026-07-08T22:43:25+00:00",
   "grade_distribution": {
     "B": 2,
-    "C": 3,
+    "C": 4,
     "D": 2,
-    "F": 10
+    "F": 9
   },
   "members": [
     {
@@ -165,20 +170,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Score changed sharply on 2026-07-05",
-      "days_until_expiry": 38,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "capital-metro",
-      "name": "Capital Metro",
-      "needs_attention": true,
-      "score": 57.5,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 30 day(s)",
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
@@ -204,6 +195,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Score changed sharply on 2026-07-05",
+      "days_until_expiry": 38,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "capital-metro",
+      "name": "Capital Metro",
+      "needs_attention": true,
+      "score": 73.6,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -303,5 +308,5 @@
     "ready": 5,
     "total": 17
   },
-  "state_percentile": 48
+  "state_percentile": 52
 }

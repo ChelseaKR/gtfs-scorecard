@@ -5,25 +5,25 @@
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
-            "csvRowNumber": 35,
+            "csvRowNumber": 33,
             "fieldName": "route_long_name",
             "fieldValue": "335 35th/38th",
             "filename": "routes.txt"
           },
           {
-            "csvRowNumber": 38,
+            "csvRowNumber": 36,
             "fieldName": "route_long_name",
             "fieldValue": "345-45th",
             "filename": "routes.txt"
           },
           {
-            "csvRowNumber": 65,
+            "csvRowNumber": 63,
             "fieldName": "route_long_name",
             "fieldValue": "800 PLEASANT VALLEY",
             "filename": "routes.txt"
           },
           {
-            "csvRowNumber": 68,
+            "csvRowNumber": 66,
             "fieldName": "route_long_name",
             "fieldValue": "837-EXPO CENTER",
             "filename": "routes.txt"
@@ -36,7 +36,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 2586
+        "total": 3125
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -47,25 +47,12 @@
               30.222559,
               -97.76732100000001
             ],
-            "shapeId": "1",
+            "shapeId": "2",
             "stopId": "5547",
             "stopName": "South Congress Bay E",
-            "stopTimeCsvRowNumber": 14,
-            "tripCsvRowNumber": 2,
-            "tripId": "2959611_0001"
-          },
-          {
-            "geoDistanceToShape": 117.16804982892201,
-            "match": [
-              30.222559,
-              -97.76732100000001
-            ],
-            "shapeId": "5",
-            "stopId": "5547",
-            "stopName": "South Congress Bay E",
-            "stopTimeCsvRowNumber": 11452,
-            "tripCsvRowNumber": 154,
-            "tripId": "2976416_0153"
+            "stopTimeCsvRowNumber": 2864,
+            "tripCsvRowNumber": 40,
+            "tripId": "2976416_0039"
           },
           {
             "geoDistanceToShape": 117.16804982892201,
@@ -76,9 +63,9 @@
             "shapeId": "6",
             "stopId": "5547",
             "stopName": "South Congress Bay E",
-            "stopTimeCsvRowNumber": 14340,
+            "stopTimeCsvRowNumber": 14302,
             "tripCsvRowNumber": 192,
-            "tripId": "2959677_0191"
+            "tripId": "2976482_0191"
           },
           {
             "geoDistanceToShape": 117.16804982892201,
@@ -86,29 +73,42 @@
               30.222559,
               -97.76732100000001
             ],
-            "shapeId": "8",
+            "shapeId": "7",
             "stopId": "5547",
             "stopName": "South Congress Bay E",
-            "stopTimeCsvRowNumber": 19927,
-            "tripCsvRowNumber": 266,
-            "tripId": "2976482_0265"
+            "stopTimeCsvRowNumber": 17114,
+            "tripCsvRowNumber": 229,
+            "tripId": "2976552_0228"
           },
           {
-            "geoDistanceToShape": 123.95278724102114,
+            "geoDistanceToShape": 123.15025558015778,
             "match": [
-              30.386895,
-              -97.717878
+              30.394258000000004,
+              -97.680891
             ],
-            "shapeId": "800",
-            "stopId": "6519",
-            "stopName": "McKalla Station",
-            "stopTimeCsvRowNumber": 863779,
-            "tripCsvRowNumber": 21559,
-            "tripId": "2968667_21558"
+            "shapeId": "9",
+            "stopId": "5347",
+            "stopName": "12100 Lamar/Oakbrook",
+            "stopTimeCsvRowNumber": 22242,
+            "tripCsvRowNumber": 297,
+            "tripId": "2976373_0296"
+          },
+          {
+            "geoDistanceToShape": 105.29201788330676,
+            "match": [
+              30.327640000000002,
+              -97.72528
+            ],
+            "shapeId": "9",
+            "stopId": "5861",
+            "stopName": "Brentwood Station (SB)",
+            "stopTimeCsvRowNumber": 22266,
+            "tripCsvRowNumber": 297,
+            "tripId": "2976373_0296"
           }
         ],
         "severity": "WARNING",
-        "total": 717
+        "total": 458
       },
       {
         "code": "route_long_name_contains_short_name",
@@ -145,50 +145,23 @@
           }
         ],
         "severity": "WARNING",
-        "total": 72
-      },
-      {
-        "code": "unusable_trip",
-        "sample_notices": [
-          {
-            "csvRowNumber": 24294,
-            "tripId": "2971941_24293"
-          },
-          {
-            "csvRowNumber": 24295,
-            "tripId": "2971940_24294"
-          },
-          {
-            "csvRowNumber": 24296,
-            "tripId": "2971939_24295"
-          },
-          {
-            "csvRowNumber": 24297,
-            "tripId": "2971938_24296"
-          },
-          {
-            "csvRowNumber": 24298,
-            "tripId": "2971951_24297"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 36
+        "total": 70
       },
       {
         "code": "stop_too_far_from_shape",
         "sample_notices": [
           {
-            "geoDistanceToShape": 115.5283619029643,
+            "geoDistanceToShape": 207.75647615117717,
             "match": [
-              30.277397966059947,
-              -97.73550031042134
+              30.35522720829849,
+              -97.7363355789848
             ],
-            "shapeId": "1046",
-            "stopId": "916",
-            "stopName": "Medical School SB (San Jacinto/17th)",
-            "stopTimeCsvRowNumber": 1067626,
-            "tripCsvRowNumber": 29248,
-            "tripId": "2974969_29247"
+            "shapeId": "515",
+            "stopId": "830",
+            "stopName": "Northcross Mall",
+            "stopTimeCsvRowNumber": 592492,
+            "tripCsvRowNumber": 15356,
+            "tripId": "2984786_15355"
           },
           {
             "geoDistanceToShape": 186.41368915689887,
@@ -196,12 +169,12 @@
               30.254917999999996,
               -97.730312
             ],
-            "shapeId": "400",
+            "shapeId": "303",
             "stopId": "2041",
             "stopName": "1400 Holly/Navasota",
-            "stopTimeCsvRowNumber": 560169,
-            "tripCsvRowNumber": 12521,
-            "tripId": "2964473_12520"
+            "stopTimeCsvRowNumber": 403627,
+            "tripCsvRowNumber": 9805,
+            "tripId": "2981329_9804"
           },
           {
             "geoDistanceToShape": 302.9657261842809,
@@ -209,12 +182,12 @@
               30.253507,
               -97.735552
             ],
-            "shapeId": "400",
+            "shapeId": "303",
             "stopId": "5427",
             "stopName": "58 Waller/Holly",
-            "stopTimeCsvRowNumber": 560170,
-            "tripCsvRowNumber": 12521,
-            "tripId": "2964473_12520"
+            "stopTimeCsvRowNumber": 403628,
+            "tripCsvRowNumber": 9805,
+            "tripId": "2981329_9804"
           },
           {
             "geoDistanceToShape": 186.41368915689887,
@@ -222,12 +195,12 @@
               30.254917999999996,
               -97.730312
             ],
-            "shapeId": "404",
+            "shapeId": "304",
             "stopId": "2041",
             "stopName": "1400 Holly/Navasota",
-            "stopTimeCsvRowNumber": 563879,
-            "tripCsvRowNumber": 12661,
-            "tripId": "2981236_12660"
+            "stopTimeCsvRowNumber": 404579,
+            "tripCsvRowNumber": 9839,
+            "tripId": "2981388_9838"
           },
           {
             "geoDistanceToShape": 302.9657261842809,
@@ -235,80 +208,16 @@
               30.253507,
               -97.735552
             ],
-            "shapeId": "404",
+            "shapeId": "304",
             "stopId": "5427",
             "stopName": "58 Waller/Holly",
-            "stopTimeCsvRowNumber": 563880,
-            "tripCsvRowNumber": 12661,
-            "tripId": "2981236_12660"
+            "stopTimeCsvRowNumber": 404580,
+            "tripCsvRowNumber": 9839,
+            "tripId": "2981388_9838"
           }
         ],
         "severity": "WARNING",
-        "total": 21
-      },
-      {
-        "code": "stops_match_shape_out_of_order",
-        "sample_notices": [
-          {
-            "match1": [
-              30.31909280224933,
-              -97.66109929762104
-            ],
-            "match2": [
-              30.32891221534078,
-              -97.65629352798251
-            ],
-            "shapeId": "534",
-            "stopId1": "5808",
-            "stopId2": "5945",
-            "stopName1": "7500 Manor/Pecan Brook",
-            "stopName2": "9100 US 290/Springdale",
-            "stopTimeCsvRowNumber1": 713907,
-            "stopTimeCsvRowNumber2": 713906,
-            "tripCsvRowNumber": 16725,
-            "tripId": "2992797_16724"
-          },
-          {
-            "match1": [
-              30.31909280224933,
-              -97.66109929762104
-            ],
-            "match2": [
-              30.32891221534078,
-              -97.65629352798251
-            ],
-            "shapeId": "536",
-            "stopId1": "5808",
-            "stopId2": "5945",
-            "stopName1": "7500 Manor/Pecan Brook",
-            "stopName2": "9100 US 290/Springdale",
-            "stopTimeCsvRowNumber1": 715089,
-            "stopTimeCsvRowNumber2": 715088,
-            "tripCsvRowNumber": 16771,
-            "tripId": "2992795_16770"
-          },
-          {
-            "match1": [
-              30.31909280224933,
-              -97.66109929762104
-            ],
-            "match2": [
-              30.32891221534078,
-              -97.65629352798251
-            ],
-            "shapeId": "538",
-            "stopId1": "5808",
-            "stopId2": "5945",
-            "stopName1": "7500 Manor/Pecan Brook",
-            "stopName2": "9100 US 290/Springdale",
-            "stopTimeCsvRowNumber1": 716245,
-            "stopTimeCsvRowNumber2": 716244,
-            "tripCsvRowNumber": 16816,
-            "tripId": "2992798_16815"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 3
+        "total": 13
       },
       {
         "code": "unknown_column",
@@ -345,6 +254,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "9ed2934bf62169b4053d92f1efc7c5a68790211323b4a57009cb6e4b22e8048a",
+  "sha256": "09cc6d8700e14dbce373a557b9a307425f2ac5f57fa24da72e208b76909083f0",
   "validator_version": "8.0.1"
 }

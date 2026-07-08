@@ -17,6 +17,30 @@
       "code": "scorecard_rt_trip_coverage",
       "last_seen": "2026-07-02",
       "what": "5 of 240 trips scheduled during the sampling window had no live predictions."
+    },
+    {
+      "cleared": "2026-07-08",
+      "code": "scorecard_rt_trip_updates_unreachable",
+      "last_seen": "2026-07-07",
+      "what": "The trip updates realtime feed failed during sampling."
+    },
+    {
+      "cleared": "2026-07-08",
+      "code": "scorecard_rt_vehicle_positions_unreachable",
+      "last_seen": "2026-07-07",
+      "what": "The vehicle positions realtime feed failed during sampling."
+    },
+    {
+      "cleared": "2026-07-08",
+      "code": "stops_match_shape_out_of_order",
+      "last_seen": "2026-07-07",
+      "what": "Stops match shape out of order (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-08",
+      "code": "unusable_trip",
+      "last_seen": "2026-07-07",
+      "what": "Some trips serve fewer than two stops."
     }
   ]
 }

@@ -120,26 +120,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 3,
+        "distinct_codes": 2,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 4,
-          "WARNING": 2
+          "WARNING": 0
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "mixed_case_recommended_field",
-          "count": 2,
-          "effort": "Often a bulk fix in your scheduling software.",
-          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
-          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
-        },
         {
           "code": "unknown_column",
           "count": 2,
@@ -164,9 +153,9 @@
         }
       ],
       "name": "correctness",
-      "score": 95.0,
+      "score": 99.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 3 kinds of issue across 6 instances (0 error, 2 warning, 4 informational).",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 4 instances (0 error, 0 warning, 4 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -231,8 +220,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "1a292260748799235db0baad7207b675cfb5a7b538407aaef80c052be26eb5df",
-    "size_bytes": 1261136,
+    "sha256": "01bb46723ff7fae639e53716b66f509ebb38d40145ec6a7bc7de936b9ce67571",
+    "size_bytes": 1261305,
     "static_url": "https://boxcar-gtfs.vercel.app/api/gtfs"
   },
   "fetch": {
@@ -283,9 +272,9 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 0.6,
-    "margin_to_next_band": 9.4,
-    "score": 80.6
+    "margin_to_lower_band": 2.4,
+    "margin_to_next_band": 7.6,
+    "score": 82.4
   },
   "recommendations": [
     {
