@@ -223,12 +223,12 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 14,
+        "days_until_expiry": 15,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-07-22",
+        "last_service_date": "2026-07-23",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -239,9 +239,9 @@
           "effort": "One export setting.",
           "fix": "Re-export with a validity window that reaches at least 60 days out.",
           "owner": "Likely your export tool",
-          "points": 66.0,
+          "points": 65.0,
           "severity": "WARNING",
-          "what": "Service data runs out in 14 day(s).",
+          "what": "Service data runs out in 15 day(s).",
           "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
         },
         {
@@ -257,9 +257,9 @@
         }
       ],
       "name": "freshness",
-      "score": 8.3,
+      "score": 10.0,
       "status": "measured",
-      "summary": "Service data runs out in 14 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data runs out in 15 day(s). Publish an updated feed soon or riders will lose trip planning.",
       "weight": 0.2
     },
     "realtime": {
@@ -306,7 +306,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "0fb6defd05863077ecf24544cfdbdad23efb59d04ff87b698cb977eb7f6df776",
+    "sha256": "8745acbb07e5f4bff491676ad56ab8caf074ae6012302a3c9800371dd6346ac0",
     "size_bytes": 602236,
     "static_url": "https://cat.cadavl.com:4431/CAT/GTFS/GTFS_CAT.zip"
   },
@@ -316,7 +316,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -81.82614,
@@ -358,9 +358,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 48.8,
-    "margin_to_next_band": 11.2,
-    "score": 48.8
+    "margin_to_lower_band": 49.2,
+    "margin_to_next_band": 10.8,
+    "score": 49.2
   },
   "recommendations": [
     {
@@ -397,11 +397,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 556,
     "findings": [
@@ -623,10 +618,10 @@
       "effort": "One export setting.",
       "fix": "Re-export with a validity window that reaches at least 60 days out.",
       "owner": "Likely your export tool",
-      "points": 66.0,
+      "points": 65.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "Service data runs out in 14 day(s).",
+      "what": "Service data runs out in 15 day(s).",
       "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
     },
     {

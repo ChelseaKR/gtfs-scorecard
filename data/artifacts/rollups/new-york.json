@@ -1,6 +1,6 @@
 {
   "agency_count": 87,
-  "average_score": 54.8,
+  "average_score": 54.9,
   "common_fixes": [
     {
       "agencies": 70,
@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 49,
+      "agencies": 50,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -28,7 +28,7 @@
       "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 12,
+      "agencies": 13,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
@@ -56,11 +56,6 @@
       "agencies": 3,
       "code": "equal_shape_distance_diff_coordinates",
       "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 3,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "agencies": 2,
@@ -98,7 +93,7 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-08T04:10:31+00:00",
+  "generated_at": "2026-07-08T06:56:33+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 2,
@@ -557,20 +552,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "st-lawrence-county-public-transit-2611",
-      "name": "St Lawrence County Public Transit",
-      "needs_attention": true,
-      "score": 53.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -905,
       "expiry_status": "stale",
@@ -580,6 +561,34 @@
       "needs_attention": true,
       "score": 55.3,
       "shapes_status": null,
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "st-lawrence-county-public-transit-2611",
+      "name": "St Lawrence County Public Transit",
+      "needs_attention": true,
+      "score": 55.5,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -8,
+      "expiry_status": "lapsed",
+      "grade": "F",
+      "id": "broome-county-transit-b-c-transit-2079",
+      "name": "Broome County Transit (B.C. Transit)",
+      "needs_attention": true,
+      "score": 57.5,
+      "shapes_status": "at_risk",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -596,34 +605,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -8,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "broome-county-transit-b-c-transit-2079",
-      "name": "Broome County Transit (B.C. Transit)",
-      "needs_attention": true,
-      "score": 57.6,
-      "shapes_status": "at_risk",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "watertown-citibus-2881",
-      "name": "Watertown Citibus",
-      "needs_attention": true,
-      "score": 61.5,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -666,6 +647,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "watertown-citibus-2881",
+      "name": "Watertown Citibus",
+      "needs_attention": true,
+      "score": 63.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,

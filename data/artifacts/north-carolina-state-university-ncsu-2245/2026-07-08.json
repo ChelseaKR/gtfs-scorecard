@@ -106,11 +106,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 6,
+        "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 10,
-          "WARNING": 32
+          "WARNING": 31
         },
         "validator_version": "8.0.1"
       },
@@ -136,17 +136,6 @@
           "severity": "WARNING",
           "what": "Stops match shape out of order (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "feed_expiration_date30_days",
-          "count": 1,
-          "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 30 days.",
-          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
         },
         {
           "code": "route_long_name_contains_short_name",
@@ -183,39 +172,27 @@
         }
       ],
       "name": "correctness",
-      "score": 80.8,
+      "score": 84.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 42 instances (0 error, 32 warning, 10 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 41 instances (0 error, 31 warning, 10 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 29,
-        "feed_end_date": "2026-08-06",
-        "feed_start_date": "2026-07-06",
+        "days_until_expiry": 30,
+        "feed_end_date": "2026-08-07",
+        "feed_start_date": "2026-07-07",
         "feed_version": "20250228",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 51.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 29 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 48.3,
+      "score": 50.0,
       "status": "measured",
-      "summary": "Service data runs out in 29 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 30 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -246,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 29 days; renew to qualify.",
+        "detail": "Service data runs out in 30 days; renew to qualify.",
         "key": "current",
         "met": false
       },
@@ -257,12 +234,12 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 29 days; renew to qualify. States wheelchair access on 2% of stops and 15% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data runs out in 30 days; renew to qualify. States wheelchair access on 2% of stops and 15% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "c745bca5faddf08b7852ffed9a4930fc339c71447dd45c789fd37378a98c3db5",
+    "sha256": "9861a245b91cb9f09d4bd019aa2522d146b2a5a7f254d02e987dd9bd27bb840e",
     "size_bytes": 93746,
     "static_url": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip"
   },
@@ -304,19 +281,19 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 29 days; renew before you certify.",
+        "detail": "Service data runs out in 30 days; renew before you certify.",
         "key": "current",
         "status": "at_risk"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 29 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 2.4,
-    "margin_to_next_band": 7.6,
-    "score": 62.4
+    "margin_to_lower_band": 4.6,
+    "margin_to_next_band": 5.4,
+    "score": 64.6
   },
   "recommendations": [
     {
@@ -547,25 +524,13 @@
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 51.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 29 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
-    {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 115,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 24.4,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "115 of 118 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -577,10 +542,22 @@
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
       "owner": "",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "The feed contains no fare information.",
       "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 303,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 12.7,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "303 of 358 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],
   "validator_version": "8.0.1"
