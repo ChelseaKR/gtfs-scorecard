@@ -77,9 +77,11 @@ data "aws_iam_policy_document" "deploy_s3" {
   }
   # GetObject lets the score job read the S3 validator cache (cache/validator/*)
   # and lets the deploy assemble published data from the bucket; Put/Delete
-  # publish artifacts and the cache.
+  # publish artifacts and the cache. PutObjectTagging lets the collect job mark
+  # each day's dated artifact for the bucket's expire-dated-artifacts lifecycle
+  # rule (docs/follow-ups.md, S3 as the artifact source of truth, step 4).
   statement {
-    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:PutObjectTagging"]
     resources = ["${aws_s3_bucket.artifacts.arn}/*"]
   }
   statement {
@@ -103,4 +105,68 @@ resource "aws_iam_role_policy" "deploy_s3" {
 output "deploy_role_arn" {
   description = "Set as the AWS_ROLE_ARN GitHub Actions secret for the CDN mirror step."
   value       = aws_iam_role.deploy.arn
+}
+
+# Read-only role for the Pages deploy job (docs/follow-ups.md, S3 as the
+# artifact source of truth, step 1). The `deploy` role above is write-scoped
+# for the collect job's mirror step; the Pages job only ever reads, so it gets
+# its own least-privilege role rather than reusing that one.
+#
+# The Pages workflow (pages.yml) assumes this role from two contexts with
+# different OIDC `sub` claims: the `lighthouse` job (and any direct push /
+# workflow_dispatch run) presents `ref:refs/heads/main`, while the `deploy`
+# job sets `environment: github-pages`, which changes its `sub` to the
+# environment form. Both must be trusted or the deploy job's sync would fail.
+data "aws_iam_policy_document" "pages_read_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      type        = "Federated"
+      identifiers = [local.github_oidc_arn]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values = [
+        "repo:${var.github_repo}:ref:refs/heads/main",
+        "repo:${var.github_repo}:environment:github-pages",
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "pages_read" {
+  name               = "${var.project}-artifacts-pages-read"
+  assume_role_policy = data.aws_iam_policy_document.pages_read_assume.json
+  tags               = { project = var.project }
+}
+
+# Least privilege: GetObject + ListBucket only, scoped to the artifacts
+# bucket. This role must never gain write access -- a compromised Pages
+# deploy job could otherwise tamper with published scores.
+data "aws_iam_policy_document" "pages_read_s3" {
+  statement {
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.artifacts.arn]
+  }
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.artifacts.arn}/*"]
+  }
+}
+
+resource "aws_iam_role_policy" "pages_read_s3" {
+  name   = "artifacts-read"
+  role   = aws_iam_role.pages_read.id
+  policy = data.aws_iam_policy_document.pages_read_s3.json
+}
+
+output "pages_read_role_arn" {
+  description = "Set as the PAGES_AWS_ROLE_ARN GitHub Actions secret for the Pages deploy job's read-only S3 sync."
+  value       = aws_iam_role.pages_read.arn
 }

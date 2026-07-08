@@ -52,6 +52,54 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
   }
 }
 
+# Keep the bucket bounded now that the collect job syncs every dated
+# artifact and nothing prunes them client-side (docs/follow-ups.md, S3 as
+# the artifact source of truth, step 4). Only objects tagged
+# artifact-class=dated are eligible for expiration: the collect job's "Tag
+# today's dated artifacts" step applies that tag to each day's
+# `<agency>/<date>.json` file. latest.json, badge.json, directory.json, and
+# the validator cache are never tagged, so current-state reads (what the
+# site actually serves) never expire out from under it even if an agency's
+# feed goes a long time without changing.
+resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  rule {
+    id     = "expire-dated-artifacts"
+    status = "Enabled"
+
+    filter {
+      tag {
+        key   = "artifact-class"
+        value = "dated"
+      }
+    }
+
+    # ~13 months: a bit more than a year of trend history survives, and the
+    # oldest dated files (synced before this rule existed, and so never
+    # tagged) are unaffected until a future re-tag.
+    expiration {
+      days = 400
+    }
+  }
+
+  # Bucket versioning is on (above); without this, every overwritten or
+  # deleted object version accumulates forever and the bucket never actually
+  # shrinks regardless of the rule above.
+  rule {
+    id     = "expire-noncurrent-versions"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+}
+
 resource "aws_cloudfront_origin_access_control" "artifacts" {
   name                              = "${var.project}-artifacts-oac"
   origin_access_control_origin_type = "s3"

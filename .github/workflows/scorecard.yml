@@ -215,6 +215,25 @@ jobs:
           # not carry. Pruning is handled by a bucket lifecycle policy, not here.
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
             --cache-control "max-age=300"
+      - name: Tag today's dated artifacts for lifecycle expiration
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        run: |
+          # The bucket's expire-dated-artifacts lifecycle rule (infra/artifacts)
+          # only matches objects tagged artifact-class=dated, so tag today's
+          # newly-synced <agency>/<date>.json files here. latest.json,
+          # badge.json, directory.json, and validator-cache.json never match
+          # this filename pattern, so they never get this tag and never
+          # expire. History synced before this step existed stays untagged
+          # (fails open: it never expires rather than expiring by surprise)
+          # until a future run happens to touch it again.
+          today=$(date -u +%Y-%m-%d)
+          find data/artifacts -mindepth 2 -maxdepth 2 -type f -name "${today}.json" | while read -r f; do
+            key="${f#./}"
+            aws s3api put-object-tagging \
+              --bucket "${{ vars.ARTIFACTS_BUCKET }}" \
+              --key "$key" \
+              --tagging 'TagSet=[{Key=artifact-class,Value=dated}]'
+          done
 
       # Send opt-in feed-health emails to confirmed subscribers in the DynamoDB
       # store. Gated on SES_FROM, so it is off until an operator verifies an SES
