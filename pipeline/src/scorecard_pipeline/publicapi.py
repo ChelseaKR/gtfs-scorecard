@@ -205,6 +205,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
             "realtime": f"{base}/realtime.json",
             "problems": f"{base}/problems.json",
             "trend": f"{base}/trend.json",
+            "status": f"{base}/status.json",
             "ntd_readiness": f"{base_url}/ntd.json",
             "agency_detail": f"{base_url}/data/artifacts/{{agency_id}}/latest.json",
         },

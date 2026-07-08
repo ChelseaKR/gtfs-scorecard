@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Accessibility | GTFS Scorecard</title>
-  <meta name="description" content="How the GTFS Scorecard meets WCAG 2.2 AAA and Section 508, its known limitations, and how to report an accessibility barrier.">
-  <link rel="canonical" href="https://gtfsscorecard.org/accessibility/">
+  <title>Data freshness &amp; uptime commitment | GTFS Scorecard</title>
+  <meta name="description" content="The intended refresh cadence per tier, the historical refresh-success record, and the degradation policy, as machine-readable status.json and in plain language.">
+  <link rel="canonical" href="https://gtfsscorecard.org/status/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Accessibility | GTFS Scorecard">
-  <meta property="og:description" content="How the GTFS Scorecard meets WCAG 2.2 AAA and Section 508, its known limitations, and how to report an accessibility barrier.">
-  <meta property="og:url" content="https://gtfsscorecard.org/accessibility/">
+  <meta property="og:title" content="Data freshness &amp; uptime commitment | GTFS Scorecard">
+  <meta property="og:description" content="The intended refresh cadence per tier, the historical refresh-success record, and the degradation policy, as machine-readable status.json and in plain language.">
+  <meta property="og:url" content="https://gtfsscorecard.org/status/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -46,47 +46,40 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span aria-current="page">Accessibility</span></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span aria-current="page">Data freshness &amp; uptime</span></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">Accessibility</h1>
-    <p class="page-lede">This site is meant to be usable by everyone, including
-    people who use a keyboard, a screen reader, a magnifier, or high-contrast
-    colours. Here is where we stand and how to tell us when something gets in
-    your way.</p>
+    <h1 class="page-title">Data freshness &amp; uptime commitment</h1>
+    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Here is how
+    often we intend to refresh each feed, how that has actually gone, and what happens when a
+    feed cannot be refreshed on schedule &mdash; so you can decide whether to depend on this
+    data before you build on it. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
-    <section><h2 class="section-title">What we aim for</h2>
-    <p>We build and test to <abbr title="Web Content Accessibility Guidelines">WCAG</abbr>
-    2.2 Level AAA, which goes beyond the Level AA bar that
-    <abbr title="Section 508 of the Rehabilitation Act">Section&nbsp;508</abbr> and
-    <abbr title="the European accessibility standard">EN&nbsp;301&nbsp;549</abbr> require.
-    That covers the landing page, the interactive app, every agency and section page,
-    and the printable brief.</p></section>
+    <section aria-labelledby="cadence-h"><h2 class="section-title" id="cadence-h">Intended refresh cadence</h2>
+    <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
+    every feed runs daily regardless of tier.</p>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
+    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
-    <section><h2 class="section-title">How we check</h2>
-    <p>Every colour pair is verified to clear AAA contrast in all four themes by an
-    automated gate, and accessibility checks (axe and Lighthouse) run on each change.
-    On top of the automated checks we review the site by keyboard and with assistive
-    technology. You can read the full results in the
-    <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/accessibility.md">conformance report</a> and the
-    <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/vpat.md">508-edition <abbr title="Voluntary Product Accessibility Template">VPAT</abbr></a>.</p></section>
+    <section aria-labelledby="record-h"><h2 class="section-title" id="record-h">Historical refresh-success record</h2>
+    <p>As of 2026-07-02T03:10:02+00:00, this pipeline is tracking liveness on
+        <strong>2</strong> feeds:
+        <strong>2</strong> checking in clean (no failed check in a row),
+        <strong>0</strong> with at least one recent failed check but not yet
+        flagged, and <strong>0</strong> flagged unreachable
+        (see the degradation policy below). Time since each feed's last liveness check ranges from
+        2.0 to 33.0 hours, with a median of
+        33.0 hours.</p>
+        <p>Overall clean-check rate: <strong>100.0%</strong>.</p></section>
 
-    <section><h2 class="section-title">Known limitations</h2>
-    <p>We keep an honest list. The national map is a convenience layer built on a
-    third-party component; everything it shows is also on the fully accessible
-    <a href="/agencies/">agency list</a>, so no one is stranded. A few linked external
-    documents (federal rules, validator docs) are outside our control; we summarise
-    them in plain language on our own pages.</p></section>
+    <section aria-labelledby="degradation-h"><h2 class="section-title" id="degradation-h">Degradation policy</h2>
+    <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
+    <ul><li>A fetch failure never fabricates or silently drops data: the last successfully retrieved artifact is carried forward, and only its freshness/expiry read is recomputed from the calendar dates it already carries (ADR 0010&#x27;s freshness sweep). A past snapshot is never rewritten, so trend history stays accurate.</li><li>A feed whose calendar has been past its expiry date for more than 365 days is labeled &#x27;stale&#x27; rather than &#x27;lapsed&#x27;, which changes how it is described but not whether it is served.</li><li>A feed URL that fails 30 consecutive liveness checks (roughly a week at standard cadence) is separately labeled &#x27;unreachable&#x27;, so a dead host reads differently from a merely stale calendar.</li><li>None of this is a guarantee of upstream uptime -- an agency&#x27;s own GTFS host can go down regardless of what this pipeline does. It is a public, honest record of what was actually observed and when, published without deletion.</li></ul></section>
 
-    <section><h2 class="section-title">Report a barrier</h2>
-    <p>If any part of this site is hard or impossible to use, please tell us. You do
-    not need to know the technical standard, just describe what got in your way.</p>
-    <p><a class="download-btn" href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?labels=accessibility&amp;template=accessibility.md">Report an accessibility barrier</a></p>
-    <p>If you would rather not file a public issue, you can reach the maintainer
-    through the contact link on <a href="https://chelseakr.com">chelseakr.com</a>.
-    We aim to acknowledge accessibility reports within a few business days.</p></section>
-
-    <p class="page-lede" style="margin-top:2rem">Last reviewed: 22 June 2026.</p>
+    <p class="page-lede" style="margin-top:2rem">This commitment is generated fresh with every
+    site build from the same liveness state the intraday refresh keeps, so it cannot say
+    anything the pipeline did not actually observe.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap">
