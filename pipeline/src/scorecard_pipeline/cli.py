@@ -582,6 +582,43 @@ def _cmd_vendor_report(args: argparse.Namespace, parser: argparse.ArgumentParser
     return 0
 
 
+def _cmd_vendor_radar(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Run the standing vendor-regression radar over today's dated artifacts.
+
+    Grouped by detected producing tool and notice code, flags a same-day spike
+    in a code's incidence within a vendor cohort (EXP-07,
+    docs/ideation/03-expansions.md). Emits two artifacts: a private per-vendor
+    worklist (agency names included, never write this to a public path) and a
+    public de-identified aggregate digest (safe to publish; names no agency).
+    Default output is the public digest, matching `vendor-report`'s
+    CI-step-summary default; pass `--private` for the internal worklist.
+    """
+    from .vendor_regression_radar import (
+        detect_regressions,
+        load_runs,
+        render_private_worklist,
+        render_public_digest,
+    )
+
+    runs = load_runs()
+    regressions = detect_regressions(runs)
+    report = (
+        render_private_worklist(regressions) if args.private else render_public_digest(regressions)
+    )
+    if args.out:
+        Path(args.out).write_text(report)
+        log.info("Wrote vendor-radar %s to %s", "worklist" if args.private else "digest", args.out)
+    else:
+        print(report, end="")
+    if regressions:
+        log.info(
+            "%d same-day vendor-regression pattern(s) detected across %d tool(s).",
+            len(regressions),
+            len({r.tool_key for r in regressions}),
+        )
+    return 0
+
+
 def _cmd_prune(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Report (and optionally delete) artifact directories whose agency left the
     registry. Removing an agency from agencies.yaml never cleaned up its
@@ -1765,6 +1802,21 @@ def main(argv: list[str] | None = None) -> int:
     )
     vendor_report.add_argument("--out", help="write the report here instead of stdout")
 
+    vendor_radar = sub.add_parser(
+        "vendor-radar",
+        help=(
+            "standing cross-corpus scan for same-day vendor regressions "
+            "(EXP-07: public digest by default, --private for the internal worklist)"
+        ),
+    )
+    vendor_radar.add_argument(
+        "--private",
+        action="store_true",
+        help="emit the private per-vendor worklist (names agencies; do not publish) "
+        "instead of the public de-identified digest",
+    )
+    vendor_radar.add_argument("--out", help="write the report here instead of stdout")
+
     dataset = sub.add_parser("dataset", help="build the open national quality dataset (JSON + CSV)")
     dataset.add_argument("--out", help="write dataset.json (and a sibling .csv) here")
 
@@ -1977,6 +2029,7 @@ def main(argv: list[str] | None = None) -> int:
         "prune": _cmd_prune,
         "vendors": _cmd_vendors,
         "vendor-report": _cmd_vendor_report,
+        "vendor-radar": _cmd_vendor_radar,
         "dataset": _cmd_dataset,
         "sensitivity": _cmd_sensitivity,
         "ntd": _cmd_ntd,
