@@ -248,7 +248,7 @@
         "met": false
       },
       {
-        "detail": "Service data expired 2744 days ago.",
+        "detail": "Service data expired 2745 days ago.",
         "key": "current",
         "met": false
       },
@@ -259,7 +259,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 2744 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 2745 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -275,7 +275,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.68749,
@@ -307,13 +307,13 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data expired 2744 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 2745 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 2744 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 2745 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -334,11 +334,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 24,
     "findings": [

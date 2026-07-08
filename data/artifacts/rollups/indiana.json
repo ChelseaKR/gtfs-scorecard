@@ -33,7 +33,7 @@
     "stale": 6,
     "total": 6
   },
-  "generated_at": "2026-07-08T15:09:26+00:00",
+  "generated_at": "2026-07-08T15:50:39+00:00",
   "grade_distribution": {
     "B": 5,
     "C": 2,
@@ -50,7 +50,7 @@
       "name": "Muncie Indiana Transit System (MITS)",
       "needs_attention": true,
       "score": 29.5,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -231,9 +231,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 8,
+    "not_measured": 7,
     "not_ready": 0,
-    "ready": 5,
+    "ready": 6,
     "total": 13
   },
   "state_percentile": 74

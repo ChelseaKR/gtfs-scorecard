@@ -83,7 +83,7 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-08T15:09:26+00:00",
+  "generated_at": "2026-07-08T15:50:39+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 29,
@@ -961,7 +961,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 64291997,
       "attention_reason": null,
       "days_until_expiry": 80,
       "expiry_status": "current",
@@ -970,7 +970,7 @@
       "name": "Flex v2 included",
       "needs_attention": false,
       "score": 44.4,
-      "shapes_status": null,
+      "shapes_status": "at_risk",
       "snapshot_date": "2026-07-08",
       "top_fix": "Review the rule documentation for 'stop_time_with_only_arrival_or_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -1283,7 +1283,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 64291997,
       "attention_reason": null,
       "days_until_expiry": 80,
       "expiry_status": "current",
@@ -1864,8 +1864,8 @@
   },
   "schema_version": "1.7",
   "shapes_readiness": {
-    "at_risk": 0,
-    "not_measured": 115,
+    "at_risk": 1,
+    "not_measured": 114,
     "not_ready": 0,
     "ready": 11,
     "total": 126

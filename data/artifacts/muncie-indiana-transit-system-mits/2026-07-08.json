@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/muncie-indiana-transit-system-mits/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/muncie-indiana-transit-system-mits/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -32,6 +33,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -177,7 +182,7 @@
           "owner": "Likely your export tool",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -279,6 +284,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -288,7 +305,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 3482 days ago.",
+        "detail": "Service data expired 3490 days ago.",
         "key": "current",
         "met": false
       },
@@ -299,7 +316,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 3482 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 3490 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -308,7 +325,14 @@
     "size_bytes": 855330,
     "static_url": "http://www.mitsbus.org/wp-content/uploads/2016/11/GTFS.zip"
   },
-  "generated_at": "2026-06-30T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-indiana-muncie-indiana-transit-system-mits-gtfs-719.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -85.44272,
@@ -321,7 +345,7 @@
     "stop_count": 717
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "35"
     ],
@@ -340,13 +364,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 3482 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 3490 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 3482 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 3490 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -378,11 +402,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 717,
     "findings": [],
@@ -390,8 +409,178 @@
     "single_stop_trips": 0,
     "trips_total": 2165
   },
+  "route_map": {
+    "drawn_route_count": 14,
+    "has_shapes": true,
+    "path": "data/artifacts/muncie-indiana-transit-system-mits/geometry.geojson",
+    "route_count": 14,
+    "routes": [
+      {
+        "color": "F07971",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "29996745",
+        "label": "East Jackson",
+        "long": "East Jackson",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC0810",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30089470",
+        "label": "Ball State University",
+        "long": "Ball State University",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F07971",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30089935",
+        "label": "Ball State Jackson",
+        "long": "Ball State Jackson",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0614D4",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30089950",
+        "label": "Northwest Plaza",
+        "long": "Northwest Plaza",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0D448",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "30100565",
+        "label": "Whitely/Morningside",
+        "long": "Whitely/Morningside",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F77A0C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30100605",
+        "label": "North Walnut",
+        "long": "North Walnut",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0D448",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "30100645",
+        "label": "Burlington",
+        "long": "Burlington",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC0810",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30102425",
+        "label": "Industry Willard",
+        "long": "Industry Willard",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F77A0C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30102591",
+        "label": "Heekin Park",
+        "long": "Heekin Park",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0614D4",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30109285",
+        "label": "Southway Centre",
+        "long": "Southway Centre",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "970AA1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30109325",
+        "label": "Ivy Tech",
+        "long": "Ivy Tech",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "970AA1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30109365",
+        "label": "Riverside/Rural King",
+        "long": "Riverside/Rural King",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "397D02",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30109390",
+        "label": "Walmart",
+        "long": "Walmart",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "397D02",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "32963025",
+        "label": "Mall",
+        "long": "Mall",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 717,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 2165 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2165,
+    "trips_with_shape": 2165
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {

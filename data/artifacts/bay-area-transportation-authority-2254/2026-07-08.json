@@ -10,7 +10,7 @@
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
-        "count": 19,
+        "count": 20,
         "examples": [
           "'stop_name': 'Cherryland Center at TC Curling ' -> 'Cherryland Center at TC Curling'",
           "'stop_name': 'M-22 at M-72 (Lakeside) ' -> 'M-22 at M-72 (Lakeside)'",
@@ -19,7 +19,7 @@
         "label": "Trimmed surrounding whitespace"
       }
     ],
-    "total": 19
+    "total": 20
   },
   "categories": {
     "completeness": {
@@ -40,7 +40,7 @@
         "components": {
           "contact": 15.0,
           "fares": 0.0,
-          "headsigns": 8.8,
+          "headsigns": 8.7,
           "stop_names": 15.0,
           "wheelchair_stops": 0.0,
           "wheelchair_trips": 0.0
@@ -61,7 +61,7 @@
           "has_flex": false
         },
         "has_fares": false,
-        "headsign_pct": 58.4,
+        "headsign_pct": 57.9,
         "mixed_case_stop_name_pct": 100.0,
         "pathways": {
           "has_entrances": false,
@@ -71,8 +71,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 236,
-        "trips": 1722,
+        "stops": 238,
+        "trips": 1738,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -81,24 +81,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 236,
+          "count": 238,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "236 of 236 stops don't say whether a wheelchair user can board there.",
+          "what": "238 of 238 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 1722,
+          "count": 1738,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "1722 of 1722 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "1738 of 1738 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -114,18 +114,18 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 716,
+          "count": 732,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
-          "points": 6.2,
+          "points": 6.3,
           "severity": "WARNING",
-          "what": "716 of 1722 trips have no headsign.",
+          "what": "732 of 1738 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         }
       ],
       "name": "completeness",
-      "score": 38.8,
+      "score": 38.7,
       "status": "measured",
       "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
       "weight": 0.25
@@ -136,7 +136,7 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 7,
-          "WARNING": 228
+          "WARNING": 229
         },
         "validator_version": "8.0.1"
       },
@@ -176,7 +176,7 @@
         },
         {
           "code": "leading_or_trailing_whitespaces",
-          "count": 18,
+          "count": 19,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'leading_or_trailing_whitespaces' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -266,7 +266,7 @@
       "name": "correctness",
       "score": 49.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 11 kinds of issue across 235 instances (0 error, 228 warning, 7 informational).",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 236 instances (0 error, 229 warning, 7 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -327,7 +327,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 26840 days.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
         "met": true
       },
@@ -343,8 +343,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "12d3e54eb9f9a2a50e508b6e6bac28cf2877db208d742f9986a123f4d9e05e71",
-    "size_bytes": 408709,
+    "sha256": "010698975eda214da2ab1065b2e4caa9cb5a0994b5beb01bfe3b4ff6ccb7d48f",
+    "size_bytes": 416847,
     "static_url": "https://batabustracker.com/gtfs"
   },
   "fetch": {
@@ -353,7 +353,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -85.98567,
@@ -361,9 +361,9 @@
       -85.43174,
       45.01994
     ],
-    "lat": 44.75282,
-    "lon": -85.61555,
-    "stop_count": 236
+    "lat": 44.75322,
+    "lon": -85.61663,
+    "stop_count": 238
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -385,7 +385,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 26840 days.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
         "status": "ready"
       }
@@ -402,34 +402,29 @@
   "recommendations": [
     {
       "code": "scorecard_route_color_low_contrast",
-      "count": 6,
+      "count": 7,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "6 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Bayline, 16, 31, 07, West, and more).",
+      "what": "7 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Bayline, 16, 31, 07, Orchard Tour, and more).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 138,
+      "count": 139,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "138 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Prospect at 8th St (Family Fare) (270)\", \"9686056-E Front at Rose St (9307)\", \"S Maple City Rd at Mill St (Post Office)\", and more).",
+      "what": "139 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Prospect at 8th St (Family Fare) (270)\", \"9686056-E Front at Rose St (9307)\", \"S Maple City Rd at Mill St (Post Office)\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 236,
+    "boardable_stops": 238,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
@@ -439,19 +434,19 @@
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "23 of 236 boardable stops are never served by any trip.",
+        "what": "23 of 238 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
     "orphan_stops": 23,
     "single_stop_trips": 0,
-    "trips_total": 1722
+    "trips_total": 1738
   },
   "route_map": {
-    "drawn_route_count": 11,
+    "drawn_route_count": 12,
     "has_shapes": true,
     "path": "data/artifacts/bay-area-transportation-authority-2254/geometry.geojson",
-    "route_count": 13,
+    "route_count": 14,
     "routes": [
       {
         "color": "098040",
@@ -564,6 +559,17 @@
         "type_label": "Bus"
       },
       {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "6157",
+        "label": "Orchard Tour",
+        "long": "Cherry Festival - Orchard Tour",
+        "short": "Orchard Tour",
+        "text_color": "FF3341",
+        "type_label": "Bus"
+      },
+      {
         "color": "10C488",
         "color_name": "teal",
         "has_shape": true,
@@ -597,54 +603,54 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 236,
+    "stop_count": 238,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 1722 trips have a shape in shapes.txt.",
+    "detail": "All 1738 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 1722,
-    "trips_with_shape": 1722
+    "total_trips": 1738,
+    "trips_with_shape": 1738
   },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 236,
+      "count": 238,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "236 of 236 stops don't say whether a wheelchair user can board there.",
+      "what": "238 of 238 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 1722,
+      "count": 1738,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "1722 of 1722 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "1738 of 1738 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/via-metropolitan-transit-via-2348/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/via-metropolitan-transit-via-2348/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -146,7 +147,7 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 75,
-          "WARNING": 5735
+          "WARNING": 5741
         },
         "validator_version": "8.0.1"
       },
@@ -175,11 +176,11 @@
         },
         {
           "code": "stop_without_stop_time",
-          "count": 45,
+          "count": 51,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
-          "points": 6.0,
+          "points": 8.0,
           "severity": "WARNING",
           "what": "Some stops exist in the feed but no trip ever stops at them.",
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
@@ -241,9 +242,9 @@
         }
       ],
       "name": "correctness",
-      "score": 59.0,
+      "score": 57.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 8 kinds of issue across 5810 instances (0 error, 5735 warning, 75 informational).",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 5816 instances (0 error, 5741 warning, 75 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -251,7 +252,7 @@
         "days_until_expiry": 46,
         "feed_end_date": "2026-08-23",
         "feed_start_date": "2026-05-04",
-        "feed_version": "May 2026_20260702",
+        "feed_version": "May 2026_20260707",
         "has_feed_info": true,
         "last_service_date": "2026-08-23",
         "seasonal_boundary": false,
@@ -308,8 +309,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "3e39c0db9df0b117b448f7ceb4310b0291223cbfc8faa0c0b55e5381eb7759de",
-    "size_bytes": 6367618,
+    "sha256": "a42c80f93ecc1afd01ea34a8296f6878e2c21b2f6dc974d10498def896f93111",
+    "size_bytes": 6365821,
     "static_url": "https://www.viainfo.net/BusService/google_transit.zip"
   },
   "fetch": {
@@ -361,9 +362,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 52.4,
-    "margin_to_next_band": 7.6,
-    "score": 52.4
+    "margin_to_lower_band": 51.5,
+    "margin_to_next_band": 8.5,
+    "score": 51.5
   },
   "recommendations": [
     {
@@ -394,17 +395,17 @@
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 45,
+        "count": 51,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "45 of 6097 boardable stops are never served by any trip.",
+        "what": "51 of 6097 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 45,
+    "orphan_stops": 51,
     "single_stop_trips": 0,
     "trips_total": 14589
   },

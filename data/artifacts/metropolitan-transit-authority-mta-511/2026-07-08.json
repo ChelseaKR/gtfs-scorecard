@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 1488,
-        "trips": 83320,
+        "trips": 83270,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 83320,
+          "count": 83270,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "83320 of 83320 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "83270 of 83270 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -245,7 +245,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 62 days.",
+        "detail": "Service data covers the next 61 days.",
         "key": "current",
         "met": true
       },
@@ -261,8 +261,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "0e8ba44c39fcab6be4f41660352a6d88a7afafa670ac0835f034dc3caed67f9d",
-    "size_bytes": 20758529,
+    "sha256": "d57c8a8c8602428226be0dcf57811215d0d64bc9c515e9897fa8aeefe67d000e",
+    "size_bytes": 20754298,
     "static_url": "http://web.mta.info/developers/files/google_transit_supplemented.zip"
   },
   "fetch": {
@@ -271,7 +271,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.25196,
@@ -303,7 +303,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 62 days.",
+        "detail": "Service data covers the next 61 days.",
         "key": "current",
         "status": "ready"
       }
@@ -352,11 +352,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 992,
     "findings": [
@@ -374,7 +369,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 83320
+    "trips_total": 83270
   },
   "route_map": {
     "drawn_route_count": 29,
@@ -708,11 +703,11 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "72440 of 83320 trips have a shape; 10880 do not.",
+    "detail": "71853 of 83270 trips have a shape; 11417 do not.",
     "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
     "status": "at_risk",
-    "total_trips": 83320,
-    "trips_with_shape": 72440
+    "total_trips": 83270,
+    "trips_with_shape": 71853
   },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
@@ -730,14 +725,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 83320,
+      "count": 83270,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "83320 of 83320 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "83270 of 83270 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

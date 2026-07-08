@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 14,
-        "trips": 719,
+        "trips": 525,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 100.0,
@@ -91,8 +91,8 @@
       "details": {
         "days_until_expiry": 176,
         "feed_end_date": "2026-12-31",
-        "feed_start_date": "2026-07-01",
-        "feed_version": "15",
+        "feed_start_date": "2026-07-08",
+        "feed_version": "16",
         "has_feed_info": true,
         "last_service_date": "2026-12-31",
         "seasonal_boundary": false,
@@ -112,6 +112,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": true,
     "criteria": [
@@ -121,7 +133,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 182 days.",
+        "detail": "Service data covers the next 176 days.",
         "key": "current",
         "met": true
       },
@@ -137,11 +149,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "1bf59de583e97969d203cf5d035ddd092b6c035ed944aeb15a0b9bd5dc31a8bb",
-    "size_bytes": 66384,
+    "sha256": "7ee2e9ceb5ade90ba577fa9f812418732d43d5b0471b957cc4d5e8f0f0524db0",
+    "size_bytes": 50118,
     "static_url": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -75.16779,
@@ -173,7 +191,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 182 days.",
+        "detail": "Service data covers the next 176 days.",
         "key": "current",
         "status": "ready"
       }
@@ -188,17 +206,12 @@
     "score": 100.0
   },
   "recommendations": [],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 14,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 719
+    "trips_total": 525
   },
   "route_map": {
     "drawn_route_count": 1,
@@ -222,7 +235,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 525 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 525,
+    "trips_with_shape": 525
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [],
   "validator_version": "8.0.1"

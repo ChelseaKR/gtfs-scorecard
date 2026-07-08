@@ -63,11 +63,11 @@
     "stale": 12,
     "total": 20
   },
-  "generated_at": "2026-07-08T15:09:26+00:00",
+  "generated_at": "2026-07-08T15:50:39+00:00",
   "grade_distribution": {
     "A": 3,
-    "B": 2,
-    "C": 4,
+    "B": 3,
+    "C": 3,
     "D": 3,
     "F": 18
   },
@@ -165,7 +165,7 @@
       "id": "suntran",
       "name": "SunTran",
       "needs_attention": true,
-      "score": 47.2,
+      "score": 47.3,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -413,11 +413,11 @@
       "attention_reason": null,
       "days_until_expiry": 109,
       "expiry_status": "current",
-      "grade": "C",
+      "grade": "B",
       "id": "valley-metro-vm",
       "name": "Valley Metro (VM)",
       "needs_attention": false,
-      "score": 80.0,
+      "score": 80.1,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."

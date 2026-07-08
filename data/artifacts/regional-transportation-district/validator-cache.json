@@ -5,75 +5,75 @@
         "code": "stop_time_with_only_arrival_or_departure_time",
         "sample_notices": [
           {
-            "csvRowNumber": 808148,
+            "csvRowNumber": 808140,
             "specifiedField": "departure_time",
             "stopSequence": 1,
             "tripId": "R_WK_679_20"
           },
           {
-            "csvRowNumber": 808176,
+            "csvRowNumber": 808168,
             "specifiedField": "departure_time",
             "stopSequence": 1,
             "tripId": "R_WK_692_32"
           },
           {
-            "csvRowNumber": 808174,
+            "csvRowNumber": 808166,
             "specifiedField": "departure_time",
             "stopSequence": 1,
             "tripId": "R_WK_692_31"
           },
           {
-            "csvRowNumber": 808180,
+            "csvRowNumber": 808172,
             "specifiedField": "departure_time",
             "stopSequence": 1,
             "tripId": "R_WK_692_34"
           },
           {
-            "csvRowNumber": 808178,
+            "csvRowNumber": 808170,
             "specifiedField": "departure_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_33"
+          }
+        ],
+        "severity": "ERROR",
+        "total": 285
+      },
+      {
+        "code": "missing_trip_edge",
+        "sample_notices": [
+          {
+            "csvRowNumber": 808140,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_679_20"
+          },
+          {
+            "csvRowNumber": 808168,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_32"
+          },
+          {
+            "csvRowNumber": 808166,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_31"
+          },
+          {
+            "csvRowNumber": 808172,
+            "specifiedField": "arrival_time",
+            "stopSequence": 1,
+            "tripId": "R_WK_692_34"
+          },
+          {
+            "csvRowNumber": 808170,
+            "specifiedField": "arrival_time",
             "stopSequence": 1,
             "tripId": "R_WK_692_33"
           }
         ],
         "severity": "ERROR",
         "total": 279
-      },
-      {
-        "code": "missing_trip_edge",
-        "sample_notices": [
-          {
-            "csvRowNumber": 808148,
-            "specifiedField": "arrival_time",
-            "stopSequence": 1,
-            "tripId": "R_WK_679_20"
-          },
-          {
-            "csvRowNumber": 808176,
-            "specifiedField": "arrival_time",
-            "stopSequence": 1,
-            "tripId": "R_WK_692_32"
-          },
-          {
-            "csvRowNumber": 808174,
-            "specifiedField": "arrival_time",
-            "stopSequence": 1,
-            "tripId": "R_WK_692_31"
-          },
-          {
-            "csvRowNumber": 808180,
-            "specifiedField": "arrival_time",
-            "stopSequence": 1,
-            "tripId": "R_WK_692_34"
-          },
-          {
-            "csvRowNumber": 808178,
-            "specifiedField": "arrival_time",
-            "stopSequence": 1,
-            "tripId": "R_WK_692_33"
-          }
-        ],
-        "severity": "ERROR",
-        "total": 267
       },
       {
         "code": "block_trips_with_overlapping_stop_times",
@@ -131,6 +131,48 @@
         ],
         "severity": "ERROR",
         "total": 63
+      },
+      {
+        "code": "stop_time_with_arrival_before_previous_departure_time",
+        "sample_notices": [
+          {
+            "arrivalTime": "05:30:00",
+            "csvRowNumber": 656000,
+            "departureTime": "05:55:00",
+            "prevCsvRowNumber": 655999,
+            "tripId": "115894986"
+          },
+          {
+            "arrivalTime": "05:30:00",
+            "csvRowNumber": 656001,
+            "departureTime": "05:55:00",
+            "prevCsvRowNumber": 656000,
+            "tripId": "115894986"
+          },
+          {
+            "arrivalTime": "05:30:00",
+            "csvRowNumber": 656002,
+            "departureTime": "05:55:00",
+            "prevCsvRowNumber": 656001,
+            "tripId": "115894986"
+          },
+          {
+            "arrivalTime": "05:30:00",
+            "csvRowNumber": 795351,
+            "departureTime": "19:00:00",
+            "prevCsvRowNumber": 795350,
+            "tripId": "115912174"
+          },
+          {
+            "arrivalTime": "05:30:00",
+            "csvRowNumber": 795337,
+            "departureTime": "19:00:00",
+            "prevCsvRowNumber": 795336,
+            "tripId": "115912170"
+          }
+        ],
+        "severity": "ERROR",
+        "total": 5
       },
       {
         "code": "fast_travel_between_consecutive_stops",
@@ -249,7 +291,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 76
+        "total": 82
       },
       {
         "code": "stop_without_stop_time",
@@ -409,7 +451,7 @@
             "shapeId": "1334541",
             "stopId": "33888",
             "stopName": "Brighton",
-            "stopTimeCsvRowNumber": 636028,
+            "stopTimeCsvRowNumber": 636029,
             "tripCsvRowNumber": 19060,
             "tripId": "115891913"
           },
@@ -669,6 +711,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "535ac2dcb40530d84c2a2c95aa018baec4986f9fd823a83e759ca9014831803d",
+  "sha256": "00469c29629a2f0779847a749862c5ed68fc2adcaf97050c7dd86c1a3c7dc834",
   "validator_version": "8.0.1"
 }

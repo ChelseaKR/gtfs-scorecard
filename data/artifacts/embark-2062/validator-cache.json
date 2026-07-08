@@ -130,21 +130,6 @@
         "total": 10
       },
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 9,
-            "serviceId": "CLVR8-6"
-          },
-          {
-            "csvRowNumber": 17,
-            "serviceId": "streetcar_free_days"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
         "code": "same_route_and_agency_url",
         "sample_notices": [
           {
@@ -164,6 +149,17 @@
         ],
         "severity": "WARNING",
         "total": 2
+      },
+      {
+        "code": "expired_calendar",
+        "sample_notices": [
+          {
+            "csvRowNumber": 9,
+            "serviceId": "CLVR8-6"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
       },
       {
         "code": "service_has_no_active_day_of_the_week",
@@ -226,10 +222,24 @@
         ],
         "severity": "INFO",
         "total": 2
+      },
+      {
+        "code": "service_window_outside_feed_period",
+        "sample_notices": [
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 2,
+            "serviceId": "edmond-54678.143480",
+            "serviceWindowEndDate": "2027-07-03",
+            "serviceWindowStartDate": "2026-05-09"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "021352b82d1d45d7dd2ce4f46e0f5bf6b2d759e6d4c2f07e62d1c279dfaad5f0",
+  "sha256": "ee03de38b77fc120dddb701453d5ada522c250c9f37a9bb7d8cf396af96f67e0",
   "validator_version": "8.0.1"
 }

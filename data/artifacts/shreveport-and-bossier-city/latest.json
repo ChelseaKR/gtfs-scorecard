@@ -359,7 +359,7 @@
         "kinds_reachable": 0,
         "rt_freshness": null,
         "samples": 9,
-        "scheduled_trips_in_window": 29,
+        "scheduled_trips_in_window": 28,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -398,13 +398,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 29,
+          "count": 28,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
+          "what": "28 of 28 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -437,7 +437,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 26840 days.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
         "met": true
       },
@@ -460,11 +460,11 @@
   "fetch": {
     "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-louisiana-shreveport-and-bossier-city-gtfs-1060.zip?alt=media",
     "max_attempts": 1,
-    "origin_error": "HTTPError",
+    "origin_error": "ConnectTimeout",
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -93.90023,
@@ -496,7 +496,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 26840 days.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
         "status": "ready"
       }
@@ -534,11 +534,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 906,
     "findings": [

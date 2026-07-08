@@ -128,11 +128,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 9,
+        "distinct_codes": 10,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 19,
-          "WARNING": 136
+          "INFO": 20,
+          "WARNING": 135
         },
         "validator_version": "8.0.1"
       },
@@ -182,17 +182,6 @@
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
-          "code": "expired_calendar",
-          "count": 2,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already ended.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
-        {
           "code": "same_route_and_agency_url",
           "count": 2,
           "effort": "Varies.",
@@ -202,6 +191,17 @@
           "severity": "WARNING",
           "what": "Same route and agency url (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
           "code": "service_has_no_active_day_of_the_week",
@@ -235,22 +235,33 @@
           "severity": "INFO",
           "what": "Big gap in service (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Service window outside feed period (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 60.8,
+      "score": 60.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 9 kinds of issue across 155 instances (0 error, 136 warning, 19 informational).",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 155 instances (0 error, 135 warning, 20 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 364,
-        "feed_end_date": "2027-07-07",
-        "feed_start_date": "2026-05-08",
-        "feed_version": "06/07/2026-22:30",
+        "days_until_expiry": 365,
+        "feed_end_date": "2027-07-08",
+        "feed_start_date": "2026-05-11",
+        "feed_version": "07/07/2026-22:30",
         "has_feed_info": true,
-        "last_service_date": "2027-07-07",
+        "last_service_date": "2027-07-08",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -258,7 +269,7 @@
       "name": "freshness",
       "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 364 days.",
+      "summary": "Service data covers the next 365 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -305,8 +316,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "021352b82d1d45d7dd2ce4f46e0f5bf6b2d759e6d4c2f07e62d1c279dfaad5f0",
-    "size_bytes": 2778950,
+    "sha256": "ee03de38b77fc120dddb701453d5ada522c250c9f37a9bb7d8cf396af96f67e0",
+    "size_bytes": 2778955,
     "static_url": "https://mna.mecatran.com/utw/ws/gtfsfeed/static/okc?apiKey=6a3b186a334d1e3e064f42782f6002520e60394c"
   },
   "fetch": {
@@ -315,7 +326,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -97.65613,
@@ -361,9 +372,9 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 1.9,
-    "margin_to_next_band": 8.1,
-    "score": 81.9
+    "margin_to_lower_band": 1.6,
+    "margin_to_next_band": 8.4,
+    "score": 81.6
   },
   "recommendations": [
     {
@@ -389,11 +400,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1644,
     "findings": [

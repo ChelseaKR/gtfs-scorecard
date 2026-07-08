@@ -257,7 +257,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 26840 days.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
         "met": true
       },
@@ -273,7 +273,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "776879fd651a92378bac8e82835515cdaa5fff9c1695571998708a29ef8aae18",
+    "sha256": "259b2f07fcde9051b3509e0d010401e5080b22ea99bc3e4fc10b1200e21b0071",
     "size_bytes": 17681,
     "static_url": "http://www.cartgps.com/gtfs"
   },
@@ -283,7 +283,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -97.45147,
@@ -315,7 +315,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 26840 days.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
         "status": "ready"
       }
@@ -353,11 +353,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 34,
     "findings": [

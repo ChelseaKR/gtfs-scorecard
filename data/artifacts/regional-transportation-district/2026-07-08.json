@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/regional-transportation-district/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/regional-transportation-district/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -71,7 +72,7 @@
           "pathway_count": 0
         },
         "stops": 7668,
-        "trips": 22022,
+        "trips": 22028,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 98.3,
         "wheelchair_marked_accessible_pct": 98.3,
@@ -91,13 +92,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 22022,
+          "count": 22028,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "22022 of 22022 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "22028 of 22028 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -119,7 +120,7 @@
           "owner": "Likely your export tool",
           "points": 0.0,
           "severity": "WARNING",
-          "what": "8 of 22022 trips have no headsign.",
+          "what": "8 of 22028 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -153,18 +154,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 16,
+        "distinct_codes": 17,
         "instances_by_severity": {
-          "ERROR": 609,
+          "ERROR": 632,
           "INFO": 61,
-          "WARNING": 211
+          "WARNING": 217
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_time_with_only_arrival_or_departure_time",
-          "count": 279,
+          "count": 285,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_time_with_only_arrival_or_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -175,7 +176,7 @@
         },
         {
           "code": "missing_trip_edge",
-          "count": 267,
+          "count": 279,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'missing_trip_edge' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -196,6 +197,17 @@
           "why": "See the linked rule for what this affects."
         },
         {
+          "code": "stop_time_with_arrival_before_previous_departure_time",
+          "count": 5,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
           "code": "fast_travel_between_consecutive_stops",
           "count": 82,
           "effort": "A few minutes per flagged trip.",
@@ -208,7 +220,7 @@
         },
         {
           "code": "unusable_trip",
-          "count": 76,
+          "count": 82,
           "effort": "Worth a vendor question if it appears often.",
           "fix": "Check the flagged trips in your scheduling software; remove them or restore their missing stops.",
           "owner": "Likely your export tool",
@@ -342,7 +354,7 @@
       "name": "correctness",
       "score": 0.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 16 kinds of issue across 881 instances (609 error, 211 warning, 61 informational).",
+      "summary": "The MobilityData validator flagged 17 kinds of issue across 910 instances (632 error, 217 warning, 61 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -350,7 +362,7 @@
         "days_until_expiry": 80,
         "feed_end_date": "2026-09-26",
         "feed_start_date": "2026-06-07",
-        "feed_version": "Jun26-36807-13-20-20260704-035425",
+        "feed_version": "Jun26-36807-13-20-20260708-034151",
         "has_feed_info": true,
         "last_service_date": "2026-09-26",
         "seasonal_boundary": false,
@@ -370,16 +382,28 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
       {
-        "detail": "3 validator errors to resolve.",
+        "detail": "4 validator errors to resolve.",
         "key": "valid",
         "met": false
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 80 days.",
         "key": "current",
         "met": true
       },
@@ -390,13 +414,13 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. States wheelchair access on 98% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 4 validator errors to resolve. States wheelchair access on 98% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "535ac2dcb40530d84c2a2c95aa018baec4986f9fd823a83e759ca9014831803d",
-    "size_bytes": 8618721,
+    "sha256": "00469c29629a2f0779847a749862c5ed68fc2adcaf97050c7dd86c1a3c7dc834",
+    "size_bytes": 8618649,
     "static_url": "https://www.rtd-denver.com/files/gtfs/google_transit_flex.zip"
   },
   "fetch": {
@@ -405,7 +429,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -105.52548,
@@ -434,18 +458,18 @@
         "status": "ready"
       },
       {
-        "detail": "3 validator errors to resolve.",
+        "detail": "4 validator errors to resolve.",
         "key": "valid",
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 80 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. 3 validator errors to resolve."
+    "summary": "This feed is close to NTD-ready. 4 validator errors to resolve."
   },
   "overall": {
     "grade": "F",
@@ -488,23 +512,18 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 7537,
     "findings": [
       {
         "code": "scorecard_single_stop_trips",
-        "count": 76,
+        "count": 82,
         "effort": "Usually an export setting or a stop_times mapping in your software.",
         "fix": "Check your scheduling export: every trip should list each stop it calls at, in order, with times.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "WARNING",
-        "what": "76 of 22022 trips list fewer than two stops.",
+        "what": "82 of 22028 trips list fewer than two stops.",
         "why": "A trip with one stop has no leg a rider can ride; trip planners can't route anyone on it, so the service effectively does not exist."
       },
       {
@@ -520,8 +539,8 @@
       }
     ],
     "orphan_stops": 18,
-    "single_stop_trips": 76,
-    "trips_total": 22022
+    "single_stop_trips": 82,
+    "trips_total": 22028
   },
   "route_map": {
     "drawn_route_count": 141,
@@ -2184,12 +2203,19 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "21818 of 22028 trips have a shape; 210 do not.",
+    "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
+    "status": "at_risk",
+    "total_trips": 22028,
+    "trips_with_shape": 21818
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
       "code": "stop_time_with_only_arrival_or_departure_time",
-      "count": 279,
+      "count": 285,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_time_with_only_arrival_or_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
@@ -2201,7 +2227,7 @@
     },
     {
       "code": "missing_trip_edge",
-      "count": 267,
+      "count": 279,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'missing_trip_edge' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
