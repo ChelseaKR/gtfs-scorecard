@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 21
   },
-  "generated_at": "2026-07-08T15:50:39+00:00",
+  "generated_at": "2026-07-08T17:07:03+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 2,
@@ -72,20 +72,6 @@
     "F": 25
   },
   "members": [
-    {
-      "annual_trips": 262474117,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1742,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "washington-county-transit",
-      "name": "Washington County Transit",
-      "needs_attention": true,
-      "score": 29.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -124,6 +110,20 @@
       "name": "Cecil Transit",
       "needs_attention": true,
       "score": 26.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1742,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "washington-county-transit",
+      "name": "Washington County Transit",
+      "needs_attention": true,
+      "score": 29.4,
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -340,20 +340,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Grade slipped from D to F",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "needs_attention": true,
-      "score": 55.7,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -8,
       "expiry_status": "lapsed",
@@ -365,6 +351,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Grade slipped from D to F",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "needs_attention": true,
+      "score": 56.5,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -417,7 +417,7 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "needs_attention": true,
-      "score": 64.7,
+      "score": 63.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
@@ -521,7 +521,7 @@
       "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
-      "annual_trips": 262474117,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 177,
       "expiry_status": "current",

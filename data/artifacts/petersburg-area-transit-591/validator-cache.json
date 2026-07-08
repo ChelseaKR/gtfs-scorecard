@@ -50,7 +50,7 @@
             "stopName2": "Slagle Avenue and Brunswick Street",
             "stopSequence1": 24,
             "stopSequence2": 25,
-            "tripCsvRowNumber": 13,
+            "tripCsvRowNumber": 2,
             "tripId": "t_6071416_b_85155_tn_2"
           },
           {
@@ -67,7 +67,7 @@
             "stopName2": "Slagle Avenue and Prince George Street",
             "stopSequence1": 25,
             "stopSequence2": 26,
-            "tripCsvRowNumber": 13,
+            "tripCsvRowNumber": 2,
             "tripId": "t_6071416_b_85155_tn_2"
           },
           {
@@ -84,7 +84,7 @@
             "stopName2": "Slagle Avenue and Washington Street",
             "stopSequence1": 26,
             "stopSequence2": 27,
-            "tripCsvRowNumber": 13,
+            "tripCsvRowNumber": 2,
             "tripId": "t_6071416_b_85155_tn_2"
           },
           {
@@ -101,7 +101,7 @@
             "stopName2": "E Washington Street and Gibbons Avenue Caribbean Kitchen",
             "stopSequence1": 27,
             "stopSequence2": 28,
-            "tripCsvRowNumber": 13,
+            "tripCsvRowNumber": 2,
             "tripId": "t_6071416_b_85155_tn_2"
           },
           {
@@ -118,7 +118,7 @@
             "stopName2": "Court House Road and Richmond Avenue Faith & Hope Temple",
             "stopSequence1": 29,
             "stopSequence2": 30,
-            "tripCsvRowNumber": 13,
+            "tripCsvRowNumber": 2,
             "tripId": "t_6071416_b_85155_tn_2"
           }
         ],
@@ -161,7 +161,7 @@
             "stopName2": "Boulevard and A Avenue SB",
             "stopSequence1": 2,
             "stopSequence2": 8,
-            "tripCsvRowNumber": 106,
+            "tripCsvRowNumber": 107,
             "tripId": "t_6120000_b_85155_tn_0"
           }
         ],
@@ -172,24 +172,24 @@
         "code": "unknown_column",
         "sample_notices": [
           {
-            "fieldName": "wkt",
-            "filename": "areas.txt",
-            "index": 2
-          },
-          {
             "fieldName": "tts_agency_name",
             "filename": "agency.txt",
             "index": 8
           },
           {
-            "fieldName": "service_name",
-            "filename": "calendar.txt",
+            "fieldName": "wkt",
+            "filename": "areas.txt",
             "index": 2
           },
           {
             "fieldName": "holiday_name",
             "filename": "calendar_dates.txt",
             "index": 3
+          },
+          {
+            "fieldName": "service_name",
+            "filename": "calendar.txt",
+            "index": 2
           },
           {
             "fieldName": "feed_license",
@@ -213,10 +213,10 @@
             "filename": "farezone_attributes.txt"
           },
           {
-            "filename": "runcut.txt"
+            "filename": "linked_datasets.txt"
           },
           {
-            "filename": "stop_attributes.txt"
+            "filename": "runcut.txt"
           }
         ],
         "severity": "INFO",
@@ -227,30 +227,30 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 270,
+            "daysBeforeFeedStart": 389,
             "serviceId": "c_71410_b_85155_d_63",
-            "serviceWindowEndDate": "2026-08-01",
+            "serviceWindowEndDate": "2027-02-01",
             "serviceWindowStartDate": "2025-06-14"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 268,
+            "daysBeforeFeedStart": 387,
             "serviceId": "c_71410_b_85155_d_31",
-            "serviceWindowEndDate": "2026-07-31",
+            "serviceWindowEndDate": "2027-02-01",
             "serviceWindowStartDate": "2025-06-16"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 270,
+            "daysBeforeFeedStart": 389,
             "serviceId": "c_71410_b_85155_d_32",
-            "serviceWindowEndDate": "2026-08-01",
+            "serviceWindowEndDate": "2027-01-30",
             "serviceWindowStartDate": "2025-06-14"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 37,
+            "daysBeforeFeedStart": 156,
             "serviceId": "c_71751_b_86213_d_63",
-            "serviceWindowEndDate": "2026-08-01",
+            "serviceWindowEndDate": "2027-02-01",
             "serviceWindowStartDate": "2026-02-02"
           }
         ],
@@ -260,6 +260,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "5f3ed436f1067bca088ef81090f9996523122db9a49820c026019ea16523d74a",
+  "sha256": "d58ef9e2c80ead11b11e61801ee2742a0afce4afefe670d0b9d2e682fb63839d",
   "validator_version": "8.0.1"
 }

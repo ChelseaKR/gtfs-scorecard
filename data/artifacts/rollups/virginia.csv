@@ -1,7 +1,7 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix,shapes_txt_status
-virginia-railway-express-vre,Virginia Railway Express (VRE),F,28.3,2026-07-08,stale,-586,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",ready
 potomac-and-rappahannock-transportation-commission-prtc,Potomac and Rappahannock Transportation Commission (PRTC),F,19.0,2026-07-08,stale,-577,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",at_risk
 fredericksburg-regional-transit,Fredericksburg Regional Transit,F,25.8,2026-07-08,stale,-920,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",ready
+virginia-railway-express-vre,Virginia Railway Express (VRE),F,28.3,2026-07-08,stale,-586,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",ready
 harrisonburg-department-of-public-transportation-hdpt,HDPT,F,30.4,2026-07-08,stale,-1887,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",at_risk
 grtc-transit-system,GRTC Transit System,F,31.8,2026-07-08,stale,-781,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",ready
 williamsburg-area-transit-authority-wata,Williamsburg Area Transit Authority (WATA),F,35.1,2026-07-08,stale,-1104,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
@@ -20,8 +20,6 @@ radford-transit,Radford Transit,F,54.8,2026-07-08,expiring_soon,30,yes,Service d
 blacksburg-transit,Blacksburg Transit,F,57.8,2026-07-08,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,ready
 radar-2443,Flex,F,58.3,2026-07-08,expiring_soon,24,yes,Service data expires in 24 day(s),Re-export with a validity window that reaches at least 60 days out.,
 williamsburg-area-transit-authority-2649,Williamsburg Area Transit Authority,F,58.6,2026-07-08,current,31,yes,Service data expires in 31 day(s),Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
-petersburg-area-transit,Petersburg Area Transit,F,59.1,2026-07-08,expiring_soon,24,yes,Service data expires in 24 day(s),Re-export with a validity window that reaches at least 60 days out.,
-petersburg-area-transit-591,Petersburg Area Transit,F,59.1,2026-07-08,expiring_soon,24,yes,Service data expires in 24 day(s),Re-export with a validity window that reaches at least 60 days out.,
 wintran,WinTran,F,59.9,2026-07-08,expiring_soon,24,yes,Grade slipped from D to F,Re-export with a validity window that reaches at least 60 days out.,
 wintran-608,WinTran,F,59.9,2026-07-08,expiring_soon,24,yes,Grade slipped from D to F,Re-export with a validity window that reaches at least 60 days out.,
 radford-transit-2415,Radford Transit,D,60.5,2026-07-08,expiring_soon,24,yes,Service data expires in 24 day(s),Re-export with a validity window that reaches at least 60 days out.,
@@ -55,6 +53,8 @@ star-transit-2444,Flex,D,66.0,2026-07-08,current,116,no,,Review the rule documen
 fairfax-cue-bus-cue,Fairfax CUE Bus (CUE),D,68.3,2026-07-08,current,4954,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
 fairfax-cue-bus-cue-484,Fairfax CUE Bus (CUE),D,68.3,2026-07-08,current,4954,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
 arlington-transit,Arlington Transit,C,71.1,2026-07-08,current,327,no,,Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.,
+petersburg-area-transit,Petersburg Area Transit,C,74.1,2026-07-08,current,208,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
+petersburg-area-transit-591,Petersburg Area Transit,C,74.1,2026-07-08,current,208,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
 blackstone-area-bus-service,Blackstone Area Bus Service,C,74.8,2026-07-08,current,236,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 blackstone-area-bus-service-235,Blackstone Area Bus Service,C,74.8,2026-07-08,current,236,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 loudoun-county-transit,Loudoun County Transit,C,74.8,2026-07-08,current,262,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,

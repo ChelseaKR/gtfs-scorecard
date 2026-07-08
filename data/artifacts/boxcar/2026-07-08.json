@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/boxcar/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/boxcar/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -232,8 +231,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "1d027596b5e942265a0c0af1814c3e6c87b8f90dc48909fbbe1620bfeee7adfb",
-    "size_bytes": 71120,
+    "sha256": "1a292260748799235db0baad7207b675cfb5a7b538407aaef80c052be26eb5df",
+    "size_bytes": 1261136,
     "static_url": "https://boxcar-gtfs.vercel.app/api/gtfs"
   },
   "fetch": {
@@ -320,15 +319,15 @@
     "trips_total": 86
   },
   "route_map": {
-    "drawn_route_count": 0,
-    "has_shapes": false,
+    "drawn_route_count": 8,
+    "has_shapes": true,
     "path": "data/artifacts/boxcar/geometry.geojson",
     "route_count": 8,
     "routes": [
       {
         "color": "EAE75B",
         "color_name": "yellow",
-        "has_shape": false,
+        "has_shape": true,
         "id": "bergen_bullet_midtown",
         "label": "BB Midtown",
         "long": "Bergen Bullet (Midtown)",
@@ -339,7 +338,7 @@
       {
         "color": "1A61FD",
         "color_name": "blue",
-        "has_shape": false,
+        "has_shape": true,
         "id": "essex_express_midtown",
         "label": "EE Midtown",
         "long": "Essex Express (Midtown)",
@@ -350,7 +349,7 @@
       {
         "color": "59E912",
         "color_name": "green",
-        "has_shape": false,
+        "has_shape": true,
         "id": "morris_meteor_downtown",
         "label": "MM Downtown",
         "long": "Morris Meteor (Downtown)",
@@ -361,7 +360,7 @@
       {
         "color": "2D4C21",
         "color_name": "green",
-        "has_shape": false,
+        "has_shape": true,
         "id": "morris_meteor_lower_midtown",
         "label": "MM Lower Mid",
         "long": "Morris Meteor (Lower Midtown)",
@@ -372,7 +371,7 @@
       {
         "color": "08EC1E",
         "color_name": "green",
-        "has_shape": false,
+        "has_shape": true,
         "id": "morris_meteor_midtown",
         "label": "MM Midtown",
         "long": "Morris Meteor (Midtown)",
@@ -383,7 +382,7 @@
       {
         "color": "FF8300",
         "color_name": "orange",
-        "has_shape": false,
+        "has_shape": true,
         "id": "raritan_rocket_midtown",
         "label": "RR Midtown",
         "long": "Raritan Rocket (Midtown)",
@@ -394,7 +393,7 @@
       {
         "color": "FF0000",
         "color_name": "red",
-        "has_shape": false,
+        "has_shape": true,
         "id": "ridgeliner_midtown",
         "label": "R Midtown",
         "long": "Ridgeliner (Midtown)",
@@ -405,7 +404,7 @@
       {
         "color": "7828FF",
         "color_name": "blue",
-        "has_shape": false,
+        "has_shape": true,
         "id": "south_mountain_special_midtown",
         "label": "SMS Midtown",
         "long": "South Mountain Special (Midtown)",
@@ -420,11 +419,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "No trips in this feed have a shape_id linked to a row in shapes.txt.",
-    "fix": "Add shapes.txt with a shape_id for each trip's path, and set trips.shape_id to match. Reduced, Rural, and Tribal NTD reporters need this in their published GTFS starting Report Year 2026; Full Reporters needed it in Report Year 2025.",
-    "status": "not_ready",
+    "detail": "All 86 trips have a shape in shapes.txt.",
+    "status": "ready",
     "total_trips": 86,
-    "trips_with_shape": 0
+    "trips_with_shape": 86
   },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
