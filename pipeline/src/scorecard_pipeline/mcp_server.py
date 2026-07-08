@@ -17,7 +17,9 @@ Client config (Claude Desktop / any MCP client), see docs/mcp.md:
     {"mcpServers": {"gtfs-scorecard": {"command": "scorecard-mcp"}}}
 
 ``SCORECARD_BASE_URL`` overrides the data source, e.g. for a fork or a local
-preview server.
+preview server; a fork with its own ``instance.yaml`` (EXP-15,
+``docs/fork-quickstart.md``) already gets the right default with no env var
+needed.
 """
 
 from __future__ import annotations
@@ -31,9 +33,10 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any
 
+from .instance import BASE_URL as DEFAULT_BASE_URL
+
 PROTOCOL_VERSION = "2025-06-18"
 SERVER_INFO = {"name": "gtfs-scorecard", "version": "1.0.0"}
-DEFAULT_BASE_URL = "https://gtfsscorecard.org"
 
 Fetch = Callable[[str], Any]
 

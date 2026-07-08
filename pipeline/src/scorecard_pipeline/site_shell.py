@@ -20,8 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import artifacts_dir
-
-BASE_URL = "https://gtfsscorecard.org"
+from .instance import BASE_URL as BASE_URL  # re-exported: render_site imports it from here
 
 CATEGORY_LABELS = {
     "correctness": "Correctness",

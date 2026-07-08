@@ -1,5 +1,8 @@
 """Scoring pipeline for the small-agency GTFS quality scorecard."""
 
+from .instance import BASE_URL as _BASE_URL
+from .instance import SITE_NAME as _SITE_NAME
+
 # 1.7: additive state_percentile on per-state rollup payloads (None on "all"
 # and named-cohort rollups, which are not peers of a 50-state comparison), so a
 # program page can say how its average score compares to other states'
@@ -24,7 +27,8 @@ SCHEMA_VERSION = "1.7"
 # has an unambiguous reuse grant, which several of them treat as a hard blocker.
 DATA_LICENSE = "CC-BY-4.0"
 DATA_ATTRIBUTION = (
-    "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator"
+    f"{_SITE_NAME} ({_BASE_URL.split('://', 1)[-1].rstrip('/')}), "
+    "scored on top of the MobilityData gtfs-validator"
 )
 
 # Bump when the rubric (weights, deductions, grade bands, or what is measured)

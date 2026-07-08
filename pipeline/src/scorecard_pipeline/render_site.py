@@ -37,6 +37,7 @@ from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
 from .google_gate import from_artifact as google_from_artifact
+from .instance import ORG_NAME
 from .metrics import expiry_status, operating_signal
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
@@ -1707,7 +1708,7 @@ def _render_agency(
         "description": desc,
         "url": canonical,
         "includedInDataCatalog": {"@type": "DataCatalog", "url": BASE_URL},
-        "creator": {"@type": "Organization", "name": "GTFS Scorecard", "url": BASE_URL},
+        "creator": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
         "about": {"@type": "Organization", "name": agency_name},
         "variableMeasured": measured_vars,
         "dateModified": artifact["snapshot_date"],
@@ -3588,7 +3589,7 @@ def _render_fix(code: str, md: str) -> str:
         "description": desc,
         "url": canonical,
         "about": {"@type": "Thing", "name": f"GTFS validator notice {code}"},
-        "publisher": {"@type": "Organization", "name": "GTFS Scorecard", "url": BASE_URL},
+        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
     }
     return _page(
         title=f"{title_text} — GTFS Scorecard",
@@ -3624,7 +3625,7 @@ def _render_crosswalk_page(md: str) -> str:
         "headline": title_text,
         "description": desc,
         "url": canonical,
-        "publisher": {"@type": "Organization", "name": "GTFS Scorecard", "url": BASE_URL},
+        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
     }
     return _page(
         title=f"{title_text} — GTFS Scorecard",
@@ -5744,7 +5745,7 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
         ),
         "url": canonical,
         "about": {"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
-        "publisher": {"@type": "Organization", "name": "GTFS Scorecard", "url": BASE_URL},
+        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
     }
     return _page(
         title=(

@@ -23,6 +23,7 @@ import yaml
 
 from .alerts import Digest, render_digest
 from .config import repo_root
+from .instance import BASE_URL
 from .portfolio_digest import PortfolioDigest, render_portfolio_digest
 
 # Enough to catch a typo without policing addresses, but restricted to the
@@ -339,9 +340,7 @@ def send_webhooks(notifications: list[WebhookNotification], timeout: float = 10.
     return sent
 
 
-def verification_email(
-    email: str, token: str, base_url: str = "https://gtfsscorecard.org"
-) -> Email:
+def verification_email(email: str, token: str, base_url: str = BASE_URL) -> Email:
     """The double opt-in confirmation email. Sending this, and only marking a
     subscriber verified when the link is followed, is what lets us promise that
     no agency receives mail it did not ask for."""

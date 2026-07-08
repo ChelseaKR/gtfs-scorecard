@@ -29,6 +29,7 @@ from typing import Any
 
 from .anomaly import detect_anomalies
 from .config import artifacts_dir
+from .instance import BASE_URL as SCORECARD_BASE
 from .lapse_risk import TIER_ELEVATED, TIER_HIGH
 from .lapse_risk import assess as assess_lapse_risk
 
@@ -37,7 +38,6 @@ from .lapse_risk import assess as assess_lapse_risk
 # wobble from validator nondeterminism is not.
 REGRESSION_POINTS = 3.0
 GRADE_ORDER = ["F", "D", "C", "B", "A"]
-SCORECARD_BASE = "https://gtfsscorecard.org"
 
 # Default lead time for the email digest. Sixty days gives an agency a first,
 # calm heads-up while there is plenty of time to re-export, instead of one
