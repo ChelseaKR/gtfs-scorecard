@@ -266,7 +266,7 @@ def build_digest(
     return Digest(as_of=as_of, items=items)
 
 
-def render_digest(digest: Digest) -> str:
+def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Render the digest as Markdown.
 
     Empty is a valid, good outcome: a digest with nothing in it says so plainly

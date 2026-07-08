@@ -107,7 +107,11 @@ def run_validator(
         country_code,
     ]
     log.info("running gtfs-validator on %s", gtfs_zip)
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=900)
+    # Reasoning for the S603 suppression below: argv list (no shell=True), every
+    # element is an internally constructed path/flag or the validated country_code
+    # — never shell-interpreted, so this is not an injection vector despite the
+    # blanket bandit audit rule.
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=900)  # noqa: S603
     report = output_dir / "report.json"
     # The validator exits non-zero in some error-notice situations; the report
     # existing is the real success signal.

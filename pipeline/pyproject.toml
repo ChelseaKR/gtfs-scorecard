@@ -1,9 +1,13 @@
 [project]
 name = "scorecard-pipeline"
-version = "0.1.0"
+# Single source of truth for the repo's version (REL-02/REL-03/REL-05). Mirrored
+# in CITATION.cff and server.json; a `make verify` check (scripts/check_versions.py)
+# fails CI if they drift. Follows the already-published tags (v1, v1.0.0) rather
+# than the reverse, since those tags are immutable (REL-07) and public.
+version = "1.0.0"
 description = "Ingestion and scoring pipeline for the small-agency GTFS quality scorecard"
 license = "Apache-2.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "requests>=2.32",
     "gtfs-realtime-bindings>=1.0",
@@ -26,7 +30,7 @@ scorecard-mcp = "scorecard_pipeline.mcp_server:main"
 [dependency-groups]
 dev = [
     "pytest>=8.0",
-    "ruff>=0.4",
+    "ruff>=0.15",
     "mypy>=1.10",
     "types-requests",
     "types-PyYAML",
@@ -56,10 +60,27 @@ packages = ["src/scorecard_pipeline"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM"]
+select = ["E", "W", "F", "I", "UP", "B", "SIM", "S", "C90", "RUF"]
+# Typographic characters used deliberately in plain-language civic prose
+# (en dash, right single quote/apostrophe, multiplication sign in a comment).
+# Reviewed allowlist, not a blanket suppression of RUF001-003.
+allowed-confusables = ["–", "’", "×"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+# Bandit rules that are structurally false-positive in tests: S101 (assert is
+# the test framework), S108 (hardcoded /tmp paths are inert FetchResult
+# fixture placeholders, never written to), S314 (parsing this repo's own
+# freshly-rendered XML fixtures, not untrusted input), S105/S106 (test
+# fixtures name an "unsub_token" variable, not a real secret), S608 (the one
+# instance reads back the test's own just-written tmp Parquet file path, not
+# externally supplied input).
+"tests/**" = ["S101", "S108", "S314", "S105", "S106", "S608"]
 
 [tool.mypy]
 strict = true
@@ -85,7 +106,7 @@ testpaths = ["tests"]
 # Browser tests are opt-in: the default run (and the 92%-branch coverage gate in
 # ci.yml / `make verify`) deselects them; .github/workflows/e2e.yml runs
 # `pytest tests/e2e -m e2e`, where the explicit -m overrides this one.
-addopts = "-m 'not e2e'"
+addopts = "-m 'not e2e' --strict-markers --strict-config --import-mode=importlib"
 markers = [
     "e2e: behavioral browser test over the statically served site (needs the e2e dependency group and a Playwright chromium)",
 ]

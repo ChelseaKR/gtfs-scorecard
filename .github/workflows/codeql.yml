@@ -1,0 +1,46 @@
+# SEC-08 / CICD-20: CodeQL SAST over both languages this repo actually has
+# attack surface in — the Python pipeline and the GitHub Actions workflows
+# themselves (the `actions` CodeQL pack covers injection via untrusted
+# expression contexts, exactly the class of issue `onboard.yml`'s
+# issue-body parsing needs watching).
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 5 * * 3" # weekly, Wednesday — CodeQL's own analysis is slow-moving
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # required to upload SARIF to code scanning
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, actions]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@703b9949c65fcfced30e2f9f41569c4adfcb657f # v3.36.3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        if: matrix.language == 'python'
+        uses: github/codeql-action/autobuild@703b9949c65fcfced30e2f9f41569c4adfcb657f # v3.36.3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@703b9949c65fcfced30e2f9f41569c4adfcb657f # v3.36.3
+        with:
+          category: "/language:${{ matrix.language }}"

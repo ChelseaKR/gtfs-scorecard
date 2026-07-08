@@ -83,7 +83,7 @@ class Email:
     body: str
 
 
-def parse_subscribers(raw: object) -> list[Subscriber]:
+def parse_subscribers(raw: object) -> list[Subscriber]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Validate parsed YAML into Subscriber records."""
     if not isinstance(raw, dict) or not isinstance(raw.get("subscribers"), list):
         raise SubscriptionError("subscriptions.yaml must have a top-level 'subscribers:' list")
@@ -193,7 +193,7 @@ def subscriber_from_item(item: dict[str, Any]) -> Subscriber:
 def load_subscribers_from_dynamo(table_name: str, region: str = "us-west-2") -> list[Subscriber]:
     """Read every subscriber from the DynamoDB store. boto3 is imported lazily so
     the core pipeline keeps no AWS dependency; only this path needs it."""
-    import boto3  # type: ignore[import-not-found]  # noqa: PLC0415 - lazy, optional dep
+    import boto3  # type: ignore[import-not-found]
 
     table = boto3.resource("dynamodb", region_name=region).Table(table_name)
     items: list[dict[str, Any]] = []
@@ -358,7 +358,7 @@ def verification_email(
 def send_via_ses(emails: list[Email], sender: str, region: str = "us-west-2") -> int:
     """Send each email through Amazon SES. boto3 is imported lazily so the core
     pipeline has no AWS dependency; only the send path needs it."""
-    import boto3  # noqa: PLC0415 - lazy, optional dep
+    import boto3
 
     ses = boto3.client("ses", region_name=region)
     for email in emails:

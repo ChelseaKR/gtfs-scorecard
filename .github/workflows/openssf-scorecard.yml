@@ -1,0 +1,43 @@
+# SEC-36/37, CICD-03/11/21: OpenSSF Scorecard, uploaded to code scanning so
+# regressions show up next to CodeQL/Semgrep findings instead of a separate
+# dashboard nobody checks. Uses only the default GITHUB_TOKEN (repo_token
+# defaults to it) — some checks (notably Branch-Protection detail) score
+# lower without a PAT with repo-admin read; provisioning that PAT secret is a
+# live write action left to the repo owner, same as the standards-pin gate's
+# STANDARDS_REPO_TOKEN (see audit-2026-07-05/gtfs-scorecard-REMEDIATION.md).
+name: OpenSSF Scorecard
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "37 7 * * 2" # weekly, Tuesday
+  workflow_dispatch: {}
+
+permissions: read-all
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      # Job-level permissions replace, not merge with, the workflow-level
+      # block above — contents: read must be repeated here.
+      contents: read
+      security-events: write # upload SARIF to code scanning
+      id-token: write # publish results to the public Scorecard API (publish_results)
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@99c09fe975337306107572b4fdf4db224cf8e2f2 # v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@703b9949c65fcfced30e2f9f41569c4adfcb657f # v3.36.3
+        with:
+          sarif_file: results.sarif

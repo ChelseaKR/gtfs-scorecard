@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 def _safe(label: str, fn: Callable[[], list[Finding]]) -> list[Finding]:
     try:
         return fn()
-    except Exception as exc:  # noqa: BLE001 - a recommendation check must not fail a score
+    except Exception as exc:
         log.warning("recommendation check %s failed: %s", label, exc)
         return []
 

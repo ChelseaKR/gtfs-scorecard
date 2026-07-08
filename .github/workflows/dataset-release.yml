@@ -13,6 +13,13 @@ on:
 permissions:
   contents: write # create the tag and release
 
+# A second concurrent run (manual dispatch racing the schedule) must not
+# double-create/overlap a release; the tag-exists guard above only checks
+# after the race, so serialize instead of cancelling (CICD-23).
+concurrency:
+  group: dataset-release
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest

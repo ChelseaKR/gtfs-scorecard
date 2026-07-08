@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import itertools
 from typing import Any
 
 from scorecard_pipeline.cadence import (
@@ -52,7 +53,7 @@ def test_standard_feed_is_due_once_per_period() -> None:
     due_hours = [h for h in range(24) if is_due("some-agency", STANDARD, h)]
     # Once every STANDARD_PERIOD hours: 24 / 6 = 4 times a day, evenly spaced.
     assert len(due_hours) == 24 // STANDARD_PERIOD
-    gaps = {b - a for a, b in zip(due_hours, due_hours[1:], strict=False)}
+    gaps = {b - a for a, b in itertools.pairwise(due_hours)}
     assert gaps == {STANDARD_PERIOD}
 
 

@@ -4,7 +4,18 @@
 
 Please report security issues privately rather than in a public issue. Use
 GitHub's [private vulnerability reporting](https://github.com/ChelseaKR/gtfs-scorecard/security/advisories/new)
-on this repository. You will get an acknowledgement within a few days.
+on this repository.
+
+**Response SLA:** acknowledgement within **72 hours**; a fix or a concrete
+remediation plan within **14 days** for HIGH-severity-or-above reports (lower
+severity reports get a plan, not necessarily a fix, on that timeline).
+
+**If GitHub's private vulnerability reporting is unavailable** (it has
+regressed before, during a 2026-07 account migration — this is not a
+hypothetical): use the contact form or email on
+[chelseakr.com](https://chelseakr.com) as a fallback channel. Mark the
+message clearly as a security report so it isn't triaged as general
+contact.
 
 ## Scope notes
 

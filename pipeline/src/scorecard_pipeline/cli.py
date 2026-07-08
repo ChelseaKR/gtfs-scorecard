@@ -877,7 +877,7 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
         for candidate in (year - 1, year - 2):
             try:
                 text = fetch_ridership_csv(candidate)
-            except Exception as exc:  # noqa: BLE001 - a fetch miss is not a failure
+            except Exception as exc:
                 log.warning("NTD ridership fetch for %s failed: %s", candidate, exc)
                 continue
             if len(parse_ridership_csv(text)) > 100:
@@ -1084,7 +1084,7 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             results.append(
                 fetch_plan(args.base, origin, destination, date=args.date, time=args.time)
             )
-        except Exception as exc:  # noqa: BLE001 - a failed query is a failed pair
+        except Exception as exc:
             log.warning("OTP plan request failed: %s", exc)
             from .otp import PlanResult
 
@@ -1159,7 +1159,7 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     try:
         indicators = fetch_state_indicators()
         log.info("equity: ACS returned indicators for %d states.", len(indicators))
-    except Exception as exc:  # noqa: BLE001 - fail loudly so a misconfig can't ship empty
+    except Exception as exc:
         if not args.allow_empty:
             log.error(
                 "equity: ACS fetch FAILED, refusing to write an overlay without need tiers: %s",
@@ -1222,7 +1222,7 @@ def _cmd_canada_equity(args: argparse.Namespace, parser: argparse.ArgumentParser
             continue
         try:
             tier, quintile = agency_cimd(stops)
-        except Exception as exc:  # noqa: BLE001 - isolate one agency's live fetch failure
+        except Exception as exc:
             log.warning("canada-equity: CIMD fetch failed for %s: %s", agency.id, exc)
             continue
         results[agency.id] = {"name": agency.name, "need_tier": tier, "mean_quintile": quintile}
@@ -1357,7 +1357,7 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
     return 0
 
 
-def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     from collections import Counter
 
     from .config import repo_root

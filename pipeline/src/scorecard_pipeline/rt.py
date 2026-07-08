@@ -137,7 +137,7 @@ def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample
         body = safe_get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
         msg = gtfs_realtime_pb2.FeedMessage()
         msg.ParseFromString(body)
-    except Exception as exc:  # noqa: BLE001 - any failure is a finding, not a crash
+    except Exception as exc:
         return RtSample(kind=kind, fetched_at=fetched_at, ok=False, error=str(exc)[:200])
 
     if archive_to:
@@ -306,7 +306,7 @@ def _trip_time_spans(gtfs_zip_path: str) -> dict[str, tuple[int, int]]:
 # ---------------------------------------------------------------- scoring
 
 
-def realtime(
+def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     window: RtWindow,
     scheduled: set[str] | None,
     drift: DriftStats | None = None,

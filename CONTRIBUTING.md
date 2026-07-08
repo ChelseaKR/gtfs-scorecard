@@ -11,14 +11,20 @@ self-serve form at [gtfsscorecard.org](https://gtfsscorecard.org/submit.html).
 
 ## Develop on the pipeline
 
-The scorer lives in `pipeline/` (Python 3.11+, [uv](https://docs.astral.sh/uv/),
+The scorer lives in `pipeline/` (Python 3.12+, [uv](https://docs.astral.sh/uv/),
 and Java 17 for the validator). Before opening a pull request, run the same
-checks CI runs:
+merge-blocking gate CI runs:
 
 ```sh
-cd pipeline
-uv run pytest && uv run ruff check src tests && uv run ruff format --check src tests && uv run mypy src
+make verify
 ```
+
+This runs lint, format-check, `mypy --strict`, tests with the 92% branch-coverage
+floor, the AAA design-token contrast check, the plain-language readability
+check, and the no-bare-TODO/FIXME/HACK grep, in that order — see the root
+`Makefile` and `.github/workflows/ci.yml`, which invoke the same steps. This
+repo's applicable standards live in [docs/standards/](docs/standards/); see
+`docs/standards/README.md` for how a repo here declares and gates conformance.
 
 The frontend is in `web/` (vanilla JS, no build step) and reads the published
 JSON artifacts. Keep scoring and other logic in the pipeline so the frontend

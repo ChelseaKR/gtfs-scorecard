@@ -26,7 +26,8 @@ permissions:
   contents: read
 
 env:
-  OTP_IMAGE: docker.io/opentripplanner/opentripplanner:2.5.0
+  # Pinned by digest (SEC-25 residue): tag 2.5.0 resolved 2026-07-05.
+  OTP_IMAGE: docker.io/opentripplanner/opentripplanner@sha256:472509f359ed06624c1c95b3afad61374e2a64ca2b9c78758d33695c584a4e07
 
 jobs:
   select:

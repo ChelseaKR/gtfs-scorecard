@@ -180,7 +180,7 @@ def _matches(
     return not (providers and feed.provider.lower() not in providers)
 
 
-def propose_agencies(
+def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     feeds: list[CatalogFeed],
     *,
     country: str | None = None,
@@ -341,7 +341,7 @@ def hosted_mirror_url(
     """
     try:
         feeds = load_catalog()
-    except Exception:  # noqa: BLE001 - a catalog hiccup must not break fetching
+    except Exception:
         return None
     ids = {agency_id: mdb_id} if mdb_id else None
     (match,) = find_replacements(feeds, [(agency_id, agency_name, current_url)], ids)

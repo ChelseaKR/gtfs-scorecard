@@ -187,7 +187,7 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             "\\". It may not be tracked yet; pick from the lists above.";
         }});
       }})();
-    </script>"""
+    </script>"""  # noqa: S608 - static HTML template text ("Compare agencies" page), never executed as SQL
     return _page(
         title="Compare two agencies side by side — GTFS Scorecard",
         description=(
@@ -348,7 +348,7 @@ def _render_query_page() -> str:
           }});
         }});
       }})();
-    </script>"""
+    </script>"""  # noqa: S608 - static HTML template text (the client-side SQL query page), never executed server-side as SQL
     return _page(
         title="Query the dataset in your browser — GTFS Scorecard",
         description=(

@@ -48,7 +48,7 @@ def _fraction_mixed_case(rows: list[dict[str, str]], field: str) -> float:
     return sum(1 for name in named if not _is_shouty(name)) / len(named)
 
 
-def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
+def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Score rider-facing completeness of a static GTFS feed.
 
     ``fare_free`` is set for agencies that run fare-free by policy: their feed

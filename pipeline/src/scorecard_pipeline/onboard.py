@@ -30,6 +30,19 @@ _SECTION = re.compile(r"^###\s+(?P<label>.+?)\s*$", re.MULTILINE)
 _URL_RE = re.compile(r"https?://[^\s<>\")']+", re.IGNORECASE)
 
 
+def _require_dict(value: object, field: str) -> dict[str, object]:
+    """Narrow a JSON artifact field to a dict, raising if the shape is wrong.
+
+    Extracted so each call site in :func:`render_comment` is one line instead
+    of an inline branch, keeping that function's cyclomatic complexity down
+    (CODE-QUALITY-STANDARD CQ-05) rather than relying on ``assert`` (S101:
+    stripped under ``python -O``, so an explicit raise is used instead).
+    """
+    if not isinstance(value, dict):
+        raise TypeError(f"scorecard artifact {field!r} must be a dict")
+    return value
+
+
 @dataclass(frozen=True)
 class ScoreRequest:
     url: str
@@ -95,12 +108,10 @@ def render_comment(artifact: dict[str, object], *, page_url: str | None = None) 
     language. Mirrors the agency page's framing: fixes, never failures. A feed
     with no realtime shows that category neutrally rather than as a zero.
     """
-    overall = artifact.get("overall", {})
-    assert isinstance(overall, dict)
+    overall = _require_dict(artifact.get("overall", {}), "overall")
     grade = str(overall.get("grade", "?"))
     score = overall.get("score", "?")
-    agency = artifact.get("agency", {})
-    assert isinstance(agency, dict)
+    agency = _require_dict(artifact.get("agency", {}), "agency")
     name = str(agency.get("name", "this feed"))
 
     lines = [
@@ -111,8 +122,7 @@ def render_comment(artifact: dict[str, object], *, page_url: str | None = None) 
         "| Category | Score |",
         "| --- | --- |",
     ]
-    categories = artifact.get("categories", {})
-    assert isinstance(categories, dict)
+    categories = _require_dict(artifact.get("categories", {}), "categories")
     for key, label in _CAT_LABELS.items():
         cat = categories.get(key, {})
         if not isinstance(cat, dict):
@@ -125,7 +135,8 @@ def render_comment(artifact: dict[str, object], *, page_url: str | None = None) 
     lines.append("")
 
     fixes = artifact.get("top_fixes", [])
-    assert isinstance(fixes, list)
+    if not isinstance(fixes, list):
+        raise TypeError("scorecard artifact 'top_fixes' must be a list")
     if fixes:
         lines.append("### Top things to fix")
         lines.append("")

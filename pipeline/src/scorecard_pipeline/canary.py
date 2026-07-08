@@ -373,7 +373,7 @@ def run_canary(
     for agency_id in sample:
         try:
             base, cand = shadow_score_agency(AGENCIES[agency_id], as_of, candidate_version)
-        except Exception as exc:  # noqa: BLE001 - one bad feed must not sink the canary
+        except Exception as exc:
             log.warning("%s: skipped in canary run (%s)", agency_id, exc)
             skipped.append(agency_id)
             continue

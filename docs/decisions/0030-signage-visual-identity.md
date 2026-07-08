@@ -1,4 +1,10 @@
-# 0013 — Rebuild the visual identity on roadway signage
+# 0030 — Rebuild the visual identity on roadway signage
+
+> Renumbered from 0013 on 2026-07-05 (remediation QW-8): that number collided
+> with `0013-static-public-api.md`, which every in-repo "ADR 0013" reference
+> (code comments, `docs/api.md`, `docs/expansion.md`) actually means. This
+> document had no external references to its old filename, so it was a plain
+> rename with no link updates needed elsewhere.
 
 Status: accepted
 Date: 2026-07-04

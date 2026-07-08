@@ -38,7 +38,7 @@ def _require_url(entry_label: str, field: str, value: object) -> str:
     return str(value)
 
 
-def parse_agencies(raw: object) -> list[Agency]:
+def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Validate parsed YAML into Agency records."""
     if not isinstance(raw, dict) or not isinstance(raw.get("agencies"), list):
         raise AgencyConfigError("agencies.yaml must contain a top-level 'agencies:' list")

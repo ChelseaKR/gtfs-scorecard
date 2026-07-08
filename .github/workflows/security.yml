@@ -67,3 +67,69 @@ jobs:
           --severity ERROR
           --error
           --metrics off
+
+  # SEC-11/SEC-13/CQ-11: pip-audit + osv-scanner over the committed, hashed
+  # lockfile. No `|| true`, no continue-on-error — a real finding blocks.
+  dependency-audit:
+    name: Dependency audit (pip-audit + osv-scanner)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          python-version: "3.12"
+      # --no-emit-project: pip-audit's requirement-file collector installs
+      # every line into a scratch venv to inspect it; the local editable
+      # package itself isn't a third-party dependency, so leave it out.
+      - name: Export a plain requirements list from the locked, hashed uv.lock
+        run: uv export --frozen --format requirements.txt --no-emit-project -o /tmp/reqs.txt
+      - name: pip-audit (blocking)
+        run: uvx --from pip-audit==2.10.1 pip-audit --strict -r /tmp/reqs.txt
+      - name: osv-scanner over uv.lock (blocking)
+        uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+        with:
+          scan-args: |-
+            --lockfile=pipeline/uv.lock
+
+  # SEC-15-approx: the closest committed approximation to "block on a
+  # Dependabot alert >= 7.0" available to a solo repo without an Enterprise
+  # security posture. Needs the repo's dependency graph enabled (on by
+  # default for public repos) — no repo-settings change made by this job.
+  dependency-review:
+    name: Dependency review (PRs only)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+        with:
+          fail-on-severity: high
+
+  # CICD-19 / RTF-06 half: zizmor on any PR touching workflow definitions.
+  # `onboard.yml` parses a feed URL out of an untrusted issue body, which is
+  # exactly the class of finding zizmor exists to catch.
+  zizmor:
+    name: zizmor (workflow security lint)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          python-version: "3.12"
+      - run: uvx zizmor==1.26.1 .github/workflows --min-severity high

@@ -13,6 +13,7 @@ is not archived; this works from the artifacts on hand.
 
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass
 from typing import Any
 
@@ -91,7 +92,7 @@ def history_events(
     then an expiry-window crossing, then a notable score swing. A steady feed
     produces nothing."""
     events: list[Event] = []
-    for prev, curr in zip(history, history[1:], strict=False):
+    for prev, curr in itertools.pairwise(history):
         date = str(curr.get("date", ""))
         prev_grade, curr_grade = prev.get("grade"), curr.get("grade")
         prev_score, curr_score = prev.get("score"), curr.get("score")
@@ -146,7 +147,7 @@ def grade_story(
 
     middle: list[str] = []
     # 1) Grade-band moves (a changed letter grade), oldest first.
-    for prev, curr in zip(history, history[1:], strict=False):
+    for prev, curr in itertools.pairwise(history):
         prev_grade, curr_grade = prev.get("grade"), curr.get("grade")
         if prev_grade is not None and curr_grade is not None and prev_grade != curr_grade:
             date = str(curr.get("date", ""))

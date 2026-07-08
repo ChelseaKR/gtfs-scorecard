@@ -539,8 +539,8 @@ def _accessibility_substat(comp_cat: dict[str, Any]) -> str:
     note = "States accessibility, not verified physical usability."
     if isinstance(stated, (int, float)) and isinstance(marked, (int, float)):
         note = (
-            f"{int(round(stated))}% of stops state accessibility "
-            f"({int(round(marked))}% marked accessible). "
+            f"{round(stated)}% of stops state accessibility "
+            f"({round(marked)}% marked accessible). "
             "Reflects what the feed states, not verified physical usability."
         )
     return (
@@ -580,7 +580,7 @@ def _fares_substat(comp_cat: dict[str, Any]) -> str:
     )
 
 
-def _board_hero(
+def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     agency_name: str,
     agency_id: str,
     artifact: dict[str, Any],
@@ -1651,7 +1651,7 @@ def _brief_changed_section(
     return rows + cleared_html
 
 
-def _render_brief(
+def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
     prev_artifact: dict[str, Any] | None = None,
@@ -2848,7 +2848,7 @@ def _standards_section(artifact: dict[str, Any], state: str = "") -> str:
     for key in CATEGORY_ORDER:
         cat = artifact.get("categories", {}).get(key, {})
         if cat.get("status") == "measured":
-            score = f"{int(round(float(cat.get('score', 0))))} / 100"
+            score = f"{round(float(cat.get('score', 0)))} / 100"
         else:
             score = "Not yet published"
         rows.append(
@@ -2923,7 +2923,9 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
     )
 
 
-def _render_agency_index(index: dict[str, Any], liveness: dict[str, dict[str, Any]]) -> str:
+def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+    index: dict[str, Any], liveness: dict[str, dict[str, Any]]
+) -> str:
     canonical = f"{BASE_URL}/agencies/"
     agencies = sorted(index["agencies"].items(), key=lambda kv: kv[1]["name"].lower())
 
@@ -3347,7 +3349,7 @@ def _is_md_table_separator(line: str) -> bool:
     return bool(cells) and all(re.fullmatch(r":?-+:?", cell) for cell in cells)
 
 
-def _md_to_html(md: str) -> tuple[str, str]:
+def _md_to_html(md: str) -> tuple[str, str]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Small Markdown subset (headings through h3, lists, tables, paragraphs,
     inline). Returns (html_body, first_h1_text)."""
     out: list[str] = []
@@ -3992,7 +3994,7 @@ def _states_by_agency() -> dict[str, str]:
         from .mobilitydb import load_catalog
 
         by_mdb = {f.mdb_id: f.subdivision for f in load_catalog() if f.mdb_id and f.subdivision}
-    except Exception as exc:  # noqa: BLE001 - a catalog hiccup must not break the render
+    except Exception as exc:
         # The live catalog is the authoritative source, but a transient outage
         # must not silently wipe every agency's state from the rendered site.
         # Carry forward the state from the last published catalog.json instead,
@@ -4725,7 +4727,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
       }})();
-    </script>"""
+    </script>"""  # noqa: S608 - static HTML template text (the national map page), never executed as SQL
     head_extra = (
         f'<link rel="stylesheet" '
         f'href="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css">'
@@ -6184,7 +6186,7 @@ def _trend_sections(
     (trend.json)</a>.</p>"""
 
 
-def render_site(now: dt.datetime | None = None) -> list[Path]:
+def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Generate all static pages, the sitemap, and robots.txt under web/.
 
     ``now`` is the instant used for wall-clock-relative prose (the liveness

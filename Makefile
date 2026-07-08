@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl render-site render-constants test contrast readability sync-static-nav mutation mutation-results
+.PHONY: verify tiles tiles-geojsonl render-site render-constants test contrast readability no-todos sync-static-nav mutation mutation-results
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -12,6 +12,18 @@ verify:
 	cd pipeline && uv run pytest -q --cov=scorecard_pipeline --cov-branch --cov-fail-under=92
 	cd pipeline && uv run python scripts/check_contrast.py
 	cd pipeline && uv run python scripts/check_readability.py
+	cd pipeline && uv run python scripts/check_versions.py
+	$(MAKE) no-todos
+
+# CQ-34: keep the repo's current zero-bare-TODO state a merge-blocking gate
+# instead of an aspiration. A real, tracked TODO should carry an issue
+# reference and live in docs/ (e.g. docs/lint-complexity-ratchet.md), not a
+# bare marker in source.
+no-todos:
+	@if grep -rnE "TODO|FIXME|HACK" pipeline/src web/src; then \
+		echo "Bare TODO/FIXME/HACK found in pipeline/src or web/src — track it in docs/ instead (CQ-34)."; \
+		exit 1; \
+	fi
 
 test:
 	cd pipeline && uv run pytest -q --cov=scorecard_pipeline --cov-branch --cov-fail-under=92

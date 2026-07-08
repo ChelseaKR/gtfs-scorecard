@@ -50,7 +50,7 @@ def agencies_endpoint(dataset: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def leaderboard(
+def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     index: dict[str, Any],
     dataset: dict[str, Any],
     annual_trips: dict[str, int] | None = None,
