@@ -100,10 +100,10 @@
           },
           {
             "daysAfterFeedEnd": 511,
-            "daysBeforeFeedStart": 552,
-            "serviceId": "66637",
+            "daysBeforeFeedStart": 551,
+            "serviceId": "66637.183319",
             "serviceWindowEndDate": "2027-12-31",
-            "serviceWindowStartDate": "2025-01-01"
+            "serviceWindowStartDate": "2025-01-02"
           },
           {
             "daysAfterFeedEnd": 510,
@@ -121,7 +121,7 @@
           }
         ],
         "severity": "INFO",
-        "total": 7
+        "total": 8
       },
       {
         "code": "big_gap_in_service",
@@ -136,13 +136,13 @@
             "gapDurationDays": 23,
             "gapEndDate": "2026-01-05",
             "gapStartDate": "2025-12-12",
-            "serviceId": "66638.183336"
+            "serviceId": "66637.183319"
           },
           {
             "gapDurationDays": 93,
             "gapEndDate": "2026-08-03",
             "gapStartDate": "2026-05-01",
-            "serviceId": "66638.183336"
+            "serviceId": "66637.183319"
           }
         ],
         "severity": "INFO",
@@ -151,6 +151,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "fd73109d659b7ae58a1c97caf6e982d9bc9982e3940f915e3e01d32667030b02",
+  "sha256": "fb1a3b4956853793d1ec160bddd7361d0974b907369d0e67942d4b268666d35a",
   "validator_version": "8.0.1"
 }

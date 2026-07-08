@@ -59,78 +59,6 @@
         "total": 48
       },
       {
-        "code": "stop_too_far_from_shape_using_user_distance",
-        "sample_notices": [
-          {
-            "geoDistanceToShape": 325.46221119814584,
-            "match": [
-              34.1780892384663,
-              -118.31202341248304
-            ],
-            "shapeId": "13945",
-            "stopId": "3068080",
-            "stopName": "Olive & Lake SB",
-            "stopTimeCsvRowNumber": 1125,
-            "tripCsvRowNumber": 53,
-            "tripId": "501-1"
-          },
-          {
-            "geoDistanceToShape": 329.67516664618364,
-            "match": [
-              34.17615885847818,
-              -118.31384770803652
-            ],
-            "shapeId": "13945",
-            "stopId": "3068081",
-            "stopName": "Olive & Victory SB",
-            "stopTimeCsvRowNumber": 1126,
-            "tripCsvRowNumber": 53,
-            "tripId": "501-1"
-          },
-          {
-            "geoDistanceToShape": 329.8056580719083,
-            "match": [
-              34.17253281262289,
-              -118.3175997457489
-            ],
-            "shapeId": "13945",
-            "stopId": "3068082",
-            "stopName": "Olive & Joslyn Center",
-            "stopTimeCsvRowNumber": 1127,
-            "tripCsvRowNumber": 53,
-            "tripId": "501-1"
-          },
-          {
-            "geoDistanceToShape": 329.53095280133164,
-            "match": [
-              34.17005304872637,
-              -118.32027263755391
-            ],
-            "shapeId": "13945",
-            "stopId": "3068083",
-            "stopName": "Olive & Verdugo",
-            "stopTimeCsvRowNumber": 1128,
-            "tripCsvRowNumber": 53,
-            "tripId": "501-1"
-          },
-          {
-            "geoDistanceToShape": 329.7473052080609,
-            "match": [
-              34.16669112398012,
-              -118.32379531191378
-            ],
-            "shapeId": "13945",
-            "stopId": "3068085",
-            "stopName": "Olive & Keystone SB",
-            "stopTimeCsvRowNumber": 1129,
-            "tripCsvRowNumber": 53,
-            "tripId": "501-1"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 26
-      },
-      {
         "code": "route_long_name_contains_short_name",
         "sample_notices": [
           {
@@ -150,13 +78,23 @@
         "total": 2
       },
       {
-        "code": "feed_expiration_date30_days",
+        "code": "missing_feed_info_date",
         "sample_notices": [
           {
             "csvRowNumber": 2,
-            "currentDate": "20260707",
-            "feedEndDate": "20260717",
-            "suggestedExpirationDate": "20260806"
+            "fieldName": "feed_end_date"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "missing_recommended_field",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "fieldName": "feed_end_date",
+            "filename": "feed_info.txt"
           }
         ],
         "severity": "WARNING",
@@ -170,32 +108,6 @@
             "routeDesc": "P - Pink Route",
             "routeId": "3162",
             "specifiedField": "route_long_name"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
-        "code": "stops_match_shape_out_of_order",
-        "sample_notices": [
-          {
-            "match1": [
-              34.1810359730188,
-              -118.31170255456165
-            ],
-            "match2": [
-              34.175312999999996,
-              -118.31443700000003
-            ],
-            "shapeId": "13945",
-            "stopId1": "3067453",
-            "stopId2": "3068106",
-            "stopName1": "Metrolink Station",
-            "stopName2": "Olive & Lake NB",
-            "stopTimeCsvRowNumber1": 1151,
-            "stopTimeCsvRowNumber2": 1150,
-            "tripCsvRowNumber": 53,
-            "tripId": "501-1"
           }
         ],
         "severity": "WARNING",
@@ -216,10 +128,21 @@
         ],
         "severity": "INFO",
         "total": 3
+      },
+      {
+        "code": "service_extends_far_in_the_future",
+        "sample_notices": [
+          {
+            "serviceId": "1",
+            "serviceWindowEndDate": "2099-12-31"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "cf5da452a823d7483c12d8696d599a22d4de55d25c7f8fce3b348ef7623d202b",
+  "sha256": "9549b9f89d241c2c4d635f6d678d753052ec1ee15da721d8530124e159100462",
   "validator_version": "8.0.1"
 }

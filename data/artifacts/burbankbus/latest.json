@@ -109,8 +109,8 @@
         "distinct_codes": 7,
         "instances_by_severity": {
           "ERROR": 48,
-          "INFO": 3,
-          "WARNING": 31
+          "INFO": 4,
+          "WARNING": 5
         },
         "validator_version": "8.0.1"
       },
@@ -127,17 +127,6 @@
           "why": "Apps can show buses jumping backwards or mis-order stops."
         },
         {
-          "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 26,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
           "code": "route_long_name_contains_short_name",
           "count": 2,
           "effort": "Varies.",
@@ -149,15 +138,26 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "feed_expiration_date30_days",
+          "code": "missing_feed_info_date",
           "count": 1,
-          "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "effort": "Two fields, likely set once in your export settings.",
+          "fix": "Fill in feed_start_date and feed_end_date in feed_info.txt.",
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 30 days.",
-          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+          "what": "feed_info.txt does not state when this feed starts and ends.",
+          "why": "Without stated dates, apps can't warn anyone before your data goes stale; it just disappears one day."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
           "code": "same_name_and_description_for_route",
@@ -171,17 +171,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "stops_match_shape_out_of_order",
-          "count": 1,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
           "code": "unknown_file",
           "count": 3,
           "effort": "Varies.",
@@ -191,42 +180,53 @@
           "severity": "INFO",
           "what": "Unknown file (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 59.5,
+      "score": 65.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 82 instances (48 error, 31 warning, 3 informational).",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 57 instances (48 error, 5 warning, 4 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 9,
-        "feed_end_date": "2026-07-17",
+        "days_until_expiry": 26839,
+        "feed_end_date": null,
         "feed_start_date": "2024-01-14",
         "feed_version": "1/12/2024",
         "has_feed_info": true,
-        "last_service_date": "2026-07-18",
+        "last_service_date": "2099-12-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [
         {
-          "code": "scorecard_feed_expiring_soon",
+          "code": "scorecard_missing_feed_info_dates",
           "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
           "owner": "Likely your export tool",
-          "points": 71.0,
+          "points": 15.0,
           "severity": "WARNING",
-          "what": "Service data runs out in 9 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
         }
       ],
       "name": "freshness",
-      "score": 15.0,
+      "score": 85.0,
       "status": "measured",
-      "summary": "Service data runs out in 9 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 26839 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -238,12 +238,12 @@
   },
   "confidence": {
     "feed_age_days": 0,
-    "fetch_source": "origin",
-    "level": "medium",
+    "fetch_source": "mirror",
+    "level": "provisional",
     "measured_categories": 3,
     "notes": [
       "Realtime quality was not measured this run. It does not count against the grade.",
-      "The feed was downloaded from the agency's own URL."
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
     ],
     "rt_windows": 0,
     "total_categories": 4
@@ -257,9 +257,9 @@
         "met": false
       },
       {
-        "detail": "Service data runs out in 10 days; renew to qualify.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
-        "met": false
+        "met": true
       },
       {
         "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
@@ -268,27 +268,28 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data runs out in 10 days; renew to qualify. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "cf5da452a823d7483c12d8696d599a22d4de55d25c7f8fce3b348ef7623d202b",
-    "size_bytes": 25622,
+    "sha256": "9549b9f89d241c2c4d635f6d678d753052ec1ee15da721d8530124e159100462",
+    "size_bytes": 25603,
     "static_url": "https://rideburbankbus.com/gtfs"
   },
   "fetch": {
-    "final_url": "https://rideburbankbus.com/gtfs",
-    "max_attempts": 4,
-    "source": "origin",
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-burbankbus-gtfs-2149.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "ChunkedEncodingError",
+    "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.3753,
       34.13859,
-      -118.3117,
+      -118.31195,
       34.19569
     ],
     "lat": 34.17242,
@@ -315,19 +316,19 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data runs out in 10 days; renew before you certify.",
+        "detail": "Service data covers the next 26839 days.",
         "key": "current",
-        "status": "at_risk"
+        "status": "ready"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. 1 validator error to resolve. Service data runs out in 10 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 43.8,
-    "margin_to_next_band": 16.2,
-    "score": 43.8
+    "grade": "D",
+    "margin_to_lower_band": 3.8,
+    "margin_to_next_band": 6.2,
+    "score": 63.8
   },
   "recommendations": [
     {
@@ -353,11 +354,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 47,
     "findings": [],
@@ -408,25 +404,13 @@
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 71.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 9 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
-    {
       "code": "decreasing_or_equal_stop_time_distance",
       "count": 48,
       "effort": "Usually an export-tool fix, not hand editing.",
       "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
       "owner": "Likely your export tool",
       "points": 18.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "ERROR",
       "what": "Some trips have stop times whose distances along the route go backwards.",
       "why": "Apps can show buses jumping backwards or mis-order stops."
@@ -438,10 +422,22 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "47 of 47 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 99,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "99 of 99 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],
   "validator_version": "8.0.1"

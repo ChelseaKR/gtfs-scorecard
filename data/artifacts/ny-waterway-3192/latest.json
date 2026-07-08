@@ -159,8 +159,8 @@
       "details": {
         "days_until_expiry": 541,
         "feed_end_date": "2027-12-31",
-        "feed_start_date": "2026-07-06",
-        "feed_version": "20260707",
+        "feed_start_date": "2026-07-07",
+        "feed_version": "20260708",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -175,24 +175,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 50.0,
+        "covered_trips": 1,
         "drift": {
-          "median_seconds": -19,
-          "observations": 28,
-          "on_time_share_pct": 85.7,
-          "p90_abs_seconds": 163
+          "median_seconds": -20,
+          "observations": 110,
+          "on_time_share_pct": 80.0,
+          "p90_abs_seconds": 300
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 30
+        "scheduled_trips_in_window": 2,
+        "vehicles_checked": 10,
+        "vehicles_on_route_pct": 90.0,
+        "worst_lag_seconds": 28
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 1,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 17.5,
+          "severity": "WARNING",
+          "what": "1 of 2 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
       "name": "realtime",
-      "score": 100.0,
+      "score": 81.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; predictions ran a median of 19s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 50.0% of scheduled trips had live predictions; 90.0% of vehicles on their route; predictions ran a median of 20s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -218,7 +233,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 542 days.",
+        "detail": "Service data covers the next 541 days.",
         "key": "current",
         "met": true
       },
@@ -234,8 +249,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "5217315869144c9d58e5bb0d5d715e363f946f13fc430a99c180df0bd5a84988",
-    "size_bytes": 23444,
+    "sha256": "120938064f73b3f3d4072ac918cef124eee752cf2ef5b3224fc3c3dd7bf07644",
+    "size_bytes": 23442,
     "static_url": "https://nywaterway.connexionz.net/rtt/public/resource/gtfs.zip"
   },
   "fetch": {
@@ -244,7 +259,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.27585,
@@ -276,7 +291,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 542 days.",
+        "detail": "Service data covers the next 541 days.",
         "key": "current",
         "status": "ready"
       }
@@ -285,10 +300,10 @@
     "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "B",
-    "margin_to_lower_band": 0.2,
-    "margin_to_next_band": 9.8,
-    "score": 80.2
+    "grade": "C",
+    "margin_to_lower_band": 6.4,
+    "margin_to_next_band": 3.6,
+    "score": 76.4
   },
   "recommendations": [
     {
@@ -314,11 +329,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 14,
     "findings": [],
@@ -502,28 +512,28 @@
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 1,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 17.5,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1 of 2 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    },
+    {
       "code": "scorecard_wheelchair_accessible_unknown",
       "count": 1007,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "WARNING",
       "what": "1007 of 1007 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
-    },
-    {
-      "code": "scorecard_no_fare_data",
-      "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
-      "points": 15.0,
-      "rank": 3,
-      "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
     }
   ],
   "validator_version": "8.0.1"

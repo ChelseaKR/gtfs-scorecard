@@ -1,6 +1,6 @@
 {
   "agency_count": 87,
-  "average_score": 54.9,
+  "average_score": 54.8,
   "common_fixes": [
     {
       "agencies": 70,
@@ -18,7 +18,7 @@
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 28,
+      "agencies": 26,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -43,12 +43,12 @@
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
-      "agencies": 5,
+      "agencies": 6,
       "code": "scorecard_rt_trip_coverage",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
-      "agencies": 3,
+      "agencies": 4,
       "code": "scorecard_missing_feed_info_dates",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
@@ -93,11 +93,11 @@
     "stale": 20,
     "total": 33
   },
-  "generated_at": "2026-07-08T06:56:33+00:00",
+  "generated_at": "2026-07-08T10:02:11+00:00",
   "grade_distribution": {
     "A": 6,
-    "B": 2,
-    "C": 10,
+    "B": 1,
+    "C": 11,
     "D": 22,
     "F": 47
   },
@@ -790,6 +790,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Grade slipped from B to C",
+      "days_until_expiry": 541,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "ny-waterway-3192",
+      "name": "NY Waterway",
+      "needs_attention": true,
+      "score": 76.4,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
       "days_until_expiry": 171,
       "expiry_status": "current",
@@ -951,7 +965,7 @@
       "id": "suffolk-county-transit-3115",
       "name": "Suffolk County Transit",
       "needs_attention": false,
-      "score": 56.7,
+      "score": 56.6,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -1225,20 +1239,6 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 541,
-      "expiry_status": "current",
-      "grade": "B",
-      "id": "ny-waterway-3192",
-      "name": "NY Waterway",
-      "needs_attention": false,
-      "score": 80.2,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
       "days_until_expiry": 85,
       "expiry_status": "current",
       "grade": "B",
@@ -1321,7 +1321,7 @@
       "top_fix": "Remove past service periods the next time you export the feed."
     }
   ],
-  "needs_attention": 51,
+  "needs_attention": 52,
   "rollup": {
     "id": "new-york",
     "name": "New York agencies"
