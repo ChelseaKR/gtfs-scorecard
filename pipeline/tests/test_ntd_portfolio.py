@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from scorecard_pipeline.ntd import portfolio_summary, render_portfolio
+from scorecard_pipeline.ntd import (
+    portfolio_summary,
+    render_portfolio,
+    shapes_portfolio_summary,
+    shapes_status,
+)
 
 
 def _artifact(
@@ -109,3 +114,74 @@ def test_render_includes_headline_counts_and_sorted_states() -> None:
 def test_render_empty_portfolio() -> None:
     md = render_portfolio(portfolio_summary([]))
     assert "No agency feeds were assessed yet." in md
+
+
+# --- shapes.txt portfolio roll-up (FTA RY2025/26 phase-in) ---
+
+
+def _shapes_artifact(
+    *,
+    state: str = "",
+    country: str = "US",
+    total_trips: int | None = 10,
+    trips_with_shape: int | None = 10,
+    stored_status: str | None = None,
+) -> dict[str, Any]:
+    shapes: dict[str, Any] = {}
+    if total_trips is not None:
+        shapes["total_trips"] = total_trips
+    if trips_with_shape is not None:
+        shapes["trips_with_shape"] = trips_with_shape
+    if stored_status is not None:
+        shapes["status"] = stored_status
+    return {"agency": {"state": state, "country": country}, "shapes_readiness": shapes}
+
+
+def test_shapes_status_recomputed_from_stored_counts() -> None:
+    # A stale stored verdict loses to the counts, the same recompute-at-read
+    # pattern the per-page renderer uses, so a threshold change needs no rescore.
+    art = _shapes_artifact(total_trips=10, trips_with_shape=4, stored_status="ready")
+    assert shapes_status(art) == "at_risk"
+
+
+def test_shapes_status_falls_back_to_stored_verdict() -> None:
+    # An older artifact that kept only the verdict still counts; an unknown
+    # verdict (or no shapes block at all) is skipped rather than guessed.
+    assert shapes_status(_shapes_artifact(total_trips=None, stored_status="ready")) == "ready"
+    assert shapes_status(_shapes_artifact(total_trips=None, stored_status="bogus")) is None
+    assert shapes_status({"agency": {}}) is None
+
+
+def test_shapes_portfolio_counts_and_states() -> None:
+    artifacts = [
+        _shapes_artifact(state="CA"),  # ready (10/10)
+        _shapes_artifact(state="CA", trips_with_shape=4),  # at_risk
+        _shapes_artifact(state="OR", trips_with_shape=0),  # not_ready
+        _shapes_artifact(state="OR", total_trips=0, trips_with_shape=0),  # not_ready (no trips)
+    ]
+    s = shapes_portfolio_summary(artifacts)
+    assert (s.total, s.ready, s.at_risk, s.not_ready) == (4, 1, 1, 2)
+    assert s.pct_ready == 25.0
+    assert s.by_state["CA"] == {"ready": 1, "at_risk": 1, "not_ready": 0, "total": 2}
+    assert s.by_state["OR"] == {"ready": 0, "at_risk": 0, "not_ready": 2, "total": 2}
+
+
+def test_shapes_portfolio_skips_non_us_and_unchecked_feeds() -> None:
+    artifacts = [
+        _shapes_artifact(state="WA"),  # counts
+        _shapes_artifact(country="CA"),  # non-US: the FTA requirement has no meaning
+        {"agency": {"state": "WA"}},  # check never ran: skipped, not "not ready"
+    ]
+    s = shapes_portfolio_summary(artifacts)
+    assert s.total == 1
+    assert s.ready == 1
+    assert set(s.by_state) == {"WA"}
+
+
+def test_shapes_portfolio_empty_and_unlocated() -> None:
+    empty = shapes_portfolio_summary([])
+    assert empty.total == 0
+    assert empty.pct_ready == 0.0
+    assert empty.by_state == {}
+    s = shapes_portfolio_summary([_shapes_artifact(state="  ")])
+    assert set(s.by_state) == {"Unlocated"}

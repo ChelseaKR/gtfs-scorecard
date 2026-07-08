@@ -1877,6 +1877,57 @@ def test_ntd_page_carries_ry2026_and_one_fix_table() -> None:
     assert "spark-mini" in html
     # Without histories the trend cell degrades to an em dash, never breaks.
     assert '<span class="spark-none">&mdash;</span>' in _render_ntd_page(payload)
+    # The RY2026 section hands off to the shapes.txt explainer.
+    assert 'href="/ntd/shapes/"' in html
+
+
+def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
+    from scorecard_pipeline.render_site import _render_shapes_page
+
+    shapes = {
+        "total": 4,
+        "ready": 1,
+        "at_risk": 1,
+        "not_ready": 2,
+        "pct_ready": 25.0,
+        "by_state": {"Iowa": {"ready": 1, "at_risk": 1, "not_ready": 2, "total": 4}},
+    }
+    html = _render_shapes_page(shapes)
+    # The lead answers the title question and names both phase-in years.
+    assert "Does your GTFS feed need shapes.txt?" in html
+    assert "Report Year 2025" in html
+    assert "Report Year 2026" in html
+    # The requirement is sourced and the waiver path is named.
+    assert "federalregister.gov" in html
+    assert "waiver" in html
+    # Live numbers: the headline share, the coverage table, and the state row.
+    assert "25.0% carry a shape for every trip" in html
+    assert "Every trip has a shape" in html
+    assert "<td>Iowa</td>" in html
+    # Self-serve checks are linked for tracked and untracked feeds alike.
+    assert 'href="/agencies/"' in html
+    assert 'href="/try.html"' in html
+    assert 'href="/check/"' in html
+    # The reporter cut stays population-level and states-not-certifies.
+    assert "For reporters" in html
+    assert "certifies nothing" in html
+    assert "not covered, never failing" in html
+    assert 'href="/press/"' in html
+    assert 'href="/ntd.json"' in html
+    # No per-agency links: population framing only on this surface.
+    assert 'href="/agency/' not in html
+
+
+def test_shapes_page_without_data_keeps_the_explainer() -> None:
+    from scorecard_pipeline.render_site import _render_shapes_page
+
+    html = _render_shapes_page({})
+    # The explainer stands on its own before any rollup has run.
+    assert "No feeds have been checked for shape coverage yet." in html
+    assert "Report Year 2026" in html
+    assert "Of 0 tracked" not in html
+    # No dangling reference to a state table that is not on the page.
+    assert "per-state counts above" not in html
 
 
 def test_rt_page_most_reliable_rows_carry_mini_sparklines() -> None:
