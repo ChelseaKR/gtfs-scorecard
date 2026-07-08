@@ -2,77 +2,13 @@
   "report": {
     "notices": [
       {
-        "code": "mixed_case_recommended_field",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2078,
-            "fieldName": "trip_headsign",
-            "fieldValue": "VERMONT & EL SEGUNDO",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 2079,
-            "fieldName": "trip_headsign",
-            "fieldValue": "VERMONT & EL SEGUNDO",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 2080,
-            "fieldName": "trip_headsign",
-            "fieldValue": "VERMONT & EL SEGUNDO",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 2081,
-            "fieldName": "trip_headsign",
-            "fieldValue": "VERMONT & EL SEGUNDO",
-            "filename": "trips.txt"
-          },
-          {
-            "csvRowNumber": 2082,
-            "fieldName": "trip_headsign",
-            "fieldValue": "VERMONT & EL SEGUNDO",
-            "filename": "trips.txt"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 58
-      },
-      {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "serviceId": "1"
-          },
-          {
-            "csvRowNumber": 4,
-            "serviceId": "3"
-          },
-          {
-            "csvRowNumber": 7,
-            "serviceId": "6"
-          },
-          {
-            "csvRowNumber": 9,
-            "serviceId": "8"
-          },
-          {
-            "csvRowNumber": 10,
-            "serviceId": "9"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 10
-      },
-      {
         "code": "feed_expiration_date30_days",
         "sample_notices": [
           {
             "csvRowNumber": 2,
-            "currentDate": "20260702",
+            "currentDate": "20260708",
             "feedEndDate": "20260718",
-            "suggestedExpirationDate": "20260801"
+            "suggestedExpirationDate": "20260807"
           }
         ],
         "severity": "WARNING",
@@ -89,45 +25,21 @@
         "total": 1
       },
       {
-        "code": "big_gap_in_service",
+        "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
-            "gapDurationDays": 48,
-            "gapEndDate": "2026-05-29",
-            "gapStartDate": "2026-04-10",
-            "serviceId": "1"
-          },
-          {
-            "gapDurationDays": 68,
-            "gapEndDate": "2026-06-11",
-            "gapStartDate": "2026-04-03",
-            "serviceId": "2"
-          },
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-04-14",
-            "gapStartDate": "2026-03-24",
-            "serviceId": "3"
-          },
-          {
-            "gapDurationDays": 20,
-            "gapEndDate": "2026-07-05",
-            "gapStartDate": "2026-06-14",
-            "serviceId": "4"
-          },
-          {
-            "gapDurationDays": 27,
-            "gapEndDate": "2026-04-24",
-            "gapStartDate": "2026-03-27",
-            "serviceId": "8"
+            "csvRowNumber": 365,
+            "fieldName": "stop_name",
+            "fieldValue": "PRAIRIE AND ARBOR VITAE",
+            "filename": "stops.txt"
           }
         ],
-        "severity": "INFO",
-        "total": 7
+        "severity": "WARNING",
+        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "c288957eb392c145b1af853a87c7c3fb1a5dbb5a3c39fa6567221edf0ca6e6f1",
+  "sha256": "d52578a9a8eb42dc9a8cb32dd0ec8185c2cf01258429ac22b66748f9343d76c3",
   "validator_version": "8.0.1"
 }

@@ -97,31 +97,31 @@
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
-            "csvRowNumber": 1048,
+            "csvRowNumber": 1391,
             "fieldName": "stop_name",
             "fieldValue": "US 287 & CO 52",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 2952,
+            "csvRowNumber": 3113,
             "fieldName": "stop_name",
             "fieldValue": "CO 93 & CO 72",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 4084,
+            "csvRowNumber": 3294,
+            "fieldName": "stop_name",
+            "fieldValue": "CO 93 & CO 72",
+            "filename": "stops.txt"
+          },
+          {
+            "csvRowNumber": 4885,
             "fieldName": "stop_name",
             "fieldValue": "CO 93 & CO 128",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 4925,
-            "fieldName": "stop_name",
-            "fieldValue": "CO 93 & CO 72",
-            "filename": "stops.txt"
-          },
-          {
-            "csvRowNumber": 5034,
+            "csvRowNumber": 5607,
             "fieldName": "stop_name",
             "fieldValue": "CO 93 & CO 128",
             "filename": "stops.txt"
@@ -226,7 +226,7 @@
         "code": "stop_without_stop_time",
         "sample_notices": [
           {
-            "csvRowNumber": 1614,
+            "csvRowNumber": 2014,
             "stopId": "22924",
             "stopName": "Den Commercial Vehicle Holding Area"
           }
@@ -285,27 +285,27 @@
         "code": "platform_without_parent_station",
         "sample_notices": [
           {
-            "csvRowNumber": 893,
-            "stopId": "21279",
-            "stopName": "Decatur / Federal Station Gate G"
-          },
-          {
-            "csvRowNumber": 1646,
+            "csvRowNumber": 410,
             "stopId": "35576",
             "stopName": "Oak Station Gate E"
           },
           {
-            "csvRowNumber": 1864,
+            "csvRowNumber": 1471,
+            "stopId": "21279",
+            "stopName": "Decatur / Federal Station Gate G"
+          },
+          {
+            "csvRowNumber": 2869,
             "stopId": "20424",
             "stopName": "W Alamo Ave & S Prince St Gate G"
           },
           {
-            "csvRowNumber": 4680,
+            "csvRowNumber": 5185,
             "stopId": "35580",
             "stopName": "Clear Creek Crossing Transfer Center Gate C"
           },
           {
-            "csvRowNumber": 6603,
+            "csvRowNumber": 6458,
             "stopId": "10224",
             "stopName": "Decatur / Federal Station Gate H"
           }
@@ -316,6 +316,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "72ec2de5dbd7a14596c48ee55e126cd48bbc7d854e969120290209d4141e3c47",
+  "sha256": "cc8bf60599045bb50c73bde9316c8070de8512944525f9855b79c025066b79c7",
   "validator_version": "8.0.1"
 }

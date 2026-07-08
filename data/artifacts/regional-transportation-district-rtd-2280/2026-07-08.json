@@ -182,7 +182,7 @@
         "days_until_expiry": 80,
         "feed_end_date": "2026-09-26",
         "feed_start_date": "2026-06-07",
-        "feed_version": "Jun26-36807-13-20-20260704-040323",
+        "feed_version": "Jun26-36807-13-20-20260708-034843",
         "has_feed_info": true,
         "last_service_date": "2026-09-26",
         "seasonal_boundary": false,
@@ -202,6 +202,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -211,7 +223,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 80 days.",
         "key": "current",
         "met": true
       },
@@ -227,8 +239,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "032b872405deaaf268a8d7a4cfd9fcf3f8a4dc3a2e3128a51f999788251bf08b",
-    "size_bytes": 804888,
+    "sha256": "29f83147849dd81b2ca75ac47971e4cc6b6ee818b2aec5ce226bffbd56eb2ff1",
+    "size_bytes": 804893,
     "static_url": "https://www.rtd-denver.com/files/gtfs/bustang-co-us.zip"
   },
   "fetch": {
@@ -237,7 +249,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-04T00:00:00+00:00",
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
       -108.564,
@@ -269,7 +281,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 84 days.",
+        "detail": "Service data covers the next 80 days.",
         "key": "current",
         "status": "ready"
       }
@@ -307,11 +319,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 53,
     "findings": [
@@ -408,7 +415,13 @@
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 254 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 254,
+    "trips_with_shape": 254
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {

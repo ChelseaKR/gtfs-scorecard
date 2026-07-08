@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-08T10:02:36+00:00",
+  "generated_at": "2026-07-08T12:18:16+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -10,8 +10,8 @@
       "prevalence_pct": 0.1
     },
     "big_gap_in_service": {
-      "agencies": 157,
-      "instances": 848,
+      "agencies": 156,
+      "instances": 841,
       "prevalence_pct": 10.8
     },
     "block_trips_with_overlapping_stop_times": {
@@ -55,9 +55,9 @@
       "prevalence_pct": 9.2
     },
     "expired_calendar": {
-      "agencies": 758,
-      "instances": 6232,
-      "prevalence_pct": 52.3
+      "agencies": 757,
+      "instances": 6222,
+      "prevalence_pct": 52.2
     },
     "fare_transfer_rule_with_forbidden_transfer_count": {
       "agencies": 4,
@@ -246,7 +246,7 @@
     },
     "mixed_case_recommended_field": {
       "agencies": 443,
-      "instances": 772644,
+      "instances": 772587,
       "prevalence_pct": 30.6
     },
     "more_than_one_entity": {
@@ -401,7 +401,7 @@
     },
     "scorecard_rt_predictions_implausible": {
       "agencies": 5,
-      "instances": 2800,
+      "instances": 2773,
       "prevalence_pct": 0.3
     },
     "scorecard_rt_service_alerts_unreachable": {
@@ -410,13 +410,13 @@
       "prevalence_pct": 2.2
     },
     "scorecard_rt_stale": {
-      "agencies": 2,
-      "instances": 2,
+      "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
       "agencies": 51,
-      "instances": 1934,
+      "instances": 1979,
       "prevalence_pct": 3.5
     },
     "scorecard_rt_trip_updates_unreachable": {
@@ -430,8 +430,8 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 8,
-      "instances": 173,
+      "agencies": 9,
+      "instances": 169,
       "prevalence_pct": 0.6
     },
     "scorecard_station_no_pathways": {
@@ -451,7 +451,7 @@
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1238,
-      "instances": 2122492,
+      "instances": 2122485,
       "prevalence_pct": 85.4
     },
     "scorecard_wheelchair_boarding_unknown": {
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2122492,
+      "instances": 2122485,
       "prevalence_pct": 85.4,
       "severity": "WARNING",
       "source": "scorecard",
@@ -645,12 +645,12 @@
       "why": "See the linked rule for what this affects."
     },
     {
-      "agencies": 758,
+      "agencies": 757,
       "code": "expired_calendar",
       "effort": "One setting in most export tools.",
       "fix": "Remove past service periods the next time you export the feed.",
-      "instances": 6232,
-      "prevalence_pct": 52.3,
+      "instances": 6222,
+      "prevalence_pct": 52.2,
       "severity": "WARNING",
       "source": "validator",
       "what": "Some service calendars in the feed have already expired.",
@@ -757,7 +757,7 @@
       "code": "mixed_case_recommended_field",
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-      "instances": 772644,
+      "instances": 772587,
       "prevalence_pct": 30.6,
       "severity": "WARNING",
       "source": "validator",
@@ -849,11 +849,11 @@
       "why": "See the linked rule for what this affects."
     },
     {
-      "agencies": 157,
+      "agencies": 156,
       "code": "big_gap_in_service",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 848,
+      "instances": 841,
       "prevalence_pct": 10.8,
       "severity": "INFO",
       "source": "validator",

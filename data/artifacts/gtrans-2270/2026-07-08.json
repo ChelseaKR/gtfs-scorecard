@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/gtrans-2270/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/gtrans-2270/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -60,7 +59,7 @@
         },
         "has_fares": false,
         "headsign_pct": 100.0,
-        "mixed_case_stop_name_pct": 99.8,
+        "mixed_case_stop_name_pct": 99.7,
         "pathways": {
           "has_entrances": false,
           "has_levels": false,
@@ -69,8 +68,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 449,
-        "trips": 4236,
+        "stops": 388,
+        "trips": 1441,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -108,37 +107,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 5,
+        "distinct_codes": 3,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 7,
-          "WARNING": 70
+          "INFO": 0,
+          "WARNING": 3
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "mixed_case_recommended_field",
-          "count": 58,
-          "effort": "Often a bulk fix in your scheduling software.",
-          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-          "owner": "Likely your export tool",
-          "points": 8.0,
-          "severity": "WARNING",
-          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
-          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
-        },
-        {
-          "code": "expired_calendar",
-          "count": 10,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
         {
           "code": "feed_expiration_date30_days",
           "count": 1,
@@ -162,29 +139,29 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "big_gap_in_service",
-          "count": 7,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.8,
-          "severity": "INFO",
-          "what": "Big gap in service (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
+          "code": "mixed_case_recommended_field",
+          "count": 1,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
         }
       ],
       "name": "correctness",
-      "score": 77.2,
+      "score": 88.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 77 instances (0 error, 70 warning, 7 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 3 instances (0 error, 3 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 10,
         "feed_end_date": "2026-07-18",
-        "feed_start_date": "2026-03-15",
-        "feed_version": "S1000129",
+        "feed_start_date": "2026-06-28",
+        "feed_version": "S1000131",
         "has_feed_info": true,
         "last_service_date": "2026-07-18",
         "seasonal_boundary": false,
@@ -216,6 +193,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -225,7 +214,7 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 16 days; renew to qualify.",
+        "detail": "Service data runs out in 10 days; renew to qualify.",
         "key": "current",
         "met": false
       },
@@ -236,26 +225,32 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 16 days; renew to qualify."
+    "summary": "This feed is close to the conformance mark. Service data runs out in 10 days; renew to qualify."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "c288957eb392c145b1af853a87c7c3fb1a5dbb5a3c39fa6567221edf0ca6e6f1",
-    "size_bytes": 1717036,
+    "sha256": "d52578a9a8eb42dc9a8cb32dd0ec8185c2cf01258429ac22b66748f9343d76c3",
+    "size_bytes": 963291,
     "static_url": "https://ridegtrans.com/gtfs.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://ridegtrans.com/gtfs.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-08T00:00:00+00:00",
   "geo": {
     "bbox": [
-      -118.37853,
+      -118.41086,
       33.78872,
       -118.22326,
       33.95246
     ],
-    "lat": 33.89123,
-    "lon": -118.30264,
-    "stop_count": 449
+    "lat": 33.89122,
+    "lon": -118.30418,
+    "stop_count": 388
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -277,61 +272,56 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 16 days; renew before you certify.",
+        "detail": "Service data runs out in 10 days; renew before you certify.",
         "key": "current",
         "status": "at_risk"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 16 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. Service data runs out in 10 days; renew before you certify."
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 2.2,
-    "margin_to_next_band": 7.8,
-    "score": 62.2
+    "margin_to_lower_band": 6.9,
+    "margin_to_next_band": 3.1,
+    "score": 66.9
   },
   "recommendations": [
     {
       "code": "scorecard_route_color_low_contrast",
-      "count": 4,
+      "count": 2,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (2, 2SCH, 4, 5).",
+      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (2, 5).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
       "code": "scorecard_stop_name_needs_tts",
-      "count": 431,
+      "count": 376,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "431 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Compton Bl & Matthisen Ave\", \"Western Ave & Redondo Beach Bl\", \"Western Ave & 154th St\", and more).",
+      "what": "376 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Compton Bl & Matthisen Ave\", \"Western Ave & Redondo Beach Bl\", \"Western Ave & 154th St\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-08",
-    "feed_fetched_date": "2026-07-07",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 449,
+    "boardable_stops": 388,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 4236
+    "trips_total": 1441
   },
   "route_map": {
-    "drawn_route_count": 8,
+    "drawn_route_count": 6,
     "has_shapes": true,
     "path": "data/artifacts/gtrans-2270/geometry.geojson",
-    "route_count": 8,
+    "route_count": 6,
     "routes": [
       {
         "color": "EF4137",
@@ -356,17 +346,6 @@
         "type_label": "Bus"
       },
       {
-        "color": "91278F",
-        "color_name": "purple",
-        "has_shape": true,
-        "id": "2SCH",
-        "label": "2SCH",
-        "long": "Line 2 School",
-        "short": "2SCH",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
         "color": "F8941E",
         "color_name": "orange",
         "has_shape": true,
@@ -374,28 +353,6 @@
         "label": "3",
         "long": "Line 3",
         "short": "3",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "F8941E",
-        "color_name": "orange",
-        "has_shape": true,
-        "id": "3SCH",
-        "label": "3SCH",
-        "long": "Line 3 School",
-        "short": "3SCH",
-        "text_color": "000000",
-        "type_label": "Bus"
-      },
-      {
-        "color": "8A5D3B",
-        "color_name": "brown",
-        "has_shape": true,
-        "id": "4",
-        "label": "4",
-        "long": "Line 4",
-        "short": "4",
         "text_color": "000000",
         "type_label": "Bus"
       },
@@ -420,13 +377,30 @@
         "short": "7X",
         "text_color": "000000",
         "type_label": "Bus"
+      },
+      {
+        "color": "F8D02D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "G",
+        "label": "G",
+        "long": "Line G to Manhattan Beach",
+        "short": "G",
+        "text_color": "000000",
+        "type_label": "Bus"
       }
     ],
-    "stop_count": 449,
+    "stop_count": 388,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 1441 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1441,
+    "trips_with_shape": 1441
+  },
   "snapshot_date": "2026-07-08",
   "top_fixes": [
     {
@@ -454,16 +428,16 @@
       "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
     },
     {
-      "code": "mixed_case_recommended_field",
-      "count": 58,
-      "effort": "Often a bulk fix in your scheduling software.",
-      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "code": "feed_expiration_date30_days",
+      "count": 1,
+      "effort": "Usually a re-export from your scheduling software.",
+      "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
       "owner": "Likely your export tool",
-      "points": 8.0,
+      "points": 4.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
-      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+      "what": "This feed's service calendar runs out within the next 30 days.",
+      "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
     }
   ],
   "validator_version": "8.0.1"

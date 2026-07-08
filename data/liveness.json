@@ -57,13 +57,13 @@
     },
     "abq-ride": {
       "changed_at": "2026-06-21T11:26:36+00:00",
-      "checked_at": "2026-07-07T23:17:39+00:00",
-      "consecutive_failures": 0,
+      "checked_at": "2026-07-08T11:59:38+00:00",
+      "consecutive_failures": 1,
       "content_length": 1018576,
       "etag": "\"f8ad0-6538855104504\"",
       "last_modified": "Fri, 05 Jun 2026 21:27:48 GMT",
       "sha256": "a88d43f750263c0e70dbc4281c9d9d2f62439f8563ae895ce27b3212da2e996c",
-      "status": 304,
+      "status": null,
       "url": "https://data.cabq.gov/transit/gtfs/google_transit.zip"
     },
     "academy-bus": {
@@ -79,7 +79,7 @@
     },
     "access-allegany": {
       "changed_at": "2026-06-21T01:34:32+00:00",
-      "checked_at": "2026-07-08T09:41:17+00:00",
+      "checked_at": "2026-07-08T11:59:38+00:00",
       "consecutive_failures": 0,
       "content_length": 496927,
       "etag": "\"899b3bac36c06cb7c66fee83ac83238a\"",
@@ -90,7 +90,7 @@
     },
     "adams-county": {
       "changed_at": "2026-06-21T09:39:17+00:00",
-      "checked_at": "2026-07-08T09:41:17+00:00",
+      "checked_at": "2026-07-08T11:59:38+00:00",
       "consecutive_failures": 0,
       "content_length": 16096,
       "etag": "\"3ee0-63b185b867fb8\"",
@@ -101,7 +101,7 @@
     },
     "addison-county-transit-actr": {
       "changed_at": "2026-06-21T11:26:37+00:00",
-      "checked_at": "2026-07-07T23:17:39+00:00",
+      "checked_at": "2026-07-08T11:59:38+00:00",
       "consecutive_failures": 0,
       "content_length": 365334,
       "etag": "\"59316-57d81b8414619\"",
@@ -244,7 +244,7 @@
     },
     "albany-transit-system": {
       "changed_at": "2026-06-21T11:26:37+00:00",
-      "checked_at": "2026-07-07T23:17:40+00:00",
+      "checked_at": "2026-07-08T11:59:38+00:00",
       "consecutive_failures": 0,
       "content_length": 219660,
       "etag": "\"d73b5353c4b2da1:0\"",
@@ -321,7 +321,7 @@
     },
     "all-points-transit": {
       "changed_at": "2026-06-24T16:12:18+00:00",
-      "checked_at": "2026-07-08T09:41:19+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 354116,
       "etag": "\"56744-649dd5329df08\"",
@@ -332,7 +332,7 @@
     },
     "all-points-transit-2039": {
       "changed_at": "2026-06-21T06:07:07+00:00",
-      "checked_at": "2026-07-08T09:41:19+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 207897,
       "etag": "\"32c19-649dd5c7a1e38\"",
@@ -343,7 +343,7 @@
     },
     "all-points-transit-212": {
       "changed_at": "2026-06-30T09:37:42+00:00",
-      "checked_at": "2026-07-08T09:41:20+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 354116,
       "etag": "\"56744-649dd5329df08\"",
@@ -442,7 +442,7 @@
     },
     "amtrak": {
       "changed_at": "2026-07-07T15:20:02+00:00",
-      "checked_at": "2026-07-08T09:41:20+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 18509501,
       "etag": "\"4075d81ac7cfe105a4bb9ce034abd854:1783436408.964929\"",
@@ -453,7 +453,7 @@
     },
     "amtrak-san-joaquins": {
       "changed_at": "2026-06-21T01:34:33+00:00",
-      "checked_at": "2026-07-08T09:41:20+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 122246,
       "etag": "\"1dd86-644835682ace8\"",
@@ -464,7 +464,7 @@
     },
     "amtrak-vermonter": {
       "changed_at": "2026-06-21T11:26:38+00:00",
-      "checked_at": "2026-07-07T23:17:41+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 652923,
       "etag": "\"9f67b-65232cc33e378\"",
@@ -475,8 +475,8 @@
     },
     "anaheim-resort-transportation-art": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:17:41+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T11:59:39+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -486,7 +486,7 @@
     },
     "anchorage-people-mover": {
       "changed_at": "2026-06-21T01:34:34+00:00",
-      "checked_at": "2026-07-08T09:41:20+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 1145359,
       "etag": "\"eea0c26d5eedc1:0\"",
@@ -562,19 +562,19 @@
       "url": "http://data.trilliumtransit.com/gtfs/arcadia-ca-us/arcadia-ca-us.zip"
     },
     "arcadia-transit-2243": {
-      "changed_at": "2026-07-08T09:41:21+00:00",
-      "checked_at": "2026-07-08T09:41:21+00:00",
+      "changed_at": "2026-07-08T11:59:39+00:00",
+      "checked_at": "2026-07-08T11:59:39+00:00",
       "consecutive_failures": 0,
       "content_length": 32708,
-      "etag": "faf78e285f2211141011b8eacb595b3a",
+      "etag": "898ac98acbd7d4a65bf7d997ebf02db9",
       "last_modified": null,
-      "sha256": "0065eef03141ce2182fb759c8702b895e9d68954fd7c5c06e23e48e0ccdba851",
+      "sha256": "c3b237bc07070f8bca54adacd9805d49994194b4b39023034db833dfc301f867",
       "status": 200,
       "url": "https://passio3.com/ArcadiaCity/passioTransit/gtfs/google_transit.zip"
     },
     "areawide-community-transportation-system": {
       "changed_at": "2026-06-21T01:34:36+00:00",
-      "checked_at": "2026-07-08T09:41:21+00:00",
+      "checked_at": "2026-07-08T11:59:40+00:00",
       "consecutive_failures": 0,
       "content_length": 16969,
       "etag": "\"682b6c14-4249\"",
@@ -585,7 +585,7 @@
     },
     "arlington-transit": {
       "changed_at": "2026-06-21T01:34:37+00:00",
-      "checked_at": "2026-07-08T09:41:21+00:00",
+      "checked_at": "2026-07-08T11:59:40+00:00",
       "consecutive_failures": 0,
       "content_length": 1248041,
       "etag": "\"10fee2f227cadc1:0\"",
@@ -629,7 +629,7 @@
     },
     "asheville-rides-transit": {
       "changed_at": "2026-06-21T01:34:37+00:00",
-      "checked_at": "2026-07-08T09:41:22+00:00",
+      "checked_at": "2026-07-08T11:59:40+00:00",
       "consecutive_failures": 0,
       "content_length": 634089,
       "etag": "\"9ace9-654648403e718\"",
@@ -640,7 +640,7 @@
     },
     "asheville-rides-transit-903": {
       "changed_at": "2026-06-30T07:40:08+00:00",
-      "checked_at": "2026-07-08T09:41:22+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 634089,
       "etag": "\"9ace9-654648403e718\"",
@@ -695,7 +695,7 @@
     },
     "atlantic-regional-commission": {
       "changed_at": "2026-06-21T11:26:40+00:00",
-      "checked_at": "2026-07-07T23:17:43+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 231979,
       "etag": "\"0eccd94c11ce1:0\"",
@@ -794,7 +794,7 @@
     },
     "avon-transit-218": {
       "changed_at": "2026-06-30T17:07:28+00:00",
-      "checked_at": "2026-07-07T23:17:43+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 113497,
       "etag": "\"1bb59-6275b44187e38\"",
@@ -871,7 +871,7 @@
     },
     "bay-area-rapid-transit-bart": {
       "changed_at": "2026-06-24T18:04:14+00:00",
-      "checked_at": "2026-07-08T09:41:23+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 1121589,
       "etag": null,
@@ -926,7 +926,7 @@
     },
     "bay-town-trolley": {
       "changed_at": "2026-06-21T01:34:41+00:00",
-      "checked_at": "2026-07-08T09:41:23+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 268262,
       "etag": "\"417e6-63b13eae5fb70\"",
@@ -937,7 +937,7 @@
     },
     "bay-town-trolley-337": {
       "changed_at": "2026-06-30T07:40:12+00:00",
-      "checked_at": "2026-07-08T09:41:24+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 268262,
       "etag": "\"417e6-63b13eae5fb70\"",
@@ -959,7 +959,7 @@
     },
     "bay-transit-224": {
       "changed_at": "2026-06-30T17:07:29+00:00",
-      "checked_at": "2026-07-07T23:17:44+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 435161,
       "etag": "\"6a3d9-65415c2222928\"",
@@ -981,8 +981,8 @@
     },
     "beach-cities-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:41:24+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T11:59:41+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -1124,7 +1124,7 @@
     },
     "ben-franklin-transit-2122": {
       "changed_at": "2026-06-24T23:47:13+00:00",
-      "checked_at": "2026-07-08T09:41:25+00:00",
+      "checked_at": "2026-07-08T11:59:41+00:00",
       "consecutive_failures": 0,
       "content_length": 1860570,
       "etag": "\"34ba1b231f9dc1:0\"",
@@ -1135,7 +1135,7 @@
     },
     "benson-area-transit": {
       "changed_at": "2026-06-21T01:34:44+00:00",
-      "checked_at": "2026-07-08T09:41:26+00:00",
+      "checked_at": "2026-07-08T11:59:42+00:00",
       "consecutive_failures": 0,
       "content_length": 11344,
       "etag": "\"2c50-608a3f61d0788\"",
@@ -1146,7 +1146,7 @@
     },
     "benson-area-transit-229": {
       "changed_at": "2026-06-30T07:40:14+00:00",
-      "checked_at": "2026-07-08T09:41:26+00:00",
+      "checked_at": "2026-07-08T11:59:42+00:00",
       "consecutive_failures": 0,
       "content_length": 11344,
       "etag": "\"2c50-608a3f61d0788\"",
@@ -1190,7 +1190,7 @@
     },
     "benton-area-transportation": {
       "changed_at": "2026-06-21T01:34:45+00:00",
-      "checked_at": "2026-07-08T09:41:26+00:00",
+      "checked_at": "2026-07-08T11:59:42+00:00",
       "consecutive_failures": 0,
       "content_length": 185443,
       "etag": "\"2d463-64e7c7445d9f0\"",
@@ -1223,7 +1223,7 @@
     },
     "berks-area-regional-transportation-authority-barta-2064": {
       "changed_at": "2026-07-02T23:33:36+00:00",
-      "checked_at": "2026-07-07T23:17:46+00:00",
+      "checked_at": "2026-07-08T11:59:42+00:00",
       "consecutive_failures": 0,
       "content_length": 1027777,
       "etag": null,
@@ -1289,13 +1289,13 @@
     },
     "big-blue-bus": {
       "changed_at": "2026-06-21T01:34:46+00:00",
-      "checked_at": "2026-07-08T09:41:27+00:00",
+      "checked_at": "2026-07-08T11:59:43+00:00",
       "consecutive_failures": 0,
       "content_length": 1069560,
       "etag": "\"bb814c74f0c5dc1:0\"",
       "last_modified": "Mon, 06 Apr 2026 18:09:04 GMT",
       "sha256": "da63a7f2c209143c9052cf8f1c92fd8ff9f0016b52c2f979659c84bb0cd6fb72",
-      "status": 200,
+      "status": 304,
       "url": "http://gtfs.bigbluebus.com/current.zip"
     },
     "birmingham-jefferson-county-transit-authority": {
@@ -1410,8 +1410,8 @@
     },
     "blacksburg-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:41:28+00:00",
-      "consecutive_failures": 70,
+      "checked_at": "2026-07-08T11:59:43+00:00",
+      "consecutive_failures": 71,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -1443,7 +1443,7 @@
     },
     "block-island-ferry": {
       "changed_at": "2026-06-21T11:26:42+00:00",
-      "checked_at": "2026-07-07T23:17:46+00:00",
+      "checked_at": "2026-07-08T11:59:44+00:00",
       "consecutive_failures": 0,
       "content_length": 16509,
       "etag": "\"407d-6472c043e12f0\"",
@@ -1487,8 +1487,8 @@
     },
     "bloomington-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:17:47+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T11:59:44+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -1509,7 +1509,7 @@
     },
     "blossom-express": {
       "changed_at": "2026-06-21T08:07:08+00:00",
-      "checked_at": "2026-07-08T09:41:28+00:00",
+      "checked_at": "2026-07-08T11:59:44+00:00",
       "consecutive_failures": 0,
       "content_length": 16230,
       "etag": "\"3f66-6471cbc74c6d0\"",
@@ -1520,7 +1520,7 @@
     },
     "blossom-express-236": {
       "changed_at": "2026-06-30T20:07:19+00:00",
-      "checked_at": "2026-07-08T09:41:29+00:00",
+      "checked_at": "2026-07-08T11:59:44+00:00",
       "consecutive_failures": 0,
       "content_length": 16230,
       "etag": "\"3f66-6471cbc74c6d0\"",
@@ -1542,8 +1542,8 @@
     },
     "blue-gold-fleet": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:17:48+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T11:59:44+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -1553,7 +1553,7 @@
     },
     "blue-grass-community-action-partnership": {
       "changed_at": "2026-06-21T09:39:29+00:00",
-      "checked_at": "2026-07-08T09:41:29+00:00",
+      "checked_at": "2026-07-08T11:59:44+00:00",
       "consecutive_failures": 0,
       "content_length": 150768,
       "etag": "\"24cf0-6490e0af86e18\"",
@@ -1564,7 +1564,7 @@
     },
     "blue-grass-community-action-partnership-362": {
       "changed_at": "2026-06-30T20:07:19+00:00",
-      "checked_at": "2026-07-08T09:41:29+00:00",
+      "checked_at": "2026-07-08T11:59:44+00:00",
       "consecutive_failures": 0,
       "content_length": 150768,
       "etag": "\"24cf0-6490e0af86e18\"",
@@ -1575,7 +1575,7 @@
     },
     "blue-sky-limo-llc": {
       "changed_at": "2026-06-21T01:34:49+00:00",
-      "checked_at": "2026-07-08T09:41:29+00:00",
+      "checked_at": "2026-07-08T11:59:44+00:00",
       "consecutive_failures": 0,
       "content_length": 4745,
       "etag": "\"68283063-1289\"",
@@ -1586,8 +1586,8 @@
     },
     "blue-star-bus": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:17:48+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T11:59:44+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -1696,7 +1696,7 @@
     },
     "breckenridge-free-ride": {
       "changed_at": "2026-06-21T01:34:50+00:00",
-      "checked_at": "2026-07-08T09:41:29+00:00",
+      "checked_at": "2026-07-08T11:59:45+00:00",
       "consecutive_failures": 0,
       "content_length": 100585,
       "etag": "\"188e9-643f87d6b5ef8\"",
@@ -1707,7 +1707,7 @@
     },
     "breckenridge-free-ride-237": {
       "changed_at": "2026-06-30T07:40:18+00:00",
-      "checked_at": "2026-07-08T09:41:30+00:00",
+      "checked_at": "2026-07-08T11:59:45+00:00",
       "consecutive_failures": 0,
       "content_length": 100585,
       "etag": "\"188e9-643f87d6b5ef8\"",
@@ -1718,8 +1718,8 @@
     },
     "breeze-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:17:49+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T11:59:45+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -1740,7 +1740,7 @@
     },
     "bristol-virginia-transit": {
       "changed_at": "2026-06-21T11:26:44+00:00",
-      "checked_at": "2026-07-08T09:41:30+00:00",
+      "checked_at": "2026-07-08T11:59:45+00:00",
       "consecutive_failures": 0,
       "content_length": 53695,
       "etag": "\"d1bf-6495276639aa8\"",
@@ -1751,7 +1751,7 @@
     },
     "bristol-virginia-transit-238": {
       "changed_at": "2026-06-30T16:12:10+00:00",
-      "checked_at": "2026-07-08T09:41:30+00:00",
+      "checked_at": "2026-07-08T11:59:45+00:00",
       "consecutive_failures": 0,
       "content_length": 53695,
       "etag": "\"d1bf-6495276639aa8\"",
@@ -1762,7 +1762,7 @@
     },
     "brite": {
       "changed_at": "2026-06-21T01:34:51+00:00",
-      "checked_at": "2026-07-08T09:41:30+00:00",
+      "checked_at": "2026-07-08T11:59:45+00:00",
       "consecutive_failures": 0,
       "content_length": 440112,
       "etag": null,
@@ -1806,7 +1806,7 @@
     },
     "broome-county-transit-b-c-transit-2079": {
       "changed_at": "2026-06-21T01:34:51+00:00",
-      "checked_at": "2026-07-08T09:41:31+00:00",
+      "checked_at": "2026-07-08T11:59:46+00:00",
       "consecutive_failures": 0,
       "content_length": 529522,
       "etag": "\"81472-6490fdc731f7f\"",
@@ -1828,7 +1828,7 @@
     },
     "brown-county-heartland-express": {
       "changed_at": "2026-06-21T01:34:54+00:00",
-      "checked_at": "2026-07-08T09:41:31+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 71352,
       "etag": "\"116b8-6494f58a33170\"",
@@ -1839,7 +1839,7 @@
     },
     "brown-county-heartland-express-2296": {
       "changed_at": "2026-06-21T11:26:45+00:00",
-      "checked_at": "2026-07-08T09:41:31+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 63714,
       "etag": "\"f8e2-6495035c8a080\"",
@@ -1861,7 +1861,7 @@
     },
     "buena-vista-ferry": {
       "changed_at": "2026-06-21T11:26:45+00:00",
-      "checked_at": "2026-07-07T23:17:51+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 6084,
       "etag": "\"17c4-6501127782010\"",
@@ -1872,7 +1872,7 @@
     },
     "bullhead-area-transit-system": {
       "changed_at": "2026-06-21T11:26:45+00:00",
-      "checked_at": "2026-07-07T23:17:51+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 30305,
       "etag": "\"7661-6548f767c11f8\"",
@@ -1938,7 +1938,7 @@
     },
     "bustang-outrider": {
       "changed_at": "2026-06-21T11:26:45+00:00",
-      "checked_at": "2026-07-08T09:41:32+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 1083371,
       "etag": "\"1087eb-6498d8a104f48\"",
@@ -1960,7 +1960,7 @@
     },
     "butte-regional-transit-b-line": {
       "changed_at": "2026-06-21T01:34:55+00:00",
-      "checked_at": "2026-07-08T09:41:33+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 567853,
       "etag": "\"0afb9fa0d71ee81f33ba02a5a04059a8\"",
@@ -1971,7 +1971,7 @@
     },
     "butte-silver-bow": {
       "changed_at": "2026-06-21T11:26:45+00:00",
-      "checked_at": "2026-07-07T23:17:52+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 62063,
       "etag": "\"f26f-5b78d59bae6b0\"",
@@ -2004,7 +2004,7 @@
     },
     "c-tran": {
       "changed_at": "2026-07-02T01:21:43+00:00",
-      "checked_at": "2026-07-08T09:41:33+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 2578,
       "etag": null,
@@ -2015,7 +2015,7 @@
     },
     "c-tran-305": {
       "changed_at": "2026-06-21T11:26:45+00:00",
-      "checked_at": "2026-07-07T23:17:53+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 200145,
       "etag": "\"bba86cb666761b95de16cdd8702f2b91\"",
@@ -2059,7 +2059,7 @@
     },
     "calaveras-transit-93": {
       "changed_at": "2026-06-30T17:07:34+00:00",
-      "checked_at": "2026-07-07T23:17:53+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 131427,
       "etag": "\"20163-65567ecf14438\"",
@@ -2103,7 +2103,7 @@
     },
     "camarillo-area-transit": {
       "changed_at": "2026-06-21T11:26:46+00:00",
-      "checked_at": "2026-07-08T09:41:33+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 73683,
       "etag": "\"11fd3-646572186f640\"",
@@ -2114,7 +2114,7 @@
     },
     "camarillo-area-transit-297": {
       "changed_at": "2026-06-30T16:12:14+00:00",
-      "checked_at": "2026-07-08T09:41:33+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 73683,
       "etag": "\"11fd3-646572186f640\"",
@@ -2147,7 +2147,7 @@
     },
     "canby-ferry": {
       "changed_at": "2026-06-21T11:26:46+00:00",
-      "checked_at": "2026-07-07T23:17:54+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 4337,
       "etag": "\"10f1-641d30ca53f08\"",
@@ -2158,7 +2158,7 @@
     },
     "cape-ann-transportation-authority-cata": {
       "changed_at": "2026-06-21T11:26:46+00:00",
-      "checked_at": "2026-07-07T23:17:54+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 410341,
       "etag": "\"642e5-651509d70d920\"",
@@ -2180,7 +2180,7 @@
     },
     "cape-cod-regional-transit-authority": {
       "changed_at": "2026-06-21T01:34:57+00:00",
-      "checked_at": "2026-07-08T09:41:34+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 2520107,
       "etag": "\"26742b-64e9c3324c768\"",
@@ -2191,7 +2191,7 @@
     },
     "cape-cod-regional-transportation-authority-cape-cod-rta": {
       "changed_at": "2026-06-21T01:34:58+00:00",
-      "checked_at": "2026-07-08T09:41:34+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 3323814,
       "etag": "\"32b7a6-64e9b6eb8d018\"",
@@ -2202,7 +2202,7 @@
     },
     "cape-cod-regional-transportation-authority-cape-cod-rta-645": {
       "changed_at": "2026-06-30T07:41:22+00:00",
-      "checked_at": "2026-07-08T09:41:34+00:00",
+      "checked_at": "2026-07-08T11:59:47+00:00",
       "consecutive_failures": 0,
       "content_length": 3323814,
       "etag": "\"32b7a6-64e9b6eb8d018\"",
@@ -2268,8 +2268,8 @@
     },
     "capital-area-transit-system-cats": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:41:34+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T11:59:47+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -2279,7 +2279,7 @@
     },
     "capital-area-transit-system-cats-2065": {
       "changed_at": "2026-06-21T11:26:47+00:00",
-      "checked_at": "2026-07-07T23:17:55+00:00",
+      "checked_at": "2026-07-08T11:59:48+00:00",
       "consecutive_failures": 0,
       "content_length": 1052221,
       "etag": null,
@@ -2290,7 +2290,7 @@
     },
     "capital-area-transportation-authority-cata": {
       "changed_at": "2026-06-21T01:35:01+00:00",
-      "checked_at": "2026-07-08T09:41:34+00:00",
+      "checked_at": "2026-07-08T11:59:49+00:00",
       "consecutive_failures": 0,
       "content_length": 2164607,
       "etag": null,
@@ -2301,8 +2301,8 @@
     },
     "capital-district-transportation-authority-cdta": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:41:35+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T11:59:50+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -2312,7 +2312,7 @@
     },
     "capital-metro": {
       "changed_at": "2026-07-01T20:06:52+00:00",
-      "checked_at": "2026-07-08T09:41:35+00:00",
+      "checked_at": "2026-07-08T11:59:50+00:00",
       "consecutive_failures": 0,
       "content_length": 9865866,
       "etag": "W/\"993eb6c6-d4c0-406b-a366-dd8304e26554--gzip\"",
@@ -2356,7 +2356,7 @@
     },
     "capital-transit-310": {
       "changed_at": "2026-06-21T11:26:50+00:00",
-      "checked_at": "2026-07-07T23:17:58+00:00",
+      "checked_at": "2026-07-08T11:59:52+00:00",
       "consecutive_failures": 0,
       "content_length": 51713,
       "etag": "\"ca01-5c080e43c7f6c\"",
@@ -2389,7 +2389,7 @@
     },
     "carlsbad-municipal-transit-system": {
       "changed_at": "2026-06-21T11:26:50+00:00",
-      "checked_at": "2026-07-07T23:17:58+00:00",
+      "checked_at": "2026-07-08T11:59:52+00:00",
       "consecutive_failures": 0,
       "content_length": 7612,
       "etag": "\"8dd65f83d4a0a3f661edc899528ae25b421831672695553e1c16a0bab4fc7fed\"",
@@ -2400,7 +2400,7 @@
     },
     "carlsbad-municipal-transit-system-2284": {
       "changed_at": "2026-06-21T01:35:03+00:00",
-      "checked_at": "2026-07-08T09:41:37+00:00",
+      "checked_at": "2026-07-08T11:59:53+00:00",
       "consecutive_failures": 0,
       "content_length": 20948,
       "etag": "\"554ab3f17b02818963fd5fc151610a38\"",
@@ -2521,7 +2521,7 @@
     },
     "catalina-express": {
       "changed_at": "2026-06-30T17:07:41+00:00",
-      "checked_at": "2026-07-07T23:17:58+00:00",
+      "checked_at": "2026-07-08T11:59:53+00:00",
       "consecutive_failures": 0,
       "content_length": 4498,
       "etag": "\"2d4566155914a184797dedbe3b53ac31\"",
@@ -2554,7 +2554,7 @@
     },
     "catholic-community-services": {
       "changed_at": "2026-06-30T07:41:26+00:00",
-      "checked_at": "2026-07-08T09:41:37+00:00",
+      "checked_at": "2026-07-08T11:59:53+00:00",
       "consecutive_failures": 0,
       "content_length": 78624,
       "etag": "\"13320-64a05fa1f7f20\"",
@@ -2565,7 +2565,7 @@
     },
     "catholic-community-services-2159": {
       "changed_at": "2026-06-30T16:12:18+00:00",
-      "checked_at": "2026-07-08T09:41:38+00:00",
+      "checked_at": "2026-07-08T11:59:53+00:00",
       "consecutive_failures": 0,
       "content_length": 71583,
       "etag": "\"1179f-64a05fa2abe08\"",
@@ -2576,7 +2576,7 @@
     },
     "catholic-community-services-2160": {
       "changed_at": "2026-06-30T18:06:28+00:00",
-      "checked_at": "2026-07-08T09:41:38+00:00",
+      "checked_at": "2026-07-08T11:59:53+00:00",
       "consecutive_failures": 0,
       "content_length": 61487,
       "etag": "\"f02f-64a05fa158c40\"",
@@ -2587,7 +2587,7 @@
     },
     "cecil-transit": {
       "changed_at": "2026-06-21T11:26:51+00:00",
-      "checked_at": "2026-07-07T23:17:59+00:00",
+      "checked_at": "2026-07-08T11:59:53+00:00",
       "consecutive_failures": 0,
       "content_length": 162569,
       "etag": "\"1b4d15d9b12ec3e58665a78afcb0707576fdefcef7f5dca3fc864684942b4e04\"",
@@ -2597,19 +2597,19 @@
       "url": "https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Cecil_GTFS.zip"
     },
     "cecil-transit-3034": {
-      "changed_at": "2026-07-08T09:41:38+00:00",
-      "checked_at": "2026-07-08T09:41:38+00:00",
+      "changed_at": "2026-07-08T11:59:54+00:00",
+      "checked_at": "2026-07-08T11:59:54+00:00",
       "consecutive_failures": 0,
       "content_length": 303284,
-      "etag": "6488cb3a22274b1479e19ce49cbb31ce",
+      "etag": "0e6edde6405019a919dade40c3d4c8fd",
       "last_modified": null,
-      "sha256": "9efae91b59f020ad35224b3e870429e60f1a7762f516dace48ee33a2fcee2a42",
+      "sha256": "64643bf00c997214eefd458d852963bc29233d15cf525511a8036a18c062ddb0",
       "status": 200,
       "url": "https://passio3.com/cecil/passioTransit/gtfs/google_transit.zip"
     },
     "cecil-transit-3178": {
       "changed_at": "2026-06-21T01:35:03+00:00",
-      "checked_at": "2026-07-08T09:41:38+00:00",
+      "checked_at": "2026-07-08T11:59:54+00:00",
       "consecutive_failures": 0,
       "content_length": 268425,
       "etag": null,
@@ -2653,7 +2653,7 @@
     },
     "central-florida-regional-transit-authority-lynx": {
       "changed_at": "2026-06-21T01:35:04+00:00",
-      "checked_at": "2026-07-08T09:41:39+00:00",
+      "checked_at": "2026-07-08T11:59:55+00:00",
       "consecutive_failures": 0,
       "content_length": 2355986,
       "etag": "\"2a3e0c0cf5dc1:0\"",
@@ -2664,18 +2664,18 @@
     },
     "central-ohio-transit-authority-cota": {
       "changed_at": "2026-06-30T21:03:27+00:00",
-      "checked_at": "2026-07-08T09:41:39+00:00",
-      "consecutive_failures": 0,
+      "checked_at": "2026-07-08T11:59:55+00:00",
+      "consecutive_failures": 1,
       "content_length": 3854370,
       "etag": "\"aadbce2757ca89de106620ca9569f121\"",
       "last_modified": "Tue, 30 Jun 2026 20:18:35 GMT",
       "sha256": "b11634f117a35a27a1813ed1eeef2b29b9484c6afdda0757262026ed2c9b3bf0",
-      "status": 304,
+      "status": null,
       "url": "http://www.cota.com/data/cota.gtfs.zip"
     },
     "central-oregon-breeze": {
       "changed_at": "2026-06-21T11:26:53+00:00",
-      "checked_at": "2026-07-07T23:18:01+00:00",
+      "checked_at": "2026-07-08T12:00:25+00:00",
       "consecutive_failures": 0,
       "content_length": 297691,
       "etag": "\"48adb-64b021e9968a0\"",
@@ -2741,7 +2741,7 @@
     },
     "charles-county-vango": {
       "changed_at": "2026-06-21T11:26:53+00:00",
-      "checked_at": "2026-07-07T23:18:01+00:00",
+      "checked_at": "2026-07-08T12:00:25+00:00",
       "consecutive_failures": 0,
       "content_length": 229422,
       "etag": "\"74dc1b3dc83fd9cb66dcd15947ec652626bfcb440a6983b7158e429634bdd5cb\"",
@@ -2752,7 +2752,7 @@
     },
     "charleston-area-regional-transportation-authority-carta": {
       "changed_at": "2026-06-25T19:07:39+00:00",
-      "checked_at": "2026-07-08T09:41:39+00:00",
+      "checked_at": "2026-07-08T12:00:25+00:00",
       "consecutive_failures": 0,
       "content_length": 2292996,
       "etag": "\"22fd04-65517ea0e9180\"",
@@ -2763,7 +2763,7 @@
     },
     "charleston-area-regional-transportation-authority-carta-352": {
       "changed_at": "2026-06-30T07:41:31+00:00",
-      "checked_at": "2026-07-08T09:41:40+00:00",
+      "checked_at": "2026-07-08T12:00:25+00:00",
       "consecutive_failures": 0,
       "content_length": 2292996,
       "etag": "\"22fd04-65517ea0e9180\"",
@@ -2785,7 +2785,7 @@
     },
     "charlotte-area-transit-system-cats-2265": {
       "changed_at": "2026-06-21T11:26:54+00:00",
-      "checked_at": "2026-07-07T23:18:01+00:00",
+      "checked_at": "2026-07-08T12:00:25+00:00",
       "consecutive_failures": 0,
       "content_length": 3017636,
       "etag": "\"28d0807cb6f9dc1:0\"",
@@ -2818,7 +2818,7 @@
     },
     "chatham-area-transit-cat-2080": {
       "changed_at": "2026-07-06T22:42:10+00:00",
-      "checked_at": "2026-07-08T09:41:40+00:00",
+      "checked_at": "2026-07-08T12:00:26+00:00",
       "consecutive_failures": 0,
       "content_length": 1917035,
       "etag": null,
@@ -2873,7 +2873,7 @@
     },
     "cherokee-area-transportation-system-cats": {
       "changed_at": "2026-06-21T11:26:56+00:00",
-      "checked_at": "2026-07-07T23:18:02+00:00",
+      "checked_at": "2026-07-08T12:00:26+00:00",
       "consecutive_failures": 0,
       "content_length": 243422,
       "etag": "\"8035cf1d89efce1:0\"",
@@ -2884,8 +2884,8 @@
     },
     "cherriots": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:41:41+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:00:26+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -2895,7 +2895,7 @@
     },
     "chicago-transit-authority-cta": {
       "changed_at": "2026-06-21T06:07:44+00:00",
-      "checked_at": "2026-07-08T09:41:42+00:00",
+      "checked_at": "2026-07-08T12:00:27+00:00",
       "consecutive_failures": 0,
       "content_length": 98307739,
       "etag": "\"807affecf0eedc1:0\"",
@@ -2906,7 +2906,7 @@
     },
     "chicago-water-taxi": {
       "changed_at": "2026-06-21T01:35:10+00:00",
-      "checked_at": "2026-07-08T09:41:43+00:00",
+      "checked_at": "2026-07-08T12:00:27+00:00",
       "consecutive_failures": 0,
       "content_length": 4120,
       "etag": "\"1018-64b07f00a9e90\"",
@@ -2928,7 +2928,7 @@
     },
     "chittenden-county-transportation-authority-ccta-629": {
       "changed_at": "2026-07-07T17:29:52+00:00",
-      "checked_at": "2026-07-07T23:18:04+00:00",
+      "checked_at": "2026-07-08T12:00:27+00:00",
       "consecutive_failures": 0,
       "content_length": 1182179,
       "etag": "\"1209e3-6560693c50c88\"",
@@ -2939,7 +2939,7 @@
     },
     "cincinnati-metro": {
       "changed_at": "2026-06-30T13:09:08+00:00",
-      "checked_at": "2026-07-08T09:41:43+00:00",
+      "checked_at": "2026-07-08T12:00:27+00:00",
       "consecutive_failures": 0,
       "content_length": 4722397,
       "etag": "\"6a43b2e0-480edd\"",
@@ -2950,7 +2950,7 @@
     },
     "cincinnati-metro-307": {
       "changed_at": "2026-06-30T13:09:08+00:00",
-      "checked_at": "2026-07-08T09:41:44+00:00",
+      "checked_at": "2026-07-08T12:00:28+00:00",
       "consecutive_failures": 0,
       "content_length": 4722397,
       "etag": "\"6a43b2e0-480edd\"",
@@ -2961,7 +2961,7 @@
     },
     "citibus": {
       "changed_at": "2026-06-21T06:07:46+00:00",
-      "checked_at": "2026-07-08T09:41:44+00:00",
+      "checked_at": "2026-07-08T12:00:28+00:00",
       "consecutive_failures": 0,
       "content_length": 470350,
       "etag": "\"72d4e-64cc559c0aa78\"",
@@ -2983,7 +2983,7 @@
     },
     "citibus-569": {
       "changed_at": "2026-06-30T18:06:42+00:00",
-      "checked_at": "2026-07-08T09:41:44+00:00",
+      "checked_at": "2026-07-08T12:00:28+00:00",
       "consecutive_failures": 0,
       "content_length": 470350,
       "etag": "\"72d4e-64cc559c0aa78\"",
@@ -3038,7 +3038,7 @@
     },
     "citrus-county-transit": {
       "changed_at": "2026-06-21T11:26:57+00:00",
-      "checked_at": "2026-07-07T23:18:05+00:00",
+      "checked_at": "2026-07-08T12:00:28+00:00",
       "consecutive_failures": 0,
       "content_length": 8934,
       "etag": null,
@@ -3049,8 +3049,8 @@
     },
     "citrus-county-transit-2257": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:05+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:00:28+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -3071,7 +3071,7 @@
     },
     "city-coach": {
       "changed_at": "2026-06-21T01:35:13+00:00",
-      "checked_at": "2026-07-08T09:41:45+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 97912,
       "etag": "\"17e78-64bc6b5e7b508\"",
@@ -3082,7 +3082,7 @@
     },
     "city-coach-599": {
       "changed_at": "2026-06-30T07:41:34+00:00",
-      "checked_at": "2026-07-08T09:41:45+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 97912,
       "etag": "\"17e78-64bc6b5e7b508\"",
@@ -3093,7 +3093,7 @@
     },
     "city-of-banning-transit": {
       "changed_at": "2026-06-21T09:39:41+00:00",
-      "checked_at": "2026-07-08T09:41:45+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 135127,
       "etag": "\"20fd7-64c2fcb25add0\"",
@@ -3104,7 +3104,7 @@
     },
     "city-of-banning-transit-220": {
       "changed_at": "2026-06-30T17:07:52+00:00",
-      "checked_at": "2026-07-08T09:41:45+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 135127,
       "etag": "\"20fd7-64c2fcb25add0\"",
@@ -3192,7 +3192,7 @@
     },
     "city-of-douglas": {
       "changed_at": "2026-06-21T01:35:13+00:00",
-      "checked_at": "2026-07-08T09:41:46+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 43933,
       "etag": "\"f873fb97c650db1:0\"",
@@ -3203,7 +3203,7 @@
     },
     "city-of-ellensburg-public-transit-central-transit": {
       "changed_at": "2026-06-21T11:26:58+00:00",
-      "checked_at": "2026-07-07T23:18:07+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 30777,
       "etag": "\"6719bdd0-7839\"",
@@ -3214,7 +3214,7 @@
     },
     "city-of-ellensburg-public-transit-central-transit-2456": {
       "changed_at": "2026-06-21T11:26:58+00:00",
-      "checked_at": "2026-07-07T23:18:07+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 78577,
       "etag": "\"132f1-64fe7aa364150\"",
@@ -3236,7 +3236,7 @@
     },
     "city-of-fountain-transit": {
       "changed_at": "2026-06-21T11:26:58+00:00",
-      "checked_at": "2026-07-07T23:18:07+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 39013,
       "etag": "\"9865-652f7162bec68\"",
@@ -3279,13 +3279,13 @@
       "url": "https://transitfeeds.com/p/city-of-glendale/628/latest/download"
     },
     "city-of-jackson-jtran": {
-      "changed_at": "2026-07-08T09:41:46+00:00",
-      "checked_at": "2026-07-08T09:41:46+00:00",
+      "changed_at": "2026-07-08T12:00:29+00:00",
+      "checked_at": "2026-07-08T12:00:29+00:00",
       "consecutive_failures": 0,
       "content_length": 206203,
-      "etag": "8e2db658157e7a8eded82833f7747317",
+      "etag": "c704008f1fab2a414a0469fa4bf042a1",
       "last_modified": null,
-      "sha256": "68d6cbea776825b262d00ead8ee5e249115366d2dda8f51871485999d03c324b",
+      "sha256": "ffd9430cf0bd1020bc026be81c03b49082614d4e91984807ee0876f1d5a027ec",
       "status": 200,
       "url": "https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip"
     },
@@ -3335,7 +3335,7 @@
     },
     "city-of-loveland": {
       "changed_at": "2026-06-21T09:39:43+00:00",
-      "checked_at": "2026-07-08T09:41:46+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 7340,
       "etag": "\"1cac-63b19b14aee38\"",
@@ -3346,7 +3346,7 @@
     },
     "city-of-madera": {
       "changed_at": "2026-06-24T16:12:53+00:00",
-      "checked_at": "2026-07-08T09:41:46+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 79008,
       "etag": "\"134a0-648cafcd009b0\"",
@@ -3357,7 +3357,7 @@
     },
     "city-of-madera-91": {
       "changed_at": "2026-06-30T16:13:00+00:00",
-      "checked_at": "2026-07-08T09:41:46+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 79008,
       "etag": "\"134a0-648cafcd009b0\"",
@@ -3390,7 +3390,7 @@
     },
     "city-of-miami-gardens": {
       "changed_at": "2026-06-21T11:26:59+00:00",
-      "checked_at": "2026-07-07T23:18:11+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 79837,
       "etag": "\"137dd-653d8584c7ce8\"",
@@ -3445,7 +3445,7 @@
     },
     "city-of-show-low": {
       "changed_at": "2026-06-21T01:35:14+00:00",
-      "checked_at": "2026-07-08T09:41:48+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 43074,
       "etag": "\"65899342-a842\"",
@@ -3511,7 +3511,7 @@
     },
     "city-of-winona-mn-winona-transit-service": {
       "changed_at": "2026-06-21T01:35:15+00:00",
-      "checked_at": "2026-07-08T09:41:48+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 24195,
       "etag": null,
@@ -3554,19 +3554,19 @@
       "url": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clackamascounty-or-us/clackamascounty-or-us.zip"
     },
     "clackco-connects-clackamas-county-2740": {
-      "changed_at": "2026-07-08T09:41:49+00:00",
-      "checked_at": "2026-07-08T09:41:49+00:00",
+      "changed_at": "2026-07-08T12:00:33+00:00",
+      "checked_at": "2026-07-08T12:00:33+00:00",
       "consecutive_failures": 0,
       "content_length": 82374,
-      "etag": "79c7abed888ea045d555eb7210100a2c",
+      "etag": "97d6cf276fd8fd17bd0deec749ac23a2",
       "last_modified": null,
-      "sha256": "b1029c06a13a2f1657184f1425556903f04a6972037398d3d1c16ac3c9163b87",
+      "sha256": "524ecfb0915b1226732355c9f433b1c9761df78b208426e7c37a37ea63e581d9",
       "status": 200,
       "url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
     },
     "clackco-connects-clackamas-county-2741": {
       "changed_at": "2026-06-21T11:27:00+00:00",
-      "checked_at": "2026-07-07T23:18:13+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 145889,
       "etag": "\"239e1-653e96e94b220\"",
@@ -3577,7 +3577,7 @@
     },
     "clackco-connects-clackamas-county-312": {
       "changed_at": "2026-06-30T17:07:54+00:00",
-      "checked_at": "2026-07-07T23:18:13+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 115435,
       "etag": "\"1c2eb-652566c6c7440\"",
@@ -3588,7 +3588,7 @@
     },
     "clallam-transit-system": {
       "changed_at": "2026-06-21T11:27:00+00:00",
-      "checked_at": "2026-07-07T23:18:13+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 435262,
       "etag": "\"69b9ed6f-6a43e\"",
@@ -3665,7 +3665,7 @@
     },
     "clinton-county-public-transit-ccpt": {
       "changed_at": "2026-06-21T01:35:16+00:00",
-      "checked_at": "2026-07-08T09:41:49+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 150510,
       "etag": "\"ed14511c6b001977bc7973dccd971ea9\"",
@@ -3676,7 +3676,7 @@
     },
     "clinton-municipal-transit-administration-clinton-mta": {
       "changed_at": "2026-06-21T11:27:01+00:00",
-      "checked_at": "2026-07-07T23:18:13+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 60285,
       "etag": "\"eb7d-646393541eca8\"",
@@ -3698,7 +3698,7 @@
     },
     "clovis-transit": {
       "changed_at": "2026-06-21T01:35:17+00:00",
-      "checked_at": "2026-07-08T09:41:50+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 103682,
       "etag": "\"19502-63e6ec78c3438\"",
@@ -3708,19 +3708,19 @@
       "url": "https://data.trilliumtransit.com/gtfs/clovistransit-ca-us/clovistransit-ca-us.zip"
     },
     "clovis-transit-2894": {
-      "changed_at": "2026-07-08T09:41:50+00:00",
-      "checked_at": "2026-07-08T09:41:50+00:00",
+      "changed_at": "2026-07-08T12:00:34+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 67981,
-      "etag": "0e91f186ebeeac139878eac9e0fcde0a",
+      "etag": "21eec6916b24deca49498014faf61520",
       "last_modified": null,
-      "sha256": "b8432f97dc69926a5aa1b5ebaa643d3f82936f6c3abbc4060237e33a7fc27687",
+      "sha256": "d7c73b44d8fd6879499157329d268b9e65a14ea3a94c8e61616fc169389f2ac9",
       "status": 200,
       "url": "https://passio3.com/clovis/passioTransit/gtfs/google_transit.zip"
     },
     "clovis-transit-89": {
       "changed_at": "2026-06-30T07:41:39+00:00",
-      "checked_at": "2026-07-08T09:41:50+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 103682,
       "etag": "\"19502-63e6ec78c3438\"",
@@ -3742,7 +3742,7 @@
     },
     "coach-company-436": {
       "changed_at": "2026-06-30T17:07:55+00:00",
-      "checked_at": "2026-07-07T23:18:14+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 127647,
       "etag": "\"1f29f-5c5cb95aa85de\"",
@@ -3753,7 +3753,7 @@
     },
     "coast-transportation": {
       "changed_at": "2026-06-30T07:41:40+00:00",
-      "checked_at": "2026-07-08T09:41:50+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 33777,
       "etag": "\"83f1-651cd93ff7590\"",
@@ -3775,7 +3775,7 @@
     },
     "cobblinc": {
       "changed_at": "2026-07-01T20:07:05+00:00",
-      "checked_at": "2026-07-08T09:41:50+00:00",
+      "checked_at": "2026-07-08T12:00:34+00:00",
       "consecutive_failures": 0,
       "content_length": 956043,
       "etag": null,
@@ -3797,7 +3797,7 @@
     },
     "collier-area-transit-cat-2259": {
       "changed_at": "2026-07-08T06:41:59+00:00",
-      "checked_at": "2026-07-08T09:41:50+00:00",
+      "checked_at": "2026-07-08T12:00:36+00:00",
       "consecutive_failures": 0,
       "content_length": 602236,
       "etag": "\"9307c-65611f637bbdc\"",
@@ -3863,7 +3863,7 @@
     },
     "columbia-county-public-transportation-3116": {
       "changed_at": "2026-06-21T11:27:03+00:00",
-      "checked_at": "2026-07-07T23:18:15+00:00",
+      "checked_at": "2026-07-08T12:00:36+00:00",
       "consecutive_failures": 0,
       "content_length": 71988,
       "etag": "\"522d07240480bcf5bae8306feae53a40797122344f8225fee87d7cf21ce29331\"",
@@ -3874,7 +3874,7 @@
     },
     "columbia-county-rider": {
       "changed_at": "2026-06-21T11:27:03+00:00",
-      "checked_at": "2026-07-07T23:18:15+00:00",
+      "checked_at": "2026-07-08T12:00:36+00:00",
       "consecutive_failures": 0,
       "content_length": 152831,
       "etag": "\"254ff-65075db6aef30\"",
@@ -3896,7 +3896,7 @@
     },
     "commerce-municipal-bus-lines": {
       "changed_at": "2026-07-08T09:41:51+00:00",
-      "checked_at": "2026-07-08T09:41:51+00:00",
+      "checked_at": "2026-07-08T12:00:36+00:00",
       "consecutive_failures": 0,
       "content_length": 77722,
       "etag": "\"e735b2ad4fda182a824e6e5da1235156\"",
@@ -3918,7 +3918,7 @@
     },
     "community-transit-ct": {
       "changed_at": "2026-06-24T03:38:02+00:00",
-      "checked_at": "2026-07-08T09:41:52+00:00",
+      "checked_at": "2026-07-08T12:00:37+00:00",
       "consecutive_failures": 0,
       "content_length": 2167740,
       "etag": null,
@@ -3962,7 +3962,7 @@
     },
     "concord-area-transit": {
       "changed_at": "2026-06-21T01:35:22+00:00",
-      "checked_at": "2026-07-08T09:41:53+00:00",
+      "checked_at": "2026-07-08T12:00:37+00:00",
       "consecutive_failures": 0,
       "content_length": 186515,
       "etag": "\"2d893-6471bbb9e97f0\"",
@@ -3973,7 +3973,7 @@
     },
     "concord-kannapolis-area-transit-rider-transit": {
       "changed_at": "2026-06-21T11:27:04+00:00",
-      "checked_at": "2026-07-07T23:18:17+00:00",
+      "checked_at": "2026-07-08T12:00:37+00:00",
       "consecutive_failures": 0,
       "content_length": 227660,
       "etag": "\"3794c-5d3d711790718\"",
@@ -3983,13 +3983,13 @@
       "url": "https://data.trilliumtransit.com/gtfs/ckrider-nc-us/ckrider-nc-us.zip"
     },
     "concord-kannapolis-area-transit-rider-transit-2244": {
-      "changed_at": "2026-07-08T09:41:53+00:00",
-      "checked_at": "2026-07-08T09:41:53+00:00",
+      "changed_at": "2026-07-08T12:00:37+00:00",
+      "checked_at": "2026-07-08T12:00:37+00:00",
       "consecutive_failures": 0,
       "content_length": 170889,
-      "etag": "eb0f8e7ad345554fbdeb3ed40daf9ca0",
+      "etag": "f5392d37301c448a893a688951cfbf4f",
       "last_modified": null,
-      "sha256": "dea04adc1727317d416cbbd4d36bde8217be97b1aeb70d0c781766de8ff86dee",
+      "sha256": "1f4e1ab9a91ee60105ce5ccabae4d064cccd0bb521bc51b22056d86311586a6d",
       "status": 200,
       "url": "https://passio3.com/concordKat/passioTransit/gtfs/google_transit.zip"
     },
@@ -4039,7 +4039,7 @@
     },
     "connecticut-transit": {
       "changed_at": "2026-06-21T01:35:23+00:00",
-      "checked_at": "2026-07-08T09:41:53+00:00",
+      "checked_at": "2026-07-08T12:00:37+00:00",
       "consecutive_failures": 0,
       "content_length": 11996735,
       "etag": "\"6a01d04a-b70e3f\"",
@@ -4072,7 +4072,7 @@
     },
     "continuum": {
       "changed_at": "2026-06-21T11:27:06+00:00",
-      "checked_at": "2026-07-07T23:18:17+00:00",
+      "checked_at": "2026-07-08T12:00:38+00:00",
       "consecutive_failures": 0,
       "content_length": 7694,
       "etag": "\"1e0e-5d50220917600\"",
@@ -4094,7 +4094,7 @@
     },
     "copper-mountain-transit": {
       "changed_at": "2026-06-21T01:35:27+00:00",
-      "checked_at": "2026-07-08T09:41:54+00:00",
+      "checked_at": "2026-07-08T12:00:38+00:00",
       "consecutive_failures": 0,
       "content_length": 6838,
       "etag": "\"5895a3eb8d72db1:0\"",
@@ -4127,7 +4127,7 @@
     },
     "corning-erwin-area-transit-system-ceats": {
       "changed_at": "2026-06-21T01:35:28+00:00",
-      "checked_at": "2026-07-08T09:41:54+00:00",
+      "checked_at": "2026-07-08T12:00:38+00:00",
       "consecutive_failures": 0,
       "content_length": 20570,
       "etag": "\"bd57ffce48b9bdf31f6e3a46f0a03453\"",
@@ -4270,7 +4270,7 @@
     },
     "cripple-creek-transportation-2042": {
       "changed_at": "2026-06-21T11:27:07+00:00",
-      "checked_at": "2026-07-07T23:18:18+00:00",
+      "checked_at": "2026-07-08T12:00:38+00:00",
       "consecutive_failures": 0,
       "content_length": 58627,
       "etag": "\"e503-650b1125673a8\"",
@@ -4303,8 +4303,8 @@
     },
     "cudahy-area-rapid-transit-2248": {
       "changed_at": "2026-06-21T01:35:28+00:00",
-      "checked_at": "2026-07-08T09:41:55+00:00",
-      "consecutive_failures": 1,
+      "checked_at": "2026-07-08T12:00:38+00:00",
+      "consecutive_failures": 2,
       "content_length": 20965,
       "etag": null,
       "last_modified": "Wed, 08 Jul 2026 06:42:05 GMT",
@@ -4325,7 +4325,7 @@
     },
     "cue-bus": {
       "changed_at": "2026-06-21T01:35:29+00:00",
-      "checked_at": "2026-07-08T09:42:25+00:00",
+      "checked_at": "2026-07-08T12:01:09+00:00",
       "consecutive_failures": 0,
       "content_length": 125815,
       "etag": "\"1eb77-647e176a24e50\"",
@@ -4336,7 +4336,7 @@
     },
     "culver-city-bus": {
       "changed_at": "2026-06-21T01:35:30+00:00",
-      "checked_at": "2026-07-08T09:42:25+00:00",
+      "checked_at": "2026-07-08T12:01:09+00:00",
       "consecutive_failures": 0,
       "content_length": 1844113,
       "etag": "\"ac598687-e96a-4057-90a8-64100ded88d0\"",
@@ -4380,7 +4380,7 @@
     },
     "cyride": {
       "changed_at": "2026-06-21T11:27:07+00:00",
-      "checked_at": "2026-07-07T23:18:20+00:00",
+      "checked_at": "2026-07-08T12:01:09+00:00",
       "consecutive_failures": 0,
       "content_length": 280934,
       "etag": "\"8c3d6a733de6dc1:0\"",
@@ -4391,7 +4391,7 @@
     },
     "dallas-area-rapid-transit-dart": {
       "changed_at": "2026-07-04T07:20:26+00:00",
-      "checked_at": "2026-07-08T09:42:26+00:00",
+      "checked_at": "2026-07-08T12:01:09+00:00",
       "consecutive_failures": 0,
       "content_length": 8563745,
       "etag": null,
@@ -4402,7 +4402,7 @@
     },
     "dallas-host-committee": {
       "changed_at": "2026-06-21T01:35:31+00:00",
-      "checked_at": "2026-07-08T09:42:26+00:00",
+      "checked_at": "2026-07-08T12:01:10+00:00",
       "consecutive_failures": 0,
       "content_length": 11766,
       "etag": "\"8edead1ae813e511af1b7f4a66ce513c\"",
@@ -4490,8 +4490,8 @@
     },
     "dc-streetcar-2223": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:21+00:00",
-      "consecutive_failures": 134,
+      "checked_at": "2026-07-08T12:01:11+00:00",
+      "consecutive_failures": 135,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -4567,7 +4567,7 @@
     },
     "des-moines-area-regional-transit-authority-dart": {
       "changed_at": "2026-06-21T01:35:32+00:00",
-      "checked_at": "2026-07-08T09:42:27+00:00",
+      "checked_at": "2026-07-08T12:01:11+00:00",
       "consecutive_failures": 0,
       "content_length": 742658,
       "etag": "\"df2514a5a6f3dc1:0\"",
@@ -4578,8 +4578,8 @@
     },
     "detroit-department-of-transportation-ddot": {
       "changed_at": "2026-06-24T18:06:12+00:00",
-      "checked_at": "2026-07-08T09:42:28+00:00",
-      "consecutive_failures": 11,
+      "checked_at": "2026-07-08T12:01:12+00:00",
+      "consecutive_failures": 12,
       "content_length": 9314996,
       "etag": null,
       "last_modified": "Wed, 24 Jun 2026 16:40:13 GMT",
@@ -4644,7 +4644,7 @@
     },
     "dodger-area-rapid-transit": {
       "changed_at": "2026-06-21T11:27:10+00:00",
-      "checked_at": "2026-07-08T09:42:28+00:00",
+      "checked_at": "2026-07-08T12:01:12+00:00",
       "consecutive_failures": 0,
       "content_length": 47234,
       "etag": "\"b882-6469dc17ed708\"",
@@ -4655,7 +4655,7 @@
     },
     "dodger-area-rapid-transit-203": {
       "changed_at": "2026-06-30T17:08:04+00:00",
-      "checked_at": "2026-07-08T09:42:29+00:00",
+      "checked_at": "2026-07-08T12:01:12+00:00",
       "consecutive_failures": 0,
       "content_length": 47234,
       "etag": "\"b882-6469dc17ed708\"",
@@ -4666,7 +4666,7 @@
     },
     "dolores-county": {
       "changed_at": "2026-06-21T09:40:00+00:00",
-      "checked_at": "2026-07-08T09:42:29+00:00",
+      "checked_at": "2026-07-08T12:01:12+00:00",
       "consecutive_failures": 0,
       "content_length": 21912,
       "etag": "\"5598-649164b159e00\"",
@@ -4743,7 +4743,7 @@
     },
     "duke-university": {
       "changed_at": "2026-06-21T01:35:35+00:00",
-      "checked_at": "2026-07-08T09:42:29+00:00",
+      "checked_at": "2026-07-08T12:01:12+00:00",
       "consecutive_failures": 0,
       "content_length": 304782,
       "etag": "\"4a68e-634600f8122d0\"",
@@ -4754,7 +4754,7 @@
     },
     "duke-university-378": {
       "changed_at": "2026-06-30T07:41:51+00:00",
-      "checked_at": "2026-07-08T09:42:30+00:00",
+      "checked_at": "2026-07-08T12:01:12+00:00",
       "consecutive_failures": 0,
       "content_length": 304782,
       "etag": "\"4a68e-634600f8122d0\"",
@@ -4765,7 +4765,7 @@
     },
     "duluth-transit": {
       "changed_at": "2026-06-21T01:35:35+00:00",
-      "checked_at": "2026-07-08T09:42:30+00:00",
+      "checked_at": "2026-07-08T12:01:12+00:00",
       "consecutive_failures": 0,
       "content_length": 1317046,
       "etag": "\"cab13ec3cdedc1:0\"",
@@ -4776,7 +4776,7 @@
     },
     "durango-transit": {
       "changed_at": "2026-06-21T11:27:10+00:00",
-      "checked_at": "2026-07-07T23:18:24+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 42417,
       "etag": null,
@@ -4820,7 +4820,7 @@
     },
     "eastern-sierra-transit": {
       "changed_at": "2026-06-21T11:27:11+00:00",
-      "checked_at": "2026-07-07T23:18:25+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 566209,
       "etag": "\"8a3c1-654653a6a0280\"",
@@ -4831,7 +4831,7 @@
     },
     "eastern-sierra-transit-25": {
       "changed_at": "2026-06-30T17:08:05+00:00",
-      "checked_at": "2026-07-07T23:18:26+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 566209,
       "etag": "\"8a3c1-654653a6a0280\"",
@@ -4853,7 +4853,7 @@
     },
     "easy-ride-transportation": {
       "changed_at": "2026-06-21T01:35:36+00:00",
-      "checked_at": "2026-07-08T09:42:30+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 18131,
       "etag": "\"46d3-63b18c725c8a0\"",
@@ -4919,7 +4919,7 @@
     },
     "el-monte-transit": {
       "changed_at": "2026-06-21T01:35:36+00:00",
-      "checked_at": "2026-07-08T09:42:31+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 88345,
       "etag": "\"15919-6128985490698\"",
@@ -4930,7 +4930,7 @@
     },
     "el-monte-transit-103": {
       "changed_at": "2026-06-30T07:41:53+00:00",
-      "checked_at": "2026-07-08T09:42:31+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 88345,
       "etag": "\"15919-6128985490698\"",
@@ -4952,7 +4952,7 @@
     },
     "el-paso-transportation-authority": {
       "changed_at": "2026-07-04T07:20:30+00:00",
-      "checked_at": "2026-07-08T09:42:31+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 94810,
       "etag": "\"60c51-1725a-655bcb9708e22\"",
@@ -5084,7 +5084,7 @@
     },
     "emery-go-round-2224": {
       "changed_at": "2026-06-21T01:35:38+00:00",
-      "checked_at": "2026-07-08T09:43:02+00:00",
+      "checked_at": "2026-07-08T12:01:13+00:00",
       "consecutive_failures": 0,
       "content_length": 231786,
       "etag": null,
@@ -5095,7 +5095,7 @@
     },
     "emery-go-round-63": {
       "changed_at": "2026-06-30T17:08:05+00:00",
-      "checked_at": "2026-07-07T23:18:27+00:00",
+      "checked_at": "2026-07-08T12:01:14+00:00",
       "consecutive_failures": 0,
       "content_length": 80167,
       "etag": "\"13927-60711fa32d228\"",
@@ -5117,7 +5117,7 @@
     },
     "envida": {
       "changed_at": "2026-06-21T11:27:11+00:00",
-      "checked_at": "2026-07-07T23:18:27+00:00",
+      "checked_at": "2026-07-08T12:01:14+00:00",
       "consecutive_failures": 0,
       "content_length": 113138,
       "etag": "\"1b9f2-65258a6674b78\"",
@@ -5139,7 +5139,7 @@
     },
     "envida-455": {
       "changed_at": "2026-06-30T17:08:05+00:00",
-      "checked_at": "2026-07-07T23:18:28+00:00",
+      "checked_at": "2026-07-08T12:01:14+00:00",
       "consecutive_failures": 0,
       "content_length": 113138,
       "etag": "\"1b9f2-65258a6674b78\"",
@@ -5172,7 +5172,7 @@
     },
     "erie-metropolitan-transit-authority-412": {
       "changed_at": "2026-06-30T17:08:05+00:00",
-      "checked_at": "2026-07-07T23:18:28+00:00",
+      "checked_at": "2026-07-08T12:01:14+00:00",
       "consecutive_failures": 0,
       "content_length": 1172906,
       "etag": "\"11e5aa-5febf365dfc38\"",
@@ -5227,7 +5227,7 @@
     },
     "estes-transit-459": {
       "changed_at": "2026-06-30T17:08:05+00:00",
-      "checked_at": "2026-07-07T23:18:28+00:00",
+      "checked_at": "2026-07-08T12:01:14+00:00",
       "consecutive_failures": 0,
       "content_length": 86305,
       "etag": "\"15121-651ae682d7d78\"",
@@ -5293,7 +5293,7 @@
     },
     "everett-transit-3038": {
       "changed_at": "2026-06-21T01:35:39+00:00",
-      "checked_at": "2026-07-08T09:43:03+00:00",
+      "checked_at": "2026-07-08T12:01:14+00:00",
       "consecutive_failures": 0,
       "content_length": 355838,
       "etag": "\"6b8ae8eb42f6dc1:0\"",
@@ -5370,8 +5370,8 @@
     },
     "fairfax-cue-bus-cue-484": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:28+00:00",
-      "consecutive_failures": 13,
+      "checked_at": "2026-07-08T12:01:14+00:00",
+      "consecutive_failures": 14,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -5381,7 +5381,7 @@
     },
     "fairfield-and-suisun-transit-fast-transit": {
       "changed_at": "2026-06-30T07:41:58+00:00",
-      "checked_at": "2026-07-08T09:43:04+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 129534,
       "etag": "\"1f9fe-6438b33383e18\"",
@@ -5392,7 +5392,7 @@
     },
     "farmville-area-bus": {
       "changed_at": "2026-06-21T09:40:09+00:00",
-      "checked_at": "2026-07-08T09:43:04+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 306870,
       "etag": "\"4aeb6-6496756d7bbf0\"",
@@ -5403,7 +5403,7 @@
     },
     "farmville-area-bus-461": {
       "changed_at": "2026-06-30T20:08:04+00:00",
-      "checked_at": "2026-07-08T09:43:04+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 306870,
       "etag": "\"4aeb6-6496756d7bbf0\"",
@@ -5414,7 +5414,7 @@
     },
     "fast-transit": {
       "changed_at": "2026-06-21T01:35:40+00:00",
-      "checked_at": "2026-07-08T09:43:04+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 129534,
       "etag": "\"1f9fe-6438b33383e18\"",
@@ -5436,7 +5436,7 @@
     },
     "flixbus": {
       "changed_at": "2026-06-21T11:27:12+00:00",
-      "checked_at": "2026-07-07T23:18:29+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 13668,
       "etag": "\"5ff79461=3564\"",
@@ -5458,7 +5458,7 @@
     },
     "foothill-transit": {
       "changed_at": "2026-07-01T20:58:31+00:00",
-      "checked_at": "2026-07-08T09:43:05+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 5452900,
       "etag": null,
@@ -5524,7 +5524,7 @@
     },
     "franklin-transit-authority": {
       "changed_at": "2026-06-21T09:40:12+00:00",
-      "checked_at": "2026-07-08T09:43:06+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 60200,
       "etag": "\"eb28-6430a071ed8e0\"",
@@ -5535,7 +5535,7 @@
     },
     "franklin-transit-authority-361": {
       "changed_at": "2026-06-30T18:07:04+00:00",
-      "checked_at": "2026-07-08T09:43:07+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 60200,
       "etag": "\"eb28-6430a071ed8e0\"",
@@ -5556,13 +5556,13 @@
       "url": "https://maps.frederickcountymd.gov/google/google_transit.zip"
     },
     "frederick-county-transit-2432": {
-      "changed_at": "2026-07-08T09:43:07+00:00",
-      "checked_at": "2026-07-08T09:43:07+00:00",
+      "changed_at": "2026-07-08T12:01:15+00:00",
+      "checked_at": "2026-07-08T12:01:15+00:00",
       "consecutive_failures": 0,
       "content_length": 380186,
-      "etag": "b2cc317e1b8d776d4385705899f1d52e",
+      "etag": "e6bd75639da7dffce81c93ae456e44dd",
       "last_modified": null,
-      "sha256": "b9a7c8b10239a98e588616239db7970e021455ff2d592ea318945e2ac5bbb547",
+      "sha256": "710fdc24a8b97f573926b65221190f3a4e5ae4ceee43a9ad2bf506dfeefed417",
       "status": 200,
       "url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
     },
@@ -5590,7 +5590,7 @@
     },
     "freedom-cruise-line": {
       "changed_at": "2026-06-21T01:35:45+00:00",
-      "checked_at": "2026-07-08T09:43:07+00:00",
+      "checked_at": "2026-07-08T12:01:16+00:00",
       "consecutive_failures": 0,
       "content_length": 3481,
       "etag": "\"d99-640a2f8db4070\"",
@@ -5601,7 +5601,7 @@
     },
     "freedom-cruise-line-425": {
       "changed_at": "2026-06-30T07:42:02+00:00",
-      "checked_at": "2026-07-08T09:43:07+00:00",
+      "checked_at": "2026-07-08T12:01:16+00:00",
       "consecutive_failures": 0,
       "content_length": 3481,
       "etag": "\"d99-640a2f8db4070\"",
@@ -5612,13 +5612,13 @@
     },
     "fresno-area-express-fax": {
       "changed_at": "2026-06-21T11:27:13+00:00",
-      "checked_at": "2026-07-07T23:18:32+00:00",
-      "consecutive_failures": 0,
+      "checked_at": "2026-07-08T12:01:16+00:00",
+      "consecutive_failures": 1,
       "content_length": 1373256,
       "etag": "\"1f8441c6b7e4dc1:0\"",
       "last_modified": "Fri, 15 May 2026 22:11:27 GMT",
       "sha256": "77c310f7b7e639205bc0cf8ca918dad71c353dd13d284006d52e7f8a6769acfe",
-      "status": 304,
+      "status": null,
       "url": "http://gis4u.fresno.gov/downloads/fax_gtfs.zip"
     },
     "froggy-transportation": {
@@ -5634,7 +5634,7 @@
     },
     "gainesville-regional-transit-system": {
       "changed_at": "2026-06-21T11:27:13+00:00",
-      "checked_at": "2026-07-07T23:18:32+00:00",
+      "checked_at": "2026-07-08T12:01:16+00:00",
       "consecutive_failures": 0,
       "content_length": 840243,
       "etag": null,
@@ -5645,7 +5645,7 @@
     },
     "gainesville-regional-transit-system-2412": {
       "changed_at": "2026-06-21T01:35:46+00:00",
-      "checked_at": "2026-07-08T09:43:07+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 642890,
       "etag": null,
@@ -5656,7 +5656,7 @@
     },
     "gallup-express": {
       "changed_at": "2026-06-21T01:35:46+00:00",
-      "checked_at": "2026-07-08T09:43:07+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 69804,
       "etag": "\"65ce2e42-110ac\"",
@@ -5667,7 +5667,7 @@
     },
     "gallup-express-462": {
       "changed_at": "2026-06-30T07:42:02+00:00",
-      "checked_at": "2026-07-08T09:43:08+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 69804,
       "etag": "\"65ce2e42-110ac\"",
@@ -5755,7 +5755,7 @@
     },
     "glendora-transportation-division-3097": {
       "changed_at": "2026-06-21T01:35:46+00:00",
-      "checked_at": "2026-07-08T09:43:08+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 25625,
       "etag": "\"68cbd5ec-370f-4954-be29-5e97683512bb\"",
@@ -5810,7 +5810,7 @@
     },
     "gloversville-transit-services": {
       "changed_at": "2026-06-21T11:27:14+00:00",
-      "checked_at": "2026-07-07T23:18:34+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 50098,
       "etag": "\"de08c2ee35a9c16d9a5834ab15778927\"",
@@ -5821,7 +5821,7 @@
     },
     "gloversville-transit-system": {
       "changed_at": "2026-06-21T01:35:47+00:00",
-      "checked_at": "2026-07-08T09:43:08+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 56154,
       "etag": "\"6d5a765c585b41343ca40ab43ff5d6d3\"",
@@ -5876,7 +5876,7 @@
     },
     "gocary": {
       "changed_at": "2026-06-21T11:27:15+00:00",
-      "checked_at": "2026-07-07T23:18:34+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 317069,
       "etag": "\"4d68d-60ccde8e0e610\"",
@@ -5909,7 +5909,7 @@
     },
     "godurham": {
       "changed_at": "2026-06-21T01:35:47+00:00",
-      "checked_at": "2026-07-08T09:43:08+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 1385902,
       "etag": "\"1525ae-638679d049898\"",
@@ -5920,7 +5920,7 @@
     },
     "godurham-377": {
       "changed_at": "2026-06-30T07:42:05+00:00",
-      "checked_at": "2026-07-08T09:43:09+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 1385902,
       "etag": "\"1525ae-638679d049898\"",
@@ -5986,7 +5986,7 @@
     },
     "gotriangle-3183": {
       "changed_at": "2026-06-21T01:35:50+00:00",
-      "checked_at": "2026-07-08T09:43:09+00:00",
+      "checked_at": "2026-07-08T12:01:17+00:00",
       "consecutive_failures": 0,
       "content_length": 994591,
       "etag": "\"3ee4cea-f2d1f-64f2751424057\"",
@@ -6008,7 +6008,7 @@
     },
     "gowal": {
       "changed_at": "2026-06-21T11:27:15+00:00",
-      "checked_at": "2026-07-07T23:18:35+00:00",
+      "checked_at": "2026-07-08T12:01:18+00:00",
       "consecutive_failures": 0,
       "content_length": 34179,
       "etag": "\"8583-5e76afdc4d088\"",
@@ -6019,7 +6019,7 @@
     },
     "graham-transit": {
       "changed_at": "2026-06-21T09:40:14+00:00",
-      "checked_at": "2026-07-08T09:43:10+00:00",
+      "checked_at": "2026-07-08T12:01:18+00:00",
       "consecutive_failures": 0,
       "content_length": 112366,
       "etag": "\"1b6ee-63b1a14e5d8e0\"",
@@ -6030,7 +6030,7 @@
     },
     "graham-transit-611": {
       "changed_at": "2026-06-30T07:42:07+00:00",
-      "checked_at": "2026-07-08T09:43:11+00:00",
+      "checked_at": "2026-07-08T12:01:18+00:00",
       "consecutive_failures": 0,
       "content_length": 112366,
       "etag": "\"1b6ee-63b1a14e5d8e0\"",
@@ -6041,7 +6041,7 @@
     },
     "grand-canyon-national-park": {
       "changed_at": "2026-06-21T11:27:15+00:00",
-      "checked_at": "2026-07-07T23:18:36+00:00",
+      "checked_at": "2026-07-08T12:01:18+00:00",
       "consecutive_failures": 0,
       "content_length": 71766,
       "etag": "\"c1d74c4341e9dc1:0\"",
@@ -6052,8 +6052,8 @@
     },
     "grand-valley-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:43:11+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:18+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -6063,7 +6063,7 @@
     },
     "grand-valley-transit-2288": {
       "changed_at": "2026-06-21T11:27:15+00:00",
-      "checked_at": "2026-07-08T09:43:11+00:00",
+      "checked_at": "2026-07-08T12:01:18+00:00",
       "consecutive_failures": 0,
       "content_length": 10902,
       "etag": "\"2a96-648ed6f18c418\"",
@@ -6162,7 +6162,7 @@
     },
     "greater-cleveland-regional-transit-authority": {
       "changed_at": "2026-06-21T01:35:51+00:00",
-      "checked_at": "2026-07-08T09:43:12+00:00",
+      "checked_at": "2026-07-08T12:01:19+00:00",
       "consecutive_failures": 0,
       "content_length": 15311198,
       "etag": "\"6a1d8e39-e9a15e\"",
@@ -6184,8 +6184,8 @@
     },
     "greater-glens-falls-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:37+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:19+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -6228,7 +6228,7 @@
     },
     "greater-peoria-mass-transit-citylink-2208": {
       "changed_at": "2026-06-21T11:27:16+00:00",
-      "checked_at": "2026-07-07T23:18:37+00:00",
+      "checked_at": "2026-07-08T12:01:19+00:00",
       "consecutive_failures": 0,
       "content_length": 1467465,
       "etag": null,
@@ -6261,7 +6261,7 @@
     },
     "greater-portland-metro-bus-2642": {
       "changed_at": "2026-07-08T06:42:22+00:00",
-      "checked_at": "2026-07-08T09:43:13+00:00",
+      "checked_at": "2026-07-08T12:01:20+00:00",
       "consecutive_failures": 0,
       "content_length": 1147288,
       "etag": "\"118198-65611f68d373b\"",
@@ -6327,8 +6327,8 @@
     },
     "greensboro-transit-authority-gta": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:38+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:20+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -6338,7 +6338,7 @@
     },
     "greensville-emporia-transit": {
       "changed_at": "2026-06-21T09:40:19+00:00",
-      "checked_at": "2026-07-08T09:43:13+00:00",
+      "checked_at": "2026-07-08T12:01:21+00:00",
       "consecutive_failures": 0,
       "content_length": 12800,
       "etag": "\"3200-6469e49597340\"",
@@ -6349,7 +6349,7 @@
     },
     "greensville-emporia-transit-463": {
       "changed_at": "2026-06-30T18:07:11+00:00",
-      "checked_at": "2026-07-08T09:43:13+00:00",
+      "checked_at": "2026-07-08T12:01:21+00:00",
       "consecutive_failures": 0,
       "content_length": 12800,
       "etag": "\"3200-6469e49597340\"",
@@ -6448,7 +6448,7 @@
     },
     "gtrans": {
       "changed_at": "2026-06-21T11:27:19+00:00",
-      "checked_at": "2026-07-07T23:18:39+00:00",
+      "checked_at": "2026-07-08T12:01:21+00:00",
       "consecutive_failures": 0,
       "content_length": 425659,
       "etag": "\"67ebb-601e0970eab58\"",
@@ -6459,13 +6459,13 @@
     },
     "gtrans-2270": {
       "changed_at": "2026-06-29T17:19:37+00:00",
-      "checked_at": "2026-07-08T09:43:14+00:00",
-      "consecutive_failures": 1,
+      "checked_at": "2026-07-08T12:01:21+00:00",
+      "consecutive_failures": 0,
       "content_length": 963291,
       "etag": null,
       "last_modified": "Mon, 29 Jun 2026 15:42:18 GMT",
       "sha256": "d52578a9a8eb42dc9a8cb32dd0ec8185c2cf01258429ac22b66748f9343d76c3",
-      "status": null,
+      "status": 304,
       "url": "https://ridegtrans.com/gtfs.zip"
     },
     "gtrans-616": {
@@ -6481,7 +6481,7 @@
     },
     "guadalupe-flyer": {
       "changed_at": "2026-06-21T01:35:53+00:00",
-      "checked_at": "2026-07-08T09:43:44+00:00",
+      "checked_at": "2026-07-08T12:01:22+00:00",
       "consecutive_failures": 0,
       "content_length": 7007,
       "etag": "\"1b5f-63ac191931aa0\"",
@@ -6492,7 +6492,7 @@
     },
     "guadalupe-flyer-617": {
       "changed_at": "2026-06-30T07:42:12+00:00",
-      "checked_at": "2026-07-08T09:43:44+00:00",
+      "checked_at": "2026-07-08T12:01:22+00:00",
       "consecutive_failures": 0,
       "content_length": 7007,
       "etag": "\"1b5f-63ac191931aa0\"",
@@ -6613,7 +6613,7 @@
     },
     "harbor-connector": {
       "changed_at": "2026-06-21T11:27:19+00:00",
-      "checked_at": "2026-07-07T23:18:40+00:00",
+      "checked_at": "2026-07-08T12:01:22+00:00",
       "consecutive_failures": 0,
       "content_length": 11354,
       "etag": "\"2c5a-6499818b82978\"",
@@ -6624,7 +6624,7 @@
     },
     "harbor-connector-618": {
       "changed_at": "2026-06-30T17:08:13+00:00",
-      "checked_at": "2026-07-07T23:18:40+00:00",
+      "checked_at": "2026-07-08T12:01:22+00:00",
       "consecutive_failures": 0,
       "content_length": 11354,
       "etag": "\"2c5a-6499818b82978\"",
@@ -6657,8 +6657,8 @@
     },
     "harrisonburg-department-of-public-transportation-hdpt": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:41+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:22+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -6734,8 +6734,8 @@
     },
     "high-desert-point-636": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:41+00:00",
-      "consecutive_failures": 13,
+      "checked_at": "2026-07-08T12:01:22+00:00",
+      "consecutive_failures": 14,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -6745,7 +6745,7 @@
     },
     "hillsborough-area-regional-transit-hart": {
       "changed_at": "2026-06-21T01:35:54+00:00",
-      "checked_at": "2026-07-08T09:43:45+00:00",
+      "checked_at": "2026-07-08T12:01:22+00:00",
       "consecutive_failures": 0,
       "content_length": 3662794,
       "etag": "\"{19F841DD-B899-4223-9E7E-7BFA4B769EED},1\"",
@@ -6756,7 +6756,7 @@
     },
     "homage-d-arling-direct": {
       "changed_at": "2026-06-21T01:35:55+00:00",
-      "checked_at": "2026-07-07T23:18:41+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 385661,
       "etag": "\"5e27d-638d45e1f2ab8\"",
@@ -6767,7 +6767,7 @@
     },
     "home-james": {
       "changed_at": "2026-06-21T11:27:20+00:00",
-      "checked_at": "2026-07-07T23:18:41+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 192780,
       "etag": "\"2f10c-647447067a9b0\"",
@@ -6800,7 +6800,7 @@
     },
     "hopelink-transportation": {
       "changed_at": "2026-06-30T17:08:15+00:00",
-      "checked_at": "2026-07-08T09:43:45+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 45394,
       "etag": "\"b152-651cf4615f460\"",
@@ -6811,7 +6811,7 @@
     },
     "hornell-area-transit": {
       "changed_at": "2026-06-21T01:35:55+00:00",
-      "checked_at": "2026-07-08T09:43:46+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 102094,
       "etag": "\"b0a992f6a321c6acebad3eef6779d8a0\"",
@@ -6833,7 +6833,7 @@
     },
     "humboldt-transit-authority": {
       "changed_at": "2026-06-21T01:35:56+00:00",
-      "checked_at": "2026-07-08T09:43:46+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 2848556,
       "etag": "\"2b772c-64aa25c143ee0\"",
@@ -6844,7 +6844,7 @@
     },
     "humboldt-transit-authority-19": {
       "changed_at": "2026-06-30T07:42:14+00:00",
-      "checked_at": "2026-07-08T09:43:46+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 2848556,
       "etag": "\"2b772c-64aa25c143ee0\"",
@@ -6877,8 +6877,8 @@
     },
     "huntington-park-express": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:42+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:23+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -6888,7 +6888,7 @@
     },
     "huntington-park-express-2648": {
       "changed_at": "2026-06-21T01:35:58+00:00",
-      "checked_at": "2026-07-08T09:43:46+00:00",
+      "checked_at": "2026-07-08T12:01:23+00:00",
       "consecutive_failures": 0,
       "content_length": 15976,
       "etag": null,
@@ -6921,8 +6921,8 @@
     },
     "hut-airport-shuttle": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:43+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:24+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -7031,7 +7031,7 @@
     },
     "intercity-transit": {
       "changed_at": "2026-06-21T01:35:58+00:00",
-      "checked_at": "2026-07-08T09:43:47+00:00",
+      "checked_at": "2026-07-08T12:01:24+00:00",
       "consecutive_failures": 0,
       "content_length": 4511233,
       "etag": null,
@@ -7042,7 +7042,7 @@
     },
     "intercity-transit-2289": {
       "changed_at": "2026-06-30T17:08:16+00:00",
-      "checked_at": "2026-07-07T23:18:44+00:00",
+      "checked_at": "2026-07-08T12:01:24+00:00",
       "consecutive_failures": 0,
       "content_length": 40221,
       "etag": "\"9d1d-64fe7248cf468\"",
@@ -7097,7 +7097,7 @@
     },
     "jackson-transit-authority": {
       "changed_at": "2026-06-21T01:36:01+00:00",
-      "checked_at": "2026-07-08T09:43:49+00:00",
+      "checked_at": "2026-07-08T12:01:24+00:00",
       "consecutive_failures": 0,
       "content_length": 198367,
       "etag": "\"306df-614a7166533a8\"",
@@ -7130,7 +7130,7 @@
     },
     "janesville-transit-system": {
       "changed_at": "2026-06-21T11:27:21+00:00",
-      "checked_at": "2026-07-07T23:18:45+00:00",
+      "checked_at": "2026-07-08T12:01:24+00:00",
       "consecutive_failures": 0,
       "content_length": 174410,
       "etag": "\"2a94a-653c86bc55cc8\"",
@@ -7141,7 +7141,7 @@
     },
     "janesville-transit-system-2239": {
       "changed_at": "2026-06-21T01:36:03+00:00",
-      "checked_at": "2026-07-08T09:43:49+00:00",
+      "checked_at": "2026-07-08T12:01:25+00:00",
       "consecutive_failures": 0,
       "content_length": 354458,
       "etag": "\"9dd5ca5cfa909ca01a7d9fb14a835c17\"",
@@ -7262,7 +7262,7 @@
     },
     "jtran": {
       "changed_at": "2026-06-21T11:27:21+00:00",
-      "checked_at": "2026-07-07T23:18:45+00:00",
+      "checked_at": "2026-07-08T12:01:25+00:00",
       "consecutive_failures": 0,
       "content_length": 236583,
       "etag": "\"39c27-5d12dc58c19e0\"",
@@ -7273,7 +7273,7 @@
     },
     "jtran-155": {
       "changed_at": "2026-06-30T17:08:16+00:00",
-      "checked_at": "2026-07-07T23:18:45+00:00",
+      "checked_at": "2026-07-08T12:01:25+00:00",
       "consecutive_failures": 0,
       "content_length": 236583,
       "etag": "\"39c27-5d12dc58c19e0\"",
@@ -7328,7 +7328,7 @@
     },
     "kansas-city-area-transportation-authority-kcata": {
       "changed_at": "2026-07-01T20:07:40+00:00",
-      "checked_at": "2026-07-08T09:43:49+00:00",
+      "checked_at": "2026-07-08T12:01:25+00:00",
       "consecutive_failures": 0,
       "content_length": 1970615,
       "etag": "\"a39b4516fe8dd1:0\"",
@@ -7361,8 +7361,8 @@
     },
     "keep-tahoe-blue": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:43:50+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:25+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -7438,7 +7438,7 @@
     },
     "kimball-county-transit-service": {
       "changed_at": "2026-06-21T01:36:07+00:00",
-      "checked_at": "2026-07-08T09:43:50+00:00",
+      "checked_at": "2026-07-08T12:01:26+00:00",
       "consecutive_failures": 0,
       "content_length": 1091002,
       "etag": "\"10a5ba-63976da017a30\"",
@@ -7449,7 +7449,7 @@
     },
     "king-county-metro": {
       "changed_at": "2026-06-21T01:36:08+00:00",
-      "checked_at": "2026-07-08T09:43:51+00:00",
+      "checked_at": "2026-07-08T12:01:26+00:00",
       "consecutive_failures": 0,
       "content_length": 13378216,
       "etag": "\"30c6842d7141bc8c7770af9d140cd084-2\"",
@@ -7460,7 +7460,7 @@
     },
     "kingman-area-regional-transit": {
       "changed_at": "2026-06-21T01:36:08+00:00",
-      "checked_at": "2026-07-08T09:43:51+00:00",
+      "checked_at": "2026-07-08T12:01:26+00:00",
       "consecutive_failures": 0,
       "content_length": 38975,
       "etag": "\"d2d5272e5b47db1:0\"",
@@ -7504,7 +7504,7 @@
     },
     "kiowa-county-transit": {
       "changed_at": "2026-06-21T11:27:23+00:00",
-      "checked_at": "2026-07-07T23:18:47+00:00",
+      "checked_at": "2026-07-08T12:01:26+00:00",
       "consecutive_failures": 0,
       "content_length": 76845,
       "etag": "\"12c2d-6526910c55720\"",
@@ -7526,7 +7526,7 @@
     },
     "kitsap-transit": {
       "changed_at": "2026-06-21T01:36:09+00:00",
-      "checked_at": "2026-07-08T09:43:52+00:00",
+      "checked_at": "2026-07-08T12:01:26+00:00",
       "consecutive_failures": 0,
       "content_length": 4559470,
       "etag": null,
@@ -7537,8 +7537,8 @@
     },
     "klamath-shuttle": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:48+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:27+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -7570,8 +7570,8 @@
     },
     "ku-on-wheels-lawrence-transit-system": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:48+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:27+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -7580,13 +7580,13 @@
       "url": "https://assets.lawrenceks.org/assets/gis/google-transit/google_transit.zip"
     },
     "ku-on-wheels-lawrence-transit-system-2063": {
-      "changed_at": "2026-07-08T09:43:52+00:00",
-      "checked_at": "2026-07-08T09:43:52+00:00",
+      "changed_at": "2026-07-08T12:01:27+00:00",
+      "checked_at": "2026-07-08T12:01:27+00:00",
       "consecutive_failures": 0,
       "content_length": 285003,
-      "etag": "f1e56eeb21cb0252139cf4e748a9ebdd",
+      "etag": "d26c235f53865c815da6f497c5db92ef",
       "last_modified": null,
-      "sha256": "fac15ba4d0bb3a401a318a67e57a623c981254ed5d0f9f76df2c83cbee93ea21",
+      "sha256": "b3a8d10e6d75cc2c7c25215030aca76a9bf4c764862dbde24071a583c6b277c4",
       "status": 200,
       "url": "https://passio3.com/lawrencetransit/passioTransit/gtfs/google_transit.zip"
     },
@@ -7614,7 +7614,7 @@
     },
     "la-junta-transit": {
       "changed_at": "2026-06-21T08:07:49+00:00",
-      "checked_at": "2026-07-08T09:43:52+00:00",
+      "checked_at": "2026-07-08T12:01:32+00:00",
       "consecutive_failures": 0,
       "content_length": 6174,
       "etag": "\"181e-648edb7f35ec8\"",
@@ -7647,7 +7647,7 @@
     },
     "la-puente-link-563": {
       "changed_at": "2026-06-30T17:08:19+00:00",
-      "checked_at": "2026-07-07T23:18:49+00:00",
+      "checked_at": "2026-07-08T12:01:32+00:00",
       "consecutive_failures": 0,
       "content_length": 43790,
       "etag": "\"ab0e-5c7b9ce2c3a5b\"",
@@ -7812,7 +7812,7 @@
     },
     "lakewood-rides": {
       "changed_at": "2026-06-21T01:36:12+00:00",
-      "checked_at": "2026-07-08T09:43:53+00:00",
+      "checked_at": "2026-07-08T12:01:32+00:00",
       "consecutive_failures": 0,
       "content_length": 17087,
       "etag": "\"42bf-648ede4634d10\"",
@@ -7834,8 +7834,8 @@
     },
     "lane-transit-district-ltd": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:43:54+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:32+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -7845,7 +7845,7 @@
     },
     "lassen-rural-bus-lrb": {
       "changed_at": "2026-06-21T11:27:26+00:00",
-      "checked_at": "2026-07-07T23:18:51+00:00",
+      "checked_at": "2026-07-08T12:01:32+00:00",
       "consecutive_failures": 0,
       "content_length": 384399,
       "etag": "\"5dd8f-65269a4048bc8\"",
@@ -7911,7 +7911,7 @@
     },
     "leprechaun-lines": {
       "changed_at": "2026-06-21T11:27:26+00:00",
-      "checked_at": "2026-07-07T23:18:51+00:00",
+      "checked_at": "2026-07-08T12:01:32+00:00",
       "consecutive_failures": 0,
       "content_length": 63537,
       "etag": "\"38bc983497404680675e86a199c3e642\"",
@@ -7922,7 +7922,7 @@
     },
     "let-er-bus": {
       "changed_at": "2026-06-21T11:27:26+00:00",
-      "checked_at": "2026-07-07T23:18:51+00:00",
+      "checked_at": "2026-07-08T12:01:33+00:00",
       "consecutive_failures": 0,
       "content_length": 78359,
       "etag": "\"13217-64bd5f447d328\"",
@@ -7988,7 +7988,7 @@
     },
     "limoliner-438": {
       "changed_at": "2026-06-30T17:08:20+00:00",
-      "checked_at": "2026-07-07T23:18:52+00:00",
+      "checked_at": "2026-07-08T12:01:33+00:00",
       "consecutive_failures": 0,
       "content_length": 47010,
       "etag": "\"b7a2-5b3b1996fc2d8\"",
@@ -8065,8 +8065,8 @@
     },
     "livermore-amador-valley-transit-authority": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:43:58+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:33+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -8087,7 +8087,7 @@
     },
     "logan-express-601": {
       "changed_at": "2026-06-30T17:08:20+00:00",
-      "checked_at": "2026-07-07T23:18:52+00:00",
+      "checked_at": "2026-07-08T12:01:33+00:00",
       "consecutive_failures": 0,
       "content_length": 309917,
       "etag": "\"4ba9d-5a1debd0d40b6\"",
@@ -8164,13 +8164,13 @@
     },
     "los-angeles-county-metropolitan-transportation-authority-la-metro-30": {
       "changed_at": "2026-07-08T09:44:00+00:00",
-      "checked_at": "2026-07-08T09:44:00+00:00",
+      "checked_at": "2026-07-08T12:01:33+00:00",
       "consecutive_failures": 0,
       "content_length": 1111679,
       "etag": "\"8e0c4a714214e29eadca325b568ca125\"",
       "last_modified": null,
       "sha256": "94f85b290d82c951ea714fb4d203c716792172c1b725b1dfbdbf4fa34db9b29a",
-      "status": 200,
+      "status": 304,
       "url": "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
     },
     "los-angeles-department-of-transportation-ladot-dash-commuter-express": {
@@ -8186,7 +8186,7 @@
     },
     "loudoun-county-transit": {
       "changed_at": "2026-07-02T23:34:28+00:00",
-      "checked_at": "2026-07-07T23:18:52+00:00",
+      "checked_at": "2026-07-08T12:01:33+00:00",
       "consecutive_failures": 0,
       "content_length": 4264294,
       "etag": "\"1946745Mon, 29 Jun 2026 16:25:45 GMT\"",
@@ -8208,7 +8208,7 @@
     },
     "lowell-regional-transit-authority-lrta": {
       "changed_at": "2026-06-21T11:27:34+00:00",
-      "checked_at": "2026-07-08T09:44:00+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 1504592,
       "etag": "\"16f550-64b4bdcfbf490\"",
@@ -8219,7 +8219,7 @@
     },
     "lowell-regional-transit-authority-lrta-444": {
       "changed_at": "2026-06-30T16:13:38+00:00",
-      "checked_at": "2026-07-08T09:44:00+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 1504592,
       "etag": "\"16f550-64b4bdcfbf490\"",
@@ -8230,7 +8230,7 @@
     },
     "lower-columbia-cap-community-action-program": {
       "changed_at": "2026-06-21T01:36:21+00:00",
-      "checked_at": "2026-07-08T09:44:00+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 150426,
       "etag": "\"24b9a-6399a013b8668\"",
@@ -8241,7 +8241,7 @@
     },
     "lower-columbia-cap-community-action-program-568": {
       "changed_at": "2026-06-30T07:42:36+00:00",
-      "checked_at": "2026-07-08T09:44:01+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 150426,
       "etag": "\"24b9a-6399a013b8668\"",
@@ -8263,7 +8263,7 @@
     },
     "lummi-island-ferry": {
       "changed_at": "2026-06-24T16:13:49+00:00",
-      "checked_at": "2026-07-08T09:44:01+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 10872,
       "etag": "\"2a78-64ef7f78da600\"",
@@ -8274,7 +8274,7 @@
     },
     "lummi-transit": {
       "changed_at": "2026-06-21T01:36:22+00:00",
-      "checked_at": "2026-07-08T09:44:01+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 167094,
       "etag": "\"28cb6-642d73ad6de90\"",
@@ -8296,7 +8296,7 @@
     },
     "madera-county-transit": {
       "changed_at": "2026-06-21T01:36:22+00:00",
-      "checked_at": "2026-07-08T09:44:01+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 124320,
       "etag": "\"1e5a0-653d86e1f0158\"",
@@ -8307,7 +8307,7 @@
     },
     "madera-county-transit-572": {
       "changed_at": "2026-06-30T07:42:37+00:00",
-      "checked_at": "2026-07-08T09:44:02+00:00",
+      "checked_at": "2026-07-08T12:01:38+00:00",
       "consecutive_failures": 0,
       "content_length": 124320,
       "etag": "\"1e5a0-653d86e1f0158\"",
@@ -8362,8 +8362,8 @@
     },
     "makah-public-transit-574": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:55+00:00",
-      "consecutive_failures": 13,
+      "checked_at": "2026-07-08T12:01:38+00:00",
+      "consecutive_failures": 14,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -8373,7 +8373,7 @@
     },
     "malheur-council-on-aging-community-services": {
       "changed_at": "2026-06-21T11:27:34+00:00",
-      "checked_at": "2026-07-07T23:18:56+00:00",
+      "checked_at": "2026-07-08T12:01:39+00:00",
       "consecutive_failures": 0,
       "content_length": 34186,
       "etag": "\"858a-64bd653e09a68\"",
@@ -8395,7 +8395,7 @@
     },
     "manatee-county-area-transit-2258": {
       "changed_at": "2026-07-02T19:59:50+00:00",
-      "checked_at": "2026-07-07T23:18:56+00:00",
+      "checked_at": "2026-07-08T12:01:39+00:00",
       "consecutive_failures": 0,
       "content_length": 605062,
       "etag": null,
@@ -8417,7 +8417,7 @@
     },
     "marble-valley-regional-transit-district-mvrtd": {
       "changed_at": "2026-06-21T11:27:35+00:00",
-      "checked_at": "2026-07-07T23:18:56+00:00",
+      "checked_at": "2026-07-08T12:01:40+00:00",
       "consecutive_failures": 0,
       "content_length": 546397,
       "etag": "\"8565d-64e025db09e48\"",
@@ -8428,7 +8428,7 @@
     },
     "marble-valley-regional-transit-district-mvrtd-2831": {
       "changed_at": "2026-06-21T11:27:35+00:00",
-      "checked_at": "2026-07-07T23:18:56+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 632348,
       "etag": "\"9a61c-64e0267221560\"",
@@ -8461,18 +8461,18 @@
     },
     "marin-transit-2937": {
       "changed_at": "2026-06-21T01:36:23+00:00",
-      "checked_at": "2026-07-08T09:44:03+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 1386563,
-      "etag": "\"6a4c34ff-152843\"",
-      "last_modified": "Mon, 06 Jul 2026 23:06:39 GMT",
+      "etag": "\"6a4c3503-152843\"",
+      "last_modified": "Mon, 06 Jul 2026 23:06:43 GMT",
       "sha256": "d03b333bc4558f3ea80a473091c4af59711907a5107da8f2cfab0ce733ee506e",
       "status": 200,
       "url": "https://marintransit.gov/data/google_transit.zip"
     },
     "marshalltown-municipal-transit": {
       "changed_at": "2026-06-21T08:07:53+00:00",
-      "checked_at": "2026-07-08T09:44:03+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 118929,
       "etag": "\"1d091-6472244454350\"",
@@ -8483,7 +8483,7 @@
     },
     "marshalltown-municipal-transit-194": {
       "changed_at": "2026-06-30T09:38:58+00:00",
-      "checked_at": "2026-07-08T09:44:04+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 118929,
       "etag": "\"1d091-6472244454350\"",
@@ -8538,7 +8538,7 @@
     },
     "maryland-transit-administration-468": {
       "changed_at": "2026-07-02T23:34:34+00:00",
-      "checked_at": "2026-07-07T23:18:57+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 193441,
       "etag": "\"863e7329a3b51cf1a3ecf2eb6bde5243\"",
@@ -8560,7 +8560,7 @@
     },
     "maryland-transit-administration-metro-subway": {
       "changed_at": "2026-06-21T11:27:36+00:00",
-      "checked_at": "2026-07-07T23:18:57+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 56280,
       "etag": "\"378c9ab62c5fefaecd91a97ce89c276b\"",
@@ -8571,7 +8571,7 @@
     },
     "mason-city-public-transit": {
       "changed_at": "2026-06-21T01:36:23+00:00",
-      "checked_at": "2026-07-08T09:44:04+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 29225,
       "etag": "\"7229-647224632ee38\"",
@@ -8582,7 +8582,7 @@
     },
     "mason-city-public-transit-204": {
       "changed_at": "2026-06-30T09:38:59+00:00",
-      "checked_at": "2026-07-08T09:44:04+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 29225,
       "etag": "\"7229-647224632ee38\"",
@@ -8593,7 +8593,7 @@
     },
     "mason-transit-authority": {
       "changed_at": "2026-06-29T19:07:41+00:00",
-      "checked_at": "2026-07-08T09:44:04+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 304387,
       "etag": "\"4a503-6556813d20290\"",
@@ -8648,7 +8648,7 @@
     },
     "massachusetts-bay-transportation-authority-mbta": {
       "changed_at": "2026-07-07T21:47:40+00:00",
-      "checked_at": "2026-07-08T09:44:05+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 24135209,
       "etag": "\"8f527ab7ae7f76e06a950a0804ba6314-3\"",
@@ -8681,8 +8681,8 @@
     },
     "matbus": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:18:58+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:41+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -8703,7 +8703,7 @@
     },
     "memphis-area-transit-authority": {
       "changed_at": "2026-06-21T11:27:36+00:00",
-      "checked_at": "2026-07-07T23:18:58+00:00",
+      "checked_at": "2026-07-08T12:01:41+00:00",
       "consecutive_failures": 0,
       "content_length": 1572784,
       "etag": "\"5391dba5a5b6d61:0\"",
@@ -8747,7 +8747,7 @@
     },
     "merced-county-transit-the-bus": {
       "changed_at": "2026-06-21T01:36:26+00:00",
-      "checked_at": "2026-07-08T09:44:05+00:00",
+      "checked_at": "2026-07-08T12:01:42+00:00",
       "consecutive_failures": 0,
       "content_length": 445328,
       "etag": "\"6cb90-642c7d5181ba0\"",
@@ -8769,7 +8769,7 @@
     },
     "merced-county-transit-the-bus-86": {
       "changed_at": "2026-06-30T07:42:40+00:00",
-      "checked_at": "2026-07-08T09:44:06+00:00",
+      "checked_at": "2026-07-08T12:01:42+00:00",
       "consecutive_failures": 0,
       "content_length": 445328,
       "etag": "\"6cb90-642c7d5181ba0\"",
@@ -8780,7 +8780,7 @@
     },
     "merrimack-valley-regional-transit-authority-mvrta": {
       "changed_at": "2026-06-21T01:36:27+00:00",
-      "checked_at": "2026-07-08T09:44:06+00:00",
+      "checked_at": "2026-07-08T12:01:42+00:00",
       "consecutive_failures": 0,
       "content_length": 2322034,
       "etag": "\"236e72-6507343f97538\"",
@@ -8791,7 +8791,7 @@
     },
     "merrimack-valley-regional-transit-authority-mvrta-445": {
       "changed_at": "2026-06-30T07:42:41+00:00",
-      "checked_at": "2026-07-08T09:44:06+00:00",
+      "checked_at": "2026-07-08T12:01:42+00:00",
       "consecutive_failures": 0,
       "content_length": 2322034,
       "etag": "\"236e72-6507343f97538\"",
@@ -8824,7 +8824,7 @@
     },
     "metro-houston-2060": {
       "changed_at": "2026-06-21T01:36:28+00:00",
-      "checked_at": "2026-07-08T09:44:07+00:00",
+      "checked_at": "2026-07-08T12:01:42+00:00",
       "consecutive_failures": 0,
       "content_length": 13195263,
       "etag": null,
@@ -8834,14 +8834,14 @@
       "url": "https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip"
     },
     "metro-north-railroad": {
-      "changed_at": "2026-07-07T20:20:29+00:00",
-      "checked_at": "2026-07-08T09:44:08+00:00",
+      "changed_at": "2026-07-08T12:01:45+00:00",
+      "checked_at": "2026-07-08T12:01:45+00:00",
       "consecutive_failures": 0,
-      "content_length": 5256637,
-      "etag": "\"447253f857c1ddb8d269395ad04b4de4\"",
-      "last_modified": "Tue, 07 Jul 2026 19:25:24 GMT",
-      "sha256": "ff5dbfc81eb024fe46e5210eeeb3fb514e2c94c8367257db1fd8e35170be8c49",
-      "status": 304,
+      "content_length": 5270016,
+      "etag": "\"a3d46f50cc5715262cafe75880608269\"",
+      "last_modified": "Wed, 08 Jul 2026 11:25:24 GMT",
+      "sha256": "1bf4580b5f47e65ab47182065075337f55bf48fc9760da57ba3eede170023b7a",
+      "status": 200,
       "url": "http://web.mta.info/developers/data/mnr/google_transit.zip"
     },
     "metro-ride": {
@@ -8857,7 +8857,7 @@
     },
     "metro-ride-830": {
       "changed_at": "2026-06-30T17:08:35+00:00",
-      "checked_at": "2026-07-07T23:19:02+00:00",
+      "checked_at": "2026-07-08T12:01:46+00:00",
       "consecutive_failures": 0,
       "content_length": 406983,
       "etag": "\"635c7-616397868f010\"",
@@ -8868,22 +8868,22 @@
     },
     "metro-rock-island-county-metropolitan-mass-transit-district": {
       "changed_at": "2026-06-24T01:18:37+00:00",
-      "checked_at": "2026-07-08T09:44:09+00:00",
+      "checked_at": "2026-07-08T12:01:46+00:00",
       "consecutive_failures": 0,
       "content_length": 4020508,
       "etag": null,
-      "last_modified": "Wed, 08 Jul 2026 09:44:09 GMT",
+      "last_modified": "Wed, 08 Jul 2026 12:01:47 GMT",
       "sha256": "8062a4c0166c2fbfdff64157c83b269ebf12793f7d599fd14baf21a227697fc3",
       "status": 200,
       "url": "http://www.gogreenmetro.com/latest/google_transit.zip"
     },
     "metro-st-louis": {
       "changed_at": "2026-07-02T21:47:17+00:00",
-      "checked_at": "2026-07-08T09:44:10+00:00",
+      "checked_at": "2026-07-08T12:01:48+00:00",
       "consecutive_failures": 0,
       "content_length": 3682737,
-      "etag": "\"6a4e1be2-3831b1\"",
-      "last_modified": "Wed, 08 Jul 2026 09:44:02 GMT",
+      "etag": "\"6a4e3c08-3831b1\"",
+      "last_modified": "Wed, 08 Jul 2026 12:01:12 GMT",
       "sha256": "f03bf5f06266562e2b39dabf8d517decc3fca7a8cf63010c9a6f55c5f6f645a9",
       "status": 200,
       "url": "http://metrostlouis.org/Transit/google_transit.zip"
@@ -8901,7 +8901,7 @@
     },
     "metro-transit": {
       "changed_at": "2026-07-04T09:35:07+00:00",
-      "checked_at": "2026-07-08T09:44:10+00:00",
+      "checked_at": "2026-07-08T12:01:48+00:00",
       "consecutive_failures": 0,
       "content_length": 19868809,
       "etag": "\"6a205c4744add1:0\"",
@@ -8912,7 +8912,7 @@
     },
     "metro-transit-city-of-madison": {
       "changed_at": "2026-06-21T01:36:39+00:00",
-      "checked_at": "2026-07-08T09:44:10+00:00",
+      "checked_at": "2026-07-08T12:01:48+00:00",
       "consecutive_failures": 0,
       "content_length": 5587828,
       "etag": "\"2572683097dcdc1:0\"",
@@ -8934,7 +8934,7 @@
     },
     "metrolink": {
       "changed_at": "2026-06-21T01:36:41+00:00",
-      "checked_at": "2026-07-08T09:44:11+00:00",
+      "checked_at": "2026-07-08T12:01:49+00:00",
       "consecutive_failures": 0,
       "content_length": 438796,
       "etag": "\"1DCF44D503B6080\"",
@@ -8956,7 +8956,7 @@
     },
     "metropolitan-atlanta-rapid-transit-authority-marta": {
       "changed_at": "2026-06-27T07:30:32+00:00",
-      "checked_at": "2026-07-08T09:44:11+00:00",
+      "checked_at": "2026-07-08T12:01:49+00:00",
       "consecutive_failures": 0,
       "content_length": 20909973,
       "etag": null,
@@ -8967,7 +8967,7 @@
     },
     "metropolitan-transit-authority-mta": {
       "changed_at": "2026-07-02T18:09:15+00:00",
-      "checked_at": "2026-07-08T09:44:11+00:00",
+      "checked_at": "2026-07-08T12:01:49+00:00",
       "consecutive_failures": 0,
       "content_length": 2610395,
       "etag": "\"25d7c9b197d6c4c79a45d55c60f7aba5\"",
@@ -8978,7 +8978,7 @@
     },
     "metropolitan-transit-authority-mta-510": {
       "changed_at": "2026-06-23T20:10:41+00:00",
-      "checked_at": "2026-07-08T09:44:11+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 5621861,
       "etag": "\"b2f5db13ac55b83d081aae255c2c78a5\"",
@@ -9033,7 +9033,7 @@
     },
     "metropolitan-transit-authority-mta-516": {
       "changed_at": "2026-06-21T01:36:43+00:00",
-      "checked_at": "2026-07-08T09:44:11+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 5614607,
       "etag": "\"b56a4a65ea6a0e734f6b7faaa0d86747\"",
@@ -9055,7 +9055,7 @@
     },
     "metropolitan-transit-authority-mta-528": {
       "changed_at": "2026-06-23T20:10:43+00:00",
-      "checked_at": "2026-07-07T23:19:04+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 6808243,
       "etag": "\"f7f8a6e95ebf2c7a1daadfa762a1bba0\"",
@@ -9154,7 +9154,7 @@
     },
     "middlesex-3-tma": {
       "changed_at": "2026-06-21T08:08:01+00:00",
-      "checked_at": "2026-07-08T09:44:12+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 33454,
       "etag": "\"82ae-639a7a243d4e0\"",
@@ -9165,7 +9165,7 @@
     },
     "middlesex-3-tma-442": {
       "changed_at": "2026-06-30T18:07:41+00:00",
-      "checked_at": "2026-07-08T09:44:12+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 33454,
       "etag": "\"82ae-639a7a243d4e0\"",
@@ -9176,7 +9176,7 @@
     },
     "middletown-area-transit": {
       "changed_at": "2026-06-21T11:27:43+00:00",
-      "checked_at": "2026-07-07T23:19:04+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 447284,
       "etag": "\"6d334-5f0e90c76c9d8\"",
@@ -9209,7 +9209,7 @@
     },
     "middletown-area-transit-mat": {
       "changed_at": "2026-06-21T11:27:43+00:00",
-      "checked_at": "2026-07-07T23:19:05+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 1110996,
       "etag": "\"10f3d4-653c6734913d8\"",
@@ -9242,18 +9242,18 @@
     },
     "milwaukee-county-transit-system-mcts-2127": {
       "changed_at": "2026-06-21T01:36:44+00:00",
-      "checked_at": "2026-07-08T09:44:12+00:00",
-      "consecutive_failures": 0,
+      "checked_at": "2026-07-08T12:01:50+00:00",
+      "consecutive_failures": 1,
       "content_length": 9205930,
       "etag": "\"8c78aa-6513e3fe345cf\"",
       "last_modified": "Thu, 07 May 2026 18:14:21 GMT",
       "sha256": "ec5d466eb783792208fb98532302adf63713b1b68c1ac9354ada2ab9cf006582",
-      "status": 304,
+      "status": null,
       "url": "https://kamino.mcts.org/gtfs/google_transit.zip"
     },
     "minnesota-valley-transit-authority-mvta": {
       "changed_at": "2026-06-22T18:41:15+00:00",
-      "checked_at": "2026-07-08T09:44:13+00:00",
+      "checked_at": "2026-07-08T12:01:50+00:00",
       "consecutive_failures": 0,
       "content_length": 1484151,
       "etag": null,
@@ -9308,7 +9308,7 @@
     },
     "montachusett-regional-transit-authority-mart": {
       "changed_at": "2026-06-21T11:27:44+00:00",
-      "checked_at": "2026-07-07T23:19:06+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 1892167,
       "etag": "\"1cdf47-64b2d08fe50c0\"",
@@ -9319,7 +9319,7 @@
     },
     "montachusett-regional-transit-authority-mart-433": {
       "changed_at": "2026-06-30T17:08:39+00:00",
-      "checked_at": "2026-07-07T23:19:06+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 1892167,
       "etag": "\"1cdf47-64b2d08fe50c0\"",
@@ -9341,7 +9341,7 @@
     },
     "montebello-bus-lines-2201": {
       "changed_at": "2026-06-26T16:10:22+00:00",
-      "checked_at": "2026-07-08T09:44:13+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 821031,
       "etag": null,
@@ -9352,7 +9352,7 @@
     },
     "montebello-bus-lines-577": {
       "changed_at": "2026-06-30T17:08:39+00:00",
-      "checked_at": "2026-07-07T23:19:07+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 821396,
       "etag": "\"c8894-5b7b55059f6b0\"",
@@ -9362,13 +9362,13 @@
       "url": "http://data.trilliumtransit.com/gtfs/montebello-ca-us/montebello-ca-us.zip"
     },
     "monterey-salinas-transit-mst": {
-      "changed_at": "2026-07-08T09:44:14+00:00",
-      "checked_at": "2026-07-08T09:44:14+00:00",
+      "changed_at": "2026-07-08T12:01:51+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
-      "content_length": 1614,
+      "content_length": 1611,
       "etag": null,
       "last_modified": null,
-      "sha256": "52baee8224928eed70936c1a0fc6c8fe07ee3d9526c5a0408420a45664f58dcb",
+      "sha256": "7d6ae1eaefcc6e65f3788c715f305f7d9a99c77ffe50d5bbe76041e3d66355d4",
       "status": 200,
       "url": "https://www.mst.org/google/google_transit.zip"
     },
@@ -9429,7 +9429,7 @@
     },
     "moover": {
       "changed_at": "2026-06-21T11:27:44+00:00",
-      "checked_at": "2026-07-07T23:19:07+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 217691,
       "etag": "\"3525b-5c80a3dbda306\"",
@@ -9506,7 +9506,7 @@
     },
     "morrow-county-public-transit": {
       "changed_at": "2026-06-21T06:09:20+00:00",
-      "checked_at": "2026-07-08T09:44:15+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 153265,
       "etag": "\"256b1-64844ee7f8b00\"",
@@ -9528,7 +9528,7 @@
     },
     "mount-adams-transportation-service-580": {
       "changed_at": "2026-06-30T17:08:40+00:00",
-      "checked_at": "2026-07-07T23:19:08+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 287416,
       "etag": "\"462b8-655717aabe130\"",
@@ -9539,7 +9539,7 @@
     },
     "mountain-empire-transit": {
       "changed_at": "2026-06-21T11:27:44+00:00",
-      "checked_at": "2026-07-07T23:19:08+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 49908,
       "etag": "\"c2f4-64d766b3eee70\"",
@@ -9550,7 +9550,7 @@
     },
     "mountain-express": {
       "changed_at": "2026-06-21T08:08:05+00:00",
-      "checked_at": "2026-07-08T09:44:15+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 6587,
       "etag": "\"19bb-6494d3c6b6ab0\"",
@@ -9583,7 +9583,7 @@
     },
     "mountain-family-center": {
       "changed_at": "2026-06-21T08:08:05+00:00",
-      "checked_at": "2026-07-08T09:44:15+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 42394,
       "etag": "\"a59a-64951daaf86f8\"",
@@ -9605,8 +9605,8 @@
     },
     "mountain-line-1148": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:44:16+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:51+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -9616,7 +9616,7 @@
     },
     "mountain-line-transit": {
       "changed_at": "2026-07-08T09:44:16+00:00",
-      "checked_at": "2026-07-08T09:44:16+00:00",
+      "checked_at": "2026-07-08T12:01:51+00:00",
       "consecutive_failures": 0,
       "content_length": 268717,
       "etag": "\"78eb0acbf01a99a1bd6c35c425874ec9\"",
@@ -9638,7 +9638,7 @@
     },
     "mountain-lynx-transit": {
       "changed_at": "2026-06-24T16:14:04+00:00",
-      "checked_at": "2026-07-08T09:44:18+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 323969,
       "etag": "\"4f181-6483793c58af0\"",
@@ -9649,7 +9649,7 @@
     },
     "mountain-lynx-transit-2447": {
       "changed_at": "2026-06-21T11:27:46+00:00",
-      "checked_at": "2026-07-08T09:44:18+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 394430,
       "etag": "\"604be-63b1bba905990\"",
@@ -9660,7 +9660,7 @@
     },
     "mountain-lynx-transit-334": {
       "changed_at": "2026-06-30T18:07:47+00:00",
-      "checked_at": "2026-07-08T09:44:18+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 323969,
       "etag": "\"4f181-6483793c58af0\"",
@@ -9671,7 +9671,7 @@
     },
     "mountain-metro-transit": {
       "changed_at": "2026-06-21T08:08:06+00:00",
-      "checked_at": "2026-07-08T09:44:18+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 146004,
       "etag": "\"23a54-64915a56720a0\"",
@@ -9693,8 +9693,8 @@
     },
     "mountain-metropolitan-transit-2356": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:44:19+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:53+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -9726,7 +9726,7 @@
     },
     "mountain-transit": {
       "changed_at": "2026-06-29T17:20:11+00:00",
-      "checked_at": "2026-07-07T23:19:15+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 551090,
       "etag": "\"868b2-655675eac8548\"",
@@ -9759,7 +9759,7 @@
     },
     "mountain-view-transportation-management-association-mvgo": {
       "changed_at": "2026-06-21T01:36:51+00:00",
-      "checked_at": "2026-07-08T09:44:19+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 124271,
       "etag": "\"1e56f-605a5972e5638\"",
@@ -9770,7 +9770,7 @@
     },
     "mountain-view-transportation-management-association-mvgo-2025": {
       "changed_at": "2026-06-25T21:03:23+00:00",
-      "checked_at": "2026-07-08T09:44:19+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 275671,
       "etag": "\"0d31e4b15c79d572f1636283ea425117\"",
@@ -9792,7 +9792,7 @@
     },
     "mountain-view-transportation-management-association-mvgo-60": {
       "changed_at": "2026-06-30T07:42:55+00:00",
-      "checked_at": "2026-07-08T09:44:20+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 124271,
       "etag": "\"1e56f-605a5972e5638\"",
@@ -9836,7 +9836,7 @@
     },
     "muckleshoot-tribal-transit": {
       "changed_at": "2026-06-21T11:27:46+00:00",
-      "checked_at": "2026-07-07T23:19:16+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 83045,
       "etag": "\"14465-6465737645fc0\"",
@@ -9847,13 +9847,13 @@
     },
     "muletown-trolley": {
       "changed_at": "2026-06-21T01:36:52+00:00",
-      "checked_at": "2026-07-08T09:44:20+00:00",
-      "consecutive_failures": 3,
+      "checked_at": "2026-07-08T12:01:53+00:00",
+      "consecutive_failures": 0,
       "content_length": 10078,
       "etag": "\"275e-62e07d0d80f4e\"",
       "last_modified": "Thu, 13 Feb 2025 15:36:03 GMT",
       "sha256": "49bbcab3b37c5f261e14699fffad0d8252f8abd061a1c920a794af9e198a4ea6",
-      "status": null,
+      "status": 304,
       "url": "https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip"
     },
     "muncie-indiana-transit-system-mits": {
@@ -9869,7 +9869,7 @@
     },
     "muscabus": {
       "changed_at": "2026-06-21T11:28:16+00:00",
-      "checked_at": "2026-07-08T09:44:50+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 77022,
       "etag": "\"12cde-64736102d9dd8\"",
@@ -9880,7 +9880,7 @@
     },
     "muscabus-200": {
       "changed_at": "2026-06-30T18:07:49+00:00",
-      "checked_at": "2026-07-08T09:44:51+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 77022,
       "etag": "\"12cde-64736102d9dd8\"",
@@ -9913,7 +9913,7 @@
     },
     "nashville-mta-wego-public-transit": {
       "changed_at": "2026-06-21T01:36:52+00:00",
-      "checked_at": "2026-07-08T09:44:51+00:00",
+      "checked_at": "2026-07-08T12:01:53+00:00",
       "consecutive_failures": 0,
       "content_length": 5099193,
       "etag": "\"0ccd6ad4d0dd1:0\"",
@@ -9924,11 +9924,11 @@
     },
     "nassau-inter-county-express-nice-bus": {
       "changed_at": "2026-06-21T01:36:53+00:00",
-      "checked_at": "2026-07-08T09:44:51+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 3802014,
-      "etag": "\"68a2553bebf5dc1:0\"",
-      "last_modified": "Sat, 06 Jun 2026 19:32:37 GMT",
+      "etag": "\"1425ab3aebf5dc1:0\"",
+      "last_modified": "Sat, 06 Jun 2026 19:32:36 GMT",
       "sha256": "9c06c63ce41dff0a8d3fae051953b7967f5b0c3b7e23df0d7b87e04a5c041c88",
       "status": 200,
       "url": "https://www.nicebus.com/NICE/media/nicebus-gtfs/NICE_GTFS.zip"
@@ -9979,7 +9979,7 @@
     },
     "needles-area-transit": {
       "changed_at": "2026-06-21T11:28:17+00:00",
-      "checked_at": "2026-07-07T23:19:18+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 17067,
       "etag": "\"42ab-654123bbc1b80\"",
@@ -10001,7 +10001,7 @@
     },
     "nevada-county-connects-gold-country-stage": {
       "changed_at": "2026-06-21T01:36:54+00:00",
-      "checked_at": "2026-07-08T09:44:52+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 302412,
       "etag": "\"49d4c-63afea986e898\"",
@@ -10012,7 +10012,7 @@
     },
     "nevada-county-connects-gold-country-stage-84": {
       "changed_at": "2026-06-30T07:43:30+00:00",
-      "checked_at": "2026-07-08T09:44:52+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 302412,
       "etag": "\"49d4c-63afea986e898\"",
@@ -10056,7 +10056,7 @@
     },
     "newburgh-beacon-shuttle-leprechaun-lines": {
       "changed_at": "2026-06-21T01:36:55+00:00",
-      "checked_at": "2026-07-08T09:44:53+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 67556,
       "etag": "\"daa98dfba9faddcc28eb1b3b119ed277\"",
@@ -10100,7 +10100,7 @@
     },
     "north-carolina-state-university-ncsu-1289": {
       "changed_at": "2026-06-30T17:08:43+00:00",
-      "checked_at": "2026-07-07T23:19:19+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 72933,
       "etag": "\"11ce5-5a5eea5bca744\"",
@@ -10110,13 +10110,13 @@
       "url": "http://data.trilliumtransit.com/gtfs/ncsu-wolfline-nc-us/ncsu-wolfline-nc-us.zip"
     },
     "north-carolina-state-university-ncsu-2245": {
-      "changed_at": "2026-07-08T09:44:53+00:00",
-      "checked_at": "2026-07-08T09:44:53+00:00",
+      "changed_at": "2026-07-08T12:01:54+00:00",
+      "checked_at": "2026-07-08T12:01:54+00:00",
       "consecutive_failures": 0,
       "content_length": 93746,
-      "etag": "791a680b40fe30d8e6dd5ba5f795d2a0",
+      "etag": "4c8ea7aba345f13ca9de839c53af0be7",
       "last_modified": null,
-      "sha256": "1cd51f7a4eeb7fa8384217a0420146970cf4990fd2ecc41a9083effb7c13da7e",
+      "sha256": "4f67c6c8400dea1447d9c1b3d0b631293fb1ceb99a130ff8c779519d02f3d2ee",
       "status": 200,
       "url": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip"
     },
@@ -10144,7 +10144,7 @@
     },
     "north-county-transit-district-nctd": {
       "changed_at": "2026-06-30T23:49:32+00:00",
-      "checked_at": "2026-07-08T09:44:53+00:00",
+      "checked_at": "2026-07-08T12:01:55+00:00",
       "consecutive_failures": 0,
       "content_length": 1870832,
       "etag": "\"12ddbd6be8dd1:0\"",
@@ -10155,7 +10155,7 @@
     },
     "north-county-transit-district-nctd-3093": {
       "changed_at": "2026-06-30T23:49:35+00:00",
-      "checked_at": "2026-07-08T09:44:55+00:00",
+      "checked_at": "2026-07-08T12:01:56+00:00",
       "consecutive_failures": 0,
       "content_length": 1870832,
       "etag": "\"12ddbd6be8dd1:0\"",
@@ -10188,8 +10188,8 @@
     },
     "norwalk-transit-district": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:19:24+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:56+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -10210,7 +10210,7 @@
     },
     "norwalk-transit-system-nts-102": {
       "changed_at": "2026-06-30T17:08:45+00:00",
-      "checked_at": "2026-07-07T23:19:24+00:00",
+      "checked_at": "2026-07-08T12:01:57+00:00",
       "consecutive_failures": 0,
       "content_length": 300475,
       "etag": "\"495bb-5d5671cb113a0\"",
@@ -10221,7 +10221,7 @@
     },
     "norwalk-transit-system-nts-2242": {
       "changed_at": "2026-07-02T23:35:19+00:00",
-      "checked_at": "2026-07-07T23:19:24+00:00",
+      "checked_at": "2026-07-08T12:01:57+00:00",
       "consecutive_failures": 0,
       "content_length": 513970,
       "etag": null,
@@ -10243,18 +10243,18 @@
     },
     "ny-waterway-3192": {
       "changed_at": "2026-07-08T09:44:55+00:00",
-      "checked_at": "2026-07-08T09:44:55+00:00",
+      "checked_at": "2026-07-08T12:01:57+00:00",
       "consecutive_failures": 0,
       "content_length": 23442,
       "etag": "\"cf4bc5ebaaedd1:0\"",
       "last_modified": "Wed, 08 Jul 2026 07:25:15 GMT",
       "sha256": "120938064f73b3f3d4072ac918cef124eee752cf2ef5b3224fc3c3dd7bf07644",
-      "status": 200,
+      "status": 304,
       "url": "https://nywaterway.connexionz.net/rtt/public/resource/gtfs.zip"
     },
     "nyc-ferry": {
       "changed_at": "2026-07-07T08:49:00+00:00",
-      "checked_at": "2026-07-08T09:44:55+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 44336,
       "etag": "\"e3267ff6d0ddd1:0\"",
@@ -10298,7 +10298,7 @@
     },
     "omaha-metro-2261": {
       "changed_at": "2026-06-21T11:28:21+00:00",
-      "checked_at": "2026-07-07T23:19:24+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 3690283,
       "etag": "\"69e930a7-384f2b\"",
@@ -10309,7 +10309,7 @@
     },
     "omnibus": {
       "changed_at": "2026-06-21T01:36:59+00:00",
-      "checked_at": "2026-07-08T09:44:56+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 11466,
       "etag": "\"2cca-64951fcde4660\"",
@@ -10331,7 +10331,7 @@
     },
     "orange-county-transportation-authority-octa": {
       "changed_at": "2026-06-21T01:36:59+00:00",
-      "checked_at": "2026-07-08T09:44:56+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 4249773,
       "etag": "\"1dcde76d4ee612d\"",
@@ -10364,7 +10364,7 @@
     },
     "oregon-express-shuttle": {
       "changed_at": "2026-06-21T11:28:21+00:00",
-      "checked_at": "2026-07-07T23:19:25+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 66826,
       "etag": "\"1050a-64bd57044c400\"",
@@ -10375,7 +10375,7 @@
     },
     "otsego-express-public-transportation": {
       "changed_at": "2026-06-21T01:37:01+00:00",
-      "checked_at": "2026-07-08T09:44:56+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 303724,
       "etag": "\"c60e8a299b05589a8d89c4d240a8104b\"",
@@ -10452,7 +10452,7 @@
     },
     "pacific-transit-3112": {
       "changed_at": "2026-06-21T11:28:21+00:00",
-      "checked_at": "2026-07-07T23:19:25+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 354857,
       "etag": "\"56a29-64f5edd657188\"",
@@ -10463,7 +10463,7 @@
     },
     "pahto-public-passage": {
       "changed_at": "2026-06-21T11:28:21+00:00",
-      "checked_at": "2026-07-07T23:19:25+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 278348,
       "etag": "\"43f4c-64ff9f5cd1870\"",
@@ -10518,7 +10518,7 @@
     },
     "palos-verdes-peninsula-transit-authority-pvpta": {
       "changed_at": "2026-07-04T14:06:23+00:00",
-      "checked_at": "2026-07-08T09:44:58+00:00",
+      "checked_at": "2026-07-08T12:01:58+00:00",
       "consecutive_failures": 0,
       "content_length": 110934,
       "etag": "\"1b156-655b6eed32600\"",
@@ -10529,7 +10529,7 @@
     },
     "palos-verdes-peninsula-transit-authority-pvpta-35": {
       "changed_at": "2026-07-04T14:06:24+00:00",
-      "checked_at": "2026-07-08T09:44:58+00:00",
+      "checked_at": "2026-07-08T12:01:59+00:00",
       "consecutive_failures": 0,
       "content_length": 110934,
       "etag": "\"1b156-655b6eed32600\"",
@@ -10562,7 +10562,7 @@
     },
     "pasadena-transit": {
       "changed_at": "2026-07-05T10:35:06+00:00",
-      "checked_at": "2026-07-08T09:44:58+00:00",
+      "checked_at": "2026-07-08T12:01:59+00:00",
       "consecutive_failures": 0,
       "content_length": 313004,
       "etag": "\"a4ee49368cdd1:0\"",
@@ -10628,7 +10628,7 @@
     },
     "patriots-party-boats-424": {
       "changed_at": "2026-06-30T17:08:48+00:00",
-      "checked_at": "2026-07-07T23:19:27+00:00",
+      "checked_at": "2026-07-08T12:01:59+00:00",
       "consecutive_failures": 0,
       "content_length": 3804,
       "etag": "\"edc-6496788e393f8\"",
@@ -10705,7 +10705,7 @@
     },
     "petersburg-area-transit": {
       "changed_at": "2026-06-21T11:28:22+00:00",
-      "checked_at": "2026-07-08T09:45:00+00:00",
+      "checked_at": "2026-07-08T12:01:59+00:00",
       "consecutive_failures": 0,
       "content_length": 313417,
       "etag": "\"4c849-64cbe42ad16e8\"",
@@ -10716,7 +10716,7 @@
     },
     "petersburg-area-transit-2441": {
       "changed_at": "2026-06-24T16:14:49+00:00",
-      "checked_at": "2026-07-08T09:45:00+00:00",
+      "checked_at": "2026-07-08T12:01:59+00:00",
       "consecutive_failures": 0,
       "content_length": 287626,
       "etag": "\"4638a-64d2bb1ec4d90\"",
@@ -10727,7 +10727,7 @@
     },
     "petersburg-area-transit-591": {
       "changed_at": "2026-06-30T07:43:36+00:00",
-      "checked_at": "2026-07-08T09:45:00+00:00",
+      "checked_at": "2026-07-08T12:01:59+00:00",
       "consecutive_failures": 0,
       "content_length": 313417,
       "etag": "\"4c849-64cbe42ad16e8\"",
@@ -10738,8 +10738,8 @@
     },
     "philomath-connection": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:19:27+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:01:59+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -10815,8 +10815,8 @@
     },
     "pinellas-suncoast-transit-authority-psta": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:45:00+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:01:59+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -10837,7 +10837,7 @@
     },
     "pioneer-valley-transit-authority-pvta-2416": {
       "changed_at": "2026-06-30T19:05:33+00:00",
-      "checked_at": "2026-07-08T09:45:01+00:00",
+      "checked_at": "2026-07-08T12:02:00+00:00",
       "consecutive_failures": 0,
       "content_length": 2932778,
       "etag": null,
@@ -10859,7 +10859,7 @@
     },
     "placer-county-transit-77": {
       "changed_at": "2026-06-30T17:08:50+00:00",
-      "checked_at": "2026-07-07T23:19:29+00:00",
+      "checked_at": "2026-07-08T12:02:00+00:00",
       "consecutive_failures": 0,
       "content_length": 529880,
       "etag": "\"815d8-6402cf790e1f0\"",
@@ -10903,7 +10903,7 @@
     },
     "plumas-transit-119": {
       "changed_at": "2026-06-30T17:08:50+00:00",
-      "checked_at": "2026-07-07T23:19:29+00:00",
+      "checked_at": "2026-07-08T12:02:00+00:00",
       "consecutive_failures": 0,
       "content_length": 241920,
       "etag": "\"3b100-64965abf98d18\"",
@@ -10947,7 +10947,7 @@
     },
     "pony-express": {
       "changed_at": "2026-06-21T01:37:10+00:00",
-      "checked_at": "2026-07-08T09:45:02+00:00",
+      "checked_at": "2026-07-08T12:02:00+00:00",
       "consecutive_failures": 0,
       "content_length": 44578,
       "etag": "\"ae22-649de54f99ca0\"",
@@ -10958,7 +10958,7 @@
     },
     "pony-express-828": {
       "changed_at": "2026-06-30T20:09:55+00:00",
-      "checked_at": "2026-07-08T09:45:02+00:00",
+      "checked_at": "2026-07-08T12:02:00+00:00",
       "consecutive_failures": 0,
       "content_length": 44578,
       "etag": "\"ae22-649de54f99ca0\"",
@@ -10969,7 +10969,7 @@
     },
     "port-authority-of-allegheny-county": {
       "changed_at": "2026-07-07T20:21:24+00:00",
-      "checked_at": "2026-07-08T09:45:02+00:00",
+      "checked_at": "2026-07-08T12:02:00+00:00",
       "consecutive_failures": 0,
       "content_length": 22512403,
       "etag": "\"bd6e94d8eedd1:0\"",
@@ -10980,7 +10980,7 @@
     },
     "port-authority-trans-hudson-path": {
       "changed_at": "2026-06-21T01:37:12+00:00",
-      "checked_at": "2026-07-08T09:45:03+00:00",
+      "checked_at": "2026-07-08T12:02:01+00:00",
       "consecutive_failures": 0,
       "content_length": 1214919,
       "etag": "\"1289c7-636eaed4871b8\"",
@@ -10991,7 +10991,7 @@
     },
     "port-authority-trans-hudson-path-517": {
       "changed_at": "2026-06-30T07:43:40+00:00",
-      "checked_at": "2026-07-08T09:45:03+00:00",
+      "checked_at": "2026-07-08T12:02:01+00:00",
       "consecutive_failures": 0,
       "content_length": 1214919,
       "etag": "\"1289c7-636eaed4871b8\"",
@@ -11012,19 +11012,19 @@
       "url": "https://592f5f98-5029-425f-ac4d-0774faecf068.filesusr.com/archives/f64377_81ed397719364abbb0aa6a97a1dbf1c9.zip?dn=12_17google_transit.zip"
     },
     "portage-area-regional-transportation-authority-parta-2256": {
-      "changed_at": "2026-07-08T09:45:03+00:00",
-      "checked_at": "2026-07-08T09:45:03+00:00",
+      "changed_at": "2026-07-08T12:02:01+00:00",
+      "checked_at": "2026-07-08T12:02:01+00:00",
       "consecutive_failures": 0,
       "content_length": 532884,
-      "etag": "23d7a81536d15aeb012f7a13ac1879cd",
+      "etag": "909678a352288ca15be71b8ed3a61cb9",
       "last_modified": null,
-      "sha256": "db3a55996b15ecb2ee4e552c4361511b317399bc3cf2dddb88fedfc9072a0799",
+      "sha256": "523b6fac15f77d8f6006375db184768ebd2e804555101c278884c2017542c783",
       "status": 200,
       "url": "https://passio3.com/parta/passioTransit/gtfs/google_transit.zip"
     },
     "porterville-transit": {
       "changed_at": "2026-06-21T11:28:28+00:00",
-      "checked_at": "2026-07-07T23:19:30+00:00",
+      "checked_at": "2026-07-08T12:02:02+00:00",
       "consecutive_failures": 0,
       "content_length": 103403,
       "etag": "\"193eb-5ebdf869d1870\"",
@@ -11046,8 +11046,8 @@
     },
     "potomac-and-rappahannock-transportation-commission-prtc": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:19:30+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:02:02+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -11057,7 +11057,7 @@
     },
     "potomac-and-rappahannock-transportation-commission-prtc-omniride": {
       "changed_at": "2026-06-24T16:14:55+00:00",
-      "checked_at": "2026-07-08T09:45:03+00:00",
+      "checked_at": "2026-07-08T12:02:02+00:00",
       "consecutive_failures": 0,
       "content_length": 1524278,
       "etag": "\"4d1365317c2dc1:0\"",
@@ -11112,7 +11112,7 @@
     },
     "pueblo-transit": {
       "changed_at": "2026-06-24T16:14:55+00:00",
-      "checked_at": "2026-07-08T09:45:04+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 174680,
       "etag": "\"2aa58-64caea7acad20\"",
@@ -11200,7 +11200,7 @@
     },
     "qline-detroit": {
       "changed_at": "2026-06-21T01:37:16+00:00",
-      "checked_at": "2026-07-08T09:45:04+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 121152,
       "etag": "\"1d940-63350dcf47340\"",
@@ -11211,7 +11211,7 @@
     },
     "qline-detroit-802": {
       "changed_at": "2026-06-30T07:43:46+00:00",
-      "checked_at": "2026-07-08T09:45:05+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 121152,
       "etag": "\"1d940-63350dcf47340\"",
@@ -11233,7 +11233,7 @@
     },
     "queen-anne-s-county-ride": {
       "changed_at": "2026-06-21T11:28:28+00:00",
-      "checked_at": "2026-07-07T23:19:31+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 129214,
       "etag": "\"ac149f117fae11c418a3fc420825710bbccf40777035d8faf958cf3c866bd58d\"",
@@ -11255,7 +11255,7 @@
     },
     "radar": {
       "changed_at": "2026-06-21T08:08:46+00:00",
-      "checked_at": "2026-07-08T09:45:05+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 264904,
       "etag": "\"40ac8-64979e12e4b90\"",
@@ -11266,7 +11266,7 @@
     },
     "radar-2443": {
       "changed_at": "2026-06-21T06:09:37+00:00",
-      "checked_at": "2026-07-08T09:45:05+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 347778,
       "etag": "\"54e82-64979dfd3ef98\"",
@@ -11277,7 +11277,7 @@
     },
     "radar-832": {
       "changed_at": "2026-06-30T16:14:53+00:00",
-      "checked_at": "2026-07-08T09:45:05+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 264904,
       "etag": "\"40ac8-64979e12e4b90\"",
@@ -11287,19 +11287,19 @@
       "url": "http://data.trilliumtransit.com/gtfs/radar-va-us/radar-va-us.zip"
     },
     "radford-transit": {
-      "changed_at": "2026-07-08T09:45:05+00:00",
-      "checked_at": "2026-07-08T09:45:05+00:00",
+      "changed_at": "2026-07-08T12:02:03+00:00",
+      "checked_at": "2026-07-08T12:02:03+00:00",
       "consecutive_failures": 0,
       "content_length": 87792,
-      "etag": "71557f696fa0a9fa95654403060252d0",
+      "etag": "4126dbf880ded2a73b0f5ee54c00c6c2",
       "last_modified": null,
-      "sha256": "7959a2ea80d3b4601d02216d0a15a391009cfd5b72445e789296e6a77e83bd88",
+      "sha256": "3a423b062f6f7a06f4180c36ec2b08864d7ea8a5346b5301c8b6391151cbe4ec",
       "status": 200,
       "url": "https://passio3.com/radford/passioTransit/gtfs/google_transit.zip"
     },
     "radford-transit-2415": {
       "changed_at": "2026-06-21T08:08:46+00:00",
-      "checked_at": "2026-07-08T09:45:06+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 255309,
       "etag": "\"3e54d-64c12474c7fb0\"",
@@ -11310,7 +11310,7 @@
     },
     "red-apple-transit": {
       "changed_at": "2026-06-21T01:37:17+00:00",
-      "checked_at": "2026-07-08T09:45:06+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 87856,
       "etag": "\"15730-644938571f030\"",
@@ -11321,7 +11321,7 @@
     },
     "red-apple-transit-160": {
       "changed_at": "2026-06-30T07:43:47+00:00",
-      "checked_at": "2026-07-08T09:45:06+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 87856,
       "etag": "\"15730-644938571f030\"",
@@ -11354,7 +11354,7 @@
     },
     "redding-area-bus-authority": {
       "changed_at": "2026-06-21T01:37:18+00:00",
-      "checked_at": "2026-07-08T09:45:07+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 248384,
       "etag": "\"0x8DE547C467D1F17\"",
@@ -11365,7 +11365,7 @@
     },
     "redding-area-bus-authority-2853": {
       "changed_at": "2026-06-21T01:37:19+00:00",
-      "checked_at": "2026-07-08T09:45:07+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 107889,
       "etag": "\"0x8DDB520F1F22A72\"",
@@ -11409,8 +11409,8 @@
     },
     "redding-area-bus-authority-raba-1972": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:45:07+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:02:04+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -11420,7 +11420,7 @@
     },
     "redwood-coast-transit-rct": {
       "changed_at": "2026-06-21T01:37:20+00:00",
-      "checked_at": "2026-07-08T09:45:07+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 291252,
       "etag": "\"471b4-648d37eaf1658\"",
@@ -11431,7 +11431,7 @@
     },
     "redwood-coast-transit-rct-20": {
       "changed_at": "2026-06-30T07:43:49+00:00",
-      "checked_at": "2026-07-08T09:45:07+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 291252,
       "etag": "\"471b4-648d37eaf1658\"",
@@ -11464,7 +11464,7 @@
     },
     "regional-transportation-agency-of-central-maryland-rta": {
       "changed_at": "2026-06-21T01:37:20+00:00",
-      "checked_at": "2026-07-08T09:45:08+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 797087,
       "etag": "\"c299f-6544eefc69c68\"",
@@ -11475,7 +11475,7 @@
     },
     "regional-transportation-agency-of-central-maryland-rta-489": {
       "changed_at": "2026-06-30T07:43:49+00:00",
-      "checked_at": "2026-07-08T09:45:08+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 797087,
       "etag": "\"c299f-6544eefc69c68\"",
@@ -11486,7 +11486,7 @@
     },
     "regional-transportation-commission-of-southern-nevada-rtc": {
       "changed_at": "2026-06-21T11:28:30+00:00",
-      "checked_at": "2026-07-07T23:19:37+00:00",
+      "checked_at": "2026-07-08T12:02:04+00:00",
       "consecutive_failures": 0,
       "content_length": 4513301,
       "etag": "\"96b8c214aa53da1:0\"",
@@ -11562,30 +11562,30 @@
       "url": "http://data.trilliumtransit.com/gtfs/bustang-co-us/bustang-co-us.zip"
     },
     "regional-transportation-district-rtd-178": {
-      "changed_at": "2026-07-04T11:51:59+00:00",
-      "checked_at": "2026-07-08T09:45:09+00:00",
+      "changed_at": "2026-07-08T12:02:05+00:00",
+      "checked_at": "2026-07-08T12:02:05+00:00",
       "consecutive_failures": 0,
-      "content_length": 8357509,
+      "content_length": 8359188,
       "etag": null,
       "last_modified": null,
-      "sha256": "72ec2de5dbd7a14596c48ee55e126cd48bbc7d854e969120290209d4141e3c47",
+      "sha256": "cc8bf60599045bb50c73bde9316c8070de8512944525f9855b79c025066b79c7",
       "status": 200,
       "url": "https://www.rtd-denver.com/files/gtfs/google_transit.zip"
     },
     "regional-transportation-district-rtd-2280": {
-      "changed_at": "2026-07-04T11:51:59+00:00",
-      "checked_at": "2026-07-07T23:19:38+00:00",
+      "changed_at": "2026-07-08T12:02:06+00:00",
+      "checked_at": "2026-07-08T12:02:06+00:00",
       "consecutive_failures": 0,
-      "content_length": 804888,
+      "content_length": 804893,
       "etag": null,
       "last_modified": null,
-      "sha256": "032b872405deaaf268a8d7a4cfd9fcf3f8a4dc3a2e3128a51f999788251bf08b",
+      "sha256": "29f83147849dd81b2ca75ac47971e4cc6b6ee818b2aec5ce226bffbd56eb2ff1",
       "status": 200,
       "url": "https://www.rtd-denver.com/files/gtfs/bustang-co-us.zip"
     },
     "relaxsan": {
       "changed_at": "2026-06-21T01:37:21+00:00",
-      "checked_at": "2026-07-08T09:45:09+00:00",
+      "checked_at": "2026-07-08T12:02:07+00:00",
       "consecutive_failures": 0,
       "content_length": 51279,
       "etag": "\"b9193df096ba38b9026bceeac07fd8cc\"",
@@ -11607,7 +11607,7 @@
     },
     "rhode-island-public-transit-authority": {
       "changed_at": "2026-06-21T01:37:21+00:00",
-      "checked_at": "2026-07-08T09:45:09+00:00",
+      "checked_at": "2026-07-08T12:02:07+00:00",
       "consecutive_failures": 0,
       "content_length": 2312474,
       "etag": null,
@@ -11651,7 +11651,7 @@
     },
     "ridgecrest-transit": {
       "changed_at": "2026-06-21T01:37:22+00:00",
-      "checked_at": "2026-07-08T09:45:09+00:00",
+      "checked_at": "2026-07-08T12:02:09+00:00",
       "consecutive_failures": 0,
       "content_length": 7108,
       "etag": null,
@@ -11673,7 +11673,7 @@
     },
     "ridgerunner-311": {
       "changed_at": "2026-06-30T17:08:59+00:00",
-      "checked_at": "2026-07-07T23:19:39+00:00",
+      "checked_at": "2026-07-08T12:02:09+00:00",
       "consecutive_failures": 0,
       "content_length": 35126,
       "etag": "\"8936-5d428f9d04a98\"",
@@ -11706,7 +11706,7 @@
     },
     "rio-vista-delta-breeze-81": {
       "changed_at": "2026-06-30T17:08:59+00:00",
-      "checked_at": "2026-07-07T23:19:39+00:00",
+      "checked_at": "2026-07-08T12:02:09+00:00",
       "consecutive_failures": 0,
       "content_length": 36363,
       "etag": "\"8e0b-61213f0643ea0\"",
@@ -11738,13 +11738,13 @@
       "url": "http://data.trilliumtransit.com/gtfs/rivercitiestransit-wa-us/rivercitiestransit-wa-us.zip"
     },
     "riverside-transit-agency": {
-      "changed_at": "2026-07-08T09:45:10+00:00",
-      "checked_at": "2026-07-08T09:45:10+00:00",
+      "changed_at": "2026-07-08T12:02:09+00:00",
+      "checked_at": "2026-07-08T12:02:09+00:00",
       "consecutive_failures": 0,
-      "content_length": 188,
+      "content_length": 185,
       "etag": null,
       "last_modified": null,
-      "sha256": "a3477a11316accf87d259d3931f5c451e1c3a0abc3b9ad58359c158c31003f47",
+      "sha256": "3ad6f977b8dbfe1d1305e35227eeb43a08ad127ab7d4f73cf163e70d8c34118a",
       "status": 200,
       "url": "http://www.riversidetransit.com/google_transit.zip"
     },
@@ -11782,13 +11782,13 @@
       "url": "https://mjcaction.com/MJC_GTFS_Public/lascrucesroadrunner_google_transit.zip"
     },
     "roadrunner-transit-2075": {
-      "changed_at": "2026-07-08T09:45:10+00:00",
-      "checked_at": "2026-07-08T09:45:10+00:00",
+      "changed_at": "2026-07-08T12:02:09+00:00",
+      "checked_at": "2026-07-08T12:02:09+00:00",
       "consecutive_failures": 0,
       "content_length": 127038,
-      "etag": "95d88c3c47e6f852601caec3ee6679e4",
+      "etag": "d54a95f9f8ca8661005ab0c31afeb9e3",
       "last_modified": null,
-      "sha256": "baef1524de0f8ad250d0b3353dac02e30daf8405e521619f4d3964c75d5d7d0c",
+      "sha256": "750790e3723c33d0eb417bfbc370fd44964604484cc4540c9b195760e82466b2",
       "status": 200,
       "url": "https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip"
     },
@@ -11871,7 +11871,7 @@
     },
     "rochester-genesee-regional-transportation-authority-rgrta": {
       "changed_at": "2026-06-21T01:37:24+00:00",
-      "checked_at": "2026-07-08T09:45:13+00:00",
+      "checked_at": "2026-07-08T12:02:10+00:00",
       "consecutive_failures": 0,
       "content_length": 3411755,
       "etag": "\"2071cb591ffdc1:0\"",
@@ -11882,7 +11882,7 @@
     },
     "rochester-genesee-regional-transportation-authority-rgrta-533": {
       "changed_at": "2026-06-30T07:43:52+00:00",
-      "checked_at": "2026-07-08T09:45:13+00:00",
+      "checked_at": "2026-07-08T12:02:10+00:00",
       "consecutive_failures": 0,
       "content_length": 3411755,
       "etag": "\"2071cb591ffdc1:0\"",
@@ -11915,7 +11915,7 @@
     },
     "rock-region-metro-2264": {
       "changed_at": "2026-06-21T01:37:25+00:00",
-      "checked_at": "2026-07-08T09:45:14+00:00",
+      "checked_at": "2026-07-08T12:02:10+00:00",
       "consecutive_failures": 0,
       "content_length": 2326448,
       "etag": "\"6886edc4-237fb0\"",
@@ -11948,7 +11948,7 @@
     },
     "rocky-mountain-national-park-shuttles": {
       "changed_at": "2026-06-21T11:28:37+00:00",
-      "checked_at": "2026-07-07T23:19:41+00:00",
+      "checked_at": "2026-07-08T12:02:11+00:00",
       "consecutive_failures": 0,
       "content_length": 54330,
       "etag": "\"d43a-6549cffbfdfa0\"",
@@ -11970,7 +11970,7 @@
     },
     "rogue-valley-transportation-district-rvtd": {
       "changed_at": "2026-06-21T01:37:26+00:00",
-      "checked_at": "2026-07-08T09:45:14+00:00",
+      "checked_at": "2026-07-08T12:02:11+00:00",
       "consecutive_failures": 0,
       "content_length": 358192,
       "etag": "\"57730-644f602107708\"",
@@ -11981,7 +11981,7 @@
     },
     "rogue-valley-transportation-district-rvtd-122": {
       "changed_at": "2026-06-30T07:43:55+00:00",
-      "checked_at": "2026-07-08T09:45:14+00:00",
+      "checked_at": "2026-07-08T12:02:11+00:00",
       "consecutive_failures": 0,
       "content_length": 358192,
       "etag": "\"57730-644f602107708\"",
@@ -11992,7 +11992,7 @@
     },
     "rogue-valley-transportation-district-rvtd-3103": {
       "changed_at": "2026-06-21T01:37:27+00:00",
-      "checked_at": "2026-07-08T09:45:14+00:00",
+      "checked_at": "2026-07-08T12:02:11+00:00",
       "consecutive_failures": 0,
       "content_length": 163591,
       "etag": "\"6a3965d1-27f07\"",
@@ -12003,13 +12003,13 @@
     },
     "rogue-valley-transportation-district-rvtd-3219": {
       "changed_at": "2026-07-08T09:45:15+00:00",
-      "checked_at": "2026-07-08T09:45:15+00:00",
+      "checked_at": "2026-07-08T12:02:11+00:00",
       "consecutive_failures": 0,
       "content_length": 185276,
       "etag": "\"2d3bc-6561638bd1595\"",
       "last_modified": "Wed, 08 Jul 2026 09:35:01 GMT",
       "sha256": "78cad739f7cce31053be2526b237c8329eebaa839f8415d7437238c395913c9d",
-      "status": 200,
+      "status": 304,
       "url": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip"
     },
     "roosevelt-island-operating-corporation-tramway-rioc-tramway": {
@@ -12046,13 +12046,13 @@
       "url": "https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/rosemead-ca-us/rosemead-ca-us.zip"
     },
     "rosemead-explorer-3098": {
-      "changed_at": "2026-07-08T09:45:15+00:00",
-      "checked_at": "2026-07-08T09:45:15+00:00",
+      "changed_at": "2026-07-08T12:02:12+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 27630,
-      "etag": "947d1b0486c8b925aeeaa3ded8877323",
+      "etag": "65299be16024fbb1921757dd4e992b55",
       "last_modified": null,
-      "sha256": "6b391ec7767a1859f33cf83a9d574cc025dce91bf313e424afb9d7ccb51f0cc4",
+      "sha256": "b9f58199e82dac0caa7f9ae5316de74c68c03861171df71f0c6e3bf7e3e8788b",
       "status": 200,
       "url": "https://passio3.com/rosemead/passioTransit/gtfs/google_transit.zip"
     },
@@ -12069,7 +12069,7 @@
     },
     "routt-county-council-on-aging-rccoca-transportation": {
       "changed_at": "2026-06-21T01:37:27+00:00",
-      "checked_at": "2026-07-08T09:45:15+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 23149,
       "etag": "\"5a6d-648fcc11eca78\"",
@@ -12080,7 +12080,7 @@
     },
     "rural-community-transportation-rct": {
       "changed_at": "2026-06-21T11:28:38+00:00",
-      "checked_at": "2026-07-07T23:19:42+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 783302,
       "etag": "\"bf3c6-653ea08b95bd0\"",
@@ -12124,7 +12124,7 @@
     },
     "ruraltransit-822": {
       "changed_at": "2026-06-30T17:09:05+00:00",
-      "checked_at": "2026-07-07T23:19:43+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 110453,
       "etag": "\"1af75-654f307f926f8\"",
@@ -12201,7 +12201,7 @@
     },
     "sage-stage": {
       "changed_at": "2026-06-21T11:28:38+00:00",
-      "checked_at": "2026-07-07T23:19:43+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 338717,
       "etag": "\"52b1d-653c525b99918\"",
@@ -12245,7 +12245,7 @@
     },
     "san-benito-county-express-sbce": {
       "changed_at": "2026-06-21T01:37:28+00:00",
-      "checked_at": "2026-07-08T09:45:16+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 64162,
       "etag": "\"faa2-64a2f3cbe78d0\"",
@@ -12256,7 +12256,7 @@
     },
     "san-benito-county-express-sbce-58": {
       "changed_at": "2026-06-30T07:43:57+00:00",
-      "checked_at": "2026-07-08T09:45:16+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 64162,
       "etag": "\"faa2-64a2f3cbe78d0\"",
@@ -12322,13 +12322,13 @@
     },
     "san-francisco-municipal-transportation-agency-sfmta-muni-2886": {
       "changed_at": "2026-07-04T17:33:10+00:00",
-      "checked_at": "2026-07-07T23:19:43+00:00",
+      "checked_at": "2026-07-08T12:02:12+00:00",
       "consecutive_failures": 0,
       "content_length": 10973449,
-      "etag": "\"6a4bdd46-a77109\"",
-      "last_modified": "Mon, 06 Jul 2026 16:52:22 GMT",
+      "etag": "\"6a4bdd45-a77109\"",
+      "last_modified": "Mon, 06 Jul 2026 16:52:21 GMT",
       "sha256": "c4c764a116374c0ff80686e44d35d5e4caa04471924f16342b2e939a649cda30",
-      "status": 304,
+      "status": 200,
       "url": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip"
     },
     "san-joaquin-regional-transit-district": {
@@ -12344,7 +12344,7 @@
     },
     "san-joaquin-regional-transit-district-rtd": {
       "changed_at": "2026-07-06T22:44:10+00:00",
-      "checked_at": "2026-07-08T09:45:17+00:00",
+      "checked_at": "2026-07-08T12:02:13+00:00",
       "consecutive_failures": 0,
       "content_length": 1414857,
       "etag": "\"1596c9-65331a8dfb500\"",
@@ -12377,7 +12377,7 @@
     },
     "san-leandro-links": {
       "changed_at": "2026-06-21T11:28:38+00:00",
-      "checked_at": "2026-07-07T23:19:44+00:00",
+      "checked_at": "2026-07-08T12:02:13+00:00",
       "consecutive_failures": 0,
       "content_length": 25506,
       "etag": "\"63a2-5cd51baf1b100\"",
@@ -12410,7 +12410,7 @@
     },
     "san-mateo-county-transit-district-samtrans": {
       "changed_at": "2026-06-21T06:09:52+00:00",
-      "checked_at": "2026-07-08T09:45:18+00:00",
+      "checked_at": "2026-07-08T12:02:13+00:00",
       "consecutive_failures": 0,
       "content_length": 1866887,
       "etag": null,
@@ -12443,7 +12443,7 @@
     },
     "san-miguel-county": {
       "changed_at": "2026-06-21T11:28:38+00:00",
-      "checked_at": "2026-07-07T23:19:45+00:00",
+      "checked_at": "2026-07-08T12:02:13+00:00",
       "consecutive_failures": 0,
       "content_length": 399789,
       "etag": "\"619ad-6534766f5dbe0\"",
@@ -12486,13 +12486,13 @@
       "url": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip"
     },
     "sandy-area-metro-sam-2739": {
-      "changed_at": "2026-07-08T09:45:18+00:00",
-      "checked_at": "2026-07-08T09:45:18+00:00",
+      "changed_at": "2026-07-08T12:02:13+00:00",
+      "checked_at": "2026-07-08T12:02:13+00:00",
       "consecutive_failures": 0,
       "content_length": 200718,
-      "etag": "2686caa8fff5f1942b19577fa83bac9a",
+      "etag": "a309a8ba90d8cd97d9636422d80b189c",
       "last_modified": null,
-      "sha256": "98d4d23a848538d3443c4ba9bbe6d15fa6be7ca354f2de84dd6f3667b5d563c3",
+      "sha256": "69910c636d7f4c19b9be49553f9c3d7a59e9b1821dac83ef7a89e7bc83218dfb",
       "status": 200,
       "url": "https://passio3.com/sandyor/passioTransit/gtfs/google_transit.zip"
     },
@@ -12542,8 +12542,8 @@
     },
     "santa-cruz-metro-scmtd": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:19:45+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:02:14+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -12553,7 +12553,7 @@
     },
     "santa-cruz-metro-scmtd-2425": {
       "changed_at": "2026-06-21T01:37:29+00:00",
-      "checked_at": "2026-07-08T09:45:18+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 2620478,
       "etag": null,
@@ -12564,7 +12564,7 @@
     },
     "santa-fe-trails": {
       "changed_at": "2026-06-21T01:37:30+00:00",
-      "checked_at": "2026-07-08T09:45:19+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 210909,
       "etag": "\"675d9745-337dd\"",
@@ -12575,7 +12575,7 @@
     },
     "santa-fe-trails-839": {
       "changed_at": "2026-06-30T07:44:00+00:00",
-      "checked_at": "2026-07-08T09:45:20+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 210909,
       "etag": "\"675d9745-337dd\"",
@@ -12652,7 +12652,7 @@
     },
     "santa-ynez-valley-transit-813": {
       "changed_at": "2026-06-30T17:09:07+00:00",
-      "checked_at": "2026-07-07T23:19:47+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 17794,
       "etag": "\"6a321dac-4582\"",
@@ -12685,7 +12685,7 @@
     },
     "sarasota-county-area-transit-scat-348": {
       "changed_at": "2026-06-30T17:09:07+00:00",
-      "checked_at": "2026-07-07T23:19:48+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 532250,
       "etag": "\"81f1a-61675253b54f0\"",
@@ -12740,8 +12740,8 @@
     },
     "selah-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:45:21+00:00",
-      "consecutive_failures": 76,
+      "checked_at": "2026-07-08T12:02:15+00:00",
+      "consecutive_failures": 77,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -12751,7 +12751,7 @@
     },
     "senior-resource-development-agency": {
       "changed_at": "2026-06-21T06:09:55+00:00",
-      "checked_at": "2026-07-08T09:45:21+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 67638,
       "etag": "\"10836-6498e65ecf660\"",
@@ -12795,7 +12795,7 @@
     },
     "shore-transit-3149": {
       "changed_at": "2026-06-21T01:37:33+00:00",
-      "checked_at": "2026-07-08T09:45:21+00:00",
+      "checked_at": "2026-07-08T12:02:15+00:00",
       "consecutive_failures": 0,
       "content_length": 288417,
       "etag": "\"b6a38bc2c558dc1:0\"",
@@ -12828,8 +12828,8 @@
     },
     "shreveport-and-bossier-city": {
       "changed_at": "2026-07-07T17:31:14+00:00",
-      "checked_at": "2026-07-08T09:45:21+00:00",
-      "consecutive_failures": 1,
+      "checked_at": "2026-07-08T12:02:15+00:00",
+      "consecutive_failures": 2,
       "content_length": 74877,
       "etag": null,
       "last_modified": null,
@@ -12850,7 +12850,7 @@
     },
     "sierra-madre-gateway-coach": {
       "changed_at": "2026-06-21T11:28:43+00:00",
-      "checked_at": "2026-07-07T23:19:54+00:00",
+      "checked_at": "2026-07-08T12:02:45+00:00",
       "consecutive_failures": 0,
       "content_length": 12332,
       "etag": "\"302c-5c588ac8a104f\"",
@@ -12872,7 +12872,7 @@
     },
     "sierra-madre-gateway-coach-829": {
       "changed_at": "2026-06-30T17:09:11+00:00",
-      "checked_at": "2026-07-07T23:19:55+00:00",
+      "checked_at": "2026-07-08T12:02:45+00:00",
       "consecutive_failures": 0,
       "content_length": 12332,
       "etag": "\"302c-5c588ac8a104f\"",
@@ -12916,7 +12916,7 @@
     },
     "sioux-area-metro-sam": {
       "changed_at": "2026-06-21T11:28:43+00:00",
-      "checked_at": "2026-07-07T23:19:55+00:00",
+      "checked_at": "2026-07-08T12:02:45+00:00",
       "consecutive_failures": 0,
       "content_length": 173390,
       "etag": "\"2a54e-6091d952c6868\"",
@@ -12960,7 +12960,7 @@
     },
     "siskiyou-county": {
       "changed_at": "2026-07-02T23:35:44+00:00",
-      "checked_at": "2026-07-07T23:19:55+00:00",
+      "checked_at": "2026-07-08T12:02:45+00:00",
       "consecutive_failures": 0,
       "content_length": 734062,
       "etag": "\"b336e-655a5468418f8\"",
@@ -13026,7 +13026,7 @@
     },
     "soltrans": {
       "changed_at": "2026-06-21T11:28:43+00:00",
-      "checked_at": "2026-07-07T23:19:55+00:00",
+      "checked_at": "2026-07-08T12:02:45+00:00",
       "consecutive_failures": 0,
       "content_length": 462305,
       "etag": "\"66977bbd55fadc1:0\"",
@@ -13103,7 +13103,7 @@
     },
     "sound-generations-hyde-shuttle": {
       "changed_at": "2026-06-30T17:09:11+00:00",
-      "checked_at": "2026-07-07T23:19:56+00:00",
+      "checked_at": "2026-07-08T12:02:46+00:00",
       "consecutive_failures": 0,
       "content_length": 204553,
       "etag": "\"31f09-641afa7d3cdb0\"",
@@ -13136,7 +13136,7 @@
     },
     "south-central-council-of-governments-sccog": {
       "changed_at": "2026-06-21T11:28:44+00:00",
-      "checked_at": "2026-07-07T23:19:56+00:00",
+      "checked_at": "2026-07-08T12:02:46+00:00",
       "consecutive_failures": 0,
       "content_length": 68817,
       "etag": "\"10cd1-64ffe201981f0\"",
@@ -13213,7 +13213,7 @@
     },
     "south-metro-area-regional-transit-smart-2706": {
       "changed_at": "2026-07-08T09:45:52+00:00",
-      "checked_at": "2026-07-08T09:45:52+00:00",
+      "checked_at": "2026-07-08T12:02:46+00:00",
       "consecutive_failures": 0,
       "content_length": 186203,
       "etag": "\"0b38c338ae490393f892064aab8c5fc7\"",
@@ -13235,7 +13235,7 @@
     },
     "south-portland-2641": {
       "changed_at": "2026-06-21T01:37:41+00:00",
-      "checked_at": "2026-07-08T09:45:54+00:00",
+      "checked_at": "2026-07-08T12:02:46+00:00",
       "consecutive_failures": 0,
       "content_length": 166597,
       "etag": "\"f277396507fb588a24409358bb4c0da7\"",
@@ -13246,13 +13246,13 @@
     },
     "south-shore-line": {
       "changed_at": "2026-06-21T01:37:41+00:00",
-      "checked_at": "2026-07-08T09:45:54+00:00",
-      "consecutive_failures": 1,
+      "checked_at": "2026-07-08T12:02:46+00:00",
+      "consecutive_failures": 0,
       "content_length": 35083,
       "etag": "\"69ea89bb-890b\"",
       "last_modified": "Thu, 23 Apr 2026 21:06:03 GMT",
       "sha256": "a96c8634ce69393626751f027dd444a120b9052d221a27fa2e982a4b81fda120",
-      "status": null,
+      "status": 304,
       "url": "http://www.mysouthshoreline.com/google/google_transit.zip"
     },
     "southeast-area-transit-district": {
@@ -13279,7 +13279,7 @@
     },
     "southeast-area-transit-district-552": {
       "changed_at": "2026-06-30T17:09:13+00:00",
-      "checked_at": "2026-07-07T23:19:57+00:00",
+      "checked_at": "2026-07-08T12:02:47+00:00",
       "consecutive_failures": 0,
       "content_length": 460507,
       "etag": "\"706db-5faa8b8c37038\"",
@@ -13290,7 +13290,7 @@
     },
     "southeastern-pennsylvania-transportation-authority-septa": {
       "changed_at": "2026-07-03T04:17:06+00:00",
-      "checked_at": "2026-07-08T09:46:24+00:00",
+      "checked_at": "2026-07-08T12:02:47+00:00",
       "consecutive_failures": 0,
       "content_length": 20332011,
       "etag": "\"1363deb-6558ed3006780\"",
@@ -13301,7 +13301,7 @@
     },
     "southeastern-pennsylvania-transportation-authority-septa-503": {
       "changed_at": "2026-07-03T04:17:07+00:00",
-      "checked_at": "2026-07-08T09:46:25+00:00",
+      "checked_at": "2026-07-08T12:02:48+00:00",
       "consecutive_failures": 0,
       "content_length": 767700,
       "etag": "\"bb6d4-6558ed3006780\"",
@@ -13312,7 +13312,7 @@
     },
     "southeastern-regional-transit-authority-srta": {
       "changed_at": "2026-06-21T01:37:42+00:00",
-      "checked_at": "2026-07-08T09:46:25+00:00",
+      "checked_at": "2026-07-08T12:02:48+00:00",
       "consecutive_failures": 0,
       "content_length": 2057740,
       "etag": "\"1f660c-651a47d92a1c0\"",
@@ -13323,7 +13323,7 @@
     },
     "southeastern-regional-transit-authority-srta-421": {
       "changed_at": "2026-06-30T07:44:10+00:00",
-      "checked_at": "2026-07-08T09:46:25+00:00",
+      "checked_at": "2026-07-08T12:02:48+00:00",
       "consecutive_failures": 0,
       "content_length": 2057740,
       "etag": "\"1f660c-651a47d92a1c0\"",
@@ -13377,13 +13377,13 @@
       "url": "https://data.trilliumtransit.com/gtfs/montereypark-ca-us/montereypark-ca-us.zip"
     },
     "spirit-bus-2202": {
-      "changed_at": "2026-07-08T09:46:25+00:00",
-      "checked_at": "2026-07-08T09:46:25+00:00",
+      "changed_at": "2026-07-08T12:02:48+00:00",
+      "checked_at": "2026-07-08T12:02:48+00:00",
       "consecutive_failures": 0,
       "content_length": 34985,
-      "etag": "9587b44f9e835d067d1b7bfb25e174e1",
+      "etag": "4c5a3da9515eaffa7cfb52ffe4562dbe",
       "last_modified": null,
-      "sha256": "b003cb334c308bdf207c15f21b746170d90b3a0dc3c1a5002d088257103aa64e",
+      "sha256": "7e921c151f81336608cc6f0fa8990a486ab94854df5bcf2197de03303c56a0fc",
       "status": 200,
       "url": "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
     },
@@ -13411,8 +13411,8 @@
     },
     "springfield-mass-transit-district-smtd": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:46:25+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:02:48+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -13466,7 +13466,7 @@
     },
     "st-lawrence-county-public-transit": {
       "changed_at": "2026-06-21T01:37:44+00:00",
-      "checked_at": "2026-07-08T09:46:27+00:00",
+      "checked_at": "2026-07-08T12:02:49+00:00",
       "consecutive_failures": 0,
       "content_length": 976630,
       "etag": "\"cee6502543c0a61f8e8d4c3937d4384e\"",
@@ -13476,13 +13476,13 @@
       "url": "https://s3.amazonaws.com/datatools-511ny/public/St_Lawrence_County_Public_Transit.zip"
     },
     "st-lawrence-county-public-transit-2611": {
-      "changed_at": "2026-07-08T09:46:27+00:00",
-      "checked_at": "2026-07-08T09:46:27+00:00",
+      "changed_at": "2026-07-08T12:02:49+00:00",
+      "checked_at": "2026-07-08T12:02:49+00:00",
       "consecutive_failures": 0,
       "content_length": 933200,
-      "etag": "135d5574b2b745be3f98f844638701d6",
+      "etag": "92b4e2d01b466214566c8af251fec653",
       "last_modified": null,
-      "sha256": "e12c70a3d74ec2f19bbaf7e5d83263c51e23450894e86efbb936871b905e7ea7",
+      "sha256": "82e3205dc64f50a7a6490af02686a7e281544946565d5df813a5b9acc3c4b2cd",
       "status": 200,
       "url": "https://passio3.com/stlawrence/passioTransit/gtfs/google_transit.zip"
     },
@@ -13532,7 +13532,7 @@
     },
     "stanislaus-regional-transit-authority": {
       "changed_at": "2026-06-21T01:37:45+00:00",
-      "checked_at": "2026-07-08T09:46:27+00:00",
+      "checked_at": "2026-07-08T12:02:50+00:00",
       "consecutive_failures": 0,
       "content_length": 17630,
       "etag": "\"44de-644ec15283c68\"",
@@ -13543,7 +13543,7 @@
     },
     "stanislaus-regional-transit-authority-stanrta": {
       "changed_at": "2026-06-21T01:37:45+00:00",
-      "checked_at": "2026-07-08T09:46:27+00:00",
+      "checked_at": "2026-07-08T12:02:50+00:00",
       "consecutive_failures": 0,
       "content_length": 1684562,
       "etag": null,
@@ -13554,7 +13554,7 @@
     },
     "stanislaus-regional-transit-start": {
       "changed_at": "2026-06-21T11:28:48+00:00",
-      "checked_at": "2026-07-07T23:20:00+00:00",
+      "checked_at": "2026-07-08T12:02:51+00:00",
       "consecutive_failures": 0,
       "content_length": 202728,
       "etag": "\"317e8-5a966fe09b64b\"",
@@ -13598,7 +13598,7 @@
     },
     "star-transit-153": {
       "changed_at": "2026-06-30T17:09:20+00:00",
-      "checked_at": "2026-07-07T23:20:00+00:00",
+      "checked_at": "2026-07-08T12:02:51+00:00",
       "consecutive_failures": 0,
       "content_length": 20324,
       "etag": "\"4f64-6459af0a963a8\"",
@@ -13664,7 +13664,7 @@
     },
     "starmetro-344": {
       "changed_at": "2026-06-30T17:09:20+00:00",
-      "checked_at": "2026-07-07T23:20:00+00:00",
+      "checked_at": "2026-07-08T12:02:51+00:00",
       "consecutive_failures": 0,
       "content_length": 1301849,
       "etag": "\"13dd59-617e36a833658\"",
@@ -13686,7 +13686,7 @@
     },
     "startran-2269": {
       "changed_at": "2026-07-01T23:30:35+00:00",
-      "checked_at": "2026-07-07T23:20:00+00:00",
+      "checked_at": "2026-07-08T12:02:51+00:00",
       "consecutive_failures": 0,
       "content_length": 371005,
       "etag": "\"3e4bf3d17c9dd1:0\"",
@@ -13719,7 +13719,7 @@
     },
     "steel-valley-regional-transit-authority": {
       "changed_at": "2026-06-21T01:37:47+00:00",
-      "checked_at": "2026-07-08T09:46:29+00:00",
+      "checked_at": "2026-07-08T12:02:51+00:00",
       "consecutive_failures": 0,
       "content_length": 811722,
       "etag": "\"693c890d-c62ca\"",
@@ -13741,7 +13741,7 @@
     },
     "steuben-county-transit": {
       "changed_at": "2026-06-21T01:37:47+00:00",
-      "checked_at": "2026-07-08T09:46:29+00:00",
+      "checked_at": "2026-07-08T12:02:51+00:00",
       "consecutive_failures": 0,
       "content_length": 52192,
       "etag": "\"e3a06f1e833801ed17b6f9861d6ebb32\"",
@@ -13774,7 +13774,7 @@
     },
     "suburban-mobility-authority-for-regional-transit-smart": {
       "changed_at": "2026-06-21T11:28:49+00:00",
-      "checked_at": "2026-07-07T23:20:01+00:00",
+      "checked_at": "2026-07-08T12:02:52+00:00",
       "consecutive_failures": 0,
       "content_length": 7909109,
       "etag": "\"8b31f8f1d6fddc1:0\"",
@@ -13785,7 +13785,7 @@
     },
     "suffolk-county-transit": {
       "changed_at": "2026-06-21T01:37:47+00:00",
-      "checked_at": "2026-07-08T09:46:29+00:00",
+      "checked_at": "2026-07-08T12:02:52+00:00",
       "consecutive_failures": 0,
       "content_length": 2231613,
       "etag": "\"c9855bb87922dc1:0\"",
@@ -13840,7 +13840,7 @@
     },
     "sun-metro": {
       "changed_at": "2026-06-21T11:28:51+00:00",
-      "checked_at": "2026-07-07T23:20:01+00:00",
+      "checked_at": "2026-07-08T12:02:52+00:00",
       "consecutive_failures": 0,
       "content_length": 1199066,
       "etag": "\"cc70e77f9fcdc1:0\"",
@@ -13851,7 +13851,7 @@
     },
     "sunline-transit-agency": {
       "changed_at": "2026-06-21T01:37:48+00:00",
-      "checked_at": "2026-07-08T09:46:32+00:00",
+      "checked_at": "2026-07-08T12:02:52+00:00",
       "consecutive_failures": 0,
       "content_length": 508546,
       "etag": "\"7c282-63c6f040bd7da\"",
@@ -13895,8 +13895,8 @@
     },
     "suntran": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:01+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:02:52+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -13906,8 +13906,8 @@
     },
     "suntran-2354": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:46:33+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:02:53+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -13928,8 +13928,8 @@
     },
     "suntran-utah": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:06+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:02:53+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -13939,7 +13939,7 @@
     },
     "swan-island-evening-shuttle": {
       "changed_at": "2026-06-21T11:28:51+00:00",
-      "checked_at": "2026-07-07T23:20:07+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 145158,
       "etag": "\"23706-652aa8a2311c0\"",
@@ -13972,7 +13972,7 @@
     },
     "tahoe-area-regional-transit-tart-north-lake-tahoe-express": {
       "changed_at": "2026-06-21T11:28:51+00:00",
-      "checked_at": "2026-07-07T23:20:07+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 551494,
       "etag": "\"86a46-654522e4842b8\"",
@@ -14016,7 +14016,7 @@
     },
     "tar-river-transit": {
       "changed_at": "2026-06-21T01:37:49+00:00",
-      "checked_at": "2026-07-08T09:46:33+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 151170,
       "etag": "\"24e82-6498af1eea3d8\"",
@@ -14027,7 +14027,7 @@
     },
     "tar-river-transit-472": {
       "changed_at": "2026-06-30T07:44:16+00:00",
-      "checked_at": "2026-07-08T09:46:34+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 151170,
       "etag": "\"24e82-6498af1eea3d8\"",
@@ -14038,7 +14038,7 @@
     },
     "tehama-rural-area-express-trax-susanville-indian-rancheria-public-transportation-program": {
       "changed_at": "2026-06-21T01:37:50+00:00",
-      "checked_at": "2026-07-08T09:46:34+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 208836,
       "etag": "\"32fc4-65078d52767b8\"",
@@ -14049,7 +14049,7 @@
     },
     "tehama-rural-area-express-trax-susanville-indian-rancheria-public-transportation-program-116": {
       "changed_at": "2026-06-30T07:44:17+00:00",
-      "checked_at": "2026-07-08T09:46:34+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 208836,
       "etag": "\"32fc4-65078d52767b8\"",
@@ -14170,8 +14170,8 @@
     },
     "the-jule": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:08+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:02:53+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -14203,7 +14203,7 @@
     },
     "the-otter-express": {
       "changed_at": "2026-06-21T09:42:13+00:00",
-      "checked_at": "2026-07-08T09:46:35+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 18434,
       "etag": "\"4802-6494e8c45eeb0\"",
@@ -14225,7 +14225,7 @@
     },
     "the-santa-cruzer": {
       "changed_at": "2026-06-21T11:28:52+00:00",
-      "checked_at": "2026-07-07T23:20:09+00:00",
+      "checked_at": "2026-07-08T12:02:53+00:00",
       "consecutive_failures": 0,
       "content_length": 5165,
       "etag": "\"0x8DDF7BB0B41A760\"",
@@ -14269,7 +14269,7 @@
     },
     "thousand-oaks-transit": {
       "changed_at": "2026-07-07T08:50:43+00:00",
-      "checked_at": "2026-07-08T09:46:36+00:00",
+      "checked_at": "2026-07-08T12:02:54+00:00",
       "consecutive_failures": 0,
       "content_length": 442668,
       "etag": "\"6c12c-655fe52b7bbf8\"",
@@ -14280,7 +14280,7 @@
     },
     "thousand-oaks-transit-33": {
       "changed_at": "2026-07-07T08:50:44+00:00",
-      "checked_at": "2026-07-08T09:46:36+00:00",
+      "checked_at": "2026-07-08T12:02:54+00:00",
       "consecutive_failures": 0,
       "content_length": 442668,
       "etag": "\"6c12c-655fe52b7bbf8\"",
@@ -14291,7 +14291,7 @@
     },
     "thousand-oaks-transit-kanan-shuttle": {
       "changed_at": "2026-06-21T01:38:22+00:00",
-      "checked_at": "2026-07-08T09:46:36+00:00",
+      "checked_at": "2026-07-08T12:02:54+00:00",
       "consecutive_failures": 0,
       "content_length": 12899,
       "etag": "\"3263-64ccc3bc1d108\"",
@@ -14302,7 +14302,7 @@
     },
     "tompkins-consolidated-area-transit-inc": {
       "changed_at": "2026-06-26T15:18:53+00:00",
-      "checked_at": "2026-07-08T09:46:37+00:00",
+      "checked_at": "2026-07-08T12:02:54+00:00",
       "consecutive_failures": 0,
       "content_length": 1287939,
       "etag": "\"2712ef8f6e516946c33f78ffd8b4cbdf\"",
@@ -14313,8 +14313,8 @@
     },
     "torrance-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:10+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:02:54+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -14389,13 +14389,13 @@
       "url": "http://data.trilliumtransit.com/gtfs/telluride-co-us/telluride-co-us.zip"
     },
     "towson-loop": {
-      "changed_at": "2026-07-08T09:46:37+00:00",
-      "checked_at": "2026-07-08T09:46:37+00:00",
+      "changed_at": "2026-07-08T12:02:54+00:00",
+      "checked_at": "2026-07-08T12:02:54+00:00",
       "consecutive_failures": 0,
       "content_length": 39754,
-      "etag": "18bcd02ca7205bea7452bd02c3b5625b",
+      "etag": "fdd411d48b25619b75a56a6ca3e120b6",
       "last_modified": null,
-      "sha256": "6093a92929f5b1a733bba6ee656d7d87f2ad8243f05b9654668c87fa79ed52ff",
+      "sha256": "5a2a9186f3a1e7135125a27446e32f1e5b44d6a4c8f1631309ee39b3084655e1",
       "status": 200,
       "url": "https://passio3.com/towson/passioTransit/gtfs/google_transit.zip"
     },
@@ -14423,8 +14423,8 @@
     },
     "transit-authority-of-northern-kentucky-tank": {
       "changed_at": "2026-07-06T21:07:22+00:00",
-      "checked_at": "2026-07-08T09:46:38+00:00",
-      "consecutive_failures": 14,
+      "checked_at": "2026-07-08T12:02:56+00:00",
+      "consecutive_failures": 15,
       "content_length": 12017,
       "etag": null,
       "last_modified": null,
@@ -14445,8 +14445,8 @@
     },
     "transit-authority-of-river-city-tarc": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:46:41+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:03:00+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -14456,7 +14456,7 @@
     },
     "transit-authority-of-river-city-tarc-2662": {
       "changed_at": "2026-06-21T01:38:57+00:00",
-      "checked_at": "2026-07-08T09:47:11+00:00",
+      "checked_at": "2026-07-08T12:03:30+00:00",
       "consecutive_failures": 0,
       "content_length": 5412817,
       "etag": null,
@@ -14489,8 +14489,8 @@
     },
     "tri-delta-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:45+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:03:33+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -14544,7 +14544,7 @@
     },
     "trinity-transit": {
       "changed_at": "2026-06-21T01:38:57+00:00",
-      "checked_at": "2026-07-08T09:47:12+00:00",
+      "checked_at": "2026-07-08T12:03:33+00:00",
       "consecutive_failures": 0,
       "content_length": 189539,
       "etag": "\"2e463-639f7b127bdc8\"",
@@ -14555,7 +14555,7 @@
     },
     "trinity-transit-115": {
       "changed_at": "2026-06-30T07:45:23+00:00",
-      "checked_at": "2026-07-08T09:47:12+00:00",
+      "checked_at": "2026-07-08T12:03:33+00:00",
       "consecutive_failures": 0,
       "content_length": 189539,
       "etag": "\"2e463-639f7b127bdc8\"",
@@ -14577,7 +14577,7 @@
     },
     "tsc-transit": {
       "changed_at": "2026-06-21T01:38:57+00:00",
-      "checked_at": "2026-07-08T09:47:12+00:00",
+      "checked_at": "2026-07-08T12:03:33+00:00",
       "consecutive_failures": 0,
       "content_length": 90631,
       "etag": "\"16207-646b7b51ac958\"",
@@ -14621,7 +14621,7 @@
     },
     "ucsc-transportation-and-parking-services": {
       "changed_at": "2026-06-21T01:38:58+00:00",
-      "checked_at": "2026-07-08T09:47:12+00:00",
+      "checked_at": "2026-07-08T12:03:33+00:00",
       "consecutive_failures": 0,
       "content_length": 112396,
       "etag": "\"0x8DE3F511BFB4CD7\"",
@@ -14632,7 +14632,7 @@
     },
     "ulster-county-area-transit": {
       "changed_at": "2026-06-21T11:29:28+00:00",
-      "checked_at": "2026-07-07T23:20:46+00:00",
+      "checked_at": "2026-07-08T12:03:33+00:00",
       "consecutive_failures": 0,
       "content_length": 551343,
       "etag": "\"c2991aff89bc855a48b1b6e5c189bad8\"",
@@ -14654,7 +14654,7 @@
     },
     "union-gap": {
       "changed_at": "2026-06-21T11:29:28+00:00",
-      "checked_at": "2026-07-07T23:20:46+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 50948,
       "etag": "\"c704-64e7eb1d5eda8\"",
@@ -14665,7 +14665,7 @@
     },
     "union-gap-277": {
       "changed_at": "2026-06-30T17:10:06+00:00",
-      "checked_at": "2026-07-07T23:20:47+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 50948,
       "etag": "\"c704-64e7eb1d5eda8\"",
@@ -14698,7 +14698,7 @@
     },
     "university-of-california-berkeley-shuttle-bear-transit-226": {
       "changed_at": "2026-06-30T17:10:06+00:00",
-      "checked_at": "2026-07-07T23:20:47+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 75396,
       "etag": "\"12684-5d0ecf00e5660\"",
@@ -14786,7 +14786,7 @@
     },
     "university-of-montana-udash-293": {
       "changed_at": "2026-06-30T17:10:06+00:00",
-      "checked_at": "2026-07-07T23:20:47+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 106871,
       "etag": "\"1a177-60454aae062e0\"",
@@ -14797,7 +14797,7 @@
     },
     "upper-arkansas-area-council-of-governments": {
       "changed_at": "2026-06-21T06:11:16+00:00",
-      "checked_at": "2026-07-08T09:47:13+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 116427,
       "etag": "\"1c6cb-648fd1af72c20\"",
@@ -14885,7 +14885,7 @@
     },
     "vail-transit": {
       "changed_at": "2026-06-21T11:29:28+00:00",
-      "checked_at": "2026-07-07T23:20:47+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 242948,
       "etag": "\"3b504-6525919aa3500\"",
@@ -14940,7 +14940,7 @@
     },
     "valley-metro-2437": {
       "changed_at": "2026-06-21T11:29:28+00:00",
-      "checked_at": "2026-07-07T23:20:48+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 33514,
       "etag": "\"82ea-64d2b5efeeed0\"",
@@ -14951,8 +14951,8 @@
     },
     "valley-metro-vm": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:47:14+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:03:34+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -14962,7 +14962,7 @@
     },
     "valley-regional-transit": {
       "changed_at": "2026-07-06T22:45:12+00:00",
-      "checked_at": "2026-07-08T09:47:14+00:00",
+      "checked_at": "2026-07-08T12:03:34+00:00",
       "consecutive_failures": 0,
       "content_length": 1672870,
       "etag": null,
@@ -15028,7 +15028,7 @@
     },
     "ventura-county-transportation-commission": {
       "changed_at": "2026-06-21T01:39:01+00:00",
-      "checked_at": "2026-07-08T09:47:15+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 1214728,
       "etag": "\"128908-639ea527d74a0\"",
@@ -15050,7 +15050,7 @@
     },
     "ventura-county-transportation-commission-31": {
       "changed_at": "2026-06-30T07:45:27+00:00",
-      "checked_at": "2026-07-08T09:47:15+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 1214728,
       "etag": "\"128908-639ea527d74a0\"",
@@ -15083,7 +15083,7 @@
     },
     "vermont-translines": {
       "changed_at": "2026-06-21T11:29:29+00:00",
-      "checked_at": "2026-07-08T09:47:15+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 264701,
       "etag": "\"409fd-64ab8ad024160\"",
@@ -15094,7 +15094,7 @@
     },
     "vermont-translines-450": {
       "changed_at": "2026-06-30T09:41:13+00:00",
-      "checked_at": "2026-07-08T09:47:16+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 264701,
       "etag": "\"409fd-64ab8ad024160\"",
@@ -15105,8 +15105,8 @@
     },
     "via-metropolitan-transit-via": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:49+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:03:35+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -15138,7 +15138,7 @@
     },
     "via-mobility-180": {
       "changed_at": "2026-06-30T17:10:07+00:00",
-      "checked_at": "2026-07-07T23:20:49+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 308517,
       "etag": "\"4b525-61ba88738cfd8\"",
@@ -15148,13 +15148,13 @@
       "url": "http://data.trilliumtransit.com/gtfs/viamobilityservices-co-us/viamobilityservices-co-us.zip"
     },
     "via-mobility-2395": {
-      "changed_at": "2026-07-08T09:47:16+00:00",
-      "checked_at": "2026-07-08T09:47:16+00:00",
+      "changed_at": "2026-07-08T12:03:35+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 217776,
-      "etag": "e93c6d9f05537c446f66749e12b70c42",
+      "etag": "83588a78b62acca3707fceb159d62035",
       "last_modified": null,
-      "sha256": "fb1a3b4956853793d1ec160bddd7361d0974b907369d0e67942d4b268666d35a",
+      "sha256": "9b4ee70c5441193c9e71d71b270e94438ae59c83e52e27a75af43b3caa2d85a7",
       "status": 200,
       "url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
     },
@@ -15171,7 +15171,7 @@
     },
     "victor-valley-transit-authority-vvta-99": {
       "changed_at": "2026-06-30T17:10:07+00:00",
-      "checked_at": "2026-07-07T23:20:49+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 852256,
       "etag": "\"d0120-623af452f2330\"",
@@ -15237,8 +15237,8 @@
     },
     "virginia-railway-express-vre": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:47:17+00:00",
-      "consecutive_failures": 200,
+      "checked_at": "2026-07-08T12:03:35+00:00",
+      "consecutive_failures": 201,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -15270,7 +15270,7 @@
     },
     "virginia-regional-transit-621": {
       "changed_at": "2026-06-30T17:10:08+00:00",
-      "checked_at": "2026-07-07T23:20:50+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 726757,
       "etag": "\"b16e5-65450c5a47430\"",
@@ -15281,7 +15281,7 @@
     },
     "votran": {
       "changed_at": "2026-06-21T01:39:03+00:00",
-      "checked_at": "2026-07-08T09:47:17+00:00",
+      "checked_at": "2026-07-08T12:03:35+00:00",
       "consecutive_failures": 0,
       "content_length": 1601746,
       "etag": null,
@@ -15347,7 +15347,7 @@
     },
     "wahkiakum-on-the-move-249": {
       "changed_at": "2026-06-30T17:10:10+00:00",
-      "checked_at": "2026-07-07T23:20:51+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 287238,
       "etag": "\"46206-6503acf3d5788\"",
@@ -15413,7 +15413,7 @@
     },
     "washington-park-shuttle": {
       "changed_at": "2026-07-04T07:23:18+00:00",
-      "checked_at": "2026-07-08T09:47:18+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 13727,
       "etag": "\"359f-655b731d4e560\"",
@@ -15435,7 +15435,7 @@
     },
     "washington-state-ferries": {
       "changed_at": "2026-06-21T06:11:22+00:00",
-      "checked_at": "2026-07-08T09:47:19+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 462994,
       "etag": "\"1045716ceedd1:0\"",
@@ -15446,7 +15446,7 @@
     },
     "washington-state-ferries-1331": {
       "changed_at": "2026-06-21T08:10:23+00:00",
-      "checked_at": "2026-07-08T09:47:19+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 297548,
       "etag": "\"ac09a1ef3ce18947f33b10409f5ec80b\"",
@@ -15457,7 +15457,7 @@
     },
     "water-avenue-shuttle": {
       "changed_at": "2026-06-21T11:29:31+00:00",
-      "checked_at": "2026-07-07T23:20:52+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 19494,
       "etag": "\"4c26-5a5b32883ab40\"",
@@ -15468,7 +15468,7 @@
     },
     "watertown-citibus": {
       "changed_at": "2026-06-21T01:39:07+00:00",
-      "checked_at": "2026-07-08T09:47:19+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 18943,
       "etag": "\"801a19e7bf20595d24ad159914cd72a3\"",
@@ -15478,19 +15478,19 @@
       "url": "https://s3.amazonaws.com/datatools-511ny/public/Watertown_Citibus.zip"
     },
     "watertown-citibus-2881": {
-      "changed_at": "2026-07-08T09:47:19+00:00",
-      "checked_at": "2026-07-08T09:47:19+00:00",
+      "changed_at": "2026-07-08T12:03:37+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 29584,
-      "etag": "f6e268bd39cbb8b39c2afe98bbb1fc59",
+      "etag": "39e346d892fd38b54b9f9705811dab68",
       "last_modified": null,
-      "sha256": "4fd11d4d3e9f6927eb5520804329123256d7cc97b6983f23b82a5846e7e9705f",
+      "sha256": "0a7340b0259f93cc740ca22ea1b2ec36f285996359c9548696a906151bad7f07",
       "status": 200,
       "url": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip"
     },
     "waukesha-metro-transit": {
       "changed_at": "2026-06-21T11:29:31+00:00",
-      "checked_at": "2026-07-07T23:20:52+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 390774,
       "etag": "\"5f676-62c5172c4c458\"",
@@ -15501,7 +15501,7 @@
     },
     "waukesha-metro-transit-396": {
       "changed_at": "2026-06-30T17:10:11+00:00",
-      "checked_at": "2026-07-07T23:20:53+00:00",
+      "checked_at": "2026-07-08T12:03:37+00:00",
       "consecutive_failures": 0,
       "content_length": 390774,
       "etag": "\"5f676-62c5172c4c458\"",
@@ -15512,8 +15512,8 @@
     },
     "wave-transit": {
       "changed_at": "2026-07-04T11:53:02+00:00",
-      "checked_at": "2026-07-07T23:20:53+00:00",
-      "consecutive_failures": 6,
+      "checked_at": "2026-07-08T12:03:37+00:00",
+      "consecutive_failures": 7,
       "content_length": 11786,
       "etag": null,
       "last_modified": null,
@@ -15578,7 +15578,7 @@
     },
     "westcat": {
       "changed_at": "2026-06-26T23:49:20+00:00",
-      "checked_at": "2026-07-07T23:20:53+00:00",
+      "checked_at": "2026-07-08T12:03:38+00:00",
       "consecutive_failures": 0,
       "content_length": 308692,
       "etag": "\"4b5d4-6552a5b7f1b20\"",
@@ -15611,7 +15611,7 @@
     },
     "westchester-county-bee-line-system-wcdot-2353": {
       "changed_at": "2026-06-21T01:39:08+00:00",
-      "checked_at": "2026-07-08T09:47:19+00:00",
+      "checked_at": "2026-07-08T12:03:38+00:00",
       "consecutive_failures": 0,
       "content_length": 3569641,
       "etag": "\"75j2m5/NKRloHFcgyUQLrYDElm8=\"",
@@ -15666,8 +15666,8 @@
     },
     "wichita-transit": {
       "changed_at": null,
-      "checked_at": "2026-07-07T23:20:54+00:00",
-      "consecutive_failures": 31,
+      "checked_at": "2026-07-08T12:03:39+00:00",
+      "consecutive_failures": 32,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -15710,7 +15710,7 @@
     },
     "williamsburg-area-transit-authority-901": {
       "changed_at": "2026-06-30T17:10:14+00:00",
-      "checked_at": "2026-07-07T23:20:54+00:00",
+      "checked_at": "2026-07-08T12:03:40+00:00",
       "consecutive_failures": 0,
       "content_length": 374583,
       "etag": "\"5b737-5ed9e87e89298\"",
@@ -15754,7 +15754,7 @@
     },
     "wintran": {
       "changed_at": "2026-06-24T16:16:21+00:00",
-      "checked_at": "2026-07-08T09:47:20+00:00",
+      "checked_at": "2026-07-08T12:03:40+00:00",
       "consecutive_failures": 0,
       "content_length": 50966,
       "etag": "\"c716-648febd44b2a8\"",
@@ -15765,7 +15765,7 @@
     },
     "wintran-608": {
       "changed_at": "2026-06-30T20:11:49+00:00",
-      "checked_at": "2026-07-08T09:47:21+00:00",
+      "checked_at": "2026-07-08T12:03:40+00:00",
       "consecutive_failures": 0,
       "content_length": 50966,
       "etag": "\"c716-648febd44b2a8\"",
@@ -15798,7 +15798,7 @@
     },
     "worcester-regional-transit-authority-wrta-432": {
       "changed_at": "2026-06-30T17:10:14+00:00",
-      "checked_at": "2026-07-07T23:20:55+00:00",
+      "checked_at": "2026-07-08T12:03:40+00:00",
       "consecutive_failures": 0,
       "content_length": 2844519,
       "etag": "\"2b6767-651b942e2fe20\"",
@@ -15886,7 +15886,7 @@
     },
     "yates-transit-service": {
       "changed_at": "2026-06-21T01:39:09+00:00",
-      "checked_at": "2026-07-08T09:47:21+00:00",
+      "checked_at": "2026-07-08T12:03:40+00:00",
       "consecutive_failures": 0,
       "content_length": 128611,
       "etag": "\"2df5602731846c784cdef7413265cf9c\"",
@@ -15897,8 +15897,8 @@
     },
     "yolo-county-transportation-district-yolobus": {
       "changed_at": null,
-      "checked_at": "2026-07-08T09:47:21+00:00",
-      "consecutive_failures": 79,
+      "checked_at": "2026-07-08T12:03:40+00:00",
+      "consecutive_failures": 80,
       "content_length": null,
       "etag": null,
       "last_modified": null,
@@ -15908,7 +15908,7 @@
     },
     "yolobus": {
       "changed_at": "2026-06-21T01:39:09+00:00",
-      "checked_at": "2026-07-08T09:47:22+00:00",
+      "checked_at": "2026-07-08T12:03:40+00:00",
       "consecutive_failures": 0,
       "content_length": 485777,
       "etag": "\"b86f29b63efdc1:0\"",
@@ -15919,7 +15919,7 @@
     },
     "yosemite-area-regional-transportation-system-yarts": {
       "changed_at": "2026-06-21T01:39:10+00:00",
-      "checked_at": "2026-07-08T09:47:22+00:00",
+      "checked_at": "2026-07-08T12:03:41+00:00",
       "consecutive_failures": 0,
       "content_length": 2115394,
       "etag": "\"204742-62f43cfa2cbf8\"",
@@ -15930,7 +15930,7 @@
     },
     "yosemite-area-regional-transportation-system-yarts-2394": {
       "changed_at": "2026-06-21T01:39:11+00:00",
-      "checked_at": "2026-07-08T09:47:23+00:00",
+      "checked_at": "2026-07-08T12:03:41+00:00",
       "consecutive_failures": 0,
       "content_length": 761031,
       "etag": "\"694c4546-b9cc7\"",
@@ -15941,7 +15941,7 @@
     },
     "yosemite-area-regional-transportation-system-yarts-88": {
       "changed_at": "2026-06-30T07:46:05+00:00",
-      "checked_at": "2026-07-08T09:47:23+00:00",
+      "checked_at": "2026-07-08T12:03:41+00:00",
       "consecutive_failures": 0,
       "content_length": 2115394,
       "etag": "\"204742-62f43cfa2cbf8\"",
@@ -15952,7 +15952,7 @@
     },
     "yuba-sutter-transit": {
       "changed_at": "2026-06-21T11:29:34+00:00",
-      "checked_at": "2026-07-07T23:20:56+00:00",
+      "checked_at": "2026-07-08T12:03:41+00:00",
       "consecutive_failures": 0,
       "content_length": 346465,
       "etag": "\"54961-62c5d021744e0\"",
@@ -15974,7 +15974,7 @@
     },
     "yuma-county-intergovernmental-public-transportation-authority-ycipta": {
       "changed_at": "2026-06-21T11:29:34+00:00",
-      "checked_at": "2026-07-07T23:20:56+00:00",
+      "checked_at": "2026-07-08T12:03:41+00:00",
       "consecutive_failures": 0,
       "content_length": 104114,
       "etag": null,

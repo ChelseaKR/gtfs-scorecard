@@ -20,10 +20,10 @@
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "regressed": true,
-      "score_delta": -0.6,
+      "score_delta": -1.4,
       "since": "2026-07-07",
       "to_grade": "F",
-      "to_score": 59.7
+      "to_score": 58.9
     },
     {
       "date": "2026-07-08",
@@ -148,6 +148,18 @@
     {
       "date": "2026-07-08",
       "from_grade": "D",
+      "from_score": 62.6,
+      "id": "gtrans-2270",
+      "name": "GTrans",
+      "regressed": false,
+      "score_delta": 4.3,
+      "since": "2026-07-07",
+      "to_grade": "D",
+      "to_score": 66.9
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "D",
       "from_score": 63.1,
       "id": "via-mobility-2395",
       "name": "Via Mobility",
@@ -168,10 +180,22 @@
       "since": "2026-07-07",
       "to_grade": "D",
       "to_score": 66.7
+    },
+    {
+      "date": "2026-07-08",
+      "from_grade": "C",
+      "from_score": 74.9,
+      "id": "regional-transportation-district-rtd-178",
+      "name": "Regional Transportation District (RTD)",
+      "regressed": false,
+      "score_delta": 1.1,
+      "since": "2026-07-07",
+      "to_grade": "C",
+      "to_score": 76.0
     }
   ],
-  "count": 14,
-  "generated_at": "2026-07-08T10:02:28+00:00",
+  "count": 16,
+  "generated_at": "2026-07-08T12:18:09+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

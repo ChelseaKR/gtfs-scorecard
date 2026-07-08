@@ -83,7 +83,7 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-08T10:02:11+00:00",
+  "generated_at": "2026-07-08T12:17:51+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 29,
@@ -1082,7 +1082,7 @@
       "name": "Bustang",
       "needs_attention": false,
       "score": 73.4,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-08",
       "top_fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -1113,20 +1113,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 80,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "regional-transportation-district-rtd-178",
-      "name": "Regional Transportation District (RTD)",
-      "needs_attention": false,
-      "score": 74.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
       "annual_trips": null,
@@ -1295,6 +1281,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-08",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 80,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "regional-transportation-district-rtd-178",
+      "name": "Regional Transportation District (RTD)",
+      "needs_attention": false,
+      "score": 76.0,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-08",
+      "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
       "annual_trips": null,
@@ -1865,9 +1865,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 117,
+    "not_measured": 115,
     "not_ready": 0,
-    "ready": 9,
+    "ready": 11,
     "total": 126
   },
   "state_percentile": 91
