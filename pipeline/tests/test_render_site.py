@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from scorecard_pipeline.render_site import (
+    _accessibility_depth_signals,
     _accessibility_score,
     _accessibility_substat,
     _california_guideline_checklist,
@@ -442,6 +443,95 @@ def test_accessibility_substat_renders_meter_and_caveat() -> None:
     assert 'role="meter"' in html and 'aria-valuenow="40"' in html
     assert "not verified physical usability" in html
     assert _accessibility_substat({"status": "not_yet_measured"}) == ""
+
+
+def test_accessibility_depth_signals_lists_the_second_lens_checks() -> None:
+    """EXP-05: pathway connectivity and field-plausibility findings (from the
+    second, BlinkTag-modeled accessibility lens) render as an adoption-framed
+    signal list, tagged zero-deduction, distinct from the field-presence
+    sub-score above them."""
+    art = {
+        "recommendations": [
+            {
+                "code": "scorecard_station_missing_step_free_data",
+                "category": "accessibility",
+                "what": "This feed models stations or entrances but has no pathways.txt.",
+                "fix": "Add pathways.txt connecting entrances, platforms, and elevators.",
+            },
+            {
+                "code": "scorecard_fares_v2_rider_categories",
+                "category": "fares",
+                "what": "No rider categories.",
+                "fix": "Add rider_categories.txt.",
+            },
+        ]
+    }
+    html = _accessibility_depth_signals(art)
+    assert "1 accessibility depth signal" in html
+    assert "pathways.txt" in html and "Consider:" in html
+    # A fares recommendation elsewhere in the block is not pulled in here.
+    assert "rider_categories" not in html
+    assert "not deductions" in html
+
+
+def test_accessibility_depth_signals_empty_when_no_accessibility_recs() -> None:
+    assert _accessibility_depth_signals({"recommendations": []}) == ""
+    assert _accessibility_depth_signals({}) == ""
+    assert (
+        _accessibility_depth_signals(
+            {"recommendations": [{"code": "x", "category": "fares", "what": "y", "fix": "z"}]}
+        )
+        == ""
+    )
+
+
+def test_accessibility_substat_includes_depth_signals_when_artifact_given() -> None:
+    cat = {
+        "status": "measured",
+        "details": {"accessibility": {"score": 80.0}},
+    }
+    art = {
+        "recommendations": [
+            {
+                "code": "scorecard_route_color_low_contrast",
+                "category": "accessibility",
+                "what": "1 route badge pairs colors below the WCAG 4.5:1 contrast bar.",
+                "fix": "Adjust route_color or route_text_color.",
+            }
+        ]
+    }
+    html = _accessibility_substat(cat, art)
+    assert "accessibility depth signal" in html
+    assert "contrast" in html
+    # Without an artifact, the sub-score still renders, just without the
+    # second-lens block -- callers that predate EXP-05 keep working.
+    assert "a11y-depth" not in _accessibility_substat(cat)
+
+
+def test_recommendations_section_excludes_accessibility_depth_items() -> None:
+    """EXP-05: accessibility-depth recs get their own celebrated presentation in
+    the sub-score block, not the generic 'beyond the grade' list."""
+    from scorecard_pipeline.render_site import _recommendations_section
+
+    art = {
+        "recommendations": [
+            {
+                "code": "scorecard_stop_name_needs_tts",
+                "category": "accessibility",
+                "what": "3 stop names use abbreviations a screen reader may mispronounce.",
+                "fix": "Add tts_stop_name.",
+            },
+            {
+                "code": "scorecard_fares_v2_rider_categories",
+                "category": "fares",
+                "what": "No rider categories.",
+                "fix": "Add rider_categories.txt so apps can show senior and youth fares.",
+            },
+        ]
+    }
+    html = _recommendations_section(art)
+    assert "rider_categories" in html
+    assert "tts_stop_name" not in html
 
 
 def test_guide_shows_validator_stamp_and_methodology_changelog() -> None:

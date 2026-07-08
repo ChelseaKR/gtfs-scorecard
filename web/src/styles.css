@@ -1674,6 +1674,20 @@ main:focus { outline: none; }
 .platform .substat .pscore { font-size: 1rem; }
 .platform .substat .pstat { font-size: .82rem; margin-top: .1rem; }
 
+/* Accessibility depth signals (EXP-05): the second, field-plausibility and
+   pathway-connectivity lens, nested inside the accessibility sub-score above.
+   Zero-deduction and framed as progress to make, so it reads as a distinct
+   invitation, not a warning -- no red/error color here. */
+.a11y-depth { margin-top: .55rem; padding-top: .55rem; border-top: 1px dashed var(--line); }
+.a11y-depth-label { margin: 0 0 .35rem; font-size: .78rem; font-weight: 600;
+  letter-spacing: .02em; color: var(--ink-soft); }
+.a11y-depth-list { list-style: none; margin: 0; padding: 0; }
+.a11y-depth-list li { padding: .35rem 0; border-top: 1px solid var(--line); }
+.a11y-depth-list li:first-child { border-top: 0; }
+.a11y-depth-what { margin: 0 0 .15rem; font-size: .82rem; }
+.a11y-depth-fix { margin: 0; font-size: .8rem; color: var(--ink-soft); }
+.a11y-depth-note { margin: .45rem 0 0; font-size: .74rem; font-style: italic; color: var(--ink-soft); }
+
 /* top fixes as service alerts */
 .alerts { margin: 0; }
 .alert { display: grid; grid-template-columns: auto 1fr; gap: .9rem; padding: 1.1rem 0; border-bottom: 1.5px dashed var(--line); }

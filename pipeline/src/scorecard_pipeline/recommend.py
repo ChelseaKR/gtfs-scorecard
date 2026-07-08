@@ -34,16 +34,22 @@ def gather_recommendations(gtfs_zip_path: str) -> list[dict[str, object]]:
     """Run the beyond-the-grade checks over a feed and return serialized findings.
 
     Safe to call in the scoring path: each check is sandboxed, and the result is
-    a list of finding dicts (same shape as a category's findings) for the
-    artifact's `recommendations` block."""
+    a list of finding dicts (same shape as a category's findings, plus a
+    `category` tag) for the artifact's `recommendations` block. The tag lets the
+    renderer give the accessibility-depth checks (EXP-05) their own celebrated
+    presentation instead of burying them in the generic "beyond the grade" list,
+    without changing the on-the-wire shape any existing consumer relies on."""
     from .accessibility import accessibility_audit
     from .fares import fares_v2_findings
     from .flex import detect_flex, flex_completeness_findings
 
-    findings: list[Finding] = []
-    findings += _safe("fares_v2", lambda: fares_v2_findings(gtfs_zip_path))
-    findings += _safe(
+    tagged: list[tuple[str, Finding]] = []
+    for f in _safe("fares_v2", lambda: fares_v2_findings(gtfs_zip_path)):
+        tagged.append(("fares", f))
+    for f in _safe(
         "flex_completeness", lambda: flex_completeness_findings(detect_flex(gtfs_zip_path))
-    )
-    findings += _safe("accessibility", lambda: accessibility_audit(gtfs_zip_path))
-    return [f.to_json() for f in findings]
+    ):
+        tagged.append(("flex", f))
+    for f in _safe("accessibility", lambda: accessibility_audit(gtfs_zip_path)):
+        tagged.append(("accessibility", f))
+    return [{**f.to_json(), "category": category} for category, f in tagged]
