@@ -53,6 +53,21 @@ public.
 
 ## FIX-02 — Content-addressed raw feed archive: make any grade reproducible
 
+**Status: code shipped (2026-07-08), S3 tier still gated.** `archive.py`
+stores each fetched feed locally, deduplicated by `feed_sha256`, and writes
+through to S3 when `RAW_ARCHIVE_BUCKET` (or `ARTIFACTS_BUCKET`) is set,
+following the same optional-tier pattern `vcache.py` uses for the validator
+cache: the local copy is the always-on first tier, S3 is the durable second
+tier, and every S3 call is best-effort so a storage hiccup never fails a
+score. `scorecard reproduce <agency> <date>` (`reproduce.py`) pulls the
+archived bytes for a published snapshot, re-runs the validator version that
+artifact recorded, rescores, and diffs against the published grade, score,
+and category scores. Still open from the pitch: the actual AWS account/bucket
+(the same cost gate as `follow-ups.md`'s S3 cutover — without it the archive
+is local-only and does not survive a CI runner), and the ADR on public
+redistribution of a re-served copy (the archive as shipped is
+private-to-pipeline, which needs no license decision).
+
 **Pitch.** Keep the actual GTFS zips (deduplicated by `feed_sha256`) so any
 published grade can be re-derived, byte for byte, at any later date.
 
