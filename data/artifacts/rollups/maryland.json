@@ -1,6 +1,6 @@
 {
   "agency_count": 36,
-  "average_score": 52.2,
+  "average_score": 53.2,
   "common_fixes": [
     {
       "agencies": 28,
@@ -8,12 +8,12 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 21,
+      "agencies": 19,
       "code": "scorecard_feed_expired",
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 13,
+      "agencies": 15,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -29,11 +29,6 @@
     },
     {
       "agencies": 4,
-      "code": "scorecard_missing_headsigns",
-      "fix": "Populate trip_headsign to match what the bus displays."
-    },
-    {
-      "agencies": 4,
       "code": "mixed_case_recommended_field",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
     },
@@ -41,6 +36,11 @@
       "agencies": 4,
       "code": "scorecard_missing_feed_info_dates",
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+    },
+    {
+      "agencies": 3,
+      "code": "scorecard_missing_headsigns",
+      "fix": "Populate trip_headsign to match what the bus displays."
     },
     {
       "agencies": 2,
@@ -59,17 +59,17 @@
     }
   ],
   "expired": {
-    "lapsed": 3,
+    "lapsed": 1,
     "stale": 18,
-    "total": 21
+    "total": 19
   },
-  "generated_at": "2026-07-09T18:29:37+00:00",
+  "generated_at": "2026-07-09T20:29:26+00:00",
   "grade_distribution": {
     "A": 1,
-    "B": 2,
+    "B": 4,
     "C": 4,
     "D": 4,
-    "F": 25
+    "F": 23
   },
   "members": [
     {
@@ -326,6 +326,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Score fell 7.0 points since 2026-07-08",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "needs_attention": true,
+      "score": 50.0,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 58 day(s)",
       "days_until_expiry": 58,
       "expiry_status": "current",
@@ -337,34 +351,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -9,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "regional-transportation-agency-of-central-maryland-rta-489",
-      "name": "Regional Transportation Agency of Central Maryland (RTA)",
-      "needs_attention": true,
-      "score": 55.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "needs_attention": true,
-      "score": 56.6,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -396,17 +382,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -9,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "regional-transportation-agency-of-central-maryland-rta",
-      "name": "Regional Transportation Agency of Central Maryland (RTA)",
+      "attention_reason": "Score fell 3.2 points since 2026-07-08",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "towson-loop",
+      "name": "Towson Loop",
       "needs_attention": true,
-      "score": 59.3,
-      "shapes_status": null,
+      "score": 63.3,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "annual_trips": null,
@@ -418,20 +404,6 @@
       "name": "Local Bus",
       "needs_attention": true,
       "score": 67.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "towson-loop",
-      "name": "Towson Loop",
-      "needs_attention": true,
-      "score": 67.9,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -461,6 +433,34 @@
       "needs_attention": true,
       "score": 73.3,
       "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Score changed sharply on 2026-07-09",
+      "days_until_expiry": 234,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "regional-transportation-agency-of-central-maryland-rta",
+      "name": "Regional Transportation Agency of Central Maryland (RTA)",
+      "needs_attention": true,
+      "score": 81.4,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Score changed sharply on 2026-07-09",
+      "days_until_expiry": 234,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "regional-transportation-agency-of-central-maryland-rta-489",
+      "name": "Regional Transportation Agency of Central Maryland (RTA)",
+      "needs_attention": true,
+      "score": 81.4,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -585,10 +585,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 26,
+    "not_measured": 24,
     "not_ready": 0,
-    "ready": 10,
+    "ready": 12,
     "total": 36
   },
-  "state_percentile": 26
+  "state_percentile": 33
 }

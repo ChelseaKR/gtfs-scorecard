@@ -31,39 +31,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 130
-      },
-      {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "serviceId": "c_71724_b_86139_d_64"
-          },
-          {
-            "csvRowNumber": 3,
-            "serviceId": "c_71724_b_86139_d_32"
-          },
-          {
-            "csvRowNumber": 5,
-            "serviceId": "c_71321_b_84995_d_96"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 3
-      },
-      {
-        "code": "feed_expiration_date7_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260630",
-            "feedEndDate": "20260630",
-            "suggestedExpirationDate": "20260707"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
+        "total": 126
       },
       {
         "code": "route_long_name_contains_short_name",
@@ -73,18 +41,6 @@
             "routeId": "OEC",
             "routeLongName": "OEC Trolley",
             "routeShortName": "OEC"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
-        "code": "trip_coverage_not_active_for_next7_days",
-        "sample_notices": [
-          {
-            "currentDate": "20260630",
-            "serviceWindowEndDate": "20260630",
-            "serviceWindowStartDate": "20260105"
           }
         ],
         "severity": "WARNING",
@@ -149,30 +105,30 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 394,
+            "daysBeforeFeedStart": 418,
             "serviceId": "c_71321_b_84995_d_96",
-            "serviceWindowEndDate": "2026-06-28",
+            "serviceWindowEndDate": "2026-12-27",
             "serviceWindowStartDate": "2025-05-17"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 161,
+            "daysBeforeFeedStart": 185,
             "serviceId": "c_71724_b_86139_d_31",
-            "serviceWindowEndDate": "2026-06-30",
+            "serviceWindowEndDate": "2027-02-26",
             "serviceWindowStartDate": "2026-01-05"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 162,
+            "daysBeforeFeedStart": 186,
             "serviceId": "c_71724_b_86139_d_64",
-            "serviceWindowEndDate": "2026-06-28",
+            "serviceWindowEndDate": "2027-02-28",
             "serviceWindowStartDate": "2026-01-04"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 156,
+            "daysBeforeFeedStart": 180,
             "serviceId": "c_71724_b_86139_d_32",
-            "serviceWindowEndDate": "2026-06-27",
+            "serviceWindowEndDate": "2027-02-27",
             "serviceWindowStartDate": "2026-01-10"
           }
         ],
@@ -182,6 +138,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "61fd1e8c5da96a5da487467a7354014a020112a0b57fdc22fddc08b360e961da",
+  "sha256": "088fd5a62bcf3bff5ec5d9e5600a73e44a515c8fdc31da947e083535962dc4c3",
   "validator_version": "8.0.1"
 }

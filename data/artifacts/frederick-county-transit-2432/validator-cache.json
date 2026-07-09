@@ -5,18 +5,62 @@
         "code": "stop_time_with_arrival_before_previous_departure_time",
         "sample_notices": [
           {
-            "arrivalTime": "07:55:00",
-            "csvRowNumber": 8946,
-            "departureTime": "25:45:00",
-            "prevCsvRowNumber": 8943,
-            "tripId": "714273"
+            "arrivalTime": "06:20:00",
+            "csvRowNumber": 2056,
+            "departureTime": "06:21:00",
+            "prevCsvRowNumber": 2055,
+            "tripId": "713864"
           },
           {
-            "arrivalTime": "20:55:00",
-            "csvRowNumber": 9284,
-            "departureTime": "21:45:00",
-            "prevCsvRowNumber": 9281,
-            "tripId": "714286"
+            "arrivalTime": "08:30:00",
+            "csvRowNumber": 2096,
+            "departureTime": "08:31:00",
+            "prevCsvRowNumber": 2095,
+            "tripId": "713866"
+          },
+          {
+            "arrivalTime": "07:30:00",
+            "csvRowNumber": 2076,
+            "departureTime": "07:31:00",
+            "prevCsvRowNumber": 2075,
+            "tripId": "713865"
+          },
+          {
+            "arrivalTime": "10:30:00",
+            "csvRowNumber": 2136,
+            "departureTime": "10:31:00",
+            "prevCsvRowNumber": 2135,
+            "tripId": "713868"
+          },
+          {
+            "arrivalTime": "09:30:00",
+            "csvRowNumber": 2116,
+            "departureTime": "09:31:00",
+            "prevCsvRowNumber": 2115,
+            "tripId": "713867"
+          }
+        ],
+        "severity": "ERROR",
+        "total": 18
+      },
+      {
+        "code": "start_and_end_range_out_of_order",
+        "sample_notices": [
+          {
+            "csvRowNumber": 863,
+            "endFieldName": "departure_time",
+            "endValue": "06:42:00",
+            "filename": "stop_times.txt",
+            "startFieldName": "arrival_time",
+            "startValue": "06:43:00"
+          },
+          {
+            "csvRowNumber": 953,
+            "endFieldName": "departure_time",
+            "endValue": "15:43:00",
+            "filename": "stop_times.txt",
+            "startFieldName": "arrival_time",
+            "startValue": "15:53:00"
           }
         ],
         "severity": "ERROR",
@@ -357,6 +401,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "d162da42d10591fcb630c50acf580a5a10735fdf62fbc5e6e3f374aafb4e2d11",
+  "sha256": "51c4e23532d837101aaf60542b7cb73a4a7a2811414436a7b19b16b7f95022b1",
   "validator_version": "8.0.1"
 }

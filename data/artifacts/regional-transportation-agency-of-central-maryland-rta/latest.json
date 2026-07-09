@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/regional-transportation-agency-of-central-maryland-rta/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/regional-transportation-agency-of-central-maryland-rta/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -26,20 +25,24 @@
       "details": {
         "accessibility": {
           "measures": "presence_not_usability",
-          "score": 37.7,
+          "score": 0.2,
           "stops_marked_accessible_pct": 0.4,
           "stops_marked_not_accessible_pct": 0.0,
           "stops_stated_pct": 0.4,
-          "trips_stated_pct": 100.0
+          "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
           "headsigns": 15.0,
           "stop_names": 15.0,
           "wheelchair_stops": 0.1,
-          "wheelchair_trips": 15.0
+          "wheelchair_trips": 0.0
         },
         "fare_free": false,
         "fares": {
@@ -68,8 +71,8 @@
           "pathway_count": 0
         },
         "stops": 771,
-        "trips": 1071,
-        "wheelchair_accessible_pct": 100.0,
+        "trips": 1256,
+        "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.4,
         "wheelchair_marked_accessible_pct": 0.4,
         "wheelchair_marked_not_accessible_pct": 0.0
@@ -87,6 +90,17 @@
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1256,
+          "effort": "Often one default setting in your export.",
+          "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1256 of 1256 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
           "code": "scorecard_flex_no_booking_rules",
           "count": 1,
           "effort": "A small file; one rule often covers the whole service.",
@@ -99,25 +113,25 @@
         }
       ],
       "name": "completeness",
-      "score": 75.1,
+      "score": 60.1,
       "status": "measured",
       "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
     },
     "correctness": {
       "details": {
-        "distinct_codes": 6,
+        "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 46,
-          "WARNING": 132
+          "WARNING": 127
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 130,
+          "count": 126,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -125,17 +139,6 @@
           "severity": "WARNING",
           "what": "Some stops exist in the feed but no trip ever stops at them.",
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
-        },
-        {
-          "code": "feed_expiration_date30_days",
-          "count": 1,
-          "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 30 days.",
-          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
         },
         {
           "code": "route_long_name_contains_short_name",
@@ -183,39 +186,27 @@
         }
       ],
       "name": "correctness",
-      "score": 82.0,
+      "score": 86.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 178 instances (0 error, 132 warning, 46 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 173 instances (0 error, 127 warning, 46 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": -9,
-        "feed_end_date": "2026-06-30",
-        "feed_start_date": "2026-06-15",
-        "feed_version": "UTC: 15-Jun-2026 17:36",
+        "days_until_expiry": 234,
+        "feed_end_date": "2027-02-28",
+        "feed_start_date": "2026-07-09",
+        "feed_version": "UTC: 09-Jul-2026 18:14",
         "has_feed_info": true,
-        "last_service_date": "2026-06-30",
+        "last_service_date": "2027-02-28",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expired",
-          "count": 1,
-          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-          "owner": "Likely your export tool",
-          "points": 100.0,
-          "severity": "ERROR",
-          "what": "Service data ended 9 day(s) ago.",
-          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 0.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data ended 9 day(s) ago. Trip planners have likely already dropped this feed.",
+      "summary": "Service data covers the next 234 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -224,6 +215,18 @@
       "summary": "This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -234,27 +237,33 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 3 days; renew to qualify.",
+        "detail": "Service data covers the next 234 days.",
         "key": "current",
-        "met": false
+        "met": true
       },
       {
-        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
         "key": "accessible",
         "met": false
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 3 days; renew to qualify. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "61fd1e8c5da96a5da487467a7354014a020112a0b57fdc22fddc08b360e961da",
-    "size_bytes": 797087,
+    "sha256": "088fd5a62bcf3bff5ec5d9e5600a73e44a515c8fdc31da947e083535962dc4c3",
+    "size_bytes": 887735,
     "static_url": "https://data.trilliumtransit.com/gtfs/centralmarylandrta-md-us/centralmarylandrta-md-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/centralmarylandrta-md-us/centralmarylandrta-md-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.91936,
@@ -267,7 +276,7 @@
     "stop_count": 771
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1529"
     ],
@@ -286,22 +295,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 3 days; renew before you certify.",
+        "detail": "Service data covers the next 234 days.",
         "key": "current",
-        "status": "at_risk"
+        "status": "ready"
       }
     ],
-    "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 3 days; renew before you certify."
+    "status": "ready",
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 59.3,
-    "margin_to_next_band": 0.7,
-    "score": 59.3
+    "grade": "B",
+    "margin_to_lower_band": 1.4,
+    "margin_to_next_band": 8.6,
+    "score": 81.4
   },
   "recommendations": [
     {
+      "category": "flex",
       "code": "scorecard_flex_completeness_no_booking_rules",
       "count": 1,
       "effort": "A small file; one rule often covers the whole service.",
@@ -313,6 +323,7 @@
       "why": "Riders can see the service area but not how to book, so they can't complete a trip."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 16,
       "effort": "A per-route color setting in your scheduling software.",
@@ -324,6 +335,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 8,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -335,46 +347,221 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 771,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 130,
+        "count": 126,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "130 of 771 boardable stops are never served by any trip.",
+        "what": "126 of 771 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 130,
+    "orphan_stops": 126,
     "single_stop_trips": 0,
-    "trips_total": 1071
+    "trips_total": 1256
+  },
+  "route_map": {
+    "drawn_route_count": 15,
+    "has_shapes": true,
+    "path": "data/artifacts/regional-transportation-agency-of-central-maryland-rta/geometry.geojson",
+    "route_count": 16,
+    "routes": [
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "301",
+        "label": "301",
+        "long": "South Laurel",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "302",
+        "label": "302",
+        "long": "Greenbelt Metro Station",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "401",
+        "label": "401",
+        "long": "Harper's Choice / Clary's Forest",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "402",
+        "label": "402",
+        "long": "Columbia Crossing / Dobbin Center",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "403",
+        "label": "403",
+        "long": "Executive Park Drive",
+        "short": "403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "404",
+        "label": "404",
+        "long": "Hickory Ridge",
+        "short": "404",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "405",
+        "label": "405",
+        "long": "Ellicott City",
+        "short": "405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "407",
+        "label": "407",
+        "long": "Owen Brown / Kings Contrivance",
+        "short": "407",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "408",
+        "label": "408",
+        "long": "Lark Brown / Waterloo",
+        "short": "408",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "409",
+        "label": "409",
+        "long": "Elkridge Corners",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "414",
+        "label": "414",
+        "long": "Kings Contrivance",
+        "short": "414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "501",
+        "label": "501",
+        "long": "Columbia / Arundel Mills",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "502",
+        "label": "502",
+        "long": "Laurel / Arundel Mills",
+        "short": "502",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "503",
+        "label": "503",
+        "long": "Laurel / Columbia",
+        "short": "503",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE2F2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "505",
+        "label": "505",
+        "long": "Columbia / Catonsville",
+        "short": "505",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "071370",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "OEC",
+        "label": "OEC",
+        "long": "OEC Trolley",
+        "short": "OEC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 771,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 1256 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1256,
+    "trips_with_shape": 1256
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
-    {
-      "code": "scorecard_feed_expired",
-      "count": 1,
-      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-      "owner": "Likely your export tool",
-      "points": 100.0,
-      "rank": 1,
-      "severity": "ERROR",
-      "what": "Service data ended 9 day(s) ago.",
-      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 768,
@@ -382,14 +569,26 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 24.9,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "768 of 771 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1256,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1256 of 1256 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
       "code": "stop_without_stop_time",
-      "count": 130,
+      "count": 126,
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",

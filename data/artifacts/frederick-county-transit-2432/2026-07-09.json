@@ -117,9 +117,9 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 10,
+        "distinct_codes": 11,
         "instances_by_severity": {
-          "ERROR": 3,
+          "ERROR": 21,
           "INFO": 11,
           "WARNING": 56
         },
@@ -128,13 +128,24 @@
       "findings": [
         {
           "code": "stop_time_with_arrival_before_previous_departure_time",
-          "count": 2,
+          "count": 18,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
-          "points": 12.0,
+          "points": 18.0,
           "severity": "ERROR",
           "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "start_and_end_range_out_of_order",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'start_and_end_range_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Start and end range out of order (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
@@ -238,9 +249,9 @@
         }
       ],
       "name": "correctness",
-      "score": 46.8,
+      "score": 28.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 70 instances (3 error, 56 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 88 instances (21 error, 56 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -263,21 +274,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 64.7,
+        "coverage_pct": 57.9,
         "covered_trips": 11,
         "drift": {
-          "median_seconds": -182,
-          "observations": 116,
-          "on_time_share_pct": 15.5,
-          "p90_abs_seconds": 1913
+          "median_seconds": -298,
+          "observations": 137,
+          "on_time_share_pct": 13.1,
+          "p90_abs_seconds": 1447
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 17,
-        "vehicles_checked": 34,
-        "vehicles_on_route_pct": 94.1,
-        "worst_lag_seconds": 5
+        "scheduled_trips_in_window": 19,
+        "vehicles_checked": 32,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -293,31 +304,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 6,
+          "count": 8,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 12.4,
+          "points": 14.7,
           "severity": "WARNING",
-          "what": "6 of 17 trips scheduled during the sampling window had no live predictions.",
+          "what": "8 of 19 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
-        },
-        {
-          "code": "scorecard_rt_predictions_implausible",
-          "count": 116,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
-          "owner": "",
-          "points": 0.0,
-          "severity": "WARNING",
-          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
-          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 78.4,
+      "score": 76.9,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 64.7% of scheduled trips had live predictions; 94.1% of vehicles on their route; predictions ran a median of 182s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 57.9% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 298s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -338,7 +338,7 @@
     "awarded": false,
     "criteria": [
       {
-        "detail": "2 validator errors to resolve.",
+        "detail": "3 validator errors to resolve.",
         "key": "valid",
         "met": false
       },
@@ -354,13 +354,13 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 87% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 87% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d162da42d10591fcb630c50acf580a5a10735fdf62fbc5e6e3f374aafb4e2d11",
-    "size_bytes": 380498,
+    "sha256": "51c4e23532d837101aaf60542b7cb73a4a7a2811414436a7b19b16b7f95022b1",
+    "size_bytes": 381362,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -396,7 +396,7 @@
         "status": "ready"
       },
       {
-        "detail": "2 validator errors to resolve.",
+        "detail": "3 validator errors to resolve.",
         "key": "valid",
         "status": "at_risk"
       },
@@ -407,13 +407,13 @@
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. 2 validator errors to resolve. Service data runs out in 30 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. 3 validator errors to resolve. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 56.6,
-    "margin_to_next_band": 3.4,
-    "score": 56.6
+    "margin_to_lower_band": 50.0,
+    "margin_to_next_band": 10.0,
+    "score": 50.0
   },
   "recommendations": [
     {
@@ -669,14 +669,26 @@
   "top_fixes": [
     {
       "code": "stop_time_with_arrival_before_previous_departure_time",
-      "count": 2,
+      "count": 18,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
-      "points": 12.0,
+      "points": 18.0,
       "rank": 1,
       "severity": "ERROR",
       "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "start_and_end_range_out_of_order",
+      "count": 2,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'start_and_end_range_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Start and end range out of order (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
     },
     {
@@ -686,22 +698,10 @@
       "fix": "Review the rule documentation for 'block_trips_with_overlapping_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 12.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "ERROR",
       "what": "Block trips with overlapping stop times (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
-    },
-    {
-      "code": "scorecard_rt_service_alerts_unreachable",
-      "count": 1,
-      "effort": "Usually a vendor support ticket.",
-      "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
-      "owner": "",
-      "points": 8.3,
-      "rank": 3,
-      "severity": "ERROR",
-      "what": "The service alerts realtime feed failed during sampling.",
-      "why": "When this feed is down, riders see scheduled times presented as if they were live."
     }
   ],
   "validator_version": "8.0.1"

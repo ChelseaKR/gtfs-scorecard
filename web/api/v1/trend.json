@@ -1,6 +1,6 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-09T18:30:00+00:00",
+  "generated_at": "2026-07-09T20:29:51+00:00",
   "license": "CC-BY-4.0",
   "points": [
     {
@@ -122,15 +122,15 @@
     },
     {
       "agency_count": 1449,
-      "average_score": 60.7,
+      "average_score": 60.8,
       "date": "2026-07-09",
-      "expired_pct": 42.9,
+      "expired_pct": 42.7,
       "grade_distribution": {
         "A": 50,
-        "B": 239,
-        "C": 277,
-        "D": 161,
-        "F": 722
+        "B": 242,
+        "C": 281,
+        "D": 158,
+        "F": 718
       }
     }
   ],
@@ -140,11 +140,11 @@
       "date": "2026-06-30"
     },
     "last": {
-      "average_score": 60.7,
+      "average_score": 60.8,
       "date": "2026-07-09"
     },
     "points": 10,
-    "score_delta": -0.3
+    "score_delta": -0.2
   },
   "top_improvers": [
     {
@@ -209,6 +209,16 @@
     },
     {
       "date_end": "2026-07-09",
+      "date_start": "2026-06-30",
+      "delta": 25.6,
+      "grade_end": "B",
+      "id": "regional-transportation-agency-of-central-maryland-rta-489",
+      "name": "Regional Transportation Agency of Central Maryland (RTA)",
+      "score_end": 81.4,
+      "score_start": 55.8
+    },
+    {
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
       "delta": 25.4,
       "grade_end": "D",
@@ -236,16 +246,6 @@
       "name": "Queens Bus",
       "score_end": 68.7,
       "score_start": 43.5
-    },
-    {
-      "date_end": "2026-07-09",
-      "date_start": "2026-06-19",
-      "delta": 25.2,
-      "grade_end": "D",
-      "id": "metropolitan-transit-authority-mta-514",
-      "name": "Staten Island Bus",
-      "score_end": 68.4,
-      "score_start": 43.2
     }
   ]
 }

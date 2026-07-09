@@ -175,37 +175,48 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 57.1,
-        "covered_trips": 4,
+        "coverage_pct": 0.0,
+        "covered_trips": 0,
         "drift": {
-          "median_seconds": 2367,
-          "observations": 11,
-          "on_time_share_pct": 9.1,
-          "p90_abs_seconds": 10341
+          "median_seconds": 6736,
+          "observations": 9,
+          "on_time_share_pct": 11.1,
+          "p90_abs_seconds": 14103
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 7,
-        "vehicles_checked": 23,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 2
+        "scheduled_trips_in_window": 8,
+        "vehicles_checked": 20,
+        "vehicles_on_route_pct": 80.0,
+        "worst_lag_seconds": 3
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 3,
+          "count": 8,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 15.0,
+          "points": 35.0,
           "severity": "WARNING",
-          "what": "3 of 7 trips scheduled during the sampling window had no live predictions.",
+          "what": "8 of 8 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         },
         {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 4,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 3.0,
+          "severity": "WARNING",
+          "what": "4 of 20 sampled vehicle positions were far from their assigned route (worst: 3670 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+        },
+        {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 11,
+          "count": 9,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -216,9 +227,9 @@
         }
       ],
       "name": "realtime",
-      "score": 85.0,
+      "score": 62.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 57.1% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 2367s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; 80.0% of vehicles on their route; predictions ran a median of 6736s behind schedule.",
       "weight": 0.2
     }
   },
@@ -260,7 +271,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "376322eb6c537e06977097154bfe3ba7c39cbb0c03b9bb7a37f4e1c9b8a33db4",
+    "sha256": "7bc0c91a29332930ecf51f40683ec290bd5fcc98f3f6e1c91a451848ff9d1a2c",
     "size_bytes": 39754,
     "static_url": "https://passio3.com/towson/passioTransit/gtfs/google_transit.zip"
   },
@@ -312,9 +323,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 7.9,
-    "margin_to_next_band": 2.1,
-    "score": 67.9
+    "margin_to_lower_band": 3.3,
+    "margin_to_next_band": 6.7,
+    "score": 63.3
   },
   "recommendations": [
     {
@@ -392,13 +403,25 @@
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 8,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 35.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "8 of 8 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    },
+    {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 47,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 1,
+      "rank": 2,
       "severity": "WARNING",
       "what": "47 of 47 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -410,22 +433,10 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "WARNING",
       "what": "369 of 369 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
-    },
-    {
-      "code": "scorecard_missing_headsigns",
-      "count": 369,
-      "effort": "Usually a bulk edit in your scheduling software.",
-      "fix": "Populate trip_headsign to match what the bus displays.",
-      "owner": "Likely your export tool",
-      "points": 15.0,
-      "rank": 3,
-      "severity": "WARNING",
-      "what": "369 of 369 trips have no headsign.",
-      "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],
   "validator_version": "8.0.1"

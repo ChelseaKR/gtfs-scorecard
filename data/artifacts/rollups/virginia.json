@@ -1,6 +1,6 @@
 {
   "agency_count": 75,
-  "average_score": 63.8,
+  "average_score": 64.7,
   "common_fixes": [
     {
       "agencies": 69,
@@ -13,14 +13,9 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 22,
+      "agencies": 26,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
-    },
-    {
-      "agencies": 15,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "agencies": 14,
@@ -31,6 +26,11 @@
       "agencies": 12,
       "code": "stop_without_stop_time",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
+    },
+    {
+      "agencies": 11,
+      "code": "scorecard_feed_expiring_soon",
+      "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "agencies": 4,
@@ -78,12 +78,12 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-09T18:29:37+00:00",
+  "generated_at": "2026-07-09T20:29:26+00:00",
   "grade_distribution": {
     "B": 17,
-    "C": 19,
-    "D": 14,
-    "F": 25
+    "C": 23,
+    "D": 12,
+    "F": 23
   },
   "members": [
     {
@@ -379,62 +379,6 @@
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 23 day(s)",
-      "days_until_expiry": 23,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "wintran",
-      "name": "WinTran",
-      "needs_attention": true,
-      "score": 59.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 23 day(s)",
-      "days_until_expiry": 23,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "wintran-608",
-      "name": "WinTran",
-      "needs_attention": true,
-      "score": 59.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 23 day(s)",
-      "days_until_expiry": 23,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "mountain-lynx-transit",
-      "name": "Mountain Lynx Transit",
-      "needs_attention": true,
-      "score": 62.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 23 day(s)",
-      "days_until_expiry": 23,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "mountain-lynx-transit-334",
-      "name": "Mountain Lynx Transit",
-      "needs_attention": true,
-      "score": 62.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -820,6 +764,34 @@
       "days_until_expiry": 207,
       "expiry_status": "current",
       "grade": "C",
+      "id": "wintran",
+      "name": "WinTran",
+      "needs_attention": false,
+      "score": 74.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 207,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "wintran-608",
+      "name": "WinTran",
+      "needs_attention": false,
+      "score": 74.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 207,
+      "expiry_status": "current",
+      "grade": "C",
       "id": "radford-transit-2415",
       "name": "Radford Transit",
       "needs_attention": false,
@@ -895,6 +867,34 @@
       "needs_attention": false,
       "score": 78.6,
       "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 207,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "mountain-lynx-transit",
+      "name": "Mountain Lynx Transit",
+      "needs_attention": false,
+      "score": 79.6,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 207,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "mountain-lynx-transit-334",
+      "name": "Mountain Lynx Transit",
+      "needs_attention": false,
+      "score": 79.6,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -1137,7 +1137,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
-  "needs_attention": 38,
+  "needs_attention": 34,
   "rollup": {
     "id": "virginia",
     "name": "Virginia agencies"
@@ -1145,10 +1145,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 2,
-    "not_measured": 53,
+    "not_measured": 49,
     "not_ready": 1,
-    "ready": 19,
+    "ready": 23,
     "total": 75
   },
-  "state_percentile": 78
+  "state_percentile": 80
 }

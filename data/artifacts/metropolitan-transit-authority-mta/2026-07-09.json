@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 127,
-        "trips": 2068,
+        "trips": 2087,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 96.1,
@@ -66,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 2068,
+          "count": 2087,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "2068 of 2068 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2087 of 2087 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -203,7 +203,7 @@
         "kinds_reachable": 1,
         "rt_freshness": null,
         "samples": 3,
-        "scheduled_trips_in_window": 37,
+        "scheduled_trips_in_window": 47,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -242,13 +242,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 37,
+          "count": 47,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "37 of 37 trips scheduled during the sampling window had no live predictions.",
+          "what": "47 of 47 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -297,8 +297,8 @@
   "feed": {
     "license_note": "License: http://web.mta.info/developers/developer-data-terms.html",
     "reachable": true,
-    "sha256": "84172f9831a2ceaa3b3744356beef27cff542d698e2141cf1a741f6b643b3313",
-    "size_bytes": 1836168,
+    "sha256": "157c56e36b3bf4cac64f984f0847c8f3a40c83776561e5d23e31cedba284d9e3",
+    "size_bytes": 1838290,
     "static_url": "http://web.mta.info/developers/data/lirr/google_transit.zip"
   },
   "fetch": {
@@ -396,7 +396,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 2068
+    "trips_total": 2087
   },
   "route_map": {
     "drawn_route_count": 12,
@@ -554,10 +554,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 2068 trips have a shape in shapes.txt.",
+    "detail": "All 2087 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 2068,
-    "trips_with_shape": 2068
+    "total_trips": 2087,
+    "trips_with_shape": 2087
   },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
@@ -587,14 +587,14 @@
     },
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 37,
+      "count": 47,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "37 of 37 trips scheduled during the sampling window had no live predictions.",
+      "what": "47 of 47 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     }
   ],

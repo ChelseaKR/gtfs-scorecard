@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/shreveport-and-bossier-city/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/shreveport-and-bossier-city/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -359,7 +358,7 @@
         "kinds_reachable": 0,
         "rt_freshness": null,
         "samples": 9,
-        "scheduled_trips_in_window": 28,
+        "scheduled_trips_in_window": 29,
         "worst_lag_seconds": null
       },
       "findings": [
@@ -398,13 +397,13 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 28,
+          "count": 29,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "28 of 28 trips scheduled during the sampling window had no live predictions.",
+          "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
@@ -437,7 +436,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 26839 days.",
+        "detail": "Service data covers the next 26838 days.",
         "key": "current",
         "met": true
       },
@@ -460,11 +459,11 @@
   "fetch": {
     "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-louisiana-shreveport-and-bossier-city-gtfs-1060.zip?alt=media",
     "max_attempts": 1,
-    "origin_error": "ConnectTimeout",
+    "origin_error": "HTTPError",
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -93.90023,
@@ -496,7 +495,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 26839 days.",
+        "detail": "Service data covers the next 26838 days.",
         "key": "current",
         "status": "ready"
       }
@@ -512,6 +511,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 18,
       "effort": "A per-route color setting in your scheduling software.",
@@ -523,6 +523,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 853,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -534,11 +535,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 906,
     "findings": [
