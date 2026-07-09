@@ -28,4 +28,4 @@
 - [ ] `make verify` passes locally (lint, format, mypy, tests + 92% branch coverage, AAA contrast, plain-language readability, no bare TODO/FIXME/HACK)
 - [ ] Findings and UI copy frame issues as fixes, in plain language
 - [ ] Accessibility (any web/HTML change): the `Accessibility` axe gate and the contrast gate pass; a new page/route is added to `.pa11yci.json`; keyboard-operable with visible focus, correct labels/roles, no colour-only meaning, respects reduced motion
-- [ ] If a primary task changed (nav, forms, scorecard, map, theme): the manual AT pass in [docs/accessibility-testing.md](docs/accessibility-testing.md) was re-run and its log updated
+- [ ] If a primary task changed (nav, forms, scorecard, map, theme): the manual AT pass in [docs/accessibility-testing.md](../docs/accessibility-testing.md) was re-run and its log updated
