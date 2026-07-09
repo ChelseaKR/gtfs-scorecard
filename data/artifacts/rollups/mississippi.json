@@ -1,6 +1,6 @@
 {
   "agency_count": 4,
-  "average_score": 64.5,
+  "average_score": 65.0,
   "common_fixes": [
     {
       "agencies": 3,
@@ -23,10 +23,10 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-09T05:27:32+00:00",
+  "generated_at": "2026-07-09T09:08:55+00:00",
   "grade_distribution": {
     "A": 1,
-    "D": 1,
+    "C": 1,
     "F": 2
   },
   "members": [
@@ -60,17 +60,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Grade slipped from C to D",
-      "days_until_expiry": 29,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
-      "grade": "D",
+      "grade": "C",
       "id": "city-of-jackson-jtran",
       "name": "City of Jackson (JTRAN)",
       "needs_attention": true,
-      "score": 68.9,
+      "score": 71.1,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,

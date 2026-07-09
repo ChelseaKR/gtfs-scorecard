@@ -17,6 +17,24 @@
       "code": "scorecard_no_feed_contact",
       "last_seen": "2026-07-07",
       "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url)."
+    },
+    {
+      "cleared": "2026-07-09",
+      "code": "feed_valid_beyond_total_service_window",
+      "last_seen": "2026-07-08",
+      "what": "Feed valid beyond total service window (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-09",
+      "code": "service_has_no_active_day_of_the_week",
+      "last_seen": "2026-07-08",
+      "what": "Some service calendars have no days of the week switched on."
+    },
+    {
+      "cleared": "2026-07-09",
+      "code": "stops_match_shape_out_of_order",
+      "last_seen": "2026-07-08",
+      "what": "Stops match shape out of order (flagged by the MobilityData validator)."
     }
   ]
 }

@@ -23,7 +23,7 @@
           "supported": false
         },
         "components": {
-          "contact": 15.0,
+          "contact": 7.5,
           "fares": 15.0,
           "headsigns": 15.0,
           "stop_names": 15.0,
@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 161,
-        "trips": 958,
+        "trips": 699,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 58.4,
         "wheelchair_marked_accessible_pct": 58.4,
@@ -76,6 +76,17 @@
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "App makers and state data programs have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
           "code": "scorecard_station_no_pathways",
           "count": 1,
           "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -88,25 +99,25 @@
         }
       ],
       "name": "completeness",
-      "score": 89.6,
+      "score": 82.1,
       "status": "measured",
       "summary": "58% of stops state wheelchair accessibility (58% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
     },
     "correctness": {
       "details": {
-        "distinct_codes": 12,
+        "distinct_codes": 10,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 7,
-          "WARNING": 1187
+          "INFO": 6,
+          "WARNING": 1028
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 782,
+          "count": 700,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -117,7 +128,7 @@
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 240,
+          "count": 165,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -149,15 +160,15 @@
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
-          "code": "stops_match_shape_out_of_order",
-          "count": 2,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stops_match_shape_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Stops match shape out of order (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         },
         {
           "code": "route_short_name_too_long",
@@ -169,17 +180,6 @@
           "severity": "WARNING",
           "what": "Route short name too long (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "service_has_no_active_day_of_the_week",
-          "count": 1,
-          "effort": "A few minutes in your scheduling software.",
-          "fix": "Delete the empty calendars or set their service days.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars have no days of the week switched on.",
-          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
         },
         {
           "code": "stop_too_far_from_shape",
@@ -215,17 +215,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "feed_valid_beyond_total_service_window",
-          "count": 1,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'feed_valid_beyond_total_service_window' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.5,
-          "severity": "INFO",
-          "what": "Feed valid beyond total service window (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
           "code": "unused_station",
           "count": 1,
           "effort": "Varies.",
@@ -238,25 +227,37 @@
         }
       ],
       "name": "correctness",
-      "score": 50.0,
+      "score": 54.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 12 kinds of issue across 1194 instances (0 error, 1187 warning, 7 informational).",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 1034 instances (0 error, 1028 warning, 6 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 175,
-        "feed_end_date": "2050-12-31",
-        "feed_start_date": "2025-06-08",
-        "feed_version": "20250608",
-        "has_feed_info": true,
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
         "last_service_date": "2026-12-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
       "name": "freshness",
-      "score": 100.0,
+      "score": 85.0,
       "status": "measured",
       "summary": "Service data covers the next 175 days.",
       "weight": 0.2
@@ -289,7 +290,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 176 days.",
+        "detail": "Service data covers the next 175 days.",
         "key": "current",
         "met": true
       },
@@ -305,8 +306,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "35770254526f117d0f4df8c870380584ff806f12cab55586a82590c5a5e6af0b",
-    "size_bytes": 704270,
+    "sha256": "5b02678ddfa192539ea09344b06b7e029f441d0df9b59e94e7da8fb554325884",
+    "size_bytes": 834022,
     "static_url": "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_lightrail.zip"
   },
   "fetch": {
@@ -315,7 +316,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.67371,
@@ -330,7 +331,7 @@
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
-      "1"
+      "30034"
     ],
     "status": "unknown"
   },
@@ -347,7 +348,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 176 days.",
+        "detail": "Service data covers the next 175 days.",
         "key": "current",
         "status": "ready"
       }
@@ -357,12 +358,13 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 4.9,
-    "margin_to_next_band": 5.1,
-    "score": 74.9
+    "margin_to_lower_band": 0.7,
+    "margin_to_next_band": 9.3,
+    "score": 70.7
   },
   "recommendations": [
     {
+      "category": "fares",
       "code": "scorecard_fares_v2_no_fare_media",
       "count": 0,
       "effort": "A short file; one row per payment method you accept.",
@@ -374,17 +376,19 @@
       "why": "Riders can't tell from the feed which payment methods you accept, such as a transit card, a mobile app, or tap-to-pay with a contactless bank card."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
-      "count": 2,
+      "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (LIGHT RAILLINK, LR Shuttle).",
+      "what": "1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (LIGHT RAILLINK).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 14,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -396,6 +400,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -407,11 +412,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 127,
     "findings": [
@@ -429,13 +429,13 @@
     ],
     "orphan_stops": 60,
     "single_stop_trips": 0,
-    "trips_total": 958
+    "trips_total": 699
   },
   "route_map": {
     "drawn_route_count": 1,
     "has_shapes": true,
     "path": "data/artifacts/maryland-transit-administration-469/geometry.geojson",
-    "route_count": 2,
+    "route_count": 1,
     "routes": [
       {
         "color": "007499",
@@ -447,17 +447,6 @@
         "short": "LIGHT RAILLINK",
         "text_color": "000000",
         "type_label": "Tram / light rail"
-      },
-      {
-        "color": "808285",
-        "color_name": "gray",
-        "has_shape": false,
-        "id": "99999",
-        "label": "LR Shuttle",
-        "long": "Light RailLink Bus Shuttle",
-        "short": "LR Shuttle",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
       }
     ],
     "stop_count": 161,
@@ -466,13 +455,25 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 958 trips have a shape in shapes.txt.",
+    "detail": "All 699 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 958,
-    "trips_with_shape": 958
+    "total_trips": 699,
+    "trips_with_shape": 699
   },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 67,
@@ -480,34 +481,22 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 10.4,
-      "rank": 1,
+      "rank": 2,
       "severity": "WARNING",
       "what": "67 of 161 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "mixed_case_recommended_field",
-      "count": 782,
+      "count": 700,
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
       "owner": "Likely your export tool",
       "points": 8.0,
-      "rank": 2,
+      "rank": 3,
       "severity": "WARNING",
       "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
       "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
-    },
-    {
-      "code": "stop_too_far_from_shape_using_user_distance",
-      "count": 240,
-      "effort": "Varies.",
-      "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "owner": "",
-      "points": 8.0,
-      "rank": 3,
-      "severity": "WARNING",
-      "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
-      "why": "See the linked rule for what this affects."
     }
   ],
   "validator_version": "8.0.1"

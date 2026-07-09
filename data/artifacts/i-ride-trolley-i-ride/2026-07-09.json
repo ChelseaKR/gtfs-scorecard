@@ -235,7 +235,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 8578 days.",
+        "detail": "Service data covers the next 8577 days.",
         "key": "current",
         "met": true
       },
@@ -251,7 +251,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "6ad0598e10daca898d09d9804558d9b88b24cf3b219a4d4dc89a7fb7bd769113",
+    "sha256": "51cf312a6d9bdaf9fd0611ccc9ad162fd43afef328d8b6067957f00f76a8e831",
     "size_bytes": 55979,
     "static_url": "https://buswhere.com/iridetrolley/gtfs/schedule"
   },
@@ -261,7 +261,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -81.4893,
@@ -293,7 +293,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 8578 days.",
+        "detail": "Service data covers the next 8577 days.",
         "key": "current",
         "status": "ready"
       }
@@ -309,6 +309,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 2,
       "effort": "A per-route color setting in your scheduling software.",
@@ -320,6 +321,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 14,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -331,11 +333,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 187,
     "findings": [],
@@ -421,16 +418,16 @@
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

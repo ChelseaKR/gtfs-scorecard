@@ -227,13 +227,15 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
+        "vehicles_checked": 1,
+        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 0
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route.",
       "weight": 0.2
     }
   },
@@ -259,7 +261,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 175 days.",
+        "detail": "Service data covers the next 174 days.",
         "key": "current",
         "met": true
       },
@@ -275,7 +277,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "8c982e242f049d44258fe9c30262d42e53eeb71edf02ce522bdb0ef8424c325b",
+    "sha256": "48097caf790e19f9965359a8417e1474fdeb49fad5cbdabd91dd4d6e2f46e427",
     "size_bytes": 268717,
     "static_url": "http://mountainline.syncromatics.com/gtfs"
   },
@@ -285,7 +287,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -111.69121,
@@ -317,7 +319,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 175 days.",
+        "detail": "Service data covers the next 174 days.",
         "key": "current",
         "status": "ready"
       }
@@ -333,6 +335,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 3,
       "effort": "A per-route color setting in your scheduling software.",
@@ -344,6 +347,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 125,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -355,11 +359,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 176,
     "findings": [],

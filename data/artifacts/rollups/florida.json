@@ -18,7 +18,7 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 8,
+      "agencies": 7,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -26,6 +26,11 @@
       "agencies": 5,
       "code": "missing_required_column",
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "agencies": 3,
+      "code": "scorecard_missing_feed_info_dates",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "agencies": 3,
@@ -69,11 +74,6 @@
     },
     {
       "agencies": 2,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
-    },
-    {
-      "agencies": 2,
       "code": "scorecard_rt_trip_updates_unreachable",
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
@@ -93,7 +93,7 @@
     "stale": 26,
     "total": 30
   },
-  "generated_at": "2026-07-09T05:27:32+00:00",
+  "generated_at": "2026-07-09T09:08:55+00:00",
   "grade_distribution": {
     "A": 4,
     "C": 6,

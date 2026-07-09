@@ -2,6 +2,63 @@
   "report": {
     "notices": [
       {
+        "code": "block_trips_with_overlapping_stop_times",
+        "sample_notices": [
+          {
+            "blockId": "410",
+            "csvRowNumberA": 7995,
+            "csvRowNumberB": 8079,
+            "intersection": "20260712",
+            "serviceIdA": "RJUN26-804-3_Sunday-06",
+            "serviceIdB": "RJUN26-804-3_Sunday-06",
+            "tripIdA": "64662579",
+            "tripIdB": "64662665"
+          },
+          {
+            "blockId": "410",
+            "csvRowNumberA": 8079,
+            "csvRowNumberB": 8006,
+            "intersection": "20260712",
+            "serviceIdA": "RJUN26-804-3_Sunday-06",
+            "serviceIdB": "RJUN26-804-3_Sunday-06",
+            "tripIdA": "64662665",
+            "tripIdB": "64662590"
+          },
+          {
+            "blockId": "410",
+            "csvRowNumberA": 8006,
+            "csvRowNumberB": 8033,
+            "intersection": "20260712",
+            "serviceIdA": "RJUN26-804-3_Sunday-06",
+            "serviceIdB": "RJUN26-804-3_Sunday-06",
+            "tripIdA": "64662590",
+            "tripIdB": "64662617"
+          },
+          {
+            "blockId": "410",
+            "csvRowNumberA": 8033,
+            "csvRowNumberB": 8034,
+            "intersection": "20260712",
+            "serviceIdA": "RJUN26-804-3_Sunday-06",
+            "serviceIdB": "RJUN26-804-3_Sunday-06",
+            "tripIdA": "64662617",
+            "tripIdB": "64662618"
+          },
+          {
+            "blockId": "410",
+            "csvRowNumberA": 8034,
+            "csvRowNumberB": 8010,
+            "intersection": "20260712",
+            "serviceIdA": "RJUN26-804-3_Sunday-06",
+            "serviceIdB": "RJUN26-804-3_Sunday-06",
+            "tripIdA": "64662618",
+            "tripIdB": "64662594"
+          }
+        ],
+        "severity": "ERROR",
+        "total": 9
+      },
+      {
         "code": "missing_recommended_field",
         "sample_notices": [
           {
@@ -95,6 +152,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "94f85b290d82c951ea714fb4d203c716792172c1b725b1dfbdbf4fa34db9b29a",
+  "sha256": "ef60695a171f4b675b70a7b97f6d2a917fe784807a093cfcb6fb53dcb6adec2a",
   "validator_version": "8.0.1"
 }

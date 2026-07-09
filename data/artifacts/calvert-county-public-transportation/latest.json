@@ -18,6 +18,10 @@
           "trips_stated_pct": 99.3
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -152,7 +156,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -163,7 +167,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -174,8 +178,8 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "fast_travel_between_far_stops",
@@ -309,6 +313,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -318,7 +334,7 @@
         "met": false
       },
       {
-        "detail": "Service data expired 1797 days ago.",
+        "detail": "Service data expired 1809 days ago.",
         "key": "current",
         "met": false
       },
@@ -329,7 +345,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 1797 days ago. States wheelchair access on 4% of stops and 99% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 1809 days ago. States wheelchair access on 4% of stops and 99% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -338,7 +354,13 @@
     "size_bytes": 395592,
     "static_url": "https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Calvert_GTFS.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Calvert_GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.78077,
@@ -351,7 +373,7 @@
     "stop_count": 137
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1"
     ],
@@ -370,13 +392,13 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data expired 1797 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 1809 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 1797 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 1809 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -386,6 +408,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 5,
       "effort": "A per-route color setting in your scheduling software.",
@@ -397,6 +420,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 82,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -408,11 +432,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 137,
     "findings": [],
@@ -420,8 +439,112 @@
     "single_stop_trips": 0,
     "trips_total": 145
   },
+  "route_map": {
+    "drawn_route_count": 8,
+    "has_shapes": true,
+    "path": "data/artifacts/calvert-county-public-transportation/geometry.geojson",
+    "route_count": 8,
+    "routes": [
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "1",
+        "label": "White",
+        "long": "Prince Frederick Shuttle I",
+        "short": "White",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "17AC32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "Green",
+        "long": "Prince Frederick Shuttle II",
+        "short": "Green",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF7D00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "3",
+        "label": "Orange",
+        "long": "Dunkirk Route",
+        "short": "Orange",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF66B3",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4",
+        "label": "Pink",
+        "long": "North Route",
+        "short": "Pink",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008ED2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "Blue",
+        "long": "South Route",
+        "short": "Blue",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FCF841",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6",
+        "label": "Yellow",
+        "long": "Mid-County",
+        "short": "Yellow",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D7A200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "7",
+        "label": "Gold",
+        "long": "Lusby Shuttle",
+        "short": "Gold",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D44B5",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "8",
+        "label": "Purple",
+        "long": "Charlotte Hall",
+        "short": "Purple",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 137,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 145 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 145,
+    "trips_with_shape": 145
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
