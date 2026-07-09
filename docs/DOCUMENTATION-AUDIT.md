@@ -1,6 +1,21 @@
 # Documentation Audit
 
-Last reviewed: 2026-07-08. Base branch: `main`.
+Last reviewed: 2026-07-08; corrected in review 2026-07-09. Base branch: `main`.
+
+> **Review correction (2026-07-09).** The original sweep's link checker ran on
+> a case-insensitive filesystem, so it passed two links in `docs/README.md`
+> (`ROADMAP.md`, `ACCESSIBILITY.md`) that resolve to nothing on GitHub's
+> case-sensitive hosting; both are fixed. The sweep also edited the vendored
+> `docs/standards/README.md`, which is pinned byte-identical to
+> `ChelseaKR/portfolio-standards` tag `v1.0.1` and must never be edited
+> in-repo (DOC-03; `standards-pin.yml` enforces this once its token exists).
+> That edit is reverted here. Its two relative links (`AUDIT-2026-06-21.md`,
+> `IMPROVEMENTS-BACKLOG.md`) resolve in the upstream repo, not this one; that
+> is a property of vendoring, is excluded from this audit's unresolved-link
+> count, and any fix belongs upstream. A case-sensitive re-check on
+> 2026-07-09 over root Markdown, `.github` templates, and `docs/**` minus the
+> vendored `docs/standards/` found 208 relative links, 0 unresolved after
+> these fixes.
 
 This audit records the documentation sweep and remediation loop for this repository. It checks the docs as a system: entry points, root-level process and legal files, project scope, setup and validation notes, safety and privacy posture, architecture and planning docs, local links, and the places where code, tests, workflows, and docs meet.
 
@@ -13,7 +28,7 @@ This audit records the documentation sweep and remediation loop for this reposit
 | Architecture/planning docs | pass | 2 architecture/interface docs; 17 planning/research docs |
 | Safety/privacy/audit docs | pass | 5 safety/privacy/accessibility/audit docs |
 | Validation surface | pass | 102 test files; 23 workflow files |
-| Local doc links | pass | 328 authored-doc links checked; 0 unresolved |
+| Local doc links | pass | 208 relative links re-checked case-sensitively 2026-07-09 (vendored `docs/standards/` excluded); 0 unresolved |
 
 ## Root-Level Documentation Audit
 
@@ -52,13 +67,14 @@ Root-adjacent template files checked:
 - Added `docs/PROJECT-SCOPE.md` as the plain-language project and boundary map.
 - Added this audit record so future doc changes have a dated baseline.
 - Added or refreshed the docs index so scope, audit, and primary docs are easy to find.
-- Fixed or added root/doc remediation files: `.github/PULL_REQUEST_TEMPLATE.md`, `NOTICE`, `docs/standards/README.md`.
+- Fixed or added root/doc remediation files: `.github/PULL_REQUEST_TEMPLATE.md`, `NOTICE`.
+- Did **not** keep the sweep's edit to `docs/standards/README.md`: that file is vendored and pinned; the edit was reverted in review (see the correction note above).
 
 ## Repo Surfaces Checked
 
 Package and workspace metadata:
 
-- No package manifest found in this sweep.
+- `pipeline/pyproject.toml` (the Python package and single version source; see `README.md` Versioning). The web frontend is vanilla JS with no package manifest.
 
 Source and operations surfaces seen at the repo root:
 
@@ -256,14 +272,16 @@ Grouped content counts:
 
 ## Link Check
 
-- Checked 328 local links in authored Markdown and MDX docs.
-- Unresolved authored-doc links after remediation: 0.
+- Original sweep (2026-07-08): 328 local links checked in authored Markdown docs, case-insensitively.
+- Review re-check (2026-07-09): 208 relative links checked case-sensitively across root Markdown, `.github` templates, and `docs/**` excluding the vendored `docs/standards/`; the count differs from the original sweep because the scopes differ (the re-check excludes vendored standards and counts only relative links, not anchors or external URLs).
+- Unresolved authored-doc links after remediation and review fixes: 0.
 - Root-level/template unresolved links after remediation: 0.
 
 Audit scope notes:
 
 - Generated sites, deployed app routes, raw third-party HTML captures, and golden fixture websites were inventoried as product or data surfaces but excluded from authored-doc link failure counts.
-- Grouped content directories are counted so they stay visible without making the audit readable without hiding them.
+- The vendored `docs/standards/*.md` files are pinned byte-identical to upstream and excluded from in-repo link remediation; their relative links resolve in `ChelseaKR/portfolio-standards`.
+- Grouped content directories are counted rather than listed file by file, so they stay visible without flooding the inventory.
 
 ## Validation Notes
 

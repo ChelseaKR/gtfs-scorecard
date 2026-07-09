@@ -68,7 +68,7 @@ GitHub workflow files checked:
 ## Trust Boundaries
 
 - The scorecard states what a feed contains; it does not certify legal compliance.
-- No realtime feed is treated as not published rather than punished by default.
+- An agency with no realtime feed is shown neutrally as "Not yet published", never scored as a zero.
 - Generated artifacts should carry validator versions and dates because transit rules move.
 
 ## Outside This Scope
