@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -52,7 +56,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 643,
+        "stops": 645,
         "trips": 1226,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
@@ -62,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 643,
+          "count": 645,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "643 of 643 stops don't say whether a wheelchair user can board there.",
+          "what": "645 of 645 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -113,11 +117,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 10,
+        "distinct_codes": 12,
         "instances_by_severity": {
           "ERROR": 50,
-          "INFO": 0,
-          "WARNING": 37526
+          "INFO": 1,
+          "WARNING": 37604
         },
         "validator_version": "8.0.1"
       },
@@ -135,7 +139,7 @@
         },
         {
           "code": "missing_timepoint_value",
-          "count": 36139,
+          "count": 36216,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -185,7 +189,7 @@
           "owner": "",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -229,24 +233,46 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "future_calendar",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'future_calendar' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Future calendar (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 24.0,
+      "score": 19.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 37576 instances (50 error, 37526 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 12 kinds of issue across 37655 instances (50 error, 37604 warning, 1 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 30,
+        "days_until_expiry": 177,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-08-08",
+        "last_service_date": "2027-01-02",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -264,9 +290,9 @@
         }
       ],
       "name": "freshness",
-      "score": 35.0,
+      "score": 85.0,
       "status": "measured",
-      "summary": "Service data covers the next 30 days.",
+      "summary": "Service data covers the next 177 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -275,6 +301,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -285,7 +323,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 42 days.",
+        "detail": "Service data covers the next 177 days.",
         "key": "current",
         "met": true
       },
@@ -301,11 +339,17 @@
   "feed": {
     "license_note": "License: http://www.goldcoasttransit.org/2-uncategorised/250-gtfs-data-download",
     "reachable": true,
-    "sha256": "26a2b10b0d954217105e7a253b72a2705ea6546f908fe0580be40a09659d3c34",
-    "size_bytes": 1150118,
+    "sha256": "d28d5b152fe2955bee4031b5e52d5f03b1de1bbff6eb2bbfda938efef9d54e18",
+    "size_bytes": 1158168,
     "static_url": "http://www.goldcoasttransit.org/images/GTFS/GTFS.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://www.goldcoasttransit.org/images/GTFS/GTFS.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -119.30746,
@@ -313,16 +357,16 @@
       -119.13249,
       34.44827
     ],
-    "lat": 34.21924,
-    "lon": -119.1881,
-    "stop_count": 643
+    "lat": 34.21926,
+    "lon": -119.18813,
+    "stop_count": 645
   },
   "ntd_id_alignment": {
-    "detail": "Your feed uses agency_id GCT; the NTD asks for your five-digit NTD ID (90035) so the feed lines up with your record.",
+    "detail": "Your feed's agency_id is GCT; your National Transit Database ID is 90035. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
     "feed_agency_ids": [
       "GCT"
     ],
-    "fix": "Change the agency_id to 90035 in agency.txt and update the matching agency_id in routes.txt.",
+    "fix": "Optionally set the agency_id for your service to 90035 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.",
     "ntd_id": "90035",
     "status": "mismatch"
   },
@@ -339,7 +383,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 42 days.",
+        "detail": "Service data covers the next 177 days.",
         "key": "current",
         "status": "ready"
       }
@@ -349,37 +393,313 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 35.5,
-    "margin_to_next_band": 24.5,
-    "score": 35.5
+    "margin_to_lower_band": 46.0,
+    "margin_to_next_band": 14.0,
+    "score": 46.0
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
-      "count": 627,
+      "count": 629,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "627 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"H & Ivywood\", \"Main & Chrisman\", \"Telephone & Cachuma\", and more).",
+      "what": "629 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"H & Ivywood\", \"Main & Chrisman\", \"Telephone & Cachuma\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 643,
+    "boardable_stops": 645,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
     "trips_total": 1226
   },
+  "route_map": {
+    "drawn_route_count": 24,
+    "has_shapes": true,
+    "path": "data/artifacts/gold-coast-transit-south-coast-area-transit/geometry.geojson",
+    "route_count": 24,
+    "routes": [
+      {
+        "color": "009933",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9900",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3333FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18A",
+        "label": "18A",
+        "long": "",
+        "short": "18A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18B",
+        "label": "18B",
+        "long": "",
+        "short": "18B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18C",
+        "label": "18C",
+        "long": "",
+        "short": "18C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18E",
+        "label": "18E",
+        "long": "",
+        "short": "18E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18F",
+        "label": "18F",
+        "long": "",
+        "short": "18F",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18G",
+        "label": "18G",
+        "long": "",
+        "short": "18G",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "",
+        "short": "19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6666FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "1A",
+        "label": "1A",
+        "long": "",
+        "short": "1A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9999FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1B",
+        "label": "1B",
+        "long": "",
+        "short": "1B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6666FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A7343A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9933",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "99FF99",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "4A",
+        "label": "4A",
+        "long": "",
+        "short": "4A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CC00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4B",
+        "label": "4B",
+        "long": "",
+        "short": "4B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CCFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0033",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "",
+        "short": "6",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "99FF99",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CCFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 645,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 1226 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1226,
+    "trips_with_shape": 1226
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
@@ -396,14 +716,14 @@
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 643,
+      "count": 645,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "643 of 643 stops don't say whether a wheelchair user can board there.",
+      "what": "645 of 645 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {

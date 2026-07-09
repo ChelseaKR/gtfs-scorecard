@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 19
   },
-  "generated_at": "2026-07-09T22:07:00+00:00",
+  "generated_at": "2026-07-09T23:54:38+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 4,
@@ -312,20 +312,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Score fell 7.2 points since 2026-07-08",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "needs_attention": true,
-      "score": 49.8,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -646,
       "expiry_status": "stale",
@@ -337,6 +323,20 @@
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Score fell 6.0 points since 2026-07-08",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "needs_attention": true,
+      "score": 51.0,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -361,7 +361,7 @@
       "id": "cecil-transit-3034",
       "name": "Cecil Transit",
       "needs_attention": true,
-      "score": 57.2,
+      "score": 58.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
@@ -389,7 +389,7 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "needs_attention": true,
-      "score": 64.8,
+      "score": 64.1,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."

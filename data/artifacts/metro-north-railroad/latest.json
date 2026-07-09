@@ -23,11 +23,11 @@
       "details": {
         "accessibility": {
           "measures": "presence_not_usability",
-          "score": 92.0,
+          "score": 92.2,
           "stops_marked_accessible_pct": 82.5,
           "stops_marked_not_accessible_pct": 15.8,
           "stops_stated_pct": 98.2,
-          "trips_stated_pct": 81.7
+          "trips_stated_pct": 82.1
         },
         "accessibility_measures": "presence_not_usability",
         "cemv": {
@@ -69,8 +69,8 @@
           "pathway_count": 0
         },
         "stops": 114,
-        "trips": 33828,
-        "wheelchair_accessible_pct": 81.7,
+        "trips": 34167,
+        "wheelchair_accessible_pct": 82.1,
         "wheelchair_boarding_pct": 98.2,
         "wheelchair_marked_accessible_pct": 82.5,
         "wheelchair_marked_not_accessible_pct": 15.8
@@ -89,13 +89,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 6199,
+          "count": 6118,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 2.7,
           "severity": "WARNING",
-          "what": "6199 of 33828 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "6118 of 34167 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -122,7 +122,7 @@
         }
       ],
       "name": "completeness",
-      "score": 74.3,
+      "score": 74.4,
       "status": "measured",
       "summary": "98% of stops state wheelchair accessibility (82% marked accessible, 16% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
       "weight": 0.25
@@ -213,12 +213,12 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 136,
+        "days_until_expiry": 170,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-11-22",
+        "last_service_date": "2026-12-26",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -238,7 +238,7 @@
       "name": "freshness",
       "score": 85.0,
       "status": "measured",
-      "summary": "Service data covers the next 136 days.",
+      "summary": "Service data covers the next 170 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -246,15 +246,15 @@
         "coverage_pct": 0.0,
         "covered_trips": 0,
         "drift": {
-          "median_seconds": 180,
-          "observations": 242,
-          "on_time_share_pct": 66.1,
-          "p90_abs_seconds": 480
+          "median_seconds": 120,
+          "observations": 266,
+          "on_time_share_pct": 84.2,
+          "p90_abs_seconds": 420
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 29,
+        "scheduled_trips_in_window": 41,
         "worst_lag_seconds": 12
       },
       "findings": [
@@ -271,20 +271,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 29,
+          "count": 41,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
+          "what": "41 of 41 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
       "score": 49.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 180s behind schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 120s behind schedule.",
       "weight": 0.2
     }
   },
@@ -310,7 +310,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 136 days.",
+        "detail": "Service data covers the next 170 days.",
         "key": "current",
         "met": true
       },
@@ -326,8 +326,8 @@
   "feed": {
     "license_note": "License: http://web.mta.info/developers/developer-data-terms.html",
     "reachable": true,
-    "sha256": "c0c3194f537113584c16639f02b3847ffa29d0694f042604342632f2195becef",
-    "size_bytes": 4322214,
+    "sha256": "fbfc9de3155da2e2c31a0fa8c9cb6aabecd868dbada394b6241734c02c707f38",
+    "size_bytes": 4360515,
     "static_url": "http://web.mta.info/developers/data/mnr/google_transit.zip"
   },
   "fetch": {
@@ -368,7 +368,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 136 days.",
+        "detail": "Service data covers the next 170 days.",
         "key": "current",
         "status": "ready"
       }
@@ -425,7 +425,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 33828
+    "trips_total": 34167
   },
   "route_map": {
     "drawn_route_count": 6,
@@ -506,10 +506,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 33828 trips have a shape in shapes.txt.",
+    "detail": "All 34167 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 33828,
-    "trips_with_shape": 33828
+    "total_trips": 34167,
+    "trips_with_shape": 34167
   },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
@@ -527,14 +527,14 @@
     },
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 29,
+      "count": 41,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
+      "what": "41 of 41 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {

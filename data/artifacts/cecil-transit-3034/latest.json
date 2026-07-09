@@ -235,27 +235,15 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 6,
-        "vehicles_on_route_pct": 66.7,
+        "vehicles_checked": 1,
+        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 4
       },
-      "findings": [
-        {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 2,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
-          "owner": "",
-          "points": 5.0,
-          "severity": "WARNING",
-          "what": "2 of 6 sampled vehicle positions were far from their assigned route (worst: 1415 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
-        }
-      ],
+      "findings": [],
       "name": "realtime",
-      "score": 92.3,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 66.7% of vehicles on their route.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route.",
       "weight": 0.2
     }
   },
@@ -297,7 +285,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "fc3fb672aad9703580850128d595c0aa8f47537d1447edc0fc316136688b5ede",
+    "sha256": "e546106e1178fd62cef865ee59d812d4f422c204a020860a30928914361a7104",
     "size_bytes": 303284,
     "static_url": "https://passio3.com/cecil/passioTransit/gtfs/google_transit.zip"
   },
@@ -338,9 +326,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 57.2,
-    "margin_to_next_band": 2.8,
-    "score": 57.2
+    "margin_to_lower_band": 58.7,
+    "margin_to_next_band": 1.3,
+    "score": 58.7
   },
   "recommendations": [
     {

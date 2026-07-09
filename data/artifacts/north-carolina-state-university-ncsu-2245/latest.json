@@ -11,7 +11,7 @@
       "details": {
         "accessibility": {
           "measures": "presence_not_usability",
-          "score": 7.4,
+          "score": 7.3,
           "stops_marked_accessible_pct": 2.5,
           "stops_marked_not_accessible_pct": 0.0,
           "stops_stated_pct": 2.5,
@@ -56,7 +56,7 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 118,
+        "stops": 120,
         "trips": 358,
         "wheelchair_accessible_pct": 15.4,
         "wheelchair_boarding_pct": 2.5,
@@ -66,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 115,
+          "count": 117,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 24.4,
           "severity": "WARNING",
-          "what": "115 of 118 stops don't say whether a wheelchair user can board there.",
+          "what": "117 of 120 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -101,7 +101,7 @@
       "name": "completeness",
       "score": 47.9,
       "status": "measured",
-      "summary": "3% of stops state wheelchair accessibility (3% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
       "weight": 0.25
     },
     "correctness": {
@@ -110,14 +110,14 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 10,
-          "WARNING": 31
+          "WARNING": 33
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 28,
+          "count": 30,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -174,7 +174,7 @@
       "name": "correctness",
       "score": 84.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 41 instances (0 error, 31 warning, 10 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 43 instances (0 error, 33 warning, 10 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -239,8 +239,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "405665a6cd79ce84333620db733a7e18e1d7dc0d727753d679b4cce6a5516361",
-    "size_bytes": 93746,
+    "sha256": "60cf0b81e796246564402dab0c8cc8a616c1c4f1d66d0b64e57a9336b3c912cf",
+    "size_bytes": 93794,
     "static_url": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -257,9 +257,9 @@
       -78.66375,
       35.80242
     ],
-    "lat": 35.78273,
-    "lon": -78.68228,
-    "stop_count": 118
+    "lat": 35.7825,
+    "lon": -78.68218,
+    "stop_count": 120
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -311,32 +311,32 @@
     {
       "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
-      "count": 98,
+      "count": 100,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "98 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Avent Ferry at Gorman St (WB)\", \"Avent Ferry Rd at Avery Close Apt\", \"Avent Ferry Rd at Brigadoon Dr (NB)\", and more).",
+      "what": "100 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Avent Ferry at Gorman St (WB)\", \"Avent Ferry Rd at Avery Close Apt\", \"Avent Ferry Rd at Brigadoon Dr (NB)\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
   "routability": {
-    "boardable_stops": 118,
+    "boardable_stops": 120,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 28,
+        "count": 30,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "28 of 118 boardable stops are never served by any trip.",
+        "what": "30 of 120 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 28,
+    "orphan_stops": 30,
     "single_stop_trips": 0,
     "trips_total": 358
   },
@@ -512,7 +512,7 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 118,
+    "stop_count": 120,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
@@ -527,14 +527,14 @@
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 115,
+      "count": 117,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 24.4,
       "rank": 1,
       "severity": "WARNING",
-      "what": "115 of 118 stops don't say whether a wheelchair user can board there.",
+      "what": "117 of 120 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {

@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/soltrans/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/soltrans/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -31,6 +30,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -144,7 +147,7 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Some route colors don't contrast with their text color.",
-          "why": "Route badges become unreadable, especially for riders with low vision."
+          "why": "Route badges get hard to read, most of all for riders with low vision."
         }
       ],
       "name": "correctness",
@@ -158,7 +161,7 @@
         "days_until_expiry": 540,
         "feed_end_date": "2027-12-31",
         "feed_start_date": "2026-05-26",
-        "feed_version": "20260612",
+        "feed_version": "20260709",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -178,6 +181,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": true,
     "criteria": [
@@ -187,7 +202,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 552 days.",
+        "detail": "Service data covers the next 540 days.",
         "key": "current",
         "met": true
       },
@@ -203,11 +218,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "fe33260168f51cb7224d3055d77e318301f9b2265d03f2d7fbdca64a01aa7efd",
-    "size_bytes": 462305,
+    "sha256": "c08cae1802518663d69a64427666736705c262e7ced56026af887f53fd441c55",
+    "size_bytes": 462302,
     "static_url": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.39524,
@@ -220,11 +241,11 @@
     "stop_count": 327
   },
   "ntd_id_alignment": {
-    "detail": "Your feed uses agency_id 1; the NTD asks for your five-digit NTD ID (90232) so the feed lines up with your record.",
+    "detail": "Your feed's agency_id is 1; your National Transit Database ID is 90232. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
     "feed_agency_ids": [
       "1"
     ],
-    "fix": "Change the agency_id to 90232 in agency.txt and update the matching agency_id in routes.txt.",
+    "fix": "Optionally set the agency_id for your service to 90232 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.",
     "ntd_id": "90232",
     "status": "mismatch"
   },
@@ -241,13 +262,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 552 days.",
+        "detail": "Service data covers the next 540 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "A",
@@ -257,6 +278,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 7,
       "effort": "A per-route color setting in your scheduling software.",
@@ -268,6 +290,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 313,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -279,6 +302,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -290,11 +314,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 325,
     "findings": [],
@@ -302,8 +321,178 @@
     "single_stop_trips": 0,
     "trips_total": 1127
   },
+  "route_map": {
+    "drawn_route_count": 14,
+    "has_shapes": true,
+    "path": "data/artifacts/soltrans/geometry.geojson",
+    "route_count": 14,
+    "routes": [
+      {
+        "color": "592E91",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Rancho Vallejo",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B72775",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Crest",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50A140",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "South Vallejo",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A6CE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Tuolumne",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F47B20",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Six Flags",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "666EB3",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Tennessee",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004D91",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "7A",
+        "label": "7A",
+        "long": "Clockwise",
+        "short": "7A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004D91",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "7B",
+        "label": "7B",
+        "long": "Counterclockwise",
+        "short": "7B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009577",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Glen Cove",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F47B20",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "82",
+        "label": "82",
+        "long": "SF Express",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004D91",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "B",
+        "label": "B",
+        "long": "Blue Line",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50A140",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "G",
+        "label": "G",
+        "long": "Green Line",
+        "short": "G",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D63029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "R",
+        "label": "R",
+        "long": "Red Line",
+        "short": "R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB415",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Y",
+        "label": "Y",
+        "long": "Yellow Line",
+        "short": "Y",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 327,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 1127 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1127,
+    "trips_with_shape": 1127
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
@@ -328,7 +517,7 @@
       "rank": 2,
       "severity": "WARNING",
       "what": "Some route colors don't contrast with their text color.",
-      "why": "Route badges become unreadable, especially for riders with low vision."
+      "why": "Route badges get hard to read, most of all for riders with low vision."
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
