@@ -40,18 +40,6 @@
     {
       "date": "2026-07-09",
       "from_grade": "F",
-      "from_score": 57.0,
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "regressed": true,
-      "score_delta": -2.8,
-      "since": "2026-07-08",
-      "to_grade": "F",
-      "to_score": 54.2
-    },
-    {
-      "date": "2026-07-09",
-      "from_grade": "F",
       "from_score": 41.4,
       "id": "metro-houston-2060",
       "name": "METRO Houston",
@@ -76,18 +64,6 @@
     {
       "date": "2026-07-09",
       "from_grade": "D",
-      "from_score": 66.5,
-      "id": "towson-loop",
-      "name": "Towson Loop",
-      "regressed": true,
-      "score_delta": -1.5,
-      "since": "2026-07-08",
-      "to_grade": "D",
-      "to_score": 65.0
-    },
-    {
-      "date": "2026-07-09",
-      "from_grade": "D",
       "from_score": 66.7,
       "id": "metropolitan-transit-authority-mta",
       "name": "Long Island Rail Road",
@@ -100,14 +76,14 @@
     {
       "date": "2026-07-09",
       "from_grade": "D",
-      "from_score": 65.7,
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
+      "from_score": 65.0,
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
       "regressed": true,
-      "score_delta": -1.3,
+      "score_delta": -1.4,
       "since": "2026-07-08",
       "to_grade": "D",
-      "to_score": 64.4
+      "to_score": 63.6
     },
     {
       "date": "2026-07-09",
@@ -172,6 +148,18 @@
     {
       "date": "2026-07-09",
       "from_grade": "F",
+      "from_score": 21.9,
+      "id": "dallas-area-rapid-transit-dart",
+      "name": "Dallas Area Rapid Transit (DART)",
+      "regressed": false,
+      "score_delta": 20.4,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 42.3
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "F",
       "from_score": 51.9,
       "id": "washington-state-ferries",
       "name": "Washington State Ferries",
@@ -195,6 +183,18 @@
     },
     {
       "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 62.2,
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
+      "regressed": false,
+      "score_delta": 4.5,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 66.7
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "C",
       "from_score": 79.6,
       "id": "intercity-transit",
@@ -204,18 +204,6 @@
       "since": "2026-07-08",
       "to_grade": "B",
       "to_score": 83.5
-    },
-    {
-      "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 62.2,
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
-      "regressed": false,
-      "score_delta": 3.1,
-      "since": "2026-07-08",
-      "to_grade": "D",
-      "to_score": 65.3
     },
     {
       "date": "2026-07-09",
@@ -288,10 +276,22 @@
       "since": "2026-07-08",
       "to_grade": "B",
       "to_score": 83.1
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 66.5,
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "regressed": false,
+      "score_delta": 1.4,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 67.9
     }
   ],
   "count": 24,
-  "generated_at": "2026-07-09T16:24:01+00:00",
+  "generated_at": "2026-07-09T18:29:53+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

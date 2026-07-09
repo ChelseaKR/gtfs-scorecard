@@ -41,14 +41,14 @@
           }
         ],
         "severity": "ERROR",
-        "total": 927
+        "total": 891
       },
       {
         "code": "decreasing_or_equal_stop_time_distance",
         "sample_notices": [
           {
-            "csvRowNumber": 885305,
-            "prevCsvRowNumber": 885304,
+            "csvRowNumber": 885149,
+            "prevCsvRowNumber": 885148,
             "prevShapeDistTraveled": 5.2807,
             "prevStopSequence": 2,
             "shapeDistTraveled": 5.2807,
@@ -57,8 +57,8 @@
             "tripId": "9014050"
           },
           {
-            "csvRowNumber": 885306,
-            "prevCsvRowNumber": 885305,
+            "csvRowNumber": 885150,
+            "prevCsvRowNumber": 885149,
             "prevShapeDistTraveled": 5.2807,
             "prevStopSequence": 3,
             "shapeDistTraveled": 5.2807,
@@ -67,8 +67,8 @@
             "tripId": "9014050"
           },
           {
-            "csvRowNumber": 885307,
-            "prevCsvRowNumber": 885306,
+            "csvRowNumber": 885151,
+            "prevCsvRowNumber": 885150,
             "prevShapeDistTraveled": 5.2807,
             "prevStopSequence": 4,
             "shapeDistTraveled": 5.2807,
@@ -77,8 +77,8 @@
             "tripId": "9014050"
           },
           {
-            "csvRowNumber": 885269,
-            "prevCsvRowNumber": 885268,
+            "csvRowNumber": 885113,
+            "prevCsvRowNumber": 885112,
             "prevShapeDistTraveled": 5.2807,
             "prevStopSequence": 2,
             "shapeDistTraveled": 5.2807,
@@ -87,8 +87,8 @@
             "tripId": "9014044"
           },
           {
-            "csvRowNumber": 885270,
-            "prevCsvRowNumber": 885269,
+            "csvRowNumber": 885114,
+            "prevCsvRowNumber": 885113,
             "prevShapeDistTraveled": 5.2807,
             "prevStopSequence": 3,
             "shapeDistTraveled": 5.2807,
@@ -135,7 +135,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 29289
+        "total": 26348
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -149,7 +149,7 @@
             "shapeId": "148089",
             "stopId": "19927",
             "stopName": "BROADWAY @ KAREN - N - NS",
-            "stopTimeCsvRowNumber": 632196,
+            "stopTimeCsvRowNumber": 632142,
             "tripCsvRowNumber": 4433,
             "tripId": "9019359"
           },
@@ -162,7 +162,7 @@
             "shapeId": "148089",
             "stopId": "19928",
             "stopName": "BROADWAY @ TACOMA - N - FS",
-            "stopTimeCsvRowNumber": 632197,
+            "stopTimeCsvRowNumber": 632143,
             "tripCsvRowNumber": 4433,
             "tripId": "9019359"
           },
@@ -175,7 +175,7 @@
             "shapeId": "148089",
             "stopId": "27340",
             "stopName": "BROADWAY @ PALO ALTO - N - NS",
-            "stopTimeCsvRowNumber": 632198,
+            "stopTimeCsvRowNumber": 632144,
             "tripCsvRowNumber": 4433,
             "tripId": "9019359"
           },
@@ -188,7 +188,7 @@
             "shapeId": "148089",
             "stopId": "19929",
             "stopName": "BROADWAY @ OATES - N - NS",
-            "stopTimeCsvRowNumber": 632200,
+            "stopTimeCsvRowNumber": 632146,
             "tripCsvRowNumber": 4433,
             "tripId": "9019359"
           },
@@ -201,13 +201,13 @@
             "shapeId": "148089",
             "stopId": "19930",
             "stopName": "BROADWAY @ GATEWOOD - N - NS",
-            "stopTimeCsvRowNumber": 632201,
+            "stopTimeCsvRowNumber": 632147,
             "tripCsvRowNumber": 4433,
             "tripId": "9019359"
           }
         ],
         "severity": "WARNING",
-        "total": 445
+        "total": 443
       },
       {
         "code": "same_name_and_description_for_stop",
@@ -233,105 +233,13 @@
             "stopId": "16083"
           },
           {
-            "csvRowNumber": 1868,
+            "csvRowNumber": 1867,
             "stopDesc": "MOUNTAIN VIEW CC",
             "stopId": "17601"
           }
         ],
         "severity": "WARNING",
-        "total": 183
-      },
-      {
-        "code": "fast_travel_between_consecutive_stops",
-        "sample_notices": [
-          {
-            "arrivalTime2": "20:33:28",
-            "csvRowNumber1": 889400,
-            "csvRowNumber2": 889401,
-            "departureTime1": "20:33:00",
-            "distanceKm": 0.26091997239749953,
-            "routeId": "27224",
-            "speedKph": 33.54685359396423,
-            "stopId1": "15414",
-            "stopId2": "23508",
-            "stopName1": "MCKINNEY @ ALLEN - N - NS",
-            "stopName2": "MCKINNEY @ SNEED - N - NS",
-            "stopSequence1": 10,
-            "stopSequence2": 11,
-            "tripCsvRowNumber": 6298,
-            "tripId": "9014198"
-          },
-          {
-            "arrivalTime2": "20:33:38",
-            "csvRowNumber1": 889401,
-            "csvRowNumber2": 889402,
-            "departureTime1": "20:33:28",
-            "distanceKm": 0.09388768918363408,
-            "routeId": "27224",
-            "speedKph": 33.79956810610827,
-            "stopId1": "23508",
-            "stopId2": "21966",
-            "stopName1": "MCKINNEY @ SNEED - N - NS",
-            "stopName2": "MCKINNEY @ BOWEN - N - MB",
-            "stopSequence1": 11,
-            "stopSequence2": 12,
-            "tripCsvRowNumber": 6298,
-            "tripId": "9014198"
-          },
-          {
-            "arrivalTime2": "20:34:00",
-            "csvRowNumber1": 889402,
-            "csvRowNumber2": 889403,
-            "departureTime1": "20:33:38",
-            "distanceKm": 0.19474881872302985,
-            "routeId": "27224",
-            "speedKph": 31.867988518313975,
-            "stopId1": "21966",
-            "stopId2": "15415",
-            "stopName1": "MCKINNEY @ BOWEN - N - MB",
-            "stopName2": "MCKINNEY @ HALL - N - NS",
-            "stopSequence1": 12,
-            "stopSequence2": 13,
-            "tripCsvRowNumber": 6298,
-            "tripId": "9014198"
-          },
-          {
-            "arrivalTime2": "18:02:01",
-            "csvRowNumber1": 824580,
-            "csvRowNumber2": 824581,
-            "departureTime1": "18:02:00",
-            "distanceKm": 0.44405752393936515,
-            "routeId": "27207",
-            "speedKph": 1598.6070861817145,
-            "stopId1": "34288",
-            "stopId2": "34261",
-            "stopName1": "UT DALLAS STATION",
-            "stopName2": "SYNERGY PARK @ FACILITIES - E - NS",
-            "stopSequence1": 1,
-            "stopSequence2": 2,
-            "tripCsvRowNumber": 5612,
-            "tripId": "9019429"
-          },
-          {
-            "arrivalTime2": "18:02:09",
-            "csvRowNumber1": 824581,
-            "csvRowNumber2": 824582,
-            "departureTime1": "18:02:01",
-            "distanceKm": 0.5098380701773703,
-            "routeId": "27207",
-            "speedKph": 229.42713157981663,
-            "stopId1": "34261",
-            "stopId2": "32769",
-            "stopName1": "SYNERGY PARK @ FACILITIES - E - NS",
-            "stopName2": "SYNERGY PARK @ POINT NORTH - N - MB",
-            "stopSequence1": 2,
-            "stopSequence2": 3,
-            "tripCsvRowNumber": 5612,
-            "tripId": "9019429"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 176
+        "total": 182
       },
       {
         "code": "trip_distance_exceeds_shape_distance_below_threshold",
@@ -376,76 +284,96 @@
         "total": 54
       },
       {
-        "code": "stop_too_far_from_shape",
+        "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
-            "geoDistanceToShape": 132.79225826150247,
-            "match": [
-              32.985124324946256,
-              -96.7149467274613
-            ],
-            "shapeId": "148168",
-            "stopId": "29214",
-            "stopName": "PALISADES BLDG",
-            "stopTimeCsvRowNumber": 884155,
-            "tripCsvRowNumber": 6054,
-            "tripId": "9013819"
+            "arrivalTime2": "20:33:28",
+            "csvRowNumber1": 889244,
+            "csvRowNumber2": 889245,
+            "departureTime1": "20:33:00",
+            "distanceKm": 0.26091997239749953,
+            "routeId": "27224",
+            "speedKph": 33.54685359396423,
+            "stopId1": "15414",
+            "stopId2": "23508",
+            "stopName1": "MCKINNEY @ ALLEN - N - NS",
+            "stopName2": "MCKINNEY @ SNEED - N - NS",
+            "stopSequence1": 10,
+            "stopSequence2": 11,
+            "tripCsvRowNumber": 6298,
+            "tripId": "9014198"
           },
           {
-            "geoDistanceToShape": 140.9401535478176,
-            "match": [
-              32.98601899999999,
-              -96.71519
-            ],
-            "shapeId": "148169",
-            "stopId": "29214",
-            "stopName": "PALISADES BLDG",
-            "stopTimeCsvRowNumber": 884230,
-            "tripCsvRowNumber": 6075,
-            "tripId": "9013840"
+            "arrivalTime2": "20:33:38",
+            "csvRowNumber1": 889245,
+            "csvRowNumber2": 889246,
+            "departureTime1": "20:33:28",
+            "distanceKm": 0.09388768918363408,
+            "routeId": "27224",
+            "speedKph": 33.79956810610827,
+            "stopId1": "23508",
+            "stopId2": "21966",
+            "stopName1": "MCKINNEY @ SNEED - N - NS",
+            "stopName2": "MCKINNEY @ BOWEN - N - MB",
+            "stopSequence1": 11,
+            "stopSequence2": 12,
+            "tripCsvRowNumber": 6298,
+            "tripId": "9014198"
           },
           {
-            "geoDistanceToShape": 487.0741753540443,
-            "match": [
-              32.786978,
-              -96.776863
-            ],
-            "shapeId": "148175",
-            "stopId": "33329",
-            "stopName": "BAYLOR STATION",
-            "stopTimeCsvRowNumber": 884700,
-            "tripCsvRowNumber": 6177,
-            "tripId": "9013942"
+            "arrivalTime2": "20:34:00",
+            "csvRowNumber1": 889246,
+            "csvRowNumber2": 889247,
+            "departureTime1": "20:33:38",
+            "distanceKm": 0.19474881872302985,
+            "routeId": "27224",
+            "speedKph": 31.867988518313975,
+            "stopId1": "21966",
+            "stopId2": "15415",
+            "stopName1": "MCKINNEY @ BOWEN - N - MB",
+            "stopName2": "MCKINNEY @ HALL - N - NS",
+            "stopSequence1": 12,
+            "stopSequence2": 13,
+            "tripCsvRowNumber": 6298,
+            "tripId": "9014198"
           },
           {
-            "geoDistanceToShape": 173.3150686784289,
-            "match": [
-              32.786978,
-              -96.776863
-            ],
-            "shapeId": "148175",
-            "stopId": "33549",
-            "stopName": "SAMMONS CANCER CENTER",
-            "stopTimeCsvRowNumber": 884701,
-            "tripCsvRowNumber": 6177,
-            "tripId": "9013942"
+            "arrivalTime2": "19:53:28",
+            "csvRowNumber1": 889261,
+            "csvRowNumber2": 889262,
+            "departureTime1": "19:53:00",
+            "distanceKm": 0.26091997239749953,
+            "routeId": "27224",
+            "speedKph": 33.54685359396423,
+            "stopId1": "15414",
+            "stopId2": "23508",
+            "stopName1": "MCKINNEY @ ALLEN - N - NS",
+            "stopName2": "MCKINNEY @ SNEED - N - NS",
+            "stopSequence1": 10,
+            "stopSequence2": 11,
+            "tripCsvRowNumber": 6300,
+            "tripId": "9014200"
           },
           {
-            "geoDistanceToShape": 156.26558868114526,
-            "match": [
-              32.79074082975358,
-              -96.78067454722536
-            ],
-            "shapeId": "148176",
-            "stopId": "33554",
-            "stopName": "ROBERTS HOSPITAL",
-            "stopTimeCsvRowNumber": 884740,
-            "tripCsvRowNumber": 6198,
-            "tripId": "9013963"
+            "arrivalTime2": "19:53:38",
+            "csvRowNumber1": 889262,
+            "csvRowNumber2": 889263,
+            "departureTime1": "19:53:28",
+            "distanceKm": 0.09388768918363408,
+            "routeId": "27224",
+            "speedKph": 33.79956810610827,
+            "stopId1": "23508",
+            "stopId2": "21966",
+            "stopName1": "MCKINNEY @ SNEED - N - NS",
+            "stopName2": "MCKINNEY @ BOWEN - N - MB",
+            "stopSequence1": 11,
+            "stopSequence2": 12,
+            "tripCsvRowNumber": 6300,
+            "tripId": "9014200"
           }
         ],
         "severity": "WARNING",
-        "total": 23
+        "total": 18
       },
       {
         "code": "route_color_contrast",
@@ -485,24 +413,83 @@
         "total": 18
       },
       {
-        "code": "feed_expiration_date30_days",
+        "code": "stop_too_far_from_shape",
         "sample_notices": [
           {
-            "csvRowNumber": 2,
-            "currentDate": "20260704",
-            "feedEndDate": "20260719",
-            "suggestedExpirationDate": "20260803"
+            "geoDistanceToShape": 132.79225826150247,
+            "match": [
+              32.985124324946256,
+              -96.7149467274613
+            ],
+            "shapeId": "148168",
+            "stopId": "29214",
+            "stopName": "PALISADES BLDG",
+            "stopTimeCsvRowNumber": 883999,
+            "tripCsvRowNumber": 6054,
+            "tripId": "9013819"
+          },
+          {
+            "geoDistanceToShape": 140.9401535478176,
+            "match": [
+              32.98601899999999,
+              -96.71519
+            ],
+            "shapeId": "148169",
+            "stopId": "29214",
+            "stopName": "PALISADES BLDG",
+            "stopTimeCsvRowNumber": 884074,
+            "tripCsvRowNumber": 6075,
+            "tripId": "9013840"
+          },
+          {
+            "geoDistanceToShape": 487.0741753540443,
+            "match": [
+              32.786978,
+              -96.776863
+            ],
+            "shapeId": "148175",
+            "stopId": "33329",
+            "stopName": "BAYLOR STATION",
+            "stopTimeCsvRowNumber": 884544,
+            "tripCsvRowNumber": 6177,
+            "tripId": "9013942"
+          },
+          {
+            "geoDistanceToShape": 173.3150686784289,
+            "match": [
+              32.786978,
+              -96.776863
+            ],
+            "shapeId": "148175",
+            "stopId": "33549",
+            "stopName": "SAMMONS CANCER CENTER",
+            "stopTimeCsvRowNumber": 884545,
+            "tripCsvRowNumber": 6177,
+            "tripId": "9013942"
+          },
+          {
+            "geoDistanceToShape": 156.26558868114526,
+            "match": [
+              32.79074082975358,
+              -96.78067454722536
+            ],
+            "shapeId": "148176",
+            "stopId": "33554",
+            "stopName": "ROBERTS HOSPITAL",
+            "stopTimeCsvRowNumber": 884584,
+            "tripCsvRowNumber": 6198,
+            "tripId": "9013963"
           }
         ],
         "severity": "WARNING",
-        "total": 1
+        "total": 18
       },
       {
         "code": "route_long_name_contains_short_name",
         "sample_notices": [
           {
             "csvRowNumber": 92,
-            "routeId": "27124",
+            "routeId": "27255",
             "routeLongName": "SILVER LINE",
             "routeShortName": "SILVER"
           }
@@ -527,10 +514,22 @@
             "stopId2": "34308",
             "stopName1": "IRVING CONVENTION CENTER STATION",
             "stopName2": "PROMENADE @ PROMENADE - N - NS",
-            "stopTimeCsvRowNumber1": 657362,
-            "stopTimeCsvRowNumber2": 657361,
+            "stopTimeCsvRowNumber1": 657308,
+            "stopTimeCsvRowNumber2": 657307,
             "tripCsvRowNumber": 4520,
             "tripId": "9004961"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "trip_coverage_not_active_for_next7_days",
+        "sample_notices": [
+          {
+            "currentDate": "20260709",
+            "serviceWindowEndDate": "20260913",
+            "serviceWindowStartDate": "20260720"
           }
         ],
         "severity": "WARNING",
@@ -559,6 +558,28 @@
         "total": 5
       },
       {
+        "code": "future_calendar",
+        "sample_notices": [
+          {
+            "currentDate": "2026-07-09",
+            "minServiceStartDate": "2026-07-20"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
+      },
+      {
+        "code": "future_feed",
+        "sample_notices": [
+          {
+            "currentDate": "20260709",
+            "feedStartDate": "20260720"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
+      },
+      {
         "code": "unknown_column",
         "sample_notices": [
           {
@@ -573,6 +594,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "5b932a78249816272882d0054dfc747cc8ced72013353751fca203a4a4acab40",
+  "sha256": "edc8e4001abb35302bdb6937c9b8c70ad37a70a49cae275761720388a9ce6669",
   "validator_version": "8.0.1"
 }

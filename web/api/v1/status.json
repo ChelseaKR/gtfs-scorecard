@@ -34,18 +34,18 @@
     "unreachable_after_consecutive_checks": 30
   },
   "description": "How fresh this data is meant to be, and how it has actually performed: the intended refresh cadence per tier, the historical refresh-success record, and what happens when a feed cannot be refreshed on schedule.",
-  "generated_at": "2026-07-09T16:24:01+00:00",
+  "generated_at": "2026-07-09T18:29:52+00:00",
   "human_readable": "https://gtfsscorecard.org/status/",
   "license": "CC-BY-4.0",
   "refresh_success_record": {
-    "as_of": "2026-07-09T16:24:01+00:00",
+    "as_of": "2026-07-09T18:29:52+00:00",
     "degraded": 79,
     "feeds_tracked": 1453,
     "healthy": 1254,
     "hours_since_last_check": {
-      "max": 238.3,
-      "median": 7.5,
-      "min": 0.7
+      "max": 240.4,
+      "median": 9.6,
+      "min": 0.2
     },
     "success_rate_pct": 86.3,
     "unreachable": 120

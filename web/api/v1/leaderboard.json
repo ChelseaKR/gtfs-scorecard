@@ -179,14 +179,6 @@
     {
       "date": "2026-07-09",
       "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "score": 54.2,
-      "score_delta": -2.8
-    },
-    {
-      "date": "2026-07-09",
-      "grade": "F",
       "id": "metro-houston-2060",
       "name": "METRO Houston",
       "score": 39.1,
@@ -203,14 +195,6 @@
     {
       "date": "2026-07-09",
       "grade": "D",
-      "id": "towson-loop",
-      "name": "Towson Loop",
-      "score": 65.0,
-      "score_delta": -1.5
-    },
-    {
-      "date": "2026-07-09",
-      "grade": "D",
       "id": "metropolitan-transit-authority-mta",
       "name": "Long Island Rail Road",
       "score": 65.3,
@@ -219,13 +203,21 @@
     {
       "date": "2026-07-09",
       "grade": "D",
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "score": 64.4,
-      "score_delta": -1.3
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
+      "score": 63.6,
+      "score_delta": -1.4
     }
   ],
   "most_improved": [
+    {
+      "date": "2026-07-09",
+      "grade": "F",
+      "id": "dallas-area-rapid-transit-dart",
+      "name": "Dallas Area Rapid Transit (DART)",
+      "score": 42.3,
+      "score_delta": 20.4
+    },
     {
       "date": "2026-07-09",
       "grade": "D",
@@ -244,19 +236,19 @@
     },
     {
       "date": "2026-07-09",
+      "grade": "D",
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
+      "score": 66.7,
+      "score_delta": 4.5
+    },
+    {
+      "date": "2026-07-09",
       "grade": "B",
       "id": "intercity-transit",
       "name": "Intercity Transit",
       "score": 83.5,
       "score_delta": 3.9
-    },
-    {
-      "date": "2026-07-09",
-      "grade": "D",
-      "id": "via-mobility-2395",
-      "name": "Via Mobility",
-      "score": 65.3,
-      "score_delta": 3.1
     },
     {
       "date": "2026-07-09",
@@ -304,6 +296,14 @@
       "id": "pasadena-transit",
       "name": "Pasadena Transit",
       "score": 83.1,
+      "score_delta": 1.4
+    },
+    {
+      "date": "2026-07-09",
+      "grade": "D",
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "score": 67.9,
       "score_delta": 1.4
     }
   ],

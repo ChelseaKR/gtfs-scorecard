@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -213,23 +212,23 @@
         "coverage_pct": 100.0,
         "covered_trips": 3,
         "drift": {
-          "median_seconds": -923,
-          "observations": 96,
-          "on_time_share_pct": 10.4,
-          "p90_abs_seconds": 1819
+          "median_seconds": -735,
+          "observations": 83,
+          "on_time_share_pct": 9.6,
+          "p90_abs_seconds": 6074
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 3,
-        "vehicles_checked": 11,
+        "vehicles_checked": 9,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 96,
+          "count": 83,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -242,7 +241,7 @@
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 923s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 735s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -284,7 +283,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "4c4c390cd501a6d481313d85aa3fa3295cf276aa9aaa0c4d94151c55a4a92bf4",
+    "sha256": "e495542f1d46a1ff4d7a304821ae66abdf4053b467143135f5c32fd2811dff68",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },
