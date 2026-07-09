@@ -91,7 +91,7 @@ def _s3_key(sha256: str) -> str:
 
 def _s3_client() -> Any:  # pragma: no cover - thin boto3 wrapper, faked in tests
     # Lazy: boto3 is an optional dependency, present only when archiving to S3.
-    import boto3  # type: ignore[import-not-found]  # noqa: PLC0415 - lazy, optional dep
+    import boto3  # type: ignore[import-not-found]
 
     return boto3.client("s3", region_name=os.environ.get("AWS_REGION") or "us-west-2")
 
@@ -100,7 +100,7 @@ def _s3_has(bucket: str, sha256: str) -> bool:
     try:
         _s3_client().head_object(Bucket=bucket, Key=_s3_key(sha256))
         return True
-    except Exception as exc:  # noqa: BLE001 - a HEAD failure just means "try the PUT"
+    except Exception as exc:
         log.debug("raw archive S3 head check failed for %s: %s", sha256, exc)
         return False
 
@@ -110,7 +110,7 @@ def _s3_store(bucket: str, sha256: str, data: bytes) -> None:
         _s3_client().put_object(
             Bucket=bucket, Key=_s3_key(sha256), Body=data, ContentType="application/zip"
         )
-    except Exception as exc:  # noqa: BLE001 - an archive write failure must never fail a score
+    except Exception as exc:
         log.warning("raw archive S3 write failed for %s: %s", sha256, exc)
 
 
@@ -118,7 +118,7 @@ def _s3_load(bucket: str, sha256: str) -> bytes | None:
     try:
         obj = _s3_client().get_object(Bucket=bucket, Key=_s3_key(sha256))
         return obj["Body"].read()  # type: ignore[no-any-return]
-    except Exception as exc:  # noqa: BLE001 - reported to fetch()'s caller as a miss
+    except Exception as exc:
         log.debug("raw archive S3 read miss for %s: %s", sha256, exc)
         return None
 

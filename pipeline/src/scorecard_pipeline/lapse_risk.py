@@ -28,6 +28,7 @@ logic stays pure and testable against fixture history lists.
 from __future__ import annotations
 
 import datetime as dt
+import itertools
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -108,7 +109,7 @@ def _renewals(points: list[_Point]) -> list[_Renewal]:
     renewals: list[_Renewal] = []
     # Deliberately not strict=True: this pairs each point with its successor,
     # so the second sequence is always exactly one shorter by construction.
-    for prev, curr in zip(points, points[1:], strict=False):
+    for prev, curr in itertools.pairwise(points):
         elapsed = (curr.date - prev.date).days
         if elapsed <= 0:
             continue
@@ -200,7 +201,7 @@ def assess(history: list[dict[str, Any]]) -> LapseRisk:
     if len(renewals) >= 3:
         gaps = [
             (b.date - a.date).days
-            for a, b in zip(renewals, renewals[1:], strict=False)
+            for a, b in itertools.pairwise(renewals)
             if (b.date - a.date).days > 0
         ]
         if len(gaps) >= 2 and gaps[-2] > 0 and gaps[-1] >= gaps[-2] * CADENCE_SLOWDOWN_RATIO:

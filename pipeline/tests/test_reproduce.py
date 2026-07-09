@@ -129,7 +129,7 @@ def test_reproduce_raises_when_artifact_has_no_hash(tmp_path, monkeypatch) -> No
     payload = {**PUBLISHED_ARTIFACT, "feed": {}}
     _write_artifact(tmp_path, payload)
     monkeypatch.setattr(reproduce, "artifacts_dir", lambda: tmp_path / "data" / "artifacts")
-    with pytest.raises(reproduce.ReproduceError, match="no feed.sha256"):
+    with pytest.raises(reproduce.ReproduceError, match=r"no feed\.sha256"):
         reproduce.reproduce(AGENCY, DATE)
 
 

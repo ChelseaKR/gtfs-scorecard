@@ -61,19 +61,19 @@ class _FakeS3:
         self.put_calls = 0
         self.head_calls = 0
 
-    def head_object(self, Bucket: str, Key: str):  # type: ignore[no-untyped-def]  # noqa: N803
+    def head_object(self, Bucket: str, Key: str):  # type: ignore[no-untyped-def]
         self.head_calls += 1
         if (Bucket, Key) not in self.store:
             raise RuntimeError("NoSuchKey")
 
-    def get_object(self, Bucket: str, Key: str):  # type: ignore[no-untyped-def]  # noqa: N803
+    def get_object(self, Bucket: str, Key: str):  # type: ignore[no-untyped-def]
         self.get_calls += 1
         try:
             return {"Body": _FakeBody(self.store[(Bucket, Key)])}
         except KeyError as exc:
             raise RuntimeError("NoSuchKey") from exc
 
-    def put_object(self, Bucket: str, Key: str, Body: bytes, **_: object):  # type: ignore[no-untyped-def]  # noqa: N803
+    def put_object(self, Bucket: str, Key: str, Body: bytes, **_: object):  # type: ignore[no-untyped-def]
         self.put_calls += 1
         self.store[(Bucket, Key)] = Body
 
@@ -136,10 +136,10 @@ def test_s3_write_errors_never_fail_a_store(tmp_path, monkeypatch) -> None:  # t
     src = _write_source_zip(tmp_path)
 
     class _Broken(_FakeS3):
-        def head_object(self, Bucket, Key):  # type: ignore[no-untyped-def]  # noqa: N803
+        def head_object(self, Bucket, Key):  # type: ignore[no-untyped-def]
             raise RuntimeError("S3 down")
 
-        def put_object(self, Bucket, Key, Body, **_):  # type: ignore[no-untyped-def]  # noqa: N803
+        def put_object(self, Bucket, Key, Body, **_):  # type: ignore[no-untyped-def]
             raise RuntimeError("S3 down")
 
     _use_s3(monkeypatch, _Broken())
@@ -151,7 +151,7 @@ def test_fetch_raises_when_s3_read_fails(tmp_path, monkeypatch) -> None:  # type
     _point_archive_at(tmp_path, monkeypatch)
 
     class _Broken(_FakeS3):
-        def get_object(self, Bucket, Key):  # type: ignore[no-untyped-def]  # noqa: N803
+        def get_object(self, Bucket, Key):  # type: ignore[no-untyped-def]
             raise RuntimeError("S3 down")
 
     _use_s3(monkeypatch, _Broken())

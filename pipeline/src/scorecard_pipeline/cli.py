@@ -63,7 +63,7 @@ def _maybe_api_report(agency: Agency, sha256: str, validator_version: str):  # t
     return report
 
 
-def run_agency(
+def run_agency(  # noqa: C901
     agency_id: str,
     date: dt.date,
     force_fetch: bool = False,
@@ -83,7 +83,7 @@ def run_agency(
 
     try:
         archive.store(fetched.sha256, fetched.path)
-    except OSError as exc:  # noqa: BLE001 - archiving must never fail a score
+    except OSError as exc:
         log.warning("%s: raw archive write failed: %s", agency.id, exc)
 
     # Skip the Java validator when this exact feed (same bytes, same validator

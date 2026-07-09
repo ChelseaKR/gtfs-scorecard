@@ -259,7 +259,7 @@ def _anomaly_alert_items(
     return items
 
 
-def build_digest(
+def build_digest(  # noqa: C901
     today: dt.date | None = None,
     expiry_days: int = DEFAULT_EXPIRY_DAYS,
 ) -> Digest:
