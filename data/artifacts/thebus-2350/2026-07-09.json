@@ -6,11 +6,10 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/thebus-2350/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/thebus-2350/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
-        "count": 3814,
+        "count": 3830,
         "examples": [
           "LAGOON DR + IOLANA PL -> Lagoon Dr + Iolana Pl",
           "LAGOON DR + KAPALULU PL -> Lagoon Dr + Kapalulu Pl",
@@ -27,7 +26,7 @@
         "label": "Recased shouting route names"
       }
     ],
-    "total": 3815
+    "total": 3831
   },
   "categories": {
     "completeness": {
@@ -41,6 +40,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -75,8 +78,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 3831,
-        "trips": 37655,
+        "stops": 3847,
+        "trips": 37678,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -85,24 +88,24 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 3831,
+          "count": 3847,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 25.0,
           "severity": "WARNING",
-          "what": "3831 of 3831 stops don't say whether a wheelchair user can board there.",
+          "what": "3847 of 3847 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 37655,
+          "count": 37678,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "37655 of 37655 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "37678 of 37678 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -118,13 +121,13 @@
         },
         {
           "code": "scorecard_stop_names_all_caps",
-          "count": 3814,
+          "count": 3830,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Rename stops to mixed case (e.g. 'Main St & 2nd Ave').",
           "owner": "Likely your export tool",
           "points": 14.9,
           "severity": "INFO",
-          "what": "About 3814 stop names are written in ALL CAPS.",
+          "what": "About 3830 stop names are written in ALL CAPS.",
           "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
         },
         {
@@ -147,18 +150,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 12,
+        "distinct_codes": 11,
         "instances_by_severity": {
-          "ERROR": 1203,
-          "INFO": 75363,
-          "WARNING": 1449444
+          "ERROR": 1214,
+          "INFO": 75402,
+          "WARNING": 1451753
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "decreasing_or_equal_stop_time_distance",
-          "count": 1203,
+          "count": 1214,
           "effort": "Usually an export-tool fix, not hand editing.",
           "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
           "owner": "Likely your export tool",
@@ -169,7 +172,7 @@
         },
         {
           "code": "missing_timepoint_value",
-          "count": 1416958,
+          "count": 1419279,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -180,7 +183,7 @@
         },
         {
           "code": "mixed_case_recommended_field",
-          "count": 32350,
+          "count": 32376,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -191,7 +194,7 @@
         },
         {
           "code": "service_has_no_active_day_of_the_week",
-          "count": 68,
+          "count": 86,
           "effort": "A few minutes in your scheduling software.",
           "fix": "Delete the empty calendars or set their service days.",
           "owner": "Likely your export tool",
@@ -202,13 +205,13 @@
         },
         {
           "code": "expired_calendar",
-          "count": 64,
+          "count": 8,
           "effort": "One setting in most export tools.",
           "fix": "Remove past service periods the next time you export the feed.",
           "owner": "Likely your export tool",
-          "points": 8.0,
+          "points": 6.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -235,7 +238,7 @@
         },
         {
           "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
-          "count": 37655,
+          "count": 37678,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'trip_with_shape_dist_traveled_but_no_shape_distances' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -246,7 +249,7 @@
         },
         {
           "code": "unsorted_stop_times",
-          "count": 37655,
+          "count": 37678,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -257,7 +260,7 @@
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 40,
+          "count": 35,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -276,31 +279,20 @@
           "severity": "INFO",
           "what": "Some files contain columns that are not part of the GTFS spec.",
           "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
-        },
-        {
-          "code": "big_gap_in_service",
-          "count": 2,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.5,
-          "severity": "INFO",
-          "what": "Big gap in service (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 32.0,
+      "score": 34.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 12 kinds of issue across 1526010 instances (1203 error, 1449444 warning, 75363 informational).",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 1528369 instances (1214 error, 1451753 warning, 75402 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 44,
         "feed_end_date": "2026-08-22",
-        "feed_start_date": "2026-05-20",
-        "feed_version": "(2605_v5_BusRail_MERGED_Landlines)",
+        "feed_start_date": "2026-07-01",
+        "feed_version": "(2605_MidSignup_v10_BusRail_MERGED_Landlines)",
         "has_feed_info": true,
         "last_service_date": "2026-08-22",
         "seasonal_boundary": false,
@@ -320,6 +312,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -329,7 +333,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 56 days.",
+        "detail": "Service data covers the next 44 days.",
         "key": "current",
         "met": true
       },
@@ -345,11 +349,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "82e5bc659d434520d5261ae238cc9ca618e335dcba472f8620f7082be6127e89",
-    "size_bytes": 12280614,
+    "sha256": "65c0b3c07486098332cef4d6a55ddbd0bb34a6b3f17f376dd8765b2fb19e617a",
+    "size_bytes": 11982564,
     "static_url": "https://www.thebus.org/transitdata/production/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://www.thebus.org/transitdata/production/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -158.22846,
@@ -357,12 +367,12 @@
       -157.66243,
       21.70332
     ],
-    "lat": 21.354,
-    "lon": -157.88303,
-    "stop_count": 3831
+    "lat": 21.35357,
+    "lon": -157.88405,
+    "stop_count": 3847
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "TheBus",
       "Skyline"
@@ -382,7 +392,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 56 days.",
+        "detail": "Service data covers the next 44 days.",
         "key": "current",
         "status": "ready"
       }
@@ -392,12 +402,13 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 39.4,
-    "margin_to_next_band": 20.6,
-    "score": 39.4
+    "margin_to_lower_band": 40.5,
+    "margin_to_next_band": 19.5,
+    "score": 40.5
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -409,24 +420,20 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
-      "count": 3779,
+      "count": 3793,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "3779 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"LAGOON DR + IOLANA PL\", \"LAGOON DR + KAPALULU PL\", \"LAGOON DR + MOKUEA PL\", and more).",
+      "what": "3793 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"LAGOON DR + IOLANA PL\", \"LAGOON DR + KAPALULU PL\", \"LAGOON DR + MOKUEA PL\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 3831,
+    "boardable_stops": 3847,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
@@ -436,21 +443,1335 @@
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "3 of 3831 boardable stops are never served by any trip.",
+        "what": "3 of 3847 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
     "orphan_stops": 3,
     "single_stop_trips": 0,
-    "trips_total": 37655
+    "trips_total": 37678
+  },
+  "route_map": {
+    "drawn_route_count": 118,
+    "has_shapes": true,
+    "path": "data/artifacts/thebus-2350/geometry.geojson",
+    "route_count": 118,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Kaimuki-Kalihi",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Kalihi-Alewa Heights",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102",
+        "label": "1L",
+        "long": "Hawaii Kai-Aloha Stadium Limited",
+        "short": "1L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "103",
+        "label": "23",
+        "long": "Kahala-Sea Life Park",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "107",
+        "label": "234",
+        "long": "Kahala Mall-Waialae Nui",
+        "short": "234",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "109",
+        "label": "E",
+        "long": "CountryExpress! E",
+        "short": "E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "112",
+        "label": "414",
+        "long": "Palahia-Makakilo-Kapolei",
+        "short": "414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "113",
+        "label": "501",
+        "long": "Mililani Mauka",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "114",
+        "label": "503",
+        "long": "Mililani-Launani Valley",
+        "short": "503",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "115",
+        "label": "504",
+        "long": "Mililani South",
+        "short": "504",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "117",
+        "label": "94",
+        "long": "Villages of Kapolei",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "118",
+        "label": "PH1",
+        "long": "Waianae Coast-Pearl Harbor Express",
+        "short": "PH1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "119",
+        "label": "PH2",
+        "long": "Mililani Town-Pearl Harbor Express",
+        "short": "PH2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "120",
+        "label": "PH3",
+        "long": "Wahiawa Heights-Pearl Harbor Express",
+        "short": "PH3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "121",
+        "label": "PH4",
+        "long": "Kailua-Kahaluu-Pearl Harbor Express",
+        "short": "PH4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "123",
+        "label": "PH6",
+        "long": "Hawaii Kai-Pearl Harbor Express",
+        "short": "PH6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "127",
+        "label": "13",
+        "long": "Liliha-Waikiki-University",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "129",
+        "label": "52",
+        "long": "Honolulu-Mililani-Haleiwa",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13",
+        "label": "14",
+        "long": "St. Louis-Maunalani",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "131",
+        "label": "51",
+        "long": "Honolulu-Wahiawa",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "134",
+        "label": "416",
+        "long": "Kapolei Circulator",
+        "short": "416",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "135",
+        "label": "99",
+        "long": "Wahiawa-Mililani-Waipahu-Kapolei",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "136",
+        "label": "PH7",
+        "long": "Ewa Beach-Pearl Harbor Express",
+        "short": "PH7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "137",
+        "label": "87",
+        "long": "Windward Express-Kailua",
+        "short": "87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "139",
+        "label": "60",
+        "long": "Honolulu-Kaneohe-Haleiwa",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "140",
+        "label": "69",
+        "long": "Kaneohe-Waimanalo-Sea Life Park",
+        "short": "69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "141",
+        "label": "86",
+        "long": "Windward Express-Haiku",
+        "short": "86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "142",
+        "label": "61",
+        "long": "Kalihi-Kaneohe-Aikahi",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "143",
+        "label": "66",
+        "long": "Downtown-Kailua-Aikahi",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "144",
+        "label": "67",
+        "long": "Honolulu-Kailua-Waimanalo",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "145",
+        "label": "651",
+        "long": "Kaneohe Circulator",
+        "short": "651",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "146",
+        "label": "671",
+        "long": "Kailua-Lanikai",
+        "short": "671",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "147",
+        "label": "672",
+        "long": "Kailua-Maunawili",
+        "short": "672",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "148",
+        "label": "673",
+        "long": "Kailua-Enchanted Lake",
+        "short": "673",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "149",
+        "label": "674",
+        "long": "Kailua-Aikahi",
+        "short": "674",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "152",
+        "label": "301",
+        "long": "Tripler-Kalihi Transit Center",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "153",
+        "label": "302",
+        "long": "Moanalua Valley-Kalihi Transit Center",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "156",
+        "label": "122",
+        "long": "Punchbowl-Alapai Transit Center",
+        "short": "122",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "157",
+        "label": "511",
+        "long": "Schofield-Wahiawa Transit Center",
+        "short": "511",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "158",
+        "label": "512",
+        "long": "Whitmore Village-Wahiawa Transit Center",
+        "short": "512",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "159",
+        "label": "521",
+        "long": "Waialua-Haleiwa",
+        "short": "521",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "160",
+        "label": "95",
+        "long": "Kapolei Homesteads",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "161",
+        "label": "123",
+        "long": "Papakolea-Pacific Heights",
+        "short": "123",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "162",
+        "label": "102",
+        "long": "Makiki-Ala Moana",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "163",
+        "label": "2L",
+        "long": "Kalihi-Waikiki-Kahala Limited",
+        "short": "2L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "164",
+        "label": "306",
+        "long": "Kahauiki Village-Kalihi",
+        "short": "306",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "165",
+        "label": "91A",
+        "long": "Ewa Gentry Express",
+        "short": "91A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "166",
+        "label": "96A",
+        "long": "Paiwa-Waikele Express",
+        "short": "96A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "168",
+        "label": "46",
+        "long": "Kapolei Commons-UH West Oahu",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "169",
+        "label": "461",
+        "long": "Makakilo-Palahia-UH West Oahu",
+        "short": "461",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "170",
+        "label": "531",
+        "long": "Manana-Pearl Highlands",
+        "short": "531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "171",
+        "label": "532",
+        "long": "Momilani-Pearl Highlands",
+        "short": "532",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "172",
+        "label": "533",
+        "long": "Pacific Palisades",
+        "short": "533",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "173",
+        "label": "535",
+        "long": "Pearl City Peninsula-Pearl Highlands",
+        "short": "535",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "174",
+        "label": "541",
+        "long": "Wailuna-Pearlridge",
+        "short": "541",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "175",
+        "label": "542",
+        "long": "Royal Summit-Newtown-Pearlridge",
+        "short": "542",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "176",
+        "label": "544",
+        "long": "Upper Pearlridge-Pearlridge",
+        "short": "544",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "177",
+        "label": "545",
+        "long": "Pali Momi-Koauka-Pearlridge",
+        "short": "545",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "178",
+        "label": "551",
+        "long": "Aiea Heights-Aloha Stadium",
+        "short": "551",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "179",
+        "label": "552",
+        "long": "Halawa Heights-Aloha Stadium",
+        "short": "552",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "180",
+        "label": "PH8",
+        "long": "Makalapa-Pearl Harbor",
+        "short": "PH8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "142E57",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "181",
+        "label": "SKYLINE",
+        "long": "SKYLINE",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "182",
+        "label": "151",
+        "long": "Chinatown-Kuakini-Kauluwela",
+        "short": "151",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "183",
+        "label": "444",
+        "long": "Hoaeae-Village Park-Royal Kunia",
+        "short": "444",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "184",
+        "label": "200",
+        "long": "Kapiolani Park-Palolo Valley",
+        "short": "200",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "185",
+        "label": "307",
+        "long": "Kamehameha IV Road-Kalihi Transit Center",
+        "short": "307",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "186",
+        "label": "47",
+        "long": "Keoneae UH West Oahu-Ewa Beach",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "187",
+        "label": "421",
+        "long": "Kapilina",
+        "short": "421",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "188",
+        "label": "331",
+        "long": "Makalapa-Hickam",
+        "short": "331",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "189",
+        "label": "A LINE",
+        "long": "Ahua-UH Manoa",
+        "short": "A LINE",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "328F16",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "190",
+        "label": "U LINE",
+        "long": "Ahua-UH Manoa via Freeway",
+        "short": "U LINE",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "191",
+        "label": "W LINE",
+        "long": "Airport-Waikiki",
+        "short": "W LINE",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "194",
+        "label": "317",
+        "long": "Ahua-Lagoon Drive",
+        "short": "317",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "School-Waikiki-Kahala",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "25",
+        "label": "32",
+        "long": "Kalihi Transit Center-Foster Village-Pearlridge",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26",
+        "label": "40",
+        "long": "Honolulu-Makaha",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "27",
+        "label": "41",
+        "long": "Kapolei-Ewa Beach",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "28",
+        "label": "42",
+        "long": "Ewa Beach-Waikiki",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "29",
+        "label": "43",
+        "long": "Pearl Highlands-Waipahu",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Kaimuki-Salt Lake",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30",
+        "label": "44",
+        "long": "Keoneae UH West Oahu-Hoaeae West Loch",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "32",
+        "label": "53",
+        "long": "Honolulu-Pacific Palisades",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "33",
+        "label": "54",
+        "long": "Honolulu-Pearl City",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "39",
+        "label": "65",
+        "long": "Honolulu-Kaneohe-Ahuimanu",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Nuuanu-Punahou-Mccully",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40",
+        "label": "C",
+        "long": "CountryExpress! C",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "48",
+        "label": "80",
+        "long": "Hawaii Kai Park & Ride Express",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "49",
+        "label": "81",
+        "long": "Waipahu Express",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Ala Moana-Manoa",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "50",
+        "label": "82",
+        "long": "Hawaii Kai Park & Ride Express",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "51",
+        "label": "83",
+        "long": "Wahiawa Town Express",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "52",
+        "label": "84",
+        "long": "Mililani Express-North",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "53",
+        "label": "85",
+        "long": "Windward Express-Kaneohe",
+        "short": "85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "55",
+        "label": "88",
+        "long": "Kahaluu-Ahuimanu Express",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "56",
+        "label": "89",
+        "long": "Waimanalo-Kailua Express",
+        "short": "89",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "57",
+        "label": "90",
+        "long": "Pearl City Express",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "58",
+        "label": "91",
+        "long": "Ewa Beach Express",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "59",
+        "label": "92",
+        "long": "Makakilo City Express",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Pauoa-Woodlawn",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "60",
+        "label": "93",
+        "long": "Waianae Coast Express-CBD",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "62",
+        "label": "96",
+        "long": "Waipio Gentry Express",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "63",
+        "label": "97",
+        "long": "Village Park Express",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "64",
+        "label": "98",
+        "long": "Wahiawa-Mililani Park & Ride",
+        "short": "98",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Kalihi Valley-Kahala",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "71",
+        "label": "84A",
+        "long": "Mililani Express-South",
+        "short": "84A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74",
+        "label": "88A",
+        "long": "North Shore Express",
+        "short": "88A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "76",
+        "label": "98A",
+        "long": "Express-Downtown",
+        "short": "98A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "77",
+        "label": "W1",
+        "long": "Waipahu via Farrington Express",
+        "short": "W1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "78",
+        "label": "W2",
+        "long": "Waipahu via Paiwa Express",
+        "short": "W2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "79",
+        "label": "W3",
+        "long": "Kalihi via School Street Express",
+        "short": "W3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Waikiki-Ala Moana",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "81",
+        "label": "401",
+        "long": "Waianae Valley",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "82",
+        "label": "402",
+        "long": "Lualualei Homestead",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "83",
+        "label": "403",
+        "long": "Nanakuli-Maili-Waianae",
+        "short": "403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "84",
+        "label": "411",
+        "long": "Makakilo Heights",
+        "short": "411",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "86",
+        "label": "413",
+        "long": "Campbell Industrial Park",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "87",
+        "label": "415",
+        "long": "Kapolei Transit Center-Kalaeloa",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "89",
+        "label": "433",
+        "long": "Waipahu-Waikele Shopping Center",
+        "short": "433",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3847,
+    "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 37678 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 37678,
+    "trips_with_shape": 37678
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
       "code": "decreasing_or_equal_stop_time_distance",
-      "count": 1203,
+      "count": 1214,
       "effort": "Usually an export-tool fix, not hand editing.",
       "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
       "owner": "Likely your export tool",
@@ -462,26 +1783,26 @@
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 3831,
+      "count": 3847,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "3831 of 3831 stops don't say whether a wheelchair user can board there.",
+      "what": "3847 of 3847 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 37655,
+      "count": 37678,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "37655 of 37655 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "37678 of 37678 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],

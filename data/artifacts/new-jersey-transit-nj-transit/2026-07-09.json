@@ -32,6 +32,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -67,7 +71,7 @@
           "pathway_count": 0
         },
         "stops": 16570,
-        "trips": 39020,
+        "trips": 33536,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -87,13 +91,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 39020,
+          "count": 33536,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "39020 of 39020 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "33536 of 33536 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -140,16 +144,16 @@
       "details": {
         "distinct_codes": 7,
         "instances_by_severity": {
-          "ERROR": 175,
+          "ERROR": 70,
           "INFO": 0,
-          "WARNING": 31891
+          "WARNING": 28089
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "decreasing_or_equal_stop_time_distance",
-          "count": 117,
+          "count": 58,
           "effort": "Usually an export-tool fix, not hand editing.",
           "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
           "owner": "Likely your export tool",
@@ -160,18 +164,18 @@
         },
         {
           "code": "block_trips_with_overlapping_stop_times",
-          "count": 58,
+          "count": 12,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'block_trips_with_overlapping_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
-          "points": 24.0,
+          "points": 18.0,
           "severity": "ERROR",
           "what": "Block trips with overlapping stop times (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
           "code": "mixed_case_recommended_field",
-          "count": 31610,
+          "count": 27817,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -193,14 +197,14 @@
         },
         {
           "code": "fast_travel_between_consecutive_stops",
-          "count": 107,
+          "count": 98,
           "effort": "A few minutes per flagged trip.",
           "fix": "Check the flagged stop times for transposed minutes.",
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "stop_too_far_from_shape",
@@ -221,24 +225,24 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
           "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
         }
       ],
       "name": "correctness",
-      "score": 18.0,
+      "score": 24.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 32066 instances (175 error, 31891 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 28159 instances (70 error, 28089 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 169,
+        "days_until_expiry": 177,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-12-25",
+        "last_service_date": "2027-01-02",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -258,7 +262,7 @@
       "name": "freshness",
       "score": 85.0,
       "status": "measured",
-      "summary": "Service data covers the next 169 days.",
+      "summary": "Service data covers the next 177 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -267,6 +271,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -277,7 +293,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 178 days.",
+        "detail": "Service data covers the next 177 days.",
         "key": "current",
         "met": true
       },
@@ -293,11 +309,17 @@
   "feed": {
     "license_note": "License: https://www.njtransit.com/developer-tools",
     "reachable": true,
-    "sha256": "dafb95e8c171680d117bb2e3a682fdf9acc66c6eb6dc5fc77bfad802edbbeae8",
-    "size_bytes": 59563568,
+    "sha256": "dedeeb9150f779bbbb67a0977ef545ed7d23915e09130f065d7ff91533d3a91c",
+    "size_bytes": 50882527,
     "static_url": "https://www.njtransit.com/bus_data.zip"
   },
-  "generated_at": "2026-06-30T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://www.njtransit.com/bus_data.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -75.52097,
@@ -310,11 +332,11 @@
     "stop_count": 16570
   },
   "ntd_id_alignment": {
-    "detail": "Your feed uses agency_id NJB; the NTD asks for your five-digit NTD ID (20080) so the feed lines up with your record.",
+    "detail": "Your feed's agency_id is NJB; your National Transit Database ID is 20080. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
     "feed_agency_ids": [
       "NJB"
     ],
-    "fix": "Change the agency_id to 20080 in agency.txt and update the matching agency_id in routes.txt.",
+    "fix": "Optionally set the agency_id for your service to 20080 in agency.txt (and the matching agency_id in routes.txt) so the feed lines up with your NTD record. It is a convenience, not a required feed change: FTA also links agency_id to your NTD ID on your P-50 form.",
     "ntd_id": "20080",
     "status": "mismatch"
   },
@@ -331,7 +353,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 178 days.",
+        "detail": "Service data covers the next 177 days.",
         "key": "current",
         "status": "ready"
       }
@@ -341,12 +363,13 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 36.4,
-    "margin_to_next_band": 23.6,
-    "score": 36.4
+    "margin_to_lower_band": 39.0,
+    "margin_to_next_band": 21.0,
+    "score": 39.0
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 263,
       "effort": "A per-route color setting in your scheduling software.",
@@ -358,6 +381,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 15768,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -369,17 +393,12 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 16570,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 39020
+    "trips_total": 33536
   },
   "route_map": {
     "drawn_route_count": 263,
@@ -3285,12 +3304,18 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 33536 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 33536,
+    "trips_with_shape": 33536
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
       "code": "decreasing_or_equal_stop_time_distance",
-      "count": 117,
+      "count": 58,
       "effort": "Usually an export-tool fix, not hand editing.",
       "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
       "owner": "Likely your export tool",
@@ -3302,11 +3327,11 @@
     },
     {
       "code": "block_trips_with_overlapping_stop_times",
-      "count": 58,
+      "count": 12,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'block_trips_with_overlapping_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
-      "points": 24.0,
+      "points": 18.0,
       "rank": 2,
       "severity": "ERROR",
       "what": "Block trips with overlapping stop times (flagged by the MobilityData validator).",

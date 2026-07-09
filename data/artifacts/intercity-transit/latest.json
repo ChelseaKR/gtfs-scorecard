@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 1116,
-        "trips": 17353,
+        "trips": 12159,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -106,32 +110,21 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 0,
-          "WARNING": 17
+          "WARNING": 4
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 8,
+          "count": 2,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
-          "points": 6.0,
+          "points": 4.0,
           "severity": "WARNING",
           "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "unused_shape",
-          "count": 8,
-          "effort": "One setting.",
-          "fix": "Enable 'remove unused shapes' (or similar) in your export tool.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "The feed contains route shapes no trip uses.",
-          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
         },
         {
           "code": "missing_feed_contact_email_and_url",
@@ -143,57 +136,93 @@
           "severity": "WARNING",
           "what": "Missing feed contact email and url (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 1,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         }
       ],
       "name": "correctness",
-      "score": 84.0,
+      "score": 88.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 3 kinds of issue across 17 instances (0 error, 17 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 4 instances (0 error, 4 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 51,
-        "feed_end_date": "2026-08-29",
-        "feed_start_date": "2026-06-09",
-        "feed_version": "20260609",
+        "days_until_expiry": 65,
+        "feed_end_date": "2026-09-12",
+        "feed_start_date": "2026-07-09",
+        "feed_version": "20260709",
         "has_feed_info": true,
-        "last_service_date": "2026-08-29",
+        "last_service_date": "2026-09-12",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [],
       "name": "freshness",
-      "score": 85.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 51 days.",
+      "summary": "Service data covers the next 65 days.",
       "weight": 0.2
     },
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 12,
+        "covered_trips": 49,
         "drift": {
           "median_seconds": 0,
-          "observations": 8153,
-          "on_time_share_pct": 98.7,
-          "p90_abs_seconds": 0
+          "observations": 9149,
+          "on_time_share_pct": 96.8,
+          "p90_abs_seconds": 73
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 12,
-        "vehicles_checked": 48,
-        "vehicles_on_route_pct": 91.7,
+        "scheduled_trips_in_window": 49,
+        "vehicles_checked": 157,
+        "vehicles_on_route_pct": 87.3,
         "worst_lag_seconds": 0
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 20,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 1.9,
+          "severity": "WARNING",
+          "what": "20 of 157 sampled vehicle positions were far from their assigned route (worst: 2009 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+        }
+      ],
       "name": "realtime",
-      "score": 98.8,
+      "score": 98.1,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 91.7% of vehicles on their route; predictions ran a median of 0s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 87.3% of vehicles on their route; predictions ran a median of 0s behind schedule.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -204,7 +233,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 63 days.",
+        "detail": "Service data covers the next 65 days.",
         "key": "current",
         "met": true
       },
@@ -220,11 +249,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "c9dedb702a45937e69628ec8aef867edb688c42e644ab1c432e40a37f15e9e54",
-    "size_bytes": 4511233,
+    "sha256": "63ec4392818fb497090f1d96903c86596a24abe44e7fe08c69f8dcb40e40afd7",
+    "size_bytes": 2602393,
     "static_url": "https://its.rideralerts.com/InfoPoint/gtfs-zip.ashx"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://its.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.97713,
@@ -237,7 +272,7 @@
     "stop_count": 1116
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "0"
     ],
@@ -256,22 +291,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 63 days.",
+        "detail": "Service data covers the next 65 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "C",
-    "margin_to_lower_band": 9.3,
-    "margin_to_next_band": 0.7,
-    "score": 79.3
+    "grade": "B",
+    "margin_to_lower_band": 3.5,
+    "margin_to_next_band": 6.5,
+    "score": 83.5
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 5,
       "effort": "A per-route color setting in your scheduling software.",
@@ -283,6 +319,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 962,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -294,20 +331,373 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1116,
-    "findings": [],
-    "orphan_stops": 0,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 1,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "1 of 1116 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 17353
+    "trips_total": 12159
+  },
+  "route_map": {
+    "drawn_route_count": 29,
+    "has_shapes": true,
+    "path": "data/artifacts/intercity-transit/geometry.geojson",
+    "route_count": 30,
+    "routes": [
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "Capitol Blvd",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Littlerock Rd",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "Mottman Rd",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Legion Way/Union Ave",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "Friendly Grove",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Union Ave/Legion Way",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "Capitol Campus/SPSCC",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Capital Mall Dr",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "Conger Ave/Capital Mall",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "32",
+        "label": "32",
+        "long": "SPSCC/The Evergreen State College",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "Black Lake Blvd",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E27D1F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "34",
+        "label": "34",
+        "long": "The Evergreen State College/Capital Mall",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E27D1F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "Courthouse/Capital Mall",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "41",
+        "label": "41",
+        "long": "Nightline",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "50",
+        "label": "50",
+        "long": "Martin Way",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Farmers Market/Lacey",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "College St/Yelm Hwy",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66A9D8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "600",
+        "label": "600",
+        "long": "Lakewood Commuter",
+        "short": "600",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66A9D8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "610",
+        "label": "610",
+        "long": "Lacey Connector",
+        "short": "610",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "Tumwater/Lacey",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "Britton Pkwy/Marvin Rd",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "Carpenter Rd/Corporate Center",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Golf Club Rd/22nd Ave",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "Lilly Rd/26th Ave",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "Pacific Ave/Steilacoom Rd",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "Ruddell/SPSCC",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E27D1F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "Marvin Rd/Willamette Dr",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E27D1F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "78",
+        "label": "78",
+        "long": "Willamette Dr/Marvin Rd",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E27D1F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "9",
+        "label": "9X",
+        "long": "Crosstown Express",
+        "short": "9X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "Yelm/Lacey",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1116,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 12159 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 12159,
+    "trips_with_shape": 12159
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
@@ -336,11 +726,11 @@
     },
     {
       "code": "stop_too_far_from_shape_using_user_distance",
-      "count": 8,
+      "count": 2,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
-      "points": 6.0,
+      "points": 4.0,
       "rank": 3,
       "severity": "WARNING",
       "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",

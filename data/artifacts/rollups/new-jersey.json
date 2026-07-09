@@ -1,6 +1,6 @@
 {
   "agency_count": 7,
-  "average_score": 65.9,
+  "average_score": 66.3,
   "common_fixes": [
     {
       "agencies": 5,
@@ -33,13 +33,27 @@
     "stale": 0,
     "total": 2
   },
-  "generated_at": "2026-07-09T12:34:01+00:00",
+  "generated_at": "2026-07-09T16:00:15+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 1,
     "F": 4
   },
   "members": [
+    {
+      "annual_trips": null,
+      "attention_reason": "Elevated behavioral lapse risk",
+      "days_until_expiry": 177,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "new-jersey-transit-nj-transit",
+      "name": "Bus",
+      "needs_attention": true,
+      "score": 39.0,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -88,20 +102,6 @@
       "days_until_expiry": 169,
       "expiry_status": "current",
       "grade": "F",
-      "id": "new-jersey-transit-nj-transit",
-      "name": "Bus",
-      "needs_attention": false,
-      "score": 36.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 169,
-      "expiry_status": "current",
-      "grade": "F",
       "id": "new-jersey-transit-nj-transit-509",
       "name": "Rail",
       "needs_attention": false,
@@ -139,7 +139,7 @@
       "top_fix": null
     }
   ],
-  "needs_attention": 3,
+  "needs_attention": 4,
   "rollup": {
     "id": "new-jersey",
     "name": "New Jersey agencies"
@@ -147,9 +147,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 1,
-    "not_measured": 4,
+    "not_measured": 3,
     "not_ready": 0,
-    "ready": 2,
+    "ready": 3,
     "total": 7
   },
   "state_percentile": 89

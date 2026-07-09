@@ -5,100 +5,34 @@
         "code": "stop_too_far_from_shape_using_user_distance",
         "sample_notices": [
           {
-            "geoDistanceToShape": 124.24346831136347,
-            "match": [
-              47.05948207690378,
-              -122.75092261444556
-            ],
-            "shapeId": "15896_shp-v3F",
-            "stopId": "1229",
-            "stopName": "Martin Way at River Ridge [wb]",
-            "stopTimeCsvRowNumber": 441809,
-            "tripCsvRowNumber": 16350,
-            "tripId": "t21E-b1F5-sl3-v3F"
-          },
-          {
-            "geoDistanceToShape": 104.45852362692793,
+            "geoDistanceToShape": 104.4585236272771,
             "match": [
               47.05757707586209,
               -122.76044361448729
             ],
-            "shapeId": "15896_shp-v3F",
+            "shapeId": "15997_shp-v41",
             "stopId": "977",
             "stopName": "Martin Way at Gerald St [wb]",
-            "stopTimeCsvRowNumber": 441811,
-            "tripCsvRowNumber": 16350,
-            "tripId": "t21E-b1F5-sl3-v3F"
+            "stopTimeCsvRowNumber": 649,
+            "tripCsvRowNumber": 5346,
+            "tripId": "t21E-b1F5-slB-v41"
           },
           {
-            "geoDistanceToShape": 124.24346831136347,
-            "match": [
-              47.05948207690378,
-              -122.75092261444556
-            ],
-            "shapeId": "15896_shp-v40",
-            "stopId": "1229",
-            "stopName": "Martin Way at River Ridge [wb]",
-            "stopTimeCsvRowNumber": 911,
-            "tripCsvRowNumber": 6841,
-            "tripId": "t21E-b1F5-slB-v40"
-          },
-          {
-            "geoDistanceToShape": 104.45852362692793,
+            "geoDistanceToShape": 104.4585236272771,
             "match": [
               47.05757707586209,
               -122.76044361448729
             ],
-            "shapeId": "15896_shp-v40",
+            "shapeId": "15998_shp-v41",
             "stopId": "977",
             "stopName": "Martin Way at Gerald St [wb]",
-            "stopTimeCsvRowNumber": 913,
-            "tripCsvRowNumber": 6841,
-            "tripId": "t21E-b1F5-slB-v40"
-          },
-          {
-            "geoDistanceToShape": 124.24346831136347,
-            "match": [
-              47.05948207690378,
-              -122.75092261444556
-            ],
-            "shapeId": "15897_shp-v3F",
-            "stopId": "1229",
-            "stopName": "Martin Way at River Ridge [wb]",
-            "stopTimeCsvRowNumber": 483515,
-            "tripCsvRowNumber": 16402,
-            "tripId": "t732-b1F7-sl3-v3F"
+            "stopTimeCsvRowNumber": 280543,
+            "tripCsvRowNumber": 5398,
+            "tripId": "t732-b1F7-slB-v41"
           }
         ],
         "severity": "WARNING",
-        "total": 8
-      },
-      {
-        "code": "unused_shape",
-        "sample_notices": [
-          {
-            "csvRowNumber": 52312,
-            "shapeId": "15785_shp-v3F"
-          },
-          {
-            "csvRowNumber": 68135,
-            "shapeId": "15876_shp-v3F"
-          },
-          {
-            "csvRowNumber": 69098,
-            "shapeId": "15879_shp-v3F"
-          },
-          {
-            "csvRowNumber": 73769,
-            "shapeId": "15893_shp-v3F"
-          },
-          {
-            "csvRowNumber": 74235,
-            "shapeId": "15894_shp-v3F"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 8
+        "total": 2
       },
       {
         "code": "missing_feed_contact_email_and_url",
@@ -109,10 +43,22 @@
         ],
         "severity": "WARNING",
         "total": 1
+      },
+      {
+        "code": "stop_without_stop_time",
+        "sample_notices": [
+          {
+            "csvRowNumber": 412,
+            "stopId": "262",
+            "stopName": "Harrison Ave at Decatur St [eb]"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "c9dedb702a45937e69628ec8aef867edb688c42e644ab1c432e40a37f15e9e54",
+  "sha256": "63ec4392818fb497090f1d96903c86596a24abe44e7fe08c69f8dcb40e40afd7",
   "validator_version": "8.0.1"
 }

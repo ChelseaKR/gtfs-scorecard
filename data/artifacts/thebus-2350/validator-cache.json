@@ -5,58 +5,58 @@
         "code": "decreasing_or_equal_stop_time_distance",
         "sample_notices": [
           {
-            "csvRowNumber": 67820,
-            "prevCsvRowNumber": 67596,
-            "prevShapeDistTraveled": 233110.8,
-            "prevStopSequence": 141,
-            "shapeDistTraveled": 233110.8,
-            "stopId": "2341",
-            "stopSequence": 142,
-            "tripId": "5314591"
-          },
-          {
-            "csvRowNumber": 329249,
-            "prevCsvRowNumber": 314557,
+            "csvRowNumber": 326040,
+            "prevCsvRowNumber": 336824,
             "prevShapeDistTraveled": 68013.9,
             "prevStopSequence": 50,
             "shapeDistTraveled": 68013.9,
             "stopId": "2341",
             "stopSequence": 51,
-            "tripId": "5314592"
+            "tripId": "5341404"
           },
           {
-            "csvRowNumber": 67819,
-            "prevCsvRowNumber": 67595,
+            "csvRowNumber": 68190,
+            "prevCsvRowNumber": 67962,
             "prevShapeDistTraveled": 233110.8,
             "prevStopSequence": 141,
             "shapeDistTraveled": 233110.8,
             "stopId": "2341",
             "stopSequence": 142,
-            "tripId": "5314585"
+            "tripId": "5341420"
           },
           {
-            "csvRowNumber": 329248,
-            "prevCsvRowNumber": 314556,
+            "csvRowNumber": 326041,
+            "prevCsvRowNumber": 336825,
             "prevShapeDistTraveled": 68013.9,
             "prevStopSequence": 50,
             "shapeDistTraveled": 68013.9,
             "stopId": "2341",
             "stopSequence": 51,
-            "tripId": "5314586"
+            "tripId": "5341412"
           },
           {
-            "csvRowNumber": 67893,
-            "prevCsvRowNumber": 67669,
-            "prevShapeDistTraveled": 233110.8,
-            "prevStopSequence": 141,
-            "shapeDistTraveled": 233110.8,
+            "csvRowNumber": 68338,
+            "prevCsvRowNumber": 69239,
+            "prevShapeDistTraveled": 219833.0,
+            "prevStopSequence": 130,
+            "shapeDistTraveled": 219833.0,
             "stopId": "2341",
-            "stopSequence": 142,
-            "tripId": "5326562"
+            "stopSequence": 131,
+            "tripId": "5341484"
+          },
+          {
+            "csvRowNumber": 78488,
+            "prevCsvRowNumber": 74998,
+            "prevShapeDistTraveled": 163274.6,
+            "prevStopSequence": 124,
+            "shapeDistTraveled": 163274.6,
+            "stopId": "2341",
+            "stopSequence": 125,
+            "tripId": "5341476"
           }
         ],
         "severity": "ERROR",
-        "total": 1203
+        "total": 1214
       },
       {
         "code": "missing_timepoint_value",
@@ -64,122 +64,122 @@
           {
             "csvRowNumber": 2,
             "stopSequence": 1,
-            "tripId": "5296229"
+            "tripId": "5315036"
           },
           {
             "csvRowNumber": 3,
             "stopSequence": 1,
-            "tripId": "5296237"
+            "tripId": "5315044"
           },
           {
             "csvRowNumber": 4,
             "stopSequence": 1,
-            "tripId": "5296238"
+            "tripId": "5315048"
           },
           {
             "csvRowNumber": 5,
             "stopSequence": 1,
-            "tripId": "5296245"
+            "tripId": "5315052"
           },
           {
             "csvRowNumber": 6,
             "stopSequence": 1,
-            "tripId": "5296246"
+            "tripId": "5315056"
           }
         ],
         "severity": "WARNING",
-        "total": 1416958
+        "total": 1419279
       },
       {
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
             "csvRowNumber": 2,
-            "fieldName": "stop_name",
-            "fieldValue": "LAGOON DR + IOLANA PL",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "KAHAUIKI KALIHI TRANSIT CNTR SKYLINE STN",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 3,
-            "fieldName": "stop_name",
-            "fieldValue": "LAGOON DR + KAPALULU PL",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "KAHAUIKI KALIHI TRANSIT CNTR SKYLINE STN",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 4,
-            "fieldName": "stop_name",
-            "fieldValue": "LAGOON DR + MOKUEA PL",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "KAHAUIKI KALIHI TRANSIT CNTR SKYLINE STN",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 5,
-            "fieldName": "stop_name",
-            "fieldValue": "LAGOON DR + KEEHI PL",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "KAHAUIKI KALIHI TRANSIT CNTR SKYLINE STN",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 6,
-            "fieldName": "stop_name",
-            "fieldValue": "LAGOON DR + IAKO PL",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "KAHAUIKI KALIHI TRANSIT CNTR SKYLINE STN",
+            "filename": "trips.txt"
           }
         ],
         "severity": "WARNING",
-        "total": 32350
+        "total": 32376
       },
       {
         "code": "service_has_no_active_day_of_the_week",
         "sample_notices": [
           {
-            "csvRowNumber": 3,
-            "serviceId": "27559"
+            "csvRowNumber": 4,
+            "serviceId": "27624"
           },
           {
-            "csvRowNumber": 5,
-            "serviceId": "27561"
+            "csvRowNumber": 6,
+            "serviceId": "27626"
           },
           {
-            "csvRowNumber": 7,
-            "serviceId": "27563"
+            "csvRowNumber": 8,
+            "serviceId": "27628"
           },
           {
-            "csvRowNumber": 9,
-            "serviceId": "27565"
+            "csvRowNumber": 10,
+            "serviceId": "27630"
           },
           {
-            "csvRowNumber": 11,
-            "serviceId": "27567"
+            "csvRowNumber": 15,
+            "serviceId": "27640"
           }
         ],
         "severity": "WARNING",
-        "total": 68
+        "total": 86
       },
       {
         "code": "expired_calendar",
         "sample_notices": [
           {
-            "csvRowNumber": 2,
-            "serviceId": "27555"
+            "csvRowNumber": 3,
+            "serviceId": "27623"
           },
           {
-            "csvRowNumber": 4,
-            "serviceId": "27560"
+            "csvRowNumber": 42,
+            "serviceId": "27684"
           },
           {
-            "csvRowNumber": 5,
-            "serviceId": "27561"
+            "csvRowNumber": 43,
+            "serviceId": "27685"
           },
           {
-            "csvRowNumber": 6,
-            "serviceId": "27562"
+            "csvRowNumber": 44,
+            "serviceId": "27686"
           },
           {
-            "csvRowNumber": 7,
-            "serviceId": "27563"
+            "csvRowNumber": 45,
+            "serviceId": "27687"
           }
         ],
         "severity": "WARNING",
-        "total": 64
+        "total": 8
       },
       {
         "code": "stop_without_stop_time",
@@ -218,125 +218,115 @@
         "sample_notices": [
           {
             "shapeId": "40455",
-            "stopTimeCsvRowNumber": 22276,
-            "tripCsvRowNumber": 30372,
+            "stopTimeCsvRowNumber": 23042,
+            "tripCsvRowNumber": 35571,
             "tripId": "5328781"
           },
           {
-            "shapeId": "650344",
-            "stopTimeCsvRowNumber": 35336,
-            "tripCsvRowNumber": 867,
-            "tripId": "5302151"
-          },
-          {
             "shapeId": "40455",
-            "stopTimeCsvRowNumber": 22277,
-            "tripCsvRowNumber": 30373,
+            "stopTimeCsvRowNumber": 23043,
+            "tripCsvRowNumber": 35572,
             "tripId": "5328782"
           },
           {
-            "shapeId": "540309",
-            "stopTimeCsvRowNumber": 26653,
-            "tripCsvRowNumber": 3016,
-            "tripId": "5302150"
+            "shapeId": "40455",
+            "stopTimeCsvRowNumber": 878106,
+            "tripCsvRowNumber": 35573,
+            "tripId": "5328783"
           },
           {
-            "shapeId": "C0369",
-            "stopTimeCsvRowNumber": 24859,
-            "tripCsvRowNumber": 3018,
-            "tripId": "5302153"
+            "shapeId": "40455",
+            "stopTimeCsvRowNumber": 23044,
+            "tripCsvRowNumber": 35574,
+            "tripId": "5328784"
+          },
+          {
+            "shapeId": "5010010",
+            "stopTimeCsvRowNumber": 17046,
+            "tripCsvRowNumber": 21417,
+            "tripId": "5326122"
           }
         ],
         "severity": "INFO",
-        "total": 37655
+        "total": 37678
       },
       {
         "code": "unsorted_stop_times",
         "sample_notices": [
           {
-            "endCsvRowNumber": 1396556,
-            "startCsvRowNumber": 22276,
+            "endCsvRowNumber": 1398487,
+            "startCsvRowNumber": 23042,
             "tripId": "5328781"
           },
           {
-            "endCsvRowNumber": 1414106,
-            "startCsvRowNumber": 35336,
-            "tripId": "5302151"
-          },
-          {
-            "endCsvRowNumber": 1396557,
-            "startCsvRowNumber": 22277,
+            "endCsvRowNumber": 1398488,
+            "startCsvRowNumber": 23043,
             "tripId": "5328782"
           },
           {
-            "endCsvRowNumber": 1409856,
-            "startCsvRowNumber": 26653,
-            "tripId": "5302150"
+            "endCsvRowNumber": 902699,
+            "startCsvRowNumber": 330289,
+            "tripId": "5328783"
           },
           {
-            "endCsvRowNumber": 1399848,
-            "startCsvRowNumber": 24859,
-            "tripId": "5302153"
+            "endCsvRowNumber": 1398489,
+            "startCsvRowNumber": 23044,
+            "tripId": "5328784"
+          },
+          {
+            "endCsvRowNumber": 1390101,
+            "startCsvRowNumber": 17046,
+            "tripId": "5326122"
           }
         ],
         "severity": "INFO",
-        "total": 37655
+        "total": 37678
       },
       {
         "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 28,
-            "serviceId": "27588",
-            "serviceWindowEndDate": "2026-05-27",
-            "serviceWindowStartDate": "2026-04-22"
+            "daysBeforeFeedStart": 30,
+            "serviceId": "27646",
+            "serviceWindowEndDate": "2026-07-10",
+            "serviceWindowStartDate": "2026-06-01"
           },
           {
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 30,
-            "serviceId": "27581",
-            "serviceWindowEndDate": "2026-05-28",
-            "serviceWindowStartDate": "2026-04-20"
+            "serviceId": "27644",
+            "serviceWindowEndDate": "2026-07-10",
+            "serviceWindowStartDate": "2026-06-01"
           },
           {
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 30,
-            "serviceId": "27587",
-            "serviceWindowEndDate": "2026-05-28",
-            "serviceWindowStartDate": "2026-04-20"
+            "serviceId": "27647",
+            "serviceWindowEndDate": "2026-07-10",
+            "serviceWindowStartDate": "2026-06-01"
           },
           {
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 30,
-            "serviceId": "27584",
-            "serviceWindowEndDate": "2026-05-28",
-            "serviceWindowStartDate": "2026-04-20"
+            "serviceId": "27656",
+            "serviceWindowEndDate": "2026-07-10",
+            "serviceWindowStartDate": "2026-06-01"
           },
           {
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 30,
-            "serviceId": "27585",
-            "serviceWindowEndDate": "2026-05-28",
-            "serviceWindowStartDate": "2026-04-20"
+            "serviceId": "27657",
+            "serviceWindowEndDate": "2026-07-10",
+            "serviceWindowStartDate": "2026-06-01"
           }
         ],
         "severity": "INFO",
-        "total": 40
+        "total": 35
       },
       {
         "code": "unknown_column",
         "sample_notices": [
-          {
-            "fieldName": "stop_code",
-            "filename": "stop_times.txt",
-            "index": 11
-          },
-          {
-            "fieldName": "stop_serial_number",
-            "filename": "stops.txt",
-            "index": 11
-          },
           {
             "fieldName": "trip_headsign_short",
             "filename": "trips.txt",
@@ -351,33 +341,24 @@
             "fieldName": "display_code",
             "filename": "trips.txt",
             "index": 10
+          },
+          {
+            "fieldName": "trip_serial_number",
+            "filename": "trips.txt",
+            "index": 11
+          },
+          {
+            "fieldName": "block",
+            "filename": "trips.txt",
+            "index": 12
           }
         ],
         "severity": "INFO",
         "total": 11
-      },
-      {
-        "code": "big_gap_in_service",
-        "sample_notices": [
-          {
-            "gapDurationDays": 28,
-            "gapEndDate": "2026-05-29",
-            "gapStartDate": "2026-04-30",
-            "serviceId": "27570"
-          },
-          {
-            "gapDurationDays": 70,
-            "gapEndDate": "2026-08-21",
-            "gapStartDate": "2026-06-11",
-            "serviceId": "27622"
-          }
-        ],
-        "severity": "INFO",
-        "total": 2
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "82e5bc659d434520d5261ae238cc9ca618e335dcba472f8620f7082be6127e89",
+  "sha256": "65c0b3c07486098332cef4d6a55ddbd0bb34a6b3f17f376dd8765b2fb19e617a",
   "validator_version": "8.0.1"
 }

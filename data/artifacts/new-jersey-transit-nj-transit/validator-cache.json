@@ -5,115 +5,115 @@
         "code": "decreasing_or_equal_stop_time_distance",
         "sample_notices": [
           {
-            "csvRowNumber": 212339,
-            "prevCsvRowNumber": 212338,
+            "csvRowNumber": 193956,
+            "prevCsvRowNumber": 193955,
             "prevShapeDistTraveled": 4.486,
             "prevStopSequence": 12,
             "shapeDistTraveled": 4.486,
             "stopId": "44227",
             "stopSequence": 13,
-            "tripId": "4660"
+            "tripId": "4471"
           },
           {
-            "csvRowNumber": 212353,
-            "prevCsvRowNumber": 212352,
+            "csvRowNumber": 193970,
+            "prevCsvRowNumber": 193969,
             "prevShapeDistTraveled": 4.486,
             "prevStopSequence": 12,
             "shapeDistTraveled": 4.486,
             "stopId": "44227",
             "stopSequence": 13,
-            "tripId": "4661"
+            "tripId": "4472"
           },
           {
-            "csvRowNumber": 212367,
-            "prevCsvRowNumber": 212366,
+            "csvRowNumber": 193984,
+            "prevCsvRowNumber": 193983,
             "prevShapeDistTraveled": 4.486,
             "prevStopSequence": 12,
             "shapeDistTraveled": 4.486,
             "stopId": "44227",
             "stopSequence": 13,
-            "tripId": "4662"
+            "tripId": "4473"
           },
           {
-            "csvRowNumber": 212381,
-            "prevCsvRowNumber": 212380,
+            "csvRowNumber": 193998,
+            "prevCsvRowNumber": 193997,
             "prevShapeDistTraveled": 4.486,
             "prevStopSequence": 12,
             "shapeDistTraveled": 4.486,
             "stopId": "44227",
             "stopSequence": 13,
-            "tripId": "4663"
+            "tripId": "4474"
           },
           {
-            "csvRowNumber": 212297,
-            "prevCsvRowNumber": 212296,
+            "csvRowNumber": 194012,
+            "prevCsvRowNumber": 194011,
             "prevShapeDistTraveled": 4.486,
             "prevStopSequence": 12,
             "shapeDistTraveled": 4.486,
             "stopId": "44227",
             "stopSequence": 13,
-            "tripId": "4657"
+            "tripId": "4475"
           }
         ],
         "severity": "ERROR",
-        "total": 117
+        "total": 58
       },
       {
         "code": "block_trips_with_overlapping_stop_times",
         "sample_notices": [
           {
             "blockId": "600HM067",
-            "csvRowNumberA": 28830,
-            "csvRowNumberB": 28713,
-            "intersection": "20260629",
+            "csvRowNumberA": 24289,
+            "csvRowNumberB": 24172,
+            "intersection": "20260707",
             "serviceIdA": "3",
             "serviceIdB": "3",
-            "tripIdA": "28829",
-            "tripIdB": "28712"
+            "tripIdA": "24288",
+            "tripIdB": "24171"
           },
           {
-            "blockId": "166OD031",
-            "csvRowNumberA": 13264,
-            "csvRowNumberB": 11499,
-            "intersection": "20260630",
-            "serviceIdA": "5",
-            "serviceIdB": "11",
-            "tripIdA": "13263",
-            "tripIdB": "11498"
+            "blockId": "801MC001",
+            "csvRowNumberA": 28821,
+            "csvRowNumberB": 28844,
+            "intersection": "20260707",
+            "serviceIdA": "3",
+            "serviceIdB": "3",
+            "tripIdA": "28820",
+            "tripIdB": "28843"
           },
           {
-            "blockId": "084ML010",
-            "csvRowNumberA": 35451,
-            "csvRowNumberB": 36986,
-            "intersection": "20260703",
-            "serviceIdA": "1",
-            "serviceIdB": "17",
-            "tripIdA": "35450",
-            "tripIdB": "36985"
+            "blockId": "801MC001",
+            "csvRowNumberA": 28821,
+            "csvRowNumberB": 28900,
+            "intersection": "20260707",
+            "serviceIdA": "3",
+            "serviceIdB": "3",
+            "tripIdA": "28820",
+            "tripIdB": "28899"
           },
           {
-            "blockId": "084ML010",
-            "csvRowNumberA": 36951,
-            "csvRowNumberB": 35495,
-            "intersection": "20260703",
-            "serviceIdA": "17",
-            "serviceIdB": "1",
-            "tripIdA": "36950",
-            "tripIdB": "35494"
+            "blockId": "801MC001",
+            "csvRowNumberA": 28844,
+            "csvRowNumberB": 28900,
+            "intersection": "20260707",
+            "serviceIdA": "3",
+            "serviceIdB": "3",
+            "tripIdA": "28843",
+            "tripIdB": "28899"
           },
           {
-            "blockId": "084ML013",
-            "csvRowNumberA": 36987,
-            "csvRowNumberB": 35453,
-            "intersection": "20260703",
-            "serviceIdA": "17",
-            "serviceIdB": "1",
-            "tripIdA": "36986",
-            "tripIdB": "35452"
+            "blockId": "801MC001",
+            "csvRowNumberA": 28900,
+            "csvRowNumberB": 28846,
+            "intersection": "20260707",
+            "serviceIdA": "3",
+            "serviceIdB": "3",
+            "tripIdA": "28899",
+            "tripIdB": "28845"
           }
         ],
         "severity": "ERROR",
-        "total": 58
+        "total": 12
       },
       {
         "code": "mixed_case_recommended_field",
@@ -150,7 +150,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 31610
+        "total": 27817
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -161,12 +161,12 @@
               39.396395999999996,
               -74.547632
             ],
-            "shapeId": "3002",
+            "shapeId": "2419",
             "stopId": "22354",
             "stopName": "RT-40/322 713' W OF DELANCY AVE",
-            "stopTimeCsvRowNumber": 1265082,
-            "tripCsvRowNumber": 25286,
-            "tripId": "25285"
+            "stopTimeCsvRowNumber": 1075916,
+            "tripCsvRowNumber": 20745,
+            "tripId": "20744"
           },
           {
             "geoDistanceToShape": 107.14466757737891,
@@ -174,12 +174,12 @@
               39.396395999999996,
               -74.547632
             ],
-            "shapeId": "3001",
+            "shapeId": "2418",
             "stopId": "22354",
             "stopName": "RT-40/322 713' W OF DELANCY AVE",
-            "stopTimeCsvRowNumber": 1264488,
-            "tripCsvRowNumber": 25269,
-            "tripId": "25268"
+            "stopTimeCsvRowNumber": 1075322,
+            "tripCsvRowNumber": 20728,
+            "tripId": "20727"
           },
           {
             "geoDistanceToShape": 107.14466757737891,
@@ -187,12 +187,12 @@
               39.396395999999996,
               -74.547632
             ],
-            "shapeId": "3011",
+            "shapeId": "2427",
             "stopId": "22354",
             "stopName": "RT-40/322 713' W OF DELANCY AVE",
-            "stopTimeCsvRowNumber": 1268436,
-            "tripCsvRowNumber": 25389,
-            "tripId": "25388"
+            "stopTimeCsvRowNumber": 1079120,
+            "tripCsvRowNumber": 20841,
+            "tripId": "20840"
           },
           {
             "geoDistanceToShape": 107.14466757737891,
@@ -200,12 +200,12 @@
               39.396395999999996,
               -74.547632
             ],
-            "shapeId": "3010",
+            "shapeId": "2426",
             "stopId": "22354",
             "stopName": "RT-40/322 713' W OF DELANCY AVE",
-            "stopTimeCsvRowNumber": 1268286,
-            "tripCsvRowNumber": 25382,
-            "tripId": "25381"
+            "stopTimeCsvRowNumber": 1078922,
+            "tripCsvRowNumber": 20835,
+            "tripId": "20834"
           },
           {
             "geoDistanceToShape": 107.14466757737891,
@@ -213,12 +213,12 @@
               39.396395999999996,
               -74.547632
             ],
-            "shapeId": "3009",
+            "shapeId": "2422",
             "stopId": "22354",
             "stopName": "RT-40/322 713' W OF DELANCY AVE",
-            "stopTimeCsvRowNumber": 1268088,
-            "tripCsvRowNumber": 25376,
-            "tripId": "25375"
+            "stopTimeCsvRowNumber": 1077152,
+            "tripCsvRowNumber": 20782,
+            "tripId": "20781"
           }
         ],
         "severity": "WARNING",
@@ -229,8 +229,8 @@
         "sample_notices": [
           {
             "arrivalTime2": "20:36:51",
-            "csvRowNumber1": 1172828,
-            "csvRowNumber2": 1172829,
+            "csvRowNumber1": 983662,
+            "csvRowNumber2": 983663,
             "departureTime1": "20:36:50",
             "distanceKm": 0.05866308579934158,
             "routeId": "123",
@@ -241,13 +241,13 @@
             "stopName2": "DULTYS LN 1600'E OF NECK RD",
             "stopSequence1": 68,
             "stopSequence2": 69,
-            "tripCsvRowNumber": 23792,
-            "tripId": "23791"
+            "tripCsvRowNumber": 19251,
+            "tripId": "19250"
           },
           {
             "arrivalTime2": "12:46:51",
-            "csvRowNumber1": 1169823,
-            "csvRowNumber2": 1169824,
+            "csvRowNumber1": 980657,
+            "csvRowNumber2": 980658,
             "departureTime1": "12:46:50",
             "distanceKm": 0.05866308579934158,
             "routeId": "123",
@@ -258,13 +258,13 @@
             "stopName2": "DULTYS LN 1600'E OF NECK RD",
             "stopSequence1": 71,
             "stopSequence2": 72,
-            "tripCsvRowNumber": 23753,
-            "tripId": "23752"
+            "tripCsvRowNumber": 19212,
+            "tripId": "19211"
           },
           {
             "arrivalTime2": "15:26:46",
-            "csvRowNumber1": 566938,
-            "csvRowNumber2": 566939,
+            "csvRowNumber1": 438007,
+            "csvRowNumber2": 438008,
             "departureTime1": "15:26:45",
             "distanceKm": 0.048921515328957936,
             "routeId": "58",
@@ -275,30 +275,13 @@
             "stopName2": "G.S. PKWY EXIT 165 AT NORTHEAST PARK/RIDE LOT",
             "stopSequence1": 2,
             "stopSequence2": 3,
-            "tripCsvRowNumber": 12625,
-            "tripId": "12624"
-          },
-          {
-            "arrivalTime2": "15:26:46",
-            "csvRowNumber1": 566938,
-            "csvRowNumber2": 566939,
-            "departureTime1": "15:26:45",
-            "distanceKm": 0.048921515328957936,
-            "routeId": "58",
-            "speedKph": 176.11745518424857,
-            "stopId1": "42943",
-            "stopId2": "37234",
-            "stopName1": "G.S. PKWY EXIT 165 288'N OF RIDGEWOOD AVE. PARK/R",
-            "stopName2": "G.S. PKWY EXIT 165 AT NORTHEAST PARK/RIDE LOT",
-            "stopSequence1": 2,
-            "stopSequence2": 3,
-            "tripCsvRowNumber": 12125,
-            "tripId": "12124"
+            "tripCsvRowNumber": 9511,
+            "tripId": "9510"
           },
           {
             "arrivalTime2": "17:49:51",
-            "csvRowNumber1": 1172159,
-            "csvRowNumber2": 1172160,
+            "csvRowNumber1": 982993,
+            "csvRowNumber2": 982994,
             "departureTime1": "17:49:50",
             "distanceKm": 0.05866308579934158,
             "routeId": "123",
@@ -309,12 +292,29 @@
             "stopName2": "DULTYS LN 1600'E OF NECK RD",
             "stopSequence1": 76,
             "stopSequence2": 77,
-            "tripCsvRowNumber": 23783,
-            "tripId": "23782"
+            "tripCsvRowNumber": 19242,
+            "tripId": "19241"
+          },
+          {
+            "arrivalTime2": "24:28:36",
+            "csvRowNumber1": 944299,
+            "csvRowNumber2": 944300,
+            "departureTime1": "24:28:35",
+            "distanceKm": 0.05866308579934158,
+            "routeId": "119",
+            "speedKph": 211.1871088776297,
+            "stopId1": "28878",
+            "stopId2": "43967",
+            "stopName1": "DULTYS LN AT NECK RD",
+            "stopName2": "DULTYS LN 1600'E OF NECK RD",
+            "stopSequence1": 71,
+            "stopSequence2": 72,
+            "tripCsvRowNumber": 18760,
+            "tripId": "18759"
           }
         ],
         "severity": "WARNING",
-        "total": 107
+        "total": 98
       },
       {
         "code": "stop_too_far_from_shape",
@@ -325,12 +325,12 @@
               40.284394000000006,
               -74.673513
             ],
-            "shapeId": "3431",
+            "shapeId": "2844",
             "stopId": "44335",
             "stopName": "AVALON WAY 300'S OF QUAKER BRIDGE RD#",
-            "stopTimeCsvRowNumber": 1481777,
-            "tripCsvRowNumber": 28635,
-            "tripId": "28634"
+            "stopTimeCsvRowNumber": 1291243,
+            "tripCsvRowNumber": 24069,
+            "tripId": "24068"
           },
           {
             "geoDistanceToShape": 121.69655842685835,
@@ -338,12 +338,12 @@
               40.284394000000006,
               -74.673513
             ],
-            "shapeId": "3427",
+            "shapeId": "2843",
             "stopId": "44335",
             "stopName": "AVALON WAY 300'S OF QUAKER BRIDGE RD#",
-            "stopTimeCsvRowNumber": 1480409,
-            "tripCsvRowNumber": 28610,
-            "tripId": "28609"
+            "stopTimeCsvRowNumber": 1290647,
+            "tripCsvRowNumber": 24059,
+            "tripId": "24058"
           },
           {
             "geoDistanceToShape": 121.69655842685835,
@@ -351,12 +351,12 @@
               40.284394000000006,
               -74.673513
             ],
-            "shapeId": "3426",
+            "shapeId": "2842",
             "stopId": "44335",
             "stopName": "AVALON WAY 300'S OF QUAKER BRIDGE RD#",
-            "stopTimeCsvRowNumber": 1479813,
-            "tripCsvRowNumber": 28600,
-            "tripId": "28599"
+            "stopTimeCsvRowNumber": 1290174,
+            "tripCsvRowNumber": 24051,
+            "tripId": "24050"
           },
           {
             "geoDistanceToShape": 121.69655842685835,
@@ -364,12 +364,12 @@
               40.284394000000006,
               -74.673513
             ],
-            "shapeId": "3425",
+            "shapeId": "2841",
             "stopId": "44335",
             "stopName": "AVALON WAY 300'S OF QUAKER BRIDGE RD#",
-            "stopTimeCsvRowNumber": 1479340,
-            "tripCsvRowNumber": 28592,
-            "tripId": "28591"
+            "stopTimeCsvRowNumber": 1290115,
+            "tripCsvRowNumber": 24050,
+            "tripId": "24049"
           },
           {
             "geoDistanceToShape": 121.69655842685835,
@@ -377,12 +377,12 @@
               40.284394000000006,
               -74.673513
             ],
-            "shapeId": "3424",
+            "shapeId": "2848",
             "stopId": "44335",
             "stopName": "AVALON WAY 300'S OF QUAKER BRIDGE RD#",
-            "stopTimeCsvRowNumber": 1479281,
-            "tripCsvRowNumber": 28591,
-            "tripId": "28590"
+            "stopTimeCsvRowNumber": 1292611,
+            "tripCsvRowNumber": 24094,
+            "tripId": "24093"
           }
         ],
         "severity": "WARNING",
@@ -401,6 +401,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "dafb95e8c171680d117bb2e3a682fdf9acc66c6eb6dc5fc77bfad802edbbeae8",
+  "sha256": "dedeeb9150f779bbbb67a0977ef545ed7d23915e09130f065d7ff91533d3a91c",
   "validator_version": "8.0.1"
 }

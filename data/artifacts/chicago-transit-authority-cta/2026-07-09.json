@@ -422,6 +422,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 91,
       "effort": "A per-route color setting in your scheduling software.",
@@ -433,6 +434,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 10291,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -444,6 +446,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",

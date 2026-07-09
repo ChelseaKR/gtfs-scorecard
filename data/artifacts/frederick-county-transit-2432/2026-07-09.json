@@ -263,21 +263,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 64.3,
-        "covered_trips": 9,
+        "coverage_pct": 58.8,
+        "covered_trips": 10,
         "drift": {
-          "median_seconds": -867,
-          "observations": 89,
-          "on_time_share_pct": 7.9,
-          "p90_abs_seconds": 1580
+          "median_seconds": -259,
+          "observations": 119,
+          "on_time_share_pct": 8.4,
+          "p90_abs_seconds": 14399
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 14,
-        "vehicles_checked": 27,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "scheduled_trips_in_window": 17,
+        "vehicles_checked": 33,
+        "vehicles_on_route_pct": 84.8,
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
@@ -293,20 +293,42 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 5,
+          "count": 7,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 12.5,
+          "points": 14.4,
           "severity": "WARNING",
-          "what": "5 of 14 trips scheduled during the sampling window had no live predictions.",
+          "what": "7 of 17 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 5,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 2.3,
+          "severity": "WARNING",
+          "what": "5 of 33 sampled vehicle positions were far from their assigned route (worst: 2508 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 119,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 79.2,
+      "score": 75.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 64.3% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 867s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 58.8% of scheduled trips had live predictions; 84.8% of vehicles on their route; predictions ran a median of 259s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -348,7 +370,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "2f432404ec35a3c80709601109fef6b70162e2a26becfbfae623f926fbdd7834",
+    "sha256": "c267f35c679aeac7248ce17ccc5118bd421089de7cc40b7cc9d1dc6706be1593",
     "size_bytes": 380430,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -400,9 +422,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 56.7,
-    "margin_to_next_band": 3.3,
-    "score": 56.7
+    "margin_to_lower_band": 55.9,
+    "margin_to_next_band": 4.1,
+    "score": 55.9
   },
   "recommendations": [
     {

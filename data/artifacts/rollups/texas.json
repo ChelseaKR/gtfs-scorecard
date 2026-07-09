@@ -1,6 +1,6 @@
 {
   "agency_count": 17,
-  "average_score": 56.0,
+  "average_score": 55.9,
   "common_fixes": [
     {
       "agencies": 15,
@@ -14,13 +14,13 @@
     },
     {
       "agencies": 5,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
+      "code": "scorecard_feed_expired",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "agencies": 4,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "code": "scorecard_feed_expiring_soon",
+      "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "agencies": 2,
@@ -44,11 +44,11 @@
     }
   ],
   "expired": {
-    "lapsed": 0,
+    "lapsed": 1,
     "stale": 4,
-    "total": 4
+    "total": 5
   },
-  "generated_at": "2026-07-09T12:34:01+00:00",
+  "generated_at": "2026-07-09T16:00:15+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 4,
@@ -100,6 +100,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service window shortened unexpectedly on 2026-07-09",
+      "days_until_expiry": -33,
+      "expiry_status": "lapsed",
+      "grade": "F",
+      "id": "metro-houston-2060",
+      "name": "METRO Houston",
+      "needs_attention": true,
+      "score": 39.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -415,
       "expiry_status": "stale",
@@ -111,20 +125,6 @@
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 2 day(s)",
-      "days_until_expiry": 2,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "metro-houston-2060",
-      "name": "METRO Houston",
-      "needs_attention": true,
-      "score": 41.0,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
@@ -303,10 +303,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 12,
+    "not_measured": 11,
     "not_ready": 0,
-    "ready": 5,
+    "ready": 6,
     "total": 17
   },
-  "state_percentile": 52
+  "state_percentile": 50
 }

@@ -6,11 +6,10 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/metro-houston-2060/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/metro-houston-2060/corrected.zip",
     "fixes": [
       {
         "code": "autofix_route_name_case",
-        "count": 4,
+        "count": 5,
         "examples": [
           "DOWNTOWN DIRECT -> Downtown Direct",
           "METRORAIL RED LINE -> Metrorail Red Line",
@@ -19,7 +18,7 @@
         "label": "Recased shouting route names"
       }
     ],
-    "total": 4
+    "total": 5
   },
   "categories": {
     "completeness": {
@@ -33,10 +32,14 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
-          "headsigns": 14.4,
+          "headsigns": 15.0,
           "stop_names": 15.0,
           "wheelchair_stops": 0.3,
           "wheelchair_trips": 15.0
@@ -57,7 +60,7 @@
           "has_flex": false
         },
         "has_fares": true,
-        "headsign_pct": 95.7,
+        "headsign_pct": 100.0,
         "mixed_case_stop_name_pct": 100.0,
         "pathways": {
           "has_entrances": false,
@@ -68,7 +71,7 @@
           "pathway_count": 0
         },
         "stops": 8794,
-        "trips": 25018,
+        "trips": 22142,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 1.4,
         "wheelchair_marked_accessible_pct": 1.4,
@@ -87,17 +90,6 @@
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
-          "code": "scorecard_missing_headsigns",
-          "count": 1080,
-          "effort": "Usually a bulk edit in your scheduling software.",
-          "fix": "Populate trip_headsign to match what the bus displays.",
-          "owner": "Likely your export tool",
-          "points": 0.6,
-          "severity": "WARNING",
-          "what": "1080 of 25018 trips have no headsign.",
-          "why": "Riders at the stop can't tell which direction a bus is going."
-        },
-        {
           "code": "scorecard_no_feed_contact",
           "count": 1,
           "effort": "One field.",
@@ -110,25 +102,25 @@
         }
       ],
       "name": "completeness",
-      "score": 67.2,
+      "score": 67.8,
       "status": "measured",
       "summary": "1% of stops state wheelchair accessibility (1% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
     },
     "correctness": {
       "details": {
-        "distinct_codes": 13,
+        "distinct_codes": 15,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 40,
-          "WARNING": 20038
+          "INFO": 52,
+          "WARNING": 18734
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "mixed_case_recommended_field",
-          "count": 19734,
+          "count": 18436,
           "effort": "Often a bulk fix in your scheduling software.",
           "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
           "owner": "Likely your export tool",
@@ -139,7 +131,7 @@
         },
         {
           "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
-          "count": 210,
+          "count": 209,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -150,7 +142,7 @@
         },
         {
           "code": "same_name_and_description_for_stop",
-          "count": 56,
+          "count": 57,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -163,23 +155,12 @@
           "code": "unused_shape",
           "count": 17,
           "effort": "One setting.",
-          "fix": "Enable 'remove unused shapes' (or similar) in your export tool.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
           "what": "The feed contains route shapes no trip uses.",
           "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
-        },
-        {
-          "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 11,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         },
         {
           "code": "stop_without_stop_time",
@@ -193,26 +174,37 @@
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
-          "code": "stop_too_far_from_shape",
-          "count": 2,
-          "effort": "A few minutes per flagged stop.",
-          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "code": "expired_calendar",
+          "count": 3,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some stops sit far from the route line they belong to.",
-          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
-          "code": "feed_expiration_date30_days",
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "feed_expiration_date7_days",
           "count": 1,
           "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "fix": "Export and publish an updated GTFS feed that covers at least the next 30 days of service.",
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 30 days.",
-          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+          "what": "This feed's service calendar runs out within the next 7 days.",
+          "why": "When the calendar ends, Google Maps and other trip planners drop your agency entirely. Riders see no service at all."
         },
         {
           "code": "missing_feed_contact_email_and_url",
@@ -226,6 +218,17 @@
           "why": "See the linked rule for what this affects."
         },
         {
+          "code": "stop_too_far_from_shape",
+          "count": 1,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
           "code": "trip_headsign_matches_intermediate_stop",
           "count": 35,
           "effort": "Varies.",
@@ -234,6 +237,17 @@
           "points": 0.8,
           "severity": "INFO",
           "what": "Trip headsign matches intermediate stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 12,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Big gap in service (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
@@ -271,39 +285,39 @@
         }
       ],
       "name": "correctness",
-      "score": 43.8,
+      "score": 41.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 13 kinds of issue across 20078 instances (0 error, 20038 warning, 40 informational).",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 18786 instances (0 error, 18734 warning, 52 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 2,
-        "feed_end_date": "2026-07-11",
-        "feed_start_date": "2026-06-07",
-        "feed_version": "FIFA2026IVOMS_20260612",
+        "days_until_expiry": -33,
+        "feed_end_date": "2026-06-06",
+        "feed_start_date": "2026-02-22",
+        "feed_version": "Feb2026IVOMS_20260708",
         "has_feed_info": true,
-        "last_service_date": "2026-07-25",
+        "last_service_date": "2027-02-06",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [
         {
-          "code": "scorecard_feed_expiring_soon",
+          "code": "scorecard_feed_expired",
           "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
           "owner": "Likely your export tool",
-          "points": 78.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 2 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+          "points": 100.0,
+          "severity": "ERROR",
+          "what": "Service data ended 33 day(s) ago.",
+          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
         }
       ],
       "name": "freshness",
-      "score": 3.3,
+      "score": 0.0,
       "status": "measured",
-      "summary": "Service data runs out in 2 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data ended 33 day(s) ago. Trip planners have likely already dropped this feed.",
       "weight": 0.2
     },
     "realtime": {
@@ -312,6 +326,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -322,7 +348,7 @@
         "met": true
       },
       {
-        "detail": "Service data runs out in 14 days; renew to qualify.",
+        "detail": "Service data expired 33 days ago.",
         "key": "current",
         "met": false
       },
@@ -333,16 +359,22 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data runs out in 14 days; renew to qualify. States wheelchair access on 1% of stops and 100% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 33 days ago. States wheelchair access on 1% of stops and 100% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "License: https://www.ridemetro.org/about/news-media/digital-assets",
     "reachable": true,
-    "sha256": "8ca8a966ed339a963cec64612ffe82b8c08068ccac128c8b16672e8d195003aa",
-    "size_bytes": 13195263,
+    "sha256": "45229fb1dd789920efcbbc01249197e3214526a5e7f779f670b2fd7c7c44424e",
+    "size_bytes": 12673789,
     "static_url": "https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -95.77625,
@@ -350,12 +382,12 @@
       -94.97971,
       30.05434
     ],
-    "lat": 29.75252,
-    "lon": -95.40651,
+    "lat": 29.75246,
+    "lon": -95.40657,
     "stop_count": 8794
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "HOU"
     ],
@@ -374,22 +406,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data runs out in 14 days; renew before you certify.",
+        "detail": "Service data expired 33 days ago, so FTA would find the link out of date.",
         "key": "current",
-        "status": "at_risk"
+        "status": "not_ready"
       }
     ],
-    "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. Service data runs out in 14 days; renew before you certify."
+    "status": "not_ready",
+    "summary": "Resolve this before you certify on the D-10. Service data expired 33 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 41.0,
-    "margin_to_next_band": 19.0,
-    "score": 41.0
+    "margin_to_lower_band": 39.1,
+    "margin_to_next_band": 20.9,
+    "score": 39.1
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -401,6 +434,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 8665,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -412,11 +446,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 8794,
     "findings": [
@@ -434,23 +463,1315 @@
     ],
     "orphan_stops": 6,
     "single_stop_trips": 0,
-    "trips_total": 25018
+    "trips_total": 22142
+  },
+  "route_map": {
+    "drawn_route_count": 110,
+    "has_shapes": true,
+    "path": "data/artifacts/metro-houston-2060/geometry.geojson",
+    "route_count": 116,
+    "routes": [
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "002",
+        "label": "002",
+        "long": "Bellaire",
+        "short": "002",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "003",
+        "label": "003",
+        "long": "Langley - Little York",
+        "short": "003",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "004",
+        "label": "004",
+        "long": "Beechnut",
+        "short": "004",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "005",
+        "label": "005",
+        "long": "Southmore",
+        "short": "005",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "006",
+        "label": "006",
+        "long": "Jensen / Greens",
+        "short": "006",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "007",
+        "label": "007",
+        "long": "West Airport",
+        "short": "007",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "008",
+        "label": "008",
+        "long": "West Bellfort",
+        "short": "008",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "009",
+        "label": "009",
+        "long": "Gulfton / Holman",
+        "short": "009",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "010",
+        "label": "010",
+        "long": "Willowbend",
+        "short": "010",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "011",
+        "label": "011",
+        "long": "Almeda / Lyons",
+        "short": "011",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "014",
+        "label": "014",
+        "long": "Hiram Clarke",
+        "short": "014",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "020",
+        "label": "020",
+        "long": "Canal / Memorial",
+        "short": "020",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "023",
+        "label": "023",
+        "long": "Clay - W. 43rd",
+        "short": "023",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "025",
+        "label": "025",
+        "long": "Richmond",
+        "short": "025",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "026",
+        "label": "026",
+        "long": "Long Point / Cavalcade",
+        "short": "026",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "027",
+        "label": "027",
+        "long": "Shepherd",
+        "short": "027",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "028",
+        "label": "028",
+        "long": "OST - Wayside",
+        "short": "028",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "029",
+        "label": "029",
+        "long": "Cullen / Hirsch",
+        "short": "029",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "030",
+        "label": "030",
+        "long": "Clinton / Ella",
+        "short": "030",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "032",
+        "label": "032",
+        "long": "Renwick",
+        "short": "032",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "035",
+        "label": "035",
+        "long": "San Felipe",
+        "short": "035",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "036",
+        "label": "036",
+        "long": "Kempwood",
+        "short": "036",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "038",
+        "label": "038",
+        "long": "Manchester - Lawndale",
+        "short": "038",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "039",
+        "label": "039",
+        "long": "Katy Freeway",
+        "short": "039",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "040",
+        "label": "040",
+        "long": "Telephone / Heights",
+        "short": "040",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "041",
+        "label": "041",
+        "long": "Kirby / Polk",
+        "short": "041",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "044",
+        "label": "044",
+        "long": "Acres Homes",
+        "short": "044",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "045",
+        "label": "045",
+        "long": "Tidwell",
+        "short": "045",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "046",
+        "label": "046",
+        "long": "Gessner",
+        "short": "046",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "047",
+        "label": "047",
+        "long": "Hillcroft",
+        "short": "047",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "048",
+        "label": "048",
+        "long": "Market",
+        "short": "048",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "049",
+        "label": "049",
+        "long": "Chimney Rock / S. Post Oak",
+        "short": "049",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "050",
+        "label": "050",
+        "long": "Broadway",
+        "short": "050",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "051",
+        "label": "051",
+        "long": "Hardy - Kelley",
+        "short": "051",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "052",
+        "label": "052",
+        "long": "Hardy - Ley",
+        "short": "052",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "054",
+        "label": "054",
+        "long": "Scott",
+        "short": "054",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "056",
+        "label": "056",
+        "long": "Airline / Montrose",
+        "short": "056",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "058",
+        "label": "058",
+        "long": "Hammerly",
+        "short": "058",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "059",
+        "label": "059",
+        "long": "Aldine Mail",
+        "short": "059",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "060",
+        "label": "060",
+        "long": "Cambridge",
+        "short": "060",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "063",
+        "label": "063",
+        "long": "Fondren",
+        "short": "063",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "065",
+        "label": "065",
+        "long": "Bissonnet",
+        "short": "065",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "066",
+        "label": "066",
+        "long": "Quitman",
+        "short": "066",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "067",
+        "label": "067",
+        "long": "Dairy Ashford",
+        "short": "067",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "068",
+        "label": "068",
+        "long": "Braeswood",
+        "short": "068",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "070",
+        "label": "070",
+        "long": "Memorial",
+        "short": "070",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "072",
+        "label": "072",
+        "long": "Westview",
+        "short": "072",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "073",
+        "label": "073",
+        "long": "Bellfort",
+        "short": "073",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "075",
+        "label": "075",
+        "long": "Eldridge",
+        "short": "075",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "076",
+        "label": "076",
+        "long": "Evergreen",
+        "short": "076",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "077",
+        "label": "077",
+        "long": "Homestead",
+        "short": "077",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "078",
+        "label": "078",
+        "long": "Wayside",
+        "short": "078",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "079",
+        "label": "079",
+        "long": "Irvington",
+        "short": "079",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "080",
+        "label": "080",
+        "long": "MLK / Lockwood",
+        "short": "080",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "082",
+        "label": "082",
+        "long": "Westheimer",
+        "short": "082",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "083",
+        "label": "083",
+        "long": "Lee Road - JFK",
+        "short": "083",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "084",
+        "label": "084",
+        "long": "Buffalo Speedway",
+        "short": "084",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "085",
+        "label": "085",
+        "long": "Antoine / Washington",
+        "short": "085",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "086",
+        "label": "086",
+        "long": "FM 1960 / Imperial Valley",
+        "short": "086",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "087",
+        "label": "087",
+        "long": "Sunnyside",
+        "short": "087",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "088",
+        "label": "088",
+        "long": "Sagemont",
+        "short": "088",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "089",
+        "label": "089",
+        "long": "Dacoma",
+        "short": "089",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "096",
+        "label": "096",
+        "long": "Veterans Memorial",
+        "short": "096",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "097",
+        "label": "097",
+        "long": "Settegast",
+        "short": "097",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "098",
+        "label": "098",
+        "long": "Briargate",
+        "short": "098",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "099",
+        "label": "099",
+        "long": "Ella - FM 1960",
+        "short": "099",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "102",
+        "label": "102",
+        "long": "Bush IAH",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "108",
+        "label": "108",
+        "long": "Veterans Memorial Express",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "137",
+        "label": "137",
+        "long": "Northshore Express",
+        "short": "137",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "151",
+        "label": "151",
+        "long": "Westpark Express",
+        "short": "151",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "152",
+        "label": "152",
+        "long": "Harwin Express",
+        "short": "152",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "153",
+        "label": "153",
+        "long": "Harwin Express",
+        "short": "153",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "161",
+        "label": "161",
+        "long": "Wilcrest Express",
+        "short": "161",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "162",
+        "label": "162",
+        "long": "Memorial Express",
+        "short": "162",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "202",
+        "label": "202",
+        "long": "Kuykendahl P&R",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "204",
+        "label": "204",
+        "long": "Spring P&R",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "209",
+        "label": "209",
+        "long": "Kuykendahl / Spring P&R",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "212",
+        "label": "212",
+        "long": "Seton Lake P&R",
+        "short": "212",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "216",
+        "label": "216",
+        "long": "W L York / NW Station P&R",
+        "short": "216",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "217",
+        "label": "217",
+        "long": "Cypress P&R",
+        "short": "217",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "219",
+        "label": "219",
+        "long": "Cypress / NW Station / W L York P&R",
+        "short": "219",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "221",
+        "label": "221",
+        "long": "Kingsland P&R",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "Grand Parkway P&R",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "228",
+        "label": "228",
+        "long": "Addicks P&R",
+        "short": "228",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "229",
+        "label": "229",
+        "long": "Grand Parkway / Kingsland / Addicks",
+        "short": "229",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "236",
+        "label": "236",
+        "long": "Maxey P&R",
+        "short": "236",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "237",
+        "label": "237",
+        "long": "Baytown P&R",
+        "short": "237",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "244",
+        "label": "244",
+        "long": "Monroe / El Dorado P&R",
+        "short": "244",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "247",
+        "label": "247",
+        "long": "Fuqua / Bay Area P&R",
+        "short": "247",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "249",
+        "label": "249",
+        "long": "Bay Area/El Dorado/Fuqua/Monroe P&R",
+        "short": "249",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "255",
+        "label": "255",
+        "long": "Kingwood P&R",
+        "short": "255",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "256",
+        "label": "256",
+        "long": "Eastex P&R",
+        "short": "256",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "257",
+        "label": "257",
+        "long": "Townsen P&R",
+        "short": "257",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "259",
+        "label": "259",
+        "long": "Kingwood / Townsen / Eastex P&R",
+        "short": "259",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "265",
+        "label": "265",
+        "long": "West Bellfort P&R",
+        "short": "265",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "269",
+        "label": "269",
+        "long": "West Bellfort P&R",
+        "short": "269",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "270",
+        "label": "270",
+        "long": "Missouri City P&R",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "292",
+        "label": "292",
+        "long": "Southwest Freeway / TMC P&R",
+        "short": "292",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "297",
+        "label": "297",
+        "long": "Gulf Freeway / TMC P&R",
+        "short": "297",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "298",
+        "label": "298",
+        "long": "Katy Freeway / TMC P&R",
+        "short": "298",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "309",
+        "label": "309",
+        "long": "Gulfton Circulator",
+        "short": "309",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "310",
+        "label": "310",
+        "long": "Gulfton Circulator",
+        "short": "310",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "314",
+        "label": "314",
+        "long": "Hiram Clarke - curb2curb",
+        "short": "314",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "329",
+        "label": "329",
+        "long": "Sunnyside - curb2curb",
+        "short": "329",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "344",
+        "label": "344",
+        "long": "Acres Homes - curb2curb",
+        "short": "344",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "347",
+        "label": "347",
+        "long": "Gulfton - curb2curb",
+        "short": "347",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "360",
+        "label": "360",
+        "long": "Peerless Shuttle",
+        "short": "360",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "363",
+        "label": "363",
+        "long": "Missouri City - curb2curb",
+        "short": "363",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "377",
+        "label": "377",
+        "long": "Kashmere / Maxey Road - curb2curb",
+        "short": "377",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "399",
+        "label": "399",
+        "long": "Kuykendahl Shuttle",
+        "short": "399",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "433",
+        "label": "433",
+        "long": "Silver Line",
+        "short": "433",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "500",
+        "label": "500",
+        "long": "DOWNTOWN DIRECT",
+        "short": "500",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "700",
+        "label": "700",
+        "long": "METRORAIL RED LINE",
+        "short": "700",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "3E7E00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "800",
+        "label": "800",
+        "long": "METRORAIL GREEN LINE",
+        "short": "800",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "004080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "804",
+        "label": "804",
+        "long": "MAXEY P&R RODEO SHUTTLE",
+        "short": "804",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "40007E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "900",
+        "label": "900",
+        "long": "METRORAIL PURPLE LINE",
+        "short": "900",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      }
+    ],
+    "stop_count": 8794,
+    "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 22142 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 22142,
+    "trips_with_shape": 22142
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
+      "code": "scorecard_feed_expired",
       "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
       "owner": "Likely your export tool",
-      "points": 78.0,
+      "points": 100.0,
       "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 2 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+      "severity": "ERROR",
+      "what": "Service data ended 33 day(s) ago.",
+      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
@@ -466,7 +1787,7 @@
     },
     {
       "code": "mixed_case_recommended_field",
-      "count": 19734,
+      "count": 18436,
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
       "owner": "Likely your export tool",

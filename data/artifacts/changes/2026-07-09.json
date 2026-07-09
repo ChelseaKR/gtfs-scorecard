@@ -3,18 +3,6 @@
   "changes": [
     {
       "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 67.2,
-      "id": "clackco-connects-clackamas-county-2740",
-      "name": "Static feed for realtime",
-      "regressed": true,
-      "score_delta": -9.7,
-      "since": "2026-07-08",
-      "to_grade": "F",
-      "to_score": 57.5
-    },
-    {
-      "date": "2026-07-09",
       "from_grade": "F",
       "from_score": 54.3,
       "id": "los-angeles-county-metropolitan-transportation-authority-la-metro-30",
@@ -36,6 +24,66 @@
       "since": "2026-07-08",
       "to_grade": "C",
       "to_score": 70.7
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "F",
+      "from_score": 41.4,
+      "id": "metro-houston-2060",
+      "name": "METRO Houston",
+      "regressed": true,
+      "score_delta": -2.3,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 39.1
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 79.9,
+      "id": "long-island-rail-road",
+      "name": "Long Island Rail Road",
+      "regressed": true,
+      "score_delta": -1.7,
+      "since": "2026-07-08",
+      "to_grade": "C",
+      "to_score": 78.2
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 66.7,
+      "id": "metropolitan-transit-authority-mta",
+      "name": "Long Island Rail Road",
+      "regressed": true,
+      "score_delta": -1.4,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 65.3
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 65.7,
+      "id": "sandy-area-metro-sam-2739",
+      "name": "Static feed for realtime",
+      "regressed": true,
+      "score_delta": -1.3,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 64.4
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "F",
+      "from_score": 57.0,
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "regressed": true,
+      "score_delta": -1.1,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 55.9
     },
     {
       "date": "2026-07-09",
@@ -123,15 +171,39 @@
     },
     {
       "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 79.6,
+      "id": "intercity-transit",
+      "name": "Intercity Transit",
+      "regressed": false,
+      "score_delta": 3.9,
+      "since": "2026-07-08",
+      "to_grade": "B",
+      "to_score": 83.5
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "D",
       "from_score": 62.2,
       "id": "via-mobility-2395",
       "name": "Via Mobility",
       "regressed": false,
-      "score_delta": 4.5,
+      "score_delta": 3.1,
       "since": "2026-07-08",
       "to_grade": "D",
-      "to_score": 66.7
+      "to_score": 65.3
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "F",
+      "from_score": 36.4,
+      "id": "new-jersey-transit-nj-transit",
+      "name": "Bus",
+      "regressed": false,
+      "score_delta": 2.6,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 39.0
     },
     {
       "date": "2026-07-09",
@@ -147,6 +219,18 @@
     },
     {
       "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 71.5,
+      "id": "metro-north-railroad",
+      "name": "Metro-North Railroad",
+      "regressed": false,
+      "score_delta": 2.2,
+      "since": "2026-07-08",
+      "to_grade": "C",
+      "to_score": 73.7
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "B",
       "from_score": 84.9,
       "id": "durango-transit",
@@ -159,18 +243,6 @@
     },
     {
       "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 65.0,
-      "id": "spirit-bus-2202",
-      "name": "Spirit Bus",
-      "regressed": false,
-      "score_delta": 1.7,
-      "since": "2026-07-08",
-      "to_grade": "D",
-      "to_score": 66.7
-    },
-    {
-      "date": "2026-07-09",
       "from_grade": "B",
       "from_score": 81.7,
       "id": "pasadena-transit",
@@ -180,34 +252,10 @@
       "since": "2026-07-08",
       "to_grade": "B",
       "to_score": 83.1
-    },
-    {
-      "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 66.5,
-      "id": "towson-loop",
-      "name": "Towson Loop",
-      "regressed": false,
-      "score_delta": 1.4,
-      "since": "2026-07-08",
-      "to_grade": "D",
-      "to_score": 67.9
-    },
-    {
-      "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 65.7,
-      "id": "sandy-area-metro-sam-2739",
-      "name": "Static feed for realtime",
-      "regressed": false,
-      "score_delta": 1.0,
-      "since": "2026-07-08",
-      "to_grade": "D",
-      "to_score": 66.7
     }
   ],
-  "count": 17,
-  "generated_at": "2026-07-09T12:34:14+00:00",
+  "count": 21,
+  "generated_at": "2026-07-09T16:00:32+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }
