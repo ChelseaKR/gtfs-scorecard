@@ -73,6 +73,7 @@ _NAV_SECTION_PREFIXES = {
     "/query/": "/tools/",
     "/procurement/": "/tools/",
     "/accessibility/": "/how-to-read/",
+    "/status/": "/how-to-read/",
     "/data/": "/how-to-read/",
     "/concept/": "/how-to-read/",
     "/press/": "/how-to-read/",
@@ -174,6 +175,7 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/press/">For reporters</a> ·
       <a href="/data/">Open data</a> ·
       <a href="/accessibility/">Accessibility</a> ·
+      <a href="/status/">Data freshness &amp; uptime</a> ·
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
     </div>
   </footer>"""

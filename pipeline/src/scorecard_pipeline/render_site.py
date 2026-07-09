@@ -3554,6 +3554,75 @@ def _render_accessibility() -> str:
     )
 
 
+def _render_status(doc: dict[str, Any]) -> str:
+    """The human-readable half of the freshness/uptime commitment (EXP-10):
+    what `api/v1/status.json` says, in prose, so a consumer does not have to
+    parse JSON to decide whether to depend on this feed. Extends FIX-11's
+    internal run-summary outward as a stated, checkable commitment."""
+    canonical = f"{BASE_URL}/status/"
+    record = doc["refresh_success_record"]
+    policy = doc["degradation_policy"]
+    hours = record["hours_since_last_check"]
+
+    tier_rows = "".join(
+        f"<tr><td>{esc(t['tier'].replace('_', ' ').title())}</td>"
+        f"<td>{esc(t['cadence'])}</td>"
+        f"<td>{esc(t['applies_to'])}</td></tr>"
+        for t in doc["commitment"]["tiers"]
+    )
+
+    if record["feeds_tracked"]:
+        record_section = f"""<p>As of {esc(record["as_of"])}, this pipeline is tracking liveness on
+        <strong>{record["feeds_tracked"]}</strong> feeds:
+        <strong>{record["healthy"]}</strong> checking in clean (no failed check in a row),
+        <strong>{record["degraded"]}</strong> with at least one recent failed check but not yet
+        flagged, and <strong>{record["unreachable"]}</strong> flagged unreachable
+        (see the degradation policy below). Time since each feed's last liveness check ranges from
+        {esc(str(hours["min"]))} to {esc(str(hours["max"]))} hours, with a median of
+        {esc(str(hours["median"]))} hours.</p>
+        <p>Overall clean-check rate: <strong>{esc(str(record["success_rate_pct"]))}%</strong>.</p>"""
+    else:
+        record_section = (
+            "<p>No liveness history has been recorded yet on this deployment "
+            "(the intraday refresh has not run). This section fills in once it has.</p>"
+        )
+
+    policy_items = "".join(f"<li>{esc(s)}</li>" for s in policy["statements"])
+
+    body = f"""    {_breadcrumb([("Home", "/"), ("Data freshness & uptime", None)])}
+    <a class="backlink" href="/">&larr; Home</a>
+    <h1 class="page-title">Data freshness &amp; uptime commitment</h1>
+    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Here is how
+    often we intend to refresh each feed, how that has actually gone, and what happens when a
+    feed cannot be refreshed on schedule &mdash; so you can decide whether to depend on this
+    data before you build on it. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
+
+    {_route_rule()}
+    <section aria-labelledby="cadence-h"><h2 class="section-title" id="cadence-h">Intended refresh cadence</h2>
+    <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
+    every feed runs daily regardless of tier.</p>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
+    <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
+
+    <section aria-labelledby="record-h"><h2 class="section-title" id="record-h">Historical refresh-success record</h2>
+    {record_section}</section>
+
+    <section aria-labelledby="degradation-h"><h2 class="section-title" id="degradation-h">Degradation policy</h2>
+    <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
+    <ul>{policy_items}</ul></section>
+
+    <p class="page-lede" style="margin-top:2rem">This commitment is generated fresh with every
+    site build from the same liveness state the intraday refresh keeps, so it cannot say
+    anything the pipeline did not actually observe.</p>"""
+    return _page(
+        title="Data freshness & uptime commitment | GTFS Scorecard",
+        description="The intended refresh cadence per tier, the historical refresh-success record, and the degradation policy, as machine-readable status.json and in plain language.",
+        canonical=canonical,
+        body=body,
+    )
+
+
 def _methodology_versions_section() -> str:
     """A visible validator + rubric version stamp and a dated methodology changelog
     on the public methodology page (RESEARCH-ROADMAP R9). The version stamp already
@@ -6245,6 +6314,20 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
     write("how-to-read/index.html", _render_guide(), f"{BASE_URL}/how-to-read/")
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
+
+    # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
+    # status.json plus a human-readable page, extending FIX-11's internal
+    # run-summary outward. Built from the same liveness state the intraday
+    # refresh keeps, so it renders (with an honest empty record) even before
+    # the first refresh has ever run.
+    from .status_commitment import build_status_commitment
+
+    status_doc = build_status_commitment(_load_liveness(), now, BASE_URL)
+    write(
+        "api/v1/status.json",
+        json.dumps(status_doc, indent=2, sort_keys=True) + "\n",
+    )
+    write("status/index.html", _render_status(status_doc), f"{BASE_URL}/status/")
     crosswalk_file = root / "docs" / "crosswalk.md"
     if crosswalk_file.exists():
         write(
