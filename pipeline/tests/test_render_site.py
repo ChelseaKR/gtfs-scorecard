@@ -813,6 +813,7 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     assert "Trillium" in html
     # It says what the grade does and does not measure.
     assert "not service" in html
+    assert '<meta name="robots" content="noindex,follow">' in html
 
 
 def test_board_page_peer_standing_only_with_percentiles() -> None:
@@ -1418,6 +1419,7 @@ def test_brief_carries_outreach_standards_and_portfolio_link() -> None:
     assert 'href="/program/california/"' in html
     no_rollup = _render_brief(lapsed, dir_record={"state": "California"}, program_ids=set())
     assert 'href="/program/california/"' not in no_rollup
+    assert '<meta name="robots" content="noindex,follow">' in html
 
 
 def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
@@ -2142,6 +2144,20 @@ def test_page_shell_keeps_nav_reachable_without_js() -> None:
     assert ".nav-cluster { display: flex !important" in html
 
 
+def test_page_shell_can_mark_utility_pages_noindex() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    html = _page(
+        title="t",
+        description="d",
+        canonical="https://gtfsscorecard.org/x/",
+        body="<p>hi</p>",
+        robots="noindex,follow",
+    )
+
+    assert '<meta name="robots" content="noindex,follow">' in html
+
+
 def test_map_page_names_its_cdn_fallback() -> None:
     html = _render_map_page(_map_features())
     assert "map-fallback" in html
@@ -2415,6 +2431,69 @@ def test_agency_page_carries_the_confidence_line() -> None:
     html = _render_agency(artifact)
     assert "Measured 2 of 4 score categories from the agency" in html
     assert "How we measured this" in html
+    title = html.split("<title>", 1)[1].split("</title>", 1)[0]
+    description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+    assert title == "Demo Transit GTFS quality report"
+    assert "grade" not in title.lower()
+    assert len(title) <= 60
+    assert len(description) <= 155
+    assert "realtime quality" not in description
+    assert 'itemtype="https://schema.org/BreadcrumbList"' in html
+    assert '"license":"https://creativecommons.org/licenses/by/4.0/"' in html
+    assert '"isBasedOn":"https://ex.org/g.zip"' in html
+
+
+def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
+    import datetime as dt
+    from pathlib import Path
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.fetch import FetchResult
+    from scorecard_pipeline.metrics import CategoryResult
+    from scorecard_pipeline.publish import build_artifact
+    from scorecard_pipeline.render_site import _render_agency
+    from scorecard_pipeline.score import build_scorecard
+
+    agency = Agency(
+        id="long-name",
+        name="A Very Long Regional Transportation Authority and Municipal Transit District",
+        static_gtfs_url="https://ex.org/long.zip",
+    )
+    fetch = FetchResult(
+        agency_id=agency.id,
+        path=Path("/tmp/long.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256="abc",
+        size_bytes=1,
+        reused=False,
+        source="origin",
+    )
+    card = build_scorecard([CategoryResult(name="correctness", score=90.0, summary="s")])
+    artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
+    html = _render_agency(artifact, dir_record={"state": "California"})
+    title = html.split("<title>", 1)[1].split("</title>", 1)[0]
+
+    assert len(title) <= 60
+    assert "(California) GTFS quality report" in title
+    assert "…" in title
+
+
+def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:
+    from scorecard_pipeline.render_site import _sitemap
+
+    xml = _sitemap(
+        [
+            "https://gtfsscorecard.org/x/",
+            "https://gtfsscorecard.org/x/",
+            "https://gtfsscorecard.org/y/",
+        ],
+        {"https://gtfsscorecard.org/x/": "2026-07-09"},
+    )
+
+    assert xml.count("https://gtfsscorecard.org/x/") == 1
+    assert "<lastmod>2026-07-09</lastmod>" in xml
+    assert "<lastmod>" not in xml.split("https://gtfsscorecard.org/y/", 1)[1]
 
 
 def _guided_flow_artifact() -> dict[str, Any]:

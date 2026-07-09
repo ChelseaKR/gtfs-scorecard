@@ -5,6 +5,8 @@ guards sync_static_navs / _NAV_ITEMS as the single source of truth."""
 
 from __future__ import annotations
 
+import json
+import re
 from pathlib import Path
 
 from scorecard_pipeline.site_shell import (
@@ -36,3 +38,20 @@ def test_active_section_targets_a_real_nav_item() -> None:
     hrefs = {href for _, href in _NAV_ITEMS}
     for rel, active in STATIC_NAV_PAGES.items():
         assert active is None or active in hrefs, f"{rel}: active {active!r} not in _NAV_ITEMS"
+
+
+def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
+    html = (_REPO / "web" / "app" / "index.html").read_text()
+
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/">' in html
+
+
+def test_open_data_page_publishes_data_catalog_jsonld() -> None:
+    html = (_REPO / "web" / "data" / "index.html").read_text()
+    match = re.search(r'<script type="application/ld\+json">(.*?)</script>', html)
+
+    assert match is not None
+    data = json.loads(match.group(1))
+    assert data["@type"] == "DataCatalog"
+    assert data["license"] == "https://creativecommons.org/licenses/by/4.0/"
+    assert data["dataset"][0]["distribution"][0]["contentUrl"].endswith("dataset.json")
