@@ -237,6 +237,7 @@ def _page(
     body: str,
     jsonld: dict[str, Any] | None = None,
     head_extra: str = "",
+    robots: str | None = None,
     wide: bool = False,
 ) -> str:
     """Wrap body in the full HTML document with SEO head tags. CSS and the
@@ -250,6 +251,8 @@ def _page(
         if jsonld
         else ""
     )
+    if robots:
+        ld += f'\n  <meta name="robots" content="{esc(robots)}">'
     ld += f"\n  {head_extra}" if head_extra else ""
     nav = _nav_html(canonical)
     main_class = "wrap wrap-wide" if wide else "wrap"
@@ -320,7 +323,15 @@ def _breadcrumb(trail: list[tuple[str, str | None]]) -> str:
     for i, (label, href) in enumerate(trail):
         last = i == len(trail) - 1
         if href and not last:
-            items.append(f'<li><a href="{esc(href)}">{esc(label)}</a></li>')
+            content = f'<a itemprop="item" href="{esc(href)}"><span itemprop="name">{esc(label)}</span></a>'
         else:
-            items.append(f'<li><span aria-current="page">{esc(label)}</span></li>')
-    return '<nav class="breadcrumb" aria-label="Breadcrumb"><ol>' + "".join(items) + "</ol></nav>"
+            content = f'<span itemprop="name" aria-current="page">{esc(label)}</span>'
+        items.append(
+            '<li itemprop="itemListElement" itemscope '
+            'itemtype="https://schema.org/ListItem">'
+            f'{content}<meta itemprop="position" content="{i + 1}"></li>'
+        )
+    return (
+        '<nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope '
+        'itemtype="https://schema.org/BreadcrumbList">' + "".join(items) + "</ol></nav>"
+    )

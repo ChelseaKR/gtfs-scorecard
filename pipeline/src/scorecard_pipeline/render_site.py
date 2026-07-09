@@ -1513,11 +1513,31 @@ def _render_agency(
     agency_id, agency_name = name
     overall = artifact["overall"]
     canonical = f"{BASE_URL}/agency/{agency_id}/"
-    desc = (
-        f"{agency_name}'s GTFS feed scores {overall['score']} out of 100 "
-        f"(grade {overall['grade']}) for data quality: correctness, freshness, "
-        "rider-experience completeness, and realtime. Plain-language fixes included."
+    state = str((dir_record or {}).get("state") or "").strip()
+    title_qualifier = f" ({state})" if state else ""
+    title_suffix = f"{title_qualifier} GTFS quality report"
+    max_name = max(18, 60 - len(title_suffix))
+    title_name = (
+        agency_name
+        if len(agency_name) <= max_name
+        else agency_name[: max_name - 1].rstrip(" ,-/") + "…"
     )
+    title = f"{title_name}{title_suffix}"
+    rt_measured = artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+    desc_tail = (
+        ": current service dates, validator findings, rider information, realtime quality, "
+        "and prioritized fixes."
+        if rt_measured
+        else ": current service dates, validator findings, rider information, and prioritized fixes."
+    )
+    desc_prefix = "GTFS quality report for "
+    max_desc_name = max(18, 155 - len(desc_prefix) - len(desc_tail))
+    desc_name = (
+        agency_name
+        if len(agency_name) <= max_desc_name
+        else agency_name[: max_desc_name - 1].rstrip(" ,-/") + "…"
+    )
+    desc = f"{desc_prefix}{desc_name}{desc_tail}"
 
     map_section = _route_map_section(artifact, agency_id, stop_names)
     # Insert the map and a closing rule only when there is a map, so a feed without
@@ -1707,6 +1727,22 @@ def _render_agency(
         "name": f"{agency_name} GTFS data quality report",
         "description": desc,
         "url": canonical,
+        "identifier": [
+            {"@type": "PropertyValue", "propertyID": "GTFS Scorecard", "value": agency_id},
+            *(
+                [
+                    {
+                        "@type": "PropertyValue",
+                        "propertyID": "Mobility Database",
+                        "value": str((dir_record or {}).get("mdb_id")),
+                    }
+                ]
+                if (dir_record or {}).get("mdb_id")
+                else []
+            ),
+        ],
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "isBasedOn": artifact.get("feed", {}).get("static_url"),
         "includedInDataCatalog": {"@type": "DataCatalog", "url": BASE_URL},
         "creator": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
         "about": {"@type": "Organization", "name": agency_name},
@@ -1719,7 +1755,6 @@ def _render_agency(
         },
         "keywords": ["GTFS", "transit data quality", "GTFS feed", agency_name],
     }
-    title = f"{agency_name} GTFS data quality: grade {overall['grade']} — GTFS Scorecard"
     atom = (
         f'<link rel="alternate" type="application/atom+xml" '
         f'title="{esc(agency_name)} feed quality changes" href="{canonical}feed.xml">'
@@ -1976,7 +2011,13 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         "readiness, and key feed facts on one page."
     )
     title = f"{agency_name} call-prep brief — GTFS Scorecard"
-    return _page(title=title, description=desc, canonical=canonical, body=body)
+    return _page(
+        title=title,
+        description=desc,
+        canonical=canonical,
+        body=body,
+        robots="noindex,follow",
+    )
 
 
 def _render_board_page(
@@ -2096,7 +2137,13 @@ def _render_board_page(
         "this period, and the next asks, on one printable page."
     )
     title = f"{agency_name} board one-pager — GTFS Scorecard"
-    return _page(title=title, description=desc, canonical=canonical, body=body)
+    return _page(
+        title=title,
+        description=desc,
+        canonical=canonical,
+        body=body,
+        robots="noindex,follow",
+    )
 
 
 def _receipt_anchor(receipt: dict[str, str]) -> str:
@@ -3636,8 +3683,14 @@ def _render_crosswalk_page(md: str) -> str:
     )
 
 
-def _sitemap(urls: list[str]) -> str:
-    items = "".join(f"<url><loc>{esc(u)}</loc></url>" for u in urls)
+def _sitemap(urls: list[str], lastmods: dict[str, str] | None = None) -> str:
+    """Render a deduplicated sitemap with truthful per-URL modification dates."""
+    modified = lastmods or {}
+    items = "".join(
+        f"<url><loc>{esc(url)}</loc>"
+        f"{f'<lastmod>{esc(modified[url])}</lastmod>' if modified.get(url) else ''}</url>"
+        for url in dict.fromkeys(urls)
+    )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
@@ -6627,19 +6680,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/try.html",
         f"{BASE_URL}/subscribe.html",
         f"{BASE_URL}/agencies/",
-        f"{BASE_URL}/map/",
-        f"{BASE_URL}/leaderboard/",
-        f"{BASE_URL}/equity/",
     ]
+    sitemap_lastmods: dict[str, str] = {}
     FIX_CODES_WITH_PAGES.clear()  # rebuilt below; never carry state across calls
 
-    def write(rel: str, content: str, url: str | None = None) -> None:
+    def write(
+        rel: str, content: str, url: str | None = None, *, lastmod: str | None = None
+    ) -> None:
         path = web / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
         written.append(path)
         if url:
             urls.append(url)
+            if lastmod:
+                sitemap_lastmods[url] = lastmod
 
     # Fix KB pages first, so agency findings can link to the ones that exist.
     fixes_dir = root / "docs" / "fixes"
@@ -6933,6 +6988,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/",
+            lastmod=str(artifact.get("snapshot_date") or "") or None,
         )
         write(
             f"agency/{agency_id}/brief/index.html",
@@ -6945,7 +7001,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 program_ids,
                 effort_bands=effort_bands,
             ),
-            f"{BASE_URL}/agency/{agency_id}/brief/",
         )
         # The board packet one-pager: same precomputed fields, different reader
         # (the agency's board rather than the liaison), so progress leads and the
@@ -6955,7 +7010,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             _render_board_page(
                 artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
             ),
-            f"{BASE_URL}/agency/{agency_id}/board/",
         )
         # The durable fix log, only once the collect step has recorded at least
         # one receipt (fixlog.py); a feed with no cleared findings has no page
@@ -7380,7 +7434,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     f"{BASE_URL}/program/{r['id']}/",
                 )
 
-    write("sitemap.xml", _sitemap(urls))
+    write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
 
     # Manifest of the top-level web/ roots this render actually wrote, so the
