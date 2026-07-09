@@ -273,7 +273,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "259b2f07fcde9051b3509e0d010401e5080b22ea99bc3e4fc10b1200e21b0071",
+    "sha256": "22111fec2e173a89cf1d74f44c63edb2376c051d5d89342de5a263138860d80c",
     "size_bytes": 17681,
     "static_url": "http://www.cartgps.com/gtfs"
   },
@@ -331,6 +331,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -342,6 +343,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 26,
       "effort": "A short text field per affected stop; start with the busiest.",

@@ -63,7 +63,7 @@
     "stale": 8,
     "total": 8
   },
-  "generated_at": "2026-07-09T16:00:15+00:00",
+  "generated_at": "2026-07-09T16:23:44+00:00",
   "grade_distribution": {
     "B": 6,
     "C": 10,
@@ -304,8 +304,8 @@
       "id": "advance-transit",
       "name": "Advance Transit",
       "needs_attention": false,
-      "score": 74.3,
-      "shapes_status": null,
+      "score": 74.2,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -318,8 +318,8 @@
       "id": "advance-transit-631",
       "name": "Advance Transit",
       "needs_attention": false,
-      "score": 74.3,
-      "shapes_status": null,
+      "score": 74.2,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -472,9 +472,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 24,
+    "not_measured": 22,
     "not_ready": 0,
-    "ready": 4,
+    "ready": 6,
     "total": 28
   },
   "state_percentile": 76

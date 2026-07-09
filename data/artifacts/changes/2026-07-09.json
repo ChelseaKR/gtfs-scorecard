@@ -3,6 +3,18 @@
   "changes": [
     {
       "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 63.8,
+      "id": "burbankbus",
+      "name": "BurbankBus",
+      "regressed": true,
+      "score_delta": -8.8,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 55.0
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "F",
       "from_score": 54.3,
       "id": "los-angeles-county-metropolitan-transportation-authority-la-metro-30",
@@ -24,6 +36,18 @@
       "since": "2026-07-08",
       "to_grade": "C",
       "to_score": 70.7
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "F",
+      "from_score": 57.0,
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "regressed": true,
+      "score_delta": -2.8,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 54.2
     },
     {
       "date": "2026-07-09",
@@ -52,6 +76,18 @@
     {
       "date": "2026-07-09",
       "from_grade": "D",
+      "from_score": 66.5,
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "regressed": true,
+      "score_delta": -1.5,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 65.0
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
       "from_score": 66.7,
       "id": "metropolitan-transit-authority-mta",
       "name": "Long Island Rail Road",
@@ -72,18 +108,6 @@
       "since": "2026-07-08",
       "to_grade": "D",
       "to_score": 64.4
-    },
-    {
-      "date": "2026-07-09",
-      "from_grade": "F",
-      "from_score": 57.0,
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "regressed": true,
-      "score_delta": -1.1,
-      "since": "2026-07-08",
-      "to_grade": "F",
-      "to_score": 55.9
     },
     {
       "date": "2026-07-09",
@@ -195,6 +219,18 @@
     },
     {
       "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 77.2,
+      "id": "mta",
+      "name": "Metro-North Railroad",
+      "regressed": false,
+      "score_delta": 2.7,
+      "since": "2026-07-08",
+      "to_grade": "C",
+      "to_score": 79.9
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "F",
       "from_score": 36.4,
       "id": "new-jersey-transit-nj-transit",
@@ -254,8 +290,8 @@
       "to_score": 83.1
     }
   ],
-  "count": 21,
-  "generated_at": "2026-07-09T16:00:32+00:00",
+  "count": 24,
+  "generated_at": "2026-07-09T16:24:01+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

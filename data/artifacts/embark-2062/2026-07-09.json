@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/embark-2062/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/embark-2062/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -127,10 +128,10 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 10,
+        "distinct_codes": 9,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 20,
+          "INFO": 19,
           "WARNING": 135
         },
         "validator_version": "8.0.1"
@@ -234,33 +235,22 @@
           "severity": "INFO",
           "what": "Big gap in service (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "service_window_outside_feed_period",
-          "count": 1,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 0.5,
-          "severity": "INFO",
-          "what": "Service window outside feed period (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 60.2,
+      "score": 60.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 155 instances (0 error, 135 warning, 20 informational).",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 154 instances (0 error, 135 warning, 19 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 364,
-        "feed_end_date": "2027-07-08",
+        "days_until_expiry": 365,
+        "feed_end_date": "2027-07-09",
         "feed_start_date": "2026-05-11",
-        "feed_version": "07/07/2026-22:30",
+        "feed_version": "08/07/2026-22:30",
         "has_feed_info": true,
-        "last_service_date": "2027-07-08",
+        "last_service_date": "2027-07-09",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -268,7 +258,7 @@
       "name": "freshness",
       "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 364 days.",
+      "summary": "Service data covers the next 365 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -299,7 +289,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 364 days.",
+        "detail": "Service data covers the next 365 days.",
         "key": "current",
         "met": true
       },
@@ -315,8 +305,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "ee03de38b77fc120dddb701453d5ada522c250c9f37a9bb7d8cf396af96f67e0",
-    "size_bytes": 2778955,
+    "sha256": "77193bf4cfffaf5eba8557f6e11db6df55b47982dec7b6e880021599b0922dd0",
+    "size_bytes": 2778953,
     "static_url": "https://mna.mecatran.com/utw/ws/gtfsfeed/static/okc?apiKey=6a3b186a334d1e3e064f42782f6002520e60394c"
   },
   "fetch": {
@@ -361,7 +351,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 364 days.",
+        "detail": "Service data covers the next 365 days.",
         "key": "current",
         "status": "ready"
       }
@@ -371,12 +361,13 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 1.6,
-    "margin_to_next_band": 8.4,
-    "score": 81.6
+    "margin_to_lower_band": 1.9,
+    "margin_to_next_band": 8.1,
+    "score": 81.9
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 21,
       "effort": "A per-route color setting in your scheduling software.",
@@ -388,6 +379,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 1526,
       "effort": "A short text field per affected stop; start with the busiest.",

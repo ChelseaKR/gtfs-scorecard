@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/boxcar/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/boxcar/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -160,12 +161,12 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 364,
-        "feed_end_date": "2027-07-08",
+        "days_until_expiry": 365,
+        "feed_end_date": "2027-07-09",
         "feed_start_date": "2024-07-08",
-        "feed_version": "2026-07-08",
+        "feed_version": "2026-07-09",
         "has_feed_info": true,
-        "last_service_date": "2027-07-08",
+        "last_service_date": "2027-07-09",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -173,7 +174,7 @@
       "name": "freshness",
       "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 364 days.",
+      "summary": "Service data covers the next 365 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -220,7 +221,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "01bb46723ff7fae639e53716b66f509ebb38d40145ec6a7bc7de936b9ce67571",
+    "sha256": "b6d33c034434c937fc165f109b8be7118e694083affd74cab68103910e183413",
     "size_bytes": 1261305,
     "static_url": "https://boxcar-gtfs.vercel.app/api/gtfs"
   },
@@ -230,7 +231,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.4434,
@@ -278,6 +279,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -289,6 +291,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 44,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -300,11 +303,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 84,
     "findings": [],

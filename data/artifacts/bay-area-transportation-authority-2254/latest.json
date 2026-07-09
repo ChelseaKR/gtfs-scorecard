@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/bay-area-transportation-authority-2254/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/bay-area-transportation-authority-2254/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -342,7 +343,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "010698975eda214da2ab1065b2e4caa9cb5a0994b5beb01bfe3b4ff6ccb7d48f",
+    "sha256": "8347fca200c3e715e5b6ba96848a325991bb043438f0f0cd1ba5ac79976e5815",
     "size_bytes": 416847,
     "static_url": "https://batabustracker.com/gtfs"
   },
@@ -400,6 +401,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 7,
       "effort": "A per-route color setting in your scheduling software.",
@@ -411,6 +413,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 139,
       "effort": "A short text field per affected stop; start with the busiest.",

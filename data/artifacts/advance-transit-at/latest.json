@@ -282,7 +282,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 1204 days ago.",
+        "detail": "Service data expired 1205 days ago.",
         "key": "current",
         "met": false
       },
@@ -293,7 +293,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 1204 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 1205 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -309,7 +309,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -72.34354,
@@ -339,13 +339,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 1204 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 1205 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 1204 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 1205 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -355,6 +355,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -366,6 +367,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 45,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -377,11 +379,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 164,
     "findings": [],

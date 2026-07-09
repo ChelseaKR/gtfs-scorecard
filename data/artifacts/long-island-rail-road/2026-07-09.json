@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 127,
-        "trips": 2022,
+        "trips": 2068,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 96.1,
@@ -66,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 2022,
+          "count": 2068,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "2022 of 2022 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2068 of 2068 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -240,8 +240,8 @@
   "feed": {
     "license_note": "License: https://www.mta.info/developers",
     "reachable": true,
-    "sha256": "0878334ca160c65acc986055b0a828ef2252db29ffc620e43bdb8cd9189c65c1",
-    "size_bytes": 1832634,
+    "sha256": "af084ff4cc9c5975f398c1ea3cda7c9412c49fed1472173377c0713d91993315",
+    "size_bytes": 1836300,
     "static_url": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip"
   },
   "fetch": {
@@ -341,7 +341,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 2022
+    "trips_total": 2068
   },
   "route_map": {
     "drawn_route_count": 12,
@@ -499,23 +499,23 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 2022 trips have a shape in shapes.txt.",
+    "detail": "All 2068 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 2022,
-    "trips_with_shape": 2022
+    "total_trips": 2068,
+    "trips_with_shape": 2068
   },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 2022,
+      "count": 2068,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "2022 of 2022 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "2068 of 2068 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

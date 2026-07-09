@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 6,
-        "trips": 434,
+        "trips": 421,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 100.0,
@@ -99,7 +99,7 @@
         "instances_by_severity": {
           "ERROR": 2,
           "INFO": 0,
-          "WARNING": 13
+          "WARNING": 16
         },
         "validator_version": "8.0.1"
       },
@@ -117,7 +117,7 @@
         },
         {
           "code": "expired_calendar",
-          "count": 12,
+          "count": 15,
           "effort": "One setting in most export tools.",
           "fix": "Remove past service periods the next time you export the feed.",
           "owner": "Likely your export tool",
@@ -141,7 +141,7 @@
       "name": "correctness",
       "score": 78.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 3 kinds of issue across 15 instances (2 error, 13 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 18 instances (2 error, 16 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -218,8 +218,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "ccee5a5759188bec07ba8d54ca497888e922cb31b731ba7521a0698d49967ba3",
-    "size_bytes": 28063,
+    "sha256": "70ac98a7677474ec63a6fd5c37072b19eeeb6d6dddb5199e8db221c51dc55f6b",
+    "size_bytes": 27742,
     "static_url": "http://feed.gobrightline.com/bl_gtfs.zip"
   },
   "fetch": {
@@ -281,7 +281,7 @@
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 434
+    "trips_total": 421
   },
   "route_map": {
     "drawn_route_count": 1,
@@ -307,10 +307,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 434 trips have a shape in shapes.txt.",
+    "detail": "All 421 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 434,
-    "trips_with_shape": 434
+    "total_trips": 421,
+    "trips_with_shape": 421
   },
   "snapshot_date": "2026-07-09",
   "top_fixes": [

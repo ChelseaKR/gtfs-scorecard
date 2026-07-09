@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/los-angeles-department-of-transportation-ladot-dash-commuter-express/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/los-angeles-department-of-transportation-ladot-dash-commuter-express/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -283,7 +284,7 @@
         "days_until_expiry": 540,
         "feed_end_date": "2027-12-31",
         "feed_start_date": "2025-12-19",
-        "feed_version": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026",
+        "feed_version": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-7/9/2026 Changes,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -340,8 +341,8 @@
   "feed": {
     "license_note": "License: https://www.ladottransit.com/dla.html",
     "reachable": true,
-    "sha256": "93dc44ad3dd6fb292dedda214442e7824f1ef29b044e9c481a5d2cfb99866c69",
-    "size_bytes": 4033314,
+    "sha256": "8deacb1c2f602d8bd90660e97f946f9af2147ea0ba577bddac6a3ea1a487c701",
+    "size_bytes": 4042206,
     "static_url": "https://ladotbus.com/gtfs"
   },
   "fetch": {
@@ -401,6 +402,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 40,
       "effort": "A per-route color setting in your scheduling software.",
@@ -412,6 +414,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 2762,
       "effort": "A short text field per affected stop; start with the busiest.",

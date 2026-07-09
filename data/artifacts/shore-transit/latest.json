@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -130,7 +134,7 @@
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -163,7 +167,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -254,6 +258,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -263,7 +279,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 2369 days ago.",
+        "detail": "Service data expired 2381 days ago.",
         "key": "current",
         "met": false
       },
@@ -274,7 +290,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 2369 days ago. States wheelchair access on 5% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 2381 days ago. States wheelchair access on 5% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "License: https://github.com/mobilityequity/maryland-local-gtfs/blob/master/README.md",
@@ -283,7 +299,14 @@
     "size_bytes": 222957,
     "static_url": "https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Shore_GTFS.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maryland-shore-transit-gtfs-494.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -75.86366,
@@ -296,7 +319,7 @@
     "stop_count": 131
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1"
     ],
@@ -315,13 +338,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 2369 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 2381 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 2369 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 2381 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -331,6 +354,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 3,
       "effort": "A per-route color setting in your scheduling software.",
@@ -342,6 +366,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 38,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -353,11 +378,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 131,
     "findings": [],
@@ -365,8 +385,178 @@
     "single_stop_trips": 0,
     "trips_total": 178
   },
+  "route_map": {
+    "drawn_route_count": 14,
+    "has_shapes": true,
+    "path": "data/artifacts/shore-transit/geometry.geojson",
+    "route_count": 14,
+    "routes": [
+      {
+        "color": "472107",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "101",
+        "label": "101",
+        "long": "Downtown Salisbury Trolley",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "472107",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "105a",
+        "label": "105a",
+        "long": "Salisbury University",
+        "short": "105a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "472107",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "105b",
+        "label": "105b",
+        "long": "Salisbury University",
+        "short": "105b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36C52E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "114",
+        "label": "114",
+        "long": "Salisbury & Delmar",
+        "short": "114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6E00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "154",
+        "label": "154",
+        "long": "South Salisbury - Fruitland",
+        "short": "154",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1500FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "198",
+        "label": "198",
+        "long": "East & West Salisbury",
+        "short": "198",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3B1C1",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "203E",
+        "label": "203E",
+        "long": "Salisbury - Ocean City",
+        "short": "203E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3B1C1",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "203W",
+        "label": "203W",
+        "long": "Ocean City - Salisbury",
+        "short": "203W",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "252",
+        "label": "252",
+        "long": "Salisbury-Princess Anne-Pocomoke",
+        "short": "252",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "916F40",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "503N",
+        "label": "503N",
+        "long": "Pocomoke - Ocean City",
+        "short": "503N",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "916F40",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "503S",
+        "label": "503S",
+        "long": "Ocean City - Pocomoke",
+        "short": "503S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8473AC",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "593",
+        "label": "593",
+        "long": "West OC - Ocean Pines - Berlin",
+        "short": "593",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FECB00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "705N",
+        "label": "705N",
+        "long": "Salisbury-Crisfield-Princess Anne",
+        "short": "705N",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FECB00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "705S",
+        "label": "705S",
+        "long": "Princess Anne - Crisfield",
+        "short": "705S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 131,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 178 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 178,
+    "trips_with_shape": 178
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {

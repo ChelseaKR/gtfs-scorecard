@@ -53,7 +53,7 @@
     "stale": 7,
     "total": 8
   },
-  "generated_at": "2026-07-09T16:00:15+00:00",
+  "generated_at": "2026-07-09T16:23:44+00:00",
   "grade_distribution": {
     "B": 7,
     "C": 3,
@@ -61,6 +61,20 @@
     "F": 10
   },
   "members": [
+    {
+      "annual_trips": 9297857,
+      "attention_reason": "Service data expires in 37 day(s)",
+      "days_until_expiry": 37,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "metro-transit-city-of-madison",
+      "name": "Metro Transit - City of Madison",
+      "needs_attention": true,
+      "score": 84.5,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -186,20 +200,6 @@
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 37 day(s)",
-      "days_until_expiry": 37,
-      "expiry_status": "current",
-      "grade": "B",
-      "id": "metro-transit-city-of-madison",
-      "name": "Metro Transit - City of Madison",
-      "needs_attention": true,
-      "score": 84.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
     },
     {
       "annual_trips": null,

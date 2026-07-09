@@ -255,39 +255,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 97.7,
-        "covered_trips": 419,
+        "coverage_pct": 97.8,
+        "covered_trips": 402,
         "drift": {
           "median_seconds": 68,
-          "observations": 11393,
+          "observations": 10823,
           "on_time_share_pct": 82.9,
-          "p90_abs_seconds": 275
+          "p90_abs_seconds": 273
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 429,
-        "vehicles_checked": 1315,
-        "vehicles_on_route_pct": 96.0,
-        "worst_lag_seconds": 17
+        "scheduled_trips_in_window": 411,
+        "vehicles_checked": 1132,
+        "vehicles_on_route_pct": 95.9,
+        "worst_lag_seconds": 20
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 10,
+          "count": 9,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 0.8,
           "severity": "WARNING",
-          "what": "10 of 429 trips scheduled during the sampling window had no live predictions.",
+          "what": "9 of 411 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
       "score": 98.6,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 97.7% of scheduled trips had live predictions; 96.0% of vehicles on their route; predictions ran a median of 68s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 97.8% of scheduled trips had live predictions; 95.9% of vehicles on their route; predictions ran a median of 68s behind schedule.",
       "weight": 0.2
     }
   },
@@ -313,7 +313,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 109 days.",
+        "detail": "Service data covers the next 108 days.",
         "key": "current",
         "met": true
       },
@@ -339,7 +339,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -112.87219,
@@ -372,7 +372,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 109 days.",
+        "detail": "Service data covers the next 108 days.",
         "key": "current",
         "status": "ready"
       }
@@ -388,6 +388,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 7901,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -399,6 +400,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -410,11 +412,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 7941,
     "findings": [],

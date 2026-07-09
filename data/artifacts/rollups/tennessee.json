@@ -19,8 +19,8 @@
     },
     {
       "agencies": 4,
-      "code": "scorecard_no_fare_data",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
+      "code": "scorecard_missing_feed_info_dates",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "agencies": 3,
@@ -29,13 +29,13 @@
     },
     {
       "agencies": 2,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+      "code": "scorecard_feed_expiring_soon",
+      "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "agencies": 2,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
+      "code": "scorecard_no_fare_data",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     }
   ],
   "expired": {
@@ -43,13 +43,27 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-09T16:00:15+00:00",
+  "generated_at": "2026-07-09T16:23:44+00:00",
   "grade_distribution": {
     "C": 2,
     "D": 2,
     "F": 7
   },
   "members": [
+    {
+      "annual_trips": 2703778,
+      "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "county-connection-cccta-2421",
+      "name": "County Connection (CCCTA)",
+      "needs_attention": true,
+      "score": 62.5,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -133,20 +147,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "county-connection-cccta-2421",
-      "name": "County Connection (CCCTA)",
-      "needs_attention": true,
-      "score": 62.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "annual_trips": null,

@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -130,7 +134,7 @@
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -221,6 +225,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -230,7 +246,7 @@
         "met": false
       },
       {
-        "detail": "Service data expired 750 days ago.",
+        "detail": "Service data expired 762 days ago.",
         "key": "current",
         "met": false
       },
@@ -241,7 +257,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 750 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 762 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -250,7 +266,14 @@
     "size_bytes": 15814,
     "static_url": "https://github.com/LACMTA/los-angeles-regional-gtfs/raw/main/elsegundo-ca-us/elsegundo-ca-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-el-segundo-transportation-gtfs-2210.zip?alt=media",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -118.42199,
@@ -263,7 +286,7 @@
     "stop_count": 25
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1746"
     ],
@@ -282,13 +305,13 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data expired 750 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 762 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 750 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 762 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
@@ -298,6 +321,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 24,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -309,11 +333,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 25,
     "findings": [],
@@ -321,8 +340,46 @@
     "single_stop_trips": 0,
     "trips_total": 32
   },
+  "route_map": {
+    "drawn_route_count": 2,
+    "has_shapes": true,
+    "path": "data/artifacts/el-segundo-transportation-2210/geometry.geojson",
+    "route_count": 2,
+    "routes": [
+      {
+        "color": "0C286D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BeachShuttle",
+        "label": "Beach Shuttle",
+        "long": "Beach Shuttle",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "730E11",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "LunchtimeShuttle",
+        "label": "Lunchtime Shuttle",
+        "long": "Lunchtime Shuttle",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 25,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 32 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 32,
+    "trips_with_shape": 32
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {

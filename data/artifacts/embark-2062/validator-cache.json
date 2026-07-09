@@ -222,24 +222,10 @@
         ],
         "severity": "INFO",
         "total": 2
-      },
-      {
-        "code": "service_window_outside_feed_period",
-        "sample_notices": [
-          {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 2,
-            "serviceId": "edmond-54678.143480",
-            "serviceWindowEndDate": "2027-07-03",
-            "serviceWindowStartDate": "2026-05-09"
-          }
-        ],
-        "severity": "INFO",
-        "total": 1
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "ee03de38b77fc120dddb701453d5ada522c250c9f37a9bb7d8cf396af96f67e0",
+  "sha256": "77193bf4cfffaf5eba8557f6e11db6df55b47982dec7b6e880021599b0922dd0",
   "validator_version": "8.0.1"
 }

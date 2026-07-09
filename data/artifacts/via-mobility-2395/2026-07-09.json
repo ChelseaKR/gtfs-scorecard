@@ -222,18 +222,18 @@
         "coverage_pct": 83.3,
         "covered_trips": 5,
         "drift": {
-          "median_seconds": -769,
-          "observations": 41,
-          "on_time_share_pct": 9.8,
-          "p90_abs_seconds": 3688
+          "median_seconds": -596,
+          "observations": 43,
+          "on_time_share_pct": 11.6,
+          "p90_abs_seconds": 1227
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 6,
-        "vehicles_checked": 14,
-        "vehicles_on_route_pct": 92.9,
-        "worst_lag_seconds": 4
+        "vehicles_checked": 13,
+        "vehicles_on_route_pct": 92.3,
+        "worst_lag_seconds": 2
       },
       "findings": [
         {
@@ -246,23 +246,12 @@
           "severity": "WARNING",
           "what": "1 of 6 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
-        },
-        {
-          "code": "scorecard_rt_predictions_implausible",
-          "count": 41,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
-          "owner": "",
-          "points": 0.0,
-          "severity": "WARNING",
-          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
-          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 93.1,
+      "score": 93.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 83.3% of scheduled trips had live predictions; 92.9% of vehicles on their route; predictions ran a median of 769s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 83.3% of scheduled trips had live predictions; 92.3% of vehicles on their route; predictions ran a median of 596s ahead of schedule.",
       "weight": 0.2
     }
   },

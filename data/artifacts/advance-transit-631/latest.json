@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/advance-transit-631/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/advance-transit-631/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -31,6 +32,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -66,7 +71,7 @@
           "pathway_count": 0
         },
         "stops": 203,
-        "trips": 888,
+        "trips": 890,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -86,13 +91,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 888,
+          "count": 890,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "888 of 888 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "890 of 890 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -132,8 +137,8 @@
           "owner": "",
           "points": 8.0,
           "severity": "WARNING",
-          "what": "Some scheduled trips travel implausibly fast between stops.",
-          "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
         },
         {
           "code": "mixed_case_recommended_field",
@@ -223,8 +228,8 @@
       "details": {
         "days_until_expiry": 145,
         "feed_end_date": "2026-12-01",
-        "feed_start_date": "2026-06-25",
-        "feed_version": "UTC: 26-Jun-2026 03:41",
+        "feed_start_date": "2026-07-09",
+        "feed_version": "UTC: 09-Jul-2026 05:13",
         "has_feed_info": true,
         "last_service_date": "2026-12-01",
         "seasonal_boundary": false,
@@ -244,6 +249,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -253,7 +270,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 154 days.",
+        "detail": "Service data covers the next 145 days.",
         "key": "current",
         "met": true
       },
@@ -269,11 +286,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "4dbbbc05bfa5030e40211efaf1fcfd3654c7096cc8a1900a152e4450e547ffec",
-    "size_bytes": 631132,
+    "sha256": "2d04d8e132cede25698e3ad435a1ad7f7380b29408c6205dfa7a181f38f12908",
+    "size_bytes": 630737,
     "static_url": "http://data.trilliumtransit.com/gtfs/advancetransit-vt-us/advancetransit-vt-us.zip"
   },
-  "generated_at": "2026-06-30T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://data.trilliumtransit.com/gtfs/advancetransit-vt-us/advancetransit-vt-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -72.34356,
@@ -286,7 +309,7 @@
     "stop_count": 203
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "738"
     ],
@@ -305,22 +328,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 154 days.",
+        "detail": "Service data covers the next 145 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 4.3,
-    "margin_to_next_band": 5.7,
-    "score": 74.3
+    "margin_to_lower_band": 4.2,
+    "margin_to_next_band": 5.8,
+    "score": 74.2
   },
   "recommendations": [
     {
+      "category": "flex",
       "code": "scorecard_flex_completeness_no_booking_rules",
       "count": 1,
       "effort": "A small file; one rule often covers the whole service.",
@@ -332,6 +356,7 @@
       "why": "Riders can see the service area but not how to book, so they can't complete a trip."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 4,
       "effort": "A per-route color setting in your scheduling software.",
@@ -343,6 +368,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 39,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -354,11 +380,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 203,
     "findings": [
@@ -376,10 +397,158 @@
     ],
     "orphan_stops": 7,
     "single_stop_trips": 0,
-    "trips_total": 888
+    "trips_total": 890
+  },
+  "route_map": {
+    "drawn_route_count": 12,
+    "has_shapes": true,
+    "path": "data/artifacts/advance-transit-631/geometry.geojson",
+    "route_count": 12,
+    "routes": [
+      {
+        "color": "FEDC0A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "14112",
+        "label": "Yellow Route",
+        "long": "Yellow Route",
+        "short": "",
+        "text_color": "616161",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D034D0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "17098",
+        "label": "Downtown Shuttle",
+        "long": "Dartmouth-Hanover Downtown Shuttle",
+        "short": "Downtown Shuttle",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "07D262",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7127",
+        "label": "Green Route",
+        "long": "Green Route",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "996600",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "7128",
+        "label": "Brown Route",
+        "long": "Brown Route",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F87217",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "7129",
+        "label": "Orange Route",
+        "long": "Orange Route",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000FFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "7130",
+        "label": "Blue Route",
+        "long": "Blue Route",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1A1A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7131",
+        "label": "Red Route",
+        "long": "Red Route",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7F00FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "7135",
+        "label": "Lot 20",
+        "long": "Lot 20 Shuttle",
+        "short": "Lot 20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "757575",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "76652",
+        "label": "Enfield-Canaan",
+        "long": "Enfield-Canaan Commuter",
+        "short": "Enfield-Canaan",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "77158D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "76655",
+        "label": "Blue-Red Route",
+        "long": "Blue-Red Route",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E02089",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "77089",
+        "label": "Pink Route",
+        "long": "Pink Route",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B2FFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "77383",
+        "label": "Lot 9",
+        "long": "Lot 9 Shuttle",
+        "short": "Lot 9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 203,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 890 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 890,
+    "trips_with_shape": 890
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
@@ -396,14 +565,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 888,
+      "count": 890,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "888 of 888 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "890 of 890 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
@@ -415,8 +584,8 @@
       "points": 8.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "Some scheduled trips travel implausibly fast between stops.",
-      "why": "Usually a typo'd stop time; riders get impossible arrival estimates."
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
     }
   ],
   "validator_version": "8.0.1"

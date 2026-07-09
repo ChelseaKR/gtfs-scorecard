@@ -78,7 +78,7 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-09T16:00:15+00:00",
+  "generated_at": "2026-07-09T16:23:44+00:00",
   "grade_distribution": {
     "B": 17,
     "C": 19,
@@ -86,6 +86,20 @@
     "F": 25
   },
   "members": [
+    {
+      "annual_trips": 1589693,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -587,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "virginia-railway-express-vre",
+      "name": "Virginia Railway Express (VRE)",
+      "needs_attention": true,
+      "score": 28.3,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -117,20 +131,6 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -587,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "virginia-railway-express-vre",
-      "name": "Virginia Railway Express (VRE)",
-      "needs_attention": true,
-      "score": 28.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
       "days_until_expiry": -1888,
       "expiry_status": "stale",
       "grade": "F",
@@ -151,7 +151,7 @@
       "id": "grtc-transit-system",
       "name": "GRTC Transit System",
       "needs_attention": true,
-      "score": 31.7,
+      "score": 31.8,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -629,7 +629,7 @@
       "needs_attention": false,
       "score": 26.2,
       "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
@@ -731,7 +731,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 2458738,
       "attention_reason": null,
       "days_until_expiry": 326,
       "expiry_status": "current",

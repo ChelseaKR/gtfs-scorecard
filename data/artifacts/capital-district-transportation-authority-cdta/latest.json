@@ -188,39 +188,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 99.0,
-        "covered_trips": 96,
+        "coverage_pct": 96.8,
+        "covered_trips": 92,
         "drift": {
-          "median_seconds": 6,
-          "observations": 6324,
-          "on_time_share_pct": 88.6,
-          "p90_abs_seconds": 273
+          "median_seconds": 16,
+          "observations": 6557,
+          "on_time_share_pct": 84.7,
+          "p90_abs_seconds": 368
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 97,
-        "vehicles_checked": 294,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 7
+        "scheduled_trips_in_window": 95,
+        "vehicles_checked": 307,
+        "vehicles_on_route_pct": 98.4,
+        "worst_lag_seconds": 10
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 1,
+          "count": 3,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 0.4,
+          "points": 1.1,
           "severity": "WARNING",
-          "what": "1 of 97 trips scheduled during the sampling window had no live predictions.",
+          "what": "3 of 95 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 99.6,
+      "score": 98.7,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 99.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 6s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 96.8% of scheduled trips had live predictions; 98.4% of vehicles on their route; predictions ran a median of 16s behind schedule.",
       "weight": 0.2
     }
   },
@@ -246,7 +246,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 52 days.",
+        "detail": "Service data covers the next 51 days.",
         "key": "current",
         "met": true
       },
@@ -273,7 +273,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -74.21932,
@@ -305,7 +305,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 52 days.",
+        "detail": "Service data covers the next 51 days.",
         "key": "current",
         "status": "ready"
       }
@@ -315,12 +315,13 @@
   },
   "overall": {
     "grade": "A",
-    "margin_to_lower_band": 1.0,
+    "margin_to_lower_band": 0.8,
     "margin_to_next_band": null,
-    "score": 91.0
+    "score": 90.8
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 2686,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -332,11 +333,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2930,
     "findings": [

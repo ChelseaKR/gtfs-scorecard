@@ -228,7 +228,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "f4f979cc2e8f169f5e9666b7079e0390699c7defa83d4fc98bc1126f856c0cac",
+    "sha256": "8f377b7e7294a2af55407d6ed44b01cec8290be6a6ceec3da2bc4ee2e4fff35f",
     "size_bytes": 99006,
     "static_url": "https://mylinktransit.org/gtfs"
   },
@@ -288,6 +288,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -299,6 +300,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 193,
       "effort": "A short text field per affected stop; start with the busiest.",

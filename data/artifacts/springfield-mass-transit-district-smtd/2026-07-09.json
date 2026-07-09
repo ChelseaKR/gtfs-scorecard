@@ -265,34 +265,34 @@
       "details": {
         "coverage_pct": null,
         "drift": {
-          "median_seconds": -3600,
-          "observations": 1017,
-          "on_time_share_pct": 1.9,
-          "p90_abs_seconds": 17835
+          "median_seconds": -3452,
+          "observations": 925,
+          "on_time_share_pct": 0.0,
+          "p90_abs_seconds": 17799
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 57,
-        "vehicles_on_route_pct": 10.5,
-        "worst_lag_seconds": 28
+        "vehicles_checked": 41,
+        "vehicles_on_route_pct": 14.6,
+        "worst_lag_seconds": 30
       },
       "findings": [
         {
           "code": "scorecard_rt_vehicles_off_route",
-          "count": 51,
+          "count": 35,
           "effort": "A vendor support ticket with the trip ids attached.",
           "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
           "owner": "",
-          "points": 13.4,
+          "points": 12.8,
           "severity": "WARNING",
-          "what": "51 of 57 sampled vehicle positions were far from their assigned route (worst: 9060 m).",
+          "what": "35 of 41 sampled vehicle positions were far from their assigned route (worst: 8410 m).",
           "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         },
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 1017,
+          "count": 925,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -303,9 +303,9 @@
         }
       ],
       "name": "realtime",
-      "score": 79.4,
+      "score": 80.3,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 10.5% of vehicles on their route; predictions ran a median of 3600s ahead of schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 14.6% of vehicles on their route; predictions ran a median of 3452s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -331,7 +331,7 @@
         "met": true
       },
       {
-        "detail": "Service data expired 32 days ago.",
+        "detail": "Service data expired 33 days ago.",
         "key": "current",
         "met": false
       },
@@ -342,7 +342,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 32 days ago. States wheelchair access on 71% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data expired 33 days ago. States wheelchair access on 71% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -358,7 +358,7 @@
     "source": "mirror",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -89.75239,
@@ -390,22 +390,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 32 days ago, so FTA would find the link out of date.",
+        "detail": "Service data expired 33 days ago, so FTA would find the link out of date.",
         "key": "current",
         "status": "not_ready"
       }
     ],
     "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 32 days ago, so FTA would find the link out of date."
+    "summary": "Resolve this before you certify on the D-10. Service data expired 33 days ago, so FTA would find the link out of date."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 55.7,
-    "margin_to_next_band": 4.3,
-    "score": 55.7
+    "margin_to_lower_band": 55.8,
+    "margin_to_next_band": 4.2,
+    "score": 55.8
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 7,
       "effort": "A per-route color setting in your scheduling software.",
@@ -417,6 +418,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 982,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -428,11 +430,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1025,
     "findings": [],
@@ -805,14 +802,14 @@
     },
     {
       "code": "scorecard_rt_vehicles_off_route",
-      "count": 51,
+      "count": 35,
       "effort": "A vendor support ticket with the trip ids attached.",
       "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
       "owner": "",
-      "points": 13.4,
+      "points": 12.8,
       "rank": 3,
       "severity": "WARNING",
-      "what": "51 of 57 sampled vehicle positions were far from their assigned route (worst: 9060 m).",
+      "what": "35 of 41 sampled vehicle positions were far from their assigned route (worst: 8410 m).",
       "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
     }
   ],

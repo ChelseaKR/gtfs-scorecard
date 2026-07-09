@@ -106,20 +106,6 @@
             "serviceWindowStartDate": "2026-05-18"
           },
           {
-            "daysAfterFeedEnd": 48,
-            "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-D044-Sunday-00_C49",
-            "serviceWindowEndDate": "2026-10-25",
-            "serviceWindowStartDate": "2026-05-17"
-          },
-          {
-            "daysAfterFeedEnd": 53,
-            "daysBeforeFeedStart": 0,
-            "serviceId": "SIR-FA2017-SI017-Weekday-08_C68",
-            "serviceWindowEndDate": "2026-10-30",
-            "serviceWindowStartDate": "2026-05-18"
-          },
-          {
             "daysAfterFeedEnd": 54,
             "daysBeforeFeedStart": 0,
             "serviceId": "ASP26GEN-GS013-Saturday-00",
@@ -132,29 +118,28 @@
             "serviceId": "BSP26GEN-D085-Weekday-00_C27",
             "serviceWindowEndDate": "2026-10-30",
             "serviceWindowStartDate": "2026-05-18"
-          }
-        ],
-        "severity": "INFO",
-        "total": 74
-      },
-      {
-        "code": "trip_headsign_matches_intermediate_stop",
-        "sample_notices": [
+          },
           {
-            "csvRowNumber": 73408,
-            "stopId1": "Q04S",
-            "stopId2": "N10S",
-            "stopSequence": 2,
-            "tripHeadsign": "86 St",
-            "tripId": "L1S1-N-1102-S26_056850_N..S16X003"
+            "daysAfterFeedEnd": 53,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "BSP26GEN-F081-Weekday-00_C30",
+            "serviceWindowEndDate": "2026-10-30",
+            "serviceWindowStartDate": "2026-05-18"
+          },
+          {
+            "daysAfterFeedEnd": 48,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "BSP26GEN-D044-Sunday-00_C50",
+            "serviceWindowEndDate": "2026-10-25",
+            "serviceWindowStartDate": "2026-05-17"
           }
         ],
         "severity": "INFO",
-        "total": 1
+        "total": 73
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "21bdf08f9077ceea0768d084ba9dfe349f5a5b6c2618c95ab79e6f8fb479d967",
+  "sha256": "2cecdc7335b8f058e661a069c6652c26ca7fb839966a5afad31a3a15822b010a",
   "validator_version": "8.0.1"
 }
