@@ -38,7 +38,7 @@ Point a fork or a local preview at itself with `SCORECARD_BASE_URL`.
 | --- | --- |
 | `search_agencies` | "Which agencies in Ontario do you track?" Name, id, state/province, and grade filters over the national catalog. |
 | `get_scorecard` | "How is Unitrans doing and what should they fix first?" Overall grade, category summaries, every finding with its plain-language fix, effort hint, and fix-guide link, plus NTD readiness. |
-| `national_stats` | "How is transit data doing nationally?" The stats rollup and NTD certification readiness, nationally and by state. |
+| `national_stats` | "How is transit data doing nationally?" The stats rollup and NTD GTFS readiness, nationally and by state. |
 
 Results carry the same framing rules as the site: an unmeasured realtime
 category reads as not yet published, findings are framed as fixes, and every

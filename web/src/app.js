@@ -1386,7 +1386,7 @@ function ntdAlignmentRow(artifact) {
       <dd>${body}</dd></dl>`;
 }
 
-/** NTD certification readiness: three pillars (published, valid, current) plus
+/** NTD GTFS readiness: three pillars (published, valid, current) plus
  *  the agency_id alignment line. Reads the precomputed `ntd_readiness`; renders
  *  whatever is present and is "" only when both are absent (older artifacts).
  *  @param {any} artifact */
@@ -1396,11 +1396,11 @@ function ntdSection(artifact) {
   if (!r && !alignRow) return "";
   let pillars = "";
   let summary = "";
-  let head = '<abbr title="National Transit Database">NTD</abbr> certification readiness';
+  let head = '<abbr title="National Transit Database">NTD</abbr> GTFS readiness';
   if (r) {
     const headStatus = String(r.status || "unknown");
     const overall = NTD_LABELS[headStatus] || headStatus;
-    head = `<abbr title="National Transit Database">NTD</abbr> certification readiness <span class="ntd-status ntd-${esc(headStatus)}">${esc(overall)}</span>`;
+    head = `<abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="ntd-status ntd-${esc(headStatus)}">${esc(overall)}</span>`;
     summary = String(r.summary || "");
     pillars = (r.pillars || [])
       .map((p) => {
@@ -1421,10 +1421,10 @@ function ntdSection(artifact) {
     <p class="fineprint">A readiness signal mapping this feed to the
       <a href="https://www.transit.dot.gov/ntd"><abbr title="Federal Transit Administration">FTA</abbr> National Transit Database</a> GTFS
       requirement (Report Year 2023 onward: a public, valid, current feed, certified
-      annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). From <a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">report
-      year 2025</a> (2026 for reduced, rural, and tribal reporters), FTA also asks that
-      agency_id equal your NTD ID. Not an official determination; your certification is
-      the official check.</p>
+      annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). The <a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">July
+      2025 final rule</a> links agency identifiers on the P-50 form rather than requiring
+      a feed-side ID change. Not an official determination; your certification is the
+      official check.</p>
   </section>`;
 }
 
