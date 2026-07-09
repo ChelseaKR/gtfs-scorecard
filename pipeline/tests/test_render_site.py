@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from scorecard_pipeline.render_site import (
@@ -2566,6 +2567,24 @@ def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
     assert "After you republish" in html
     assert "dated receipt" in html
     assert "the scorecard shows the fix; the agency publishes it." in html
+    assert '<a class="backlink" href="/fix/">' in html
+    assert '"author":{"@type":"Organization","name":"GTFS Scorecard"' in html
+
+
+def test_fix_guide_description_skips_the_validator_code_line() -> None:
+    from scorecard_pipeline.render_site import _render_fix
+
+    html = _render_fix(
+        "expired_calendar",
+        "# Fix expired calendars\n\n"
+        "Code: `expired_calendar` (MobilityData validator)\n\n"
+        "## What this means\n\n"
+        "The service calendar ended in the past, so the feed may stop showing trips.\n",
+    )
+
+    description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+    assert description.startswith("The service calendar ended")
+    assert "Code:" not in description
 
 
 def test_md_to_html_renders_a_table() -> None:
@@ -2573,12 +2592,13 @@ def test_md_to_html_renders_a_table() -> None:
 
     md = "# Title\n\n| A | B |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\nAfter.\n"
     html, title = _md_to_html(md)
+    compact = re.sub(r"\s+", "", html)
     assert title == "Title"
     assert '<table class="leaderboard">' in html
-    assert "<thead><tr><th>A</th><th>B</th></tr></thead>" in html
-    assert "<tr><td>1</td><td>2</td></tr>" in html
-    assert "<tr><td>3</td><td>4</td></tr>" in html
-    assert "</tbody></table>" in html
+    assert "<thead><tr><th>A</th><th>B</th></tr></thead>" in compact
+    assert "<tr><td>1</td><td>2</td></tr>" in compact
+    assert "<tr><td>3</td><td>4</td></tr>" in compact
+    assert "</tbody></table>" in compact
     # The paragraph after the table still renders, so the table doesn't eat
     # the rest of the document.
     assert "<p>After.</p>" in html
@@ -2595,7 +2615,38 @@ def test_md_to_html_table_at_end_of_document_closes_cleanly() -> None:
     from scorecard_pipeline.render_site import _md_to_html
 
     html, _ = _md_to_html("# T\n\n| A |\n|---|\n| 1 |\n")
-    assert html.endswith("</tbody></table>")
+    assert html.endswith("</table>")
+
+
+def test_md_to_html_preserves_wrapped_paragraphs_and_list_continuations() -> None:
+    from scorecard_pipeline.render_site import _md_to_html
+
+    html, _ = _md_to_html(
+        "# T\n\nA paragraph that wraps\nonto another source line.\n\n"
+        "- A list item that wraps\n  onto its continuation.\n"
+    )
+
+    assert "<p>A paragraph that wraps\nonto another source line.</p>" in html
+    assert "<li>A list item that wraps\nonto its continuation.</li>" in html
+
+
+def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
+    from scorecard_pipeline.render_site import _render_fix_index
+
+    html = _render_fix_index(
+        [
+            {
+                "code": "expired_calendar",
+                "title": "Fix expired calendars",
+                "description": "Remove service periods that already ended.",
+                "category": "Service dates and freshness",
+            }
+        ]
+    )
+
+    assert "GTFS errors and fixes" in html
+    assert 'href="/fix/expired_calendar/"' in html
+    assert '"@type":"CollectionPage"' in html
 
 
 def test_render_crosswalk_page_links_the_authoritative_sources() -> None:

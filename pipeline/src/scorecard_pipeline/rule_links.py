@@ -102,6 +102,8 @@ def _v(notice: str, *, canonical: str | None = None) -> RuleLink:
 # there is no hand-kept mirror to sync.
 RULE_LINKS: dict[str, RuleLink] = {
     # --- Canonical gtfs-validator notices (code == notice) --------------------
+    "big_gap_in_service": _v("big_gap_in_service"),
+    "equal_shape_distance_same_coordinates": _v("equal_shape_distance_same_coordinates"),
     "expired_calendar": _v("expired_calendar"),
     "fast_travel_between_consecutive_stops": _v("fast_travel_between_consecutive_stops"),
     "fast_travel_between_far_stops": _v("fast_travel_between_far_stops"),

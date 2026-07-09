@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: service calendars that have already expired — GTFS Scorecard</title>
-  <meta name="description" content="Code: expired_calendar (MobilityData validator)">
+  <meta name="description" content="calendar.txt (and calendar_dates.txt) define the date ranges your service runs. Some of those ranges have an end date in the past, so they describe…">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/expired_calendar/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: service calendars that have already expired — GTFS Scorecard">
-  <meta property="og:description" content="Code: expired_calendar (MobilityData validator)">
+  <meta property="og:description" content="calendar.txt (and calendar_dates.txt) define the date ranges your service runs. Some of those ranges have an end date in the past, so they describe…">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/expired_calendar/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: service calendars that have already expired","description":"Code: expired_calendar (MobilityData validator)","url":"https://gtfsscorecard.org/fix/expired_calendar/","about":{"@type":"Thing","name":"GTFS validator notice expired_calendar"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: service calendars that have already expired","description":"calendar.txt (and calendar_dates.txt) define the date ranges your service runs. Some of those ranges have an end date in the past, so they describe\u2026","url":"https://gtfsscorecard.org/fix/expired_calendar/","about":{"@type":"Thing","name":"GTFS validator notice expired_calendar"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-02","mainEntityOfPage":"https://gtfsscorecard.org/fix/expired_calendar/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,39 +47,35 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/agencies/"><span itemprop="name">All agencies</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: expired_calendar</span><meta itemprop="position" content="3"></li></ol></nav>
-    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: expired_calendar</span><meta itemprop="position" content="3"></li></ol></nav>
+    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
     <article class="feed-details"><h1>Fix: service calendars that have already expired</h1>
 <p>Code: <code>expired_calendar</code> (MobilityData validator)</p>
 <h2 class="section-title">What this means</h2>
-<p><code>calendar.txt</code> (and <code>calendar_dates.txt</code>) define the date ranges your service</p>
-<p>runs. Some of those ranges have an end date in the past, so they describe</p>
-<p>service that has already stopped. They are leftovers the export carried forward.</p>
+<p><code>calendar.txt</code> (and <code>calendar_dates.txt</code>) define the date ranges your service
+runs. Some of those ranges have an end date in the past, so they describe
+service that has already stopped. They are leftovers the export carried forward.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>Expired calendars are dead weight. On their own they do not break a trip</p>
-<p>planner, but they are the early warning sign of the failure that does: a feed</p>
-<p>whose service quietly runs out. If the only calendars left are expiring, trip</p>
-<p>planners drop the agency on the day they lapse, and nobody is told first. Old</p>
-<p>calendars also make the feed harder for you and your vendor to read, because</p>
-<p>they hide which service is actually current.</p>
+<p>Expired calendars are dead weight. On their own they do not break a trip
+planner, but they are the early warning sign of the failure that does: a feed
+whose service quietly runs out. If the only calendars left are expiring, trip
+planners drop the agency on the day they lapse, and nobody is told first. Old
+calendars also make the feed harder for you and your vendor to read, because
+they hide which service is actually current.</p>
 <h2 class="section-title">How to fix it</h2>
 <ul>
-<li><strong>In your export settings</strong>, look for an option like &quot;only export active</li>
+<li><strong>In your export settings</strong>, look for an option like &quot;only export active
+service&quot;, &quot;trim past service periods&quot;, or a service-window date range. Setting
+it drops expired calendars on the next export.</li>
+<li><strong>At the source</strong>, retire the old service periods (last season's schedule, a
+past pick) so they stop being exported.</li>
+<li><strong>Check what remains is current.</strong> After trimming, confirm the feed still
+covers the next several weeks. Expired calendars often sit next to a calendar
+that is about to expire, which is the more urgent fix.</li>
 </ul>
-<p>  service&quot;, &quot;trim past service periods&quot;, or a service-window date range. Setting</p>
-<p>  it drops expired calendars on the next export.</p>
-<ul>
-<li><strong>At the source</strong>, retire the old service periods (last season&#x27;s schedule, a</li>
-</ul>
-<p>  past pick) so they stop being exported.</p>
-<ul>
-<li><strong>Check what remains is current.</strong> After trimming, confirm the feed still</li>
-</ul>
-<p>  covers the next several weeks. Expired calendars often sit next to a calendar</p>
-<p>  that is about to expire, which is the more urgent fix.</p>
 <h2 class="section-title">How long it usually takes</h2>
-<p>One setting in most export tools, applied on the next run. Confirming the</p>
-<p>remaining service window is current is a quick look.</p>
+<p>One setting in most export tools, applied on the next run. Confirming the
+remaining service window is current is a quick look.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p><code>expired_calendar</code> is a canonical MobilityData GTFS Validator notice, the same rule behind the statewide GTFS quality reports. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#expired_calendar-rule">Read the authoritative rule for expired_calendar in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
   </main>
@@ -98,6 +94,7 @@
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
