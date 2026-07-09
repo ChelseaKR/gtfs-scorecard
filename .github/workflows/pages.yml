@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}
+
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -21,6 +24,9 @@ jobs:
   # is asserted because that is the only category the >=95 claim covers (BL-12).
   lighthouse:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -40,13 +46,13 @@ jobs:
           cp -r web/. _site/
           cp -r data/artifacts _site/data/artifacts
       - name: Authenticate to AWS (read-only, artifacts bucket)
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
-          role-to-assume: ${{ secrets.PAGES_AWS_ROLE_ARN }}
+          role-to-assume: ${{ env.PAGES_AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
       - name: Sync published artifacts from S3
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         run: |
           # S3 as the artifact source of truth (docs/follow-ups.md), step 2:
           # the `cp -r data/artifacts` above already seeded _site with
@@ -87,13 +93,13 @@ jobs:
       # runs under the github-pages environment, which changes the OIDC
       # `sub` claim (infra/artifacts/github_oidc.tf, pages_read role).
       - name: Authenticate to AWS (read-only, artifacts bucket)
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
-          role-to-assume: ${{ secrets.PAGES_AWS_ROLE_ARN }}
+          role-to-assume: ${{ env.PAGES_AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
       - name: Sync published artifacts from S3
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         run: |
           # See the matching step in the lighthouse job above: additive sync
           # on top of the committed fallback, never fails the deploy.
