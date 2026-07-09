@@ -183,7 +183,7 @@ def run_agency(  # noqa: C901
         **routability.to_details(),
         "findings": [f.to_json() for f in routability.findings],
     }
-    # NTD certification readiness and agency_id alignment are US-only surfaces:
+    # NTD GTFS readiness and agency_id alignment are US-only surfaces:
     # they map the feed onto the FTA National Transit Database, which has no
     # meaning abroad. A non-US agency is scored on the same rubric but skips both,
     # so no hollow NTD box appears (ADR 0026). Absent keys mean the SPA and API
@@ -206,7 +206,7 @@ def run_agency(  # noqa: C901
         artifact["shapes_readiness"] = assess_shapes_readiness(
             shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
-        # NTD certification readiness (published / valid / current), precomputed so
+        # NTD GTFS readiness (published / valid / current), precomputed so
         # the web app and API render it without re-deriving the verdict.
         artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()
     # Corrected-feed offer: run the safe deterministic fixes over the feed we
@@ -1870,7 +1870,7 @@ def main(argv: list[str] | None = None) -> int:
         "--out", help="write the study here (default: data/artifacts/sensitivity.json)"
     )
 
-    ntd = sub.add_parser("ntd", help="NTD certification-readiness portfolio summary")
+    ntd = sub.add_parser("ntd", help="NTD GTFS-readiness portfolio summary")
     ntd.add_argument("--state", help="scope to one state (default: all agencies)")
     ntd.add_argument("--out", help="write the summary here instead of stdout")
 

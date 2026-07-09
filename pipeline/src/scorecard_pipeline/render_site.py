@@ -1957,7 +1957,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     </section>
     {outreach_html}
     <section aria-labelledby="brief-ntd-h">
-      <h2 id="brief-ntd-h">NTD certification readiness: {esc(ntd_label)}</h2>
+      <h2 id="brief-ntd-h">NTD GTFS readiness: {esc(ntd_label)}</h2>
       {ntd_html}
       {align_html}
     </section>
@@ -2527,7 +2527,7 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
     return (
         '<section aria-labelledby="ntd-h" class="feed-details">'
         '<h2 class="section-title" id="ntd-h">'
-        '<abbr title="National Transit Database">NTD</abbr> certification readiness '
+        '<abbr title="National Transit Database">NTD</abbr> GTFS readiness '
         f'<span class="ntd-status ntd-{readiness.status}">{esc(overall)}</span></h2>'
         f"{note_html}"
         f'<p class="page-lede">{esc(readiness.summary)}</p>'
@@ -2591,7 +2591,7 @@ def _rt_health_section(agency_id: str) -> str:
 
 
 def _rt_accuracy_section(artifact: dict[str, Any]) -> str:
-    """Prediction accuracy from the last full realtime sample: how far arrival
+    """Live predictions versus schedule from the last full realtime sample: how far arrival
     predictions ran from the schedule, and how many vehicle positions sat on or
     near the route. Both are already computed (rt_drift.py) and recorded in the
     realtime category detail, but were not shown; this surfaces them. Returns
@@ -2630,7 +2630,7 @@ def _rt_accuracy_section(artifact: dict[str, Any]) -> str:
         return ""
     return (
         '<section aria-labelledby="rta-h" class="feed-details">'
-        '<h2 class="section-title" id="rta-h">Prediction accuracy</h2>'
+        '<h2 class="section-title" id="rta-h">Live predictions vs schedule</h2>'
         f'<p class="page-lede">{" ".join(parts)}</p>'
         '<p class="fineprint">From the last full realtime sample: how far live arrival predictions '
         "sat from the schedule, and whether vehicle positions fell on the route. These feed the "
@@ -4441,7 +4441,7 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
     areas = [
         (
             "/ntd/",
-            "NTD certification readiness",
+            "NTD GTFS readiness",
             f"{pct_ready}% of tracked feeds look ready to certify",
             "Which feeds are published, valid, and current against the FTA "
             "requirement, nationally and by state.",
@@ -4486,7 +4486,7 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
     return _page(
         title="Focus areas — GTFS Scorecard",
         description=(
-            "National lenses on US transit data: NTD certification readiness, realtime "
+            "National lenses on US transit data: NTD GTFS readiness, realtime "
             "reliability, the equity overlay, and what feeds publish."
         ),
         canonical=f"{BASE_URL}/focus/",
@@ -5485,7 +5485,7 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
 def _render_ntd_page(
     payload: dict[str, Any], histories: dict[str, list[dict[str, Any]]] | None = None
 ) -> str:
-    """The national NTD certification-readiness view, for an FTA or state-DOT
+    """The national NTD GTFS-readiness view, for an FTA or state-DOT
     program lead. Reads the same ntd.json the pipeline publishes (the published,
     valid, and current pillars rolled up across every tracked feed) and shows the
     headline share ready to certify plus a per-state breakdown, so a liaison can
@@ -5702,7 +5702,7 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     <section class="feed-details"><h2 class="section-title">Check whether your feed has it</h2>
     <p>The shapes.txt check already runs on every US feed this site tracks: open
     <a href="/agencies/">your agency's scorecard page</a> and look for &ldquo;shapes.txt
-    covers your trips&rdquo; in the NTD certification readiness section. If your agency is
+    covers your trips&rdquo; in the NTD GTFS readiness section. If your agency is
     not tracked here, <a href="/try.html">paste your feed's URL</a> to grade it in about a
     minute, or run <a href="/check/">the pre-publish check</a> on an export you have not
     published yet; that one reads the zip in your browser and uploads nothing.</p></section>
@@ -6768,7 +6768,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("dataset.json", json.dumps(dataset, indent=2, sort_keys=True) + "\n")
     write("dataset.csv", to_csv(dataset))
 
-    # NTD certification-readiness portfolio (national + per state), so a program
+    # NTD GTFS-readiness portfolio (national + per state), so a program
     # lead can see "% ready to certify" without opening each scorecard.
     from .ntd import one_fix_from_ready, portfolio_summary, shapes_portfolio_summary
 

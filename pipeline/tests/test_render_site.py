@@ -25,11 +25,35 @@ from scorecard_pipeline.render_site import (
     _render_map_page,
     _rollup_percentile_context,
     _route_map_section,
+    _rt_accuracy_section,
     _standards_section,
     _vendor_request,
     _vendor_section,
     compute_changes,
 )
+
+
+def test_rt_schedule_deviation_is_not_labeled_prediction_accuracy() -> None:
+    html = _rt_accuracy_section(
+        {
+            "categories": {
+                "realtime": {
+                    "status": "measured",
+                    "details": {
+                        "drift": {
+                            "median_seconds": 17,
+                            "p90_abs_seconds": 166,
+                            "on_time_share_pct": 93.6,
+                        },
+                        "vehicles_on_route_pct": 100.0,
+                    },
+                }
+            }
+        }
+    )
+
+    assert "Live predictions vs schedule" in html
+    assert "Prediction accuracy" not in html
 
 
 def _artifact_with_route_map(**route_map: object) -> dict[str, object]:
@@ -1408,8 +1432,9 @@ def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
     }
     html = _ntd_section(art)
     # The NTD abbreviation is wrapped for 3.1.4, so the heading reads
-    # "<abbr ...>NTD</abbr> certification readiness".
-    assert "certification readiness" in html
+    # "<abbr ...>NTD</abbr> GTFS readiness" without implying certification.
+    assert "GTFS readiness" in html
+    assert "certification readiness" not in html
     assert ">NTD</abbr>" in html
     assert "Published" in html and "Valid" in html and "Current" in html
     assert "Ready" in html  # status is conveyed in text, not color alone

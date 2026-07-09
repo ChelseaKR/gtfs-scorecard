@@ -150,7 +150,7 @@ def get_scorecard(fetch: Fetch, agency_id: str) -> dict[str, Any]:
 
 
 def national_stats(fetch: Fetch) -> dict[str, Any]:
-    """National rollups: quality stats plus NTD certification readiness."""
+    """National rollups: quality stats plus NTD GTFS readiness."""
     return {
         "stats": fetch(f"{_base_url()}/api/v1/stats.json"),
         "ntd_readiness": fetch(f"{_base_url()}/ntd.json"),
@@ -180,7 +180,7 @@ TOOLS: list[dict[str, Any]] = [
         "description": (
             "An agency's latest scorecard: overall grade, category scores and "
             "plain-language summaries, every finding with its fix and effort, "
-            "top fixes, and NTD certification readiness."
+            "top fixes, and NTD GTFS readiness."
         ),
         "inputSchema": {
             "type": "object",
@@ -194,7 +194,7 @@ TOOLS: list[dict[str, Any]] = [
         "name": "national_stats",
         "description": (
             "National rollups: how many feeds are tracked, grade distribution, "
-            "and NTD certification readiness nationally and by state."
+            "and NTD GTFS readiness nationally and by state."
         ),
         "inputSchema": {"type": "object", "properties": {}},
     },
