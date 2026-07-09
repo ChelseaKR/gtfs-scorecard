@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 15.0,
@@ -152,7 +156,7 @@
           "owner": "",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
           "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
@@ -253,6 +257,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -262,7 +278,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 69 days.",
+        "detail": "Service data covers the next 57 days.",
         "key": "current",
         "met": true
       },
@@ -282,7 +298,13 @@
     "size_bytes": 1018576,
     "static_url": "https://data.cabq.gov/transit/gtfs/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.cabq.gov/transit/gtfs/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -106.75478,
@@ -295,7 +317,7 @@
     "stop_count": 1758
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1"
     ],
@@ -314,7 +336,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 69 days.",
+        "detail": "Service data covers the next 57 days.",
         "key": "current",
         "status": "ready"
       }
@@ -330,6 +352,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 1,
       "effort": "A per-route color setting in your scheduling software.",
@@ -341,6 +364,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 1701,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -352,11 +376,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1758,
     "findings": [],
@@ -364,8 +383,266 @@
     "single_stop_trips": 0,
     "trips_total": 2338
   },
+  "route_map": {
+    "drawn_route_count": 22,
+    "has_shapes": true,
+    "path": "data/artifacts/abq-ride/geometry.geojson",
+    "route_count": 22,
+    "routes": [
+      {
+        "color": "E17F38",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4300",
+        "label": "1",
+        "long": "Juan Tabo",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C30000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4301",
+        "label": "10",
+        "long": "North 4th St.",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "420080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4305",
+        "label": "140",
+        "long": "San Mateo / CNM Work Force",
+        "short": "140",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E0080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4306",
+        "label": "141",
+        "long": "San Mateo",
+        "short": "141",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8900",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4307",
+        "label": "155",
+        "long": "Coors",
+        "short": "155",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008047",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4308",
+        "label": "157",
+        "long": "Cottonwood/Montano/UTC",
+        "short": "157",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C01D8C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4309",
+        "label": "16",
+        "long": "Broadway/University/Gibson",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4311",
+        "label": "198",
+        "long": "98th / Dennis Chavez",
+        "short": "198",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC5D2E",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4312",
+        "label": "2",
+        "long": "Eubank-Ventura",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "852300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "4317",
+        "label": "31",
+        "long": "Wyoming",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF4E21",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4321",
+        "label": "5",
+        "long": "Montgomery/Carlisle",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "71220F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "4322",
+        "label": "50",
+        "long": "Airport/Downtown",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2390CF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4324",
+        "label": "53",
+        "long": "Isleta",
+        "short": "53",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006097",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4325",
+        "label": "54",
+        "long": "Bridge/Westgate",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00DEC8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4328",
+        "label": "66",
+        "long": "Central Avenue",
+        "short": "66",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4330",
+        "label": "766",
+        "long": "ART Red Line",
+        "short": "766",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4331",
+        "label": "777",
+        "long": "ART Green Line",
+        "short": "777",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7B097B",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4333",
+        "label": "8",
+        "long": "Menaul",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6600FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4338",
+        "label": "97",
+        "long": "Zuni Express",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4340",
+        "label": "11",
+        "long": "Lomas",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4607",
+        "label": "790",
+        "long": "Coors/University",
+        "short": "790",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "572820",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "4926",
+        "label": "52",
+        "long": "South Broadway-Rio Bravo",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1758,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 2338 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2338,
+    "trips_with_shape": 2338
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {

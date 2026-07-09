@@ -8,7 +8,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 4,
+      "agencies": 5,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -33,7 +33,7 @@
     "stale": 3,
     "total": 4
   },
-  "generated_at": "2026-07-09T01:28:45+00:00",
+  "generated_at": "2026-07-09T05:27:32+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 1,
@@ -98,17 +98,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "greater-portland-metro-bus-2642",
       "name": "Greater Portland Metro Bus",
       "needs_attention": true,
-      "score": 51.1,
+      "score": 51.4,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,

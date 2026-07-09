@@ -201,12 +201,12 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 30,
+        "days_until_expiry": 31,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-08-08",
+        "last_service_date": "2026-08-09",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -224,9 +224,9 @@
         }
       ],
       "name": "freshness",
-      "score": 35.0,
+      "score": 36.7,
       "status": "measured",
-      "summary": "Service data covers the next 30 days.",
+      "summary": "Service data covers the next 31 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -273,7 +273,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "841e8fd324148cc0a8e284294a7dc514030c971de5056222c101d5485138d44b",
+    "sha256": "fd81e7f8c9b62f988598dc33e669acd783dd0e58fb862af9e0a757394a97ded5",
     "size_bytes": 247763,
     "static_url": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip"
   },
@@ -283,7 +283,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.82154,
@@ -325,12 +325,13 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 58.2,
-    "margin_to_next_band": 1.8,
-    "score": 58.2
+    "margin_to_lower_band": 58.6,
+    "margin_to_next_band": 1.4,
+    "score": 58.6
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 4,
       "effort": "A per-route color setting in your scheduling software.",
@@ -342,6 +343,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 474,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -353,6 +355,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -364,11 +367,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 295,
     "findings": [
@@ -576,16 +574,16 @@
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

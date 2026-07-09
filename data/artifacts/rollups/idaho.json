@@ -23,7 +23,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-09T01:28:45+00:00",
+  "generated_at": "2026-07-09T05:27:32+00:00",
   "grade_distribution": {
     "A": 1,
     "C": 1,
@@ -60,13 +60,13 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": null,
+      "attention_reason": "Elevated behavioral lapse risk",
       "days_until_expiry": 335,
       "expiry_status": "current",
       "grade": "C",
       "id": "valley-regional-transit",
       "name": "Valley Regional Transit",
-      "needs_attention": false,
+      "needs_attention": true,
       "score": 78.6,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
@@ -87,7 +87,7 @@
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     }
   ],
-  "needs_attention": 2,
+  "needs_attention": 3,
   "rollup": {
     "id": "idaho",
     "name": "Idaho agencies"

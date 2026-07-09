@@ -44,52 +44,39 @@
         "total": 3
       },
       {
-        "code": "feed_expiration_date30_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260709",
-            "feedEndDate": "20260807",
-            "suggestedExpirationDate": "20260808"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 583,
+            "daysBeforeFeedStart": 584,
             "serviceId": "61520.200442",
             "serviceWindowEndDate": "2026-01-27",
             "serviceWindowStartDate": "2024-12-01"
           },
           {
-            "daysAfterFeedEnd": 141,
-            "daysBeforeFeedStart": 395,
+            "daysAfterFeedEnd": 140,
+            "daysBeforeFeedStart": 396,
             "serviceId": "61466.165393",
             "serviceWindowEndDate": "2026-12-26",
             "serviceWindowStartDate": "2025-06-07"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 204,
+            "daysBeforeFeedStart": 205,
             "serviceId": "61520.198852",
             "serviceWindowEndDate": "2025-12-15",
             "serviceWindowStartDate": "2025-12-15"
           },
           {
-            "daysAfterFeedEnd": 511,
-            "daysBeforeFeedStart": 552,
+            "daysAfterFeedEnd": 510,
+            "daysBeforeFeedStart": 553,
             "serviceId": "66969.184750",
             "serviceWindowEndDate": "2027-12-31",
             "serviceWindowStartDate": "2025-01-01"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 583,
+            "daysBeforeFeedStart": 584,
             "serviceId": "66969.200484",
             "serviceWindowEndDate": "2024-12-01",
             "serviceWindowStartDate": "2024-12-01"
@@ -114,6 +101,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "b504d9471d24a7ee897a1f1b4b6101b0e230fc6a4ef2488997af521a3d615f15",
+  "sha256": "4f7e279dcd516b4f1621775fcd8a61a214089e8abc3be5b5e72949279f944ac1",
   "validator_version": "8.0.1"
 }

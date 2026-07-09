@@ -262,7 +262,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "a0ef1a6eb864449a0573ca7f876a780df66ff98d84239479e14bf1c53b012f0f",
+    "sha256": "6825901a017a3a1bbbe887817712ae4206344c635a2fc2afc78b81af0e198ecf",
     "size_bytes": 32708,
     "static_url": "https://passio3.com/ArcadiaCity/passioTransit/gtfs/google_transit.zip"
   },
@@ -320,6 +320,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 52,
       "effort": "A short text field per affected stop; start with the busiest.",

@@ -117,19 +117,6 @@
         "total": 1
       },
       {
-        "code": "feed_expiration_date30_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260709",
-            "feedEndDate": "20260807",
-            "suggestedExpirationDate": "20260808"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
@@ -172,36 +159,36 @@
         "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
-            "daysAfterFeedEnd": 506,
-            "daysBeforeFeedStart": 548,
+            "daysAfterFeedEnd": 505,
+            "daysBeforeFeedStart": 549,
             "serviceId": "73962.218808",
             "serviceWindowEndDate": "2027-12-26",
             "serviceWindowStartDate": "2025-01-05"
           },
           {
-            "daysAfterFeedEnd": 511,
-            "daysBeforeFeedStart": 552,
+            "daysAfterFeedEnd": 510,
+            "daysBeforeFeedStart": 553,
             "serviceId": "73962.218805",
             "serviceWindowEndDate": "2027-12-31",
             "serviceWindowStartDate": "2025-01-01"
           },
           {
-            "daysAfterFeedEnd": 511,
-            "daysBeforeFeedStart": 550,
+            "daysAfterFeedEnd": 510,
+            "daysBeforeFeedStart": 551,
             "serviceId": "70364.199502",
             "serviceWindowEndDate": "2027-12-31",
             "serviceWindowStartDate": "2025-01-03"
           },
           {
-            "daysAfterFeedEnd": 505,
-            "daysBeforeFeedStart": 549,
+            "daysAfterFeedEnd": 504,
+            "daysBeforeFeedStart": 550,
             "serviceId": "70364.199505",
             "serviceWindowEndDate": "2027-12-25",
             "serviceWindowStartDate": "2025-01-04"
           },
           {
-            "daysAfterFeedEnd": 511,
-            "daysBeforeFeedStart": 550,
+            "daysAfterFeedEnd": 510,
+            "daysBeforeFeedStart": 551,
             "serviceId": "70378.199571",
             "serviceWindowEndDate": "2027-12-31",
             "serviceWindowStartDate": "2025-01-03"
@@ -213,6 +200,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "7248563b21e130b20d3eca0a0699895ece73a33e8e8e3e99ba4cb7b3b8befd27",
+  "sha256": "abe014fcb75f1b256361dbe9570235958d6446c82bcf6a0848b957c0c854f426",
   "validator_version": "8.0.1"
 }

@@ -6,6 +6,25 @@
         "sample_notices": [
           {
             "match1": [
+              37.27004035392593,
+              -107.88123647436782
+            ],
+            "match2": [
+              37.27275226337001,
+              -107.88311056154826
+            ],
+            "shapeId": "05WMT",
+            "stopId1": "201",
+            "stopId2": "100",
+            "stopName1": "College Dr. & Main Ave.",
+            "stopName2": "Transit Center",
+            "stopTimeCsvRowNumber1": 2427,
+            "stopTimeCsvRowNumber2": 2426,
+            "tripCsvRowNumber": 143,
+            "tripId": "WM1"
+          },
+          {
+            "match1": [
               37.27004733007956,
               -107.88123672727929
             ],
@@ -22,25 +41,6 @@
             "stopTimeCsvRowNumber2": 1278,
             "tripCsvRowNumber": 87,
             "tripId": "FTL1"
-          },
-          {
-            "match1": [
-              37.27004035392593,
-              -107.88123647436782
-            ],
-            "match2": [
-              37.27275226337001,
-              -107.88311056154826
-            ],
-            "shapeId": "05WM",
-            "stopId1": "201",
-            "stopId2": "100",
-            "stopName1": "College Dr. & Main Ave.",
-            "stopName2": "Transit Center",
-            "stopTimeCsvRowNumber1": 1895,
-            "stopTimeCsvRowNumber2": 1894,
-            "tripCsvRowNumber": 115,
-            "tripId": "WM1"
           }
         ],
         "severity": "WARNING",
@@ -51,18 +51,6 @@
         "sample_notices": [
           {
             "csvRowNumber": 2
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
-        "code": "missing_recommended_field",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "fieldName": "feed_version",
-            "filename": "feed_info.txt"
           }
         ],
         "severity": "WARNING",
@@ -130,6 +118,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "492fc2a5a6dcb2931ac694b268faaaab9b0d0b59d073abc05530fb481d4591e5",
+  "sha256": "f1368548ab5603187703a7a8a0de116266b5ea61cdac6023024c2bd9dae8c62f",
   "validator_version": "8.0.1"
 }

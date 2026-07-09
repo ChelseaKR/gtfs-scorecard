@@ -1,9 +1,9 @@
 {
   "agency_count": 36,
-  "average_score": 52.1,
+  "average_score": 52.2,
   "common_fixes": [
     {
-      "agencies": 27,
+      "agencies": 28,
       "code": "scorecard_wheelchair_boarding_unknown",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -13,7 +13,7 @@
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 12,
+      "agencies": 13,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
@@ -29,18 +29,13 @@
     },
     {
       "agencies": 4,
-      "code": "mixed_case_recommended_field",
-      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
-    },
-    {
-      "agencies": 3,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "agencies": 3,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
+    },
+    {
+      "agencies": 4,
+      "code": "mixed_case_recommended_field",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
     },
     {
       "agencies": 3,
@@ -68,12 +63,12 @@
     "stale": 18,
     "total": 21
   },
-  "generated_at": "2026-07-09T01:28:45+00:00",
+  "generated_at": "2026-07-09T05:27:32+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 2,
-    "C": 4,
-    "D": 4,
+    "C": 5,
+    "D": 3,
     "F": 25
   },
   "members": [
@@ -331,6 +326,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Score fell 6.3 points since 2026-07-08",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "frederick-county-transit-2432",
+      "name": "Frederick County TransIT",
+      "needs_attention": true,
+      "score": 50.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 58 day(s)",
       "days_until_expiry": 58,
       "expiry_status": "current",
@@ -359,31 +368,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
-      "needs_attention": true,
-      "score": 56.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "cecil-transit-3034",
       "name": "Cecil Transit",
       "needs_attention": true,
-      "score": 57.0,
+      "score": 58.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "annual_trips": null,
@@ -415,20 +410,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "towson-loop",
-      "name": "Towson Loop",
-      "needs_attention": true,
-      "score": 64.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 44 day(s)",
       "days_until_expiry": 44,
       "expiry_status": "current",
@@ -437,6 +418,20 @@
       "name": "Local Bus",
       "needs_attention": true,
       "score": 67.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "C",
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "needs_attention": true,
+      "score": 70.9,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -595,5 +590,5 @@
     "ready": 8,
     "total": 36
   },
-  "state_percentile": 24
+  "state_percentile": 26
 }

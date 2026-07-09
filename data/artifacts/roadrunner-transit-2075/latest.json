@@ -287,7 +287,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d6306b51ff289b19e4b2ea88e6c29745e980734fed3c0ce8aa03af03e416343b",
+    "sha256": "0753ca62a4c4bb02723555eec2f8da7326d984d28259800d90b3174f227e9837",
     "size_bytes": 127038,
     "static_url": "https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip"
   },
@@ -345,6 +345,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 2,
       "effort": "A per-route color setting in your scheduling software.",
@@ -356,6 +357,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 272,
       "effort": "A short text field per affected stop; start with the busiest.",

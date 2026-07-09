@@ -143,7 +143,7 @@
     "stale": 44,
     "total": 65
   },
-  "generated_at": "2026-07-09T01:28:45+00:00",
+  "generated_at": "2026-07-09T05:27:32+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 31,
@@ -1204,6 +1204,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Elevated behavioral lapse risk",
+      "days_until_expiry": 339,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "thousand-oaks-transit",
+      "name": "Thousand Oaks Transit",
+      "needs_attention": true,
+      "score": 72.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data expires in 23 day(s)",
       "days_until_expiry": 23,
       "expiry_status": "expiring_soon",
@@ -1495,20 +1509,6 @@
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 339,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "thousand-oaks-transit",
-      "name": "Thousand Oaks Transit",
-      "needs_attention": false,
-      "score": 72.7,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -2043,7 +2043,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
-  "needs_attention": 91,
+  "needs_attention": 92,
   "rollup": {
     "id": "california",
     "name": "California agencies"

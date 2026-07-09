@@ -40,7 +40,6 @@ mountain-express,Flex,D,60.1,2026-07-09,expiring_soon,23,yes,Service data expire
 mountain-family-center,Flex,D,60.1,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
 omnibus,Flex,D,60.1,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
 all-points-transit-2039,Flex v2 included,D,60.2,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
-via-mobility-2395,Via Mobility,D,61.1,2026-07-09,expiring_soon,29,yes,Service data expires in 29 day(s),Re-export with a validity window that reaches at least 60 days out.,ready
 all-points-transit,All Points Transit,D,62.0,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
 all-points-transit-212,All Points Transit,D,62.0,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
 routt-county-council-on-aging-rccoca-transportation,Flex,D,62.1,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
@@ -52,6 +51,7 @@ grand-valley-transit-2288,Flex,D,64.8,2026-07-09,expiring_soon,23,yes,Service da
 la-junta-transit,Flex,D,64.8,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
 lakewood-rides,Flex,D,64.8,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
 mountain-metro-transit,Flex,D,64.8,2026-07-09,expiring_soon,23,yes,Service data expires in 23 day(s),Re-export with a validity window that reaches at least 60 days out.,
+via-mobility-2395,Via Mobility,D,65.0,2026-07-09,expiring_soon,29,yes,Service data expires in 29 day(s),Re-export with a validity window that reaches at least 60 days out.,ready
 el-paso-fountain-valley-senior-citizens-program-inc,Flex v2 included,C,73.0,2026-07-09,current,54,yes,Service data expires in 54 day(s),Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 university-of-colorado-boulder,University of Colorado Boulder,C,73.3,2026-07-09,current,42,yes,Service data expires in 42 day(s),"Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
 university-of-colorado-boulder-181,University of Colorado Boulder,C,73.3,2026-07-09,current,42,yes,Service data expires in 42 day(s),"Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
@@ -119,7 +119,7 @@ envida-455,Envida,B,84.0,2026-07-09,current,145,no,,Set wheelchair_boarding to 1
 steamboat-springs-transit,Flex v2 included,B,84.0,2026-07-09,current,141,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 el-dorado-transit,El Dorado Transit,B,84.1,2026-07-09,current,145,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 roaring-fork-transportation-authority-2278,Roaring Fork Transportation Authority,B,84.6,2026-07-09,current,73,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
-durango-transit,Durango Transit,B,84.9,2026-07-09,current,540,no,,"Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+durango-transit,Durango Transit,B,86.6,2026-07-09,current,540,no,,"Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",ready
 teller-senior-coalition-transit-tsc-transit,Teller Senior Coalition Transit (TSC Transit),B,86.6,2026-07-09,current,176,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 teller-senior-coalition-transit-tsc-transit-827,Teller Senior Coalition Transit (TSC Transit),B,86.6,2026-07-09,current,176,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 avon-transit-2433,Avon Transit,B,88.3,2026-07-09,current,139,no,,Populate trip_headsign to match what the bus displays.,

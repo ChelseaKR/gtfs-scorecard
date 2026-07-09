@@ -242,39 +242,18 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 44.4,
-        "covered_trips": 4,
-        "drift": {
-          "median_seconds": -521,
-          "observations": 33,
-          "on_time_share_pct": 9.1,
-          "p90_abs_seconds": 1145
-        },
+        "coverage_pct": null,
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 9,
-        "vehicles_checked": 13,
-        "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 2
+        "scheduled_trips_in_window": 0,
+        "worst_lag_seconds": 4
       },
-      "findings": [
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 5,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 19.4,
-          "severity": "WARNING",
-          "what": "5 of 9 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
-        }
-      ],
+      "findings": [],
       "name": "realtime",
-      "score": 80.6,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 44.4% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 521s ahead of schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -316,7 +295,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "eb5ae50e79a9773cfe4cb71932f4bb2c3c40797c8d6be79d977946af803850bd",
+    "sha256": "e05f871cd081c8286e1c83d203f3b6fae8e7242912dd36e2d5215e51ac03d08d",
     "size_bytes": 217546,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },
@@ -368,12 +347,13 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 1.1,
-    "margin_to_next_band": 8.9,
-    "score": 61.1
+    "margin_to_lower_band": 5.0,
+    "margin_to_next_band": 5.0,
+    "score": 65.0
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 4,
       "effort": "A per-route color setting in your scheduling software.",
@@ -385,6 +365,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 68,
       "effort": "A short text field per affected stop; start with the busiest.",

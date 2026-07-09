@@ -18,6 +18,10 @@
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
@@ -53,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 107,
-        "trips": 168,
+        "trips": 196,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 94.4,
         "wheelchair_marked_accessible_pct": 93.5,
@@ -102,11 +106,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 7,
+        "distinct_codes": 6,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 4,
-          "WARNING": 5
+          "WARNING": 4
         },
         "validator_version": "8.0.1"
       },
@@ -132,17 +136,6 @@
           "severity": "WARNING",
           "what": "Missing feed contact email and url (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "missing_recommended_field",
-          "count": 1,
-          "effort": "A field at a time; not urgent.",
-          "fix": "Review the flagged fields and fill in the ones your riders would use.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some files are missing recommended (not required) fields.",
-          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
         },
         {
           "code": "mixed_case_recommended_field",
@@ -190,9 +183,9 @@
         }
       ],
       "name": "correctness",
-      "score": 82.5,
+      "score": 86.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 7 kinds of issue across 9 instances (0 error, 5 warning, 4 informational).",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 8 instances (0 error, 4 warning, 4 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -200,7 +193,7 @@
         "days_until_expiry": 540,
         "feed_end_date": "2030-01-31",
         "feed_start_date": "2022-03-03",
-        "feed_version": null,
+        "feed_version": "2026.07 Route3-5 Split",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -220,6 +213,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": true,
     "criteria": [
@@ -229,7 +234,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 552 days.",
+        "detail": "Service data covers the next 540 days.",
         "key": "current",
         "met": true
       },
@@ -245,11 +250,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "492fc2a5a6dcb2931ac694b268faaaab9b0d0b59d073abc05530fb481d4591e5",
-    "size_bytes": 42417,
+    "sha256": "f1368548ab5603187703a7a8a0de116266b5ea61cdac6023024c2bd9dae8c62f",
+    "size_bytes": 46358,
     "static_url": "https://durangogov.org/DocumentCenter/View/17688/Durango-Transit-GTFS-Data"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://durangogov.org/DocumentCenter/View/17688/Durango-Transit-GTFS-Data",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -107.91359,
@@ -262,7 +273,7 @@
     "stop_count": 107
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "DRT"
     ],
@@ -281,22 +292,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 552 days.",
+        "detail": "Service data covers the next 540 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 4.9,
-    "margin_to_next_band": 5.1,
-    "score": 84.9
+    "margin_to_lower_band": 6.6,
+    "margin_to_next_band": 3.4,
+    "score": 86.6
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 57,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -308,20 +320,97 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 107,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 168
+    "trips_total": 196
+  },
+  "route_map": {
+    "drawn_route_count": 6,
+    "has_shapes": true,
+    "path": "data/artifacts/durango-transit/geometry.geojson",
+    "route_count": 6,
+    "routes": [
+      {
+        "color": "57E93A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "107427",
+        "label": "Route 4",
+        "long": "Crestview - 160 W",
+        "short": "Route 4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "290CAD",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "FTL",
+        "label": "Route 2",
+        "long": "Fort Lewis College",
+        "short": "Route 2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "290CAD",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "FTLCS",
+        "label": "FLC XP",
+        "long": "Fort Lewis Express",
+        "short": "FLC XP",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0054A6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "MTS",
+        "label": "Route 5",
+        "long": "Mercy / Three Springs",
+        "short": "Route 5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E91E15",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "TR",
+        "label": "Route 1",
+        "long": "Main Ave Trolley",
+        "short": "Route 1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF6113",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "WM",
+        "label": "Route 3",
+        "long": "Walmart",
+        "short": "Route 3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 107,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 196 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 196,
+    "trips_with_shape": 196
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {

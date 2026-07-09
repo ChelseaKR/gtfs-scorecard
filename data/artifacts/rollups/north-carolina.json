@@ -1,6 +1,6 @@
 {
   "agency_count": 36,
-  "average_score": 55.3,
+  "average_score": 55.4,
   "common_fixes": [
     {
       "agencies": 34,
@@ -13,14 +13,9 @@
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "agencies": 21,
+      "agencies": 22,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
-    },
-    {
-      "agencies": 6,
-      "code": "scorecard_no_fare_data",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
     {
       "agencies": 6,
@@ -28,14 +23,14 @@
       "fix": "Review the rule documentation for 'stop_time_timepoint_without_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 4,
-      "code": "missing_required_column",
-      "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+      "agencies": 5,
+      "code": "scorecard_no_fare_data",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
     {
       "agencies": 4,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
+      "code": "missing_required_column",
+      "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "agencies": 2,
@@ -56,6 +51,11 @@
       "agencies": 2,
       "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
       "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "agencies": 2,
+      "code": "scorecard_feed_expiring_soon",
+      "fix": "Re-export with a validity window that reaches at least 60 days out."
     }
   ],
   "expired": {
@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 24
   },
-  "generated_at": "2026-07-09T01:28:45+00:00",
+  "generated_at": "2026-07-09T05:27:32+00:00",
   "grade_distribution": {
     "B": 4,
     "C": 5,
@@ -409,31 +409,31 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "D",
       "id": "north-carolina-state-university-ncsu-2245",
       "name": "North Carolina State University (NCSU)",
       "needs_attention": true,
-      "score": 62.4,
+      "score": 64.6,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "D",
       "id": "concord-kannapolis-area-transit-rider-transit-2244",
       "name": "Concord Kannapolis Area Transit (Rider Transit)",
       "needs_attention": true,
-      "score": 63.2,
+      "score": 65.4,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -487,7 +487,7 @@
       "name": "Charlotte Area Transit System (CATS)",
       "needs_attention": false,
       "score": 69.7,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -584,9 +584,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 27,
+    "not_measured": 26,
     "not_ready": 0,
-    "ready": 9,
+    "ready": 10,
     "total": 36
   },
   "state_percentile": 48
