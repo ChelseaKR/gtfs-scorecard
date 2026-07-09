@@ -1,6 +1,6 @@
 {
   "agency_count": 7,
-  "average_score": 52.6,
+  "average_score": 53.0,
   "common_fixes": [
     {
       "agencies": 5,
@@ -33,9 +33,9 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-09T09:08:55+00:00",
+  "generated_at": "2026-07-09T12:34:01+00:00",
   "grade_distribution": {
-    "C": 1,
+    "B": 1,
     "D": 2,
     "F": 4
   },
@@ -126,20 +126,20 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 51 day(s)",
-      "days_until_expiry": 51,
+      "attention_reason": null,
+      "days_until_expiry": 184,
       "expiry_status": "current",
-      "grade": "C",
+      "grade": "B",
       "id": "the-comet-2209",
       "name": "The Comet",
-      "needs_attention": true,
-      "score": 78.2,
-      "shapes_status": null,
+      "needs_attention": false,
+      "score": 81.1,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     }
   ],
-  "needs_attention": 7,
+  "needs_attention": 6,
   "rollup": {
     "id": "south-carolina",
     "name": "South Carolina agencies"
@@ -147,10 +147,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 7,
+    "not_measured": 6,
     "not_ready": 0,
-    "ready": 0,
+    "ready": 1,
     "total": 7
   },
-  "state_percentile": 28
+  "state_percentile": 33
 }

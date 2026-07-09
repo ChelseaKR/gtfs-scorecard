@@ -7,31 +7,31 @@
           {
             "csvRowNumber": 2,
             "routeId": "113",
-            "tripId": "11390613260"
+            "tripId": "11390709260"
           },
           {
             "csvRowNumber": 3,
             "routeId": "113",
-            "tripId": "11390613261"
+            "tripId": "11390709261"
           },
           {
             "csvRowNumber": 4,
             "routeId": "113",
-            "tripId": "11390613262"
+            "tripId": "11390709262"
           },
           {
             "csvRowNumber": 5,
             "routeId": "113",
-            "tripId": "11390613263"
+            "tripId": "11390709263"
           },
           {
             "csvRowNumber": 6,
             "routeId": "113",
-            "tripId": "11390613264"
+            "tripId": "11390709264"
           }
         ],
         "severity": "WARNING",
-        "total": 27709
+        "total": 28840
       },
       {
         "code": "stop_too_far_from_shape",
@@ -45,9 +45,9 @@
             "shapeId": "514",
             "stopId": "5",
             "stopName": "Clinton",
-            "stopTimeCsvRowNumber": 628,
-            "tripCsvRowNumber": 315,
-            "tripId": "51470613260"
+            "stopTimeCsvRowNumber": 648,
+            "tripCsvRowNumber": 325,
+            "tripId": "51470709260"
           },
           {
             "geoDistanceToShape": 560.9125608169305,
@@ -58,9 +58,9 @@
             "shapeId": "514",
             "stopId": "14",
             "stopName": "Mukilteo",
-            "stopTimeCsvRowNumber": 629,
-            "tripCsvRowNumber": 315,
-            "tripId": "51470613260"
+            "stopTimeCsvRowNumber": 649,
+            "tripCsvRowNumber": 325,
+            "tripId": "51470709260"
           },
           {
             "geoDistanceToShape": 194.08602602977447,
@@ -71,9 +71,9 @@
             "shapeId": "2220",
             "stopId": "22",
             "stopName": "Vashon Island",
-            "stopTimeCsvRowNumber": 982,
-            "tripCsvRowNumber": 492,
-            "tripId": "2220150613260"
+            "stopTimeCsvRowNumber": 1012,
+            "tripCsvRowNumber": 507,
+            "tripId": "2220150709260"
           },
           {
             "geoDistanceToShape": 163.7530185776068,
@@ -84,9 +84,9 @@
             "shapeId": "2220",
             "stopId": "20",
             "stopName": "Southworth",
-            "stopTimeCsvRowNumber": 983,
-            "tripCsvRowNumber": 492,
-            "tripId": "2220150613260"
+            "stopTimeCsvRowNumber": 1013,
+            "tripCsvRowNumber": 507,
+            "tripId": "2220150709260"
           },
           {
             "geoDistanceToShape": 163.69294304891596,
@@ -97,40 +97,13 @@
             "shapeId": "2022",
             "stopId": "20",
             "stopName": "Southworth",
-            "stopTimeCsvRowNumber": 1026,
-            "tripCsvRowNumber": 514,
-            "tripId": "2022150613260"
+            "stopTimeCsvRowNumber": 1058,
+            "tripCsvRowNumber": 530,
+            "tripId": "2022150709260"
           }
         ],
         "severity": "WARNING",
         "total": 16
-      },
-      {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "serviceId": "20260613"
-          },
-          {
-            "csvRowNumber": 3,
-            "serviceId": "20260614"
-          },
-          {
-            "csvRowNumber": 4,
-            "serviceId": "20260615"
-          },
-          {
-            "csvRowNumber": 5,
-            "serviceId": "20260616"
-          },
-          {
-            "csvRowNumber": 6,
-            "serviceId": "20260617"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 8
       },
       {
         "code": "missing_recommended_field",
@@ -200,6 +173,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "42e9884009d3369f9165502c0fbeb7cdcb0d01e42cc256277e075a7f9a32515e",
+  "sha256": "37f298dc4b7e31b888d857144a3db626b9e17c9fbd17b9e87884e358e964fbd4",
   "validator_version": "8.0.1"
 }

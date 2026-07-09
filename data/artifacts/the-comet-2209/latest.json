@@ -18,10 +18,14 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 7.5,
           "fares": 0.0,
-          "headsigns": 12.1,
+          "headsigns": 12.2,
           "stop_names": 15.0,
           "wheelchair_stops": 25.0,
           "wheelchair_trips": 0.0
@@ -42,7 +46,7 @@
           "has_flex": false
         },
         "has_fares": false,
-        "headsign_pct": 80.5,
+        "headsign_pct": 81.7,
         "mixed_case_stop_name_pct": 100.0,
         "pathways": {
           "has_entrances": false,
@@ -52,8 +56,8 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 1302,
-        "trips": 5558,
+        "stops": 1308,
+        "trips": 13397,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 9.9,
@@ -62,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 5558,
+          "count": 13397,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "5558 of 5558 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "13397 of 13397 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -84,13 +88,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 1083,
+          "count": 2457,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
-          "points": 2.9,
+          "points": 2.8,
           "severity": "WARNING",
-          "what": "1083 of 5558 trips have no headsign.",
+          "what": "2457 of 13397 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -106,7 +110,7 @@
         }
       ],
       "name": "completeness",
-      "score": 59.6,
+      "score": 59.7,
       "status": "measured",
       "summary": "100% of stops state wheelchair accessibility (10% marked accessible, 90% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
       "weight": 0.25
@@ -116,32 +120,32 @@
         "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 1,
-          "WARNING": 4
+          "INFO": 5,
+          "WARNING": 11
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "stop_without_stop_time",
-          "count": 2,
+          "count": 8,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
-          "points": 4.0,
+          "points": 6.0,
           "severity": "WARNING",
           "what": "Some stops exist in the feed but no trip ever stops at them.",
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
           "code": "expired_calendar",
-          "count": 1,
+          "count": 2,
           "effort": "One setting in most export tools.",
           "fix": "Remove past service periods the next time you export the feed.",
           "owner": "Likely your export tool",
           "points": 4.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -157,7 +161,7 @@
         },
         {
           "code": "big_gap_in_service",
-          "count": 1,
+          "count": 5,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -168,27 +172,27 @@
         }
       ],
       "name": "correctness",
-      "score": 87.5,
+      "score": 85.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 4 kinds of issue across 5 instances (0 error, 4 warning, 1 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 16 instances (0 error, 11 warning, 5 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 51,
-        "feed_end_date": "2026-08-29",
+        "days_until_expiry": 184,
+        "feed_end_date": "2027-01-09",
         "feed_start_date": "2026-05-03",
-        "feed_version": "79b9e3b2-47c8-4130-bce5-4abe5747645b",
+        "feed_version": "3681142b-debf-4b2e-9648-2c10841b6aff",
         "has_feed_info": true,
-        "last_service_date": "2026-08-29",
+        "last_service_date": "2027-01-09",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [],
       "name": "freshness",
-      "score": 85.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data covers the next 51 days.",
+      "summary": "Service data covers the next 184 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -197,6 +201,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -207,7 +223,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 63 days.",
+        "detail": "Service data covers the next 184 days.",
         "key": "current",
         "met": true
       },
@@ -223,11 +239,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "eebe470fbe3bea9cedeeda8e8c7886989b62d2e56a40a82185eaece81f38a2b9",
-    "size_bytes": 915043,
+    "sha256": "fd8990861d77e14623c2d19399a8232b9d3a0cc0c470ac8ac59b2d2b720a36ec",
+    "size_bytes": 1982562,
     "static_url": "https://comet.mapstrat.com/current/google_transit.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://comet.mapstrat.com/current/google_transit.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -81.17229,
@@ -237,10 +259,10 @@
     ],
     "lat": 34.02027,
     "lon": -81.0198,
-    "stop_count": 1302
+    "stop_count": 1308
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1"
     ],
@@ -259,22 +281,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 63 days.",
+        "detail": "Service data covers the next 184 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "C",
-    "margin_to_lower_band": 8.2,
-    "margin_to_next_band": 1.8,
-    "score": 78.2
+    "grade": "B",
+    "margin_to_lower_band": 1.1,
+    "margin_to_next_band": 8.9,
+    "score": 81.1
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 9,
       "effort": "A per-route color setting in your scheduling software.",
@@ -286,6 +309,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 204,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -293,48 +317,543 @@
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "204 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Harden Greene South (Fountain @ Five Points)\", \"Gervais St and Laurens West\", \"Gervais St and Sumter West\", and more).",
+      "what": "204 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Gervais St and Laurens West\", \"Gervais St and Sumter West\", \"Assembly & Hampton North\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 1302,
+    "boardable_stops": 1308,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 2,
+        "count": 8,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "2 of 1302 boardable stops are never served by any trip.",
+        "what": "8 of 1308 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 2,
+    "orphan_stops": 8,
     "single_stop_trips": 0,
-    "trips_total": 5558
+    "trips_total": 13397
+  },
+  "route_map": {
+    "drawn_route_count": 44,
+    "has_shapes": true,
+    "path": "data/artifacts/the-comet-2209/geometry.geojson",
+    "route_count": 44,
+    "routes": [
+      {
+        "color": "009999",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2813",
+        "label": "42",
+        "long": "- Millwood",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C9707",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2814",
+        "label": "801",
+        "long": "- Broad River",
+        "short": "801",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66AD3C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2816",
+        "label": "92",
+        "long": "- 12th Street Extension Express",
+        "short": "92",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D07B3",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2817",
+        "label": "55",
+        "long": "- Sandhills",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "65439A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2818",
+        "label": "84",
+        "long": "- Dutch Square",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "019687",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2819",
+        "label": "2",
+        "long": "- Soda Cap Connector East",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005BAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2821",
+        "label": "19",
+        "long": "- Blue",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2823",
+        "label": "14",
+        "long": "- Express",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "023CFA",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2824",
+        "label": "6",
+        "long": "- Eau Claire",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6A9C00",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2825",
+        "label": "501",
+        "long": "- Two Notch",
+        "short": "501",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A72051",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2826",
+        "label": "20",
+        "long": "- West Campus REDUCED",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B85C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2827",
+        "label": "301",
+        "long": "- Farrow",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B95FED",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2828",
+        "label": "12",
+        "long": "- Edgewood",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "68AA3D",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2829",
+        "label": "75",
+        "long": "- Decker / Parkland",
+        "short": "75",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "65479B",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2830",
+        "label": "77",
+        "long": "- Polo",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "848481",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2831",
+        "label": "13",
+        "long": "- North Loop REDUCED",
+        "short": "13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF3399",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2832",
+        "label": "91",
+        "long": "- Springdale / Cayce",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4CA3AE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2833",
+        "label": "22",
+        "long": "- Harden",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A92023",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2834",
+        "label": "18",
+        "long": "- Red",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B3B3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2837",
+        "label": "96L",
+        "long": "- West Columbia / Cayce",
+        "short": "96L",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6BAA3A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2838",
+        "label": "57L",
+        "long": "- Killian / Clemson Local",
+        "short": "57L",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4AB247",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2839",
+        "label": "83L",
+        "long": "- St Andrews Local",
+        "short": "83L",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AD0101",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2840",
+        "label": "44",
+        "long": "- Lower Richland Express",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0BB391",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2841",
+        "label": "47",
+        "long": "- Eastover / Gadsden",
+        "short": "47",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F50505",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2842",
+        "label": "101",
+        "long": "- North Main",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD6F27",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2843",
+        "label": "45",
+        "long": "- Leesburg-Hazelwood",
+        "short": "45",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "848481",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2844",
+        "label": "13",
+        "long": "- North Loop",
+        "short": "13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "613E9D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2845",
+        "label": "4",
+        "long": "- Soda Cap Connector Orbit",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E36412",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2846",
+        "label": "1",
+        "long": "- Soda Cap Connector West",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E05200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2847",
+        "label": "20",
+        "long": "- West Campus",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AC02FA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2848",
+        "label": "11",
+        "long": "- Fairfield",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3CA351",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2849",
+        "label": "76",
+        "long": "- Fort Jackson",
+        "short": "76",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF1B8E",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2850",
+        "label": "32",
+        "long": "- North Main / Hardscrabble",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B38900",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2851",
+        "label": "401",
+        "long": "- Devine",
+        "short": "401",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2852",
+        "label": "14",
+        "long": "- Express REDUCED",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "64449C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2853",
+        "label": "701",
+        "long": "- Forest",
+        "short": "701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B85C5C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2854",
+        "label": "88",
+        "long": "- Beltline Crosstown",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "969603",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2855",
+        "label": "61",
+        "long": "- Shop",
+        "short": "61",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EB6200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2856",
+        "label": "21",
+        "long": "- Rosewood",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A38E18",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "80",
+        "label": "15",
+        "long": "- Yellow",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C9500E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "81",
+        "label": "16",
+        "long": "- Greek Village Lunch Express",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "066A40",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "83",
+        "label": "17",
+        "long": "- Green",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8B1717",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "87",
+        "label": "24",
+        "long": "- Evening 1",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0E0753",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "90",
+        "label": "25",
+        "long": "- Evening 2",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1308,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 13397 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 13397,
+    "trips_with_shape": 13397
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 5558,
+      "count": 13397,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "5558 of 5558 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "13397 of 13397 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
@@ -351,11 +870,11 @@
     },
     {
       "code": "stop_without_stop_time",
-      "count": 2,
+      "count": 8,
       "effort": "A review pass in your scheduling software.",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
       "owner": "Likely your export tool",
-      "points": 4.0,
+      "points": 6.0,
       "rank": 3,
       "severity": "WARNING",
       "what": "Some stops exist in the feed but no trip ever stops at them.",

@@ -146,7 +146,7 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 75,
-          "WARNING": 5741
+          "WARNING": 5751
         },
         "validator_version": "8.0.1"
       },
@@ -175,7 +175,7 @@
         },
         {
           "code": "stop_without_stop_time",
-          "count": 51,
+          "count": 61,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -243,7 +243,7 @@
       "name": "correctness",
       "score": 57.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 8 kinds of issue across 5816 instances (0 error, 5741 warning, 75 informational).",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 5826 instances (0 error, 5751 warning, 75 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -251,7 +251,7 @@
         "days_until_expiry": 45,
         "feed_end_date": "2026-08-23",
         "feed_start_date": "2026-05-04",
-        "feed_version": "May 2026_20260707",
+        "feed_version": "May 2026_20260708",
         "has_feed_info": true,
         "last_service_date": "2026-08-23",
         "seasonal_boundary": false,
@@ -292,7 +292,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 46 days.",
+        "detail": "Service data covers the next 45 days.",
         "key": "current",
         "met": true
       },
@@ -308,8 +308,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "a42c80f93ecc1afd01ea34a8296f6878e2c21b2f6dc974d10498def896f93111",
-    "size_bytes": 6365821,
+    "sha256": "b624c94b3889be13db0dade76c7ff2f3ab59e2567f92ac9fdca951a68c92d360",
+    "size_bytes": 6343889,
     "static_url": "https://www.viainfo.net/BusService/google_transit.zip"
   },
   "fetch": {
@@ -318,7 +318,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -98.73475,
@@ -351,7 +351,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 46 days.",
+        "detail": "Service data covers the next 45 days.",
         "key": "current",
         "status": "ready"
       }
@@ -367,6 +367,7 @@
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 32,
       "effort": "A per-route color setting in your scheduling software.",
@@ -378,6 +379,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 4925,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -389,27 +391,22 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 6097,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 51,
+        "count": 61,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "51 of 6097 boardable stops are never served by any trip.",
+        "what": "61 of 6097 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 51,
+    "orphan_stops": 61,
     "single_stop_trips": 0,
     "trips_total": 14589
   },

@@ -63,15 +63,15 @@
     <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="record-h"><h2 class="section-title" id="record-h">Historical refresh-success record</h2>
-    <p>As of 2026-07-09T09:09:12+00:00, this pipeline is tracking liveness on
+    <p>As of 2026-07-09T12:34:13+00:00, this pipeline is tracking liveness on
         <strong>1453</strong> feeds:
-        <strong>1255</strong> checking in clean (no failed check in a row),
-        <strong>78</strong> with at least one recent failed check but not yet
+        <strong>1253</strong> checking in clean (no failed check in a row),
+        <strong>80</strong> with at least one recent failed check but not yet
         flagged, and <strong>120</strong> flagged unreachable
         (see the degradation policy below). Time since each feed's last liveness check ranges from
-        0.2 to 231.0 hours, with a median of
-        8.0 hours.</p>
-        <p>Overall clean-check rate: <strong>86.4%</strong>.</p></section>
+        0.2 to 234.4 hours, with a median of
+        7.3 hours.</p>
+        <p>Overall clean-check rate: <strong>86.2%</strong>.</p></section>
 
     <section aria-labelledby="degradation-h"><h2 class="section-title" id="degradation-h">Degradation policy</h2>
     <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>

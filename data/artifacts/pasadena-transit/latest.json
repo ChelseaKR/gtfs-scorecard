@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 446,
-        "trips": 1038,
+        "trips": 942,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 1038,
+          "count": 942,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "1038 of 1038 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "942 of 942 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -106,26 +106,15 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 4,
+        "distinct_codes": 3,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 23,
-          "WARNING": 5
+          "WARNING": 3
         },
         "validator_version": "8.0.1"
       },
       "findings": [
-        {
-          "code": "expired_calendar",
-          "count": 2,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already ended.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
         {
           "code": "mixed_case_recommended_field",
           "count": 2,
@@ -161,17 +150,17 @@
         }
       ],
       "name": "correctness",
-      "score": 87.2,
+      "score": 91.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 4 kinds of issue across 28 instances (0 error, 5 warning, 23 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 26 instances (0 error, 3 warning, 23 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 540,
         "feed_end_date": "2027-12-31",
-        "feed_start_date": "2026-07-05",
-        "feed_version": "20260708",
+        "feed_start_date": "2026-07-09",
+        "feed_version": "20260709",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
@@ -186,19 +175,19 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 94.7,
-        "covered_trips": 18,
+        "coverage_pct": 100.0,
+        "covered_trips": 1,
         "drift": {
-          "median_seconds": 213,
-          "observations": 83,
-          "on_time_share_pct": 48.2,
-          "p90_abs_seconds": 868
+          "median_seconds": -60,
+          "observations": 10,
+          "on_time_share_pct": 80.0,
+          "p90_abs_seconds": 91
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 19,
-        "worst_lag_seconds": 5
+        "scheduled_trips_in_window": 1,
+        "worst_lag_seconds": 1
       },
       "findings": [
         {
@@ -211,23 +200,12 @@
           "severity": "ERROR",
           "what": "The vehicle positions realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
-        },
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 1,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 1.8,
-          "severity": "WARNING",
-          "what": "1 of 19 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 88.0,
+      "score": 90.2,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 94.7% of scheduled trips had live predictions; predictions ran a median of 213s behind schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; predictions ran a median of 60s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -269,8 +247,8 @@
   "feed": {
     "license_note": "License: https://www.cityofpasadena.net/pasadena-transit/real-time-applications/",
     "reachable": true,
-    "sha256": "6096b1657c095c69a318de07b498477bc6358a754c41db31fe54d7282afff4bf",
-    "size_bytes": 332234,
+    "sha256": "84f01e0755b821326e863e6e522685a6aa3d208418ee4842556688270f5bc91b",
+    "size_bytes": 311470,
     "static_url": "http://rt.pasadenatransit.net/rtt/public/utility/gtfs.aspx"
   },
   "fetch": {
@@ -321,12 +299,13 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 1.3,
-    "margin_to_next_band": 8.7,
-    "score": 81.3
+    "margin_to_lower_band": 3.1,
+    "margin_to_next_band": 6.9,
+    "score": 83.1
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 4,
       "effort": "A per-route color setting in your scheduling software.",
@@ -338,6 +317,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 440,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -354,7 +334,7 @@
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 1038
+    "trips_total": 942
   },
   "route_map": {
     "drawn_route_count": 12,
@@ -501,10 +481,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 1038 trips have a shape in shapes.txt.",
+    "detail": "All 942 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 1038,
-    "trips_with_shape": 1038
+    "total_trips": 942,
+    "trips_with_shape": 942
   },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
@@ -534,14 +514,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 1038,
+      "count": 942,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "1038 of 1038 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "942 of 942 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],

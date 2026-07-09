@@ -43,8 +43,8 @@
         "sample_notices": [
           {
             "arrivalTime2": "05:35:22",
-            "csvRowNumber1": 325815,
-            "csvRowNumber2": 325816,
+            "csvRowNumber1": 324157,
+            "csvRowNumber2": 324158,
             "departureTime1": "05:35:21",
             "distanceKm": 0.40621694700040006,
             "routeId": "603",
@@ -60,8 +60,8 @@
           },
           {
             "arrivalTime2": "06:29:32",
-            "csvRowNumber1": 330720,
-            "csvRowNumber2": 330721,
+            "csvRowNumber1": 329062,
+            "csvRowNumber2": 329063,
             "departureTime1": "06:29:31",
             "distanceKm": 0.40621694700040006,
             "routeId": "603",
@@ -77,8 +77,8 @@
           },
           {
             "arrivalTime2": "10:17:01",
-            "csvRowNumber1": 326641,
-            "csvRowNumber2": 326642,
+            "csvRowNumber1": 324983,
+            "csvRowNumber2": 324984,
             "departureTime1": "10:16:59",
             "distanceKm": 0.40621694700040006,
             "routeId": "603",
@@ -94,8 +94,8 @@
           },
           {
             "arrivalTime2": "18:40:11",
-            "csvRowNumber1": 331487,
-            "csvRowNumber2": 331488,
+            "csvRowNumber1": 329829,
+            "csvRowNumber2": 329830,
             "departureTime1": "18:40:10",
             "distanceKm": 0.40621694700040006,
             "routeId": "603",
@@ -111,8 +111,8 @@
           },
           {
             "arrivalTime2": "18:40:11",
-            "csvRowNumber1": 331487,
-            "csvRowNumber2": 331488,
+            "csvRowNumber1": 329829,
+            "csvRowNumber2": 329830,
             "departureTime1": "18:40:10",
             "distanceKm": 0.40621694700040006,
             "routeId": "603",
@@ -139,28 +139,28 @@
             "stopName": "BROADVIEW & FREEMAN"
           },
           {
+            "csvRowNumber": 171,
+            "stopId": "79126",
+            "stopName": "NAVARRO OPPOSITE SOLEDAD"
+          },
+          {
             "csvRowNumber": 190,
             "stopId": "89869",
             "stopName": "COMMERCE & ST. MARY'S"
           },
           {
-            "csvRowNumber": 835,
-            "stopId": "49957",
-            "stopName": "MCCULLOUGH & EVERGREEN"
+            "csvRowNumber": 665,
+            "stopId": "94429",
+            "stopName": "E. COMMERCE OPPOSITE SYCAMORE"
           },
           {
-            "csvRowNumber": 1105,
-            "stopId": "72646",
-            "stopName": "BROADWAY & MCCULLOUGH"
-          },
-          {
-            "csvRowNumber": 1328,
-            "stopId": "14423",
-            "stopName": "LOOP 1604 E ACCES RD & VALERO WAY"
+            "csvRowNumber": 667,
+            "stopId": "68116",
+            "stopName": "SAN PEDRO & MARSHALL"
           }
         ],
         "severity": "WARNING",
-        "total": 51
+        "total": 61
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -174,7 +174,7 @@
             "shapeId": "237102",
             "stopId": "61806",
             "stopName": "VANCE JACKSON IN FRONT OF 14100",
-            "stopTimeCsvRowNumber": 325810,
+            "stopTimeCsvRowNumber": 324152,
             "tripCsvRowNumber": 3225,
             "tripId": "5192023"
           },
@@ -187,7 +187,7 @@
             "shapeId": "237102",
             "stopId": "61826",
             "stopName": "VANCE JACKSON & UTSA BLVD",
-            "stopTimeCsvRowNumber": 325811,
+            "stopTimeCsvRowNumber": 324153,
             "tripCsvRowNumber": 3225,
             "tripId": "5192023"
           },
@@ -200,7 +200,7 @@
             "shapeId": "237102",
             "stopId": "61836",
             "stopName": "VANCE JACKSON OPPOSITE OF PRESIDIO PKWY",
-            "stopTimeCsvRowNumber": 325812,
+            "stopTimeCsvRowNumber": 324154,
             "tripCsvRowNumber": 3225,
             "tripId": "5192023"
           },
@@ -213,7 +213,7 @@
             "shapeId": "237102",
             "stopId": "61846",
             "stopName": "VANCE JACKSON & LOOP 1604 E. ACCESS RD",
-            "stopTimeCsvRowNumber": 325813,
+            "stopTimeCsvRowNumber": 324155,
             "tripCsvRowNumber": 3225,
             "tripId": "5192023"
           },
@@ -226,7 +226,7 @@
             "shapeId": "237102",
             "stopId": "11106",
             "stopName": "VANCE JACKSON OPPOSITE 16333",
-            "stopTimeCsvRowNumber": 325814,
+            "stopTimeCsvRowNumber": 324156,
             "tripCsvRowNumber": 3225,
             "tripId": "5192023"
           }
@@ -268,7 +268,7 @@
             "shapeId": "237142",
             "stopId": "97336",
             "stopName": "TINKER & 330' NORTH OF PERRIN",
-            "stopTimeCsvRowNumber": 398326,
+            "stopTimeCsvRowNumber": 396668,
             "tripCsvRowNumber": 3843,
             "tripId": "5194373"
           },
@@ -281,7 +281,7 @@
             "shapeId": "237140",
             "stopId": "97336",
             "stopName": "TINKER & 330' NORTH OF PERRIN",
-            "stopTimeCsvRowNumber": 399062,
+            "stopTimeCsvRowNumber": 397404,
             "tripCsvRowNumber": 3859,
             "tripId": "5194389"
           },
@@ -294,7 +294,7 @@
             "shapeId": "237166",
             "stopId": "92756",
             "stopName": "COKER L00P W BETW NAKOMA & ARION PKWY",
-            "stopTimeCsvRowNumber": 425026,
+            "stopTimeCsvRowNumber": 423368,
             "tripCsvRowNumber": 13346,
             "tripId": "5195597"
           }
@@ -362,6 +362,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "a42c80f93ecc1afd01ea34a8296f6878e2c21b2f6dc974d10498def896f93111",
+  "sha256": "b624c94b3889be13db0dade76c7ff2f3ab59e2567f92ac9fdca951a68c92d360",
   "validator_version": "8.0.1"
 }

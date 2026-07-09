@@ -4,14 +4,14 @@
     {
       "date": "2026-07-09",
       "from_grade": "D",
-      "from_score": 68.4,
-      "id": "rogue-valley-transportation-district-rvtd-3219",
-      "name": "Rogue Valley Transportation District (RVTD)",
+      "from_score": 67.2,
+      "id": "clackco-connects-clackamas-county-2740",
+      "name": "Static feed for realtime",
       "regressed": true,
-      "score_delta": -12.3,
+      "score_delta": -9.7,
       "since": "2026-07-08",
       "to_grade": "F",
-      "to_score": 56.1
+      "to_score": 57.5
     },
     {
       "date": "2026-07-09",
@@ -99,6 +99,30 @@
     },
     {
       "date": "2026-07-09",
+      "from_grade": "F",
+      "from_score": 51.9,
+      "id": "washington-state-ferries",
+      "name": "Washington State Ferries",
+      "regressed": false,
+      "score_delta": 13.9,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 65.8
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 73.5,
+      "id": "mountain-line",
+      "name": "Mountain Line",
+      "regressed": false,
+      "score_delta": 5.2,
+      "since": "2026-07-08",
+      "to_grade": "C",
+      "to_score": 78.7
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "D",
       "from_score": 62.2,
       "id": "via-mobility-2395",
@@ -111,15 +135,15 @@
     },
     {
       "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 66.5,
-      "id": "towson-loop",
-      "name": "Towson Loop",
+      "from_grade": "C",
+      "from_score": 78.6,
+      "id": "the-comet-2209",
+      "name": "The Comet",
       "regressed": false,
-      "score_delta": 4.4,
+      "score_delta": 2.5,
       "since": "2026-07-08",
-      "to_grade": "C",
-      "to_score": 70.9
+      "to_grade": "B",
+      "to_score": 81.1
     },
     {
       "date": "2026-07-09",
@@ -147,15 +171,27 @@
     },
     {
       "date": "2026-07-09",
-      "from_grade": "F",
-      "from_score": 57.0,
-      "id": "frederick-county-transit-2432",
-      "name": "Frederick County TransIT",
+      "from_grade": "B",
+      "from_score": 81.7,
+      "id": "pasadena-transit",
+      "name": "Pasadena Transit",
       "regressed": false,
-      "score_delta": 1.3,
+      "score_delta": 1.4,
       "since": "2026-07-08",
-      "to_grade": "F",
-      "to_score": 58.3
+      "to_grade": "B",
+      "to_score": 83.1
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 66.5,
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "regressed": false,
+      "score_delta": 1.4,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 67.9
     },
     {
       "date": "2026-07-09",
@@ -170,8 +206,8 @@
       "to_score": 66.7
     }
   ],
-  "count": 14,
-  "generated_at": "2026-07-09T09:09:13+00:00",
+  "count": 17,
+  "generated_at": "2026-07-09T12:34:14+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

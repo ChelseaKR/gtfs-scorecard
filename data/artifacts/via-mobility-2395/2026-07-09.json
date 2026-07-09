@@ -219,18 +219,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 100.0,
+        "covered_trips": 1,
+        "drift": {
+          "median_seconds": -1851,
+          "observations": 25,
+          "on_time_share_pct": 0.0,
+          "p90_abs_seconds": 2227
+        },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 0,
+        "scheduled_trips_in_window": 1,
+        "vehicles_checked": 3,
+        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 4
       },
-      "findings": [],
+      "findings": [
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 25,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+        }
+      ],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 1851s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -272,7 +293,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "102051b492d219f4c38c07aba7dadf326a3212d033a09760248c93d1f8189e51",
+    "sha256": "14a1da829dd8a589e68bfbc7f7fe5728c9d627d172d1d92449e4ad4dd420cab5",
     "size_bytes": 217904,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },

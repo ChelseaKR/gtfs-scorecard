@@ -1,6 +1,6 @@
 {
   "agency_count": 9,
-  "average_score": 57.8,
+  "average_score": 58.4,
   "common_fixes": [
     {
       "agencies": 9,
@@ -33,7 +33,7 @@
     "stale": 5,
     "total": 6
   },
-  "generated_at": "2026-07-09T09:08:55+00:00",
+  "generated_at": "2026-07-09T12:34:01+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 1,
@@ -127,14 +127,14 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 175,
+      "days_until_expiry": 221,
       "expiry_status": "current",
       "grade": "C",
       "id": "mountain-line",
       "name": "Mountain Line",
       "needs_attention": false,
-      "score": 73.5,
-      "shapes_status": null,
+      "score": 78.7,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -175,9 +175,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 9,
+    "not_measured": 8,
     "not_ready": 0,
-    "ready": 0,
+    "ready": 1,
     "total": 9
   },
   "state_percentile": 59

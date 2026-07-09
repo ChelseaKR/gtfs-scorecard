@@ -143,7 +143,7 @@
     "stale": 44,
     "total": 65
   },
-  "generated_at": "2026-07-09T09:08:55+00:00",
+  "generated_at": "2026-07-09T12:34:01+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 31,
@@ -1740,20 +1740,6 @@
       "days_until_expiry": 540,
       "expiry_status": "current",
       "grade": "B",
-      "id": "pasadena-transit",
-      "name": "Pasadena Transit",
-      "needs_attention": false,
-      "score": 81.3,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 540,
-      "expiry_status": "current",
-      "grade": "B",
       "id": "san-luis-obispo-regional-transit-authority-slorta",
       "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
       "needs_attention": false,
@@ -1817,6 +1803,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 540,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "pasadena-transit",
+      "name": "Pasadena Transit",
+      "needs_attention": false,
+      "score": 83.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,

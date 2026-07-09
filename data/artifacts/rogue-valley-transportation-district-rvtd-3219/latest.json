@@ -44,8 +44,8 @@
           "supported": false
         },
         "components": {
-          "contact": 7.5,
-          "fares": 0.0,
+          "contact": 15.0,
+          "fares": 15.0,
           "headsigns": 15.0,
           "stop_names": 14.9,
           "wheelchair_stops": 0.0,
@@ -53,11 +53,11 @@
         },
         "fare_free": false,
         "fares": {
-          "applied": false,
+          "applied": true,
           "has_leg_rules": false,
           "has_products": false,
           "has_transfer_rules": false,
-          "model": "none",
+          "model": "legacy",
           "product_count": 0
         },
         "flex": {
@@ -66,7 +66,7 @@
           "has_booking_rules": false,
           "has_flex": false
         },
-        "has_fares": false,
+        "has_fares": true,
         "headsign_pct": 100.0,
         "mixed_case_stop_name_pct": 99.7,
         "pathways": {
@@ -108,28 +108,6 @@
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
-          "code": "scorecard_no_fare_data",
-          "count": 1,
-          "effort": "A small file for most flat-fare systems.",
-          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-          "owner": "",
-          "points": 15.0,
-          "severity": "WARNING",
-          "what": "The feed contains no fare information.",
-          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
-        },
-        {
-          "code": "scorecard_no_feed_contact",
-          "count": 1,
-          "effort": "One field.",
-          "fix": "Add feed_contact_email to feed_info.txt.",
-          "owner": "",
-          "points": 7.5,
-          "severity": "INFO",
-          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
-          "why": "App makers and state data programs have nobody to email when they spot a problem with your feed, so problems linger."
-        },
-        {
           "code": "scorecard_station_no_pathways",
           "count": 1,
           "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -142,9 +120,9 @@
         }
       ],
       "name": "completeness",
-      "score": 37.4,
+      "score": 59.9,
       "status": "measured",
-      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
     },
     "correctness": {
@@ -152,8 +130,8 @@
         "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 1,
-          "WARNING": 16
+          "INFO": 2,
+          "WARNING": 15
         },
         "validator_version": "8.0.1"
       },
@@ -181,17 +159,6 @@
           "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
         },
         {
-          "code": "missing_recommended_file",
-          "count": 1,
-          "effort": "One small file, set once in export settings.",
-          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
-          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
-        },
-        {
           "code": "stop_without_stop_time",
           "count": 1,
           "effort": "A review pass in your scheduling software.",
@@ -201,6 +168,17 @@
           "severity": "WARNING",
           "what": "Some stops exist in the feed but no trip ever stops at them.",
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "feed_valid_beyond_total_service_window",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'feed_valid_beyond_total_service_window' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Feed valid beyond total service window (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         },
         {
           "code": "unknown_column",
@@ -215,37 +193,25 @@
         }
       ],
       "name": "correctness",
-      "score": 81.5,
+      "score": 85.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 17 instances (0 error, 16 warning, 1 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 17 instances (0 error, 15 warning, 2 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 30,
-        "feed_end_date": null,
-        "feed_start_date": null,
-        "feed_version": null,
-        "has_feed_info": false,
+        "feed_end_date": "2026-11-22",
+        "feed_start_date": "2026-06-05",
+        "feed_version": "07-09-26  02:35",
+        "has_feed_info": true,
         "last_service_date": "2026-08-08",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_missing_feed_info_dates",
-          "count": 1,
-          "effort": "Two fields, set once in export settings.",
-          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
-          "owner": "Likely your export tool",
-          "points": 15.0,
-          "severity": "WARNING",
-          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
-          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 35.0,
+      "score": 50.0,
       "status": "measured",
       "summary": "Service data covers the next 30 days.",
       "weight": 0.2
@@ -294,8 +260,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "71b5385ded5161fa10464df9993aedd30b72c699cadba926ad3e80fa8435dff0",
-    "size_bytes": 183790,
+    "sha256": "bbad340be2ef891f5194418e3cbd0eb96077e94fdc7d404e830c1c471e5bfa03",
+    "size_bytes": 185276,
     "static_url": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip"
   },
   "fetch": {
@@ -345,10 +311,10 @@
     "summary": "This feed is close to NTD-ready. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 56.1,
-    "margin_to_next_band": 3.9,
-    "score": 56.1
+    "grade": "D",
+    "margin_to_lower_band": 8.4,
+    "margin_to_next_band": 1.6,
+    "score": 68.4
   },
   "recommendations": [
     {
@@ -506,16 +472,16 @@
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_missing_feed_info_dates",
-      "count": 1,
-      "effort": "Two fields, set once in export settings.",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "code": "unused_shape",
+      "count": 12,
+      "effort": "One setting.",
+      "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
       "owner": "Likely your export tool",
-      "points": 15.0,
+      "points": 6.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
-      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+      "what": "The feed contains route shapes no trip uses.",
+      "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
     }
   ],
   "validator_version": "8.0.1"

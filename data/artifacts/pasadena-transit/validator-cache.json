@@ -2,21 +2,6 @@
   "report": {
     "notices": [
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "serviceId": "1"
-          },
-          {
-            "csvRowNumber": 8,
-            "serviceId": "7"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
@@ -80,6 +65,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "6096b1657c095c69a318de07b498477bc6358a754c41db31fe54d7282afff4bf",
+  "sha256": "84f01e0755b821326e863e6e522685a6aa3d208418ee4842556688270f5bc91b",
   "validator_version": "8.0.1"
 }

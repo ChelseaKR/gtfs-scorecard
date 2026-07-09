@@ -28,7 +28,7 @@
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 10,
+      "agencies": 9,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -74,13 +74,13 @@
     },
     {
       "agencies": 2,
-      "code": "trip_distance_exceeds_shape_distance",
-      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+      "code": "scorecard_rt_trip_coverage",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "agencies": 2,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+      "code": "trip_distance_exceeds_shape_distance",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
       "agencies": 2,
@@ -93,7 +93,7 @@
     "stale": 30,
     "total": 35
   },
-  "generated_at": "2026-07-09T09:08:55+00:00",
+  "generated_at": "2026-07-09T12:34:01+00:00",
   "grade_distribution": {
     "B": 24,
     "C": 23,
@@ -597,13 +597,13 @@
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "F",
-      "id": "rogue-valley-transportation-district-rvtd-3219",
-      "name": "Rogue Valley Transportation District (RVTD)",
+      "id": "clackco-connects-clackamas-county-2740",
+      "name": "Static feed for realtime",
       "needs_attention": true,
-      "score": 56.1,
+      "score": 57.5,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "top_fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
     },
     {
       "annual_trips": null,
@@ -639,10 +639,10 @@
       "days_until_expiry": 30,
       "expiry_status": "expiring_soon",
       "grade": "D",
-      "id": "clackco-connects-clackamas-county-2740",
-      "name": "Static feed for realtime",
+      "id": "rogue-valley-transportation-district-rvtd-3219",
+      "name": "Rogue Valley Transportation District (RVTD)",
       "needs_attention": true,
-      "score": 67.5,
+      "score": 68.4,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."

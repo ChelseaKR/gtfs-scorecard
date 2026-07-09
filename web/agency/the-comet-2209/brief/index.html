@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Comet call-prep brief — GTFS Scorecard</title>
-  <meta name="description" content="Call-prep brief for The Comet: grade C, top fixes, NTD readiness, and key feed facts on one page.">
+  <meta name="description" content="Call-prep brief for The Comet: grade B, top fixes, NTD readiness, and key feed facts on one page.">
   <link rel="canonical" href="https://gtfsscorecard.org/agency/the-comet-2209/brief/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="The Comet call-prep brief — GTFS Scorecard">
-  <meta property="og:description" content="Call-prep brief for The Comet: grade C, top fixes, NTD readiness, and key feed facts on one page.">
+  <meta property="og:description" content="Call-prep brief for The Comet: grade B, top fixes, NTD readiness, and key feed facts on one page.">
   <meta property="og:url" content="https://gtfsscorecard.org/agency/the-comet-2209/brief/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -51,30 +51,30 @@
     <header class="brief-head">
       <p class="brief-kicker">Call-prep brief &middot; checked 2026-07-09</p>
       <h1 class="brief-title">The Comet</h1>
-      <p class="brief-grade">Grade C &middot; 78.2 / 100</p>
-      <p class="brief-trend">Down 0.4 points since 2026-07-08 (C to C).</p>
+      <p class="brief-grade">Grade B &middot; 81.1 / 100</p>
+      <p class="brief-trend">Up 2.5 points since 2026-07-08 (C to B).</p>
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
         confirm the feed is current and the NTD details line up. Each fix is framed as a next step,
         not a failure.</p>
     </header>
     <section aria-labelledby="brief-changed-h">
       <h2 id="brief-changed-h">What changed since the last check</h2>
-      <ul class="brief-deltas"><li><span class="brief-cat">Correctness</span> no change</li><li><span class="brief-cat">Freshness</span> down 1.7</li><li><span class="brief-cat">Rider experience</span> no change</li></ul>
+      <ul class="brief-deltas"><li><span class="brief-cat">Correctness</span> down 2.0</li><li><span class="brief-cat">Freshness</span> up 13.3</li><li><span class="brief-cat">Rider experience</span> up 0.1</li></ul>
     </section>
     <section aria-labelledby="brief-fixes-h">
       <h2 id="brief-fixes-h">Top three things to fix</h2>
-      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">5558 of 5558 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Effort: Often one default setting in your export.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 5 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p class="brief-fix-why">The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="brief-fix-eta">Effort: A small file for most flat-fare systems.</p></li><li class="brief-fix"><p class="brief-fix-do">Remove retired stops from the export, or add them back to the trips that should serve them.</p><p class="brief-fix-why">Some stops exist in the feed but no trip ever stops at them. Riders may walk to a stop where no bus is scheduled to arrive.</p><p class="brief-fix-eta">Effort: A review pass in your scheduling software.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 11 observed fixes).</p></li></ol>
+      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">13397 of 13397 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Effort: Often one default setting in your export.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 5 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p class="brief-fix-why">The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="brief-fix-eta">Effort: A small file for most flat-fare systems.</p></li><li class="brief-fix"><p class="brief-fix-do">Remove retired stops from the export, or add them back to the trips that should serve them.</p><p class="brief-fix-why">Some stops exist in the feed but no trip ever stops at them. Riders may walk to a stop where no bus is scheduled to arrive.</p><p class="brief-fix-eta">Effort: A review pass in your scheduling software.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 12 observed fixes).</p></li></ol>
     </section>
     
     <section aria-labelledby="brief-ntd-h">
       <h2 id="brief-ntd-h">NTD certification readiness: Ready</h2>
-      <p class="brief-ntd-summary">This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 63 days.</dd></dl>
+      <p class="brief-ntd-summary">Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 184 days.</dd></dl>
       <p class="brief-align"><strong>agency_id and NTD ID:</strong> Not checked yet. Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don&#x27;t have your NTD ID on file, so this is not checked yet.</p>
     </section>
     
     <section aria-labelledby="brief-facts-h">
       <h2 id="brief-facts-h">Key facts</h2>
-      <dl class="brief-facts"><dt>Feed URL</dt><dd>https://comet.mapstrat.com/current/google_transit.zip</dd><dt>Last checked</dt><dd>2026-07-09</dd><dt>Service window</dt><dd>51 days of service data remain. Last service date 2026-08-29.</dd><dt>Feed version</dt><dd>79b9e3b2-47c8-4130-bce5-4abe5747645b</dd><dt>State</dt><dd>South Carolina</dd></dl>
+      <dl class="brief-facts"><dt>Feed URL</dt><dd>https://comet.mapstrat.com/current/google_transit.zip</dd><dt>Last checked</dt><dd>2026-07-09</dd><dt>Service window</dt><dd>184 days of service data remain. Last service date 2027-01-09.</dd><dt>Feed version</dt><dd>3681142b-debf-4b2e-9648-2c10841b6aff</dd><dt>State</dt><dd>South Carolina</dd></dl>
     </section>
     <p class="brief-portfolio no-print">Part of the <a href="/program/south-carolina/">South Carolina portfolio</a>: see where this agency sits among the state's feeds before the call.</p>
     <p class="brief-foot">A data-quality and completeness read to support an agency conversation.
