@@ -2,6 +2,10 @@
 data/raw/
 data/cache/
 
+# content-addressed raw feed archive (FIX-02): local dedup tier, durable copy
+# lives in S3 when RAW_ARCHIVE_BUCKET/ARTIFACTS_BUCKET is configured (archive.py)
+data/raw-archive/
+
 # corrected feeds the autofix step writes per agency: binary, regenerated each
 # run, and synced to the CDN by the workflow, so they stay out of git history
 data/artifacts/**/corrected.zip

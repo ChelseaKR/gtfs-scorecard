@@ -13,6 +13,7 @@ scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for lia
 scorecard rollups                                 # portfolio rollup artifacts
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
+scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
 """
 
 from __future__ import annotations
@@ -73,6 +74,17 @@ def run_agency(
     """Run the full pipeline for one agency; return the artifact path."""
     agency = AGENCIES[agency_id]
     fetched = fetch_static(agency, date, force=force_fetch)
+
+    # Content-addressed raw archive (FIX-02): keep the bytes that produced this
+    # grade, deduplicated by hash, so a disputed grade or `scorecard reproduce`
+    # can pull the exact zip later. Best-effort by design (archive.py); never
+    # blocks a score.
+    from . import archive
+
+    try:
+        archive.store(fetched.sha256, fetched.path)
+    except OSError as exc:  # noqa: BLE001 - archiving must never fail a score
+        log.warning("%s: raw archive write failed: %s", agency.id, exc)
 
     # Skip the Java validator when this exact feed (same bytes, same validator
     # version) was already validated; reuse the cached normalized report.
@@ -1623,6 +1635,31 @@ def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_reproduce(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .reproduce import ReproduceError, reproduce
+
+    agency = AGENCIES.get(args.agency)
+    if agency is None:
+        parser.error(f"unknown agency: {args.agency}")
+        return 2
+    try:
+        result = reproduce(agency, args.date)
+    except ReproduceError as exc:
+        log.error("%s", exc)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True))
+    if result["identical"]:
+        print(
+            f"\nidentical: {agency.id}/{args.date} reproduces byte-for-byte against feed "
+            f"{result['sha256'][:12]} with validator {result['validator_version']}."
+        )
+        return 0
+    print(f"\nDIFFERS from the published artifact ({len(result['differences'])} field(s)):")
+    for line in result["differences"]:
+        print(f"  - {line}")
+    return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     load_agencies()
     parser = argparse.ArgumentParser(prog="scorecard", description=__doc__)
@@ -2018,6 +2055,16 @@ def main(argv: list[str] | None = None) -> int:
         help="snapshot date to fetch/score (default: today)",
     )
 
+    reproduce = sub.add_parser(
+        "reproduce",
+        help=(
+            "re-derive a published grade from the archived raw feed bytes and diff it "
+            "against the published artifact (FIX-02)"
+        ),
+    )
+    reproduce.add_argument("agency", help="agency id, e.g. unitrans")
+    reproduce.add_argument("date", help="published snapshot date, YYYY-MM-DD")
+
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -2060,6 +2107,7 @@ def main(argv: list[str] | None = None) -> int:
         "otp-batch": _cmd_otp_batch,
         "rt-health": _cmd_rt_health,
         "rt-archive": _cmd_rt_archive,
+        "reproduce": _cmd_reproduce,
     }
     handler = handlers.get(args.command)
     if handler is None:

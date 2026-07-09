@@ -63,6 +63,19 @@ shape change cannot reach production without a schema update. `scoring.json`
 exposes the category weights, grade bands, and severity deductions, so the
 grade is reproducible rather than opaque.
 
+The raw feed bytes behind a grade are archived too, deduplicated by the
+`feed.sha256` every artifact already carries (content-addressed: one copy per
+distinct hash, not per agency per day). The score job writes each new hash to
+a local dedup store and, when a durable bucket is configured
+(`RAW_ARCHIVE_BUCKET`, falling back to `ARTIFACTS_BUCKET`), to S3 as the
+second, durable tier (`archive.py`). `scorecard reproduce <agency> <date>`
+pulls the archived bytes for a published snapshot, re-runs the validator
+version that artifact recorded, rescores it, and diffs the result against the
+published grade, score, and category scores: the mechanism a disputed grade
+or a validator-upgrade study cites. The archive is private to the pipeline;
+public redistribution of a re-served copy is a separate, license-gated
+decision (see `docs/ideation/02-large-scale-fixes.md`, FIX-02).
+
 The flat analysis exports (`dataset.json`, `dataset.csv`,
 `api/v1/agencies.parquet`) carry two version fields: `schema_version` is the
 version of the flat export's own shape, and `pipeline_schema_version` is the
