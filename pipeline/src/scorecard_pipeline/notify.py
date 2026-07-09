@@ -31,7 +31,7 @@ from .portfolio_digest import PortfolioDigest, render_portfolio_digest
 EMAIL_RE = re.compile(r"^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
 # The alert kinds a subscriber can opt into; mirrors AlertItem.kind in alerts.py.
-ALERT_KINDS = frozenset({"expiry", "regression", "anomaly"})
+ALERT_KINDS = frozenset({"expiry", "lapse_risk", "regression", "anomaly"})
 
 
 class SubscriptionError(ValueError):

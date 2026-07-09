@@ -155,3 +155,66 @@ def test_expiring_feeds_grouped_by_lead_time_tier() -> None:
     assert "Expires within a month" in text
     # the expired tier heading precedes the week tier heading in the output
     assert text.index("Already expired") < text.index("Expires within a week")
+
+
+def _lapse_series(base_date: dt.date, days_series: list[int]) -> list[dict]:  # type: ignore[type-arg]
+    """A history list (EXP-13 lapse_risk shape) from a series of days_until_expiry."""
+    return [
+        {"date": (base_date + dt.timedelta(days=i)).isoformat(), "days_until_expiry": d}
+        for i, d in enumerate(days_series)
+    ]
+
+
+def test_far_out_feed_with_risky_renewal_history_gets_lapse_risk_item() -> None:
+    # Well outside the deterministic expiry window, but its history shows a
+    # lapse-and-late-renewal pattern -- the behavioral signal should fire.
+    write_latest("risky", "Risky Transit", 90.0, "A", days_until_expiry=200)
+    series = [5, 4, 3, 2, 1, 0, -1, -2, 50, 49, 48, 47]
+    write_index(
+        {
+            "risky": {
+                "name": "Risky Transit",
+                "history": _lapse_series(dt.date(2026, 5, 1), series),
+            }
+        }
+    )
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    lapse_items = [i for i in digest.items if i.kind == "lapse_risk"]
+    assert lapse_items and lapse_items[0].agency_id == "risky"
+    text = render_digest(digest)
+    assert "early lapse-risk signals" in text.lower()
+
+
+def test_deterministic_expiry_item_suppresses_lapse_risk_duplicate() -> None:
+    # A feed already inside the expiry window should not also get a lapse_risk
+    # item, even if its history would otherwise flag one -- the deterministic
+    # alert is already more urgent and covers the same ground.
+    write_latest("close", "Close Transit", 60.0, "C", days_until_expiry=10)
+    series = [5, 4, 3, 2, 1, 0, -1, -2, 50, 49, 48, 47]
+    write_index(
+        {
+            "close": {
+                "name": "Close Transit",
+                "history": _lapse_series(dt.date(2026, 5, 1), series),
+            }
+        }
+    )
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    kinds = {i.kind for i in digest.items if i.agency_id == "close"}
+    assert "expiry" in kinds
+    assert "lapse_risk" not in kinds
+
+
+def test_healthy_far_out_feed_produces_no_lapse_risk_item() -> None:
+    write_latest("ok", "OK Transit", 90.0, "A", days_until_expiry=200)
+    series = list(range(80, 60, -1))  # steady decline, never lapses
+    write_index(
+        {
+            "ok": {
+                "name": "OK Transit",
+                "history": _lapse_series(dt.date(2026, 5, 1), series),
+            }
+        }
+    )
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    assert digest.items == []

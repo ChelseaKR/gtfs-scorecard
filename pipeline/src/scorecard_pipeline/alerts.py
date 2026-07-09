@@ -3,14 +3,21 @@
 The roadmap's first retention tool (docs/roadmap.md): the single most useful
 thing this tool can tell a small agency is "your feed expires in N days and
 trip planners are about to drop you." This reads the artifacts the pipeline
-already publishes and produces a plain-language digest of two things worth
-acting on now: feeds whose service window is about to close, and grades that
-dropped since the previous run.
+already publishes and produces a plain-language digest of things worth acting
+on now: feeds whose service window is about to close, grades that dropped
+since the previous run, and — per EXP-13 (docs/ideation/03-expansions.md) —
+feeds whose renewal *behavior* (a history of late renewals, a repeating
+lapse-and-recover pattern, a slowing cadence) suggests risk before the calendar
+date itself says so. The behavioral read only fires for feeds the deterministic
+expiry check hasn't already flagged, so it stays a genuinely earlier warning
+rather than a duplicate.
 
 The digest is rendered as Markdown and written to stdout or a file. Routing it
 to subscribers (email via SES, a Slack post) is a deploy concern handled by the
 caller; keeping the build and the send separate is what makes the logic
-testable against fixture artifacts with no network.
+testable against fixture artifacts with no network. This digest is the private,
+opt-in liaison channel (ADR 0004) — the behavioral risk read is never shown on
+the public agency page.
 """
 
 from __future__ import annotations
@@ -22,6 +29,8 @@ from typing import Any
 
 from .anomaly import detect_anomalies
 from .config import artifacts_dir
+from .lapse_risk import TIER_ELEVATED, TIER_HIGH
+from .lapse_risk import assess as assess_lapse_risk
 
 # A letter-grade drop, or a score fall of at least this many points between the
 # two most recent runs, is worth telling someone about. Smaller day-to-day
@@ -69,7 +78,7 @@ class AlertItem:
 
     agency_id: str
     agency_name: str
-    kind: str  # "expiry" | "regression"
+    kind: str  # "expiry" | "lapse_risk" | "regression" | "anomaly"
     headline: str
     detail: str
     fix: str
@@ -129,6 +138,33 @@ def _expiry_item(latest: dict[str, Any], expiry_days: int) -> AlertItem | None:
         # Link straight to the ready-to-send note on the scorecard.
         scorecard_url=_scorecard_url(agency["id"], "#send-note"),
         days_until_expiry=days,
+    )
+
+
+def _lapse_risk_item(history: list[dict[str, Any]], name: str, agency_id: str) -> AlertItem | None:
+    """A behavioral early-warning item, or None if the tier doesn't warrant one.
+
+    Only called for agencies the deterministic expiry check hasn't already
+    flagged (see build_digest), so this is always a genuinely earlier signal,
+    never a second copy of the same warning. `insufficient_history` and `none`
+    tiers produce nothing — a quiet, honest read, not a forced item.
+    """
+    risk = assess_lapse_risk(history)
+    if risk.tier not in (TIER_ELEVATED, TIER_HIGH):
+        return None
+    label = "High" if risk.tier == TIER_HIGH else "Elevated"
+    headline = f"{label} behavioral lapse risk"
+    detail = " ".join(reason.detail for reason in risk.reasons)
+    return AlertItem(
+        agency_id=agency_id,
+        agency_name=name,
+        kind="lapse_risk",
+        headline=headline,
+        detail=detail,
+        fix="This is a behavioral read from renewal history, not a certainty — "
+        "confirm with the agency whether the next export is already prepared. "
+        "A proactive check now can prevent a repeat of this pattern.",
+        scorecard_url=_scorecard_url(agency_id),
     )
 
 
@@ -240,10 +276,20 @@ def build_digest(
     index = _load_json(root / "index.json") or {"agencies": {}}
     for agency_id, entry in sorted(index.get("agencies", {}).items()):
         latest = _load_json(root / agency_id / "latest.json")
+        expiry = None
         if latest:
             expiry = _expiry_item(latest, expiry_days)
             if expiry:
                 items.append(expiry)
+        if not expiry:
+            # Behavioral risk is only worth surfacing when the deterministic
+            # check hasn't already flagged this feed — otherwise it is a
+            # slower-to-fire duplicate of the same warning.
+            lapse_risk = _lapse_risk_item(
+                entry.get("history", []), entry.get("name", agency_id), agency_id
+            )
+            if lapse_risk:
+                items.append(lapse_risk)
         regression = _regression_item(
             entry.get("history", []), entry.get("name", agency_id), agency_id
         )
@@ -254,13 +300,16 @@ def build_digest(
         )
 
     def _urgency(item: AlertItem) -> tuple[int, int, str]:
-        # Expiry before regression/anomaly; within expiry, soonest (or most overdue) first.
+        # Expiry first (soonest/most overdue first), then behavioral lapse
+        # risk (the early warning), then regressions, then anomalies.
         if item.kind == "expiry":
             days = item.days_until_expiry
             return (0, days if days is not None else 9999, item.agency_id)
+        if item.kind == "lapse_risk":
+            return (1, 0, item.agency_id)
         if item.kind == "anomaly":
-            return (2, 0, item.agency_id)
-        return (1, 0, item.agency_id)
+            return (3, 0, item.agency_id)
+        return (2, 0, item.agency_id)
 
     items.sort(key=_urgency)
     return Digest(as_of=as_of, items=items)
@@ -281,6 +330,7 @@ def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint
         return "\n".join(lines)
 
     expiring = [i for i in digest.items if i.kind == "expiry"]
+    lapse_risks = [i for i in digest.items if i.kind == "lapse_risk"]
     regressions = [i for i in digest.items if i.kind == "regression"]
     anomalies = [i for i in digest.items if i.kind == "anomaly"]
     lines.append(f"{len(digest.items)} item(s) need attention.")
@@ -314,6 +364,16 @@ def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint
             lines.append("")
             for item in members:
                 _emit(item, "####")
+    if lapse_risks:
+        lines.append("## Feeds showing early lapse-risk signals")
+        lines.append("")
+        lines.append(
+            "Not yet close to expiring, but their renewal history suggests risk "
+            "worth a proactive check — see the reasons below each one."
+        )
+        lines.append("")
+        for item in lapse_risks:
+            _emit(item)
     if regressions:
         lines.append("## Grade changes")
         lines.append("")
