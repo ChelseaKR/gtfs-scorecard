@@ -148,6 +148,64 @@ def test_mdb_id_parsed() -> None:
     assert agency.mdb_id == "777"
 
 
+def test_feed_identity_fields_parse_with_conservative_defaults() -> None:
+    (default_agency,) = parse_agencies(VALID)
+    assert default_agency.organization_key == "demo"
+    assert default_agency.feed_status == "active"
+    assert default_agency.is_official is None
+    assert default_agency.is_canonical_feed is True
+
+    raw = {
+        "agencies": [
+            {
+                **VALID_ENTRY,
+                "id": "canonical",
+                "organization_id": "demo-transit",
+                "feed_variant": "bus",
+                "is_official": True,
+            },
+            {
+                **VALID_ENTRY,
+                "id": "legacy",
+                "alias_of": "canonical",
+                "feed_status": "deprecated",
+            },
+        ]
+    }
+    canonical, legacy = parse_agencies(raw)
+    assert canonical.organization_key == "demo-transit"
+    assert canonical.feed_variant == "bus"
+    assert canonical.is_official is True
+    assert legacy.alias_of == "canonical"
+    assert legacy.is_canonical_feed is False
+
+
+@pytest.mark.parametrize(
+    ("raw", "message"),
+    [
+        (entry(feed_status="retired"), "feed_status must be one of"),
+        (entry(is_official="yes"), "is_official must be true or false"),
+        (entry(organization_id="Bad Name"), "organization_id must be a lowercase slug"),
+        (entry(alias_of="demo"), "alias_of cannot point to the same entry"),
+        (entry(alias_of="missing"), "alias_of references unknown id"),
+    ],
+)
+def test_invalid_feed_identity_fields_fail(raw: object, message: str) -> None:
+    with pytest.raises(AgencyConfigError, match=message):
+        parse_agencies(raw)
+
+
+def test_alias_cycles_are_rejected() -> None:
+    raw = {
+        "agencies": [
+            {**VALID_ENTRY, "id": "a", "alias_of": "b"},
+            {**VALID_ENTRY, "id": "b", "alias_of": "a"},
+        ]
+    }
+    with pytest.raises(AgencyConfigError, match="alias_of contains a cycle"):
+        parse_agencies(raw)
+
+
 def test_country_typo_fails_with_supported_list() -> None:
     import pytest
 

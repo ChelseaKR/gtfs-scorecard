@@ -90,6 +90,8 @@ class CatalogFeed:
     authentication_type: str  # "0"/"" means no key required
     static_reference: str  # realtime -> the schedule feed's mdb_id
     hosted_url: str = ""  # urls.latest: MobilityData's hosted mirror on GCS
+    status: str = ""  # active / deprecated / inactive / development
+    is_official: bool | None = None
 
 
 @dataclass
@@ -104,6 +106,8 @@ class ProposedAgency:
     rt_urls: dict[str, str] = field(default_factory=dict)
     rt_note: str = ""
     license_note: str = ""
+    feed_status: str = "active"
+    is_official: bool | None = None
 
 
 def _cell(row: dict[str, str], *names: str) -> str:
@@ -117,6 +121,22 @@ def _cell(row: dict[str, str], *names: str) -> str:
         if value and value.strip():
             return value.strip()
     return ""
+
+
+def _optional_bool(value: str) -> bool | None:
+    normalized = value.strip().lower()
+    if normalized in {"true", "1", "yes"}:
+        return True
+    if normalized in {"false", "0", "no"}:
+        return False
+    return None
+
+
+def _feed_url_key(url: str) -> str:
+    """Treat HTTP/HTTPS variants of one endpoint as the same proposal."""
+    from .identity import normalized_feed_url
+
+    return normalized_feed_url(url)
 
 
 def parse_catalog(csv_text: str) -> list[CatalogFeed]:
@@ -147,6 +167,8 @@ def parse_catalog(csv_text: str) -> list[CatalogFeed]:
                 authentication_type=_cell(row, "urls.authentication_type", "authentication_type"),
                 static_reference=_cell(row, "static_reference"),
                 hosted_url=_cell(row, "urls.latest"),
+                status=_cell(row, "status").lower(),
+                is_official=_optional_bool(_cell(row, "is_official")),
             )
         )
     return feeds
@@ -201,16 +223,34 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
 
     rt_by_reference: dict[str, list[CatalogFeed]] = {}
     for feed in feeds:
-        if feed.data_type == "gtfs-rt" and feed.static_reference:
+        active = not feed.status or feed.status == "active"
+        if (
+            feed.data_type == "gtfs-rt"
+            and feed.static_reference
+            and active
+            and feed.is_official is not False
+        ):
             rt_by_reference.setdefault(feed.static_reference, []).append(feed)
 
     proposals: list[ProposedAgency] = []
     used_ids = set(existing)
+    proposed_sources: set[str] = set()
+    proposed_urls: set[str] = set()
     for feed in feeds:
         if feed.data_type != "gtfs":
             continue
+        if feed.status and feed.status != "active":
+            continue
+        if feed.is_official is False:
+            continue
         if not _matches(feed, country, subdivision, provider_filter):
             continue
+        url_key = _feed_url_key(feed.direct_download)
+        if (feed.mdb_id and feed.mdb_id in proposed_sources) or url_key in proposed_urls:
+            continue
+        if feed.mdb_id:
+            proposed_sources.add(feed.mdb_id)
+        proposed_urls.add(url_key)
 
         base_id = slugify(feed.provider, feed.mdb_id)
         agency_id = base_id
@@ -251,6 +291,8 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
                 rt_urls=rt_urls,
                 rt_note=rt_note,
                 license_note=_license_note(feed),
+                feed_status=feed.status or "active",
+                is_official=feed.is_official,
             )
         )
     return proposals
@@ -290,6 +332,9 @@ def render_yaml(proposals: list[ProposedAgency]) -> str:
         lines.append(f"    static_gtfs_url: {_scalar(p.static_gtfs_url)}")
         if p.mdb_id:
             lines.append(f"    mdb_id: {_scalar(p.mdb_id)}")
+        lines.append(f"    feed_status: {_scalar(p.feed_status)}")
+        if p.is_official is not None:
+            lines.append(f"    is_official: {'true' if p.is_official else 'false'}")
         if p.rt_urls:
             lines.append("    rt_urls:")
             for kind in ("trip_updates", "vehicle_positions", "service_alerts"):

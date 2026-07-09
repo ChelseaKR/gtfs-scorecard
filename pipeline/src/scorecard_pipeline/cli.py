@@ -992,6 +992,21 @@ def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0
 
 
+def _cmd_identity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .identity import build_identity_ledger
+
+    payload = build_identity_ledger(AGENCIES.values())
+    text = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    if args.out:
+        path = Path(args.out)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        log.info("Wrote feed identity ledger to %s.", path)
+    else:
+        print(text, end="")
+    return 0
+
+
 def _cmd_cadence(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     import json as _json
     from collections import Counter
@@ -1957,6 +1972,11 @@ def main(argv: list[str] | None = None) -> int:
         help="exit non-zero when an agency name is a feed descriptor (for CI)",
     )
 
+    identity = sub.add_parser(
+        "identity", help="report feed records, canonical feeds, organizations, and aliases"
+    )
+    identity.add_argument("--out", help="write the identity ledger JSON here")
+
     sweep = sub.add_parser(
         "freshness-sweep",
         help="recompute freshness/expiry from the last score without re-fetching",
@@ -2092,6 +2112,7 @@ def main(argv: list[str] | None = None) -> int:
         "render-constants": _cmd_render_constants,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
+        "identity": _cmd_identity,
         "freshness-sweep": _cmd_freshness_sweep,
         "liveness": _cmd_liveness,
         "cadence": _cmd_cadence,

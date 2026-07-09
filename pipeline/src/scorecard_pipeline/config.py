@@ -39,6 +39,16 @@ class Agency:
     # follow the catalog's own record of a feed by id instead of fuzzy name
     # matching, so a moved URL is caught exactly. Empty means not pinned.
     mdb_id: str = ""
+    # Canonical identity is separate from a feed endpoint. organization_id joins
+    # several modal or regional feeds to one operator; alias_of keeps a retired
+    # endpoint reproducible without counting it as another active feed.
+    organization_id: str = ""
+    alias_of: str = ""
+    feed_variant: str = ""
+    # Mobility Database source status/provenance. Existing hand-curated records
+    # default to active/unknown; sync proposals retain explicit catalog values.
+    feed_status: str = "active"
+    is_official: bool | None = None
     # The agency's five-digit National Transit Database ID, when known. Aligning
     # GTFS agency_id with the NTD ID lets a feed join cleanly to its NTD record;
     # the July 2025 final rule did not require that feed change (it links the two
@@ -70,6 +80,15 @@ class Agency:
     # "no fare data" finding becomes a neutral note. Mirrors the neutral
     # treatment of agencies without realtime: a deliberate policy is not a gap.
     fare_free: bool = False
+
+    @property
+    def organization_key(self) -> str:
+        """Stable operator key for portfolio counts and identity joins."""
+        return self.organization_id or self.id
+
+    @property
+    def is_canonical_feed(self) -> bool:
+        return self.feed_status == "active" and not self.alias_of
 
 
 # Endpoints verified against the Mobility Database and transit.land;

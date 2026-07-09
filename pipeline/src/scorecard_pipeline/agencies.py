@@ -22,6 +22,7 @@ RT_KINDS = ("trip_updates", "vehicle_positions", "service_alerts")
 # standards framing per ADR 0026). A typo like "UU" must fail here, not pass a
 # shape check and silently drop the agency from the US-only surfaces.
 SUPPORTED_COUNTRIES = {"US", "CA"}
+FEED_STATUSES = {"active", "deprecated", "inactive", "development"}
 
 
 class AgencyConfigError(ValueError):
@@ -82,6 +83,11 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
             "operating_note",
             "ntd_note",
             "mdb_id",
+            "organization_id",
+            "alias_of",
+            "feed_variant",
+            "feed_status",
+            "is_official",
             "ntd_id",
             "country",
             "state",
@@ -109,6 +115,21 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
         if not isinstance(fare_free, bool):
             _fail(label, f"fare_free must be true or false, got {fare_free!r}")
 
+        organization_id = str(entry.get("organization_id") or "").strip()
+        if organization_id and not ID_PATTERN.match(organization_id):
+            _fail(label, f"organization_id must be a lowercase slug, got {organization_id!r}")
+        alias_of = str(entry.get("alias_of") or "").strip()
+        if alias_of and not ID_PATTERN.match(alias_of):
+            _fail(label, f"alias_of must be a lowercase agency id, got {alias_of!r}")
+        if alias_of == agency_id:
+            _fail(label, "alias_of cannot point to the same entry")
+        feed_status = str(entry.get("feed_status") or "active").strip().lower()
+        if feed_status not in FEED_STATUSES:
+            _fail(label, f"feed_status must be one of {sorted(FEED_STATUSES)}, got {feed_status!r}")
+        official_raw = entry.get("is_official")
+        if official_raw is not None and not isinstance(official_raw, bool):
+            _fail(label, f"is_official must be true or false, got {official_raw!r}")
+
         country = str(entry.get("country") or "US").strip().upper()
         if country not in SUPPORTED_COUNTRIES:
             _fail(
@@ -130,6 +151,11 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
                 operating_note=str(entry.get("operating_note") or "").strip(),
                 ntd_note=str(entry.get("ntd_note") or "").strip(),
                 mdb_id=str(entry.get("mdb_id") or "").strip(),
+                organization_id=organization_id,
+                alias_of=alias_of,
+                feed_variant=str(entry.get("feed_variant") or "").strip(),
+                feed_status=feed_status,
+                is_official=official_raw,
                 ntd_id=ntd_id,
                 country=country,
                 state=str(entry.get("state") or "").strip(),
@@ -139,6 +165,17 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
         )
     if not agencies:
         raise AgencyConfigError("agencies.yaml lists no agencies")
+    by_id = {agency.id: agency for agency in agencies}
+    for agency in agencies:
+        if agency.alias_of and agency.alias_of not in by_id:
+            _fail(f"agency '{agency.id}'", f"alias_of references unknown id {agency.alias_of!r}")
+        seen_aliases = {agency.id}
+        target = agency.alias_of
+        while target:
+            if target in seen_aliases:
+                _fail(f"agency '{agency.id}'", "alias_of contains a cycle")
+            seen_aliases.add(target)
+            target = by_id[target].alias_of
     return agencies
 
 
