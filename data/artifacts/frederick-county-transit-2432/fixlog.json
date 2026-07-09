@@ -65,6 +65,12 @@
       "code": "fast_travel_between_far_stops",
       "last_seen": "2026-07-07",
       "what": "Fast travel between far stops (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-09",
+      "code": "scorecard_rt_predictions_implausible",
+      "last_seen": "2026-07-08",
+      "what": "Some live predictions disagree with the schedule by more than 30 minutes."
     }
   ]
 }

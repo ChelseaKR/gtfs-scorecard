@@ -1,6 +1,6 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-08T22:43:41+00:00",
+  "generated_at": "2026-07-09T01:29:07+00:00",
   "license": "CC-BY-4.0",
   "points": [
     {
@@ -119,6 +119,19 @@
         "D": 163,
         "F": 720
       }
+    },
+    {
+      "agency_count": 1449,
+      "average_score": 60.6,
+      "date": "2026-07-09",
+      "expired_pct": 42.8,
+      "grade_distribution": {
+        "A": 50,
+        "B": 237,
+        "C": 278,
+        "D": 162,
+        "F": 722
+      }
     }
   ],
   "summary": {
@@ -127,15 +140,15 @@
       "date": "2026-06-30"
     },
     "last": {
-      "average_score": 60.7,
-      "date": "2026-07-08"
+      "average_score": 60.6,
+      "date": "2026-07-09"
     },
-    "points": 9,
-    "score_delta": -0.3
+    "points": 10,
+    "score_delta": -0.4
   },
   "top_improvers": [
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-16",
       "delta": 34.9,
       "grade_end": "B",
@@ -145,7 +158,7 @@
       "score_start": 50.7
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
       "delta": 34.5,
       "grade_end": "B",
@@ -155,17 +168,17 @@
       "score_start": 49.2
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
-      "delta": 30.9,
+      "delta": 30.5,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-513",
       "name": "Manhattan Bus",
-      "score_end": 70.0,
+      "score_end": 69.6,
       "score_start": 39.1
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
       "delta": 28.6,
       "grade_end": "B",
@@ -175,7 +188,7 @@
       "score_start": 52.7
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-16",
       "delta": 27.7,
       "grade_end": "B",
@@ -185,53 +198,53 @@
       "score_start": 54.2
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
-      "delta": 27.4,
+      "delta": 26.9,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-512",
       "name": "Brooklyn Bus",
-      "score_end": 68.8,
+      "score_end": 68.3,
       "score_start": 41.4
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
-      "delta": 25.8,
+      "delta": 25.4,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-510",
       "name": "NYC Bus Company",
-      "score_end": 62.9,
+      "score_end": 62.5,
       "score_start": 37.1
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
-      "delta": 25.6,
+      "delta": 25.2,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-528",
       "name": "Bronx Bus",
-      "score_end": 68.7,
+      "score_end": 68.3,
       "score_start": 43.1
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
-      "delta": 25.6,
+      "delta": 25.2,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-520",
       "name": "Queens Bus",
-      "score_end": 69.1,
+      "score_end": 68.7,
       "score_start": 43.5
     },
     {
-      "date_end": "2026-07-08",
+      "date_end": "2026-07-09",
       "date_start": "2026-06-19",
-      "delta": 25.6,
+      "delta": 25.2,
       "grade_end": "D",
       "id": "metropolitan-transit-authority-mta-514",
       "name": "Staten Island Bus",
-      "score_end": 68.8,
+      "score_end": 68.4,
       "score_start": 43.2
     }
   ]

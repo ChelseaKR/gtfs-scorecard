@@ -28,7 +28,7 @@
     "stale": 2,
     "total": 3
   },
-  "generated_at": "2026-07-08T22:43:25+00:00",
+  "generated_at": "2026-07-09T01:28:45+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 1,
@@ -38,7 +38,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2223,
+      "days_until_expiry": -2224,
       "expiry_status": "stale",
       "grade": "F",
       "id": "omaha-metro",
@@ -46,13 +46,13 @@
       "needs_attention": true,
       "score": 39.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -175,
+      "days_until_expiry": -176,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "kimball-county-transit-service",
@@ -60,13 +60,13 @@
       "needs_attention": true,
       "score": 51.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2015,
+      "days_until_expiry": -2016,
       "expiry_status": "stale",
       "grade": "F",
       "id": "startran",
@@ -74,27 +74,27 @@
       "needs_attention": true,
       "score": 52.1,
       "shapes_status": "at_risk",
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 52 day(s)",
-      "days_until_expiry": 52,
+      "attention_reason": "Service data expires in 51 day(s)",
+      "days_until_expiry": 51,
       "expiry_status": "current",
       "grade": "C",
       "id": "omaha-metro-2261",
       "name": "Omaha Metro",
       "needs_attention": true,
-      "score": 76.7,
+      "score": 76.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 541,
+      "days_until_expiry": 540,
       "expiry_status": "current",
       "grade": "D",
       "id": "startran-2269",
@@ -102,7 +102,7 @@
       "needs_attention": false,
       "score": 68.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],

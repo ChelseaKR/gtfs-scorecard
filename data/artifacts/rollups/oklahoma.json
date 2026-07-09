@@ -28,7 +28,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-08T22:43:25+00:00",
+  "generated_at": "2026-07-09T01:28:45+00:00",
   "grade_distribution": {
     "B": 1,
     "D": 1,
@@ -38,7 +38,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1054,
+      "days_until_expiry": -1055,
       "expiry_status": "stale",
       "grade": "F",
       "id": "metropolitan-tulsa-transit-authority-mtta",
@@ -46,13 +46,13 @@
       "needs_attention": true,
       "score": 28.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -949,
+      "days_until_expiry": -950,
       "expiry_status": "stale",
       "grade": "F",
       "id": "embark",
@@ -60,13 +60,13 @@
       "needs_attention": true,
       "score": 43.7,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 26839,
+      "days_until_expiry": 26838,
       "expiry_status": "current",
       "grade": "D",
       "id": "campus-area-rapid-transit-cart",
@@ -74,13 +74,13 @@
       "needs_attention": false,
       "score": 66.9,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 365,
+      "days_until_expiry": 364,
       "expiry_status": "current",
       "grade": "B",
       "id": "embark-2062",
@@ -88,7 +88,7 @@
       "needs_attention": false,
       "score": 81.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     }
   ],

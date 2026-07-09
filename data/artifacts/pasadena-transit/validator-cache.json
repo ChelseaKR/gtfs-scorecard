@@ -2,6 +2,21 @@
   "report": {
     "notices": [
       {
+        "code": "expired_calendar",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "serviceId": "1"
+          },
+          {
+            "csvRowNumber": 8,
+            "serviceId": "7"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 2
+      },
+      {
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
@@ -25,18 +40,6 @@
         "sample_notices": [
           {
             "csvRowNumber": 2
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
-        "code": "trip_coverage_not_active_for_next7_days",
-        "sample_notices": [
-          {
-            "currentDate": "20260705",
-            "serviceWindowEndDate": "20271231",
-            "serviceWindowStartDate": "20260706"
           }
         ],
         "severity": "WARNING",
@@ -77,6 +80,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "c5088140682caed98abcb9b56d9fd8f3d4013b0a7cc8b60f79778bea6cc7f30a",
+  "sha256": "6096b1657c095c69a318de07b498477bc6358a754c41db31fe54d7282afff4bf",
   "validator_version": "8.0.1"
 }

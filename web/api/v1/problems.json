@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-08T22:43:41+00:00",
+  "generated_at": "2026-07-09T01:29:07+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -55,9 +55,9 @@
       "prevalence_pct": 9.2
     },
     "expired_calendar": {
-      "agencies": 752,
-      "instances": 6179,
-      "prevalence_pct": 51.9
+      "agencies": 753,
+      "instances": 6181,
+      "prevalence_pct": 52.0
     },
     "fare_transfer_rule_with_forbidden_transfer_count": {
       "agencies": 4,
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.6
     },
     "feed_expiration_date30_days": {
-      "agencies": 22,
-      "instances": 22,
-      "prevalence_pct": 1.5
+      "agencies": 41,
+      "instances": 41,
+      "prevalence_pct": 2.8
     },
     "feed_expiration_date7_days": {
       "agencies": 508,
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.7
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 94,
-      "instances": 94,
-      "prevalence_pct": 6.5
+      "agencies": 119,
+      "instances": 119,
+      "prevalence_pct": 8.2
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -401,7 +401,7 @@
     },
     "scorecard_rt_predictions_implausible": {
       "agencies": 6,
-      "instances": 3050,
+      "instances": 2979,
       "prevalence_pct": 0.4
     },
     "scorecard_rt_service_alerts_unreachable": {
@@ -416,7 +416,7 @@
     },
     "scorecard_rt_trip_coverage": {
       "agencies": 55,
-      "instances": 1735,
+      "instances": 1730,
       "prevalence_pct": 3.8
     },
     "scorecard_rt_trip_updates_unreachable": {
@@ -430,8 +430,8 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 8,
-      "instances": 176,
+      "agencies": 9,
+      "instances": 181,
       "prevalence_pct": 0.6
     },
     "scorecard_station_no_pathways": {
@@ -451,7 +451,7 @@
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1238,
-      "instances": 2121024,
+      "instances": 2121073,
       "prevalence_pct": 85.4
     },
     "scorecard_wheelchair_boarding_unknown": {
@@ -530,9 +530,9 @@
       "prevalence_pct": 6.8
     },
     "trip_coverage_not_active_for_next7_days": {
-      "agencies": 643,
-      "instances": 643,
-      "prevalence_pct": 44.4
+      "agencies": 642,
+      "instances": 642,
+      "prevalence_pct": 44.3
     },
     "trip_distance_exceeds_shape_distance": {
       "agencies": 40,
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2121024,
+      "instances": 2121073,
       "prevalence_pct": 85.4,
       "severity": "WARNING",
       "source": "scorecard",
@@ -645,12 +645,12 @@
       "why": "See the linked rule for what this affects."
     },
     {
-      "agencies": 752,
+      "agencies": 753,
       "code": "expired_calendar",
       "effort": "One setting in most export tools.",
       "fix": "Remove past service periods the next time you export the feed.",
-      "instances": 6179,
-      "prevalence_pct": 51.9,
+      "instances": 6181,
+      "prevalence_pct": 52.0,
       "severity": "WARNING",
       "source": "validator",
       "what": "Some service calendars in the feed have already expired.",
@@ -693,12 +693,12 @@
       "why": "Riders may walk to a stop where no bus is scheduled to arrive."
     },
     {
-      "agencies": 643,
+      "agencies": 642,
       "code": "trip_coverage_not_active_for_next7_days",
       "effort": "One setting in most export tools.",
       "fix": "Trim past service periods the next time you export.",
-      "instances": 643,
-      "prevalence_pct": 44.4,
+      "instances": 642,
+      "prevalence_pct": 44.3,
       "severity": "WARNING",
       "source": "validator",
       "what": "Many of the feed's trips don't run at all in the next 7 days.",
@@ -713,7 +713,7 @@
       "prevalence_pct": 42.7,
       "severity": "ERROR",
       "source": "scorecard",
-      "what": "Service data ended 2745 day(s) ago.",
+      "what": "Service data ended 2746 day(s) ago.",
       "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
     },
     {

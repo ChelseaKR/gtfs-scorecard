@@ -1,6 +1,6 @@
 {
   "agency_count": 9,
-  "average_score": 65.7,
+  "average_score": 65.5,
   "common_fixes": [
     {
       "agencies": 9,
@@ -33,7 +33,7 @@
     "stale": 3,
     "total": 3
   },
-  "generated_at": "2026-07-08T22:43:25+00:00",
+  "generated_at": "2026-07-09T01:28:45+00:00",
   "grade_distribution": {
     "B": 3,
     "D": 2,
@@ -43,7 +43,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1650,
+      "days_until_expiry": -1651,
       "expiry_status": "stale",
       "grade": "F",
       "id": "jump-around-carson",
@@ -51,13 +51,27 @@
       "needs_attention": true,
       "score": 50.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 44 day(s)",
+      "days_until_expiry": 44,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "regional-transportation-commission-of-southern-nevada-rtc-2351",
+      "name": "Regional Transportation Commission of Southern Nevada (RTC)",
+      "needs_attention": true,
+      "score": 51.6,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -373,
+      "days_until_expiry": -374,
       "expiry_status": "stale",
       "grade": "F",
       "id": "city-of-las-vegas",
@@ -65,13 +79,13 @@
       "needs_attention": true,
       "score": 51.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -373,
+      "days_until_expiry": -374,
       "expiry_status": "stale",
       "grade": "F",
       "id": "city-of-las-vegas-565",
@@ -79,55 +93,41 @@
       "needs_attention": true,
       "score": 51.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 45 day(s)",
-      "days_until_expiry": 45,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "regional-transportation-commission-of-southern-nevada-rtc-2351",
-      "name": "Regional Transportation Commission of Southern Nevada (RTC)",
-      "needs_attention": true,
-      "score": 52.0,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-08",
-      "top_fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 58 day(s)",
-      "days_until_expiry": 58,
+      "attention_reason": "Service data expires in 57 day(s)",
+      "days_until_expiry": 57,
       "expiry_status": "current",
       "grade": "B",
       "id": "regional-transportation-commission-rtc",
       "name": "Regional Transportation Commission (RTC)",
       "needs_attention": true,
-      "score": 82.5,
+      "score": 82.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 58 day(s)",
-      "days_until_expiry": 58,
+      "attention_reason": "Service data expires in 57 day(s)",
+      "days_until_expiry": 57,
       "expiry_status": "current",
       "grade": "B",
       "id": "regional-transportation-commission-rtc-120",
       "name": "Regional Transportation Commission (RTC)",
       "needs_attention": true,
-      "score": 82.5,
+      "score": 82.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 26839,
+      "days_until_expiry": 26838,
       "expiry_status": "current",
       "grade": "D",
       "id": "tahoe-transportation-district",
@@ -135,13 +135,13 @@
       "needs_attention": false,
       "score": 69.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 26839,
+      "days_until_expiry": 26838,
       "expiry_status": "current",
       "grade": "D",
       "id": "tahoe-transportation-district-897",
@@ -149,13 +149,13 @@
       "needs_attention": false,
       "score": 69.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 208,
+      "days_until_expiry": 207,
       "expiry_status": "current",
       "grade": "B",
       "id": "north-lake-tahoe-express",
@@ -163,7 +163,7 @@
       "needs_attention": false,
       "score": 81.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-08",
+      "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
