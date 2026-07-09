@@ -3,5 +3,5 @@ madison-county-transit-1145,Madison County Transit,F,7.0,2026-07-09,stale,-1524,
 kansas-city-area-transportation-authority-kcata,Kansas City Area Transportation Authority (KCATA),F,27.0,2026-07-09,expiring_soon,2,yes,Service data expires in 2 day(s),Re-export with a validity window that reaches at least 60 days out.,
 jeffco-express,JeffCo Express,F,43.7,2026-07-09,stale,-1925,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
 jeffco-express-189,JeffCo Express,F,43.7,2026-07-09,stale,-1925,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-metro-st-louis,Metro St. Louis,C,72.8,2026-07-09,current,52,yes,Service data expires in 52 day(s),"Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+metro-st-louis,Metro St. Louis,D,69.3,2026-07-09,current,52,yes,Grade slipped from C to D,Add feed_info.txt with feed_start_date and feed_end_date to your export.,ready
 metro-st-louis-2035,Loop Trolley,C,77.1,2026-07-09,current,108,no,,"Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",

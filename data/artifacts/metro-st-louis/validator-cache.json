@@ -6,37 +6,94 @@
         "sample_notices": [
           {
             "csvRowNumber": 2,
-            "fieldName": "stop_name",
-            "fieldValue": "THEKLA @ EMERSON SB",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "TO CENTRAL WEST END TC",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 3,
-            "fieldName": "stop_name",
-            "fieldValue": "WEST FLORISSANT @ BUZZ WESTFALL SB",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "TO CENTRAL WEST END TC",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 4,
-            "fieldName": "stop_name",
-            "fieldValue": "SKINKER @ FOREST PARK PARKWAY SB",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "TO CENTRAL WEST END TC",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 5,
-            "fieldName": "stop_name",
-            "fieldValue": "MERCY HOSPITAL SOUTH NB",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "TO CENTRAL WEST END TC",
+            "filename": "trips.txt"
           },
           {
             "csvRowNumber": 6,
-            "fieldName": "stop_name",
-            "fieldValue": "CIVIC CENTER TRANSIT CENTER",
-            "filename": "stops.txt"
+            "fieldName": "trip_headsign",
+            "fieldValue": "TO CENTRAL WEST END TC",
+            "filename": "trips.txt"
           }
         ],
         "severity": "WARNING",
-        "total": 14402
+        "total": 23930
+      },
+      {
+        "code": "duplicate_route_name",
+        "sample_notices": [
+          {
+            "agencyId": "70006",
+            "csvRowNumber1": 60,
+            "csvRowNumber2": 62,
+            "routeId1": "19725B",
+            "routeId2": "19731B",
+            "routeLongName": "MetroLink Blue Line",
+            "routeShortName": "MLB",
+            "routeTypeValue": 2
+          },
+          {
+            "agencyId": "70006",
+            "csvRowNumber1": 61,
+            "csvRowNumber2": 63,
+            "routeId1": "19725R",
+            "routeId2": "19731R",
+            "routeLongName": "MetroLink Red Line",
+            "routeShortName": "MLR",
+            "routeTypeValue": 2
+          },
+          {
+            "agencyId": "70006",
+            "csvRowNumber1": 60,
+            "csvRowNumber2": 64,
+            "routeId1": "19725B",
+            "routeId2": "19734B",
+            "routeLongName": "MetroLink Blue Line",
+            "routeShortName": "MLB",
+            "routeTypeValue": 2
+          },
+          {
+            "agencyId": "70006",
+            "csvRowNumber1": 61,
+            "csvRowNumber2": 65,
+            "routeId1": "19725R",
+            "routeId2": "19734R",
+            "routeLongName": "MetroLink Red Line",
+            "routeShortName": "MLR",
+            "routeTypeValue": 2
+          },
+          {
+            "agencyId": "70006",
+            "csvRowNumber1": 2,
+            "csvRowNumber2": 66,
+            "routeId1": "19666",
+            "routeId2": "19811",
+            "routeLongName": "Gold",
+            "routeShortName": "1",
+            "routeTypeValue": 3
+          }
+        ],
+        "severity": "WARNING",
+        "total": 64
       },
       {
         "code": "stop_too_far_from_shape",
@@ -50,8 +107,8 @@
             "shapeId": "118093",
             "stopId": "14124",
             "stopName": "FAIRVIEW HEIGHTS TRANSIT CENTER",
-            "stopTimeCsvRowNumber": 476938,
-            "tripCsvRowNumber": 9034,
+            "stopTimeCsvRowNumber": 470551,
+            "tripCsvRowNumber": 8786,
             "tripId": "3384283"
           },
           {
@@ -108,7 +165,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 19
+        "total": 38
       },
       {
         "code": "unused_shape",
@@ -128,47 +185,41 @@
           {
             "csvRowNumber": 97382,
             "shapeId": "118110"
+          },
+          {
+            "csvRowNumber": 104240,
+            "shapeId": "118121"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 19
+      },
+      {
+        "code": "stop_without_stop_time",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "stopId": "23",
+            "stopName": "DEBALIVIERE GARAGE"
+          },
+          {
+            "csvRowNumber": 29,
+            "stopId": "1445",
+            "stopName": "SCOTT AVE @ GRAND METROLINK"
+          },
+          {
+            "csvRowNumber": 1360,
+            "stopId": "5333",
+            "stopName": "TAYLOR @ CENTRAL WESTEND TRANSIT CTR SB"
+          },
+          {
+            "csvRowNumber": 4975,
+            "stopId": "16371",
+            "stopName": "BOYLE @ CORTEX METROLINK NB"
           }
         ],
         "severity": "WARNING",
         "total": 4
-      },
-      {
-        "code": "duplicate_route_name",
-        "sample_notices": [
-          {
-            "agencyId": "70006",
-            "csvRowNumber1": 60,
-            "csvRowNumber2": 62,
-            "routeId1": "19725B",
-            "routeId2": "19731B",
-            "routeLongName": "MetroLink Blue Line",
-            "routeShortName": "MLB",
-            "routeTypeValue": 2
-          },
-          {
-            "agencyId": "70006",
-            "csvRowNumber1": 61,
-            "csvRowNumber2": 63,
-            "routeId1": "19725R",
-            "routeId2": "19731R",
-            "routeLongName": "MetroLink Red Line",
-            "routeShortName": "MLR",
-            "routeTypeValue": 2
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
-        "code": "missing_recommended_file",
-        "sample_notices": [
-          {
-            "filename": "feed_info.txt"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
       },
       {
         "code": "stops_match_shape_out_of_order",
@@ -191,6 +242,35 @@
             "stopTimeCsvRowNumber2": 26127,
             "tripCsvRowNumber": 569,
             "tripId": "3373474"
+          },
+          {
+            "match1": [
+              38.47119601286639,
+              -90.30470666314149
+            ],
+            "match2": [
+              38.46965219455664,
+              -90.30853873174655
+            ],
+            "shapeId": "118595",
+            "stopId1": "8155",
+            "stopId2": "15614",
+            "stopName1": "TELEGRAPH @ BAUMGARTNER NB",
+            "stopName2": "GEBHARDT @ DELOAK SB",
+            "stopTimeCsvRowNumber1": 511565,
+            "stopTimeCsvRowNumber2": 511564,
+            "tripCsvRowNumber": 10384,
+            "tripId": "3404977"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 2
+      },
+      {
+        "code": "missing_recommended_file",
+        "sample_notices": [
+          {
+            "filename": "feed_info.txt"
           }
         ],
         "severity": "WARNING",
@@ -200,10 +280,22 @@
         "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
         "sample_notices": [
           {
+            "shapeId": "118709",
+            "stopTimeCsvRowNumber": 728777,
+            "tripCsvRowNumber": 14736,
+            "tripId": "3409329"
+          },
+          {
             "shapeId": "117863",
             "stopTimeCsvRowNumber": 118587,
             "tripCsvRowNumber": 2565,
             "tripId": "3375470"
+          },
+          {
+            "shapeId": "118825",
+            "stopTimeCsvRowNumber": 949615,
+            "tripCsvRowNumber": 18384,
+            "tripId": "3412980"
           },
           {
             "shapeId": "117830",
@@ -216,26 +308,14 @@
             "stopTimeCsvRowNumber": 118947,
             "tripCsvRowNumber": 2570,
             "tripId": "3375475"
-          },
-          {
-            "shapeId": "117830",
-            "stopTimeCsvRowNumber": 58294,
-            "tripCsvRowNumber": 1240,
-            "tripId": "3374145"
-          },
-          {
-            "shapeId": "117863",
-            "stopTimeCsvRowNumber": 119019,
-            "tripCsvRowNumber": 2571,
-            "tripId": "3375476"
           }
         ],
         "severity": "INFO",
-        "total": 9327
+        "total": 18892
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "f03bf5f06266562e2b39dabf8d517decc3fca7a8cf63010c9a6f55c5f6f645a9",
+  "sha256": "ab690506e00b7b3d9cc8cc677db27819b2ebf4d6ecd85a3cfe6912e4f81473ec",
   "validator_version": "8.0.1"
 }

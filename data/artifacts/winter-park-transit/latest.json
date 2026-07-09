@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/winter-park-transit/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/winter-park-transit/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -25,16 +24,20 @@
         "accessibility": {
           "measures": "presence_not_usability",
           "score": 0.5,
-          "stops_marked_accessible_pct": 0.8,
+          "stops_marked_accessible_pct": 0.7,
           "stops_marked_not_accessible_pct": 0.0,
-          "stops_stated_pct": 0.8,
+          "stops_stated_pct": 0.7,
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
-          "headsigns": 3.7,
+          "headsigns": 3.9,
           "stop_names": 15.0,
           "wheelchair_stops": 0.2,
           "wheelchair_trips": 0.0
@@ -55,7 +58,7 @@
           "has_flex": true
         },
         "has_fares": true,
-        "headsign_pct": 24.3,
+        "headsign_pct": 26.0,
         "mixed_case_stop_name_pct": 100.0,
         "pathways": {
           "has_entrances": false,
@@ -65,45 +68,45 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 130,
-        "trips": 115,
+        "stops": 136,
+        "trips": 77,
         "wheelchair_accessible_pct": 0.0,
-        "wheelchair_boarding_pct": 0.8,
-        "wheelchair_marked_accessible_pct": 0.8,
+        "wheelchair_boarding_pct": 0.7,
+        "wheelchair_marked_accessible_pct": 0.7,
         "wheelchair_marked_not_accessible_pct": 0.0
       },
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 129,
+          "count": 135,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
           "points": 24.8,
           "severity": "WARNING",
-          "what": "129 of 130 stops don't say whether a wheelchair user can board there.",
+          "what": "135 of 136 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 115,
+          "count": 77,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "115 of 115 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "77 of 77 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 87,
+          "count": 57,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
-          "points": 11.3,
+          "points": 11.1,
           "severity": "WARNING",
-          "what": "87 of 115 trips have no headsign.",
+          "what": "57 of 77 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -119,18 +122,18 @@
         }
       ],
       "name": "completeness",
-      "score": 48.8,
+      "score": 49.1,
       "status": "measured",
       "summary": "1% of stops state wheelchair accessibility (1% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
     },
     "correctness": {
       "details": {
-        "distinct_codes": 6,
+        "distinct_codes": 5,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 44,
-          "WARNING": 45
+          "INFO": 46,
+          "WARNING": 43
         },
         "validator_version": "8.0.1"
       },
@@ -145,17 +148,6 @@
           "severity": "WARNING",
           "what": "Some stops exist in the feed but no trip ever stops at them.",
           "why": "Riders may walk to a stop where no bus is scheduled to arrive."
-        },
-        {
-          "code": "expired_calendar",
-          "count": 2,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
           "code": "mixed_case_recommended_field",
@@ -192,7 +184,7 @@
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 2,
+          "count": 4,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -203,17 +195,17 @@
         }
       ],
       "name": "correctness",
-      "score": 84.0,
+      "score": 88.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 6 kinds of issue across 89 instances (0 error, 45 warning, 44 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 89 instances (0 error, 43 warning, 46 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 128,
         "feed_end_date": "2026-11-14",
-        "feed_start_date": "2026-05-23",
-        "feed_version": "UTC: 23-May-2026 14:52",
+        "feed_start_date": "2026-07-09",
+        "feed_version": "UTC: 09-Jul-2026 19:33",
         "has_feed_info": true,
         "last_service_date": "2026-11-14",
         "seasonal_boundary": false,
@@ -233,6 +225,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -242,7 +246,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 140 days.",
+        "detail": "Service data covers the next 128 days.",
         "key": "current",
         "met": true
       },
@@ -258,24 +262,30 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "33aea47b2697d02cd97217a10b5f38585cdf896c378b9d9229a80685b7979a00",
-    "size_bytes": 89294,
+    "sha256": "136388e18d6da5c2bf4bce37907d6a2205aeeafcdb3318ae6507f2f2172867f5",
+    "size_bytes": 104726,
     "static_url": "https://data.trilliumtransit.com/gtfs/winterpark-co-us/winterpark-co-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/winterpark-co-us/winterpark-co-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
-      -105.94676,
+      -105.96056,
       39.87522,
       -105.75583,
-      40.09211
+      40.25304
     ],
-    "lat": 39.92923,
-    "lon": -105.79425,
-    "stop_count": 130
+    "lat": 39.93203,
+    "lon": -105.795,
+    "stop_count": 136
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "806"
     ],
@@ -294,22 +304,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 140 days.",
+        "detail": "Service data covers the next 128 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 7.0,
-    "margin_to_next_band": 3.0,
-    "score": 77.0
+    "margin_to_lower_band": 8.8,
+    "margin_to_next_band": 1.2,
+    "score": 78.8
   },
   "recommendations": [
     {
+      "category": "flex",
       "code": "scorecard_flex_completeness_no_booking_rules",
       "count": 1,
       "effort": "A small file; one rule often covers the whole service.",
@@ -321,6 +332,7 @@
       "why": "Riders can see the service area but not how to book, so they can't complete a trip."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 4,
       "effort": "A per-route color setting in your scheduling software.",
@@ -328,28 +340,24 @@
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (RED, KC, GR, WFX).",
+      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (RED, WFX, KC, GR).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
-      "count": 34,
+      "count": 36,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "34 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"CR 72 & Elk Creek (Southbound)\", \"Safeway @ CR 804\", \"Spinner & Cranmer - The Timbers\", and more).",
+      "what": "36 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"CR 72 & Elk Creek (Southbound)\", \"Safeway @ CR 804\", \"Spinner & Cranmer - The Timbers\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 130,
+    "boardable_stops": 136,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
@@ -359,52 +367,189 @@
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "41 of 130 boardable stops are never served by any trip.",
+        "what": "41 of 136 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
     "orphan_stops": 41,
     "single_stop_trips": 0,
-    "trips_total": 115
+    "trips_total": 77
+  },
+  "route_map": {
+    "drawn_route_count": 3,
+    "has_shapes": true,
+    "path": "data/artifacts/winter-park-transit/geometry.geojson",
+    "route_count": 11,
+    "routes": [
+      {
+        "color": "FE6E09",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "10094",
+        "label": "KC",
+        "long": "Kings Crossing/Orange Line",
+        "short": "KC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0072BC",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "10095",
+        "label": "HCH",
+        "long": "Hi Country Haus/Blue Line",
+        "short": "HCH",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE011F",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "10096",
+        "label": "RED",
+        "long": "Rendezvous/Red Line",
+        "short": "RED",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9E399E",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "10098",
+        "label": "FRX",
+        "long": "MeadowRidge Express",
+        "short": "FRX",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A2A2A",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "10099",
+        "label": "FRA",
+        "long": "Fraser/Black Line",
+        "short": "FRA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8B5E3C",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "10100",
+        "label": "VQ",
+        "long": "Vasquez/Brown Line",
+        "short": "VQ",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4D600",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "10101",
+        "label": "BV",
+        "long": "Beaver Village/Yellow Line",
+        "short": "BV",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00ACC4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10103",
+        "label": "GR",
+        "long": "Granby Regional Commuter/Teal Line",
+        "short": "GR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A2A2A",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "10104",
+        "label": "FRA",
+        "long": "Fraser/Black Line - Summer",
+        "short": "FRA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2C973E",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "14411",
+        "label": "WFX",
+        "long": "West Fraser Express/Emerald Line",
+        "short": "WFX",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "77841",
+        "label": "ROC",
+        "long": "Rocky Express/Gold Line",
+        "short": "ROC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 136,
+    "stop_points_capped": false
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 77 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 77,
+    "trips_with_shape": 77
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 129,
+      "count": 135,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 24.8,
       "rank": 1,
       "severity": "WARNING",
-      "what": "129 of 130 stops don't say whether a wheelchair user can board there.",
+      "what": "135 of 136 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 115,
+      "count": 77,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "115 of 115 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "77 of 77 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
       "code": "scorecard_missing_headsigns",
-      "count": 87,
+      "count": 57,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
-      "points": 11.3,
+      "points": 11.1,
       "rank": 3,
       "severity": "WARNING",
-      "what": "87 of 115 trips have no headsign.",
+      "what": "57 of 77 trips have no headsign.",
       "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],

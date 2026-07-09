@@ -83,7 +83,7 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-09T20:29:26+00:00",
+  "generated_at": "2026-07-09T22:07:00+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 30,
@@ -829,7 +829,7 @@
       "id": "via-mobility-2395",
       "name": "Via Mobility",
       "needs_attention": true,
-      "score": 66.2,
+      "score": 66.5,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
@@ -1330,20 +1330,6 @@
       "days_until_expiry": 128,
       "expiry_status": "current",
       "grade": "C",
-      "id": "winter-park-transit",
-      "name": "Winter Park Transit",
-      "needs_attention": false,
-      "score": 77.0,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 128,
-      "expiry_status": "current",
-      "grade": "C",
       "id": "winter-park-transit-175",
       "name": "Winter Park Transit",
       "needs_attention": false,
@@ -1405,6 +1391,20 @@
       "needs_attention": false,
       "score": 78.4,
       "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 128,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "winter-park-transit",
+      "name": "Winter Park Transit",
+      "needs_attention": false,
+      "score": 78.8,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -1865,9 +1865,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 1,
-    "not_measured": 112,
+    "not_measured": 111,
     "not_ready": 0,
-    "ready": 13,
+    "ready": 14,
     "total": 126
   },
   "state_percentile": 91

@@ -1,6 +1,6 @@
 {
   "agency_count": 6,
-  "average_score": 45.2,
+  "average_score": 44.6,
   "common_fixes": [
     {
       "agencies": 4,
@@ -19,13 +19,13 @@
     },
     {
       "agencies": 2,
-      "code": "scorecard_no_fare_data",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
+      "code": "scorecard_missing_feed_info_dates",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "agencies": 2,
-      "code": "scorecard_missing_feed_info_dates",
-      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+      "code": "scorecard_no_fare_data",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
     {
       "agencies": 2,
@@ -38,9 +38,10 @@
     "stale": 3,
     "total": 3
   },
-  "generated_at": "2026-07-09T20:29:26+00:00",
+  "generated_at": "2026-07-09T22:07:00+00:00",
   "grade_distribution": {
-    "C": 2,
+    "C": 1,
+    "D": 1,
     "F": 4
   },
   "members": [
@@ -102,17 +103,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 52 day(s)",
+      "attention_reason": "Grade slipped from C to D",
       "days_until_expiry": 52,
       "expiry_status": "current",
-      "grade": "C",
+      "grade": "D",
       "id": "metro-st-louis",
       "name": "Metro St. Louis",
       "needs_attention": true,
-      "score": 72.8,
-      "shapes_status": null,
+      "score": 69.3,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
-      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
+      "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "annual_trips": null,
@@ -137,10 +138,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 5,
+    "not_measured": 4,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 2,
     "total": 6
   },
-  "state_percentile": 15
+  "state_percentile": 13
 }

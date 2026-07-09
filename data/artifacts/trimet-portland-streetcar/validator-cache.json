@@ -6,8 +6,8 @@
         "sample_notices": [
           {
             "blockId": "9003",
-            "csvRowNumberA": 74470,
-            "csvRowNumberB": 74361,
+            "csvRowNumberA": 55628,
+            "csvRowNumberB": 55519,
             "intersection": "20261126",
             "serviceIdA": "A.727",
             "serviceIdB": "X.727",
@@ -16,8 +16,8 @@
           },
           {
             "blockId": "9003",
-            "csvRowNumberA": 74470,
-            "csvRowNumberB": 74732,
+            "csvRowNumberA": 55628,
+            "csvRowNumberB": 55890,
             "intersection": "20261126",
             "serviceIdA": "A.727",
             "serviceIdB": "X.727",
@@ -26,8 +26,8 @@
           },
           {
             "blockId": "9003",
-            "csvRowNumberA": 74732,
-            "csvRowNumberB": 74090,
+            "csvRowNumberA": 55890,
+            "csvRowNumberB": 55248,
             "intersection": "20261126",
             "serviceIdA": "X.727",
             "serviceIdB": "A.727",
@@ -36,8 +36,8 @@
           },
           {
             "blockId": "9003",
-            "csvRowNumberA": 74090,
-            "csvRowNumberB": 74373,
+            "csvRowNumberA": 55248,
+            "csvRowNumberB": 55531,
             "intersection": "20261126",
             "serviceIdA": "A.727",
             "serviceIdB": "X.727",
@@ -46,8 +46,8 @@
           },
           {
             "blockId": "9003",
-            "csvRowNumberA": 74373,
-            "csvRowNumberB": 74493,
+            "csvRowNumberA": 55531,
+            "csvRowNumberB": 55651,
             "intersection": "20261126",
             "serviceIdA": "X.727",
             "serviceIdB": "A.727",
@@ -62,55 +62,55 @@
         "code": "service_has_no_active_day_of_the_week",
         "sample_notices": [
           {
-            "csvRowNumber": 21,
+            "csvRowNumber": 15,
             "serviceId": "U.730"
           },
           {
-            "csvRowNumber": 26,
+            "csvRowNumber": 18,
             "serviceId": "C.730"
           },
           {
-            "csvRowNumber": 33,
+            "csvRowNumber": 23,
             "serviceId": "h.731"
           },
           {
-            "csvRowNumber": 35,
+            "csvRowNumber": 25,
             "serviceId": "i.731"
           },
           {
-            "csvRowNumber": 36,
+            "csvRowNumber": 26,
             "serviceId": "v.731"
           }
         ],
         "severity": "WARNING",
-        "total": 21
+        "total": 19
       },
       {
         "code": "expired_calendar",
         "sample_notices": [
           {
             "csvRowNumber": 2,
-            "serviceId": "7.724"
+            "serviceId": "7.730"
           },
           {
-            "csvRowNumber": 6,
-            "serviceId": "Q.724"
+            "csvRowNumber": 5,
+            "serviceId": "Q.730"
           },
           {
-            "csvRowNumber": 10,
-            "serviceId": "W.724"
+            "csvRowNumber": 8,
+            "serviceId": "W.730"
           },
           {
-            "csvRowNumber": 14,
-            "serviceId": "8.724"
+            "csvRowNumber": 15,
+            "serviceId": "U.730"
           },
           {
-            "csvRowNumber": 17,
-            "serviceId": "S.724"
+            "csvRowNumber": 18,
+            "serviceId": "C.730"
           }
         ],
         "severity": "WARNING",
-        "total": 18
+        "total": 10
       },
       {
         "code": "mixed_case_recommended_field",
@@ -242,39 +242,6 @@
         "total": 4
       },
       {
-        "code": "stop_too_far_from_shape_using_user_distance",
-        "sample_notices": [
-          {
-            "geoDistanceToShape": 115.65074316919622,
-            "match": [
-              45.347064,
-              -122.774988
-            ],
-            "shapeId": "631376",
-            "stopId": "14574",
-            "stopName": "SW Boones Ferry Rd & Salinan",
-            "stopTimeCsvRowNumber": 395700,
-            "tripCsvRowNumber": 66355,
-            "tripId": "17087764"
-          },
-          {
-            "geoDistanceToShape": 115.65074316919622,
-            "match": [
-              45.347064,
-              -122.774988
-            ],
-            "shapeId": "631378",
-            "stopId": "14574",
-            "stopName": "SW Boones Ferry Rd & Salinan",
-            "stopTimeCsvRowNumber": 396028,
-            "tripCsvRowNumber": 66357,
-            "tripId": "17087766"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
         "code": "unknown_column",
         "sample_notices": [
           {
@@ -356,6 +323,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "d5b0ba95776de3459a63ffb019715b92dd967c0e5c46cf7edd56d199bbb66e22",
+  "sha256": "7db3e3981718842d3f96cb628f6a3f46cf1076b4fd8417fb2d70cded32ba56d1",
   "validator_version": "8.0.1"
 }

@@ -32,10 +32,34 @@
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "regressed": true,
-      "score_delta": -7.0,
+      "score_delta": -7.2,
       "since": "2026-07-08",
       "to_grade": "F",
-      "to_score": 50.0
+      "to_score": 49.8
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 67.2,
+      "id": "clackco-connects-clackamas-county-2740",
+      "name": "Static feed for realtime",
+      "regressed": true,
+      "score_delta": -6.7,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 60.5
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 65.0,
+      "id": "spirit-bus-2202",
+      "name": "Spirit Bus",
+      "regressed": true,
+      "score_delta": -5.3,
+      "since": "2026-07-08",
+      "to_grade": "F",
+      "to_score": 59.7
     },
     {
       "date": "2026-07-09",
@@ -51,15 +75,15 @@
     },
     {
       "date": "2026-07-09",
-      "from_grade": "D",
-      "from_score": 66.5,
-      "id": "towson-loop",
-      "name": "Towson Loop",
+      "from_grade": "C",
+      "from_score": 73.1,
+      "id": "metro-st-louis",
+      "name": "Metro St. Louis",
       "regressed": true,
-      "score_delta": -3.2,
+      "score_delta": -3.8,
       "since": "2026-07-08",
       "to_grade": "D",
-      "to_score": 63.3
+      "to_score": 69.3
     },
     {
       "date": "2026-07-09",
@@ -84,6 +108,18 @@
       "since": "2026-07-08",
       "to_grade": "C",
       "to_score": 78.2
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "D",
+      "from_score": 66.5,
+      "id": "towson-loop",
+      "name": "Towson Loop",
+      "regressed": true,
+      "score_delta": -1.7,
+      "since": "2026-07-08",
+      "to_grade": "D",
+      "to_score": 64.8
     },
     {
       "date": "2026-07-09",
@@ -284,10 +320,10 @@
       "id": "via-mobility-2395",
       "name": "Via Mobility",
       "regressed": false,
-      "score_delta": 4.0,
+      "score_delta": 4.3,
       "since": "2026-07-08",
       "to_grade": "D",
-      "to_score": 66.2
+      "to_score": 66.5
     },
     {
       "date": "2026-07-09",
@@ -351,6 +387,30 @@
     },
     {
       "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 70.0,
+      "id": "trimet-portland-streetcar",
+      "name": "TriMet, Portland Streetcar",
+      "regressed": false,
+      "score_delta": 1.8,
+      "since": "2026-07-08",
+      "to_grade": "C",
+      "to_score": 71.8
+    },
+    {
+      "date": "2026-07-09",
+      "from_grade": "C",
+      "from_score": 77.0,
+      "id": "winter-park-transit",
+      "name": "Winter Park Transit",
+      "regressed": false,
+      "score_delta": 1.8,
+      "since": "2026-07-08",
+      "to_grade": "C",
+      "to_score": 78.8
+    },
+    {
+      "date": "2026-07-09",
       "from_grade": "B",
       "from_score": 84.9,
       "id": "durango-transit",
@@ -374,8 +434,8 @@
       "to_score": 83.1
     }
   ],
-  "count": 31,
-  "generated_at": "2026-07-09T20:29:44+00:00",
+  "count": 36,
+  "generated_at": "2026-07-09T22:07:16+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

@@ -34,21 +34,6 @@
         "total": 41
       },
       {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 4,
-            "serviceId": "c_6364_b_86700_d_127"
-          },
-          {
-            "csvRowNumber": 7,
-            "serviceId": "c_16980_b_86701_d_127"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 2
-      },
-      {
         "code": "mixed_case_recommended_field",
         "sample_notices": [
           {
@@ -126,25 +111,39 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 33,
-            "serviceId": "c_16980_b_86701_d_127",
-            "serviceWindowEndDate": "2026-05-31",
-            "serviceWindowStartDate": "2026-04-20"
+            "daysBeforeFeedStart": 38,
+            "serviceId": "c_71875_b_86754_d_127",
+            "serviceWindowEndDate": "2026-11-14",
+            "serviceWindowStartDate": "2026-06-01"
           },
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 33,
-            "serviceId": "c_6364_b_86700_d_127",
-            "serviceWindowEndDate": "2026-05-31",
-            "serviceWindowStartDate": "2026-04-20"
+            "daysBeforeFeedStart": 38,
+            "serviceId": "c_71875_b_86754_d_31",
+            "serviceWindowEndDate": "2026-11-13",
+            "serviceWindowStartDate": "2026-06-01"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 35,
+            "serviceId": "c_18048_b_86698_d_120",
+            "serviceWindowEndDate": "2026-08-30",
+            "serviceWindowStartDate": "2026-06-04"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 38,
+            "serviceId": "c_18048_b_86698_d_127",
+            "serviceWindowEndDate": "2026-08-30",
+            "serviceWindowStartDate": "2026-06-01"
           }
         ],
         "severity": "INFO",
-        "total": 2
+        "total": 4
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "33aea47b2697d02cd97217a10b5f38585cdf896c378b9d9229a80685b7979a00",
+  "sha256": "136388e18d6da5c2bf4bce37907d6a2205aeeafcdb3318ae6507f2f2172867f5",
   "validator_version": "8.0.1"
 }

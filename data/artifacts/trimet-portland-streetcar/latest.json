@@ -71,7 +71,7 @@
           "pathway_count": 0
         },
         "stops": 6478,
-        "trips": 93055,
+        "trips": 70428,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 100.0,
@@ -80,13 +80,13 @@
       "findings": [
         {
           "code": "scorecard_missing_headsigns",
-          "count": 93055,
+          "count": 70428,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "93055 of 93055 trips have no headsign.",
+          "what": "70428 of 70428 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -109,11 +109,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 10,
+        "distinct_codes": 9,
         "instances_by_severity": {
           "ERROR": 908,
           "INFO": 13,
-          "WARNING": 62
+          "WARNING": 50
         },
         "validator_version": "8.0.1"
       },
@@ -131,7 +131,7 @@
         },
         {
           "code": "service_has_no_active_day_of_the_week",
-          "count": 21,
+          "count": 19,
           "effort": "A few minutes in your scheduling software.",
           "fix": "Delete the empty calendars or set their service days.",
           "owner": "Likely your export tool",
@@ -142,13 +142,13 @@
         },
         {
           "code": "expired_calendar",
-          "count": 18,
+          "count": 10,
           "effort": "One setting in most export tools.",
           "fix": "Remove past service periods the next time you export the feed.",
           "owner": "Likely your export tool",
           "points": 6.0,
           "severity": "WARNING",
-          "what": "Some service calendars in the feed have already expired.",
+          "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
@@ -182,17 +182,6 @@
           "points": 4.0,
           "severity": "WARNING",
           "what": "Same route and agency url (flagged by the MobilityData validator).",
-          "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 2,
-          "effort": "Varies.",
-          "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-          "owner": "",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Stop too far from shape using user distance (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
         },
         {
@@ -230,17 +219,17 @@
         }
       ],
       "name": "correctness",
-      "score": 42.2,
+      "score": 46.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 983 instances (908 error, 62 warning, 13 informational).",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 971 instances (908 error, 50 warning, 13 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 142,
         "feed_end_date": "2026-11-28",
-        "feed_start_date": "2026-05-31",
-        "feed_version": "20260531-20260701-2100",
+        "feed_start_date": "2026-06-28",
+        "feed_version": "20260628-20260709-1312",
         "has_feed_info": true,
         "last_service_date": "2026-11-28",
         "seasonal_boundary": false,
@@ -260,6 +249,18 @@
       "weight": 0.2
     }
   },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
   "conformance": {
     "awarded": false,
     "criteria": [
@@ -269,7 +270,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 149 days.",
+        "detail": "Service data covers the next 142 days.",
         "key": "current",
         "met": true
       },
@@ -285,11 +286,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "d5b0ba95776de3459a63ffb019715b92dd967c0e5c46cf7edd56d199bbb66e22",
-    "size_bytes": 51779312,
+    "sha256": "7db3e3981718842d3f96cb628f6a3f46cf1076b4fd8417fb2d70cded32ba56d1",
+    "size_bytes": 38471783,
     "static_url": "http://developer.trimet.org/schedule/gtfs.zip"
   },
-  "generated_at": "2026-07-02T00:00:00+00:00",
+  "fetch": {
+    "final_url": "http://developer.trimet.org/schedule/gtfs.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-09T00:00:00+00:00",
   "geo": {
     "bbox": [
       -123.11545,
@@ -323,7 +330,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 149 days.",
+        "detail": "Service data covers the next 142 days.",
         "key": "current",
         "status": "ready"
       }
@@ -333,12 +340,13 @@
   },
   "overall": {
     "grade": "C",
-    "margin_to_lower_band": 0.0,
-    "margin_to_next_band": 10.0,
-    "score": 70.0
+    "margin_to_lower_band": 1.8,
+    "margin_to_next_band": 8.2,
+    "score": 71.8
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -350,17 +358,12 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-09",
-    "feed_fetched_date": "2026-07-08",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 6410,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 93055
+    "trips_total": 70428
   },
   "route_map": {
     "drawn_route_count": 112,
@@ -1605,7 +1608,13 @@
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 70428 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 70428,
+    "trips_with_shape": 70428
+  },
   "snapshot_date": "2026-07-09",
   "top_fixes": [
     {
@@ -1622,19 +1631,19 @@
     },
     {
       "code": "scorecard_missing_headsigns",
-      "count": 93055,
+      "count": 70428,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "93055 of 93055 trips have no headsign.",
+      "what": "70428 of 70428 trips have no headsign.",
       "why": "Riders at the stop can't tell which direction a bus is going."
     },
     {
       "code": "service_has_no_active_day_of_the_week",
-      "count": 21,
+      "count": 19,
       "effort": "A few minutes in your scheduling software.",
       "fix": "Delete the empty calendars or set their service days.",
       "owner": "Likely your export tool",
