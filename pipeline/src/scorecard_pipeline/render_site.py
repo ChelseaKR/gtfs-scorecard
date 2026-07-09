@@ -841,6 +841,99 @@ def _embed_section(agency_id: str, agency_name: str, grade: str) -> str:
     )
 
 
+def _citation_reference(
+    artifact: dict[str, Any], agency_id: str, agency_name: str, record_url: str
+) -> str:
+    """The plain-text formatted reference for a single agency's pinned, dated
+    record (EXP-09). Names exactly what a citation needs to resolve to a fixed
+    claim: which record (the dated JSON, not the page that keeps changing),
+    what methodology produced it (rubric + validator version), and what feed
+    bytes it scored (the sha256 already carried in ``feed`` for FIX-01
+    provenance), so a manager, board packet, or NTD narrative can cite a grade
+    the way a paper cites a dataset snapshot instead of a URL that quietly
+    drifts."""
+    date = str(artifact.get("snapshot_date", ""))
+    year = date[:4] or "n.d."
+    rubric = str(artifact.get("rubric_version", "—"))
+    validator = str(artifact.get("validator_version", "—"))
+    sha = str((artifact.get("feed") or {}).get("sha256", "") or "")
+    sha_note = f", feed sha256 {sha[:12]}…" if sha else ""
+    overall = artifact.get("overall") or {}
+    grade_note = f"grade {overall.get('grade', '—')} ({overall.get('score', '—')}/100)"
+    return (
+        f"GTFS Scorecard. ({year}). {agency_name} GTFS feed-quality record, "
+        f"dated {date} ({grade_note}, rubric v{rubric}, gtfs-validator "
+        f"{validator}{sha_note}). {record_url}"
+    )
+
+
+def _citation_bibtex(
+    artifact: dict[str, Any], agency_id: str, agency_name: str, record_url: str
+) -> str:
+    """The same record as a BibTeX @misc entry, for a researcher's reference
+    manager. The key is built from the agency slug and the record date so two
+    records for the same agency never collide."""
+    date = str(artifact.get("snapshot_date", ""))
+    year = date[:4] or "n.d."
+    rubric = str(artifact.get("rubric_version", "—"))
+    validator = str(artifact.get("validator_version", "—"))
+    overall = artifact.get("overall") or {}
+    key = f"gtfsscorecard-{agency_id}-{date}".replace(":", "")
+    note = (
+        f"Checked {date}; rubric v{rubric}; gtfs-validator {validator}; "
+        f"grade {overall.get('grade', '—')} ({overall.get('score', '—')}/100)"
+    )
+    return (
+        f"@misc{{{key},\n"
+        f"  title        = {{{agency_name} GTFS feed-quality record}},\n"
+        "  author       = {GTFS Scorecard},\n"
+        f"  year         = {{{year}}},\n"
+        f"  howpublished = {{\\url{{{record_url}}}}},\n"
+        f"  note         = {{{note}}}\n"
+        "}"
+    )
+
+
+def _citation_section(artifact: dict[str, Any], agency_id: str, agency_name: str) -> str:
+    """A 'Cite this record' affordance (EXP-09): a stable, versioned, per-agency
+    record any manager, board, or NTD narrative can point at, distinct from the
+    live page above (which is overwritten on every check). The record it cites
+    is the dated JSON artifact the publish step already writes and never
+    overwrites (``<agency>/<date>.json``), pinning grade, category scores,
+    methodology (rubric + validator version), and provenance (the exact feed
+    bytes scored, by sha256) as they stood on that date, backed by the
+    per-agency history archive so the cited state is reproducible. Emits both a
+    plain-text formatted reference and a BibTeX entry, each with a copy button
+    (the page-level copy script wires them), so citing a grade takes one click
+    instead of hand-formatting one."""
+    date = str(artifact.get("snapshot_date", ""))
+    if not date:
+        return ""
+    record_url = f"{BASE_URL}/data/artifacts/{agency_id}/{date}.json"
+    reference = _citation_reference(artifact, agency_id, agency_name, record_url)
+    bibtex = _citation_bibtex(artifact, agency_id, agency_name, record_url)
+    repo = "https://github.com/ChelseaKR/gtfs-scorecard"
+    return (
+        '<section class="citation" id="cite" aria-labelledby="cite-h">'
+        '<h2 class="section-title" id="cite-h">Cite this record</h2>'
+        '<p class="page-lede">This page updates on every check. The record below does not: it is '
+        f'the dated file this grade came from, published at <a href="{esc(record_url)}">'
+        f"{esc(record_url)}</a> and never overwritten, pinning the grade, category scores, "
+        "rubric version, validator version, and the scored feed's sha256 as they stood on "
+        f"{esc(date)}. Use it in a board packet, an NTD narrative, or a research citation "
+        "instead of linking the live page, whose content will differ on your next visit.</p>"
+        '<label class="visually-hidden" for="cite-text">Formatted reference</label>'
+        f'<textarea id="cite-text" class="outreach-text" rows="3" readonly>{esc(reference)}</textarea>'
+        '<button type="button" class="copy-btn" data-copy="cite-text">Copy reference</button>'
+        '<label class="visually-hidden" for="cite-bibtex">BibTeX</label>'
+        f'<textarea id="cite-bibtex" class="outreach-text" rows="7" readonly>{esc(bibtex)}</textarea>'
+        '<button type="button" class="copy-btn" data-copy="cite-bibtex">Copy BibTeX</button>'
+        '<p class="fineprint">Citing the tool itself rather than one agency\'s record? Use the '
+        f'repo\'s <a href="{esc(repo)}/blob/main/CITATION.cff">CITATION.cff</a>.</p>'
+        "</section>"
+    )
+
+
 def _outreach_section(artifact: dict[str, Any], canonical: str) -> str:
     """The 'Send the agency a note' block: a ready-to-paste message with a copy
     button (the page emits the copy script once)."""
@@ -1498,9 +1591,14 @@ def _render_agency(
     _outreach_block = _outreach_section(artifact, canonical)
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name, str(overall["grade"]))
+    _citation_block = _citation_section(artifact, agency_id, agency_name)
     # The copy script is emitted once if any copyable block (outreach, vendor,
-    # embed) is present, so multiple buttons never double-bind.
-    _copy_script = _COPY_SCRIPT if (_outreach_block or _vendor_block or _embed_block) else ""
+    # embed, citation) is present, so multiple buttons never double-bind.
+    _copy_script = (
+        _COPY_SCRIPT
+        if (_outreach_block or _vendor_block or _embed_block or _citation_block)
+        else ""
+    )
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (agency_name, None)])
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -1557,6 +1655,7 @@ def _render_agency(
     {_standards_section(artifact, (dir_record or {}).get("state", ""))}
     {_route_rule()}
     {_embed_block}
+    {_citation_block}
     {_copy_script}"""
 
     jsonld = {
