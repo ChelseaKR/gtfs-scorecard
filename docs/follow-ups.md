@@ -6,39 +6,53 @@ big ones lives in `docs/roadmap.md`; this file is the operational checklist.
 
 ## S3 as the artifact source of truth (roadmap Year 1)
 
-**Status: deferred.** The original driver was the daily run losing refreshes to
-git push races. That is now fixed in code — shards publish only the agencies
-they scored (no cross-shard clobber), and a rejected push replays the generated
-files onto the latest `main` instead of rebasing (which conflicted on binary
-artifacts like `web/api/v1/agencies.parquet`). With reliability handled, moving
-artifacts off git is now just cleanup (keeping the repo from growing by a few
-thousand JSON files a day) and is not urgent.
+**Status: steps 1, 2, and 4 landed in code; step 3 (the actual cutover) is
+still deferred pending a live-verified deploy — see below.** The original
+driver was the daily run losing refreshes to git push races. That is now
+fixed in code — shards publish only the agencies they scored (no cross-shard
+clobber), and a rejected push replays the generated files onto the latest
+`main` instead of rebasing (which conflicted on binary artifacts like
+`web/api/v1/agencies.parquet`). With reliability handled, moving artifacts
+off git is now just cleanup (keeping the repo from growing by a few thousand
+JSON files a day) and is not urgent.
 
 The validator cache already supports this move: `vcache.py` has an S3 tier
 (`VALIDATOR_CACHE_BUCKET` / `ARTIFACTS_BUCKET`) so the cache survives once
 `data/artifacts` stops being committed.
 
-Remaining steps, in order:
+Steps, in order:
 
-1. **Pages read role.** Add an `aws_iam_role` in `infra/artifacts/github_oidc.tf`
-   with only `s3:GetObject` + `s3:ListBucket` on the artifacts bucket, trusted
-   for both `repo:ChelseaKR/gtfs-scorecard:ref:refs/heads/main` and
-   `repo:ChelseaKR/gtfs-scorecard:environment:github-pages` (the deploy job sets
-   `environment: github-pages`, which changes its OIDC `sub`). The existing
-   deploy role is write-scoped; do not reuse it for the read-only Pages job.
-   Output its ARN; store it as the `PAGES_AWS_ROLE_ARN` Actions secret.
-2. **Assemble from S3 in `pages.yml`.** After the `cp -r data/artifacts`, add an
-   AWS auth step (assume the read role) and
-   `aws s3 sync s3://<bucket>/data/artifacts _site/data/artifacts`, gated on
-   `vars.ARTIFACTS_BUCKET`. Keep the `cp` as a fallback so a fork or an S3 outage
-   still serves the committed copy. Verify on one deploy that the site still has
-   data before step 3.
+1. **Pages read role — done.** `aws_iam_role.pages_read` in
+   `infra/artifacts/github_oidc.tf` grants only `s3:GetObject` +
+   `s3:ListBucket` on the artifacts bucket, trusted for both
+   `repo:ChelseaKR/gtfs-scorecard:ref:refs/heads/main` and
+   `repo:ChelseaKR/gtfs-scorecard:environment:github-pages`. Its output
+   `pages_read_role_arn` still needs a human to `terraform apply` and store as
+   the `PAGES_AWS_ROLE_ARN` Actions secret — that has not happened yet.
+2. **Assemble from S3 in `pages.yml` — done, but unverified live.** Both the
+   `lighthouse` and `deploy` jobs now sync `s3://<bucket>/data/artifacts` into
+   `_site/data/artifacts` after the `cp -r data/artifacts` fallback, gated on
+   `vars.ARTIFACTS_BUCKET` and non-fatal on failure (`|| echo "::warning
+   ..."`). This has not run against real infra yet, since step 1's role has
+   not been applied or wired to a secret. Before step 3: apply step 1, set
+   `PAGES_AWS_ROLE_ARN`, trigger one deploy, and confirm in the run log that
+   the sync step actually authenticated and copied objects (not just skipped
+   on the unset variable).
 3. **Stop committing `data/artifacts`** in the `collect` job (drop it from the
-   `git add` path list). This is the cutover; only do it after step 2 is proven
-   on a live deploy, since after it S3 is the sole source of the dated history
+   `git add` path list). **Not done — do not do this until step 2 is proven on
+   a live deploy**, since after it S3 is the sole source of the dated history
    the trend charts read. The S3 sync is already additive (no `--delete`).
-4. **Lifecycle policy.** Add an S3 lifecycle rule to expire very old dated
-   artifacts so the bucket stays bounded (the sync no longer prunes).
+4. **Lifecycle policy — done.** `aws_s3_bucket_lifecycle_configuration.artifacts`
+   in `infra/artifacts/main.tf` expires objects tagged `artifact-class=dated`
+   after 400 days, plus a 30-day noncurrent-version expiration now that
+   versioning is on. The collect job's "Tag today's dated artifacts" step
+   (`scorecard.yml`) applies the tag to each day's `<agency>/<date>.json` as
+   it's synced; `latest.json`, `badge.json`, `directory.json`, and the
+   validator cache never match that filename pattern, so they're never tagged
+   and never expire. Artifact history synced to the bucket before this step
+   existed stays untagged (and therefore un-expiring) until something
+   re-touches it — fails open, not closed. This also needs `terraform apply`
+   to take effect.
 
 The web app's runtime data source does not change: it keeps reading same-origin
 from Pages, so there is no CDN-staleness risk (see the note in
