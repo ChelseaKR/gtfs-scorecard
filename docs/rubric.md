@@ -147,7 +147,7 @@ a values statement and the most common real gap in small-agency feeds.
 
 ### Reported but not graded
 
-Six further signals are computed and shown on the agency page, but carry no
+Seven further signals are computed and shown on the agency page, but carry no
 points in this version, so they never move the grade. They surface real,
 rider-facing detail and are framed as fixes. Each stays ungraded on purpose until
 there are enough real feeds to calibrate a fair weight, and each has an ADR.
@@ -157,6 +157,18 @@ there are enough real feeds to calibrate a fair weight, and each has an ADR.
   on its own rather than blended into completeness. It reflects the same graded
   points and adds none; the chip and the sub-score key off it directly. The
   number states what the feed publishes, not whether a stop is physically usable.
+- **Accessibility depth signals** (EXP-05, `pipeline/src/scorecard_pipeline/accessibility.py`).
+  A second lens on the same category, modeled on the BlinkTag
+  `gtfs-accessibility-validator`, that looks past whether an accessibility field
+  is populated and asks whether it holds together: route-color/text-color
+  contrast against the WCAG 4.5:1 bar, stop names a screen reader is likely to
+  mispronounce with no `tts_stop_name` override, and whether a feed that models
+  stations or entrances also carries `pathways.txt`/`levels.txt` so a wheelchair
+  user's step-free route inside the station is describable. Shown as a small,
+  zero-deduction "accessibility depth signals" list nested inside the
+  accessibility sub-score above, framed as progress to make, never as a
+  deduction or a failing grade for a small agency. Same "states it, does not
+  certify usability" caveat as the sub-score above it.
 - **Fare-free** (docs/add-your-agency.md). An agency that runs fare-free by policy
   is credited for the fare component and shown a neutral note in place of the
   "no fare data" finding. A deliberate policy is not a gap, the same way a missing

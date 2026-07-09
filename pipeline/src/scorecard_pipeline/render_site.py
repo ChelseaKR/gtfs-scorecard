@@ -524,7 +524,44 @@ def _accessibility_score(comp_cat: dict[str, Any]) -> float | None:
     return round(earned / 40 * 100, 1)  # 25 (stops) + 15 (trips) available
 
 
-def _accessibility_substat(comp_cat: dict[str, Any]) -> str:
+def _accessibility_depth_signals(artifact: dict[str, Any]) -> str:
+    """Adoption-framed accessibility-depth signals (EXP-05).
+
+    The second accessibility lens (``accessibility.py``, modeled on the
+    BlinkTag ``gtfs-accessibility-validator``) checks field plausibility
+    (route-color contrast a low-vision rider can read, stop names a screen
+    reader pronounces correctly) and pathway-graph connectivity (step-free
+    routing inside stations) -- past whether a field is merely populated. Those
+    checks are zero-deduction: they never move the sub-score above or the
+    grade, and are surfaced here as adoption progress to make, not as failures,
+    so a small agency is never shamed for a gap the field-presence sub-score
+    already treats fairly. Empty when the feed has nothing to flag or the
+    checks did not run.
+    """
+    recs = [
+        r for r in (artifact.get("recommendations") or []) if r.get("category") == "accessibility"
+    ]
+    if not recs:
+        return ""
+    items = "".join(
+        f'<li><p class="a11y-depth-what">{esc(str(r.get("what", "")))}</p>'
+        f'<p class="a11y-depth-fix"><strong>Consider:</strong> {esc(str(r.get("fix", "")))}</p>'
+        "</li>"
+        for r in recs
+    )
+    noun = "signal" if len(recs) == 1 else "signals"
+    return (
+        '<div class="a11y-depth">'
+        f'<p class="a11y-depth-label">{len(recs)} accessibility depth {noun}</p>'
+        f'<ul class="a11y-depth-list">{items}</ul>'
+        '<p class="a11y-depth-note">Opportunities to strengthen the data, not deductions from '
+        "the sub-score above. States what the second accessibility lens can check from the "
+        "feed, not verified physical usability.</p>"
+        "</div>"
+    )
+
+
+def _accessibility_substat(comp_cat: dict[str, Any], artifact: dict[str, Any] | None = None) -> str:
     """A small accessibility sub-score block for the Rider experience card."""
     score = _accessibility_score(comp_cat)
     if score is None:
@@ -543,6 +580,7 @@ def _accessibility_substat(comp_cat: dict[str, Any]) -> str:
             f"({round(marked)}% marked accessible). "
             "Reflects what the feed states, not verified physical usability."
         )
+    depth = _accessibility_depth_signals(artifact) if artifact is not None else ""
     return (
         '<div class="substat" role="group" aria-label="Accessibility sub-score">'
         '<div class="ptop"><span class="pname">Accessibility</span>'
@@ -550,7 +588,7 @@ def _accessibility_substat(comp_cat: dict[str, Any]) -> str:
         f'<div class="pbar" role="meter" aria-valuenow="{shown}" aria-valuemin="0" '
         f'aria-valuemax="100" aria-label="Accessibility sub-score">'
         f'<span style="width:{width}%;background:var(--grade-{band})"></span></div>'
-        f'<p class="pstat">{esc(note)}</p></div>'
+        f'<p class="pstat">{esc(note)}</p>{depth}</div>'
     )
 
 
@@ -1542,7 +1580,11 @@ def _render_agency(
         band = _grade_band(score)
         # Accessibility gets a visible sub-score inside the Rider experience card
         # (ADR 0006); it is a lens on this category, not a change to the grade.
-        substat = _accessibility_substat(cat) + _fares_substat(cat) if key == "completeness" else ""
+        substat = (
+            _accessibility_substat(cat, artifact) + _fares_substat(cat)
+            if key == "completeness"
+            else ""
+        )
         cats_html += (
             f'<div class="platform">'
             f'<span class="trk" aria-hidden="true">{trk}</span>'
@@ -2177,10 +2219,15 @@ STATE_STANDARDS: dict[str, dict[str, str]] = {
 
 
 def _recommendations_section(artifact: dict[str, Any]) -> str:
-    """Beyond-the-grade opportunities (fares, on-demand service, deeper
-    accessibility) attached to the artifact at score time. These do not affect
-    the grade; empty when there is nothing to suggest."""
-    recs = artifact.get("recommendations") or []
+    """Beyond-the-grade opportunities (fares, on-demand service) attached to the
+    artifact at score time. These do not affect the grade; empty when there is
+    nothing to suggest. Accessibility-depth items (EXP-05) are excluded here --
+    they get their own celebrated presentation in the Rider experience card's
+    accessibility sub-score (see `_accessibility_depth_signals`), not this
+    generic list, per the ideation item's "celebrated sub-score" bar."""
+    recs = [
+        r for r in (artifact.get("recommendations") or []) if r.get("category") != "accessibility"
+    ]
     if not recs:
         return ""
     items = []
