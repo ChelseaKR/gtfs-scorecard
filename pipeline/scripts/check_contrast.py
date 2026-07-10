@@ -36,6 +36,13 @@ def ratio(fg: str, bg: str) -> float:
 # Each entry: (label, fg, bg, large?). Large text needs 4.5:1; normal needs 7:1.
 # Tokens resolved per theme below; literal hexes pass through.
 PAIRS: list[tuple[str, str, str, bool]] = [
+    # ---- board-ready report document (scorecard_pipeline/report.py) ----
+    # The report is a standalone print-first file with a fixed light palette
+    # (literal hexes, no theming), so these pairs hold in every theme pass.
+    # The brand accent colors only decorative bands and rules, never text.
+    ("report ink on white", "#20241f", "#ffffff", False),
+    ("report ink-soft on white", "#3d4339", "#ffffff", False),
+    ("report ink on table-header fill", "#20241f", "#e5e8df", False),
     # ---- default light palette / app shared styles.css ----
     ("app --ink body on --paper", "ink", "paper", False),
     ("app --ink-soft on --paper", "ink-soft", "paper", False),

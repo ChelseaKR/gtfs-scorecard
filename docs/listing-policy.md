@@ -26,14 +26,32 @@ that does not publish realtime is shown neutrally, never penalized for it.
 
 We will act on these quickly and without argument:
 
-- **Correct a name, URL, or detail** that is wrong: open an issue or a pull
+- **Correct a name, URL, or detail** that is wrong: use the
+  [correction and claim form](https://gtfsscorecard.org/claim/), open a pull
   request against [`agencies.yaml`](../agencies.yaml), or email the address in
-  the repository.
+  the repository. A correction only needs a public source that supports it.
 - **Request removal**: an agency that does not want to be listed can ask to be
   removed, by the same channels. We honor removal requests; the entry is deleted
   and the agency is excluded from future runs.
 - **Report a feed that has moved or broken**: tell us and we will update or drop
   the URL.
+
+## Agency claims and verification
+
+Agency staff can ask to become the verified contact for a listing. Opening a
+request does not prove ownership or employment. A maintainer verifies one of
+three evidence paths before marking a contact as verified:
+
+- confirmation on an agency-controlled public webpage;
+- a one-time proof file or text at the public feed host; or
+- a private reply from an official agency email domain.
+
+Do not publish private email addresses, access tokens, or credentials in an
+issue. Until evidence has been reviewed, the request remains **unverified**.
+Verification confirms the contact's relationship to the listing. It does not
+endorse the grade, override the rubric, or prevent other people from reporting
+errors. Registry changes still go through a reviewed pull request so the public
+record shows what changed and why.
 
 ## Long-expired feeds
 

@@ -1,0 +1,150 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:78832d4f-c352-48f0-b872-671567120801",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-07-10T20:30:00Z",
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli",
+      "name": "gtfs-validator-cli",
+      "version": "8.0.1",
+      "purl": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "19293ddd9b6f954f216d4f12054bd8a3232921751c4484339e339764a91000e2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "application",
+      "bom-ref": "pkg:golang/github.com/aws/aws-lambda-runtime-interface-emulator@1.26.4",
+      "name": "aws-lambda-runtime-interface-emulator",
+      "version": "1.26.4",
+      "purl": "pkg:golang/github.com/aws/aws-lambda-runtime-interface-emulator@1.26.4"
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2022-25647",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-25647"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "The CLI serializes validator results with Gson. It does not deserialize attacker-controlled JSON into application types on the GTFS scoring path. Reassess when MobilityData publishes a release newer than 8.0.1.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2014-0114",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0114"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "Commons BeanUtils is shaded transitively through commons-validator, but the validator CLI does not bind request properties or invoke the affected PropertyUtils APIs.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2019-10086",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-10086"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "Commons BeanUtils is shaded transitively through commons-validator, but the validator CLI does not bind request properties or invoke the affected PropertyUtils APIs.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2025-48734",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-48734"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "Commons BeanUtils is shaded transitively through commons-validator, but the validator CLI does not bind request properties or invoke the affected enum-property introspection APIs.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2021-35515",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-35515"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "protected_by_mitigating_control",
+        "response": ["workaround_available"],
+        "detail": "The service accepts ZIP GTFS feeds only. Python preflight rejects unreadable archives, excessive entry counts, oversized entries, excessive expanded size, and extreme compression ratios before Java starts; workers also have bounded memory and execution time.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2021-35516",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-35516"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "protected_by_mitigating_control",
+        "response": ["workaround_available"],
+        "detail": "The service accepts ZIP GTFS feeds only. Python preflight rejects unreadable archives, excessive entry counts, oversized entries, excessive expanded size, and extreme compression ratios before Java starts; workers also have bounded memory and execution time.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2021-35517",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-35517"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "protected_by_mitigating_control",
+        "response": ["workaround_available"],
+        "detail": "The service accepts ZIP GTFS feeds only. Python preflight rejects unreadable archives, excessive entry counts, oversized entries, excessive expanded size, and extreme compression ratios before Java starts; workers also have bounded memory and execution time.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2021-36090",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-36090"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "protected_by_mitigating_control",
+        "response": ["workaround_available"],
+        "detail": "Python archive preflight rejects unreadable ZIPs, excessive entry counts, oversized entries, excessive expanded size, and extreme compression ratios before Java starts; workers also have bounded memory and execution time.",
+        "firstIssued": "2026-07-10T20:30:00Z",
+        "lastUpdated": "2026-07-10T20:30:00Z"
+      }
+    },
+    {
+      "id": "CVE-2026-39822",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-39822"},
+      "affects": [{"ref": "pkg:golang/github.com/aws/aws-lambda-runtime-interface-emulator@1.26.4"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "The Runtime Interface Emulator is included by the official AWS Lambda base image for local container execution. AWS Lambda's managed runtime does not invoke this binary, and neither production image exposes a local-emulator network endpoint. Remove this exception as soon as AWS refreshes the base image with RIE 1.26.5 or newer.",
+        "firstIssued": "2026-07-10T20:55:00Z",
+        "lastUpdated": "2026-07-10T20:55:00Z"
+      }
+    }
+  ]
+}

@@ -164,6 +164,38 @@ def test_fetch_static_rejects_a_non_zip_response(monkeypatch: pytest.MonkeyPatch
     assert not dest.with_suffix(".zip.part").exists()
 
 
+def test_fetch_static_rejects_an_oversized_archive_entry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(fetchmod, "MAX_GTFS_ENTRY_BYTES", 8)
+    monkeypatch.setattr(
+        fetchmod, "_download_with_mirror_fallback", lambda _a: (_zip_bytes(), ORIGIN_PROV)
+    )
+
+    with pytest.raises(ValueError, match=r"entry 'agency\.txt' expands"):
+        fetchmod.fetch_static(AGENCY, DATE)
+
+    dest = raw_dir() / AGENCY.id / DATE.isoformat() / "gtfs.zip"
+    assert not dest.exists()
+    assert not dest.with_suffix(".zip.part").exists()
+
+
+def test_fetch_static_rejects_an_extreme_compression_ratio(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("stop_times.txt", "A" * 10_000)
+    monkeypatch.setattr(fetchmod, "COMPRESSION_RATIO_MIN_BYTES", 1)
+    monkeypatch.setattr(fetchmod, "MAX_GTFS_COMPRESSION_RATIO", 2)
+    monkeypatch.setattr(
+        fetchmod, "_download_with_mirror_fallback", lambda _a: (buf.getvalue(), ORIGIN_PROV)
+    )
+
+    with pytest.raises(ValueError, match="unsafe compression ratio"):
+        fetchmod.fetch_static(AGENCY, DATE)
+
+
 def test_reused_snapshot_reads_provenance_back_from_the_sidecar(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

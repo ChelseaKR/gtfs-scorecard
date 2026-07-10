@@ -34,11 +34,9 @@ left implicit.
 Declare, for the deployed system as it exists today:
 
 - **Tier B (frontend)** for `web/`: the Core Web Vitals lab-gate half of
-  `OBSERVABILITY-STANDARD.md` §8 applies. `lighthouserc.json` currently
-  asserts only `categories:accessibility`; extending it to LCP/INP-proxy
-  (TBT)/CLS assertions is tracked as a follow-up (remediation P1-9) and is
-  **not yet met** — this ADR declares the tier, it does not claim the gate is
-  green.
+  `OBSERVABILITY-STANDARD.md` §8 applies. As of 2026-07-10,
+  `lighthouserc.json` gates performance ≥90, accessibility ≥95, LCP ≤2.5s,
+  CLS ≤0.1, and TBT ≤200ms as the lab responsiveness proxy.
   - RUM (field p75 Core Web Vitals) is **declined, N/A-with-reason**: this
     site has no analytics/beacon pipeline by design (`web/analytics.js` is a
     static-asset name, not a telemetry client — see `docs/listing-policy.md`
@@ -76,9 +74,8 @@ Declare, for the deployed system as it exists today:
   wrong bar. This is a scoring correction, not new engineering — the audit
   itself notes this single declaration moves overall conformance from ~35%
   to ~39%.
-- The two controls that genuinely still apply (Tier B CWV gate, Tier C
-  structured logging) remain open work, tracked in the remediation plan
-  (P1-9, P3) rather than closed by this ADR.
+- The Tier B CWV gate is implemented. Tier C structured logging remains
+  optional operational polish for the current Actions batch deployment.
 - If a future contributor stands up `infra/compute`, they must revisit this
   ADR (mark it superseded) before claiming Tier A conformance — applying the
   Terraform without also wiring OTel/SLOs/health probes would recreate

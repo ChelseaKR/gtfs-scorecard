@@ -97,10 +97,10 @@ jobs:
           echo '${{ toJSON(matrix.shard) }}' | jq -r '.[]' | while read -r id; do
             echo "::group::$id"
             uv run --with boto3 scorecard run --agency "$id" --skip-unchanged --outcome-out "$outcomes" && EXIT=0 || EXIT=$?
-            if [ $EXIT -eq 0 ]; then
+            if [ "$EXIT" -eq 0 ]; then
               mkdir -p "$stage/$id"
               cp -a "$GITHUB_WORKSPACE/data/artifacts/$id/." "$stage/$id/"
-            elif [ $EXIT -eq 2 ]; then
+            elif [ "$EXIT" -eq 2 ]; then
               echo "feed unchanged, keeping last artifact"
             else
               echo "::warning title=scoring failed::$id did not score this run (kept its last good artifact)"
@@ -190,11 +190,13 @@ jobs:
       - name: Vendor support report
         working-directory: pipeline
         run: |
-          echo "## Vendor support snapshot" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "_Internal tool — shows which feed hosts have the most expiry problems. Not public._" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          uv run scorecard vendor-report --format markdown >> "$GITHUB_STEP_SUMMARY" || true
+          {
+            echo "## Vendor support snapshot"
+            echo ""
+            echo "_Internal tool — shows which feed hosts have the most expiry problems. Not public._"
+            echo ""
+            uv run scorecard vendor-report --format markdown || true
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Commit refreshed artifacts
         run: |
           git config user.name "scorecard-bot"
@@ -206,8 +208,9 @@ jobs:
           # explicitly. The manifest lists only generated paths, so hand-authored
           # web/src, the static *.html, web/app, and web/tiles stay excluded.
           test -s build/render-manifest.txt || { echo "render manifest missing; render-site did not run"; exit 1; }
-          paths="data/artifacts $(tr '\n' ' ' < build/render-manifest.txt)"
-          git add $paths
+          mapfile -t rendered_paths < build/render-manifest.txt
+          paths=(data/artifacts "${rendered_paths[@]}")
+          git add -- "${paths[@]}"
           if git diff --cached --quiet; then
             echo "No artifact changes today."
             exit 0
@@ -234,7 +237,7 @@ jobs:
             # re-applies modifications, additions, AND deletions for these paths, so
             # a page/artifact this run pruned is actually removed; a plain
             # `git checkout -- $paths` is overlay-only and would leave it behind.
-            git restore --source="$ours" --staged --worktree -- $paths
+            git restore --source="$ours" --staged --worktree -- "${paths[@]}"
             if git diff --cached --quiet; then
               echo "latest main already carries these artifacts; nothing to push."
               exit 0

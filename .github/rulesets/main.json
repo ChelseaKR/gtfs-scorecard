@@ -41,7 +41,8 @@
           { "context": "e2e" },
           { "context": "Dependency audit (pip-audit + osv-scanner)" },
           { "context": "Analyze (python)" },
-          { "context": "Analyze (actions)" }
+          { "context": "Analyze (actions)" },
+          { "context": "standards-pin" }
         ],
         "strict_required_status_checks_policy": true
       }

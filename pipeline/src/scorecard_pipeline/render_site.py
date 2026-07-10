@@ -18,6 +18,7 @@ from __future__ import annotations
 # ruff: noqa: E501
 import csv
 import datetime as dt
+import html as html_lib
 import io
 import json
 import re
@@ -25,6 +26,8 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+
+from markdown_it import MarkdownIt
 
 from ._stats import _GRADES
 from .anomaly import latest_anomaly
@@ -37,6 +40,7 @@ from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
 from .google_gate import from_artifact as google_from_artifact
+from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalogs
 from .instance import ORG_NAME
 from .metrics import expiry_status, operating_signal
 from .mobilitydb import canonical_state
@@ -1637,11 +1641,31 @@ def _render_agency(
     agency_id, agency_name = name
     overall = artifact["overall"]
     canonical = f"{BASE_URL}/agency/{agency_id}/"
-    desc = (
-        f"{agency_name}'s GTFS feed scores {overall['score']} out of 100 "
-        f"(grade {overall['grade']}) for data quality: correctness, freshness, "
-        "rider-experience completeness, and realtime. Plain-language fixes included."
+    state = str((dir_record or {}).get("state") or "").strip()
+    title_qualifier = f" ({state})" if state else ""
+    title_suffix = f"{title_qualifier} GTFS quality report"
+    max_name = max(18, 60 - len(title_suffix))
+    title_name = (
+        agency_name
+        if len(agency_name) <= max_name
+        else agency_name[: max_name - 1].rstrip(" ,-/") + "…"
     )
+    title = f"{title_name}{title_suffix}"
+    rt_measured = artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+    desc_tail = (
+        ": current service dates, validator findings, rider information, realtime quality, "
+        "and prioritized fixes."
+        if rt_measured
+        else ": current service dates, validator findings, rider information, and prioritized fixes."
+    )
+    desc_prefix = "GTFS quality report for "
+    max_desc_name = max(18, 155 - len(desc_prefix) - len(desc_tail))
+    desc_name = (
+        agency_name
+        if len(agency_name) <= max_desc_name
+        else agency_name[: max_desc_name - 1].rstrip(" ,-/") + "…"
+    )
+    desc = f"{desc_prefix}{desc_name}{desc_tail}"
 
     map_section = _route_map_section(artifact, agency_id, stop_names)
     # Insert the map and a closing rule only when there is a map, so a feed without
@@ -1773,7 +1797,8 @@ def _render_agency(
       · <a href="/agency/{esc(agency_id)}/board/">For your board packet: printable one-pager</a>
       {f'· <a href="/agency/{esc(agency_id)}/fixes/">Fix log: every issue this feed has cleared</a>' if has_fixlog else ""}
       · <a href="/compare/?a={esc(agency_id)}">Compare with another agency</a>
-      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a></p>
+      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a>
+      · <a href="/claim/?agency={esc(agency_id)}">Correct or claim this listing</a></p>
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
     {op_html}
     {_anomaly_note(history)}
@@ -1831,6 +1856,22 @@ def _render_agency(
         "name": f"{agency_name} GTFS data quality report",
         "description": desc,
         "url": canonical,
+        "identifier": [
+            {"@type": "PropertyValue", "propertyID": "GTFS Scorecard", "value": agency_id},
+            *(
+                [
+                    {
+                        "@type": "PropertyValue",
+                        "propertyID": "Mobility Database",
+                        "value": str((dir_record or {}).get("mdb_id")),
+                    }
+                ]
+                if (dir_record or {}).get("mdb_id")
+                else []
+            ),
+        ],
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "isBasedOn": artifact.get("feed", {}).get("static_url"),
         "includedInDataCatalog": {"@type": "DataCatalog", "url": BASE_URL},
         "creator": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
         "about": {"@type": "Organization", "name": agency_name},
@@ -1843,7 +1884,6 @@ def _render_agency(
         },
         "keywords": ["GTFS", "transit data quality", "GTFS feed", agency_name],
     }
-    title = f"{agency_name} GTFS data quality: grade {overall['grade']} — GTFS Scorecard"
     atom = (
         f'<link rel="alternate" type="application/atom+xml" '
         f'title="{esc(agency_name)} feed quality changes" href="{canonical}feed.xml">'
@@ -2100,7 +2140,13 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         "readiness, and key feed facts on one page."
     )
     title = f"{agency_name} call-prep brief — GTFS Scorecard"
-    return _page(title=title, description=desc, canonical=canonical, body=body)
+    return _page(
+        title=title,
+        description=desc,
+        canonical=canonical,
+        body=body,
+        robots="noindex,follow",
+    )
 
 
 def _render_board_page(
@@ -2220,7 +2266,13 @@ def _render_board_page(
         "this period, and the next asks, on one printable page."
     )
     title = f"{agency_name} board one-pager — GTFS Scorecard"
-    return _page(title=title, description=desc, canonical=canonical, body=body)
+    return _page(
+        title=title,
+        description=desc,
+        canonical=canonical,
+        body=body,
+        robots="noindex,follow",
+    )
 
 
 def _receipt_anchor(receipt: dict[str, str]) -> str:
@@ -3309,7 +3361,7 @@ def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratc
     for aid, a in graded:
         by_grade.setdefault(str(a["history"][-1]["grade"]), []).append((aid, a))
 
-    sections = []
+    sections: list[str] = []
     for g in "ABCDF":
         members = by_grade.get(g, [])
         if not members:
@@ -3587,114 +3639,125 @@ def _rollup_common_fixes_section(rollup: dict[str, Any]) -> str:
     )
 
 
-# --- minimal markdown for the fix knowledge base -------------------------------
+# --- CommonMark rendering for the fix knowledge base ---------------------------
+
+_FIX_MARKDOWN = MarkdownIt("commonmark", {"html": False, "linkify": False}).enable("table")
 
 
-def _md_link(match: re.Match[str]) -> str:
-    label, href = match.group(1), match.group(2)
-    # Fix docs cross-reference each other as `other_code.md`; rewrite those to the
-    # real on-site path so the links work in the generated site.
-    rel = re.fullmatch(r"([a-z0-9_]+)\.md", href)
-    if rel:
-        href = f"/fix/{rel.group(1)}/"
-    # Only allow http(s), site-relative, and anchor hrefs; never javascript:/data:
-    # even from a repo-controlled fix doc.
-    if not (href.startswith(("http://", "https://", "/", "#"))):
-        return label
-    return f'<a href="{href}">{label}</a>'
+def _plain_html_text(fragment: str) -> str:
+    text = html_lib.unescape(re.sub(r"<[^>]+>", "", fragment))
+    return re.sub(r"\s+", " ", text).strip()
 
 
-def _md_inline(text: str) -> str:
-    text = esc(text)
-    text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
-    text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
-    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _md_link, text)
-    return text
+def _md_to_html(md: str) -> tuple[str, str]:
+    """Render trusted authored Markdown and return the body plus its first H1.
 
-
-def _md_table_row(line: str) -> list[str]:
-    return [cell.strip() for cell in line.strip().strip("|").split("|")]
-
-
-def _is_md_table_separator(line: str) -> bool:
-    cells = _md_table_row(line)
-    return bool(cells) and all(re.fullmatch(r":?-+:?", cell) for cell in cells)
-
-
-def _md_to_html(md: str) -> tuple[str, str]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
-    """Small Markdown subset (headings through h3, lists, tables, paragraphs,
-    inline). Returns (html_body, first_h1_text)."""
-    out: list[str] = []
+    CommonMark preserves wrapped paragraphs and list continuation lines. Raw
+    HTML stays disabled so a guide cannot inject arbitrary page markup.
+    """
+    md = re.sub(r"\]\(([a-z0-9_]+)\.md\)", r"](/fix/\1/)", md)
+    tokens = _FIX_MARKDOWN.parse(md)
     title = ""
-    in_list = False
-    in_table = False
-    lines = md.splitlines()
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        if (
-            not in_table
-            and line.strip().startswith("|")
-            and i + 1 < len(lines)
-            and _is_md_table_separator(lines[i + 1])
-        ):
-            if in_list:
-                out.append("</ul>")
-                in_list = False
-            header = _md_table_row(line)
-            out.append(
-                '<table class="leaderboard"><thead><tr>'
-                + "".join(f"<th>{_md_inline(cell)}</th>" for cell in header)
-                + "</tr></thead><tbody>"
-            )
-            in_table = True
-            i += 2  # skip the header row and the separator row just consumed
-            continue
-        if in_table:
-            if line.strip().startswith("|"):
-                row = _md_table_row(line)
-                out.append(
-                    "<tr>" + "".join(f"<td>{_md_inline(cell)}</td>" for cell in row) + "</tr>"
-                )
-                i += 1
-                continue
-            out.append("</tbody></table>")
-            in_table = False
-        if line.startswith("- "):
-            if not in_list:
-                out.append("<ul>")
-                in_list = True
-            out.append(f"<li>{_md_inline(line[2:])}</li>")
-            i += 1
-            continue
-        if in_list:
-            out.append("</ul>")
-            in_list = False
-        if line.startswith("# "):
-            title = line[2:].strip()
-            out.append(f"<h1>{_md_inline(line[2:])}</h1>")
-        elif line.startswith("### "):
-            out.append(f'<h3 class="section-subtitle">{_md_inline(line[4:])}</h3>')
-        elif line.startswith("## "):
-            out.append(f'<h2 class="section-title">{_md_inline(line[3:])}</h2>')
-        elif line.strip():
-            out.append(f"<p>{_md_inline(line)}</p>")
-        i += 1
-    if in_list:
-        out.append("</ul>")
-    if in_table:
-        out.append("</tbody></table>")
-    return "\n".join(out), title
+    for index, token in enumerate(tokens[:-1]):
+        next_token = tokens[index + 1]
+        if token.type == "heading_open" and token.tag == "h1" and next_token.type == "inline":
+            title = next_token.content.strip()
+            break
+    body = _FIX_MARKDOWN.render(md).strip()
+    body = body.replace("<h2>", '<h2 class="section-title">')
+    body = body.replace("<h3>", '<h3 class="section-subtitle">')
+    body = body.replace("<table>", '<table class="leaderboard">')
+    return body, title
 
 
-def _render_fix(code: str, md: str) -> str:
+def _fix_description(body_html: str, code: str) -> str:
+    """Use the first explanatory paragraph, never the validator-code line."""
+    for paragraph in re.findall(r"<p>(.*?)</p>", body_html, flags=re.DOTALL):
+        text = _plain_html_text(paragraph)
+        if not text or text.lower().startswith("code:"):
+            continue
+        if len(text) > 155:
+            text = text[:152].rsplit(" ", 1)[0].rstrip(" ,;:") + "…"
+        return text
+    return f"What the GTFS validator notice {code} means and how to fix it."
+
+
+def _fix_category(code: str) -> str:
+    if any(term in code for term in ("calendar", "service", "feed_expiration", "feed_info")):
+        return "Service dates and freshness"
+    if any(term in code for term in ("wheelchair", "pathway", "accessible")):
+        return "Accessibility"
+    if any(term in code for term in ("shape", "stop", "route", "trip", "travel")):
+        return "Routes, stops, and shapes"
+    if any(term in code for term in ("fare", "currency")):
+        return "Fares"
+    return "Feed structure and publishing"
+
+
+def _render_fix_index(guides: list[dict[str, str]]) -> str:
+    """Topic hub for the curated GTFS errors and fixes knowledge base."""
+    grouped: dict[str, list[dict[str, str]]] = {}
+    for guide in guides:
+        grouped.setdefault(guide["category"], []).append(guide)
+    order = [
+        "Service dates and freshness",
+        "Accessibility",
+        "Routes, stops, and shapes",
+        "Fares",
+        "Feed structure and publishing",
+    ]
+    sections: list[str] = []
+    for category in order:
+        entries = grouped.get(category, [])
+        if not entries:
+            continue
+        items = "".join(
+            '<li class="finding">'
+            f'<p class="what"><a href="/fix/{esc(entry["code"])}/">'
+            f"{esc(entry['title'])}</a></p>"
+            f'<p class="why">{esc(entry["description"])}</p>'
+            f'<p class="code">Validator rule: {esc(entry["code"])}</p></li>'
+            for entry in entries
+        )
+        section_id = f"fix-{len(sections)}"
+        sections.append(
+            f'<section aria-labelledby="{section_id}"><h2 class="section-title" '
+            f'id="{section_id}">{esc(category)}</h2><ul class="findings">{items}</ul></section>'
+        )
+    canonical = f"{BASE_URL}/fix/"
+    body = f"""    {_breadcrumb([("Home", "/"), ("GTFS errors and fixes", None)])}
+    <a class="backlink" href="/problems/">&larr; Common problems</a>
+    <h1 class="page-title">GTFS errors and fixes.</h1>
+    <p class="page-lede">Plain-language guides to the validator notices and data gaps that
+    affect riders most. Start with the code on your scorecard, then follow the steps and
+    republish the feed.</p>
+    {"".join(sections)}"""
+    jsonld = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "GTFS errors and fixes",
+        "description": "Plain-language guides for common GTFS validator notices.",
+        "url": canonical,
+        "hasPart": [
+            {"@type": "TechArticle", "name": guide["title"], "url": f"{canonical}{guide['code']}/"}
+            for guide in guides
+        ],
+    }
+    return _page(
+        title="GTFS errors and fixes — GTFS Scorecard",
+        description="Plain-language guides for common GTFS validator notices, with rider impact, repair steps, and what to check after republishing.",
+        canonical=canonical,
+        body=body,
+        jsonld=jsonld,
+    )
+
+
+def _render_fix(code: str, md: str, now: dt.datetime) -> str:
     canonical = f"{BASE_URL}/fix/{code}/"
     body_html, title_text = _md_to_html(md)
     title_text = title_text or f"Fix: {code}"
-    # description: first paragraph after the first heading.
-    para = next((re.sub("<[^>]+>", "", p) for p in re.findall(r"<p>(.*?)</p>", body_html)), "")
-    desc = (para[:155] or f"How to fix the GTFS validator notice {code}.").strip()
-    crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (f"Fix: {code}", None)])
+    desc = _fix_description(body_html, code)
+    crumb = _breadcrumb([("Home", "/"), ("GTFS errors and fixes", "/fix/"), (f"Fix: {code}", None)])
     after_republish = (
         '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
         "After you republish</h2>"
@@ -3705,7 +3768,7 @@ def _render_fix(code: str, md: str) -> str:
         "it.</p></section>"
     )
     body = f"""    {crumb}
-    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
     <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>"""
     jsonld = {
         "@context": "https://schema.org",
@@ -3714,6 +3777,9 @@ def _render_fix(code: str, md: str) -> str:
         "description": desc,
         "url": canonical,
         "about": {"@type": "Thing", "name": f"GTFS validator notice {code}"},
+        "author": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
+        "dateModified": now.date().isoformat(),
+        "mainEntityOfPage": canonical,
         "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
     }
     return _page(
@@ -3761,8 +3827,153 @@ def _render_crosswalk_page(md: str) -> str:
     )
 
 
-def _sitemap(urls: list[str]) -> str:
-    items = "".join(f"<url><loc>{esc(u)}</loc></url>" for u in urls)
+def _render_claim_page() -> str:
+    """Explain the evidence-backed correction and agency-claim process.
+
+    Claims are deliberately reviewed by a person. Opening an issue proves
+    neither employment nor control of a feed, so this page names the accepted
+    proof paths and the public status language before collecting a request.
+    """
+    canonical = f"{BASE_URL}/claim/"
+    issue_url = (
+        "https://github.com/ChelseaKR/gtfs-scorecard/issues/new"
+        "?template=claim-agency.yml&labels=agency-claim"
+    )
+    body = f"""    {_breadcrumb([("Home", "/"), ("Correct or claim a listing", None)])}
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <h1 class="page-title">Correct or claim an agency listing</h1>
+    <p class="page-lede">Tell us when a name, feed URL, service status, or other
+    listing detail is wrong. Agency staff can also ask to become the verified
+    contact for a listing. A request is not treated as proof by itself.</p>
+
+    {_route_rule()}
+    <section aria-labelledby="correction-h"><h2 class="section-title" id="correction-h">Corrections do not require a claim</h2>
+    <p>Anyone can report a factual error. Link to the agency's official website,
+    public feed page, procurement record, or another source that lets a reviewer
+    confirm the change. We correct supported facts without requiring the agency
+    to create or maintain an account.</p></section>
+
+    <section aria-labelledby="proof-h"><h2 class="section-title" id="proof-h">How an agency claim is verified</h2>
+    <p>Use one of these proof paths. Do not put private email addresses, access
+    tokens, or credentials in a public issue.</p>
+    <ul>
+      <li><strong>Official webpage:</strong> publish a short confirmation or the
+      scorecard URL on an agency-controlled website.</li>
+      <li><strong>Feed-host proof:</strong> place the one-time text supplied by a
+      reviewer at the public feed host or in an adjacent public file.</li>
+      <li><strong>Official-domain email:</strong> send confirmation privately from
+      an agency-controlled domain after opening the issue.</li>
+    </ul>
+    <p>Until a reviewer checks one of those paths, the request remains
+    <strong>unverified</strong>. Verification confirms the contact's relationship
+    to the listing; it does not endorse the score or change the rubric.</p></section>
+
+    <section aria-labelledby="review-h"><h2 class="section-title" id="review-h">What happens next</h2>
+    <ol>
+      <li>Open a request and describe the exact correction or claim.</li>
+      <li>A maintainer checks the public evidence and may ask for one missing detail.</li>
+      <li>The underlying registry is changed in a reviewed pull request, leaving a public audit trail.</li>
+      <li>The next scoring run republishes the listing. Removal requests are handled under the same policy.</li>
+    </ol>
+    <p><a class="download-btn" id="claim-issue-link" href="{issue_url}">Open a correction or claim request</a></p>
+    <p class="fineprint">Public issues are appropriate for public facts only. For
+    private proof, open the issue without the private detail and use the maintainer
+    contact it provides.</p></section>
+
+    <script>
+    (function () {{
+      var agency = new URLSearchParams(window.location.search).get("agency");
+      if (!agency || !/^[a-z0-9][a-z0-9-]{{0,119}}$/.test(agency)) return;
+      var link = document.getElementById("claim-issue-link");
+      link.href += "&title=" + encodeURIComponent("Correct or claim: " + agency);
+      var note = document.createElement("p");
+      note.className = "fineprint";
+      note.textContent = "Listing selected: " + agency;
+      link.parentNode.insertBefore(note, link);
+    }})();
+    </script>"""
+    return _page(
+        title="Correct or claim a transit agency listing | GTFS Scorecard",
+        description=(
+            "Report a GTFS listing correction or verify an agency contact using "
+            "public evidence, feed-host proof, or official-domain email."
+        ),
+        canonical=canonical,
+        body=body,
+        jsonld={
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Correct or claim a transit agency listing",
+            "url": canonical,
+            "isPartOf": {"@type": "WebSite", "name": "GTFS Scorecard", "url": BASE_URL},
+        },
+    )
+
+
+def _render_spanish_rider_page() -> str:
+    """Spanish-first agency lookup, the first localized rider-facing surface."""
+    text = load_catalog("es")
+    canonical = f"{BASE_URL}/es/"
+    body = f"""    <nav class="breadcrumb" aria-label="Migas de pan"><ol>
+      <li><a href="/">GTFS Scorecard</a></li>
+      <li><span aria-current="page">Espa&ntilde;ol</span></li>
+    </ol></nav>
+    <p><a href="/" hreflang="en">Read this site in English</a></p>
+    <h1 class="page-title">{esc(text["spanish_page_title"])}</h1>
+    <p class="page-lede">{esc(text["spanish_page_lede"])}</p>
+
+    {_route_rule()}
+    <section class="feed-details" aria-labelledby="buscar-agencia">
+      <h2 class="section-title" id="buscar-agencia">Busca tu agencia</h2>
+      <form id="agency-search-es" class="check-form"
+            data-ready="{esc(text["agency_search_ready"])}"
+            data-error="{esc(text["agency_search_error"])}"
+            data-missing="{esc(text["agency_search_missing"])}">
+        <label for="agency-es">{esc(text["agency_search_label"])}</label>
+        <input id="agency-es" name="agency" list="agency-options-es" autocomplete="off"
+               placeholder="{esc(text["agency_search_placeholder"])}" required>
+        <datalist id="agency-options-es"></datalist>
+        <p><button type="submit" disabled>{esc(text["agency_search_button"])}</button></p>
+        <p id="agency-status-es" class="form-status" role="status" aria-live="polite">
+          {esc(text["agency_search_loading"])}
+        </p>
+      </form>
+      <noscript><p><a href="/agencies/" hreflang="en">Abre el directorio completo (en ingl&eacute;s)</a>.</p></noscript>
+    </section>
+
+    <section aria-labelledby="que-significa">
+      <h2 class="section-title" id="que-significa">Qu&eacute; significa la ficha</h2>
+      <p>{esc(text["spanish_page_scope"])}</p>
+      <ul>
+        <li><strong>Vigencia:</strong> si el calendario publicado cubre los pr&oacute;ximos d&iacute;as.</li>
+        <li><strong>Experiencia del pasajero:</strong> si el feed incluye nombres, destinos y datos de accesibilidad.</li>
+        <li><strong>Correcciones:</strong> acciones concretas que la agencia o su proveedor puede revisar.</li>
+      </ul>
+      <p>Las fichas detalladas est&aacute;n disponibles actualmente en ingl&eacute;s. Los grados,
+      las fechas y los valores num&eacute;ricos no cambian con el idioma.</p>
+    </section>"""
+    return _page(
+        title=f"{text['spanish_page_title']} | GTFS Scorecard",
+        description=str(text["spanish_page_lede"]),
+        canonical=canonical,
+        body=body,
+        lang="es",
+        head_extra=(
+            '<link rel="alternate" hreflang="en" href="https://gtfsscorecard.org/">\n'
+            '  <link rel="alternate" hreflang="es" href="https://gtfsscorecard.org/es/">\n'
+            '  <script src="/src/es.js" defer></script>'
+        ),
+    )
+
+
+def _sitemap(urls: list[str], lastmods: dict[str, str] | None = None) -> str:
+    """Render a deduplicated sitemap with truthful per-URL modification dates."""
+    modified = lastmods or {}
+    items = "".join(
+        f"<url><loc>{esc(url)}</loc>"
+        f"{f'<lastmod>{esc(modified[url])}</lastmod>' if modified.get(url) else ''}</url>"
+        for url in dict.fromkeys(urls)
+    )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
@@ -5291,6 +5502,15 @@ def _leaderboard_sections(
     (ADR 0021) matched at least one of its rows, so an unweighted build renders
     exactly as before."""
     hist = histories or {}
+    comparison = board.get("comparison") or {}
+    if comparison.get("suppressed"):
+        return (
+            '<section class="feed-details"><h2 class="section-title">Comparisons withheld</h2>'
+            f"<p>Only {esc(comparison.get('eligible_count', 0))} feeds meet the comparison "
+            f"rules. At least {esc(comparison.get('minimum_cohort', 20))} are required before "
+            "publishing a ranked list. Individual scorecards and the open dataset remain "
+            "available.</p></section>"
+        )
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
@@ -5342,7 +5562,10 @@ def _leaderboard_sections(
     {_move_table(board.get("most_declined", []), "Needs attention")}
     {_rank_table(board.get("bottom", []), "Lowest scoring")}
     </div>
-    <p class="fineprint">Lowest-scoring feeds are listed to help, not to shame: a low
+    <p class="fineprint">Only comparable feeds are included: the snapshot must be dated,
+    the required schedule categories measured, and service data no more than one year expired.
+    Cohorts below {esc(comparison.get("minimum_cohort", 20))} are withheld. Lowest-scoring feeds
+    are listed to help, not to shame: a low
     grade is usually a vendor export setting, and each scorecard names the fix.
     The same standings are available as
     <abbr title="JavaScript Object Notation">JSON</abbr> at
@@ -6848,22 +7071,25 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/try.html",
         f"{BASE_URL}/subscribe.html",
         f"{BASE_URL}/agencies/",
-        f"{BASE_URL}/map/",
-        f"{BASE_URL}/leaderboard/",
-        f"{BASE_URL}/equity/",
     ]
+    sitemap_lastmods: dict[str, str] = {}
     FIX_CODES_WITH_PAGES.clear()  # rebuilt below; never carry state across calls
 
-    def write(rel: str, content: str, url: str | None = None) -> None:
+    def write(
+        rel: str, content: str, url: str | None = None, *, lastmod: str | None = None
+    ) -> None:
         path = web / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
         written.append(path)
         if url:
             urls.append(url)
+            if lastmod:
+                sitemap_lastmods[url] = lastmod
 
     # Fix KB pages first, so agency findings can link to the ones that exist.
     fixes_dir = root / "docs" / "fixes"
+    fix_guides: list[dict[str, str]] = []
     for md_file in sorted(fixes_dir.glob("*.md")):
         if md_file.stem == "README":
             continue
@@ -6872,14 +7098,30 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if md_file.stem == "README":
             continue
         code = md_file.stem
+        md = md_file.read_text()
+        body_html, title_text = _md_to_html(md)
+        fix_guides.append(
+            {
+                "code": code,
+                "title": title_text or f"Fix: {code}",
+                "description": _fix_description(body_html, code),
+                "category": _fix_category(code),
+            }
+        )
         write(
             f"fix/{code}/index.html",
-            _render_fix(code, md_file.read_text()),
+            _render_fix(code, md, now),
             f"{BASE_URL}/fix/{code}/",
         )
+    write("fix/index.html", _render_fix_index(fix_guides), f"{BASE_URL}/fix/")
 
     write("how-to-read/index.html", _render_guide(), f"{BASE_URL}/how-to-read/")
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
+    write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
+    validate_catalogs()
+    write("es/index.html", _render_spanish_rider_page(), f"{BASE_URL}/es/")
+    for locale in SUPPORTED_LOCALES:
+        write(f"locales/{locale}.json", (CATALOG_DIR / f"{locale}.json").read_text())
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
     # status.json, extending FIX-11's internal run-summary outward. Built from
@@ -7154,6 +7396,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 effort_bands=effort_bands,
             ),
             f"{BASE_URL}/agency/{agency_id}/",
+            lastmod=str(artifact.get("snapshot_date") or "") or None,
         )
         write(
             f"agency/{agency_id}/brief/index.html",
@@ -7166,7 +7409,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 program_ids,
                 effort_bands=effort_bands,
             ),
-            f"{BASE_URL}/agency/{agency_id}/brief/",
         )
         # The board packet one-pager: same precomputed fields, different reader
         # (the agency's board rather than the liaison), so progress leads and the
@@ -7176,7 +7418,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             _render_board_page(
                 artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
             ),
-            f"{BASE_URL}/agency/{agency_id}/board/",
         )
         # The durable fix log, only once the collect step has recorded at least
         # one receipt (fixlog.py); a feed with no cleared findings has no page
@@ -7601,7 +7842,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     f"{BASE_URL}/program/{r['id']}/",
                 )
 
-    write("sitemap.xml", _sitemap(urls))
+    write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
 
     # Manifest of the top-level web/ roots this render actually wrote, so the

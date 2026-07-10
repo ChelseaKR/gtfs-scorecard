@@ -40,6 +40,8 @@ add a page's link here in the same change that adds the page.
 
 Correctness (validator notices):
 
+- [`big_gap_in_service`](big_gap_in_service.md)
+- [`equal_shape_distance_same_coordinates`](equal_shape_distance_same_coordinates.md)
 - [`expired_calendar`](expired_calendar.md)
 - [`fast_travel_between_consecutive_stops`](fast_travel_between_consecutive_stops.md)
 - [`fast_travel_between_far_stops`](fast_travel_between_far_stops.md)

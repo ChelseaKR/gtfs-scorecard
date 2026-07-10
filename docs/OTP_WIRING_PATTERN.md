@@ -1,6 +1,7 @@
 # Wiring OpenTripPlanner Routing QA Results to Agency Pages
 
-**Status:** Design pattern for future implementation (ADR 0014 follow-up; no external dependencies yet)
+**Status:** Implemented as an opt-in weekly QA path. National publishing remains
+intentionally disabled because this project does not operate a hosted OTP service.
 
 ## Overview
 
@@ -10,7 +11,7 @@ The `scorecard otp` CLI command runs trip-plannability QA against an external Op
 
 - **`pipeline/src/scorecard_pipeline/otp.py`**: Trip-plannability assessment (already built, serverless-compatible)
 - **`scorecard otp` CLI**: Query OTP for sampled routes (registered, requires OTP endpoint URL)
-- **`otp-qa.yml` workflow**: Manual sampling (example workflow; not automated yet)
+- **`otp-qa.yml` workflow**: Weekly and manual sampling
 - **Agency pages**: `_otp_section` in `render_site.py` renders a "Can a rider plan
   a trip?" section, gated on the artifact carrying a measured `routing_qa` block —
   pages are unchanged until the OTP job publishes results
@@ -38,7 +39,8 @@ The `scorecard otp` CLI command runs trip-plannability QA against an external Op
 
 ### 2. Render-Site Gating (existing pattern from equity/adoption)
 
-Add to `_render_agency()` in `render_site.py`:
+The renderer is implemented in `_otp_section()` and called by `_render_agency()`.
+The example below documents the artifact contract rather than pending code.
 
 ```python
 def _otp_section(artifact: dict[str, Any]) -> str:
@@ -66,7 +68,7 @@ The `scorecard otp` command already exists:
 
 ```bash
 # Requires a running OTP instance (e.g., locally or via Docker)
-scorecard otp --feed https://gtfs.example.com/feed.zip --otp http://localhost:8080
+scorecard otp ./feed.zip --base http://localhost:8080
 ```
 
 ### 4. Workflow (Manual Sample)
@@ -79,13 +81,16 @@ name: Route QA (OTP)
 # Usage: gh workflow run otp-qa.yml -f feed_url=...
 ```
 
-## Implementation Checklist (when OTP is available)
+## Implementation record
 
-- [ ] Build the OTP artifact structure in `otp.py` → `artifact["routing_qa"]`
-- [ ] Add `_otp_section()` to `render_site.py` + call it in `_render_agency()`
-- [ ] Wire OTP results to the national map (optional: show "routable" flag)
-- [ ] Add OTP to the automated scoring pipeline (if OTP service becomes available)
-- [ ] Document OTP setup for users who want to run it locally
+- [x] Build the OTP artifact structure in `otp.py` → `artifact["routing_qa"]`.
+- [x] Add `_otp_section()` to `render_site.py` and call it in `_render_agency()`.
+- [x] Provide weekly and manual execution in `.github/workflows/otp-qa.yml`.
+- [x] Document local setup and command usage.
+- National-map publishing is intentionally not applicable until a representative
+  hosted run exists; publishing a partial opt-in sample would mislead readers.
+- Daily scoring integration is intentionally not applicable without a hosted OTP
+  service. The weekly/manual workflow preserves the serverless cost boundary.
 
 ## Decisions
 

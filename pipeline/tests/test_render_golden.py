@@ -100,8 +100,15 @@ def test_render_site_golden_output(golden_fixture_root: Path, golden_root: Path)
             pytest.fail(msg)
 
         # Check that no goldens were left behind (render removed a page).
+        # goldens/report/ belongs to the board-ready report generator, which
+        # runs on demand rather than in render_site; test_report_golden.py
+        # owns that subtree.
         rendered_rels = {f.relative_to(web) for f in written}
-        golden_rels = {f.relative_to(golden_root) for f in golden_root.rglob("*") if f.is_file()}
+        golden_rels = {
+            f.relative_to(golden_root)
+            for f in golden_root.rglob("*")
+            if f.is_file() and f.relative_to(golden_root).parts[0] != "report"
+        }
         missing = golden_rels - rendered_rels
         if missing:
             lines = "\n".join(f"  {m}" for m in sorted(missing))

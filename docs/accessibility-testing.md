@@ -98,3 +98,8 @@ One row per pass. Keep it append-only; this is the conformance artifact.
 | Date | Tester | AT + browser | Tasks run | Result | Issues filed |
 | --- | --- | --- | --- | --- | --- |
 | _2026-06-22_ | _(template)_ | _NVDA+Firefox / VO+Safari_ | _1–8 + cross-cutting_ | _pass / pass-with-issues_ | _#nnn, …_ |
+| 2026-07-10 | Automated CI remediation | Chromium + axe, keyboard, 320px reflow, forced colors, reduced motion | Automated equivalents for 1–8 + cross-cutting | Pass; this is not a screen-reader attestation | None |
+
+The next quarterly pass must still be performed by a person using VoiceOver or
+NVDA. Automated browser coverage is evidence for reflow and operation, but it
+does not replace the review-gated assistive-technology walkthrough.

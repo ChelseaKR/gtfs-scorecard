@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yolobus (Yolo County Transportation District): transit data quality report</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0 1.25rem 3rem; background: #ffffff; color: #20241f;
+      font: 16px/1.55 "Public Sans", "Helvetica Neue", Arial, sans-serif;
+    }
+    .accent-band { height: 0.5rem; background: #2c5f70; margin: 0 -1.25rem; }
+    .report { max-width: 46rem; margin: 0 auto; }
+    .prepared-by {
+      display: flex; align-items: center; gap: 0.75rem;
+      border-bottom: 1px solid #c6ccbe; padding: 0.75rem 0; margin-bottom: 1.5rem;
+    }
+    .prepared-by img { max-height: 3rem; max-width: 12rem; }
+    .prepared-by p { margin: 0; color: #3d4339; font-size: 0.9375rem; }
+    .kicker {
+      margin: 1.5rem 0 0.25rem; color: #3d4339;
+      font-size: 0.9375rem; letter-spacing: 0.02em; text-transform: uppercase;
+    }
+    h1 { margin: 0 0 0.5rem; font-size: 1.75rem; line-height: 1.25; }
+    h2 {
+      margin: 2rem 0 0.75rem; font-size: 1.25rem;
+      border-bottom: 3px solid #2c5f70; padding-bottom: 0.25rem;
+    }
+    .grade-line { font-size: 1.375rem; margin: 0 0 0.25rem; }
+    .trend-line { margin: 0; color: #3d4339; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; }
+    caption { text-align: left; color: #3d4339; font-size: 0.9375rem; padding-bottom: 0.5rem; }
+    th, td { border: 1px solid #c6ccbe; padding: 0.5rem 0.625rem; text-align: left; vertical-align: top; }
+    thead th { background: #e5e8df; }
+    tbody th { font-weight: 600; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    ol.fixes { padding-left: 1.25rem; }
+    ol.fixes li { margin: 0 0 1rem; }
+    ol.fixes p { margin: 0.25rem 0; }
+    .fix-do { font-weight: 600; }
+    .fix-effort, .muted { color: #3d4339; }
+    dl.pillars { margin: 0.75rem 0; }
+    dl.pillars dt { font-weight: 600; margin-top: 0.625rem; }
+    dl.pillars dd { margin: 0.125rem 0 0; }
+    .status-chip {
+      display: inline-block; border: 1px solid #3d4339; border-radius: 0.25rem;
+      padding: 0 0.375rem; margin-left: 0.25rem; font-size: 0.875rem; font-weight: 600;
+    }
+    .report-foot {
+      margin-top: 2.5rem; border-top: 1px solid #c6ccbe; padding-top: 0.75rem;
+      color: #3d4339; font-size: 0.875rem;
+    }
+    a { color: #20241f; }
+    @media print {
+      body { padding: 0; font-size: 12px; }
+      .accent-band { margin: 0; }
+      section { break-inside: avoid; }
+      h2 { break-after: avoid-page; }
+      .new-page { break-before: page; }
+      .report-foot a[href^="http"]::after { content: " (" attr(href) ")"; }
+    }
+  </style>
+</head>
+<body>
+  <div class="accent-band" role="presentation"></div>
+  <div class="report">
+    <div class="prepared-by"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4Ij48Y2lyY2xlIGN4PSIyNCIgY3k9IjI0IiByPSIyMCIgZmlsbD0iIzIwNGUzYSIvPjxjaXJjbGUgY3g9IjI0IiBjeT0iMjQiIHI9IjciIGZpbGw9IiNmMmYzZWUiLz48L3N2Zz4K" alt="Example State Transit Program logo"><p>Prepared by Example State Transit Program</p></div>
+    <header>
+      <p class="kicker">Transit data quality report &middot; checked 2026-07-02</p>
+      <h1>Yolobus (Yolo County Transportation District)</h1>
+      <p class="grade-line">Grade B &middot; 82.5 out of 100</p>
+      <p class="trend-line">Unchanged since 2026-07-01.</p>
+    </header>
+    <section aria-labelledby="what-h">
+      <h2 id="what-h">What this grade measures</h2>
+      <p>The quality of the schedule data this agency publishes for trip-planning
+      apps: whether riders using Google Maps, Apple Maps, or Transit see current,
+      correct, and complete information. It measures the data feed, not service
+      quality or operations.</p>
+    </section>
+    <section aria-labelledby="categories-h">
+      <h2 id="categories-h">Category scores</h2>
+      <table><caption>The four rubric categories, each scored 0 to 100. A category the pipeline has not measured yet shows no number and never counts against the grade.</caption><thead><tr><th scope="col">Category</th><th scope="col" class="num">Score</th><th scope="col">Where this feed stands</th></tr></thead><tbody><tr><th scope="row">Correctness</th><td class="num">90.0</td><td>The MobilityData validator flagged 2 kinds of issue across 16 instances (0 error, 16 warning, 0 informational).</td></tr><tr><th scope="row">Freshness</th><td class="num">85.0</td><td>Service data covers the next 67 days.</td></tr><tr><th scope="row">Rider experience</th><td class="num">62.4</td><td>99% of stops state wheelchair accessibility (99% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.</td></tr><tr><th scope="row">Realtime quality</th><td class="num">92.2</td><td>Sampled 9 times: 3 of 3 feeds healthy; 77.8% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 17s behind schedule.</td></tr></tbody></table>
+    </section>
+    <section aria-labelledby="fixes-h">
+      <h2 id="fixes-h">Top three things to fix</h2>
+      <p>Three improvements, in priority order, each sized so a board can see what it is approving:</p><ol class="fixes"><li><p class="fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p>721 of 721 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="fix-effort">Estimated effort: Often one default setting in your export.</p></li><li><p class="fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p>The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="fix-effort">Estimated effort: A small file for most flat-fare systems.</p></li><li><p class="fix-do">Add feed_info.txt with feed_start_date and feed_end_date to your export.</p><p>feed_info.txt is missing its start/end dates (the file itself is absent) Apps and this scorecard can&#x27;t warn anyone before the feed goes stale without stated validity dates.</p><p class="fix-effort">Estimated effort: Two fields, set once in export settings.</p></li></ol>
+    </section>
+    <section class="new-page" aria-labelledby="ntd-h">
+      <h2 id="ntd-h"><abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="status-chip">Ready</span></h2>
+      <p>This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification.</p>
+      <dl class="pillars"><dt>Published <span class="status-chip">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="status-chip">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="status-chip">Ready</span></dt><dd>Service data covers the next 72 days.</dd></dl>
+      <p><strong>In plain words:</strong> agencies that report to the federal National
+      Transit Database certify once a year, on form D-10, that they publish a working,
+      up-to-date feed. This section is a heads-up on whether the feed looks ready; the
+      certification itself is the official check. The FTA's July 2025 final rule also
+      requires shapes.txt in the published GTFS: Full Reporters from Report Year 2025,
+      and Reduced, Rural, and Tribal Reporters from Report Year 2026.</p>
+    </section>
+    <section class="new-page" aria-labelledby="trend-h">
+      <h2 id="trend-h">Over time</h2>
+      <p>Unchanged since 2026-07-01. The table lists each daily check.</p>
+      <p class="muted">Showing the 12 most recent of 19 checks.</p><table><caption>Overall score by check, with the change from the previous check stated in words.</caption>
+      <thead><tr><th scope="col">Check</th><th scope="col" class="num">Score</th><th scope="col">Grade</th><th scope="col">Change</th></tr></thead>
+      <tbody><tr><th scope="row">2026-06-21</th><td class="num">82.7</td><td>B</td><td>down 0.5</td></tr><tr><th scope="row">2026-06-22</th><td class="num">81.4</td><td>B</td><td>down 1.3</td></tr><tr><th scope="row">2026-06-23</th><td class="num">83.1</td><td>B</td><td>up 1.7</td></tr><tr><th scope="row">2026-06-24</th><td class="num">81.9</td><td>B</td><td>down 1.2</td></tr><tr><th scope="row">2026-06-25</th><td class="num">83.8</td><td>B</td><td>up 1.9</td></tr><tr><th scope="row">2026-06-26</th><td class="num">82.5</td><td>B</td><td>down 1.3</td></tr><tr><th scope="row">2026-06-27</th><td class="num">82.5</td><td>B</td><td>no change</td></tr><tr><th scope="row">2026-06-28</th><td class="num">82.5</td><td>B</td><td>no change</td></tr><tr><th scope="row">2026-06-29</th><td class="num">82.5</td><td>B</td><td>no change</td></tr><tr><th scope="row">2026-06-30</th><td class="num">82.5</td><td>B</td><td>no change</td></tr><tr><th scope="row">2026-07-01</th><td class="num">82.5</td><td>B</td><td>no change</td></tr><tr><th scope="row">2026-07-02</th><td class="num">82.5</td><td>B</td><td>no change</td></tr></tbody></table>
+    </section>
+    <footer class="report-foot">
+      <p>Prepared by Example State Transit Program with the GTFS Scorecard, an open-source data quality tool for small and rural transit agencies. Scores follow the public rubric
+      (<a href="https://gtfsscorecard.org/how-to-read/">how to read a scorecard</a>; full methodology in
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">docs/rubric.md</a>), rubric v1.1,
+      validator 8.0.1. Report generated 2026-07-10 12:00 UTC
+      from the 2026-07-02 check. Live scorecard: <a href="https://gtfsscorecard.org/agency/yolobus/">https://gtfsscorecard.org/agency/yolobus/</a>.
+      A data-quality read to support the conversation, not an official compliance determination.</p>
+    </footer>
+  </div>
+</body>
+</html>

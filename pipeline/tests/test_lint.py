@@ -61,3 +61,15 @@ def test_feed_descriptor_issue_sorts_before_others() -> None:
     )
     assert issues[0].kind == "feed_descriptor_name"
     assert issues[0].agency_id == "aaa"
+
+
+def test_duplicate_identity_requires_an_explicit_alias() -> None:
+    duplicate = _agency(id="duplicate")
+    issues = lint_registry([_agency(id="canonical"), duplicate])
+    kinds = {issue.kind for issue in issues}
+    assert {"duplicate_mdb_id", "duplicate_feed_url"} <= kinds
+
+    aliased = _agency(id="duplicate", alias_of="canonical", feed_status="deprecated")
+    kinds = {issue.kind for issue in lint_registry([_agency(id="canonical"), aliased])}
+    assert "duplicate_mdb_id" not in kinds
+    assert "duplicate_feed_url" not in kinds

@@ -13,9 +13,13 @@ scorecard run-summary merge --out data/artifacts/run/latest.json s0.json s1.json
 scorecard alerts [--out digest.md]                # expiry/regression digest
 scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for liaisons
 scorecard rollups                                 # portfolio rollup artifacts
+scorecard campaign --rollup id --kind calendar-renewal  # bounded support worklist
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
 scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
+scorecard evidence-packet artifact.json [--format markdown]  # vendor remediation record
+scorecard fix-outcomes [--format markdown]          # observed resolution and recurrence
+scorecard report --agency unitrans [--brand b.yaml] [--out r.html]  # board-ready report file
 """
 
 from __future__ import annotations
@@ -356,6 +360,12 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.write_text(render_comment(artifact, page_url=getattr(args, "page_url", None)))
         print(f"  Comment markdown written to {out}\n")
 
+    if getattr(args, "json_out", None):
+        out = Path(args.json_out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
+        print(f"  Scorecard JSON written to {out}\n")
+
     # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
     # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
     return _try_gate(artifact, args)
@@ -682,6 +692,63 @@ def _cmd_vendor_radar(args: argparse.Namespace, parser: argparse.ArgumentParser)
             len(regressions),
             len({r.tool_key for r in regressions}),
         )
+    return 0
+
+
+def _cmd_evidence_packet(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Build a deterministic, single-agency vendor remediation packet."""
+    from .evidence_packet import build_evidence_packet, render_evidence_packet_markdown
+
+    artifact_path = Path(args.artifact)
+    try:
+        artifact = json.loads(artifact_path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        parser.error(f"could not read scorecard artifact: {exc}")
+    packet = build_evidence_packet(artifact, scorecard_url=args.scorecard_url)
+    output = (
+        render_evidence_packet_markdown(packet)
+        if args.format == "markdown"
+        else json.dumps(packet, indent=2, sort_keys=True) + "\n"
+    )
+    if args.out:
+        Path(args.out).write_text(output)
+        log.info("Wrote vendor evidence packet to %s", args.out)
+    else:
+        print(output, end="")
+    return 0
+
+
+def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Measure finding resolution and recurrence from dated artifacts on disk."""
+    from .config import artifacts_dir
+    from .outcomes import build_fix_outcomes, render_fix_outcomes_markdown
+    from .publish import RESERVED_ARTIFACT_DIRS
+
+    histories: dict[str, list[dict[str, Any]]] = {}
+    root = artifacts_dir()
+    if root.exists():
+        for agency_dir in sorted(path for path in root.iterdir() if path.is_dir()):
+            if agency_dir.name in RESERVED_ARTIFACT_DIRS:
+                continue
+            artifacts: list[dict[str, Any]] = []
+            for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
+                try:
+                    artifacts.append(json.loads(dated.read_text()))
+                except (OSError, json.JSONDecodeError):
+                    continue
+            if artifacts:
+                histories[agency_dir.name] = artifacts
+    report = build_fix_outcomes(histories)
+    output = (
+        render_fix_outcomes_markdown(report, min_episodes=args.min_episodes)
+        if args.format == "markdown"
+        else json.dumps(report, indent=2, sort_keys=True) + "\n"
+    )
+    if args.out:
+        Path(args.out).write_text(output)
+        log.info("Wrote finding outcome report to %s", args.out)
+    else:
+        print(output, end="")
     return 0
 
 
@@ -1047,6 +1114,21 @@ def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     log.info("%d registry issue(s): %s", len(issues), dict(by_kind))
     if args.strict and by_kind.get("feed_descriptor_name"):
         return 1
+    return 0
+
+
+def _cmd_identity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .identity import build_identity_ledger
+
+    payload = build_identity_ledger(AGENCIES.values())
+    text = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    if args.out:
+        path = Path(args.out)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        log.info("Wrote feed identity ledger to %s.", path)
+    else:
+        print(text, end="")
     return 0
 
 
@@ -1694,6 +1776,39 @@ def _cmd_rollups(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
     return 0
 
 
+def _cmd_campaign(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Build one fix-themed support campaign for a configured rollup."""
+    from .campaigns import build_program_campaign, render_program_campaign_markdown
+    from .rollups import _load_latest, load_rollups, resolve_member_ids
+
+    rollup = next((candidate for candidate in load_rollups() if candidate.id == args.rollup), None)
+    if rollup is None:
+        parser.error(f"no rollup with id {args.rollup!r}")
+    artifacts = [
+        artifact
+        for agency_id in resolve_member_ids(rollup)
+        if (artifact := _load_latest(agency_id)) is not None
+    ]
+    campaign = build_program_campaign(
+        rollup_id=rollup.id,
+        rollup_name=rollup.name,
+        kind=args.kind,
+        artifacts=artifacts,
+        as_of=args.date,
+    )
+    output = (
+        render_program_campaign_markdown(campaign)
+        if args.format == "markdown"
+        else json.dumps(campaign, indent=2, sort_keys=True) + "\n"
+    )
+    if args.out:
+        Path(args.out).write_text(output)
+        log.info("Wrote %s campaign for %s to %s", args.kind, rollup.id, args.out)
+    else:
+        print(output, end="")
+    return 0
+
+
 def _cmd_reindex(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .publish import rebuild_index
 
@@ -1717,6 +1832,19 @@ def _cmd_render_constants(args: argparse.Namespace, parser: argparse.ArgumentPar
     from .constants_export import write_constants
 
     print(write_constants())
+    return 0
+
+
+def _cmd_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .report import ReportError, generate_report, load_brand
+
+    try:
+        brand = load_brand(args.brand) if args.brand else None
+        path = generate_report(args.agency, brand=brand, out=args.out)
+    except ReportError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    print(path)
     return 0
 
 
@@ -1807,6 +1935,10 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--comment",
         help="also write a markdown comment summary to this path (for the onboarding bot)",
+    )
+    adhoc.add_argument(
+        "--json-out",
+        help="write the complete scorecard artifact as JSON before applying CI thresholds",
     )
     adhoc.add_argument(
         "--page-url", help="link to the full scorecard, included in the --comment markdown"
@@ -1963,6 +2095,38 @@ def main(argv: list[str] | None = None) -> int:
     )
     vendor_radar.add_argument("--out", help="write the report here instead of stdout")
 
+    evidence_packet = sub.add_parser(
+        "evidence-packet",
+        help="turn one scorecard artifact into a reproducible vendor remediation packet",
+    )
+    evidence_packet.add_argument("artifact", help="path to a published scorecard artifact JSON")
+    evidence_packet.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+        help="output format (default: json)",
+    )
+    evidence_packet.add_argument("--scorecard-url", help="override the canonical scorecard URL")
+    evidence_packet.add_argument("--out", help="write the packet here instead of stdout")
+
+    fix_outcomes = sub.add_parser(
+        "fix-outcomes",
+        help="measure finding resolution time and recurrence from dated artifact history",
+    )
+    fix_outcomes.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+        help="output format (default: json)",
+    )
+    fix_outcomes.add_argument(
+        "--min-episodes",
+        type=int,
+        default=1,
+        help="minimum episodes per code in Markdown output (default: 1)",
+    )
+    fix_outcomes.add_argument("--out", help="write the report here instead of stdout")
+
     dataset = sub.add_parser("dataset", help="build the open national quality dataset (JSON + CSV)")
     dataset.add_argument("--out", help="write dataset.json (and a sibling .csv) here")
 
@@ -2073,11 +2237,49 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     sub.add_parser("rollups", help="publish portfolio rollup artifacts")
+    campaign = sub.add_parser(
+        "campaign", help="build a bounded, fix-themed support campaign for a rollup"
+    )
+    campaign.add_argument("--rollup", required=True, help="configured rollup id")
+    campaign.add_argument(
+        "--kind",
+        required=True,
+        choices=["calendar-renewal", "accessibility-fields", "rider-information"],
+        help="campaign theme",
+    )
+    campaign.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+        help="output format (default: json)",
+    )
+    campaign.add_argument(
+        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="baseline date"
+    )
+    campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
     sub.add_parser("render-site", help="generate crawlable static HTML pages, sitemap, robots")
     sub.add_parser(
         "render-constants",
         help="regenerate web/src/generated/constants.js from the Python definitions",
+    )
+
+    report = sub.add_parser(
+        "report",
+        help="render one agency's scorecard as a self-contained board-ready HTML report",
+    )
+    report.add_argument("--agency", required=True, help="agency id, e.g. unitrans")
+    report.add_argument(
+        "--brand",
+        type=Path,
+        default=None,
+        help="brand YAML (name, optional logo path, optional #rrggbb accent) for the cover",
+    )
+    report.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="output path (default: <agency>-board-report.html in the current directory)",
     )
 
     backfill = sub.add_parser(
@@ -2092,6 +2294,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="exit non-zero when an agency name is a feed descriptor (for CI)",
     )
+
+    identity = sub.add_parser(
+        "identity", help="report feed records, canonical feeds, organizations, and aliases"
+    )
+    identity.add_argument("--out", help="write the identity ledger JSON here")
 
     sweep = sub.add_parser(
         "freshness-sweep",
@@ -2213,6 +2420,8 @@ def main(argv: list[str] | None = None) -> int:
         "vendors": _cmd_vendors,
         "vendor-report": _cmd_vendor_report,
         "vendor-radar": _cmd_vendor_radar,
+        "evidence-packet": _cmd_evidence_packet,
+        "fix-outcomes": _cmd_fix_outcomes,
         "dataset": _cmd_dataset,
         "sensitivity": _cmd_sensitivity,
         "ntd": _cmd_ntd,
@@ -2224,11 +2433,14 @@ def main(argv: list[str] | None = None) -> int:
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
         "rollups": _cmd_rollups,
+        "campaign": _cmd_campaign,
         "reindex": _cmd_reindex,
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
+        "report": _cmd_report,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
+        "identity": _cmd_identity,
         "freshness-sweep": _cmd_freshness_sweep,
         "liveness": _cmd_liveness,
         "cadence": _cmd_cadence,

@@ -15,6 +15,9 @@ dependencies = [
     # Machine-enforces the per-agency data contract: publish() validates every
     # artifact against web/schemas/artifact.schema.json before writing it.
     "jsonschema>=4.21",
+    # Render authored fix guides with CommonMark semantics. The previous
+    # line-by-line renderer split wrapped paragraphs and list continuations.
+    "markdown-it-py>=4.0",
 ]
 
 [project.optional-dependencies]

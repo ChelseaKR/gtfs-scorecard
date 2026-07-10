@@ -1,0 +1,66 @@
+name: Correct or claim an agency listing
+description: Report a listing error, request removal, or ask to verify an agency contact.
+title: "Correct or claim: "
+labels: ["agency-claim"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Use this form for public facts only. Do not paste private email
+        addresses, access tokens, or credentials. Submitting this form does not
+        verify agency ownership. A maintainer reviews evidence before changing
+        the registry or marking a contact as verified.
+  - type: input
+    id: agency-id
+    attributes:
+      label: Scorecard URL or agency ID
+      description: Link to the current scorecard, or paste the ID at the end of its URL.
+      placeholder: https://gtfsscorecard.org/agency/example-transit/
+    validations:
+      required: true
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Request type
+      options:
+        - Correct a public fact
+        - Update a feed URL
+        - Claim the listing as agency staff
+        - Remove the listing
+        - Report that service ended
+    validations:
+      required: true
+  - type: textarea
+    id: requested-change
+    attributes:
+      label: Requested correction or claim
+      description: State exactly what should change. For a claim, describe your role without posting private contact details.
+    validations:
+      required: true
+  - type: input
+    id: public-proof
+    attributes:
+      label: Public proof URL
+      description: Link to an official agency page, public feed page, procurement record, or other source. Leave blank only if you need private official-domain email verification.
+      placeholder: https://agency.gov/transit/open-data
+    validations:
+      required: false
+  - type: dropdown
+    id: proof-method
+    attributes:
+      label: Preferred claim proof method
+      description: Corrections can use the public source above. Agency claims require one reviewed proof path.
+      options:
+        - Not claiming the listing
+        - Official agency webpage
+        - Public feed-host proof
+        - Private official-domain email
+    validations:
+      required: true
+  - type: checkboxes
+    id: public-safe
+    attributes:
+      label: Public information check
+      options:
+        - label: I have not included private email addresses, credentials, or access tokens.
+          required: true

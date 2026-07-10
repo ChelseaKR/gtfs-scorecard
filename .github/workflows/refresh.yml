@@ -82,8 +82,9 @@ jobs:
           # static *.html, web/app, and web/tiles stay excluded and a concurrent
           # merge to them is preserved by the replay.
           test -s build/render-manifest.txt || { echo "render manifest missing; render-site did not run"; exit 1; }
-          paths="data/artifacts data/liveness.json $(tr '\n' ' ' < build/render-manifest.txt)"
-          git add $paths
+          mapfile -t rendered_paths < build/render-manifest.txt
+          paths=(data/artifacts data/liveness.json "${rendered_paths[@]}")
+          git add -- "${paths[@]}"
           if git diff --cached --quiet; then
             echo "No changes this cycle."
             exit 0
@@ -107,7 +108,7 @@ jobs:
             # re-applies modifications, additions, AND deletions for these paths, so
             # a page/artifact this cycle pruned is actually removed; a plain
             # `git checkout -- $paths` is overlay-only and would leave it behind.
-            git restore --source="$ours" --staged --worktree -- $paths
+            git restore --source="$ours" --staged --worktree -- "${paths[@]}"
             if git diff --cached --quiet; then
               echo "latest main already carries these artifacts; nothing to push."
               exit 0

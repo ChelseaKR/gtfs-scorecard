@@ -100,6 +100,32 @@ def test_parse_catalog_keeps_gtfs_rows_only() -> None:
     assert types["101"] == "gtfs-rt"
 
 
+def test_catalog_retains_status_and_official_provenance() -> None:
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,status,is_official\n"
+        "active,gtfs,Active,Active,https://ex.org/a.zip,active,true\n"
+        "old,gtfs,Old,Old,https://ex.org/o.zip,deprecated,false\n"
+    )
+    active, old = parse_catalog(catalog)
+    assert active.status == "active" and active.is_official is True
+    assert old.status == "deprecated" and old.is_official is False
+    assert [proposal.mdb_id for proposal in propose_agencies([active, old])] == ["active"]
+
+
+def test_proposals_dedupe_source_ids_and_http_variants() -> None:
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,status,is_official\n"
+        "same,gtfs,First,First,http://ex.org/feed.zip,active,true\n"
+        "same,gtfs,First Copy,First Copy,https://ex.org/feed.zip,active,true\n"
+        "other,gtfs,URL Copy,URL Copy,https://ex.org/feed.zip,active,true\n"
+    )
+    proposals = propose_agencies(parse_catalog(catalog))
+    assert len(proposals) == 1
+    assert proposals[0].mdb_id == "same"
+    assert proposals[0].feed_status == "active"
+    assert proposals[0].is_official is True
+
+
 def test_state_filter_and_rt_pairing() -> None:
     feeds = parse_catalog(CATALOG)
     proposals = propose_agencies(feeds, country="US", subdivision="California")

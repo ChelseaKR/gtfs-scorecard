@@ -39,9 +39,11 @@ jobs:
       - name: Report orphaned artifact directories
         working-directory: pipeline
         run: |
-          echo "## Orphaned artifact directories" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          uv run scorecard prune >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Orphaned artifact directories"
+            echo ""
+            uv run scorecard prune
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload the discovery report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

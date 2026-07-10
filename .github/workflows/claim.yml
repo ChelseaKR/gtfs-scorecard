@@ -1,0 +1,42 @@
+name: Agency claim intake
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  acknowledge:
+    if: contains(github.event.issue.labels.*.name, 'agency-claim')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post the evidence review checklist
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const body = context.payload.issue.body || "";
+            const hasAgency = body.includes("### Scorecard URL or agency ID");
+            const hasRequest = body.includes("### Requested correction or claim");
+            const complete = hasAgency && hasRequest;
+            const intro = complete
+              ? "Thanks. This request is queued for evidence review."
+              : "This request is missing one of the form's required sections. Please edit it before review.";
+            const comment = `${intro}
+
+            Review checklist:
+            - [ ] Confirm the scorecard entry and exact requested change.
+            - [ ] Check the cited public source, feed-host proof, or private official-domain reply.
+            - [ ] Keep the claim **unverified** until one proof path is complete.
+            - [ ] Make registry changes through a reviewed pull request and link it here.
+            - [ ] Confirm the next published scorecard reflects the change.
+
+            Do not add private email addresses, credentials, or access tokens to this issue.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment,
+            });

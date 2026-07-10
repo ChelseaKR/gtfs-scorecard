@@ -24,6 +24,23 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Searchable, quality-gated fix library; canonical feed identity ledger;
+  reviewed listing-claim/correction workflow; vendor evidence packets; fix
+  outcome analytics; program campaign pages; and fair-comparison guardrails.
+- GitHub Action v2 controls, EXP-16 policy research materials, board-ready
+  reports, and transparent project sponsorship documentation.
+- Spanish-first `/es/` agency lookup backed by key-parity `en`/`es` locale
+  catalogs, with explicit limits on what a scorecard certifies.
+- Responsible-technology audit register and consequence, bias, privacy, and
+  threat-model reviews; a release checklist; and a reproducible
+  `make golden-refresh` command.
+- CycloneDX SBOM/VEX release assets and build-provenance attestations.
+- `scorecard report` (also `python -m scorecard_pipeline.report`): renders one
+  agency's published scorecard as a single self-contained HTML file for a
+  board packet or a grant application, printable to PDF, with an optional
+  `--brand` YAML (name, logo, accent) so a state program or consultancy can
+  put its name on reports for the agencies it supports. See
+  `docs/board-report.md`.
 - "Fixes shared across this group" section on `/program/<state>/` pages (#23).
 - `docs/crosswalk.md` rendered as an on-site `/crosswalk/` page (#22).
 - Fix-KB pages and validator rule links for the four highest-prevalence
@@ -45,6 +62,14 @@ the declared public surface).
   ruleset; this CHANGELOG and a wheel-build CI step.
 
 ### Fixed
+- Container ingestion now rejects oversized or suspiciously compressed GTFS
+  archives before Java starts. Both production images pass HIGH/CRITICAL Trivy
+  scanning with reviewed, expiring VEX entries for unreachable upstream code.
+- Standards pinning is self-contained and merge-blocking; Lighthouse now gates
+  performance, LCP, CLS, and responsiveness as well as accessibility.
+- Workflow shell lint is clean, generated pages are synchronized with the
+  merged feature set, and Docker build context is reduced from roughly 400 MB
+  to the source and pinned validator inputs actually needed.
 - Badge embed's copied Markdown now names the agency and grade instead of
   the generic "GTFS data quality" (#24, and an earlier partial fix).
 - `shapes_readiness` allowed in the artifact schema — was failing 100% of

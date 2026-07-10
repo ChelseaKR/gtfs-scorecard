@@ -53,6 +53,15 @@ _NAV_ITEMS = [
     ("About", "/about/"),
 ]
 
+_NAV_ITEMS_ES = [
+    ("Agencias", "/agencies/"),
+    ("Pulso nacional", "/pulse/"),
+    ("Temas", "/focus/"),
+    ("Herramientas", "/tools/"),
+    ("Cómo leer", "/how-to-read/"),
+    ("Acerca de", "/about/"),
+]
+
 # Which nav stop a non-hub path belongs to, so the bar still shows where you
 # are when you are inside a section's pages.
 _NAV_SECTION_PREFIXES = {
@@ -95,35 +104,38 @@ def _nav_active(path: str) -> str:
     return active
 
 
-def _nav_stops_html(active: str | None) -> str:
+def _nav_stops_html(active: str | None, lang: str = "en") -> str:
     """The <nav> of wayfinding stops, with the active section filled
     (aria-current). The single source of the primary nav's item set (_NAV_ITEMS),
     shared by the generated header (_nav_html) and the hand-authored static pages
     (sync_static_navs, guarded by tests/test_static_nav.py) so the bar cannot
     drift between them."""
     parts = []
-    for label, href in _NAV_ITEMS:
+    items = _NAV_ITEMS_ES if lang == "es" else _NAV_ITEMS
+    for label, href in items:
         cur = ' aria-current="page"' if href == active else ""
         parts.append(
             f'<a class="nav-stop" href="{href}"{cur}>'
             f'<span class="pip" aria-hidden="true"></span>{label}</a>'
         )
-    return f'<nav class="nav-stops" aria-label="Primary">{"".join(parts)}</nav>'
+    aria_label = "Principal" if lang == "es" else "Primary"
+    return f'<nav class="nav-stops" aria-label="{aria_label}">{"".join(parts)}</nav>'
 
 
-def _nav_html(canonical: str) -> str:
+def _nav_html(canonical: str, lang: str = "en") -> str:
     """The primary wayfinding nav: the site's sections as stops on a route line,
     with the current page's stop filled (aria-current). The #theme-control slot is
     where theme.js mounts the colour-theme menu."""
     path = canonical.replace(BASE_URL, "") or "/"
+    menu = "Menú" if lang == "es" else "Menu"
     return (
         '<header class="site-header"><div class="wrap">'
         '<a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span>'
         '<span class="brand-name">GTFS&nbsp;Scorecard</span></a>'
         '<button class="nav-menu-btn" type="button" aria-expanded="false" '
-        'aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button>'
+        f'aria-controls="nav-cluster"><span aria-hidden="true">☰</span> {menu}</button>'
         '<div class="nav-cluster" id="nav-cluster">'
-        f"{_nav_stops_html(_nav_active(path))}"
+        f"{_nav_stops_html(_nav_active(path), lang)}"
         '<div id="theme-control"></div>'
         "</div></div></header>"
     )
@@ -160,11 +172,13 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·
@@ -176,6 +190,16 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/data/">Open data</a> ·
       <a href="/accessibility/">Accessibility</a> ·
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+    </div>
+  </footer>"""
+
+FOOTER_HTML_ES = """<footer class="site-footer">
+    <div class="wrap">
+      <p>Herramienta de código abierto para revisar datos de transporte público.</p>
+      <p><a href="/es/">Buscar una agencia</a> ·
+      <a href="/agencies/" hreflang="en">Directorio completo (en inglés)</a> ·
+      <a href="/accessibility/" hreflang="en">Accesibilidad (en inglés)</a> ·
+      <a href="/" hreflang="en">English</a></p>
     </div>
   </footer>"""
 
@@ -243,7 +267,9 @@ def _page(
     body: str,
     jsonld: dict[str, Any] | None = None,
     head_extra: str = "",
+    robots: str | None = None,
     wide: bool = False,
+    lang: str = "en",
 ) -> str:
     """Wrap body in the full HTML document with SEO head tags. CSS and the
     interactive app are linked by absolute path from the site root. ``head_extra``
@@ -256,11 +282,15 @@ def _page(
         if jsonld
         else ""
     )
+    if robots:
+        ld += f'\n  <meta name="robots" content="{esc(robots)}">'
     ld += f"\n  {head_extra}" if head_extra else ""
-    nav = _nav_html(canonical)
+    nav = _nav_html(canonical, lang)
     main_class = "wrap wrap-wide" if wide else "wrap"
+    skip_label = "Saltar al contenido principal" if lang == "es" else "Skip to main content"
+    footer = FOOTER_HTML_ES if lang == "es" else FOOTER_HTML
     return f"""<!doctype html>
-<html lang="en">
+<html lang="{esc(lang)}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -304,12 +334,12 @@ def _page(
   </style></noscript>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
+  <a class="skip-link" href="#main">{skip_label}</a>
   {nav}
   <main id="main" class="{main_class}" tabindex="-1">
 {body}
   </main>
-  {FOOTER_HTML}
+  {footer}
 </body>
 </html>
 """
@@ -326,7 +356,15 @@ def _breadcrumb(trail: list[tuple[str, str | None]]) -> str:
     for i, (label, href) in enumerate(trail):
         last = i == len(trail) - 1
         if href and not last:
-            items.append(f'<li><a href="{esc(href)}">{esc(label)}</a></li>')
+            content = f'<a itemprop="item" href="{esc(href)}"><span itemprop="name">{esc(label)}</span></a>'
         else:
-            items.append(f'<li><span aria-current="page">{esc(label)}</span></li>')
-    return '<nav class="breadcrumb" aria-label="Breadcrumb"><ol>' + "".join(items) + "</ol></nav>"
+            content = f'<span itemprop="name" aria-current="page">{esc(label)}</span>'
+        items.append(
+            '<li itemprop="itemListElement" itemscope '
+            'itemtype="https://schema.org/ListItem">'
+            f'{content}<meta itemprop="position" content="{i + 1}"></li>'
+        )
+    return (
+        '<nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope '
+        'itemtype="https://schema.org/BreadcrumbList">' + "".join(items) + "</ol></nav>"
+    )

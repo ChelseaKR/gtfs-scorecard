@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¿Verán los pasajeros mi servicio de transporte? | GTFS Scorecard</title>
+  <meta name="description" content="Busca el feed GTFS público de una agencia y abre su ficha más reciente.">
+  <link rel="canonical" href="https://gtfsscorecard.org/es/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="¿Verán los pasajeros mi servicio de transporte? | GTFS Scorecard">
+  <meta property="og:description" content="Busca el feed GTFS público de una agencia y abre su ficha más reciente.">
+  <meta property="og:url" content="https://gtfsscorecard.org/es/">
+  <meta property="og:image" content="https://gtfsscorecard.org/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="/src/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
+  <link rel="alternate" hreflang="en" href="https://gtfsscorecard.org/">
+  <link rel="alternate" hreflang="es" href="https://gtfsscorecard.org/es/">
+  <script src="/src/es.js" defer></script>
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
+    try {
+      var t = localStorage.getItem("scorecard-theme");
+      if (t && ["light", "contrast", "dark"].indexOf(t) >= 0)
+        document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <script src="/src/theme.js" defer></script>
+  <script src="/src/nav.js" defer></script>
+  <script src="/analytics.js" defer></script>
+  <noscript><style>
+    /* Without JS the menu button cannot expand the collapsed nav, so show the
+       stacked nav permanently and hide the button (content stays operable
+       without scripting). nav.js never runs here, so nothing double-toggles. */
+    @media (max-width: 1400px) {
+      .nav-menu-btn { display: none !important; }
+      .nav-cluster { display: flex !important; position: static; }
+    }
+  </style></noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido principal</a>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menú</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Principal"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencias</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Pulso nacional</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Temas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Herramientas</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>Cómo leer</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>Acerca de</a></nav><div id="theme-control"></div></div></div></header>
+  <main id="main" class="wrap" tabindex="-1">
+    <nav class="breadcrumb" aria-label="Migas de pan"><ol>
+      <li><a href="/">GTFS Scorecard</a></li>
+      <li><span aria-current="page">Espa&ntilde;ol</span></li>
+    </ol></nav>
+    <p><a href="/" hreflang="en">Read this site in English</a></p>
+    <h1 class="page-title">¿Verán los pasajeros mi servicio de transporte?</h1>
+    <p class="page-lede">Busca el feed GTFS público de una agencia y abre su ficha más reciente.</p>
+
+    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
+    <section class="feed-details" aria-labelledby="buscar-agencia">
+      <h2 class="section-title" id="buscar-agencia">Busca tu agencia</h2>
+      <form id="agency-search-es" class="check-form"
+            data-ready="El directorio de agencias está listo."
+            data-error="No se pudo cargar el directorio. Prueba el directorio completo."
+            data-missing="Elige una agencia de las sugerencias.">
+        <label for="agency-es">Busca una agencia de transporte público</label>
+        <input id="agency-es" name="agency" list="agency-options-es" autocomplete="off"
+               placeholder="Empieza a escribir el nombre de una agencia" required>
+        <datalist id="agency-options-es"></datalist>
+        <p><button type="submit" disabled>Ver la ficha</button></p>
+        <p id="agency-status-es" class="form-status" role="status" aria-live="polite">
+          Cargando el directorio de agencias…
+        </p>
+      </form>
+      <noscript><p><a href="/agencies/" hreflang="en">Abre el directorio completo (en ingl&eacute;s)</a>.</p></noscript>
+    </section>
+
+    <section aria-labelledby="que-significa">
+      <h2 class="section-title" id="que-significa">Qu&eacute; significa la ficha</h2>
+      <p>La ficha describe los datos que publica una agencia. No certifica la calidad del servicio, la accesibilidad ni el cumplimiento de normas.</p>
+      <ul>
+        <li><strong>Vigencia:</strong> si el calendario publicado cubre los pr&oacute;ximos d&iacute;as.</li>
+        <li><strong>Experiencia del pasajero:</strong> si el feed incluye nombres, destinos y datos de accesibilidad.</li>
+        <li><strong>Correcciones:</strong> acciones concretas que la agencia o su proveedor puede revisar.</li>
+      </ul>
+      <p>Las fichas detalladas est&aacute;n disponibles actualmente en ingl&eacute;s. Los grados,
+      las fechas y los valores num&eacute;ricos no cambian con el idioma.</p>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Herramienta de código abierto para revisar datos de transporte público.</p>
+      <p><a href="/es/">Buscar una agencia</a> ·
+      <a href="/agencies/" hreflang="en">Directorio completo (en inglés)</a> ·
+      <a href="/accessibility/" hreflang="en">Accesibilidad (en inglés)</a> ·
+      <a href="/" hreflang="en">English</a></p>
+    </div>
+  </footer>
+</body>
+</html>

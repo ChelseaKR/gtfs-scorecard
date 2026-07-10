@@ -1057,6 +1057,7 @@ source = { editable = "." }
 dependencies = [
     { name = "gtfs-realtime-bindings" },
     { name = "jsonschema" },
+    { name = "markdown-it-py" },
     { name = "pyyaml" },
     { name = "requests" },
 ]
@@ -1088,6 +1089,7 @@ requires-dist = [
     { name = "duckdb", marker = "extra == 'query'", specifier = ">=1.0" },
     { name = "gtfs-realtime-bindings", specifier = ">=1.0" },
     { name = "jsonschema", specifier = ">=4.21" },
+    { name = "markdown-it-py", specifier = ">=4.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "requests", specifier = ">=2.32" },
 ]

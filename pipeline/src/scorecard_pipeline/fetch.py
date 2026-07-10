@@ -45,6 +45,18 @@ TIMEOUT = (CONNECT_TIMEOUT, READ_TIMEOUT)
 # transient 403/429/5xx. Connection timeouts are not retried (see net.py).
 FETCH_RETRIES = 3
 
+# Archive-level limits are intentionally tighter than net.safe_get's generic
+# download ceiling. GTFS feeds are text-heavy and normally compress well, so a
+# huge entry, extreme ratio, or multi-gigabyte expanded archive is more likely
+# to be a zip bomb than a legitimate schedule. These checks run before the Java
+# validator opens untrusted bytes (the mitigation documented in vex.json).
+MAX_GTFS_DOWNLOAD_BYTES = 256 * 1024 * 1024
+MAX_GTFS_ENTRIES = 200_000
+MAX_GTFS_ENTRY_BYTES = 512 * 1024 * 1024
+MAX_GTFS_UNCOMPRESSED_BYTES = 2 * 1024 * 1024 * 1024
+MAX_GTFS_COMPRESSION_RATIO = 1_000
+COMPRESSION_RATIO_MIN_BYTES = 10 * 1024 * 1024
+
 
 @dataclass(frozen=True)
 class FetchProvenance:
@@ -99,6 +111,46 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def _validate_gtfs_archive(path: Path) -> None:
+    """Reject archive shapes that can exhaust the validator worker.
+
+    Reading the central directory does not extract member contents. The limits
+    therefore stop oversized or implausibly compressed entries before the
+    embedded gtfs-validator and Apache Commons Compress parse attacker-controlled
+    data.
+    """
+    try:
+        with zipfile.ZipFile(path) as archive:
+            entries = archive.infolist()
+    except (OSError, zipfile.BadZipFile) as exc:
+        raise ValueError("response is not a readable zip archive") from exc
+
+    if len(entries) > MAX_GTFS_ENTRIES:
+        raise ValueError(
+            f"GTFS archive has {len(entries):,} entries; limit is {MAX_GTFS_ENTRIES:,}"
+        )
+
+    expanded = 0
+    for entry in entries:
+        if entry.is_dir():
+            continue
+        if entry.file_size > MAX_GTFS_ENTRY_BYTES:
+            raise ValueError(
+                f"GTFS archive entry {entry.filename!r} expands to {entry.file_size:,} bytes; "
+                f"limit is {MAX_GTFS_ENTRY_BYTES:,}"
+            )
+        expanded += entry.file_size
+        if expanded > MAX_GTFS_UNCOMPRESSED_BYTES:
+            raise ValueError(
+                f"GTFS archive expands beyond the {MAX_GTFS_UNCOMPRESSED_BYTES:,}-byte limit"
+            )
+        ratio = entry.file_size / max(entry.compress_size, 1)
+        if entry.file_size >= COMPRESSION_RATIO_MIN_BYTES and ratio > MAX_GTFS_COMPRESSION_RATIO:
+            raise ValueError(
+                f"GTFS archive entry {entry.filename!r} has an unsafe compression ratio"
+            )
+
+
 def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenance]:
     """Fetch the agency's feed, falling back to the Mobility Database's hosted
     mirror when the origin is unreachable.
@@ -117,7 +169,11 @@ def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenan
 
     try:
         body = safe_get(
-            agency.static_gtfs_url, headers=FEED_HEADERS, timeout=TIMEOUT, retries=FETCH_RETRIES
+            agency.static_gtfs_url,
+            headers=FEED_HEADERS,
+            timeout=TIMEOUT,
+            max_bytes=MAX_GTFS_DOWNLOAD_BYTES,
+            retries=FETCH_RETRIES,
         )
         return body, FetchProvenance(
             source="origin",
@@ -141,7 +197,9 @@ def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenan
             type(origin_exc).__name__,
             mirror,
         )
-        body = safe_get(mirror, headers=FEED_HEADERS, timeout=TIMEOUT)
+        body = safe_get(
+            mirror, headers=FEED_HEADERS, timeout=TIMEOUT, max_bytes=MAX_GTFS_DOWNLOAD_BYTES
+        )
         return body, FetchProvenance(
             source="mirror",
             final_url=mirror,
@@ -194,6 +252,7 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
     dest = raw_dir() / agency.id / date.isoformat() / "gtfs.zip"
     if dest.exists() and not force:
         log.info("%s: reusing snapshot %s", agency.id, dest)
+        _validate_gtfs_archive(dest)
         recorded = _read_provenance_sidecar(dest)
         max_attempts = recorded.get("max_attempts")
         return FetchResult(
@@ -220,6 +279,11 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
     if not zipfile.is_zipfile(tmp):
         tmp.unlink()
         raise ValueError(f"{agency.id}: response from {agency.static_gtfs_url} is not a zip")
+    try:
+        _validate_gtfs_archive(tmp)
+    except ValueError:
+        tmp.unlink(missing_ok=True)
+        raise
     tmp.replace(dest)
     _write_provenance_sidecar(dest, prov)
 

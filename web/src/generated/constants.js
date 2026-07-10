@@ -83,6 +83,18 @@ export const AUTHORITY_LABELS = {
 };
 
 export const RULE_LINKS = {
+  "big_gap_in_service": {
+    "authority": "MobilityData GTFS Validator rules",
+    "canonical": null,
+    "kind": "validator",
+    "url": "https://gtfs-validator.mobilitydata.org/rules.html#big_gap_in_service-rule"
+  },
+  "equal_shape_distance_same_coordinates": {
+    "authority": "MobilityData GTFS Validator rules",
+    "canonical": null,
+    "kind": "validator",
+    "url": "https://gtfs-validator.mobilitydata.org/rules.html#equal_shape_distance_same_coordinates-rule"
+  },
   "expired_calendar": {
     "authority": "MobilityData GTFS Validator rules",
     "canonical": null,

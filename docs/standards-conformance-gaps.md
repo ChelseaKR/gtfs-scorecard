@@ -1,39 +1,29 @@
-# Standards conformance: applicability and open gaps
+# Standards conformance: applicability and review items
 
 This repo is governed by the shared portfolio standards vendored at
-[`docs/standards/`](standards/) (pinned to a tag; see
-[`docs/standards/.standards-version`](standards/.standards-version) — never
-edit those files locally, see `docs/standards/README.md` §"How a repo
-declares conformance" and the integrity note in
-[`docs/decisions/`](decisions/) history around 2026-07-05).
+[`docs/standards/`](standards/) and pinned by
+[`docs/standards/.standards-version`](standards/.standards-version). The
+`standards-pin` required check verifies every vendored byte against the reviewed
+v1.0.1 manifest. Vendored files are not edited locally.
 
-Per that README's rule 1, silent omission of a standard is itself a defect.
-This page is the applicability declaration `README.md`'s conformance table
-links to, plus a running list of the gaps a 2026-07-05 audit found, so the
-link actually resolves to something instead of a placeholder. It is updated
-as gaps close; it is not a substitute for the review-gated artifacts each
-standard names (those live under `docs/` per-topic — the ACR at
-`docs/accessibility.md`, the VPAT at `docs/vpat.md`, the mutation-testing
-log at `docs/mutation-testing.md`, and so on).
+This is the applicability declaration required by the standards. It records
+honest review items, not an aspirational percentage. Evidence lives in the
+linked artifacts and required workflows.
 
-| Standard | Applies? | Headline gaps (2026-07-05 audit) |
+| Standard | Applies? | Current evidence and remaining review items (2026-07-10) |
 |---|---|---|
-| [CODE-QUALITY](standards/CODE-QUALITY-STANDARD.md) | Applies (Python; TS/Node/frontend-toolchain N/A — `web/` is no-build vanilla JS, no `package.json` anywhere) | Branch-protection/required-reviews gates were unenforced (fixed 2026-07-05, see `.github/rulesets/main.json`); a 16-function complexity ratchet is tracked in `docs/lint-complexity-ratchet.md`; mutation score is short of the 70% target on 2 of 3 scoped modules (`docs/mutation-testing.md`). |
-| [SECURITY & SUPPLY-CHAIN](standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth, no PII store) | No dependency-vulnerability scan (pip-audit/osv-scanner), no CodeQL, no container scan, no SBOM/signing yet — tracked in the remediation P1 items; `docs/RESPONSIBLE-TECH-AUDITS.md` (§F declarations) not yet written. |
-| [CI/CD](standards/CI-CD-STANDARD.md) | Applies (19 workflows) | Required-status-checks ruleset landed 2026-07-05 (`.github/rulesets/main.json`); zizmor/CodeQL-for-actions/OpenSSF Scorecard not yet wired. |
-| [OBSERVABILITY](standards/OBSERVABILITY-STANDARD.md) | Applies — **Tier B (frontend) + Tier C (batch)**, not the standard's default Tier A mapping; see [ADR 0031](decisions/0031-observability-tier.md) | Lighthouse CWV (LCP/INP/CLS) gate not yet added (accessibility-only today); structured JSON logging for the batch pipeline is polish, not urgent at this tier. |
-| [ACCESSIBILITY](standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA | Strongest standard in this repo (62%); open items are REVIEW-GATE artifacts: a committed dated screen-reader walkthrough (template only exists today) and a few AUTO specs (320px reflow, reduced-motion, target-size). |
-| [INTERNATIONALIZATION](standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; the N/A path is unavailable | No `locales/` catalog yet; all UI strings are hardcoded English. Largest single remaining item in the remediation plan (P1-13); the civic multilingual-obligations review (P2-8) follows once a catalog exists. |
-| AI-EVALUATION | **N/A** — no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD.md` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. | — |
-| [QUALITY & METRICS](standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (QM-10 data-quality/lineage named for this repo explicitly) | Performance/CWV budget not yet gated (see Observability row); release checklist / DoD artifact not yet written (remediation P2-5). |
-| [DOCUMENTATION](standards/DOCUMENTATION-STANDARD.md) | Applies | This page + the README conformance table are the DOC-11/12/13 fix landing 2026-07-05; a CI job asserting the standards-pin byte-identity (DOC-01) is tracked as remediation P1-8. |
-| [RELEASE & VERSIONING](standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — marketplace action tags (`v1`/`v1.0.0`), monthly dataset releases, MCP registry entry | Weakest applicable standard (18%): tags are lightweight/unsigned, no CHANGELOG yet, no SBOM/provenance/signing on releases. Version numbers reconciled to `1.0.0` across `pyproject.toml`/`CITATION.cff`/`server.json` 2026-07-05 (`pipeline/scripts/check_versions.py` keeps them from drifting again); a real tag-triggered release pipeline is remediation P1-10. |
-| [RESPONSIBLE-TECH](standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) | `docs/RESPONSIBLE-TECH-AUDITS.md` and the `docs/audits/` pack (consequence scan, bias review, DPIA-lite, threat model) not yet written — remediation P2-2/P2-3. |
+| [CODE-QUALITY](standards/CODE-QUALITY-STANDARD.md) | Applies (Python and a no-build vanilla-JS frontend) | Ruff, mypy, pytest, golden rendering, browser tests, and the main-branch ruleset are enforced. The documented complexity ratchet and accepted mutation survivors remain managed quality work, not silent omissions. |
+| [SECURITY & SUPPLY-CHAIN](standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth or PII store) | pip-audit, CodeQL, container scanning, archive preflight limits, a time-bounded VEX, CycloneDX SBOM, signed release manifest, and provenance attestations are wired. The VEX expires 2026-10-08 and must be renewed only after upstream review. |
+| [CI/CD](standards/CI-CD-STANDARD.md) | Applies | Required checks, dependency review, CodeQL, zizmor, OpenSSF Scorecard, pinned actions, least-privilege permissions, concurrency controls, and deployment smoke checks are present. |
+| [OBSERVABILITY](standards/OBSERVABILITY-STANDARD.md) | Applies as Tier B frontend + Tier C batch; see [ADR 0031](decisions/0031-observability-tier.md) | Lighthouse gates performance, accessibility, LCP, CLS, and total blocking time. Batch run summaries and failure artifacts provide the Tier C operational record. |
+| [ACCESSIBILITY](standards/ACCESSIBILITY-STANDARD.md) | Applies fully; the public target is WCAG 2.2 AAA | Axe, contrast, keyboard, 320px reflow, reduced motion, forced colors, target size, and Lighthouse are automated. The remaining review-gate item is a dated human VoiceOver or NVDA walkthrough; automation is not represented as that attestation. See [manual test log](accessibility-testing.md) and [VPAT](vpat.md). |
+| [INTERNATIONALIZATION](standards/INTERNATIONALIZATION-STANDARD.md) | Applies | Reviewed `en`/`es` catalogs now have key-parity tests and `/es/` provides a Spanish-first agency lookup with explicit scope. Full translation of every technical scorecard remains a product-roadmap expansion, not a claim made by this release. |
+| AI-EVALUATION | **N/A** | No model inference exists in a user-facing or decision-making path. The MCP server retrieves read-only data and does not use an LLM SDK. Reassess on first model integration. |
+| [QUALITY & METRICS](standards/QUALITY-AND-METRICS-STANDARD.md) | Applies | Data lineage, validation, test gates, CWV budgets, rollback steps, and the [release checklist](release-checklist.md) are documented and enforced where automatable. |
+| [DOCUMENTATION](standards/DOCUMENTATION-STANDARD.md) | Applies | README conformance links, this declaration, ADRs, runbooks, API docs, standards manifest, and the self-contained `standards-pin` gate are present. |
+| [RELEASE & VERSIONING](standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies | Versions are cross-checked; changelog generation, tag-triggered releases, CycloneDX SBOM, VEX, signed checksum manifest, and build-provenance attestations are wired. Protected stable tags remain a repository-administration control. |
+| [RESPONSIBLE-TECH](standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies; AI-governance rows are N/A | The [audit register](RESPONSIBLE-TECH-AUDITS.md), consequence scan, bias review, DPIA-lite, and threat model are committed under `docs/audits/`. |
 
-**Overall:** roughly 35% strict conformance / 39% with the Observability
-Tier-A block correctly re-tiered (2026-07-05 audit). The dominant failure
-mode was not missing engineering — several standards here (accessibility,
-code quality) are strong — it was gates that existed but weren't
-merge-blocking, and declarations (like this page) that didn't exist yet.
-Re-run the audit periodically and update this table; do not let it go stale
-the way the README's prior silence did.
+Two items remain deliberately review-gated or externally operated: a human
+screen-reader pass, and the separately documented S3 source-of-truth cutover.
+Neither is silently treated as complete.

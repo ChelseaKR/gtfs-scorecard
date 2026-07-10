@@ -26,7 +26,7 @@ jobs:
           for url in "https://gtfsscorecard.org/" "https://gtfsscorecard.org/data/artifacts/index.json"; do
             code=000
             # Retry so a single transient blip does not page you.
-            for attempt in 1 2 3; do
+            for _attempt in 1 2 3; do
               code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 25 "$url" 2>/dev/null || echo 000)
               [ "$code" = "200" ] && break
               sleep 12
@@ -37,7 +37,7 @@ jobs:
               fail=1
             fi
           done
-          exit $fail
+          exit "$fail"
 
       - name: The daily refresh has a recent success
         env:
