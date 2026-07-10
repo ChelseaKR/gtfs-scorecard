@@ -1,0 +1,71 @@
+name: Sign release
+
+# Keyless-signs a manifest binding the tag name to the exact commit it points
+# at, so `v1.0.0`/`v1` (or any future tag) is verifiable, not just a label.
+# Same pattern as tods-validate's docker.yml image signing: Sigstore/cosign
+# via the runner's OIDC identity, no long-lived key material to manage or
+# leak. Runs on tag push, or manually (workflow_dispatch) for a tag that
+# already exists and predates this workflow.
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to sign (e.g. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write # attach the signature/cert to the release
+  id-token: write # for keyless cosign signing
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          persist-credentials: false
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+
+      - name: Build the release manifest
+        id: manifest
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          {
+            echo "repo=${GITHUB_REPOSITORY}"
+            echo "tag=${tag}"
+            echo "commit=$(git rev-parse HEAD)"
+          } > release-manifest.txt
+          cat release-manifest.txt
+
+      - name: Sign the manifest (keyless)
+        run: |
+          cosign sign-blob --yes \
+            --output-signature release-manifest.txt.sig \
+            --output-certificate release-manifest.txt.pem \
+            release-manifest.txt
+
+      - name: Verify the signature before publishing it (REL-16)
+        run: |
+          cosign verify-blob \
+            --certificate release-manifest.txt.pem \
+            --signature release-manifest.txt.sig \
+            --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/release-sign.yml@.*$" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            release-manifest.txt
+
+      - name: Attach signature + cert to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.manifest.outputs.tag }}"
+          gh release upload "$tag" \
+            release-manifest.txt release-manifest.txt.sig release-manifest.txt.pem \
+            --clobber
