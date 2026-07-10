@@ -27,3 +27,4 @@ This index is the handoff point for the documentation sweep last reviewed on 202
 - [Add Your Agency](add-your-agency.md)
 - [CI Action](ci-action.md)
 - [Conformance](conformance.md)
+- [Support this project](support.md)
