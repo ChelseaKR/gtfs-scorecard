@@ -339,6 +339,12 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.write_text(render_comment(artifact, page_url=getattr(args, "page_url", None)))
         print(f"  Comment markdown written to {out}\n")
 
+    if getattr(args, "json_out", None):
+        out = Path(args.json_out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
+        print(f"  Scorecard JSON written to {out}\n")
+
     # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
     # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
     return _try_gate(artifact, args)
@@ -1698,6 +1704,10 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--comment",
         help="also write a markdown comment summary to this path (for the onboarding bot)",
+    )
+    adhoc.add_argument(
+        "--json-out",
+        help="write the complete scorecard artifact as JSON before applying CI thresholds",
     )
     adhoc.add_argument(
         "--page-url", help="link to the full scorecard, included in the --comment markdown"
