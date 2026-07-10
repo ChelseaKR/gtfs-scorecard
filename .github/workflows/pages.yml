@@ -37,14 +37,6 @@ jobs:
       - name: Install the pipeline
         working-directory: pipeline
         run: uv sync --locked
-      - name: Render the static site
-        working-directory: pipeline
-        run: uv run scorecard render-site
-      - name: Assemble the Pages site (mirrors deploy)
-        run: |
-          mkdir -p _site/data
-          cp -r web/. _site/
-          cp -r data/artifacts _site/data/artifacts
       - name: Authenticate to AWS (read-only, artifacts bucket)
         if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
@@ -54,18 +46,30 @@ jobs:
       - name: Sync published artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         run: |
-          # S3 as the artifact source of truth (docs/follow-ups.md), step 2:
-          # the `cp -r data/artifacts` above already seeded _site with
-          # whatever git still carries (a fork, or an S3 outage); this sync
-          # only adds/refreshes on top of it and never deletes, so a sync
-          # failure here degrades to that committed copy instead of failing
-          # the deploy.
-          # Corrected feed ZIPs are served from the artifact CDN and can be
-          # hundreds of MB each; Pages needs the JSON/SVG/GeoJSON public data,
-          # not a duplicate 2.7 GB binary mirror in every deployment artifact.
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" _site/data/artifacts \
-            --exclude "*.zip" --only-show-errors \
-            || echo "::warning title=S3 artifact sync failed::serving whatever data/artifacts git still carries"
+          # S3 is authoritative. index.json already carries complete score
+          # histories, so rendering needs each current artifact plus only the
+          # two newest dated snapshots for finding diffs. This bounded set
+          # avoids downloading the 400-day archive or CDN-hosted corrected ZIPs.
+          today=$(date -u +%Y-%m-%d)
+          yesterday=$(date -u -d yesterday +%Y-%m-%d)
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            --exclude "*" \
+            --include "directory.json" --include "index.json" \
+            --include "scoring.json" --include "sensitivity.json" \
+            --include "changes/*" --include "rollups/*" --include "run/*" \
+            --include "*/latest.json" --include "*/badge.json" --include "*/badge.svg" \
+            --include "*/conformance.json" --include "*/fixlog.json" \
+            --include "*/geometry.geojson" \
+            --include "*/${today}.json" --include "*/${yesterday}.json" \
+            --only-show-errors
+      - name: Render and assemble the Pages site
+        run: |
+          cd pipeline
+          uv run scorecard render-site
+          cd ..
+          mkdir -p _site/data
+          cp -r web/. _site/
+          cp -r data/artifacts _site/data/artifacts
       - name: Lighthouse CI (accessibility >= 95)
         run: |
           python3 -m http.server 8080 --directory _site &
@@ -73,6 +77,9 @@ jobs:
           for _attempt in $(seq 1 30); do curl -sf http://127.0.0.1:8080/ >/dev/null && break; sleep 1; done
           npx --yes @lhci/cli@0.14 autorun
           kill $SRV
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: _site
 
   deploy:
     needs: lighthouse
@@ -85,33 +92,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          ref: main
-      - name: Assemble static site
-        run: |
-          mkdir -p _site/data
-          cp -r web/. _site/
-          cp -r data/artifacts _site/data/artifacts
-      # PAGES_AWS_ROLE_ARN is trusted for this job specifically because it
-      # runs under the github-pages environment, which changes the OIDC
-      # `sub` claim (infra/artifacts/github_oidc.tf, pages_read role).
-      - name: Authenticate to AWS (read-only, artifacts bucket)
-        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
-        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
-        with:
-          role-to-assume: ${{ env.PAGES_AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
-      - name: Sync published artifacts from S3
-        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
-        run: |
-          # See the matching step in the lighthouse job above: additive sync
-          # on top of the committed fallback, never fails the deploy.
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" _site/data/artifacts \
-            --exclude "*.zip" --only-show-errors \
-            || echo "::warning title=S3 artifact sync failed::serving whatever data/artifacts git still carries"
-      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
-        with:
-          path: _site
       - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
         id: deployment

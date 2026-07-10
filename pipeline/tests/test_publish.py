@@ -330,3 +330,19 @@ def test_reindex_repairs_clobbered_latest_and_badge_from_newest_dated() -> None:
     index = json.loads((artifacts_dir() / "index.json").read_text())
     dates = [h["date"] for h in index["agencies"]["unitrans"]["history"]]
     assert dates == ["2026-06-16", "2026-06-19"]
+
+
+def test_reindex_preserves_s3_history_not_present_in_clean_checkout() -> None:
+    """The compact index remains complete after dated files move to S3."""
+    from scorecard_pipeline.publish import rebuild_index
+
+    publish(make_artifact(dt.date(2026, 6, 16), score=70.0))
+    publish(make_artifact(dt.date(2026, 6, 17), score=80.0))
+    missing_locally = artifacts_dir() / "unitrans" / "2026-06-16.json"
+    missing_locally.unlink()
+
+    rebuild_index()
+
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    dates = [item["date"] for item in index["agencies"]["unitrans"]["history"]]
+    assert dates == ["2026-06-16", "2026-06-17"]

@@ -71,6 +71,7 @@ jobs:
         env:
           # Empty when ARTIFACTS_BUCKET is unset, which the cache treats as off.
           VALIDATOR_CACHE_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
           AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
           # CDN base for the corrected-feed download link. Set only when this repo
           # publishes to S3 (the pilot); empty for forks, which then show the CLI
@@ -96,6 +97,15 @@ jobs:
           echo "shard_started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
           echo '${{ toJSON(matrix.shard) }}' | jq -r '.[]' | while read -r id; do
             echo "::group::$id"
+            if [ -n "$ARTIFACTS_BUCKET" ]; then
+              today=$(date -u +%Y-%m-%d)
+              yesterday=$(date -u -d yesterday +%Y-%m-%d)
+              aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}" \
+                "$GITHUB_WORKSPACE/data/artifacts/${id}" \
+                --exclude "*" --include "latest.json" --include "fixlog.json" \
+                --include "${today}.json" --include "${yesterday}.json" \
+                --only-show-errors
+            fi
             uv run --with boto3 scorecard run --agency "$id" --skip-unchanged --outcome-out "$outcomes" && EXIT=0 || EXIT=$?
             if [ "$EXIT" -eq 0 ]; then
               mkdir -p "$stage/$id"
@@ -138,7 +148,7 @@ jobs:
     needs: score
     runs-on: ubuntu-latest
     permissions:
-      contents: write # commit + push refreshed artifacts
+      contents: read
       id-token: write # OIDC for the optional CDN mirror
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -160,6 +170,19 @@ jobs:
         # individual agency failing) simply has no run-summary-N artifact;
         # merge below tolerates that and undercounts rather than failing.
         continue-on-error: true
+      - name: Authenticate to AWS
+        if: ${{ vars.ARTIFACTS_BUCKET != '' || vars.SES_FROM != '' }}
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+      - name: Hydrate the authoritative compact history and fix receipts
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        run: |
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
+            data/artifacts/index.json --only-show-errors
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            --exclude "*" --include "*/fixlog.json" --only-show-errors
       - name: Fetch NTD annual ridership (rider-trips weighting, ADR 0021)
         working-directory: pipeline
         run: |
@@ -181,12 +204,11 @@ jobs:
               echo "::warning title=pipeline run degraded::more than the threshold share of agencies were not refreshed this run; see /status/"
             fi
           fi
-      - name: Rebuild index, rollups, and static SEO pages
+      - name: Rebuild index and rollups
         working-directory: pipeline
         run: |
           uv run scorecard reindex
           uv run scorecard rollups
-          uv run scorecard render-site
       - name: Vendor support report
         working-directory: pipeline
         run: |
@@ -197,66 +219,9 @@ jobs:
             echo ""
             uv run scorecard vendor-report --format markdown || true
           } >> "$GITHUB_STEP_SUMMARY"
-      - name: Commit refreshed artifacts
-        run: |
-          git config user.name "scorecard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          # The generated web/ roots come from the manifest render-site emitted
-          # (build/render-manifest.txt), so a newly added page is always published
-          # and can never be silently dropped by a hand-typed list that drifts.
-          # data/artifacts (scores + directory.json) is a scoring output, added
-          # explicitly. The manifest lists only generated paths, so hand-authored
-          # web/src, the static *.html, web/app, and web/tiles stay excluded.
-          test -s build/render-manifest.txt || { echo "render manifest missing; render-site did not run"; exit 1; }
-          mapfile -t rendered_paths < build/render-manifest.txt
-          paths=(data/artifacts "${rendered_paths[@]}")
-          git add -- "${paths[@]}"
-          if git diff --cached --quiet; then
-            echo "No artifact changes today."
-            exit 0
-          fi
-          git commit -m "chore(data): daily scorecard refresh"
-          # main can move during a multi-minute run (a merge, or another push).
-          # Do NOT rebase: this commit is regenerated artifacts, including binary
-          # files (web/api/v1/agencies.parquet) and large JSON/HTML that both this
-          # run and whatever moved main rewrite wholesale, so a 3-way rebase
-          # conflicts on essentially every file and aborts. Instead replay our
-          # freshly generated files on top of the latest main. Our content is
-          # authoritative by construction (it was just regenerated from the newest
-          # scores), and main's non-artifact changes are preserved because we reset
-          # onto it and only re-add the generated paths.
-          for attempt in 1 2 3 4 5; do
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            echo "push rejected (main moved); replaying generated files onto latest main ($attempt)"
-            git fetch origin main
-            ours=$(git rev-parse HEAD)
-            git reset --hard origin/main
-            # Replay our generated tree onto latest main. git restore (no-overlay)
-            # re-applies modifications, additions, AND deletions for these paths, so
-            # a page/artifact this run pruned is actually removed; a plain
-            # `git checkout -- $paths` is overlay-only and would leave it behind.
-            git restore --source="$ours" --staged --worktree -- "${paths[@]}"
-            if git diff --cached --quiet; then
-              echo "latest main already carries these artifacts; nothing to push."
-              exit 0
-            fi
-            git commit -m "chore(data): daily scorecard refresh"
-            sleep 3
-          done
-          echo "still rejected after retries; failing so the run is visible."
-          exit 1
-
       # Mirror to the CloudFront-backed bucket once infra/artifacts is applied.
       # Gated on the ARTIFACTS_BUCKET repo variable, so the pilot and forks
       # (which set no variable) skip it entirely and keep serving from Pages.
-      - name: Authenticate to AWS
-        if: ${{ vars.ARTIFACTS_BUCKET != '' || vars.SES_FROM != '' }}
-        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
       - name: Publish artifacts to S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
@@ -264,7 +229,7 @@ jobs:
           # artifact, so it must keep history that a fresh collect checkout does
           # not carry. Pruning is handled by a bucket lifecycle policy, not here.
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
-            --cache-control "max-age=300"
+            --cache-control "max-age=300" --only-show-errors
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
