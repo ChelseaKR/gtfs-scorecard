@@ -16,6 +16,7 @@ scorecard rollups                                 # portfolio rollup artifacts
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
 scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
+scorecard evidence-packet artifact.json [--format markdown]  # vendor remediation record
 """
 
 from __future__ import annotations
@@ -682,6 +683,29 @@ def _cmd_vendor_radar(args: argparse.Namespace, parser: argparse.ArgumentParser)
             len(regressions),
             len({r.tool_key for r in regressions}),
         )
+    return 0
+
+
+def _cmd_evidence_packet(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Build a deterministic, single-agency vendor remediation packet."""
+    from .evidence_packet import build_evidence_packet, render_evidence_packet_markdown
+
+    artifact_path = Path(args.artifact)
+    try:
+        artifact = json.loads(artifact_path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        parser.error(f"could not read scorecard artifact: {exc}")
+    packet = build_evidence_packet(artifact, scorecard_url=args.scorecard_url)
+    output = (
+        render_evidence_packet_markdown(packet)
+        if args.format == "markdown"
+        else json.dumps(packet, indent=2, sort_keys=True) + "\n"
+    )
+    if args.out:
+        Path(args.out).write_text(output)
+        log.info("Wrote vendor evidence packet to %s", args.out)
+    else:
+        print(output, end="")
     return 0
 
 
@@ -1978,6 +2002,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     vendor_radar.add_argument("--out", help="write the report here instead of stdout")
 
+    evidence_packet = sub.add_parser(
+        "evidence-packet",
+        help="turn one scorecard artifact into a reproducible vendor remediation packet",
+    )
+    evidence_packet.add_argument("artifact", help="path to a published scorecard artifact JSON")
+    evidence_packet.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+        help="output format (default: json)",
+    )
+    evidence_packet.add_argument("--scorecard-url", help="override the canonical scorecard URL")
+    evidence_packet.add_argument("--out", help="write the packet here instead of stdout")
+
     dataset = sub.add_parser("dataset", help="build the open national quality dataset (JSON + CSV)")
     dataset.add_argument("--out", help="write dataset.json (and a sibling .csv) here")
 
@@ -2233,6 +2271,7 @@ def main(argv: list[str] | None = None) -> int:
         "vendors": _cmd_vendors,
         "vendor-report": _cmd_vendor_report,
         "vendor-radar": _cmd_vendor_radar,
+        "evidence-packet": _cmd_evidence_packet,
         "dataset": _cmd_dataset,
         "sensitivity": _cmd_sensitivity,
         "ntd": _cmd_ntd,
