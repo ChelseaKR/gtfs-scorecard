@@ -2564,17 +2564,17 @@ def test_staleness_distribution_empty_catalog() -> None:
 def test_status_page_with_no_run_summary_says_not_published_yet() -> None:
     import datetime as dt
 
-    from scorecard_pipeline.render_site import _render_status_page
+    from scorecard_pipeline.render_site import _status_evidence_section
 
-    html = _render_status_page(None, [], dt.datetime(2026, 7, 8, tzinfo=dt.UTC))
+    html = _status_evidence_section(None, [], dt.datetime(2026, 7, 8, tzinfo=dt.UTC))
     assert "No run-health summary has been published yet" in html
-    assert "Pipeline status" in html
+    assert "Today's evidence" in html
 
 
 def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
     import datetime as dt
 
-    from scorecard_pipeline.render_site import _render_status_page
+    from scorecard_pipeline.render_site import _status_evidence_section
 
     now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
     run_summary = {
@@ -2602,7 +2602,7 @@ def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
         ],
     }
     catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
-    html = _render_status_page(run_summary, catalog, now)
+    html = _status_evidence_section(run_summary, catalog, now)
     assert "Healthy" in html
     assert "Degraded run" not in html
     assert ">95<" in html  # scored count
@@ -2612,7 +2612,7 @@ def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
 def test_status_page_degraded_run_names_unreachable_agencies() -> None:
     import datetime as dt
 
-    from scorecard_pipeline.render_site import _render_status_page
+    from scorecard_pipeline.render_site import _status_evidence_section
 
     now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
     run_summary = {
@@ -2630,7 +2630,50 @@ def test_status_page_degraded_run_names_unreachable_agencies() -> None:
         "shards": [],
     }
     catalog = [{"id": "unitrans", "name": "Unitrans"}]
-    html = _render_status_page(run_summary, catalog, now)
+    html = _status_evidence_section(run_summary, catalog, now)
     assert "Degraded run" in html
     assert 'href="/agency/unitrans/"' in html
     assert "Unitrans" in html
+
+
+def test_render_status_combines_commitment_and_evidence_sections() -> None:
+    """The one /status/ page composes EXP-10's commitment section ("what we
+    commit to") and FIX-11's run-evidence section ("today's evidence") --
+    they used to render to the same URL from two separate functions, each
+    silently clobbering the other's file on disk (see _render_status's
+    docstring). Both machine-readable twins must stay cross-linked."""
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _render_status
+    from scorecard_pipeline.status_commitment import build_status_commitment
+
+    now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
+    status_doc = build_status_commitment({}, now, "https://gtfsscorecard.org")
+    run_summary = {
+        "generated_at": "2026-07-08T13:30:00+00:00",
+        "shard_count": 1,
+        "agency_count": 10,
+        "scored": 10,
+        "reused": 0,
+        "unreachable": 0,
+        "mirrored": 0,
+        "cache_hit": 0,
+        "unreachable_agencies": [],
+        "degraded": False,
+        "degraded_threshold": 0.05,
+        "shards": [],
+    }
+    catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
+    html = _render_status(status_doc, run_summary, catalog, now)
+    # The commitment half (EXP-10).
+    assert "What we commit to" in html
+    assert "Intended refresh cadence" in html
+    assert "Degradation policy" in html
+    # The run-evidence half (FIX-11).
+    assert "Today's evidence" in html
+    assert "Per-shard breakdown" in html
+    assert "Catalog freshness" in html
+    # Both JSON twins stay cross-linked, and only one page-level title exists.
+    assert 'href="/api/v1/status.json"' in html
+    assert 'href="/api/v1/run-status.json"' in html
+    assert html.count("<h1") == 1

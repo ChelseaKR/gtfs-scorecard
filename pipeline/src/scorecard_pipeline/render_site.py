@@ -3701,12 +3701,14 @@ def _render_accessibility() -> str:
     )
 
 
-def _render_status(doc: dict[str, Any]) -> str:
-    """The human-readable half of the freshness/uptime commitment (EXP-10):
-    what `api/v1/status.json` says, in prose, so a consumer does not have to
-    parse JSON to decide whether to depend on this feed. Extends FIX-11's
-    internal run-summary outward as a stated, checkable commitment."""
-    canonical = f"{BASE_URL}/status/"
+def _status_commitment_section(doc: dict[str, Any]) -> str:
+    """The "what we commit to" half of /status/ (EXP-10): what
+    `api/v1/status.json` says, in prose, so a consumer does not have to parse
+    JSON to decide whether to depend on this feed -- the cadence tiers, the
+    historical refresh-success record, and the degradation policy. Extends
+    FIX-11's internal run-summary outward as a stated, checkable commitment.
+    Returns a fragment (no page chrome); composed into the combined /status/
+    page by `_render_status` alongside `_status_evidence_section`."""
     record = doc["refresh_success_record"]
     policy = doc["degradation_policy"]
     hours = record["hours_since_last_check"]
@@ -3736,38 +3738,29 @@ def _render_status(doc: dict[str, Any]) -> str:
 
     policy_items = "".join(f"<li>{esc(s)}</li>" for s in policy["statements"])
 
-    body = f"""    {_breadcrumb([("Home", "/"), ("Data freshness & uptime", None)])}
-    <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">Data freshness &amp; uptime commitment</h1>
-    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Here is how
-    often we intend to refresh each feed, how that has actually gone, and what happens when a
-    feed cannot be refreshed on schedule &mdash; so you can decide whether to depend on this
-    data before you build on it. Machine-readable at
+    return f"""    <h2 class="section-title" id="commitment-h">What we commit to</h2>
+    <p>"Refreshed daily" is a claim; this is the record. Here is how often we intend to
+    refresh each feed, how that has actually gone, and what happens when a feed cannot be
+    refreshed on schedule &mdash; so you can decide whether to depend on this data before you
+    build on it. Machine-readable at
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
-    {_route_rule()}
-    <section aria-labelledby="cadence-h"><h2 class="section-title" id="cadence-h">Intended refresh cadence</h2>
+    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
     <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
     every feed runs daily regardless of tier.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
     <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
 
-    <section aria-labelledby="record-h"><h2 class="section-title" id="record-h">Historical refresh-success record</h2>
+    <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
     {record_section}</section>
 
-    <section aria-labelledby="degradation-h"><h2 class="section-title" id="degradation-h">Degradation policy</h2>
+    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
     <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
     <ul>{policy_items}</ul></section>
 
-    <p class="page-lede" style="margin-top:2rem">This commitment is generated fresh with every
-    site build from the same liveness state the intraday refresh keeps, so it cannot say
-    anything the pipeline did not actually observe.</p>"""
-    return _page(
-        title="Data freshness & uptime commitment | GTFS Scorecard",
-        description="The intended refresh cadence per tier, the historical refresh-success record, and the degradation policy, as machine-readable status.json and in plain language.",
-        canonical=canonical,
-        body=body,
-    )
+    <p class="fineprint">This commitment is generated fresh with every site build from the same
+    liveness state the intraday refresh keeps, so it cannot say anything the pipeline did not
+    actually observe.</p>"""
 
 
 def _methodology_versions_section() -> str:
@@ -6022,27 +6015,28 @@ def _status_shard_rows(shards: list[dict[str, Any]]) -> str:
     return "".join(rows)
 
 
-def _render_status_page(
+def _status_evidence_section(
     run_summary: dict[str, Any] | None, catalog: list[dict[str, Any]], now: dt.datetime
 ) -> str:
-    """The public pipeline-health surface (FIX-11,
+    """The "today's evidence" half of /status/ (FIX-11,
     docs/ideation/02-large-scale-fixes.md): what the daily run itself did --
     shard outcomes, unreachable feeds, mirror fallbacks, validator cache hits --
     plus how stale the published catalog is right now. Users are asked to trust
     the daily numbers; the operational evidence used to live only in private
     Actions logs, so one shard failing left ~1/12 of agencies silently showing
-    yesterday's data with no signal anywhere on the site. This page is that
+    yesterday's data with no signal anywhere on the site. This section is that
     signal, built entirely from data/artifacts/run/latest.json (merged by
     `scorecard run-summary merge` in the collect job) and the same catalog the
-    directory page reads -- no separate trust required."""
-    canonical = f"{BASE_URL}/status/"
+    directory page reads -- no separate trust required. Returns a fragment (no
+    page chrome); composed into the combined /status/ page by `_render_status`
+    alongside `_status_commitment_section`."""
     staleness = _staleness_distribution(catalog, now)
     staleness_rows = "".join(
         f"<tr><td>{esc(label)}</td><td>{count}</td></tr>" for label, count in staleness
     )
 
     if run_summary is None:
-        run_section = """    <section class="feed-details"><h2 class="section-title">Last daily run</h2>
+        run_section = """    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
     <p>No run-health summary has been published yet. This page fills in the day after the
     first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>"""
     else:
@@ -6072,7 +6066,7 @@ def _render_status_page(
         )
         shard_count = run_summary.get("shard_count", 0)
         shard_word = "shard" if shard_count == 1 else "shards"
-        run_section = f"""    <section class="feed-details"><h2 class="section-title">Last daily run</h2>
+        run_section = f"""    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
     <p><span class="{badge_class}">{badge_text}</span>
     Generated {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}),
     across {shard_count} {shard_word}, {run_summary.get("agency_count", 0)}
@@ -6087,7 +6081,7 @@ def _render_status_page(
     </dl>
     </section>
 
-    <section class="feed-details"><h2 class="section-title">Per-shard breakdown</h2>
+    <section class="feed-details"><h3 class="section-title">Per-shard breakdown</h3>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Outcome counts by CI shard</caption>
       <thead><tr><th scope="col">Shard</th><th scope="col">Scored</th>
@@ -6097,7 +6091,7 @@ def _render_status_page(
     </table></div>
     </section>
 
-    <section class="feed-details"><h2 class="section-title">Agencies unreachable this run</h2>
+    <section class="feed-details"><h3 class="section-title">Agencies unreachable this run</h3>
     <p>The pipeline could not fetch or validate these feeds today; each is still showing its
     last successful scorecard. This is usually the agency's feed host being down, not a
     pipeline bug -- if a name stays on this list for several days running, its own feed URL
@@ -6105,16 +6099,15 @@ def _render_status_page(
     {unreachable_list}
     </section>"""
 
-    body = f"""    {_breadcrumb([("Home", "/"), ("Pipeline status", None)])}
-    <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">Pipeline status.</h1>
-    <p class="page-lede">What the daily pipeline itself did, published the same way the
-    scorecards are: shard outcomes, feeds it could not reach, and how stale the catalog is
-    right now. No part of this page requires trusting the maintainer's word.</p>
+    return f"""    <h2 class="section-title" id="evidence-h">Today's evidence</h2>
+    <p>What the daily pipeline itself did, published the same way the scorecards are: shard
+    outcomes, feeds it could not reach, and how stale the catalog is right now. No part of this
+    page requires trusting the maintainer's word. Machine-readable at
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
 {run_section}
 
-    <section class="feed-details"><h2 class="section-title">Catalog freshness</h2>
+    <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
     <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
     (not just this run -- an agency scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
@@ -6128,11 +6121,44 @@ def _render_status_page(
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
     refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
     the grades themselves mean.</p>"""
+
+
+def _render_status(
+    status_doc: dict[str, Any],
+    run_summary: dict[str, Any] | None,
+    catalog: list[dict[str, Any]],
+    now: dt.datetime,
+) -> str:
+    """The one public /status/ page. EXP-10 (the freshness/uptime commitment)
+    and FIX-11 (today's concrete run evidence) both used to render their own
+    full page to this same URL, so whichever `write()` ran last silently
+    clobbered the other's file on disk. This composes both instead: the
+    commitment (`_status_commitment_section`, sourced from
+    `api/v1/status.json`) on top, framed as what we commit to; today's run
+    evidence (`_status_evidence_section`, sourced from
+    `api/v1/run-status.json`) below, framed as today's evidence. Both JSON
+    endpoints stay published unchanged and are cross-linked from here and
+    from within each section."""
+    canonical = f"{BASE_URL}/status/"
+    body = f"""    {_breadcrumb([("Home", "/"), ("Status", None)])}
+    <a class="backlink" href="/">&larr; Home</a>
+    <h1 class="page-title">Status.</h1>
+    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
+    we commit to for refresh cadence and uptime; below is concrete evidence from today's run.
+    Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+
+    {_route_rule()}
+{_status_commitment_section(status_doc)}
+
+    {_route_rule()}
+{_status_evidence_section(run_summary, catalog, now)}"""
     return _page(
-        title="Pipeline status — GTFS Scorecard",
+        title="Status | GTFS Scorecard",
         description=(
-            "Daily pipeline run health: shard outcomes, unreachable feeds, mirror "
-            "fallbacks, and how fresh the published catalog is right now."
+            "What this pipeline commits to for refresh cadence and uptime, the historical "
+            "refresh-success record, and concrete evidence from today's run: shard outcomes, "
+            "unreachable feeds, and catalog freshness."
         ),
         canonical=canonical,
         body=body,
@@ -6635,10 +6661,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
-    # status.json plus a human-readable page, extending FIX-11's internal
-    # run-summary outward. Built from the same liveness state the intraday
-    # refresh keeps, so it renders (with an honest empty record) even before
-    # the first refresh has ever run.
+    # status.json, extending FIX-11's internal run-summary outward. Built from
+    # the same liveness state the intraday refresh keeps, so it renders (with
+    # an honest empty record) even before the first refresh has ever run. The
+    # human-readable page is written later, once the run summary and catalog
+    # (FIX-11's half of /status/) are also ready -- see `_render_status`.
     from .status_commitment import build_status_commitment
 
     status_doc = build_status_commitment(_load_liveness(), now, BASE_URL)
@@ -6646,7 +6673,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "api/v1/status.json",
         json.dumps(status_doc, indent=2, sort_keys=True) + "\n",
     )
-    write("status/index.html", _render_status(status_doc), f"{BASE_URL}/status/")
     crosswalk_file = root / "docs" / "crosswalk.md"
     if crosswalk_file.exists():
         write(
@@ -6813,8 +6839,13 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 file=sys.stderr,
             )
     write("api/v1/run-status.json", json.dumps(run_summary, indent=2, sort_keys=True) + "\n")
+    # The combined /status/ page (EXP-10 + FIX-11): the commitment (status_doc,
+    # computed above from liveness state) and today's run evidence (run_summary
+    # + catalog, both ready by this point in the render), composed into one page.
     write(
-        "status/index.html", _render_status_page(run_summary, catalog, now), f"{BASE_URL}/status/"
+        "status/index.html",
+        _render_status(status_doc, run_summary, catalog, now),
+        f"{BASE_URL}/status/",
     )
 
     # liveness_state was loaded earlier (with the directory page); each agency
