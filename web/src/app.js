@@ -1053,7 +1053,7 @@ function peerContext(dirRecord) {
     rows.push(percentileRow(`${tier} peers`, peer));
   }
   return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}</p>
-    <div class="percentile-strip" aria-label="Percentile position; higher is better">
+    <div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">
       ${rows.join("")}
       <div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div>
     </div>`;

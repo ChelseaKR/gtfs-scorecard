@@ -737,6 +737,7 @@ def test_peer_context_renders_national_and_size_peer_and_state() -> None:
     assert "68% of large agencies" in html
     assert "Operates in New Mexico." in html
     assert 'class="percentile-strip"' in html
+    assert 'class="percentile-strip" role="group"' in html
     assert 'style="--position:53"' in html
     assert 'style="--position:68"' in html
     assert "All agencies" in html and "large peers" in html

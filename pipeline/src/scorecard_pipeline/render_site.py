@@ -839,7 +839,7 @@ def _peer_context(record: dict[str, Any] | None) -> str:
             '<span class="percentile-line"></span><span class="percentile-marker"></span></span></div>'
         )
     strip = (
-        '<div class="percentile-strip" aria-label="Percentile position; higher is better">'
+        '<div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">'
         f'{"".join(rows)}<div class="percentile-scale" aria-hidden="true">'
         "<span>0</span><span>Ahead of more agencies</span><span>100</span></div></div>"
     )
