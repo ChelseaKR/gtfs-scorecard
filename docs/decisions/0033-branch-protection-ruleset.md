@@ -1,7 +1,6 @@
 # 0033 — Branch protection via a ruleset with a scoped Actions bypass
 
-Status: accepted (ruleset JSON committed; **not yet applied to the live
-repo** — see Consequences)
+Status: accepted and applied to the live repository (2026-07-10)
 
 Date: 2026-07-05
 
@@ -17,11 +16,10 @@ blocks nothing, because nothing requires it to pass before merge
 (CICD-11/13, CQ-37/38/40/43).
 
 **The complication that made this not a trivial toggle:** scheduled Actions
-workflows commit generated JSON data directly to `main` on an hourly/daily
-cadence (`chore(data): intraday refresh`, `chore(rt): realtime health
-observations`, plus the daily `scorecard.yml` run and the monthly
-`dataset-release.yml`). A naive "require a PR for every push to main" rule
-would break every one of these the moment it takes effect.
+originally committed generated JSON data directly to `main`. The 2026-07-10
+S3 source-of-truth cutover removed those data commits, but the intraday job
+still commits the small tracked `data/liveness.json` observation. A naive
+"require a PR for every push to main" rule would break that job.
 
 Two ways to reconcile the two needs:
 
@@ -37,28 +35,35 @@ Two ways to reconcile the two needs:
 
 ## Decision
 
-**Option (a).** Committed as `.github/rulesets/main.json`:
+**Option (a), narrowed after the S3 cutover.** The S3 data plane now avoids
+bulk generated-data commits, while the scoped Actions bypass remains for the
+small liveness commit. Committed as `.github/rulesets/main.json`:
 
 - Bypass actor: `actor_id: 15368`, `actor_type: Integration` — the
   `github-actions` GitHub App's numeric ID (verified 2026-07-05 via
   `gh api repos/ChelseaKR/gtfs-scorecard/commits/HEAD/check-runs`, which
   shows every check run's `app.id` as `15368`, `app.slug: "github-actions"`).
   `bypass_mode: always` so scheduled-workflow commits are never blocked.
-- Humans are fully bound: `pull_request` rule requires 1 approval, dismisses
-  stale reviews on push, requires code-owner review, requires the last
-  pusher not be the sole approver (`require_last_push_approval`).
+- Administrator recovery bypass: `actor_id: 5`, `actor_type:
+  RepositoryRole`. This lets repository administrators recover a broken
+  required check or automation path without weakening the normal contributor
+  path. Ordinary human contributions remain bound by the rules below.
+- The normal human path is fully bound: `pull_request` requires 1 approval,
+  dismisses stale reviews on push, requires code-owner review, and requires
+  the last pusher not be the sole approver (`require_last_push_approval`).
 - `required_status_checks` (strict/up-to-date required) lists the real job
   names as they appear in GitHub's check-run API today: `pipeline`,
-  `Secret scan (gitleaks)`, `SAST (Semgrep)`, `axe`, `e2e`. **Every new
-  blocking job added in P1 (CodeQL, dependency-audit, zizmor, TruffleHog,
-  container scan, Scorecard) must be appended to this list** — an
+  `Secret scan (gitleaks)`, `SAST (Semgrep)`, `axe`, `e2e`, `Dependency audit
+  (pip-audit + osv-scanner)`, `Analyze (python)`, `Analyze (actions)`, and
+  `standards-pin`. **Every new unconditional PR gate must be appended to this
+  list** — an
   unenforced merge-blocking gate is exactly the defect this ADR fixes; don't
   reintroduce it piecemeal.
   - **Updated same-day (still 2026-07-05)** once P1-1/P1-2 landed:
     `Dependency audit (pip-audit + osv-scanner)` and the CodeQL matrix legs
     `Analyze (python)` / `Analyze (actions)` were added — all three run
     unconditionally on every push and PR.
-  - **Deliberately NOT added yet:** `Dependency review (PRs only)` and
+  - **Deliberately not required:** `Dependency review (PRs only)` and
     `zizmor (workflow security lint)` both use a job-level `if:
     github.event_name == 'pull_request'` guard, so they report no status at
     all on a direct push. GitHub's "required status check" enforcement can
@@ -67,17 +72,17 @@ Two ways to reconcile the two needs:
     ref; verify in the live UI that a PR actually shows these as
     green/skipped-as-satisfied before adding them here, rather than assuming.
     `openssf-scorecard.yml` and `trufflehog.yml` are schedule/push-to-main
-    only by design (not meaningful per-PR signals) and are never candidates
-    for this list. `standards-pin.yml` is soft-gated behind a secret that
-    doesn't exist yet (see its own header comment) and must not be added
-    until it's actually enforcing.
+    only by design (not meaningful per-PR signals) and are not candidates for
+    this list. `standards-pin` is self-contained and enforcing, so it is
+    required.
 - `deletion`, `non_fast_forward`, and `required_linear_history` rules block
   force-push, branch deletion, and merge commits that aren't fast-forwardable
   from the review path — mirroring the classic protection API's
-  `allow_force_pushes: false`/`allow_deletions: false`, which already passed.
+  `allow_force_pushes: false`/`allow_deletions: false`. Only squash and rebase
+  merges are allowed, matching the linear-history rule.
 - A companion `.github/rulesets/tags.json` protects **fully-qualified
   semver tags** (`refs/tags/v*.*.*`, e.g. `v1.0.0`) and dataset-release tags
-  (`refs/tags/dataset-*`) from deletion or being moved, once applied — these
+  (`refs/tags/dataset-*`) from deletion or being moved — these
   are meant to be immutable the moment they're cut (REL-07).
   **Deliberately excluded: the bare `v1` tag.** GitHub Actions' marketplace
   convention is a floating major-version tag that intentionally moves to
@@ -103,24 +108,19 @@ Two ways to reconcile the two needs:
 
 ## Consequences
 
-- **This ADR and the two JSON files are the committed-artifact half of the
-  fix (CICD-12's requirement, and the audit's evidence trail). Applying
-  them live is a separate, human-run step**, deliberately left undone by
-  this change: creating a ruleset is a real, immediately-enforced
-  modification to how `main` accepts changes, and this repo's remediation
-  ground rules explicitly reserve write-effect GitHub API calls (creating
-  rulesets, toggling branch protection) for the repo owner to run
-  themselves, not for an automated pass to execute silently. Apply with:
+- The branch and tag rulesets were applied through the GitHub API on
+  2026-07-10 after their configuration PR passed CI and merged:
 
   ```sh
   gh api repos/ChelseaKR/gtfs-scorecard/rulesets -X POST --input .github/rulesets/main.json
   gh api repos/ChelseaKR/gtfs-scorecard/rulesets -X POST --input .github/rulesets/tags.json
   ```
 
-  Verify afterward with `gh api repos/ChelseaKR/gtfs-scorecard/rulesets` and
-  a real PR (confirm required checks show up and a scheduled data-refresh
-  run still lands on `main` without needing a PR).
-- Every future PR now needs the five listed checks green and one approval
+  The live ruleset API is the enforcement source; these files are the
+  reviewable, reproducible configuration. Verification includes reading the
+  live rulesets back and running the intraday refresh through its S3 publish,
+  liveness commit, and Pages deployment path.
+- Every future PR now needs the nine listed checks green and one approval
   before merge — including the author's own future PRs, which is the point.
 - If `infra/compute`, CodeQL, dependency-audit, zizmor, or container-scan
   jobs land (P1), their exact job/check names must be appended to
