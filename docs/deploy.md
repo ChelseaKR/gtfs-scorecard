@@ -9,6 +9,10 @@ published JSON.
 All the code and Terraform for these is written and tested. None of it is
 required to keep the site live.
 
+Standing up your own branded instance rather than deploying the maintainer's?
+Start at [docs/fork-quickstart.md](fork-quickstart.md); it sequences the
+branding config (`instance.yaml`) and the deploy steps below in order.
+
 > **Current deployment status (maintainer's account).** The artifacts CDN (§1)
 > and the feed-health digest (§2) are applied and live: `gtfsscorecard.org` is
 > verified in SES and out of the sandbox, and the daily workflow mirrors

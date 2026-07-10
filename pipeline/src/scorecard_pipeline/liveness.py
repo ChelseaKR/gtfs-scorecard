@@ -31,7 +31,9 @@ from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-USER_AGENT = "gtfs-scorecard liveness (+https://gtfsscorecard.org)"
+from .instance import BASE_URL
+
+USER_AGENT = f"gtfs-scorecard liveness (+{BASE_URL})"
 
 # Classifications returned per feed.
 UNCHANGED = "unchanged"

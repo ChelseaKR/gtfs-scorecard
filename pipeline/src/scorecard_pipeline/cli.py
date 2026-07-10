@@ -321,13 +321,12 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if args.html:
         import re
 
+        from .instance import BASE_URL
         from .render_site import _render_agency
 
         # Rewrite root-absolute asset and nav links to the live domain so the
         # page renders correctly opened straight from disk (file://).
-        page = re.sub(
-            r'(href|src)="/', r'\1="https://gtfsscorecard.org/', _render_agency(artifact, [])
-        )
+        page = re.sub(r'(href|src)="/', rf'\1="{BASE_URL}/', _render_agency(artifact, []))
         out = Path(args.html)
         out.write_text(page)
         print(f"  Standalone scorecard written to {out}\n")

@@ -243,10 +243,18 @@ This repo also **produces releases**: the marketplace GitHub Action (tagged
 `v1`), monthly citable dataset releases (`dataset-release.yml`), and an MCP
 registry entry (`server.json`).
 
+## Run your own instance
+
+A state DOT, national RTAP, or country program can fork this repo and stand
+up its own branded instance — own domain, own agency registry, own
+organization name — from config and a deploy, no code change:
+[docs/fork-quickstart.md](docs/fork-quickstart.md).
+
 ## Layout
 
 ```
 agencies.yaml   the agencies the scorecard tracks; add yours here
+instance.example.yaml   fork branding template; copy to instance.yaml to rebrand
 rollups.yaml    program rollups (portfolio views across many agencies)
 pipeline/       Python pipeline: fetch -> validate -> score -> publish
 web/            static frontend; reads only published JSON

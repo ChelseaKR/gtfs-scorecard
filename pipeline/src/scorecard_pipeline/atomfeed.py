@@ -29,9 +29,15 @@ from dataclasses import dataclass
 from typing import Any
 from xml.sax.saxutils import escape
 
+from .instance import BASE_URL, SITE_NAME
+
 # The tag: URI authority for stable, reproducible entry and feed ids (RFC 4151).
-# The date is the scheme's minting year, fixed so ids never churn.
-_TAG_BASE = "tag:gtfsscorecard.org,2026:"
+# The date is the scheme's minting year, fixed so ids never churn. Derived from
+# the configured base URL's host so a fork mints its own tag authority instead
+# of inheriting the upstream domain's; on the upstream instance this resolves
+# to the same "gtfsscorecard.org" value it always has, so existing entry ids
+# are unchanged.
+_TAG_BASE = f"tag:{BASE_URL.split('://', 1)[-1].rstrip('/')},2026:"
 
 
 @dataclass(frozen=True)
@@ -92,8 +98,8 @@ def render_atom(
         f"  <updated>{_rfc3339(feed_updated)}</updated>",
         # RFC 4287 4.1.1 requires a feed-level author when entries omit their own;
         # without it the document is not valid Atom and feed validators reject it.
-        "  <author><name>GTFS Scorecard</name></author>",
-        '  <generator uri="https://gtfsscorecard.org">GTFS Scorecard</generator>',
+        f"  <author><name>{escape(SITE_NAME)}</name></author>",
+        f'  <generator uri="{escape(BASE_URL)}">{escape(SITE_NAME)}</generator>',
     ]
     for entry in ordered:
         parts.extend(

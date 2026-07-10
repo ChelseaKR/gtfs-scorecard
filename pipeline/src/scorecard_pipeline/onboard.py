@@ -19,6 +19,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from .instance import BASE_URL
+
 # GitHub renders an issue *form* as markdown: each field becomes a "### Label"
 # heading followed by the value (or "_No response_" when left blank). We read the
 # two fields the score-a-feed form defines by their labels.
@@ -157,6 +159,6 @@ def render_comment(artifact: dict[str, object], *, page_url: str | None = None) 
         lines.append("")
     lines.append(
         "This is a one-off check. To track this feed over time, "
-        "[add your agency](https://gtfsscorecard.org/submit.html)."
+        f"[add your agency]({BASE_URL}/submit.html)."
     )
     return "\n".join(lines) + "\n"

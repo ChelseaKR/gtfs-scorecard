@@ -263,6 +263,13 @@ agency list, optionally their own object storage and domain. Because the whole
 system is static artifacts plus a stateless pipeline, a white-label instance is
 a configuration and a deploy, not a fork.
 
+The branding and agency-list half of that is live today: `instance.yaml` and
+`agencies.yaml` (EXP-15, `docs/decisions/0030-forkable-instance-config.md`,
+[docs/fork-quickstart.md](fork-quickstart.md)). Left for the rest of this
+item: making the rubric itself pluggable per region (RR:E11) rather than
+shared, and an operator-facing self-management layer if demand for
+white-label ever outgrows "edit two YAML files and deploy."
+
 ### Internationalization and the global catalogue
 
 GTFS is a global standard and the Mobility Database is a global catalogue. The

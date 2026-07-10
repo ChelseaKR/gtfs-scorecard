@@ -1,0 +1,34 @@
+# Instance identity for a forked GTFS Scorecard deployment.
+#
+# Copy this file to `instance.yaml` at the repo root and edit the values
+# below, then commit it. No code change is required: `instance.yaml` is read
+# at pipeline run time (site render, feeds, MCP server) and every field falls
+# back to the maintainer's production value if you leave it out, so you can
+# override just the fields you care about.
+#
+# See docs/fork-quickstart.md for the full walkthrough, and the scope note in
+# pipeline/src/scorecard_pipeline/instance.py: this covers the site's public
+# identity, not the scoring rubric. Every fork is scored on the same shared
+# rubric (docs/rubric.md, RUBRIC_VERSION) so grades stay comparable across
+# instances.
+
+# Canonical URL of your deployment, no trailing slash. Used for canonical
+# links, JSON-LD, the Atom feed, sitemap.xml, robots.txt, and the MCP
+# server's default data source.
+base_url: https://gtfs.example-state-dot.gov
+
+# Display name shown in the nav, page titles, and the Atom feed author.
+site_name: Example State GTFS Scorecard
+
+# Organization name recorded as the JSON-LD publisher/creator of each
+# artifact and page.
+org_name: Example State DOT
+
+# Contact address shown on the About page and in outreach copy.
+contact_email: gtfs-scorecard@example-state-dot.gov
+
+# One line describing your instance and audience, used where the site
+# introduces itself (About page, meta description fallback).
+tagline: >-
+  An open-source GTFS quality scorecard for Example State's transit agencies,
+  forked from gtfsscorecard.org.
