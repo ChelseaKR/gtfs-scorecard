@@ -19,6 +19,11 @@ from __future__ import annotations
 from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE
+from .comparisons import (
+    MIN_PUBLIC_COMPARISON_COHORT,
+    comparison_eligible,
+    comparison_exclusions,
+)
 from .dataset import build_quality_dataset, national_summary
 
 API_VERSION = "v1"
@@ -54,6 +59,8 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     index: dict[str, Any],
     dataset: dict[str, Any],
     annual_trips: dict[str, int] | None = None,
+    *,
+    min_cohort: int = MIN_PUBLIC_COMPARISON_COHORT,
 ) -> dict[str, Any]:
     """Cross-agency standings: best and worst by score, and the biggest movers.
 
@@ -74,8 +81,33 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     def _trips(agency_id: str) -> int:
         return trips_map.get(agency_id) or 0
 
-    scored = [r for r in dataset.get("rows", []) if isinstance(r.get("score"), (int, float))]
+    rows = dataset.get("rows", [])
+    exclusion_counts: dict[str, int] = {}
+    for row in rows:
+        for reason in comparison_exclusions(row):
+            exclusion_counts[reason] = exclusion_counts.get(reason, 0) + 1
+    scored = [r for r in rows if comparison_eligible(r)]
+    comparison = {
+        "eligible_count": len(scored),
+        "excluded_count": len(rows) - len(scored),
+        "minimum_cohort": min_cohort,
+        "suppressed": len(scored) < min_cohort,
+        "exclusion_counts": exclusion_counts,
+        "note": (
+            "Ranked comparisons include only dated feeds with the three required schedule "
+            "categories measured and service data no more than one year expired."
+        ),
+    }
+    if comparison["suppressed"]:
+        return {
+            "comparison": comparison,
+            "top": [],
+            "bottom": [],
+            "most_improved": [],
+            "most_declined": [],
+        }
     by_score = sorted(scored, key=lambda r: (-float(r["score"]), r["id"]))
+    eligible_ids = {str(row["id"]) for row in scored}
     if annual_trips:
         bottom_rows = sorted(scored, key=lambda r: (float(r["score"]), -_trips(r["id"]), r["id"]))[
             :LEADERBOARD_SIZE
@@ -97,6 +129,8 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 
     movers: list[dict[str, Any]] = []
     for agency_id, entry in (index.get("agencies") or {}).items():
+        if agency_id not in eligible_ids:
+            continue
         history = entry.get("history") or []
         if len(history) < 2:
             continue
@@ -126,6 +160,7 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     else:
         declined = sorted(movers, key=lambda m: (m["score_delta"], m["id"]))
     return {
+        "comparison": comparison,
         "top": [_entry(r) for r in by_score[:LEADERBOARD_SIZE]],
         "bottom": [_entry(r) for r in bottom_rows],
         "most_improved": [m for m in improved if m["score_delta"] > 0][:LEADERBOARD_SIZE],
@@ -211,7 +246,8 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
         },
         "notes": (
             "Static JSON over precomputed artifacts. Per-agency detail is each "
-            "agency's published artifact. CC BY 4.0; cite the attribution."
+            "agency's published artifact. Ranked comparisons apply documented "
+            "eligibility and minimum-cohort guardrails. CC BY 4.0; cite the attribution."
         ),
     }
 
