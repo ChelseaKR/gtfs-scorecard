@@ -24,6 +24,12 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- `scorecard report` (also `python -m scorecard_pipeline.report`): renders one
+  agency's published scorecard as a single self-contained HTML file for a
+  board packet or a grant application, printable to PDF, with an optional
+  `--brand` YAML (name, logo, accent) so a state program or consultancy can
+  put its name on reports for the agencies it supports. See
+  `docs/board-report.md`.
 - "Fixes shared across this group" section on `/program/<state>/` pages (#23).
 - `docs/crosswalk.md` rendered as an on-site `/crosswalk/` page (#22).
 - Fix-KB pages and validator rule links for the four highest-prevalence
