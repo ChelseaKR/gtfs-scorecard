@@ -1,0 +1,93 @@
+name: container-scan
+
+# Container image CVE scan (SECURITY-AND-SUPPLY-CHAIN-STANDARD.md §6.3,
+# control SEC-28). Builds each production Dockerfile in this repo
+# (infra/compute and infra/instant-score — the two Lambda worker images
+# behind the fan-out/instant-score infra, see infra/README.md) and scans
+# them with Trivy. A fixable HIGH or CRITICAL OS/library vulnerability fails
+# the job; no `|| true`, no continue-on-error. Matches the container-scan.yml
+# pattern already used in davis-bike-hazard-map / trans-docs-navigator /
+# habitable / queer-the-stacks.
+#
+# Both images COPY in the MobilityData gtfs-validator CLI jar from
+# data/cache/, which is gitignored (not committed — it's a 38MB binary this
+# repo fetches on demand). CI fetches the exact pinned release the Dockerfile
+# already sha256-verifies and stages it at that path before building, so the
+# scanned image matches what a real build produces.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/compute/Dockerfile"
+      - "infra/instant-score/Dockerfile"
+      - "pipeline/pyproject.toml"
+      - "pipeline/uv.lock"
+      - ".github/workflows/container-scan.yml"
+  pull_request:
+    paths:
+      - "infra/compute/Dockerfile"
+      - "infra/instant-score/Dockerfile"
+      - "pipeline/pyproject.toml"
+      - "pipeline/uv.lock"
+      - ".github/workflows/container-scan.yml"
+  schedule:
+    - cron: "0 8 * * 1" # Mondays 08:00 UTC — catch new CVEs against a pinned base image
+
+# Least privilege: build + scan only need to read the repo.
+permissions:
+  contents: read
+
+concurrency:
+  group: container-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VALIDATOR_VERSION: "8.0.1"
+  VALIDATOR_JAR_SHA256: "19293ddd9b6f954f216d4f12054bd8a3232921751c4484339e339764a91000e2"
+
+jobs:
+  trivy:
+    name: Trivy image CVE scan (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: compute
+            dockerfile: infra/compute/Dockerfile
+            tag: gtfs-scorecard-compute:scan
+          - name: instant-score
+            dockerfile: infra/instant-score/Dockerfile
+            tag: gtfs-scorecard-instant-score:scan
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Stage the gtfs-validator CLI jar (same pinned release + hash the Dockerfile verifies)
+        # data/cache/ is gitignored (see .gitignore); both Dockerfiles COPY
+        # this exact file and sha256-verify it in a RUN step, so fetching it
+        # here — pinned to the same version and hash — reproduces a real build
+        # rather than faking the input.
+        run: |
+          set -euo pipefail
+          mkdir -p data/cache
+          jar="data/cache/gtfs-validator-${VALIDATOR_VERSION}-cli.jar"
+          curl -fsSL --retry 3 -o "$jar" \
+            "https://github.com/MobilityData/gtfs-validator/releases/download/v${VALIDATOR_VERSION}/gtfs-validator-${VALIDATOR_VERSION}-cli.jar"
+          echo "${VALIDATOR_JAR_SHA256}  ${jar}" | sha256sum -c -
+
+      - name: Build production image
+        run: docker build -f ${{ matrix.dockerfile }} -t ${{ matrix.tag }} .
+
+      - name: Trivy vulnerability scan (fails on fixable HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ matrix.tag }}
+          scan-type: image
+          vuln-type: os,library
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
