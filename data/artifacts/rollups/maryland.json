@@ -63,7 +63,7 @@
     "stale": 18,
     "total": 19
   },
-  "generated_at": "2026-07-10T19:06:16+00:00",
+  "generated_at": "2026-07-10T21:00:41+00:00",
   "grade_distribution": {
     "A": 1,
     "B": 4,
@@ -333,7 +333,7 @@
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "needs_attention": true,
-      "score": 50.7,
+      "score": 50.2,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
@@ -361,7 +361,7 @@
       "id": "cecil-transit-3034",
       "name": "Cecil Transit",
       "needs_attention": true,
-      "score": 58.2,
+      "score": 58.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
@@ -403,7 +403,7 @@
       "id": "towson-loop",
       "name": "Towson Loop",
       "needs_attention": true,
-      "score": 67.6,
+      "score": 67.8,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."

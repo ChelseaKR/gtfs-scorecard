@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: impossibly fast travel between distant stops — GTFS Scorecard</title>
-  <meta name="description" content="Between two stops that are far apart, the scheduled times imply a speed no bus reaches. The usual causes: an arrival or departure time typed a minute…">
+  <meta name="description" content="Code: fast_travel_between_far_stops (MobilityData validator)">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/fast_travel_between_far_stops/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: impossibly fast travel between distant stops — GTFS Scorecard">
-  <meta property="og:description" content="Between two stops that are far apart, the scheduled times imply a speed no bus reaches. The usual causes: an arrival or departure time typed a minute…">
+  <meta property="og:description" content="Code: fast_travel_between_far_stops (MobilityData validator)">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/fast_travel_between_far_stops/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: impossibly fast travel between distant stops","description":"Between two stops that are far apart, the scheduled times imply a speed no bus reaches. The usual causes: an arrival or departure time typed a minute\u2026","url":"https://gtfsscorecard.org/fix/fast_travel_between_far_stops/","about":{"@type":"Thing","name":"GTFS validator notice fast_travel_between_far_stops"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-10","mainEntityOfPage":"https://gtfsscorecard.org/fix/fast_travel_between_far_stops/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: impossibly fast travel between distant stops","description":"Code: fast_travel_between_far_stops (MobilityData validator)","url":"https://gtfsscorecard.org/fix/fast_travel_between_far_stops/","about":{"@type":"Thing","name":"GTFS validator notice fast_travel_between_far_stops"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,33 +47,37 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: fast_travel_between_far_stops</span><meta itemprop="position" content="3"></li></ol></nav>
-    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Fix: fast_travel_between_far_stops</span></li></ol></nav>
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <article class="feed-details"><h1>Fix: impossibly fast travel between distant stops</h1>
 <p>Code: <code>fast_travel_between_far_stops</code> (MobilityData validator)</p>
 <h2 class="section-title">What this means</h2>
-<p>Between two stops that are far apart, the scheduled times imply a speed no bus
-reaches. The usual causes: an arrival or departure time typed a minute or an
-hour off, a stop placed at the wrong coordinates so the distance is inflated,
-or a missing stop between the two that would have broken the leg up.</p>
+<p>Between two stops that are far apart, the scheduled times imply a speed no bus</p>
+<p>reaches. The usual causes: an arrival or departure time typed a minute or an</p>
+<p>hour off, a stop placed at the wrong coordinates so the distance is inflated,</p>
+<p>or a missing stop between the two that would have broken the leg up.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>A rider planning around these times gets an itinerary that cannot happen; a
-realtime system comparing predictions to this schedule reports phantom delays.
-Either way, the feed promises something the street cannot deliver, and the
-rider pays for the gap.</p>
+<p>A rider planning around these times gets an itinerary that cannot happen; a</p>
+<p>realtime system comparing predictions to this schedule reports phantom delays.</p>
+<p>Either way, the feed promises something the street cannot deliver, and the</p>
+<p>rider pays for the gap.</p>
 <h2 class="section-title">How to fix it</h2>
 <ul>
-<li><strong>Check the times first.</strong> Open the flagged trip and look at the two stop
-times; a transposed digit or wrong hour is the most common cause.</li>
-<li><strong>Then check the stop locations.</strong> If a stop sits miles from where the bus
-actually stops, correcting its coordinates fixes the implied speed and
-every other check that uses that stop.</li>
-<li><strong>Then check for a missing stop.</strong> If the vehicle really serves a stop
-between the two, adding it back splits the leg into plausible pieces.</li>
+<li><strong>Check the times first.</strong> Open the flagged trip and look at the two stop</li>
 </ul>
+<p>  times; a transposed digit or wrong hour is the most common cause.</p>
+<ul>
+<li><strong>Then check the stop locations.</strong> If a stop sits miles from where the bus</li>
+</ul>
+<p>  actually stops, correcting its coordinates fixes the implied speed and</p>
+<p>  every other check that uses that stop.</p>
+<ul>
+<li><strong>Then check for a missing stop.</strong> If the vehicle really serves a stop</li>
+</ul>
+<p>  between the two, adding it back splits the leg into plausible pieces.</p>
 <h2 class="section-title">How long it usually takes</h2>
-<p>Minutes per flagged trip once you open it: these are almost always a typo, a
-misplaced pin, or a dropped stop, each visible at a glance.</p>
+<p>Minutes per flagged trip once you open it: these are almost always a typo, a</p>
+<p>misplaced pin, or a dropped stop, each visible at a glance.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p><code>fast_travel_between_far_stops</code> is a canonical MobilityData GTFS Validator notice, the same rule behind the statewide GTFS quality reports. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#fast_travel_between_far_stops-rule">Read the authoritative rule for fast_travel_between_far_stops in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
   </main>
@@ -92,13 +96,11 @@ misplaced pin, or a dropped stop, each visible at a glance.</p>
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: a stop sits far from the route line — GTFS Scorecard</title>
-  <meta name="description" content="Some stops sit far from the route line (the shapes.txt path) they belong to, based on the geometric distance between the stop and the shape.">
+  <meta name="description" content="Code: stop_too_far_from_shape (MobilityData validator)">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/stop_too_far_from_shape/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: a stop sits far from the route line — GTFS Scorecard">
-  <meta property="og:description" content="Some stops sit far from the route line (the shapes.txt path) they belong to, based on the geometric distance between the stop and the shape.">
+  <meta property="og:description" content="Code: stop_too_far_from_shape (MobilityData validator)">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/stop_too_far_from_shape/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: a stop sits far from the route line","description":"Some stops sit far from the route line (the shapes.txt path) they belong to, based on the geometric distance between the stop and the shape.","url":"https://gtfsscorecard.org/fix/stop_too_far_from_shape/","about":{"@type":"Thing","name":"GTFS validator notice stop_too_far_from_shape"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-10","mainEntityOfPage":"https://gtfsscorecard.org/fix/stop_too_far_from_shape/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: a stop sits far from the route line","description":"Code: stop_too_far_from_shape (MobilityData validator)","url":"https://gtfsscorecard.org/fix/stop_too_far_from_shape/","about":{"@type":"Thing","name":"GTFS validator notice stop_too_far_from_shape"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,29 +47,31 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: stop_too_far_from_shape</span><meta itemprop="position" content="3"></li></ol></nav>
-    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Fix: stop_too_far_from_shape</span></li></ol></nav>
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <article class="feed-details"><h1>Fix: a stop sits far from the route line</h1>
 <p>Code: <code>stop_too_far_from_shape</code> (MobilityData validator)</p>
 <h2 class="section-title">What this means</h2>
-<p>Some stops sit far from the route line (the <code>shapes.txt</code> path) they belong
-to, based on the geometric distance between the stop and the shape.</p>
+<p>Some stops sit far from the route line (the <code>shapes.txt</code> path) they belong</p>
+<p>to, based on the geometric distance between the stop and the shape.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>Trip planners use the shape to draw the route on the map. When a stop sits
-far from it, the map can draw the bus detouring to reach the stop, or point
-riders to the wrong corner to wait.</p>
+<p>Trip planners use the shape to draw the route on the map. When a stop sits</p>
+<p>far from it, the map can draw the bus detouring to reach the stop, or point</p>
+<p>riders to the wrong corner to wait.</p>
 <h2 class="section-title">How to fix it</h2>
-<p>Check the flagged stops' coordinates and the route shape in your scheduling
-software, then re-snap whichever one is misplaced:</p>
+<p>Check the flagged stops&#x27; coordinates and the route shape in your scheduling</p>
+<p>software, then re-snap whichever one is misplaced:</p>
 <ul>
-<li><strong>If the stop's location is wrong</strong>, correct <code>stop_lat</code> / <code>stop_lon</code> to
-where the stop actually is.</li>
-<li><strong>If the shape doesn't actually pass the stop</strong>, fix or re-generate
-<code>shapes.txt</code> so it follows the real path the bus drives.</li>
+<li><strong>If the stop&#x27;s location is wrong</strong>, correct <code>stop_lat</code> / <code>stop_lon</code> to</li>
 </ul>
-<p>See <a href="/fix/stop_too_far_from_shape_using_user_distance/">a stop far from the shape by its distance measurement</a>
-for the related case where <code>shape_dist_traveled</code> values, not the raw
-geometry, are what disagree with the stop's location.</p>
+<p>  where the stop actually is.</p>
+<ul>
+<li><strong>If the shape doesn&#x27;t actually pass the stop</strong>, fix or re-generate</li>
+</ul>
+<p>  <code>shapes.txt</code> so it follows the real path the bus drives.</p>
+<p>See <a href="/fix/stop_too_far_from_shape_using_user_distance/">a stop far from the shape by its distance measurement</a></p>
+<p>for the related case where <code>shape_dist_traveled</code> values, not the raw</p>
+<p>geometry, are what disagree with the stop&#x27;s location.</p>
 <h2 class="section-title">How long it usually takes</h2>
 <p>A few minutes per flagged stop, checking the coordinates against the map.</p>
 <h2 class="section-title">Authoritative rule</h2>
@@ -90,13 +92,11 @@ geometry, are what disagree with the stop's location.</p>
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

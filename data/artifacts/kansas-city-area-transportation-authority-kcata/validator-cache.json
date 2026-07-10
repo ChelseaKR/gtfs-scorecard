@@ -36,15 +36,15 @@
           }
         ],
         "severity": "WARNING",
-        "total": 3687
+        "total": 3683
       },
       {
         "code": "fast_travel_between_consecutive_stops",
         "sample_notices": [
           {
             "arrivalTime2": "12:20:56",
-            "csvRowNumber1": 25156,
-            "csvRowNumber2": 25157,
+            "csvRowNumber1": 24920,
+            "csvRowNumber2": 24921,
             "departureTime1": "12:20:43",
             "distanceKm": 0.9913183572480209,
             "routeId": "229",
@@ -55,13 +55,13 @@
             "stopName2": "ON AMBASSADOR AT SKYVIEW SB",
             "stopSequence1": 21,
             "stopSequence2": 22,
-            "tripCsvRowNumber": 530,
-            "tripId": "363985"
+            "tripCsvRowNumber": 520,
+            "tripId": "373624"
           },
           {
             "arrivalTime2": "19:18:09",
-            "csvRowNumber1": 168105,
-            "csvRowNumber2": 168106,
+            "csvRowNumber1": 162623,
+            "csvRowNumber2": 162624,
             "departureTime1": "19:17:58",
             "distanceKm": 0.9913183572480209,
             "routeId": "229",
@@ -72,13 +72,13 @@
             "stopName2": "ON AMBASSADOR AT SKYVIEW SB",
             "stopSequence1": 21,
             "stopSequence2": 22,
-            "tripCsvRowNumber": 4487,
-            "tripId": "363958"
+            "tripCsvRowNumber": 4466,
+            "tripId": "373597"
           },
           {
             "arrivalTime2": "13:22:16",
-            "csvRowNumber1": 24462,
-            "csvRowNumber2": 24463,
+            "csvRowNumber1": 24226,
+            "csvRowNumber2": 24227,
             "departureTime1": "13:22:11",
             "distanceKm": 0.4127814379979884,
             "routeId": "229",
@@ -89,13 +89,13 @@
             "stopName2": "ON AMBASSADOR AT OLD TIFFANY SPRINGS NB",
             "stopSequence1": 23,
             "stopSequence2": 24,
-            "tripCsvRowNumber": 514,
-            "tripId": "363969"
+            "tripCsvRowNumber": 504,
+            "tripId": "373608"
           },
           {
             "arrivalTime2": "22:23:31",
-            "csvRowNumber1": 106189,
-            "csvRowNumber2": 106190,
+            "csvRowNumber1": 105523,
+            "csvRowNumber2": 105524,
             "departureTime1": "22:23:26",
             "distanceKm": 0.4127814379979884,
             "routeId": "229",
@@ -106,13 +106,13 @@
             "stopName2": "ON AMBASSADOR AT OLD TIFFANY SPRINGS NB",
             "stopSequence1": 23,
             "stopSequence2": 24,
-            "tripCsvRowNumber": 2861,
-            "tripId": "363910"
+            "tripCsvRowNumber": 2971,
+            "tripId": "373549"
           },
           {
             "arrivalTime2": "08:42:29",
-            "csvRowNumber1": 37310,
-            "csvRowNumber2": 37311,
+            "csvRowNumber1": 36607,
+            "csvRowNumber2": 36608,
             "departureTime1": "08:42:28",
             "distanceKm": 0.04681175469488012,
             "routeId": "28",
@@ -123,12 +123,12 @@
             "stopName2": "ON BLUE RIDGE BLVD AT 8414 BLUE RIDGE BLVD SB",
             "stopSequence1": 79,
             "stopSequence2": 80,
-            "tripCsvRowNumber": 848,
-            "tripId": "364706"
+            "tripCsvRowNumber": 821,
+            "tripId": "374345"
           }
         ],
         "severity": "WARNING",
-        "total": 93
+        "total": 123
       },
       {
         "code": "same_name_and_description_for_route",
@@ -171,43 +171,43 @@
         "code": "stop_too_far_from_shape_using_user_distance",
         "sample_notices": [
           {
-            "geoDistanceToShape": 129.2391036637989,
+            "geoDistanceToShape": 119.69217811362299,
             "match": [
-              39.18853943979709,
-              -94.5479495238715
+              39.006638,
+              -94.542489
             ],
-            "shapeId": "6198",
-            "stopId": "234175",
-            "stopName": "ON NE ANTIOCH AT 5261 NE ANTIOCH SOUTHBOUND",
-            "stopTimeCsvRowNumber": 26753,
-            "tripCsvRowNumber": 580,
-            "tripId": "364157"
+            "shapeId": "6348",
+            "stopId": "1750114",
+            "stopName": "ON SWOPE PKWY AT MEYER NB",
+            "stopTimeCsvRowNumber": 11653,
+            "tripCsvRowNumber": 230,
+            "tripId": "372921"
           },
           {
-            "geoDistanceToShape": 211.56676938537868,
+            "geoDistanceToShape": 137.64409417974892,
             "match": [
-              39.043894,
-              -94.591476
+              39.10002899999999,
+              -94.585826
             ],
-            "shapeId": "6231",
-            "stopId": "5700047",
-            "stopName": "ON 47TH AT CENTRAL EASTBOUND FARSIDE",
-            "stopTimeCsvRowNumber": 51025,
-            "tripCsvRowNumber": 1168,
-            "tripId": "365463"
+            "shapeId": "6347",
+            "stopId": "1010004",
+            "stopName": "ON 11TH AT CENTRAL WESTBOUND",
+            "stopTimeCsvRowNumber": 10240,
+            "tripCsvRowNumber": 204,
+            "tripId": "372895"
           },
           {
-            "geoDistanceToShape": 179.8212333422559,
+            "geoDistanceToShape": 115.77379698033651,
             "match": [
-              39.18813,
-              -94.547402
+              39.013088,
+              -94.591905
             ],
-            "shapeId": "6190",
-            "stopId": "234175",
-            "stopName": "ON NE ANTIOCH AT 5261 NE ANTIOCH SOUTHBOUND",
-            "stopTimeCsvRowNumber": 19389,
-            "tripCsvRowNumber": 451,
-            "tripId": "363778"
+            "shapeId": "6483",
+            "stopId": "5710090",
+            "stopName": "ON 63RD AT BROOKSIDE EASTBOUND",
+            "stopTimeCsvRowNumber": 61370,
+            "tripCsvRowNumber": 1437,
+            "tripId": "378064"
           },
           {
             "geoDistanceToShape": 350.4282263191765,
@@ -215,146 +215,51 @@
               39.26112144813301,
               -94.64931222407736
             ],
-            "shapeId": "6194",
+            "shapeId": "6363",
             "stopId": "23107",
             "stopName": "ON AMBASSADOR AT SKYVIEW NB",
-            "stopTimeCsvRowNumber": 24168,
-            "tripCsvRowNumber": 507,
-            "tripId": "363962"
+            "stopTimeCsvRowNumber": 23932,
+            "tripCsvRowNumber": 497,
+            "tripId": "373601"
           },
           {
-            "geoDistanceToShape": 2343.7034771486874,
+            "geoDistanceToShape": 120.37236504596942,
             "match": [
-              39.02937299999999,
-              -94.43957
+              38.96730196891241,
+              -94.60519062695101
             ],
-            "shapeId": "6237",
-            "stopId": "479901",
-            "stopName": "ON US40 HWY SOUTHBOUND NEARSIDE STERLING",
-            "stopTimeCsvRowNumber": 54470,
-            "tripCsvRowNumber": 1288,
-            "tripId": "365781"
+            "shapeId": "6489",
+            "stopId": "1750061",
+            "stopName": "ON WARD PKWY AT 89TH SOUTHBOUND",
+            "stopTimeCsvRowNumber": 185765,
+            "tripCsvRowNumber": 5078,
+            "tripId": "378197"
           }
         ],
         "severity": "WARNING",
-        "total": 16
-      },
-      {
-        "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
-        "sample_notices": [
-          {
-            "actualDistanceBetweenShapePoints": 0.8895608094005769,
-            "csvRowNumber": 15344,
-            "prevCsvRowNumber": 15343,
-            "prevShapeDistTraveled": 9.251,
-            "prevShapePtSequence": 303,
-            "shapeDistTraveled": 9.251,
-            "shapeId": "6198",
-            "shapePtSequence": 304
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.8895608094005769,
-            "csvRowNumber": 15399,
-            "prevCsvRowNumber": 15398,
-            "prevShapeDistTraveled": 10.3402,
-            "prevShapePtSequence": 358,
-            "shapeDistTraveled": 10.3402,
-            "shapeId": "6198",
-            "shapePtSequence": 359
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.8895608094005769,
-            "csvRowNumber": 15494,
-            "prevCsvRowNumber": 15493,
-            "prevShapeDistTraveled": 11.8093,
-            "prevShapePtSequence": 453,
-            "shapeDistTraveled": 11.8093,
-            "shapeId": "6198",
-            "shapePtSequence": 454
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.715666971972723,
-            "csvRowNumber": 30454,
-            "prevCsvRowNumber": 30453,
-            "prevShapeDistTraveled": 23.8964,
-            "prevShapePtSequence": 757,
-            "shapeDistTraveled": 23.8964,
-            "shapeId": "6245",
-            "shapePtSequence": 758
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.8895608094005769,
-            "csvRowNumber": 16842,
-            "prevCsvRowNumber": 16841,
-            "prevShapeDistTraveled": 14.407,
-            "prevShapePtSequence": 536,
-            "shapeDistTraveled": 14.407,
-            "shapeId": "6200",
-            "shapePtSequence": 537
-          }
-        ],
-        "severity": "WARNING",
-        "total": 10
+        "total": 17
       },
       {
         "code": "stops_match_shape_out_of_order",
         "sample_notices": [
           {
             "match1": [
-              39.08398034363756,
-              -94.5838965823915
+              39.00770267201602,
+              -94.54256520312862
             ],
             "match2": [
-              39.084561424658965,
-              -94.58168453853084
+              39.003657917624125,
+              -94.54265831357064
             ],
-            "shapeId": "6242",
-            "stopId1": "2700092",
-            "stopId2": "290073",
-            "stopName1": "ON PERSHING AT MAIN EB",
-            "stopName2": "ON GRAND AT PERSHING FARSIDE NORTHBOUND",
-            "stopTimeCsvRowNumber1": 61558,
-            "stopTimeCsvRowNumber2": 61557,
-            "tripCsvRowNumber": 1457,
-            "tripId": "366113"
-          },
-          {
-            "match1": [
-              39.084449,
-              -94.58169400000001
-            ],
-            "match2": [
-              39.084561424658965,
-              -94.58168453853084
-            ],
-            "shapeId": "6242",
-            "stopId1": "2700092",
-            "stopId2": "290073",
-            "stopName1": "ON PERSHING AT MAIN EB",
-            "stopName2": "ON GRAND AT PERSHING FARSIDE NORTHBOUND",
-            "stopTimeCsvRowNumber1": 61558,
-            "stopTimeCsvRowNumber2": 61557,
-            "tripCsvRowNumber": 1457,
-            "tripId": "366113"
-          },
-          {
-            "match1": [
-              38.96703092682472,
-              -94.60645511970732
-            ],
-            "match2": [
-              38.96707459303277,
-              -94.60663958681636
-            ],
-            "shapeId": "6313",
-            "stopId1": "5100171",
-            "stopId2": "1750061",
-            "stopName1": "ON 89TH BETWEEN WARD PKWY AND STATE LINE WB",
-            "stopName2": "ON WARD PKWY AT 89TH SOUTHBOUND",
-            "stopTimeCsvRowNumber1": 195989,
-            "stopTimeCsvRowNumber2": 195988,
-            "tripCsvRowNumber": 5220,
-            "tripId": "368567"
+            "shapeId": "6348",
+            "stopId1": "1750114",
+            "stopId2": "21181",
+            "stopName1": "ON SWOPE PKWY AT MEYER NB",
+            "stopName2": "ON CLEVELAND AT 67TH TERR NORTHBOUND NEARSIDE",
+            "stopTimeCsvRowNumber1": 11653,
+            "stopTimeCsvRowNumber2": 11652,
+            "tripCsvRowNumber": 230,
+            "tripId": "372921"
           },
           {
             "match1": [
@@ -365,15 +270,15 @@
               39.012555333048134,
               -94.5921283775978
             ],
-            "shapeId": "6307",
+            "shapeId": "6483",
             "stopId1": "5710090",
             "stopId2": "562305",
             "stopName1": "ON 63RD AT BROOKSIDE EASTBOUND",
             "stopName2": "ON BROOKSIDE AT MEYER SB",
-            "stopTimeCsvRowNumber1": 64138,
-            "stopTimeCsvRowNumber2": 64137,
-            "tripCsvRowNumber": 1530,
-            "tripId": "368434"
+            "stopTimeCsvRowNumber1": 61370,
+            "stopTimeCsvRowNumber2": 61369,
+            "tripCsvRowNumber": 1437,
+            "tripId": "378064"
           },
           {
             "match1": [
@@ -384,15 +289,53 @@
               38.96707459303277,
               -94.60663958681636
             ],
-            "shapeId": "6314",
+            "shapeId": "6489",
             "stopId1": "5100171",
             "stopId2": "1750061",
             "stopName1": "ON 89TH BETWEEN WARD PKWY AND STATE LINE WB",
             "stopName2": "ON WARD PKWY AT 89TH SOUTHBOUND",
-            "stopTimeCsvRowNumber1": 68361,
-            "stopTimeCsvRowNumber2": 68360,
-            "tripCsvRowNumber": 1601,
-            "tripId": "368593"
+            "stopTimeCsvRowNumber1": 185766,
+            "stopTimeCsvRowNumber2": 185765,
+            "tripCsvRowNumber": 5078,
+            "tripId": "378197"
+          },
+          {
+            "match1": [
+              39.08433402338346,
+              -94.59446686025524
+            ],
+            "match2": [
+              39.08234635305437,
+              -94.5961462670385
+            ],
+            "shapeId": "6376",
+            "stopId1": "271601",
+            "stopId2": "1231202",
+            "stopName1": "ON SW BLVD BETWEEN MADISON AND SUMMIT EASTBOUND",
+            "stopName2": "ON 25TH ST AT BELLEVIEW WB",
+            "stopTimeCsvRowNumber1": 33589,
+            "stopTimeCsvRowNumber2": 33588,
+            "tripCsvRowNumber": 759,
+            "tripId": "374257"
+          },
+          {
+            "match1": [
+              39.08398034363756,
+              -94.5838965823915
+            ],
+            "match2": [
+              39.084561424658965,
+              -94.58168453853084
+            ],
+            "shapeId": "6411",
+            "stopId1": "2700092",
+            "stopId2": "290073",
+            "stopName1": "ON PERSHING AT MAIN EB",
+            "stopName2": "ON GRAND AT PERSHING FARSIDE NORTHBOUND",
+            "stopTimeCsvRowNumber1": 58694,
+            "stopTimeCsvRowNumber2": 58693,
+            "tripCsvRowNumber": 1381,
+            "tripId": "375749"
           }
         ],
         "severity": "WARNING",
@@ -407,12 +350,12 @@
               39.042377,
               -94.59156
             ],
-            "shapeId": "6231",
+            "shapeId": "6400",
             "stopId": "556161",
             "stopName": "ON W 47TH AT JC NICHOLS PARKWAY EASTBOUND NEARSIDE",
-            "stopTimeCsvRowNumber": 51026,
-            "tripCsvRowNumber": 1168,
-            "tripId": "365463"
+            "stopTimeCsvRowNumber": 50045,
+            "tripCsvRowNumber": 1136,
+            "tripId": "375099"
           },
           {
             "geoDistanceToShape": 458.525420096024,
@@ -420,55 +363,16 @@
               39.042377,
               -94.59156
             ],
-            "shapeId": "6231",
+            "shapeId": "6400",
             "stopId": "90081",
             "stopName": "PLAZA STATION",
-            "stopTimeCsvRowNumber": 51027,
-            "tripCsvRowNumber": 1168,
-            "tripId": "365463"
-          },
-          {
-            "geoDistanceToShape": 134.18561437216871,
-            "match": [
-              39.099677517432994,
-              -94.57615948402879
-            ],
-            "shapeId": "6193",
-            "stopId": "1090042",
-            "stopName": "ON 11TH AT CHERRY WESTBOUND",
-            "stopTimeCsvRowNumber": 23607,
-            "tripCsvRowNumber": 492,
-            "tripId": "363879"
-          },
-          {
-            "geoDistanceToShape": 137.0624323939687,
-            "match": [
-              39.09977484305459,
-              -94.57846456728005
-            ],
-            "shapeId": "6193",
-            "stopId": "110046",
-            "stopName": "ON 11TH AT OAK WESTBOUND",
-            "stopTimeCsvRowNumber": 23608,
-            "tripCsvRowNumber": 492,
-            "tripId": "363879"
+            "stopTimeCsvRowNumber": 50046,
+            "tripCsvRowNumber": 1136,
+            "tripId": "375099"
           }
         ],
         "severity": "WARNING",
-        "total": 4
-      },
-      {
-        "code": "feed_expiration_date30_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260701",
-            "feedEndDate": "20260711",
-            "suggestedExpirationDate": "20260731"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
+        "total": 2
       },
       {
         "code": "missing_feed_contact_email_and_url",
@@ -494,10 +398,34 @@
         "total": 1
       },
       {
-        "code": "unknown_file",
+        "code": "trip_coverage_not_active_for_next7_days",
         "sample_notices": [
           {
-            "filename": "google.log"
+            "currentDate": "20260710",
+            "serviceWindowEndDate": "20261003",
+            "serviceWindowStartDate": "20260713"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "future_calendar",
+        "sample_notices": [
+          {
+            "currentDate": "2026-07-10",
+            "minServiceStartDate": "2026-07-12"
+          }
+        ],
+        "severity": "INFO",
+        "total": 1
+      },
+      {
+        "code": "future_feed",
+        "sample_notices": [
+          {
+            "currentDate": "20260710",
+            "feedStartDate": "20260712"
           }
         ],
         "severity": "INFO",
@@ -506,6 +434,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "2a49be56567391508e8ac456d09e165564ccf46ddc3cb0ffb38c06f0d1ec13e7",
+  "sha256": "f5ee076c271fac64fd9bea697356513e1817d0169d56154698555ee1aa2686ac",
   "validator_version": "8.0.1"
 }

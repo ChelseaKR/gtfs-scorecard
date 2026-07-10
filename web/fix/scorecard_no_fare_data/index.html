@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: the feed contains no fare information — GTFS Scorecard</title>
-  <meta name="description" content="The feed has no fare files, so it does not say what a trip costs. GTFS carries fares either in the classic fare_attributes.txt and fare_rules.txt, or…">
+  <meta name="description" content="Code: scorecard_no_fare_data">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/scorecard_no_fare_data/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: the feed contains no fare information — GTFS Scorecard">
-  <meta property="og:description" content="The feed has no fare files, so it does not say what a trip costs. GTFS carries fares either in the classic fare_attributes.txt and fare_rules.txt, or…">
+  <meta property="og:description" content="Code: scorecard_no_fare_data">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/scorecard_no_fare_data/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: the feed contains no fare information","description":"The feed has no fare files, so it does not say what a trip costs. GTFS carries fares either in the classic fare_attributes.txt and fare_rules.txt, or\u2026","url":"https://gtfsscorecard.org/fix/scorecard_no_fare_data/","about":{"@type":"Thing","name":"GTFS validator notice scorecard_no_fare_data"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-10","mainEntityOfPage":"https://gtfsscorecard.org/fix/scorecard_no_fare_data/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: the feed contains no fare information","description":"Code: scorecard_no_fare_data","url":"https://gtfsscorecard.org/fix/scorecard_no_fare_data/","about":{"@type":"Thing","name":"GTFS validator notice scorecard_no_fare_data"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,36 +47,40 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: scorecard_no_fare_data</span><meta itemprop="position" content="3"></li></ol></nav>
-    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Fix: scorecard_no_fare_data</span></li></ol></nav>
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <article class="feed-details"><h1>Fix: the feed contains no fare information</h1>
 <p>Code: <code>scorecard_no_fare_data</code></p>
 <h2 class="section-title">What this means</h2>
-<p>The feed has no fare files, so it does not say what a trip costs. GTFS carries
-fares either in the classic <code>fare_attributes.txt</code> and <code>fare_rules.txt</code>, or in
-the newer Fares v2 files (<code>fare_products.txt</code>, <code>fare_leg_rules.txt</code>, and
-related). Neither is present.</p>
+<p>The feed has no fare files, so it does not say what a trip costs. GTFS carries</p>
+<p>fares either in the classic <code>fare_attributes.txt</code> and <code>fare_rules.txt</code>, or in</p>
+<p>the newer Fares v2 files (<code>fare_products.txt</code>, <code>fare_leg_rules.txt</code>, and</p>
+<p>related). Neither is present.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>Without fare data, trip planners show &quot;fare unknown&quot;, and a rider cannot tell
-what to bring or budget for the trip before they board. Visitors and occasional
-riders feel this most, because regulars already know the fare. For a flat-fare
-system, the missing information is small and easy to supply, so the gap is more
-about it never being entered than about complexity.</p>
+<p>Without fare data, trip planners show &quot;fare unknown&quot;, and a rider cannot tell</p>
+<p>what to bring or budget for the trip before they board. Visitors and occasional</p>
+<p>riders feel this most, because regulars already know the fare. For a flat-fare</p>
+<p>system, the missing information is small and easy to supply, so the gap is more</p>
+<p>about it never being entered than about complexity.</p>
 <h2 class="section-title">How to fix it</h2>
 <ul>
-<li><strong>Flat fare (one price to ride):</strong> add a <code>fare_attributes.txt</code> with a single
-fare (price, currency, payment method, transfer rules), and a <code>fare_rules.txt</code>
-that applies it to your routes. This is a short file for most small systems.</li>
-<li><strong>Zones or distance-based fares:</strong> model the fare zones on your stops and the
-rules between them, or use Fares v2 if your tool supports it.</li>
-<li><strong>In your scheduling tool:</strong> look for a fares or pricing section, enter the
-fare once, and enable fare output in the export settings.</li>
+<li><strong>Flat fare (one price to ride):</strong> add a <code>fare_attributes.txt</code> with a single</li>
 </ul>
-<p>Set the currency correctly (for example <code>USD</code>) so apps display the price
-properly.</p>
+<p>  fare (price, currency, payment method, transfer rules), and a <code>fare_rules.txt</code></p>
+<p>  that applies it to your routes. This is a short file for most small systems.</p>
+<ul>
+<li><strong>Zones or distance-based fares:</strong> model the fare zones on your stops and the</li>
+</ul>
+<p>  rules between them, or use Fares v2 if your tool supports it.</p>
+<ul>
+<li><strong>In your scheduling tool:</strong> look for a fares or pricing section, enter the</li>
+</ul>
+<p>  fare once, and enable fare output in the export settings.</p>
+<p>Set the currency correctly (for example <code>USD</code>) so apps display the price</p>
+<p>properly.</p>
 <h2 class="section-title">How long it usually takes</h2>
-<p>A small file for most flat-fare systems, entered once. Zone and distance fares
-take longer because the structure itself is larger.</p>
+<p>A small file for most flat-fare systems, entered once. Zone and distance fares</p>
+<p>take longer because the structure itself is larger.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p>The GTFS Validator does not flag this (the field is valid GTFS when left empty), so the expectation comes from the community GTFS Best Practices. <a class="rule-ref" href="https://gtfs.org/schedule/best-practices/#fare_attributestxt">Read the relevant GTFS Best Practice</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
   </main>
@@ -95,13 +99,11 @@ take longer because the structure itself is larger.</p>
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

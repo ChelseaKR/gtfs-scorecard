@@ -197,21 +197,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 33.3,
-        "covered_trips": 1,
+        "coverage_pct": 50.0,
+        "covered_trips": 2,
         "drift": {
-          "median_seconds": -420,
-          "observations": 6,
-          "on_time_share_pct": 33.3,
-          "p90_abs_seconds": 1004
+          "median_seconds": 78,
+          "observations": 13,
+          "on_time_share_pct": 46.2,
+          "p90_abs_seconds": 2340
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 3,
-        "vehicles_checked": 3,
+        "scheduled_trips_in_window": 4,
+        "vehicles_checked": 9,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 4
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
@@ -220,16 +220,27 @@
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 23.3,
+          "points": 17.5,
           "severity": "WARNING",
-          "what": "2 of 3 trips scheduled during the sampling window had no live predictions.",
+          "what": "2 of 4 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 13,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 76.7,
+      "score": 82.5,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 33.3% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 420s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 50.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 78s behind schedule.",
       "weight": 0.2
     }
   },
@@ -271,7 +282,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "ea8de81aac357474199f4fb0bf2baccfbed0fa778f33d21a0b245712debd2cc4",
+    "sha256": "7cfca24d423d7ee3f96e72fb510f54aa194acdcf3cb4d58a775ff9ae277bafe9",
     "size_bytes": 34985,
     "static_url": "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
   },
@@ -323,9 +334,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 2.1,
-    "margin_to_next_band": 7.9,
-    "score": 62.1
+    "margin_to_lower_band": 3.2,
+    "margin_to_next_band": 6.8,
+    "score": 63.2
   },
   "recommendations": [
     {
@@ -465,10 +476,10 @@
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
-      "points": 23.3,
+      "points": 17.5,
       "rank": 2,
       "severity": "WARNING",
-      "what": "2 of 3 trips scheduled during the sampling window had no live predictions.",
+      "what": "2 of 4 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {

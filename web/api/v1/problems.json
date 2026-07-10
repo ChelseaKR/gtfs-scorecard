@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-10T20:47:49+00:00",
+  "generated_at": "2026-07-10T21:01:06+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -45,9 +45,9 @@
       "prevalence_pct": 1.7
     },
     "equal_shape_distance_diff_coordinates_distance_below_threshold": {
-      "agencies": 84,
-      "instances": 73157,
-      "prevalence_pct": 5.8
+      "agencies": 83,
+      "instances": 73147,
+      "prevalence_pct": 5.7
     },
     "equal_shape_distance_same_coordinates": {
       "agencies": 134,
@@ -71,7 +71,7 @@
     },
     "fast_travel_between_consecutive_stops": {
       "agencies": 230,
-      "instances": 169239,
+      "instances": 169269,
       "prevalence_pct": 15.9
     },
     "fast_travel_between_far_stops": {
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.6
     },
     "feed_expiration_date30_days": {
-      "agencies": 16,
-      "instances": 16,
-      "prevalence_pct": 1.1
+      "agencies": 15,
+      "instances": 15,
+      "prevalence_pct": 1.0
     },
     "feed_expiration_date7_days": {
       "agencies": 507,
@@ -100,13 +100,13 @@
       "prevalence_pct": 1.1
     },
     "future_calendar": {
-      "agencies": 27,
-      "instances": 27,
+      "agencies": 28,
+      "instances": 28,
       "prevalence_pct": 1.9
     },
     "future_feed": {
-      "agencies": 27,
-      "instances": 27,
+      "agencies": 28,
+      "instances": 28,
       "prevalence_pct": 1.9
     },
     "inconsistent_route_type_for_block_id": {
@@ -246,7 +246,7 @@
     },
     "mixed_case_recommended_field": {
       "agencies": 442,
-      "instances": 774646,
+      "instances": 774642,
       "prevalence_pct": 30.5
     },
     "more_than_one_entity": {
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.3
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 85,
-      "instances": 85,
-      "prevalence_pct": 5.9
+      "agencies": 84,
+      "instances": 84,
+      "prevalence_pct": 5.8
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 7,
-      "instances": 3234,
-      "prevalence_pct": 0.5
+      "agencies": 9,
+      "instances": 3243,
+      "prevalence_pct": 0.6
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -415,8 +415,8 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 56,
-      "instances": 1693,
+      "agencies": 57,
+      "instances": 1696,
       "prevalence_pct": 3.9
     },
     "scorecard_rt_trip_updates_unreachable": {
@@ -446,17 +446,17 @@
     },
     "scorecard_stop_names_all_caps": {
       "agencies": 131,
-      "instances": 176047,
+      "instances": 176051,
       "prevalence_pct": 9.0
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1240,
-      "instances": 2071112,
+      "instances": 2070833,
       "prevalence_pct": 85.6
     },
     "scorecard_wheelchair_boarding_unknown": {
       "agencies": 1356,
-      "instances": 644408,
+      "instances": 644413,
       "prevalence_pct": 93.6
     },
     "service_extends_far_in_the_future": {
@@ -506,12 +506,12 @@
     },
     "stop_too_far_from_shape": {
       "agencies": 132,
-      "instances": 2586,
+      "instances": 2584,
       "prevalence_pct": 9.1
     },
     "stop_too_far_from_shape_using_user_distance": {
       "agencies": 172,
-      "instances": 64273,
+      "instances": 64274,
       "prevalence_pct": 11.9
     },
     "stop_without_stop_time": {
@@ -530,8 +530,8 @@
       "prevalence_pct": 6.8
     },
     "trip_coverage_not_active_for_next7_days": {
-      "agencies": 643,
-      "instances": 643,
+      "agencies": 644,
+      "instances": 644,
       "prevalence_pct": 44.4
     },
     "trip_distance_exceeds_shape_distance": {
@@ -565,9 +565,9 @@
       "prevalence_pct": 62.0
     },
     "unknown_file": {
-      "agencies": 804,
-      "instances": 5724,
-      "prevalence_pct": 55.5
+      "agencies": 803,
+      "instances": 5723,
+      "prevalence_pct": 55.4
     },
     "unsorted_stop_times": {
       "agencies": 39,
@@ -601,7 +601,7 @@
       "code": "scorecard_wheelchair_boarding_unknown",
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
-      "instances": 644408,
+      "instances": 644413,
       "prevalence_pct": 93.6,
       "severity": "WARNING",
       "source": "scorecard",
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2071112,
+      "instances": 2070833,
       "prevalence_pct": 85.6,
       "severity": "WARNING",
       "source": "scorecard",
@@ -633,12 +633,12 @@
       "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
     },
     {
-      "agencies": 804,
+      "agencies": 803,
       "code": "unknown_file",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'unknown_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 5724,
-      "prevalence_pct": 55.5,
+      "instances": 5723,
+      "prevalence_pct": 55.4,
       "severity": "INFO",
       "source": "validator",
       "what": "Unknown file (flagged by the MobilityData validator).",
@@ -693,11 +693,11 @@
       "why": "Riders may walk to a stop where no bus is scheduled to arrive."
     },
     {
-      "agencies": 643,
+      "agencies": 644,
       "code": "trip_coverage_not_active_for_next7_days",
       "effort": "One setting in most export tools.",
       "fix": "Trim past service periods the next time you export.",
-      "instances": 643,
+      "instances": 644,
       "prevalence_pct": 44.4,
       "severity": "WARNING",
       "source": "validator",
@@ -757,7 +757,7 @@
       "code": "mixed_case_recommended_field",
       "effort": "Often a bulk fix in your scheduling software.",
       "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
-      "instances": 774646,
+      "instances": 774642,
       "prevalence_pct": 30.5,
       "severity": "WARNING",
       "source": "validator",
@@ -805,7 +805,7 @@
       "code": "fast_travel_between_consecutive_stops",
       "effort": "A few minutes per flagged trip.",
       "fix": "Check the flagged stop times for transposed minutes.",
-      "instances": 169239,
+      "instances": 169269,
       "prevalence_pct": 15.9,
       "severity": "WARNING",
       "source": "validator",
@@ -841,7 +841,7 @@
       "code": "stop_too_far_from_shape_using_user_distance",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 64273,
+      "instances": 64274,
       "prevalence_pct": 11.9,
       "severity": "WARNING",
       "source": "validator",

@@ -46,7 +46,7 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Status</span><meta itemprop="position" content="2"></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span aria-current="page">Status</span></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Status.</h1>
     <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
@@ -69,14 +69,14 @@
     <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
-    <p>As of 2026-07-10T20:47:37+00:00, this pipeline is tracking liveness on
+    <p>As of 2026-07-10T21:00:58+00:00, this pipeline is tracking liveness on
         <strong>1453</strong> feeds:
-        <strong>1255</strong> checking in clean (no failed check in a row),
-        <strong>56</strong> with at least one recent failed check but not yet
+        <strong>1256</strong> checking in clean (no failed check in a row),
+        <strong>55</strong> with at least one recent failed check but not yet
         flagged, and <strong>142</strong> flagged unreachable
         (see the degradation policy below). Time since each feed's last liveness check ranges from
-        1.9 to 266.7 hours, with a median of
-        5.6 hours.</p>
+        0.2 to 266.9 hours, with a median of
+        3.8 hours.</p>
         <p>Overall clean-check rate: <strong>86.4%</strong>.</p></section>
 
     <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
@@ -96,7 +96,7 @@
 
     <section class="feed-details"><h3 class="section-title">Last daily run</h3>
     <p><span class="pill-ok">Healthy</span>
-    Generated 4 hours ago (2026-07-10 15:54 UTC),
+    Generated 5 hours ago (2026-07-10 15:54 UTC),
     across 12 shards, 1488
     agencies attempted.</p>
     
@@ -131,12 +131,12 @@
     <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
     (not just this run -- an agency scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
-    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 1449 tracked agencies, grouped by age of their current scorecard.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:26"><span class="bucket-value">279</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:5.6"><span class="bucket-value">60</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:3.4"><span class="bucket-value">37</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">1073</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
+    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 1449 tracked agencies, grouped by age of their current scorecard.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:26.1"><span class="bucket-value">280</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:5.6"><span class="bucket-value">60</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:3.5"><span class="bucket-value">37</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">1072</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
     <details class="viz-data"><summary>Show the table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Agency count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
-      <tbody><tr><td>under 1 day</td><td>279</td></tr><tr><td>1-2 days</td><td>60</td></tr><tr><td>3-7 days</td><td>37</td></tr><tr><td>over 7 days</td><td>1073</td></tr></tbody>
+      <tbody><tr><td>under 1 day</td><td>280</td></tr><tr><td>1-2 days</td><td>60</td></tr><tr><td>3-7 days</td><td>37</td></tr><tr><td>over 7 days</td><td>1072</td></tr></tbody>
     </table></div></details>
     </section>
 
@@ -159,13 +159,11 @@
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

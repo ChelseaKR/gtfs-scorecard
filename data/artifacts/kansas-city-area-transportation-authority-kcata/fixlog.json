@@ -5,6 +5,30 @@
       "code": "equal_shape_distance_diff_coordinates",
       "last_seen": "2026-06-30",
       "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+      "last_seen": "2026-07-09",
+      "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "feed_expiration_date30_days",
+      "last_seen": "2026-07-09",
+      "what": "This feed's service calendar runs out within the next 30 days."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_feed_expiring_soon",
+      "last_seen": "2026-07-09",
+      "what": "Service data runs out in 2 day(s)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "unknown_file",
+      "last_seen": "2026-07-09",
+      "what": "Unknown file (flagged by the MobilityData validator)."
     }
   ]
 }

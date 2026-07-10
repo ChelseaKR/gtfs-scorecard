@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: the feed has already expired — GTFS Scorecard</title>
-  <meta name="description" content="The scorecard works out the last day your feed actually covers service, taking the later of feed_info.txt&#x27;s feed_end_date and the last date any…">
+  <meta name="description" content="Code: scorecard_feed_expired">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/scorecard_feed_expired/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: the feed has already expired — GTFS Scorecard">
-  <meta property="og:description" content="The scorecard works out the last day your feed actually covers service, taking the later of feed_info.txt&#x27;s feed_end_date and the last date any…">
+  <meta property="og:description" content="Code: scorecard_feed_expired">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/scorecard_feed_expired/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: the feed has already expired","description":"The scorecard works out the last day your feed actually covers service, taking the later of feed_info.txt's feed_end_date and the last date any\u2026","url":"https://gtfsscorecard.org/fix/scorecard_feed_expired/","about":{"@type":"Thing","name":"GTFS validator notice scorecard_feed_expired"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-10","mainEntityOfPage":"https://gtfsscorecard.org/fix/scorecard_feed_expired/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: the feed has already expired","description":"Code: scorecard_feed_expired","url":"https://gtfsscorecard.org/fix/scorecard_feed_expired/","about":{"@type":"Thing","name":"GTFS validator notice scorecard_feed_expired"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,41 +47,45 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: scorecard_feed_expired</span><meta itemprop="position" content="3"></li></ol></nav>
-    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Fix: scorecard_feed_expired</span></li></ol></nav>
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <article class="feed-details"><h1>Fix: the feed has already expired</h1>
 <p>Code: <code>scorecard_feed_expired</code></p>
 <h2 class="section-title">What this means</h2>
-<p>The scorecard works out the last day your feed actually covers service, taking
-the later of <code>feed_info.txt</code>'s <code>feed_end_date</code> and the last date any calendar
-or calendar_dates entry runs service, and that day has already passed.</p>
+<p>The scorecard works out the last day your feed actually covers service, taking</p>
+<p>the later of <code>feed_info.txt</code>&#x27;s <code>feed_end_date</code> and the last date any calendar</p>
+<p>or calendar_dates entry runs service, and that day has already passed.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>This is the most urgent thing a small agency's feed can get wrong. Trip
-planners stop showing your service the day the calendar runs out, even though
-the buses are still running. Riders are not warned first; they just stop
-seeing the agency as an option. An expired feed is worse for riders than a
-feed with data-quality problems, because it looks like the service does not
-exist at all.</p>
+<p>This is the most urgent thing a small agency&#x27;s feed can get wrong. Trip</p>
+<p>planners stop showing your service the day the calendar runs out, even though</p>
+<p>the buses are still running. Riders are not warned first; they just stop</p>
+<p>seeing the agency as an option. An expired feed is worse for riders than a</p>
+<p>feed with data-quality problems, because it looks like the service does not</p>
+<p>exist at all.</p>
 <h2 class="section-title">How to fix it</h2>
 <ul>
-<li><strong>Re-export the feed</strong> with a calendar that reaches further out, and set
-<code>feed_info.txt</code>'s <code>feed_end_date</code> past your next planned service change.</li>
-<li><strong>Publish on a schedule.</strong> A feed that is re-exported weekly, or whenever
-the schedule changes, never gets close to expiry again. This is the durable
-fix, not a one-time patch.</li>
-<li>If your export tool sets these dates automatically, confirm the export
-itself is actually running on schedule and reaching the URL riders' apps
-read.</li>
+<li><strong>Re-export the feed</strong> with a calendar that reaches further out, and set</li>
 </ul>
-<p>See <a href="/fix/feed_expiration_date7_days/">the feed expires within 7 days</a> and
-<a href="/fix/feed_expiration_date30_days/">within 30 days</a> for the validator's own
-date-based warnings on <code>feed_info.txt</code>'s <code>feed_end_date</code> (computed differently
-from this finding, so the two do not always fire in the same order), and
-<a href="/fix/expired_calendar/">expired service calendars</a> for leftover calendars an
-export should stop carrying forward.</p>
+<p>  <code>feed_info.txt</code>&#x27;s <code>feed_end_date</code> past your next planned service change.</p>
+<ul>
+<li><strong>Publish on a schedule.</strong> A feed that is re-exported weekly, or whenever</li>
+</ul>
+<p>  the schedule changes, never gets close to expiry again. This is the durable</p>
+<p>  fix, not a one-time patch.</p>
+<ul>
+<li>If your export tool sets these dates automatically, confirm the export</li>
+</ul>
+<p>  itself is actually running on schedule and reaching the URL riders&#x27; apps</p>
+<p>  read.</p>
+<p>See <a href="/fix/feed_expiration_date7_days/">the feed expires within 7 days</a> and</p>
+<p><a href="/fix/feed_expiration_date30_days/">within 30 days</a> for the validator&#x27;s own</p>
+<p>date-based warnings on <code>feed_info.txt</code>&#x27;s <code>feed_end_date</code> (computed differently</p>
+<p>from this finding, so the two do not always fire in the same order), and</p>
+<p><a href="/fix/expired_calendar/">expired service calendars</a> for leftover calendars an</p>
+<p>export should stop carrying forward.</p>
 <h2 class="section-title">How long it usually takes</h2>
-<p>Often a same-day fix: one export with the calendar reaching further out. The
-lasting fix is the export schedule so this never recurs.</p>
+<p>Often a same-day fix: one export with the calendar reaching further out. The</p>
+<p>lasting fix is the export schedule so this never recurs.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p>The GTFS Validator does not flag this (the field is valid GTFS when left empty), so the expectation comes from the community GTFS Best Practices. <a class="rule-ref" href="https://gtfs.org/schedule/best-practices/#dataset-publishing-general-practices">Read the relevant GTFS Best Practice</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
   </main>
@@ -100,13 +104,11 @@ lasting fix is the export schedule so this never recurs.</p>
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

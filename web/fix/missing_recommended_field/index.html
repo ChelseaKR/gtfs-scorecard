@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: recommended fields left empty — GTFS Scorecard</title>
-  <meta name="description" content="A file in the feed is missing a field the spec recommends, one apps rely on even though the feed still loads without it. Common examples: agency_lang…">
+  <meta name="description" content="Code: missing_recommended_field (MobilityData validator)">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/missing_recommended_field/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: recommended fields left empty — GTFS Scorecard">
-  <meta property="og:description" content="A file in the feed is missing a field the spec recommends, one apps rely on even though the feed still loads without it. Common examples: agency_lang…">
+  <meta property="og:description" content="Code: missing_recommended_field (MobilityData validator)">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/missing_recommended_field/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: recommended fields left empty","description":"A file in the feed is missing a field the spec recommends, one apps rely on even though the feed still loads without it. Common examples: agency_lang\u2026","url":"https://gtfsscorecard.org/fix/missing_recommended_field/","about":{"@type":"Thing","name":"GTFS validator notice missing_recommended_field"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-10","mainEntityOfPage":"https://gtfsscorecard.org/fix/missing_recommended_field/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: recommended fields left empty","description":"Code: missing_recommended_field (MobilityData validator)","url":"https://gtfsscorecard.org/fix/missing_recommended_field/","about":{"@type":"Thing","name":"GTFS validator notice missing_recommended_field"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,34 +47,38 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: missing_recommended_field</span><meta itemprop="position" content="3"></li></ol></nav>
-    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Fix: missing_recommended_field</span></li></ol></nav>
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <article class="feed-details"><h1>Fix: recommended fields left empty</h1>
 <p>Code: <code>missing_recommended_field</code> (MobilityData validator)</p>
 <h2 class="section-title">What this means</h2>
-<p>A file in the feed is missing a field the spec recommends, one apps rely on
-even though the feed still loads without it. Common examples: <code>agency_lang</code>,
-<code>stop_desc</code> alternatives, or <code>feed_info</code> contact fields. The validator's
-notice names the exact file and field for your feed.</p>
+<p>A file in the feed is missing a field the spec recommends, one apps rely on</p>
+<p>even though the feed still loads without it. Common examples: <code>agency_lang</code>,</p>
+<p><code>stop_desc</code> alternatives, or <code>feed_info</code> contact fields. The validator&#x27;s</p>
+<p>notice names the exact file and field for your feed.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>Recommended fields are where rider experience lives. The feed works without
-them, but apps show less: no contact link when a rider needs help, wrong
-language assumptions, poorer stop descriptions. Filling them costs little and
-each one shows up directly in what riders see.</p>
+<p>Recommended fields are where rider experience lives. The feed works without</p>
+<p>them, but apps show less: no contact link when a rider needs help, wrong</p>
+<p>language assumptions, poorer stop descriptions. Filling them costs little and</p>
+<p>each one shows up directly in what riders see.</p>
 <h2 class="section-title">How to fix it</h2>
 <ul>
-<li><strong>Read the notice for the exact field.</strong> The validator names the file and
-column; the fix is filling that column.</li>
-<li><strong>Most scheduling tools have a home for these values</strong> (agency profile,
-feed settings, stop attributes); fill it there so every future export
-carries it.</li>
-<li><strong>If the tool has no home for it</strong>, a one-time edit of the exported file
-works, but push your vendor to carry the value so it survives the next
-export.</li>
+<li><strong>Read the notice for the exact field.</strong> The validator names the file and</li>
 </ul>
+<p>  column; the fix is filling that column.</p>
+<ul>
+<li><strong>Most scheduling tools have a home for these values</strong> (agency profile,</li>
+</ul>
+<p>  feed settings, stop attributes); fill it there so every future export</p>
+<p>  carries it.</p>
+<ul>
+<li><strong>If the tool has no home for it</strong>, a one-time edit of the exported file</li>
+</ul>
+<p>  works, but push your vendor to carry the value so it survives the next</p>
+<p>  export.</p>
 <h2 class="section-title">How long it usually takes</h2>
-<p>Minutes per field once you find where your tool stores it. The value usually
-already exists somewhere in your agency; this is copying it into the export.</p>
+<p>Minutes per field once you find where your tool stores it. The value usually</p>
+<p>already exists somewhere in your agency; this is copying it into the export.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p><code>missing_recommended_field</code> is a canonical MobilityData GTFS Validator notice, the same rule behind the statewide GTFS quality reports. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#missing_recommended_field-rule">Read the authoritative rule for missing_recommended_field in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
   </main>
@@ -93,13 +97,11 @@ already exists somewhere in your agency; this is copying it into the export.</p>
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·
