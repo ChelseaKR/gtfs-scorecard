@@ -216,10 +216,11 @@ function peerNote(a) {
   return `Better than ${pct}% of ${tier} agencies`;
 }
 
-/** The national grade-distribution bar: one labelled segment per grade, sized
+/** A grade-distribution bar: one labelled segment per grade, sized
  *  by share. Decorative fill, but each segment is a labelled list item so the
- *  same information is available without color. @param {any} dist @param {number} total */
-function gradeDistributionBar(dist, total) {
+ *  same information is available without color. @param {any} dist @param {number} total
+ *  @param {string} [label] */
+function gradeDistributionBar(dist, total, label = "Grade distribution across all agencies") {
   const order = ["A", "B", "C", "D", "F"];
   const segs = order
     .map((g) => {
@@ -233,7 +234,7 @@ function gradeDistributionBar(dist, total) {
       </li>`;
     })
     .join("");
-  return `<ul class="grade-distribution" aria-label="Grade distribution across all agencies">${segs}</ul>`;
+  return `<ul class="grade-distribution" aria-label="${esc(label)}">${segs}</ul>`;
 }
 
 /** Five buckets of expired-feed share, for the choropleth's sequential fill.
@@ -673,9 +674,11 @@ function renderProgram(rollup) {
     })
     .join("");
 
-  const dist = Object.entries(rollup.grade_distribution || {})
-    .map(([g, n]) => `<span class="grade-chip ${gradeClass(g)}">${esc(g)}</span> ${n}`)
-    .join(" &nbsp; ");
+  const dist = gradeDistributionBar(
+    rollup.grade_distribution || {},
+    rollup.agency_count,
+    "Grade distribution across this program",
+  );
 
   const common = (rollup.common_fixes || [])
     .map(
@@ -708,11 +711,13 @@ function renderProgram(rollup) {
         <h1 class="page-title">${esc(rollup.rollup.name)}</h1>
         <p class="overall"><strong>${rollup.agency_count} agencies</strong> ·
           ${avg} average · ${rollup.needs_attention} need attention</p>
-        <p class="snapshot-note">Grade mix: ${dist || "—"}</p>
         ${shapesNote}
       </div>
     </div>
     ${routeRule()}
+    ${dist ? `<section aria-labelledby="dist-h" class="reveal">
+      <h2 class="section-title visually-hidden" id="dist-h">Grade distribution</h2>${dist}
+    </section>` : ""}
     <section aria-labelledby="members-h" class="reveal">
       <h2 class="section-title" id="members-h">Agencies, worst first</h2>
       <ul class="program-list">${rows}</ul>
@@ -1033,7 +1038,25 @@ function peerContext(dirRecord) {
       ? ` and ${peer}% of ${tier} agencies`
       : "";
   const where = dirRecord.state ? ` Operates in ${esc(dirRecord.state)}.` : "";
-  return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}</p>`;
+  const percentileRow = (label, value) => {
+    const position = Math.max(0, Math.min(100, Number(value)));
+    return `<div class="percentile-row">
+      <span class="percentile-label">${esc(label)}</span>
+      <span class="percentile-value">${position}%</span>
+      <span class="percentile-track" style="--position:${position}" aria-hidden="true">
+        <span class="percentile-line"></span><span class="percentile-marker"></span>
+      </span>
+    </div>`;
+  };
+  const rows = [percentileRow("All agencies", nat)];
+  if (peer != null && tier && dirRecord.size_tier !== "unknown") {
+    rows.push(percentileRow(`${tier} peers`, peer));
+  }
+  return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}</p>
+    <div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">
+      ${rows.join("")}
+      <div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div>
+    </div>`;
 }
 
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
@@ -1577,9 +1600,9 @@ function badgeSection(agencyId) {
 /** @param {string} message */
 function renderError(message) {
   main.innerHTML = `<div class="error-box" role="alert">
-    <p><strong>Something went wrong loading the scorecard.</strong></p>
+    <h1 class="page-title">We couldn't load this scorecard.</h1>
     <p>${esc(message)}</p>
-    <p><a href="#/">Back to all agencies</a></p>
+    <p><a class="backlink" href="#/">Back to all agencies</a></p>
   </div>`;
 }
 
@@ -1587,9 +1610,9 @@ function renderError(message) {
 function renderNotFound(agencyId) {
   document.title = "Agency not found — GTFS Scorecard";
   main.innerHTML = `<div class="error-box" role="alert">
-    <p><strong>No scorecard for “${esc(agencyId)}”.</strong></p>
+    <h1 class="page-title">No scorecard for “${esc(agencyId)}”.</h1>
     <p>That agency isn't tracked yet, or the link is out of date.</p>
-    <p><a href="#/">Back to all agencies</a></p>
+    <p><a class="backlink" href="#/">Back to all agencies</a></p>
   </div>`;
 }
 
@@ -1606,6 +1629,11 @@ async function renderCompare(aId, bId) {
   const valid = (id) => !!id && byId.has(id);
 
   if (!valid(aId) || !valid(bId)) {
+    const firstId = valid(aId) ? aId : agencies[0]?.id || "";
+    const secondId =
+      valid(bId) && bId !== firstId
+        ? bId
+        : agencies.find((agency) => agency.id !== firstId)?.id || "";
     const options = (selected) =>
       agencies
         .map((a) => `<option value="${esc(a.id)}"${a.id === selected ? " selected" : ""}>${esc(a.name)}</option>`)
@@ -1616,16 +1644,32 @@ async function renderCompare(aId, bId) {
       <p class="page-lede">Put two scorecards side by side to benchmark one feed against another. The result has a shareable link.</p>
       <form id="compare-pick" class="compare-pick">
         <p><label for="cmp-a">First agency</label>
-          <select id="cmp-a" name="a">${options(aId)}</select></p>
+          <select id="cmp-a" name="a">${options(firstId)}</select></p>
         <p><label for="cmp-b">Second agency</label>
-          <select id="cmp-b" name="b">${options(bId)}</select></p>
+          <select id="cmp-b" name="b">${options(secondId)}</select></p>
         <p><button type="submit" class="compare-go">Compare</button></p>
+        <p id="compare-pick-status" class="form-status form-status-err" role="alert" hidden></p>
       </form>`;
     const form = /** @type {HTMLFormElement} */ (main.querySelector("#compare-pick"));
+    const first = /** @type {HTMLSelectElement} */ (form.querySelector("#cmp-a"));
+    const second = /** @type {HTMLSelectElement} */ (form.querySelector("#cmp-b"));
+    const status = /** @type {HTMLElement} */ (form.querySelector("#compare-pick-status"));
+    function clearCompareError() {
+      status.hidden = true;
+      status.textContent = "";
+    }
+    first.addEventListener("change", clearCompareError);
+    second.addEventListener("change", clearCompareError);
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const a = /** @type {HTMLSelectElement} */ (form.querySelector("#cmp-a")).value;
-      const b = /** @type {HTMLSelectElement} */ (form.querySelector("#cmp-b")).value;
+      const a = first.value;
+      const b = second.value;
+      if (!a || !b || a === b) {
+        status.textContent = "Pick two different agencies to compare.";
+        status.hidden = false;
+        second.focus();
+        return;
+      }
       location.hash = `#/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`;
     });
     return;

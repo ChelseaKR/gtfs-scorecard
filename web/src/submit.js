@@ -61,16 +61,30 @@ form.addEventListener("submit", async (event) => {
   const urlField = /** @type {HTMLInputElement | null} */ (
     form.querySelector('[name="static_gtfs_url"]')
   );
-  urlField?.removeAttribute("aria-invalid");
+  const nameField = /** @type {HTMLInputElement | null} */ (form.querySelector('[name="name"]'));
+  const typedFields = /** @type {HTMLInputElement[]} */ (
+    Array.from(form.querySelectorAll('input[type="url"], input[type="email"]'))
+  );
+  nameField?.removeAttribute("aria-invalid");
+  for (const field of typedFields) field.removeAttribute("aria-invalid");
   if (!data.name || !data.static_gtfs_url) {
     setStatus("Please give at least an agency name and a GTFS Schedule URL.", "err");
+    const missing = data.name ? urlField : nameField;
+    missing?.setAttribute("aria-invalid", "true");
+    missing?.focus();
     return;
   }
-  if (!/^https?:\/\/.+/i.test(String(data.static_gtfs_url))) {
-    setStatus("The GTFS Schedule URL should start with http:// or https://.", "err");
-    urlField?.setAttribute("aria-invalid", "true");
-    urlField?.focus();
-    return;
+  for (const field of typedFields) {
+    const value = field.value.trim();
+    const wrongProtocol = field.type === "url" && !/^https?:\/\//i.test(value);
+    if (value && (!field.validity.valid || wrongProtocol)) {
+      const example = field.type === "email" ? "name@agency.gov" : "https://example.gov/feed";
+      const kind = field.type === "email" ? "email address" : "URL";
+      setStatus(`Enter a complete ${kind}, like ${example}.`, "err");
+      field.setAttribute("aria-invalid", "true");
+      field.focus();
+      return;
+    }
   }
 
   if (!endpoint) {

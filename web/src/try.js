@@ -46,8 +46,12 @@ if (!TRY_URL) {
     const data = Object.fromEntries(new FormData(form).entries());
     const url = String(data.url || "").trim();
     const name = String(data.name || "").trim();
-    if (!/^https?:\/\/.+/i.test(url)) {
+    const urlField = /** @type {HTMLInputElement} */ (form.querySelector("#try-url"));
+    urlField.removeAttribute("aria-invalid");
+    if (!urlField.validity.valid || !/^https?:\/\/.+/i.test(url)) {
       setStatus("The GTFS Schedule URL should start with http:// or https://.", "err");
+      urlField.setAttribute("aria-invalid", "true");
+      urlField.focus();
       return;
     }
 

@@ -1,0 +1,212 @@
+"""Mobile-first layout and target-size checks over representative page families.
+
+The static generator emits thousands of pages from a small set of templates.
+These routes cover each distinct shell: landing, SPA, agency, program, national
+data views, maps, forms, fix guides, redirects' destination, and the standalone
+design concept. The ABQ RIDE page intentionally carries long validator rule
+names, making it the regression fixture for min-content horizontal overflow.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is not installed")
+
+from playwright.sync_api import Page, expect
+
+pytestmark = pytest.mark.e2e
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+MOBILE_ROUTES = [
+    "/",
+    "/app/#/",
+    "/agency/abq-ride/",
+    "/program/california/",
+    "/pulse/",
+    "/problems/",
+    "/adoption/",
+    "/realtime/",
+    "/status/",
+    "/focus/",
+    "/fix/expired_calendar/",
+    "/map/",
+    "/routes/",
+    "/compare/",
+    "/query/",
+    "/subscribe.html",
+    "/check/",
+    "/concept/",
+]
+
+
+@pytest.mark.parametrize("path", MOBILE_ROUTES)
+def test_page_family_fits_mobile_viewport(page: Page, base_url: str, path: str) -> None:
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.goto(f"{base_url}{path}")
+    if path.startswith("/app/"):
+        expect(page.locator("#main .loading")).to_have_count(0)
+
+    layout = page.evaluate(
+        """() => ({
+          viewport: document.documentElement.clientWidth,
+          pageWidth: document.documentElement.scrollWidth,
+          headings: document.querySelectorAll('h1').length,
+          overflowers: Array.from(document.querySelectorAll('body *')).filter((el) => {
+            const r = el.getBoundingClientRect();
+            const s = getComputedStyle(el);
+            return s.position !== 'absolute' && r.right >
+              document.documentElement.clientWidth + 1;
+          }).slice(0, 12).map((el) => ({
+            tag: el.tagName,
+            id: el.id,
+            className: typeof el.className === 'string' ? el.className : '',
+            right: Math.round(el.getBoundingClientRect().right),
+            width: Math.round(el.getBoundingClientRect().width),
+          })),
+          wideScrollContainers: Array.from(document.querySelectorAll('body *')).filter((el) =>
+            el.scrollWidth > el.clientWidth + 1
+          ).slice(0, 12).map((el) => ({
+            tag: el.tagName,
+            id: el.id,
+            className: typeof el.className === 'string' ? el.className : '',
+            clientWidth: el.clientWidth,
+            scrollWidth: el.scrollWidth,
+            overflowX: getComputedStyle(el).overflowX,
+          })),
+          small: Array.from(document.querySelectorAll([
+            'button',
+            'input:not([type="checkbox"]):not([type="radio"])',
+            'select', 'textarea', 'summary', '.brand', '.backlink', '.theme-toggle'
+          ].join(','))).filter((el) => {
+            const r = el.getBoundingClientRect();
+            const s = getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' &&
+              (r.width < 44 || r.height < 44);
+          }).map((el) => ({
+            tag: el.tagName,
+            id: el.id,
+            className: typeof el.className === 'string' ? el.className : '',
+            width: Math.round(el.getBoundingClientRect().width),
+            height: Math.round(el.getBoundingClientRect().height),
+          })),
+          smallChoiceLabels: Array.from(document.querySelectorAll(
+            'input[type="checkbox"], input[type="radio"]'
+          )).filter((input) => {
+            const r = input.getBoundingClientRect();
+            if (!(r.width > 0 && r.height > 0)) return false;
+            const label = input.closest('label');
+            if (!label) return true;
+            const lr = label.getBoundingClientRect();
+            return lr.width < 44 || lr.height < 44;
+          }).map((input) => input.id || input.getAttribute('name')),
+        })"""
+    )
+    assert layout["pageWidth"] <= layout["viewport"], f"{path}: {layout}"
+    assert layout["headings"] == 1, f"{path}: expected one h1"
+    assert layout["small"] == [], f"{path}: undersized standalone targets: {layout['small']}"
+    assert layout["smallChoiceLabels"] == [], f"{path}: undersized checkbox/radio labels"
+
+
+def test_scorecard_shows_measured_grade_immediately(page: Page, base_url: str) -> None:
+    artifact = json.loads(
+        (REPO_ROOT / "data" / "artifacts" / "abq-ride" / "latest.json").read_text()
+    )
+    grade = artifact["overall"]["grade"]
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.goto(f"{base_url}/agency/abq-ride/")
+
+    expect(page.locator(".reel")).to_have_attribute("aria-label", f"Overall grade {grade}")
+    visible = page.evaluate(
+        """() => {
+          const reel = document.querySelector('.reel').getBoundingClientRect();
+          return Array.from(document.querySelectorAll('.reel-strip span'))
+            .filter((span) => {
+              const r = span.getBoundingClientRect();
+              return r.top < reel.bottom && r.bottom > reel.top;
+            }).map((span) => span.textContent.trim());
+        }"""
+    )
+    assert visible == [grade]
+    assert (
+        page.locator(".reel-strip").evaluate("el => getComputedStyle(el).animationName") == "none"
+    )
+
+
+@pytest.mark.parametrize(
+    ("path", "selector"),
+    [
+        ("/agency/abq-ride/", ".percentile-strip"),
+        ("/pulse/", ".movement-chart"),
+        ("/problems/", ".problems-chart"),
+        ("/adoption/", ".adoption-chart"),
+        ("/realtime/", ".reliability-chart"),
+        ("/status/", ".staleness-chart"),
+    ],
+)
+def test_visualization_patterns_stay_inside_phone_viewport(
+    page: Page, base_url: str, path: str, selector: str
+) -> None:
+    page.set_viewport_size({"width": 320, "height": 720})
+    page.goto(f"{base_url}{path}")
+    expect(page.locator(selector)).to_have_count(1)
+    bounds = page.locator(selector).evaluate(
+        """el => {
+          const r = el.getBoundingClientRect();
+          return {
+            left: r.left,
+            right: r.right,
+            viewport: document.documentElement.clientWidth,
+            labels: Array.from(el.querySelectorAll(
+              '.service-bar-label, .bucket-label, .percentile-label, .movement-counts li'
+            )).map((node) => node.textContent.trim()),
+            values: Array.from(el.querySelectorAll(
+              '.service-bar-value, .bucket-value, .percentile-value, .movement-counts strong'
+            )).map((node) => node.textContent.trim()),
+          };
+        }"""
+    )
+    assert bounds["left"] >= -1 and bounds["right"] <= bounds["viewport"] + 1, bounds
+    assert bounds["labels"], f"{path}: chart needs visible labels"
+    assert bounds["values"], f"{path}: chart needs visible exact values"
+
+
+@pytest.mark.parametrize("width", [768, 1440])
+def test_key_pages_fit_tablet_and_desktop(page: Page, base_url: str, width: int) -> None:
+    page.set_viewport_size({"width": width, "height": 900})
+    for path in ("/", "/app/#/", "/agency/abq-ride/", "/pulse/", "/compare/"):
+        page.goto(f"{base_url}{path}")
+        if path.startswith("/app/"):
+            expect(page.locator("#main .loading")).to_have_count(0)
+        page_width, viewport = page.evaluate(
+            "() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]"
+        )
+        assert page_width <= viewport, f"{path} at {width}px: {page_width}px page"
+
+
+@pytest.mark.parametrize(("path", "grade"), [("/", "A"), ("/concept/", "B")])
+def test_reduced_motion_keeps_grade_and_content_visible(
+    page: Page, base_url: str, path: str, grade: str
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.goto(f"{base_url}{path}")
+
+    visible_grade = page.evaluate(
+        """() => {
+          const reel = document.querySelector('.reel').getBoundingClientRect();
+          return Array.from(document.querySelectorAll('.reel-strip span'))
+            .filter((span) => {
+              const r = span.getBoundingClientRect();
+              return r.top < reel.bottom && r.bottom > reel.top;
+            }).map((span) => span.textContent.trim());
+        }"""
+    )
+    assert visible_grade == [grade]
+    assert page.evaluate(
+        "() => Array.from(document.querySelectorAll('.rise')).every((el) => "
+        "getComputedStyle(el).opacity === '1')"
+    )

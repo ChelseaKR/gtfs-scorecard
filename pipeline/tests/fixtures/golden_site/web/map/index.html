@@ -47,7 +47,7 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span aria-current="page">National map</span></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">National map</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">The national map.</h1>
     <p class="page-lede">Every tracked agency with a locatable
@@ -86,7 +86,7 @@
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
-        <tbody id="map-tbody"><tr data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
+        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
       </table>
     </section>
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -123,6 +123,12 @@
           if (countEl) countEl.textContent = shown;
         }
 
+        // A changed filter updates the count in its role="status" live region
+        // (see #map-result-count), which a screen reader announces on its own,
+        // and the "Skip to the agency list" link jumps there on demand. So the
+        // filter never moves focus: on a native <select>, keyboard arrow keys
+        // fire "change" per option, and moving focus then would yank the caret
+        // out of the control mid-choice (WCAG 3.2.2 On Input).
         if (!window.maplibregl) {
           gradeEl.addEventListener("change", filterTable);
           stateEl.addEventListener("change", filterTable);
@@ -145,6 +151,60 @@
         // No on-canvas controls: the canvas is aria-hidden and out of the tab
         // order, so it must hold nothing focusable. Scroll/pinch zooms; clicking
         // a cluster zooms in; the table is the operable primary.
+
+        var NONE = "__none__";  // sentinel agency id; no real feature matches
+
+        // Agency id -> table row, so a hovered map point can light up its row
+        // and the reverse. Visual only: the row text is the accessible source.
+        var rowById = {};
+        rows.forEach(function (tr) {
+          var id = tr.getAttribute("data-id");
+          if (id) rowById[id] = tr;
+        });
+        var current = null;   // agency id currently brushed, or null
+        var pinned = null;    // sticky selection from Space or a row tap, or null
+        var hiReady = false;  // the highlight layer exists once the map loads
+
+        function paintRow(id, on) {
+          var tr = rowById[id];
+          if (tr) tr.classList.toggle("is-brushed", on);
+        }
+        function highlight(id) {
+          if (id === current) return;
+          if (current !== null) paintRow(current, false);
+          current = id;
+          if (hiReady) {
+            map.setFilter("agencies-hi", ["==", ["get", "id"], id === null ? NONE : id]);
+          }
+          if (id !== null) paintRow(id, true);
+        }
+        function togglePin(id) {
+          pinned = (pinned === id) ? null : id;
+          highlight(pinned);
+        }
+
+        // Row -> point: hovering or focusing a row enlarges its point. The
+        // row's existing agency link is the tab stop (no tabindex added), so
+        // focus reaching it brushes through focusin; Space pins the highlight,
+        // while Enter keeps its meaning and follows the link. A click outside
+        // the link pins too, for touch.
+        rows.forEach(function (tr) {
+          var id = tr.getAttribute("data-id");
+          if (!id) return;
+          tr.addEventListener("mouseenter", function () { highlight(id); });
+          tr.addEventListener("mouseleave", function () { highlight(pinned); });
+          tr.addEventListener("focusin", function () { highlight(id); });
+          tr.addEventListener("focusout", function () { highlight(pinned); });
+          tr.addEventListener("click", function (e) {
+            if (e.target && e.target.closest && e.target.closest("a")) return;
+            togglePin(id);
+          });
+          tr.addEventListener("keydown", function (e) {
+            if (e.key !== " ") return;
+            e.preventDefault();  // Space pins, never scrolls the page
+            togglePin(id);
+          });
+        });
 
         function filtered() {
           if (!all) return { type: "FeatureCollection", features: [] };
@@ -198,6 +258,18 @@
               "circle-stroke-width": 1, "circle-stroke-color": "#ffffff"
             }
           });
+          // Highlight layer above the base points, empty until brushing sets
+          // its filter to one agency id, enlarging just that point (the agency
+          // map's routes-hi pattern). Added before the grade letters so the
+          // letter still draws on top of the enlarged disc.
+          map.addLayer({
+            id: "agencies-hi", type: "circle", source: "agencies",
+            filter: ["==", ["get", "id"], NONE],
+            paint: {
+              "circle-radius": 12, "circle-color": ["get", "color"],
+              "circle-stroke-width": 2, "circle-stroke-color": "#ffffff"
+            }
+          });
           // The grade letter, drawn on every point so grade reads without colour.
           map.addLayer({
             id: "agency-grade", type: "symbol", source: "agencies",
@@ -211,6 +283,10 @@
               "text-halo-color": "#1c1c1c", "text-halo-width": 0.8
             }
           });
+          hiReady = true;
+          if (current !== null) {
+            map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
+          }
           fetch("/map.geojson").then(function (r) { return r.json(); })
             .then(function (gj) { all = gj; applyFilter(); })
             .catch(function () {});
@@ -237,14 +313,29 @@
             div.appendChild(link);
             new maplibregl.Popup().setLngLat(e.lngLat).setDOMContent(div).addTo(map);
           });
-          ["clusters", "agencies"].forEach(function (layer) {
-            map.on("mouseenter", layer, function () { map.getCanvas().style.cursor = "pointer"; });
-            map.on("mouseleave", layer, function () { map.getCanvas().style.cursor = ""; });
+          // Point -> row: hovering a point brushes its row and scrolls it into
+          // view (skipped under prefers-reduced-motion); leaving falls back to
+          // the pinned selection (or clears).
+          map.on("mousemove", "agencies", function (e) {
+            map.getCanvas().style.cursor = "pointer";
+            var id = e.features[0].properties.id;
+            highlight(id);
+            var tr = rowById[id];
+            if (tr && !tr.hidden && !reduce) {
+              tr.scrollIntoView({ block: "nearest" });
+            }
           });
+          map.on("mouseleave", "agencies", function () {
+            map.getCanvas().style.cursor = "";
+            highlight(pinned);
+          });
+          map.on("mouseenter", "clusters", function () { map.getCanvas().style.cursor = "pointer"; });
+          map.on("mouseleave", "clusters", function () { map.getCanvas().style.cursor = ""; });
         });
-        gradeEl.addEventListener("change", applyFilter);
-        stateEl.addEventListener("change", applyFilter);
-        if (flexEl) flexEl.addEventListener("change", applyFilter);
+        function onFilterChange() { applyFilter(); }
+        gradeEl.addEventListener("change", onFilterChange);
+        stateEl.addEventListener("change", onFilterChange);
+        if (flexEl) flexEl.addEventListener("change", onFilterChange);
       })();
     </script>
   </main>
@@ -270,8 +361,11 @@
       <a href="/submit.html">Add your agency</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
+      <a href="/status/">Status</a> ·
+      <a href="/support/">Support this project</a> ·
       <a href="/how-to-read/">How to read a scorecard</a> ·
       <a href="/how-to-read/#glossary">Glossary</a> ·
+      <a href="/crosswalk/">Standards crosswalk</a> ·
       <a href="/press/">For reporters</a> ·
       <a href="/data/">Open data</a> ·
       <a href="/accessibility/">Accessibility</a> ·

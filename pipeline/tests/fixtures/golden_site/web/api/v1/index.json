@@ -6,15 +6,17 @@
     "agencies": "https://gtfsscorecard.org/api/v1/agencies.json",
     "agency_detail": "https://gtfsscorecard.org/data/artifacts/{agency_id}/latest.json",
     "by_state": "https://gtfsscorecard.org/api/v1/by-state.json",
+    "canada_equity": "https://gtfsscorecard.org/api/v1/canada-equity.json",
     "equity": "https://gtfsscorecard.org/api/v1/equity.json",
     "leaderboard": "https://gtfsscorecard.org/api/v1/leaderboard.json",
     "ntd_readiness": "https://gtfsscorecard.org/ntd.json",
     "problems": "https://gtfsscorecard.org/api/v1/problems.json",
     "realtime": "https://gtfsscorecard.org/api/v1/realtime.json",
     "stats": "https://gtfsscorecard.org/api/v1/stats.json",
+    "status": "https://gtfsscorecard.org/api/v1/status.json",
     "trend": "https://gtfsscorecard.org/api/v1/trend.json"
   },
-  "generated_at": "2026-07-02T03:39:07+00:00",
+  "generated_at": "2026-07-10T19:45:48+00:00",
   "license": "CC-BY-4.0",
   "notes": "Static JSON over precomputed artifacts. Per-agency detail is each agency's published artifact. CC BY 4.0; cite the attribution.",
   "version": "v1"
