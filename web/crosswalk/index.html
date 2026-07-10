@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>How the grade maps to the standards — GTFS Scorecard</title>
-  <meta name="description" content="The scorecard&amp;#x27;s four categories are its own. This page shows how each one lines">
+  <meta name="description" content="How the scorecard&#x27;s categories map to NTD, California&#x27;s guidelines, the GTFS Grading Scheme, and Google Transit.">
   <link rel="canonical" href="https://gtfsscorecard.org/crosswalk/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="How the grade maps to the standards — GTFS Scorecard">
-  <meta property="og:description" content="The scorecard&amp;#x27;s four categories are its own. This page shows how each one lines">
+  <meta property="og:description" content="How the scorecard&#x27;s categories map to NTD, California&#x27;s guidelines, the GTFS Grading Scheme, and Google Transit.">
   <meta property="og:url" content="https://gtfsscorecard.org/crosswalk/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"How the grade maps to the standards","description":"The scorecard&#x27;s four categories are its own. This page shows how each one lines","url":"https://gtfsscorecard.org/crosswalk/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"How the grade maps to the standards","description":"How the scorecard's categories map to NTD, California's guidelines, the GTFS Grading Scheme, and Google Transit.","url":"https://gtfsscorecard.org/crosswalk/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,160 +47,175 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/how-to-read/">How to read this</a></li><li><span aria-current="page">Crosswalk</span></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/how-to-read/"><span itemprop="name">How to read this</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Crosswalk</span><meta itemprop="position" content="3"></li></ol></nav>
     <article class="feed-details"><h1>How the grade maps to the standards</h1>
-<p>The scorecard&#x27;s four categories are its own. This page shows how each one lines</p>
-<p>up with the two standards California small agencies are actually held to, so the</p>
-<p>grade is legible to someone who already knows those standards, and so a manager</p>
-<p>can move from &quot;scorecard says B&quot; to &quot;here is the official thing this relates to.&quot;</p>
-<p>This is a crosswalk, not a compliance determination. A category being strong here</p>
-<p>does not certify a feed against any guideline, and a weak one does not fail it.</p>
-<p>For the official assessment, use the sources linked below.</p>
+<p>The scorecard's four categories are its own. This page shows how each one lines
+up with the two standards California small agencies are actually held to, so the
+grade is legible to someone who already knows those standards, and so a manager
+can move from &quot;scorecard says B&quot; to &quot;here is the official thing this relates to.&quot;</p>
+<p>This is a crosswalk, not a compliance determination. A category being strong here
+does not certify a feed against any guideline, and a weak one does not fail it.
+For the official assessment, use the sources linked below.</p>
 <h2 class="section-title">The standards</h2>
-<p>Three of these apply to every US agency; the fourth is the agency&#x27;s own state</p>
-<p>guideline, shown only where one exists. On an agency page, the &quot;How this agency</p>
-<p>maps to the standards&quot; section shows the universal three plus the state guideline</p>
-<p>for that agency&#x27;s state.</p>
+<p>Three of these apply to every US agency; the fourth is the agency's own state
+guideline, shown only where one exists. On an agency page, the &quot;How this agency
+maps to the standards&quot; section shows the universal three plus the state guideline
+for that agency's state.</p>
 <ul>
-<li>**The <a href="https://www.transit.dot.gov/ntd">FTA National Transit Database</a> GTFS</li>
+<li><strong>The <a href="https://www.transit.dot.gov/ntd">FTA National Transit Database</a> GTFS
+requirement.</strong> Since Report Year 2023, every NTD reporter with fixed-route
+service must publish and maintain a valid, public GTFS feed and certify it
+annually. This is the one standard that applies nationwide, and it tracks the
+scorecard's Correctness and Freshness categories. Aligning the GTFS <code>agency_id</code>
+with the agency's five-digit NTD ID lets a feed join cleanly to its NTD record.
+The October 2024 proposal would have required that alignment in the feed; the
+<a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">July 2025 final rule</a>
+did not adopt it, collecting the <code>agency_id</code>-to-NTD-ID link on the P-50 form
+instead. When the agency's NTD ID is on file, the NTD readiness section on its
+scorecard checks the alignment and frames it as an optional convenience, never
+a required feed change and not part of the grade.</li>
+<li><strong>A state's own guideline or program, where it has one.</strong> California is
+currently the only US state with a formal published GTFS quality <em>guideline</em>:
+the <a href="https://dot.ca.gov/cal-itp/california-transit-data-guidelines">California Transit Data Guidelines</a>
+and <a href="https://dot.ca.gov/cal-itp/california-minimum-general-transit-feed-specification-gtfs-guidelines-v2_0">Minimum GTFS Guidelines</a>,
+which define &quot;Features&quot; under GTFS Schedule, Realtime, and Data Availability and
+a ten-point checklist. This scorecard's rubric is anchored to them, so for
+California agencies it is shown as the guideline the score maps to.
+Other states (Colorado, Michigan, Minnesota, Oregon, Washington) run GTFS
+<em>programs</em> rather than a quality rubric; for agencies in those states the
+program is shown as a support resource, not as a standard the score maps to.
+The registry adds a state in one block.</li>
+<li>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a>:
+a qualitative check that rider-facing values match the real world (route names
+and colors, stop names and locations, trip headsigns). It deliberately does not
+cover accessibility, fares, or feed validity, which is where this scorecard adds
+to it.</li>
+<li><strong>Google Transit (Google Maps).</strong> Not a published rubric, but the de-facto
+gate beyond California: to appear and stay in Google Maps a feed has to pass
+Google's own validation and stay current. A feed that does not validate, or
+whose calendar has expired, is dropped. In practice this tracks the scorecard's
+Correctness and Freshness categories. Apple Maps applies a similar bar.</li>
 </ul>
-<p>  requirement.** Since Report Year 2023, every NTD reporter with fixed-route</p>
-<p>  service must publish and maintain a valid, public GTFS feed and certify it</p>
-<p>  annually. This is the one standard that applies nationwide, and it tracks the</p>
-<p>  scorecard&#x27;s Correctness and Freshness categories. Aligning the GTFS <code>agency_id</code></p>
-<p>  with the agency&#x27;s five-digit NTD ID lets a feed join cleanly to its NTD record.</p>
-<p>  The October 2024 proposal would have required that alignment in the feed; the</p>
-<p>  <a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">July 2025 final rule</a></p>
-<p>  did not adopt it, collecting the <code>agency_id</code>-to-NTD-ID link on the P-50 form</p>
-<p>  instead. When the agency&#x27;s NTD ID is on file, the NTD readiness section on its</p>
-<p>  scorecard checks the alignment and frames it as an optional convenience, never</p>
-<p>  a required feed change and not part of the grade.</p>
-<ul>
-<li><strong>A state&#x27;s own guideline or program, where it has one.</strong> California is</li>
-</ul>
-<p>  currently the only US state with a formal published GTFS quality *guideline*:</p>
-<p>  the <a href="https://dot.ca.gov/cal-itp/california-transit-data-guidelines">California Transit Data Guidelines</a></p>
-<p>  and <a href="https://dot.ca.gov/cal-itp/california-minimum-general-transit-feed-specification-gtfs-guidelines-v2_0">Minimum GTFS Guidelines</a>,</p>
-<p>  which define &quot;Features&quot; under GTFS Schedule, Realtime, and Data Availability and</p>
-<p>  a ten-point checklist. This scorecard&#x27;s rubric is anchored to them, so for</p>
-<p>  California agencies it is shown as the guideline the score maps to.</p>
-<p>  Other states (Colorado, Michigan, Minnesota, Oregon, Washington) run GTFS</p>
-<p>  *programs* rather than a quality rubric; for agencies in those states the</p>
-<p>  program is shown as a support resource, not as a standard the score maps to.</p>
-<p>  The registry adds a state in one block.</p>
-<ul>
-<li>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a>:</li>
-</ul>
-<p>  a qualitative check that rider-facing values match the real world (route names</p>
-<p>  and colors, stop names and locations, trip headsigns). It deliberately does not</p>
-<p>  cover accessibility, fares, or feed validity, which is where this scorecard adds</p>
-<p>  to it.</p>
-<ul>
-<li><strong>Google Transit (Google Maps).</strong> Not a published rubric, but the de-facto</li>
-</ul>
-<p>  gate beyond California: to appear and stay in Google Maps a feed has to pass</p>
-<p>  Google&#x27;s own validation and stay current. A feed that does not validate, or</p>
-<p>  whose calendar has expired, is dropped. In practice this tracks the scorecard&#x27;s</p>
-<p>  Correctness and Freshness categories. Apple Maps applies a similar bar.</p>
-<h2 class="section-title">The Grading Scheme&#x27;s seven fields, mapped</h2>
-<p>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a></p>
-<p>(v1.0.0) grades seven rider-facing fields by hand, comparing each against a source</p>
-<p>of truth (the agency website, street imagery). The scorecard automates a proxy</p>
-<p>for every one of them. The methods differ on purpose: the scheme verifies that a</p>
-<p>value is *accurate against the real world*, which needs a human; the scorecard</p>
-<p>checks that a value is *present, legible, and internally plausible*, which a</p>
-<p>machine can do daily. The scorecard is the automated complement to the scheme,</p>
-<p>not a replacement for its accuracy checks.</p>
-<table class="leaderboard"><thead><tr><th>Grading Scheme field</th><th>The scheme checks (by hand)</th><th>The scorecard&#x27;s automated proxy</th></tr></thead><tbody>
-<tr><td><code>route_short_name</code></td><td>matches on-street signage</td><td>Correctness: validator route-name notices</td></tr>
-<tr><td><code>route_long_name</code></td><td>matches official route documentation</td><td>Correctness: <code>missing_route_long_name</code> and related notices</td></tr>
-<tr><td><code>route_color</code></td><td>matches on-the-ground signage</td><td>Correctness: <code>route_color_contrast</code> (the published color is legible)</td></tr>
-<tr><td><code>route_text_color</code></td><td>legible against the route color</td><td>Correctness: <code>route_color_contrast</code></td></tr>
-<tr><td><code>stop_name</code></td><td>matches the real stop (<code>location_type=0</code>)</td><td>Rider experience: readable (mixed-case) stop names; Correctness: name notices</td></tr>
-<tr><td><code>stop_lat</code> / <code>stop_lon</code></td><td>the coordinate is the real location</td><td>Correctness: stop-too-far-from-shape; Realtime: position plausibility</td></tr>
-<tr><td><code>trip_headsign</code></td><td>matches the destination the bus displays</td><td>Rider experience: headsign presence</td></tr>
-</tbody></table>
-<p>Beyond these seven, the scorecard also grades accessibility, fares, feed</p>
-<p>freshness, and realtime, which the scheme does not address. So it covers every</p>
-<p>field the scheme does (automatically, as a proxy) and four dimensions it does not.</p>
+<h2 class="section-title">The Grading Scheme's seven fields, mapped</h2>
+<p>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a>
+(v1.0.0) grades seven rider-facing fields by hand, comparing each against a source
+of truth (the agency website, street imagery). The scorecard automates a proxy
+for every one of them. The methods differ on purpose: the scheme verifies that a
+value is <em>accurate against the real world</em>, which needs a human; the scorecard
+checks that a value is <em>present, legible, and internally plausible</em>, which a
+machine can do daily. The scorecard is the automated complement to the scheme,
+not a replacement for its accuracy checks.</p>
+<table class="leaderboard">
+<thead>
+<tr>
+<th>Grading Scheme field</th>
+<th>The scheme checks (by hand)</th>
+<th>The scorecard's automated proxy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>route_short_name</code></td>
+<td>matches on-street signage</td>
+<td>Correctness: validator route-name notices</td>
+</tr>
+<tr>
+<td><code>route_long_name</code></td>
+<td>matches official route documentation</td>
+<td>Correctness: <code>missing_route_long_name</code> and related notices</td>
+</tr>
+<tr>
+<td><code>route_color</code></td>
+<td>matches on-the-ground signage</td>
+<td>Correctness: <code>route_color_contrast</code> (the published color is legible)</td>
+</tr>
+<tr>
+<td><code>route_text_color</code></td>
+<td>legible against the route color</td>
+<td>Correctness: <code>route_color_contrast</code></td>
+</tr>
+<tr>
+<td><code>stop_name</code></td>
+<td>matches the real stop (<code>location_type=0</code>)</td>
+<td>Rider experience: readable (mixed-case) stop names; Correctness: name notices</td>
+</tr>
+<tr>
+<td><code>stop_lat</code> / <code>stop_lon</code></td>
+<td>the coordinate is the real location</td>
+<td>Correctness: stop-too-far-from-shape; Realtime: position plausibility</td>
+</tr>
+<tr>
+<td><code>trip_headsign</code></td>
+<td>matches the destination the bus displays</td>
+<td>Rider experience: headsign presence</td>
+</tr>
+</tbody>
+</table>
+<p>Beyond these seven, the scorecard also grades accessibility, fares, feed
+freshness, and realtime, which the scheme does not address. So it covers every
+field the scheme does (automatically, as a proxy) and four dimensions it does not.</p>
 <h2 class="section-title">Category by category</h2>
 <h3 class="section-subtitle">Correctness (35%)</h3>
-<p>What it measures: structural and semantic problems from the</p>
-<p><a href="https://gtfs-validator.mobilitydata.org/rules.html">MobilityData GTFS validator</a>,</p>
-<p>weighted by severity.</p>
+<p>What it measures: structural and semantic problems from the
+<a href="https://gtfs-validator.mobilitydata.org/rules.html">MobilityData GTFS validator</a>,
+weighted by severity.</p>
 <ul>
-<li><strong>California Guidelines:</strong> the GTFS Schedule expectation that the feed</li>
+<li><strong>California Guidelines:</strong> the GTFS Schedule expectation that the feed
+implements the specification per industry best practices. Validator-clean is
+the floor for most Schedule Features.</li>
+<li><strong>Grading Scheme:</strong> carries the automated proxy for most of the scheme's
+fields (see the seven-field table above): <code>stop_lat</code>/<code>stop_lon</code> via
+stop-far-from-street-location notices, and <code>route_color</code>/<code>route_text_color</code>
+and the route names via the validator's color-contrast and route-name notices.</li>
+<li><strong>Google Transit:</strong> a feed has to pass validation to be accepted and kept in
+Maps, so validator errors here are the same ones that risk the listing.</li>
 </ul>
-<p>  implements the specification per industry best practices. Validator-clean is</p>
-<p>  the floor for most Schedule Features.</p>
-<ul>
-<li><strong>Grading Scheme:</strong> carries the automated proxy for most of the scheme&#x27;s</li>
-</ul>
-<p>  fields (see the seven-field table above): <code>stop_lat</code>/<code>stop_lon</code> via</p>
-<p>  stop-far-from-street-location notices, and <code>route_color</code>/<code>route_text_color</code></p>
-<p>  and the route names via the validator&#x27;s color-contrast and route-name notices.</p>
-<ul>
-<li><strong>Google Transit:</strong> a feed has to pass validation to be accepted and kept in</li>
-</ul>
-<p>  Maps, so validator errors here are the same ones that risk the listing.</p>
 <h3 class="section-subtitle">Freshness (20%)</h3>
-<p>What it measures: a present and current <code>feed_info</code> validity window, calendar</p>
-<p>coverage for the weeks ahead, and days until the service data expires.</p>
+<p>What it measures: a present and current <code>feed_info</code> validity window, calendar
+coverage for the weeks ahead, and days until the service data expires.</p>
 <ul>
-<li><strong>California Guidelines:</strong> &quot;keep GTFS Schedule up to date and consistent,&quot; and</li>
+<li><strong>California Guidelines:</strong> &quot;keep GTFS Schedule up to date and consistent,&quot; and
+the Data Availability expectation of a stable, current feed at a fixed URL. This
+is the category closest to the compliance threshold: an expired feed drops the
+agency off the map, which is the failure the Guidelines exist to prevent.</li>
+<li><strong>Grading Scheme:</strong> not covered (the scheme assesses accuracy, not currency),
+so this category is additive to it.</li>
+<li><strong>Google Transit:</strong> an expired calendar is one of the clearest ways to fall
+out of Maps, so this is the category that most directly protects the listing.</li>
 </ul>
-<p>  the Data Availability expectation of a stable, current feed at a fixed URL. This</p>
-<p>  is the category closest to the compliance threshold: an expired feed drops the</p>
-<p>  agency off the map, which is the failure the Guidelines exist to prevent.</p>
-<ul>
-<li><strong>Grading Scheme:</strong> not covered (the scheme assesses accuracy, not currency),</li>
-</ul>
-<p>  so this category is additive to it.</p>
-<ul>
-<li><strong>Google Transit:</strong> an expired calendar is one of the clearest ways to fall</li>
-</ul>
-<p>  out of Maps, so this is the category that most directly protects the listing.</p>
 <h3 class="section-subtitle">Rider experience (25%)</h3>
-<p>What it measures: accessibility fields populated (<code>wheelchair_boarding</code>), fares</p>
-<p>present, human-readable stop names, headsigns, and valid agency contact details.</p>
+<p>What it measures: accessibility fields populated (<code>wheelchair_boarding</code>), fares
+present, human-readable stop names, headsigns, and valid agency contact details.</p>
 <ul>
-<li><strong>California Guidelines:</strong> the expectation that riders get complete and accurate</li>
+<li><strong>California Guidelines:</strong> the expectation that riders get complete and accurate
+information including fare, pathway, accessibility, and geographic data, so
+anyone can plan a trip regardless of familiarity or access needs.</li>
+<li><strong>Grading Scheme:</strong> directly overlaps the rider-facing-accuracy dimensions —
+<code>stop_name</code>, <code>route_short_name</code>/<code>route_long_name</code>, and <code>trip_headsign</code>. Note the
+difference in method: the scheme compares values against real-world signage by
+hand; the scorecard checks presence and plausibility automatically. The
+accessibility and fare parts of this category go beyond the grading scheme,
+which does not assess them.</li>
 </ul>
-<p>  information including fare, pathway, accessibility, and geographic data, so</p>
-<p>  anyone can plan a trip regardless of familiarity or access needs.</p>
-<ul>
-<li><strong>Grading Scheme:</strong> directly overlaps the rider-facing-accuracy dimensions —</li>
-</ul>
-<p>  <code>stop_name</code>, <code>route_short_name</code>/<code>route_long_name</code>, and <code>trip_headsign</code>. Note the</p>
-<p>  difference in method: the scheme compares values against real-world signage by</p>
-<p>  hand; the scorecard checks presence and plausibility automatically. The</p>
-<p>  accessibility and fare parts of this category go beyond the grading scheme,</p>
-<p>  which does not assess them.</p>
 <h3 class="section-subtitle">Realtime quality (20%)</h3>
-<p>What it measures: the GTFS-Realtime feed reachable and fresh, the share of</p>
-<p>scheduled trips represented in TripUpdates, and plausible vehicle positions. Shown</p>
-<p>neutrally as &quot;Not yet published&quot; when an agency has no realtime feed.</p>
+<p>What it measures: the GTFS-Realtime feed reachable and fresh, the share of
+scheduled trips represented in TripUpdates, and plausible vehicle positions. Shown
+neutrally as &quot;Not yet published&quot; when an agency has no realtime feed.</p>
 <ul>
-<li><strong>California Guidelines:</strong> the GTFS Realtime Features — standard formats at a</li>
-</ul>
-<p>  stable URL, with high uptime and update frequency.</p>
-<ul>
+<li><strong>California Guidelines:</strong> the GTFS Realtime Features — standard formats at a
+stable URL, with high uptime and update frequency.</li>
 <li><strong>Grading Scheme:</strong> not covered (Schedule only).</li>
 </ul>
 <h2 class="section-title">Where the scorecard and the standards differ</h2>
 <ul>
-<li>The scorecard is automated and runs daily; the Grading Scheme&#x27;s accuracy checks</li>
-</ul>
-<p>  are manual by design. The scorecard approximates them, it does not replace them.</p>
-<ul>
-<li>The scorecard weights and grades; the California Guidelines are pass/fail per</li>
-</ul>
-<p>  Feature. A good grade is encouragement toward the Features, not a substitute for</p>
-<p>  the official checklist.</p>
-<ul>
-<li>Accessibility and fares are first-class in the scorecard&#x27;s Rider-experience</li>
-</ul>
-<p>  category and absent from the Grading Scheme, which is a deliberate emphasis.</p></article>
+<li>The scorecard is automated and runs daily; the Grading Scheme's accuracy checks
+are manual by design. The scorecard approximates them, it does not replace them.</li>
+<li>The scorecard weights and grades; the California Guidelines are pass/fail per
+Feature. A good grade is encouragement toward the Features, not a substitute for
+the official checklist.</li>
+<li>Accessibility and fares are first-class in the scorecard's Rider-experience
+category and absent from the Grading Scheme, which is a deliberate emphasis.</li>
+</ul></article>
   </main>
   <footer class="site-footer">
     <div class="wrap">
@@ -217,11 +232,13 @@
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·
