@@ -169,15 +169,12 @@
     padding: clamp(1.2rem, 3vw, 2rem) 0 clamp(3rem, 7vw, 6rem);
     overflow: hidden;
   }
-  /* the route line: a vertical dashed spine that "draws" in */
+  /* the route line: a vertical dashed spine */
   .hero .route {
     position: absolute; top: 0; bottom: 0; left: 8%;
     width: 2px;
     background: repeating-linear-gradient(var(--line) 0 8px, transparent 8px 16px);
-    transform-origin: top;
-    animation: drawline 1.1s cubic-bezier(.2,.7,.2,1) both;
   }
-  @keyframes drawline { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
@@ -245,12 +242,6 @@
   .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; }
   .reassure { margin: 1.5rem 0 0; font-family: var(--mono); font-size: .8rem; letter-spacing: .04em; color: #b9c7ba; }
 
-  /* stagger the hero text on load */
-  .rise { opacity: 0; transform: translateY(18px); animation: rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
-  .rise.d1 { animation-delay: .15s; } .rise.d2 { animation-delay: .28s; }
-  .rise.d3 { animation-delay: .41s; } .rise.d4 { animation-delay: .54s; } .rise.d5 { animation-delay: .67s; }
-  @keyframes rise { to { opacity: 1; transform: none; } }
-
   /* ---------- the sample scorecard "card" ---------- */
   .card {
     background: var(--paper); color: var(--ink);
@@ -259,9 +250,7 @@
     padding: 1.8rem 2rem 2rem;
     position: relative;
     border: 1.5px solid var(--line-ink);
-    animation: cardin 1s cubic-bezier(.2,.7,.2,1) .35s both;
   }
-  @keyframes cardin { from { opacity:0; transform: translateY(40px); } to { opacity:1; } }
   .card .tag {
     position:absolute; top: -12px; left: 18px;
     background: var(--pine); color: var(--on-pine);
@@ -282,14 +271,13 @@
   }
   .reel-strip {
     display: grid; grid-auto-rows: var(--h);
-    animation: flap 1.7s cubic-bezier(.2,.85,.25,1) .7s both;
+    transform: translateY(calc(var(--h) * -4));
   }
   .reel-strip span {
     display: grid; place-items: center;
     font-family: var(--display); font-weight: 900; font-size: 3.4rem; line-height: 1;
   }
-  /* strip order F,D,C,B,A — lands on A (translateY -4 rows) */
-  @keyframes flap { from { transform: translateY(0); } to { transform: translateY(calc(var(--h) * -4)); } }
+  /* strip order F,D,C,B,A; the final A row is visible */
   .card-head h3 { font-family: var(--display); font-weight: 900; font-size: 1.35rem; margin: 0 0 .15rem; letter-spacing: -.01em; }
   .card-head .sub { margin: 0; font-family: var(--mono); font-size: .78rem; color: var(--ink-soft); }
   .bars { margin: 1.3rem 0 1.2rem; display: grid; gap: .7rem; }
@@ -297,8 +285,7 @@
   .bar .track { height: 9px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
   /* display:block is required: a bare <span> is inline, and width/height do not
      apply to inline boxes, so the fill never showed. */
-  .bar .fill { display: block; height: 100%; border-radius: 99px; width: 0; animation: grow 1s cubic-bezier(.2,.7,.2,1) 1s forwards; }
-  @keyframes grow { to { width: var(--w); } }
+  .bar .fill { display: block; height: 100%; border-radius: 99px; width: var(--w); }
   .bar .num { font-family: var(--mono); text-align: right; color: var(--ink-soft); }
   .fix {
     border-top: 1.5px dashed var(--line-ink); padding-top: 1rem;
