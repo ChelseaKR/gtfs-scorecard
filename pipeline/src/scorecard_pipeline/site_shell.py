@@ -188,12 +188,18 @@ def _redirect_page(target: str, title: str) -> str:
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="refresh" content="0; url={esc(target)}">
   <link rel="canonical" href="{esc(target)}">
+  <link rel="stylesheet" href="/src/styles.css">
   <title>{esc(title)} — moved</title>
 </head>
 <body>
-  <p>This page moved. Continue to <a href="{esc(target)}">{esc(title)}</a>.</p>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main id="main" class="wrap" tabindex="-1">
+    <h1 class="page-title">{esc(title)} moved.</h1>
+    <p class="page-lede">Continue to <a href="{esc(target)}">{esc(title)}</a>.</p>
+  </main>
 </body>
 </html>
 """

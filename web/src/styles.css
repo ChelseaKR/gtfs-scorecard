@@ -81,6 +81,7 @@ main.wrap-wide .page-title {
   gap: 0 2.4rem;
   align-items: start;
 }
+.section-grid > * { min-width: 0; }
 @media (min-width: 900px) {
   .section-grid { grid-template-columns: 1fr 1fr; }
   .section-grid > .span-2 { grid-column: 1 / -1; }
@@ -91,6 +92,8 @@ main.wrap-wide .page-title {
 @media (max-width: 640px) {
   .leaderboard {
     display: block;
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -171,6 +174,7 @@ a:hover { color: var(--green-bright); }
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+  min-height: 44px;
   text-decoration: none;
   color: #f4f6f0;
   flex: none;
@@ -459,6 +463,7 @@ main:focus { outline: none; }
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  min-width: 44px;
   min-height: 44px;
   padding: 0.4rem 0.9rem;
   border: 1.5px solid var(--line);
@@ -594,6 +599,163 @@ main:focus { outline: none; }
 }
 .grade-seg .seg-n { color: var(--ink-soft); font-weight: 400; font-variant-numeric: tabular-nums; }
 
+/* ---------- shared visualization grammar ----------
+   Ranked percentages use a zero-based "service route": a labelled line starts
+   at a stop marker and runs to the exact value. The semantic list is both chart
+   and text equivalent, so no fact depends on SVG, hover, or color. */
+.service-chart {
+  margin: 0 0 1.3rem;
+  padding: 1rem 1.05rem 0.85rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.service-chart figcaption { display: grid; gap: 0.15rem; margin-bottom: 0.9rem; }
+.service-chart-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.service-chart-note { color: var(--ink-soft); font-size: 0.82rem; }
+.service-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
+.service-bar { min-width: 0; }
+.service-bar-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 0.3rem;
+}
+.service-bar-label { font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.service-bar-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.service-bar-detail { display: block; color: var(--ink-soft); font-size: 0.7rem; font-weight: 400; }
+.service-track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0.62rem;
+  border-radius: 999px;
+  background: var(--paper-deep);
+}
+.service-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--value) * 1%);
+  min-width: 0;
+  border-radius: 999px;
+  background: var(--green);
+}
+.service-stop {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.68rem;
+  height: 0.68rem;
+  border: 2px solid var(--green);
+  border-radius: 50%;
+  background: var(--card);
+  transform: translate(-1px, -50%);
+}
+.service-scale {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3rem 0 0;
+  padding-left: 0.1rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+.viz-data { margin-top: -0.4rem; }
+.viz-data > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--green);
+  cursor: pointer;
+}
+.problems-chart { max-width: 58rem; }
+.problem-example { color: var(--ink-soft); font-size: 0.9rem; }
+.events,
+.event { min-width: 0; }
+.event p { overflow-wrap: anywhere; }
+
+/* Ordered bucket distributions use columns. Labels name the bands because the
+   intervals are intentionally not drawn as a continuous, equal-width axis. */
+.bucket-chart,
+.movement-chart {
+  margin: 0 0 1.3rem;
+  padding: 1rem 1.05rem 0.85rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.bucket-chart figcaption,
+.movement-chart figcaption { display: grid; gap: 0.15rem; margin-bottom: 0.9rem; }
+.bucket-bars {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(var(--bins), minmax(0, 1fr));
+  gap: 0.45rem;
+  align-items: end;
+  margin: 0;
+  padding: 0;
+}
+.bucket-bar {
+  display: grid;
+  grid-template-rows: auto 7rem auto;
+  gap: 0.3rem;
+  min-width: 0;
+  text-align: center;
+}
+.bucket-value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.bucket-column {
+  position: relative;
+  display: block;
+  height: 100%;
+  border-bottom: 2px solid var(--line);
+}
+.bucket-column > span {
+  position: absolute;
+  inset: auto 12% 0;
+  height: calc(var(--height) * 1%);
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--green);
+}
+.bucket-label { color: var(--ink-soft); font-size: 0.7rem; line-height: 1.25; overflow-wrap: anywhere; }
+
+/* Significant movers form a part-to-whole band. Words and counts carry the
+   direction; green and rust are redundant reinforcement. */
+.movement-chart { max-width: 42rem; }
+.movement-counts {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.4rem;
+  padding: 0;
+}
+.movement-counts li { font-size: 0.9rem; }
+.movement-counts strong { font-family: var(--font-mono); font-size: 1.15rem; }
+.movement-band { display: flex; width: 100%; height: 0.75rem; gap: 3px; }
+.movement-band span { flex: var(--share) 1 0; border-radius: 999px; }
+.movement-band .movement-up { background: var(--grade-a); }
+.movement-band .movement-down { background: var(--grade-f); }
+.movement-note { margin: 0.45rem 0 0; color: var(--ink-soft); font-size: 0.78rem; }
+
 /* browse by state */
 .state-browse { margin: 0 0 1.4rem; }
 .state-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -603,6 +765,7 @@ main:focus { outline: none; }
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  min-width: 44px;
   min-height: 44px;
   padding: 0.4rem 0.85rem;
   border: 1.5px solid var(--line);
@@ -637,6 +800,61 @@ main:focus { outline: none; }
 
 .peer-note { margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--green-bright); }
 .peer-context { margin: 0.4rem 0 0; font-size: 0.9rem; color: #d3e0d4; }
+
+/* Percentiles are positions, not quantities, so the board uses a marker on a
+   fixed ruler instead of a filled bar. Exact values remain visible above it. */
+.percentile-strip {
+  width: min(100%, 25rem);
+  margin-top: 0.75rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgb(244 246 240 / 0.18);
+}
+.percentile-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) auto;
+  gap: 0.1rem 0.8rem;
+  margin-top: 0.45rem;
+}
+.percentile-row:first-child { margin-top: 0; }
+.percentile-label,
+.percentile-value {
+  color: #eef3eb;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+.percentile-value { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.percentile-track {
+  position: relative;
+  grid-column: 1 / -1;
+  display: block;
+  height: 0.75rem;
+}
+.percentile-line {
+  position: absolute;
+  inset: 0.32rem 0 auto;
+  height: 2px;
+  background: rgb(244 246 240 / 0.35);
+}
+.percentile-marker {
+  position: absolute;
+  left: calc(var(--position) * 1%);
+  top: 0;
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 2px solid var(--board);
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 1px var(--amber);
+  transform: translateX(-50%);
+}
+.percentile-scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--board-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
 
 /* US choropleth: states shaded by share of feeds expired (good green to rust),
    reinforced by each state's title/aria text and the legend. */
@@ -815,6 +1033,7 @@ main:focus { outline: none; }
   text-align: left;
   padding: 0.4rem 0.6rem;
   border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
 }
 .leaderboard th {
   font-size: 0.8rem;
@@ -896,8 +1115,18 @@ main:focus { outline: none; }
 .map-filters-intro { margin: 0 0 0.4rem; color: var(--ink-soft); font-size: 0.9rem; }
 .map-filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.8rem; }
 .map-filter-row label { font-weight: 600; }
+.map-filter-row label:has(input) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  cursor: pointer;
+}
 .map-filter-row select {
   font: inherit;
+  min-width: 0;
+  min-height: 44px;
+  max-width: 100%;
   padding: 0.35rem 0.5rem;
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
@@ -990,7 +1219,9 @@ main:focus { outline: none; }
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  min-height: 44px;
   margin-right: 1.2rem;
+  cursor: pointer;
 }
 .route-skip-targets {
   margin: 0.4rem 0 1rem;
@@ -1243,6 +1474,7 @@ main:focus { outline: none; }
   font-weight: 600;
   display: inline-flex;
   align-items: center;
+  min-width: 44px;
   min-height: 44px;
   color: var(--ink);
   background: var(--card);
@@ -1331,12 +1563,15 @@ main:focus { outline: none; }
   padding: 0;
   display: grid;
   gap: 0.8rem;
+  min-width: 0;
 }
 .finding {
+  min-width: 0;
   background: var(--card);
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
   padding: 0.9rem 1.05rem;
+  overflow-wrap: anywhere;
 }
 .finding-head {
   display: flex;
@@ -1500,7 +1735,8 @@ main:focus { outline: none; }
   padding: 0.9rem 1rem;
 }
 .submit-form fieldset label { font-weight: 400; margin-top: 0.6rem; }
-.submit-form input {
+.submit-form input:not([type="checkbox"]),
+.submit-form select {
   width: 100%;
   font-family: var(--font-body);
   font-size: 1rem;
@@ -1511,6 +1747,7 @@ main:focus { outline: none; }
   background: var(--card);
   color: var(--ink);
 }
+.submit-form select { cursor: pointer; }
 /* 2.5.5: checkbox controls and their labels get a >=44px tall hit area. */
 .submit-form fieldset label {
   display: flex;
@@ -1519,7 +1756,8 @@ main:focus { outline: none; }
   min-height: 44px;
 }
 .submit-form fieldset input[type="checkbox"] { width: 1.15rem; height: 1.15rem; }
-.submit-form input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+.submit-form input:focus-visible,
+.submit-form select:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
 .submit-form .req { font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; }
 .submit-form .hint { display: block; margin-top: 0.35rem; font-size: 0.8rem; color: var(--ink-soft); }
 .submit-button {
@@ -1543,6 +1781,28 @@ main:focus { outline: none; }
 .form-status { margin-top: 0.4rem; font-size: 0.9rem; }
 .form-status-err { color: var(--error); font-weight: 600; }
 .form-status-ok { color: var(--grade-a); font-weight: 600; }
+
+/* The browser's default file picker is only about 22px tall on mobile. Keep
+   the pre-publish check's local-only upload control at the same target size as
+   the rest of the site's form controls. */
+.feed-details input[type="file"] {
+  width: 100%;
+  min-height: 44px;
+  max-width: 100%;
+  font: inherit;
+  color: var(--ink);
+}
+.feed-details input[type="file"]::file-selector-button {
+  min-height: 44px;
+  margin-right: 0.7rem;
+  padding: 0.4rem 0.8rem;
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
 
 /* ---------- embeddable badge ---------- */
 
@@ -1632,10 +1892,10 @@ main:focus { outline: none; }
   background: rgb(0 0 0 / 0.55); z-index: 2; }
 .reel-strip {
   display: grid; grid-auto-rows: var(--reel-h);
-  transform: translateY(0);
-  animation: flapTo 1.7s cubic-bezier(.2,.85,.25,1) .35s both;
+  /* The grade is decision-critical. Show the measured value immediately
+     instead of briefly displaying an incorrect F while a reel animates. */
+  transform: translateY(var(--flap-end, 0));
 }
-@keyframes flapTo { to { transform: translateY(var(--flap-end, 0)); } }
 .reel-strip span { display: grid; place-items: center; color: #f4f6f0;
   font-family: var(--font-display); font-weight: 900; font-size: 4rem; line-height: 1; }
 
@@ -1690,7 +1950,11 @@ main:focus { outline: none; }
 
 /* top fixes as service alerts */
 .alerts { margin: 0; }
-.alert { display: grid; grid-template-columns: auto 1fr; gap: .9rem; padding: 1.1rem 0; border-bottom: 1.5px dashed var(--line); }
+.alert { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .9rem; padding: 1.1rem 0; border-bottom: 1.5px dashed var(--line); }
+.alert > * { min-width: 0; }
+.alert .afix,
+.alert .awhy,
+.alert .aeta { overflow-wrap: anywhere; }
 .alert .badge { align-self: start; font-family: var(--font-mono); font-size: .68rem; font-weight: 600;
   letter-spacing: .06em; text-transform: uppercase; padding: .32rem .55rem; border-radius: 7px;
   background: var(--error); color: #fff; white-space: nowrap; }
@@ -1704,7 +1968,18 @@ main:focus { outline: none; }
   background: var(--paper-deep); border-radius: 999px; padding: .1rem .5rem; white-space: nowrap; }
 
 @media (max-width: 640px) {
+  .service-chart { padding-inline: 0.85rem; }
+  .service-bar-head { align-items: start; gap: 0.5rem; }
+  .service-bar-detail { white-space: normal; }
+  .bucket-chart, .movement-chart { padding-inline: 0.75rem; }
+  .bucket-bars { gap: 0.25rem; }
+  .bucket-bar { grid-template-rows: auto 5.5rem auto; }
+  .bucket-label { font-size: 0.62rem; }
   .platform { grid-template-columns: 1.8rem 1fr; gap: .7rem; }
+  .alert { grid-template-columns: 1fr; gap: .55rem; }
+  .alert .badge { justify-self: start; }
+  .feed-details dl { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
+  .feed-details dd { margin-bottom: 0.55rem; }
 }
 
 /* ===================================================================
@@ -1951,8 +2226,8 @@ main p,
    inherits the verified AAA palette. */
 .fixloop { margin: 1.1rem 0 0; }
 .fixloop-lede { margin: 0 0 0.7rem; max-width: var(--measure); }
-.fixloop-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; counter-reset: fixloop; }
-.fixloop-item { padding: 0.8rem 0 0; border-top: 1px solid var(--line); max-width: var(--measure); }
+.fixloop-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; min-width: 0; counter-reset: fixloop; }
+.fixloop-item { min-width: 0; padding: 0.8rem 0 0; border-top: 1px solid var(--line); max-width: var(--measure); overflow-wrap: anywhere; }
 .fixloop-name { margin: 0 0 0.35rem; font-family: var(--font-display); font-weight: 600; }
 .fixloop-step { margin: 0 0 0.3rem; font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft); }
 .fixloop-step:last-child { margin-bottom: 0; }
@@ -2021,7 +2296,14 @@ main p,
   border-radius: var(--radius);
   cursor: pointer;
 }
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .compare-table { width: 100%; border-collapse: collapse; margin: 0.6rem 0 1.2rem; }
 .compare-table th,
 .compare-table td {

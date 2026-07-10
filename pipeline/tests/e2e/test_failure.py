@@ -26,9 +26,9 @@ def test_artifact_404_shows_announced_error(page: Page, app_url: str) -> None:
     box = page.locator("#main .error-box")
     expect(box).to_be_visible()
     expect(box).to_have_attribute("role", "alert")
-    expect(box).to_contain_text("Something went wrong loading the scorecard.")
+    expect(box.locator("h1")).to_have_text("We couldn't load this scorecard.")
     # The same box is what role=alert announces.
-    expect(page.get_by_role("alert")).to_contain_text("Something went wrong")
+    expect(page.get_by_role("alert")).to_contain_text("We couldn't load")
     # It offers a way back out.
     expect(box.locator('a[href="#/"]')).to_be_visible()
     # And the spinner is gone, not sitting under or before the error.

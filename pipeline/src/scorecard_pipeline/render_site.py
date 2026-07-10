@@ -292,6 +292,105 @@ def _spark_mini(history: list[dict[str, Any]] | None, name: str) -> str:
     )
 
 
+def _service_bar_chart(
+    rows: list[tuple[str, float, str]],
+    *,
+    title: str,
+    note: str,
+    css_class: str = "",
+) -> str:
+    """Direct-labelled horizontal percentage bars for ranked comparisons.
+
+    The list is the chart and its text equivalent: every label, exact percentage,
+    and supporting count stays visible in semantic HTML. The track is decorative
+    and starts with a stop marker, borrowing the visual language of a transit
+    route without asking color to carry meaning. Values are clamped to the
+    zero-based 0–100 scale used by every caller.
+    """
+    if not rows:
+        return ""
+    items = []
+    for label, raw_value, detail in rows:
+        value = max(0.0, min(100.0, float(raw_value)))
+        shown = f"{value:g}%"
+        items.append(
+            f'<li class="service-bar" style="--value:{value:g}">'
+            '<div class="service-bar-head">'
+            f'<span class="service-bar-label">{esc(label)}</span>'
+            f'<span class="service-bar-value">{shown}'
+            f'<span class="service-bar-detail">{esc(detail)}</span></span></div>'
+            '<div class="service-track" aria-hidden="true">'
+            '<span class="service-fill"></span><span class="service-stop"></span></div></li>'
+        )
+    extra = f" {css_class}" if css_class else ""
+    return (
+        f'<figure class="service-chart{extra}"><figcaption>'
+        f'<span class="service-chart-title">{esc(title)}</span>'
+        f'<span class="service-chart-note">{esc(note)}</span></figcaption>'
+        f'<ol class="service-bars">{"".join(items)}</ol>'
+        '<div class="service-scale" aria-hidden="true"><span>0%</span><span>100%</span></div>'
+        "</figure>"
+    )
+
+
+def _bucket_chart(
+    rows: list[tuple[str, int]], *, title: str, note: str, css_class: str = ""
+) -> str:
+    """Ordered count buckets as zero-based columns with visible exact values.
+
+    This is for distributions whose order matters (age ranges), not ranked
+    categories. Equal-width buckets are deliberately presented as named bands,
+    not as a continuous time axis, because their underlying ranges differ.
+    """
+    if not rows:
+        return ""
+    maximum = max((count for _, count in rows), default=0)
+    items = []
+    for label, count in rows:
+        height = round((count / maximum) * 100, 1) if maximum else 0
+        items.append(
+            f'<li class="bucket-bar" style="--height:{height:g}">'
+            f'<span class="bucket-value">{count}</span>'
+            '<span class="bucket-column" aria-hidden="true"><span></span></span>'
+            f'<span class="bucket-label">{esc(label)}</span></li>'
+        )
+    extra = f" {css_class}" if css_class else ""
+    return (
+        f'<figure class="bucket-chart{extra}" style="--bins:{len(rows)}"><figcaption>'
+        f'<span class="service-chart-title">{esc(title)}</span>'
+        f'<span class="service-chart-note">{esc(note)}</span></figcaption>'
+        f'<ol class="bucket-bars">{"".join(items)}</ol></figure>'
+    )
+
+
+def _movement_balance(changes: list[dict[str, Any]]) -> str:
+    """Part-to-whole summary of agencies with a material latest change.
+
+    The band covers only the significant changes returned by ``compute_changes``;
+    the note says so explicitly to avoid implying that quiet agencies were
+    measured as unchanged in this view.
+    """
+    improved = sum(not bool(c.get("regressed")) for c in changes)
+    declined = sum(bool(c.get("regressed")) for c in changes)
+    total = improved + declined
+    if not total:
+        return '<p class="page-lede">No material score or grade changes were detected.</p>'
+    return (
+        '<figure class="movement-chart"><figcaption>'
+        '<span class="service-chart-title">Direction of material changes</span>'
+        '<span class="service-chart-note">Agencies shown in the change lists below.</span>'
+        "</figcaption>"
+        '<ul class="movement-counts">'
+        f'<li class="movement-up"><strong>{improved}</strong> improved</li>'
+        f'<li class="movement-down"><strong>{declined}</strong> slipped</li></ul>'
+        '<div class="movement-band" aria-hidden="true">'
+        f'<span class="movement-up" style="--share:{improved}"></span>'
+        f'<span class="movement-down" style="--share:{declined}"></span></div>'
+        '<p class="movement-note">This summarizes significant movers, not every quiet feed.</p>'
+        "</figure>"
+    )
+
+
 def _trend_section(history: list[dict[str, Any]]) -> str:
     """An 'Over time' block: an overall-score line plus per-category change since
     the previous check. Mirrors the interactive app so static and SPA agree. The
@@ -716,13 +815,38 @@ def _peer_context(record: dict[str, Any] | None) -> str:
     peer = record.get("peer_percentile")
     tier_key = record.get("size_tier")
     tier = TIER_LABELS.get(str(tier_key), str(tier_key))
+    nat_position = max(0.0, min(100.0, float(nat)))
     peer_part = (
         f" and {peer}% of {esc(tier)} agencies"
         if peer is not None and tier_key not in (None, "unknown")
         else ""
     )
     where = f" Operates in {esc(record['state'])}." if record.get("state") else ""
-    return f'<p class="peer-context">Ahead of {nat}% of all tracked agencies{peer_part}.{where}</p>'
+    rows = [
+        '<div class="percentile-row">'
+        '<span class="percentile-label">All agencies</span>'
+        f'<span class="percentile-value">{esc(nat)}%</span>'
+        f'<span class="percentile-track" style="--position:{nat_position:g}" aria-hidden="true">'
+        '<span class="percentile-line"></span><span class="percentile-marker"></span></span></div>'
+    ]
+    if peer is not None and tier_key not in (None, "unknown"):
+        peer_position = max(0.0, min(100.0, float(peer)))
+        rows.append(
+            '<div class="percentile-row">'
+            f'<span class="percentile-label">{esc(tier)} peers</span>'
+            f'<span class="percentile-value">{esc(peer)}%</span>'
+            f'<span class="percentile-track" style="--position:{peer_position:g}" aria-hidden="true">'
+            '<span class="percentile-line"></span><span class="percentile-marker"></span></span></div>'
+        )
+    strip = (
+        '<div class="percentile-strip" aria-label="Percentile position; higher is better">'
+        f'{"".join(rows)}<div class="percentile-scale" aria-hidden="true">'
+        "<span>0</span><span>Ahead of more agencies</span><span>100</span></div></div>"
+    )
+    return (
+        f'<p class="peer-context">Ahead of {nat}% of all tracked agencies{peer_part}.{where}</p>'
+        f"{strip}"
+    )
 
 
 def _ago(now: dt.datetime, then: dt.datetime) -> str:
@@ -3321,6 +3445,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
       <h2 class="section-title" id="members-h">Agencies, worst first</h2>
       <ul class="program-list">{rows}</ul>
     </section>"""
+    body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
         title=f"{rname} — GTFS Scorecard", description=desc, canonical=canonical, body=body
     )
@@ -4322,7 +4447,8 @@ def _changes_sections(changes: list[dict[str, Any]]) -> str:
             )
         return "".join(rows)
 
-    return f"""<div class="section-grid">
+    return f"""{_movement_balance(changes)}
+    <div class="section-grid">
     <section aria-labelledby="improved-h">
       <h2 class="section-title" id="improved-h">Most improved</h2>
       <ul class="delta-list">{_rows(improved, True)}</ul>
@@ -4407,6 +4533,7 @@ def _render_pulse_page(
     country at once, not any single agency. The <a href="/problems/">most common
     problems</a> page names the recurring fixes behind these numbers. Writing about
     this data? <a href="/press/">Start with the reporter's page.</a></p>"""
+    body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
         title="The national pulse — GTFS Scorecard",
         description=(
@@ -5778,10 +5905,24 @@ def _access_sections(coverage: dict[str, Any]) -> str:
             f"<td>{esc(bands.get(key, 0))}</td></tr>"
             for key in ("most", "some", "none")
         )
+        band_chart = _service_bar_chart(
+            [
+                (
+                    _ACCESS_BAND_LABELS[key],
+                    round(100 * int(bands.get(key, 0)) / count, 1),
+                    f"{bands.get(key, 0)} of {count} feeds",
+                )
+                for key in ("most", "some", "none")
+            ],
+            title="Stop-level accessibility coverage",
+            note="Share of feeds in each coverage band.",
+            css_class="access-coverage-chart",
+        )
         band_table = (
             '<section class="feed-details"><h2 class="section-title">Where feeds stand</h2>'
+            f'{band_chart}<details class="viz-data"><summary>Show the table</summary>'
             '<table class="leaderboard"><thead><tr><th>Stop-level coverage</th>'
-            f"<th>Feeds</th></tr></thead><tbody>{band_rows}</tbody></table></section>"
+            f"<th>Feeds</th></tr></thead><tbody>{band_rows}</tbody></table></details></section>"
         )
         complete = coverage.get("most_complete", [])
         complete_rows = "".join(
@@ -5847,6 +5988,14 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     to encourage. The retired /access/ URL redirects to #access here."""
     count = adoption.get("agency_count", 0)
     if count:
+        capabilities = [
+            ("Flexible (demand-responsive) service", adoption.get("flex") or {}),
+            ("Fare data (any model)", adoption.get("fares") or {}),
+            ("Fare data using Fares v2", adoption.get("fares_v2") or {}),
+            ("Station accessibility (pathways)", adoption.get("pathways") or {}),
+            ("Step-free station paths", adoption.get("step_free") or {}),
+            ("Contactless payment declared (cEMV)", adoption.get("cemv") or {}),
+        ]
 
         def cap_row(label: str, share: dict[str, Any] | None) -> str:
             s = share or {}
@@ -5855,20 +6004,27 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
                 f"<td>{esc(s.get('pct', 0))}%</td></tr>"
             )
 
-        cap_rows = (
-            cap_row("Flexible (demand-responsive) service", adoption.get("flex"))
-            + cap_row("Fare data (any model)", adoption.get("fares"))
-            + cap_row("Fare data using Fares v2", adoption.get("fares_v2"))
-            + cap_row("Station accessibility (pathways)", adoption.get("pathways"))
-            + cap_row("Step-free station paths", adoption.get("step_free"))
-            # cemv_support was adopted into GTFS in September 2025; the count
-            # starts near zero by design, so the page watches it spread.
-            + cap_row("Contactless payment declared (cEMV)", adoption.get("cemv"))
+        cap_rows = "".join(cap_row(label, share) for label, share in capabilities)
+        cap_chart = _service_bar_chart(
+            [
+                (
+                    label,
+                    float(share.get("pct", 0)),
+                    f"{share.get('count', 0)} of {count} feeds",
+                )
+                for label, share in sorted(
+                    capabilities, key=lambda row: float(row[1].get("pct", 0)), reverse=True
+                )
+            ],
+            title="Adoption by capability",
+            note="Share of tracked feeds publishing each optional capability.",
+            css_class="adoption-chart",
         )
         cap_table = (
             '<section class="feed-details"><h2 class="section-title">What feeds publish</h2>'
+            f'{cap_chart}<details class="viz-data"><summary>Show the table</summary>'
             '<table class="leaderboard"><thead><tr><th>Capability</th><th>Feeds</th>'
-            f"<th>Share</th></tr></thead><tbody>{cap_rows}</tbody></table></section>"
+            f"<th>Share</th></tr></thead><tbody>{cap_rows}</tbody></table></details></section>"
         )
         flex_sample = adoption.get("flex_sample", [])
         flex_rows = "".join(
@@ -6034,6 +6190,12 @@ def _status_evidence_section(
     staleness_rows = "".join(
         f"<tr><td>{esc(label)}</td><td>{count}</td></tr>" for label, count in staleness
     )
+    staleness_chart = _bucket_chart(
+        staleness,
+        title="Snapshot age distribution",
+        note=f"All {len(catalog)} tracked agencies, grouped by age of their current scorecard.",
+        css_class="staleness-chart",
+    )
 
     if run_summary is None:
         run_section = """    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
@@ -6111,11 +6273,13 @@ def _status_evidence_section(
     <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
     (not just this run -- an agency scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
+    {staleness_chart}
+    <details class="viz-data"><summary>Show the table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Agency count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
       <tbody>{staleness_rows}</tbody>
-    </table></div>
+    </table></div></details>
     </section>
 
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
@@ -6329,10 +6493,24 @@ def _render_rt_page(
             f"<tr><td>{esc(_RT_BAND_LABELS.get(key, key))}</td><td>{esc(bands.get(key, 0))}</td></tr>"
             for key in ("reliable", "mostly", "spotty")
         )
+        band_chart = _service_bar_chart(
+            [
+                (
+                    _RT_BAND_LABELS[key],
+                    round(100 * int(bands.get(key, 0)) / count, 1),
+                    f"{bands.get(key, 0)} of {count} feeds",
+                )
+                for key in ("reliable", "mostly", "spotty")
+            ],
+            title="Realtime reliability bands",
+            note="Share of monitored feeds in each uptime band.",
+            css_class="reliability-chart",
+        )
         band_table = (
             '<section class="feed-details"><h2 class="section-title">Where feeds stand</h2>'
+            f'{band_chart}<details class="viz-data"><summary>Show the table</summary>'
             '<table class="leaderboard"><thead><tr><th>Reliability</th><th>Feeds</th>'
-            f"</tr></thead><tbody>{band_rows}</tbody></table></section>"
+            f"</tr></thead><tbody>{band_rows}</tbody></table></details></section>"
         )
         reliable = nat.get("most_reliable", [])
         hist = histories or {}
@@ -6402,6 +6580,29 @@ def _render_rt_page(
     )
 
 
+_PROBLEM_CHART_LABELS = {
+    "scorecard_wheelchair_boarding_unknown": "Stops missing wheelchair boarding information",
+    "scorecard_wheelchair_accessible_unknown": (
+        "Trips missing wheelchair accessibility information"
+    ),
+    "unknown_column": "Non-standard columns",
+    "unknown_file": "Non-standard files",
+    "expired_calendar": "Expired service calendars",
+    "service_window_outside_feed_period": "Service dates outside the feed period",
+}
+
+
+def _problem_chart_label(problem: dict[str, Any]) -> str:
+    """Stable national label for a problem whose ``what`` may contain one
+    agency's instance counts. Known common findings get practitioner-facing
+    copy; other validator codes get a readable fallback rather than presenting
+    one feed's numbers as the name of a national metric."""
+    code = str(problem.get("code") or "problem")
+    if code in _PROBLEM_CHART_LABELS:
+        return _PROBLEM_CHART_LABELS[code]
+    return code.removeprefix("scorecard_").replace("_", " ").capitalize()
+
+
 def _render_problems_page(nat: dict[str, Any]) -> str:
     """The national "most common GTFS problems" knowledge base, for a practitioner
     or a journalist. Reads the prevalence rollup (``findings_national``) and lists
@@ -6415,6 +6616,7 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
         rows = ""
         for p in problems:
             code = esc(p["code"])
+            label = _problem_chart_label(p)
             guide = (
                 f' <a class="fix-guide" href="/fix/{code}/">Read the fix guide</a>'
                 if p["code"] in FIX_CODES_WITH_PAGES
@@ -6422,16 +6624,35 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             )
             rows += (
                 '<li class="event">'
-                f"<p><strong>{esc(p['what'])}</strong> "
+                f"<p><strong>{esc(label)}</strong> "
                 f'<span class="mgrade">({esc(p["prevalence_pct"])}% of feeds, '
                 f"{esc(p['severity'])})</span></p>"
+                f'<p class="problem-example"><strong>Typical finding:</strong> {esc(p["what"])}</p>'
                 f"<p>{esc(p['why'])}</p>"
                 f"<p><strong>Fix:</strong> {esc(p['fix'])}"
                 f"{(' Effort: ' + esc(p['effort']) + '.') if p.get('effort') else ''}"
                 f"{guide}</p>"
                 "</li>"
             )
-        body_problems = f'<ul class="events">{rows}</ul>'
+        chart_rows = [
+            (
+                _problem_chart_label(p),
+                float(p.get("prevalence_pct", 0)),
+                f"{p.get('agencies', 0)} feeds",
+            )
+            for p in problems[:6]
+        ]
+        prevalence_chart = _service_bar_chart(
+            chart_rows,
+            title="The six most widespread problems",
+            note="Share of all tracked feeds carrying each problem.",
+            css_class="problems-chart",
+        )
+        body_problems = (
+            f"{prevalence_chart}"
+            '<h3 class="section-sub">What each problem means and how to fix it</h3>'
+            f'<ul class="events">{rows}</ul>'
+        )
         lead = (
             f"Across {esc(total)} tracked feeds, these are the problems the most agencies "
             "share. Each one is common, which means each fix helps a lot of riders at once."
@@ -6454,9 +6675,9 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             queue_table = (
                 "<p>Next up for curation, ranked by how often riders' data actually "
                 "hits each problem:</p>"
-                '<table class="leaderboard"><thead><tr><th>Notice code</th>'
+                '<div class="table-wrap"><table class="leaderboard"><thead><tr><th>Notice code</th>'
                 "<th>Instances</th><th>Agencies</th></tr></thead>"
-                f"<tbody>{queue_rows}</tbody></table>"
+                f"<tbody>{queue_rows}</tbody></table></div>"
             )
         else:
             queue_table = "<p>Every problem code seen nationally has curated text.</p>"

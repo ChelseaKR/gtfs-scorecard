@@ -264,6 +264,9 @@ def test_changes_page_splits_improved_and_declined() -> None:
     assert "C &rarr; B" in html  # grade transition shown
     # Direction is conveyed in text, not color alone.
     assert "up 9" in html and "down 18" in html
+    assert 'class="movement-chart"' in html
+    assert "1</strong> improved" in html and "1</strong> slipped" in html
+    assert "significant movers, not every quiet feed" in html
 
 
 def test_changes_page_has_friendly_empty_states() -> None:
@@ -733,6 +736,10 @@ def test_peer_context_renders_national_and_size_peer_and_state() -> None:
     assert "Ahead of 53% of all tracked agencies" in html
     assert "68% of large agencies" in html
     assert "Operates in New Mexico." in html
+    assert 'class="percentile-strip"' in html
+    assert 'style="--position:53"' in html
+    assert 'style="--position:68"' in html
+    assert "All agencies" in html and "large peers" in html
 
 
 def test_peer_context_omits_size_part_when_tier_unknown() -> None:
@@ -742,6 +749,7 @@ def test_peer_context_omits_size_part_when_tier_unknown() -> None:
     assert "Ahead of 40% of all tracked agencies." in html
     assert "agencies and" not in html  # no size-peer clause
     assert "Operates in" not in html
+    assert html.count('class="percentile-row"') == 1
 
 
 def test_peer_context_empty_without_record_or_percentile() -> None:
@@ -2075,6 +2083,9 @@ def test_rt_page_most_reliable_rows_carry_mini_sparklines() -> None:
     assert "<th>Score trend</th>" in html
     assert 'aria-label="Score trend for Steady Transit: 2026-06-10 88.0; 2026-06-11 90.0"' in html
     assert "spark-mini" in html
+    assert 'class="service-chart reliability-chart"' in html
+    assert "1 of 1 feeds" in html
+    assert "Show the table" in html
     # Without histories the trend cell degrades to an em dash, never breaks.
     assert '<span class="spark-none">&mdash;</span>' in _render_rt_page(nat)
 
@@ -2269,6 +2280,12 @@ def test_retired_urls_render_redirects() -> None:
     assert 'rel="canonical"' in html
     # A no-JS, no-meta fallback link is always present.
     assert '<a href="/pulse/#changes">' in html
+    # If refreshes are disabled, the fallback is still a complete mobile and
+    # keyboard-readable page rather than an unstructured line of text.
+    assert '<meta name="viewport"' in html
+    assert '<a class="skip-link" href="#main">' in html
+    assert '<main id="main"' in html
+    assert html.count("<h1") == 1
 
 
 def test_adoption_page_absorbs_access_coverage() -> None:
@@ -2299,6 +2316,45 @@ def test_adoption_page_absorbs_access_coverage() -> None:
     # The no-shaming framings survive: optional features, publish-not-usability.
     assert "early, not failing" in html
     assert "physically usable" in html
+    # Ranked percentages use the shared semantic route-bar grammar; the exact
+    # table remains available as the detail layer.
+    assert 'class="service-chart adoption-chart"' in html
+    assert 'class="service-bars"' in html
+    assert "6 of 10 feeds" in html
+    assert "Show the table" in html
+    assert 'class="service-chart access-coverage-chart"' in html
+    assert "5 of 10 feeds" in html
+    assert html.index("Fare data (any model)") < html.index("Flexible (demand-responsive) service")
+
+
+def test_problem_page_visualizes_prevalence_without_hiding_fix_text() -> None:
+    from scorecard_pipeline.render_site import _render_problems_page
+
+    html = _render_problems_page(
+        {
+            "total_agencies": 10,
+            "problems": [
+                {
+                    "code": "expired_calendar",
+                    "what": "Some service calendars have expired.",
+                    "why": "Trips can disappear.",
+                    "fix": "Extend the calendar.",
+                    "severity": "WARNING",
+                    "prevalence_pct": 70.0,
+                    "agencies": 7,
+                    "instances": 14,
+                }
+            ],
+        }
+    )
+    assert 'class="service-chart problems-chart"' in html
+    assert 'style="--value:70"' in html
+    assert "70%" in html and "7 feeds" in html
+    assert "Expired service calendars" in html
+    assert "Typical finding:" in html
+    assert "Some service calendars have expired." in html
+    assert "Trips can disappear." in html
+    assert "Extend the calendar." in html
 
 
 def test_ridership_impact_line_states_coverage_and_never_ranks() -> None:
@@ -2632,6 +2688,9 @@ def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
     assert "Degraded run" not in html
     assert ">95<" in html  # scored count
     assert "No agencies were unreachable this run." in html
+    assert 'class="bucket-chart staleness-chart"' in html
+    assert "Snapshot age distribution" in html
+    assert "All 1 tracked agencies" in html
 
 
 def test_status_page_degraded_run_names_unreachable_agencies() -> None:

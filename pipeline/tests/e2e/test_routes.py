@@ -84,3 +84,47 @@ def test_hash_navigation_reroutes_without_reload(page: Page, app_url: str) -> No
         "How is the country's transit data doing?"
     )
     _assert_not_stuck_loading(page)
+
+
+def test_not_found_route_has_a_page_heading(page: Page, app_url: str) -> None:
+    page.goto(f"{app_url}#/agency/not-a-real-agency")
+    expect(page.locator("#main .error-box")).to_have_attribute("role", "alert")
+    expect(page.locator("#main h1.page-title")).to_have_text(
+        "No scorecard for “not-a-real-agency”."
+    )
+    _assert_not_stuck_loading(page)
+
+
+def test_compare_defaults_to_distinct_agencies_and_rejects_duplicates(
+    page: Page, app_url: str
+) -> None:
+    page.goto(f"{app_url}#/compare")
+    first = page.locator("#cmp-a")
+    second = page.locator("#cmp-b")
+    expect(first).to_be_visible()
+    a_id = first.input_value()
+    b_id = second.input_value()
+    assert a_id and b_id and a_id != b_id
+
+    second.select_option(a_id)
+    page.locator("#compare-pick button.compare-go").click()
+    status = page.locator("#compare-pick-status")
+    expect(status).to_be_visible()
+    expect(status).to_have_text("Pick two different agencies to compare.")
+    assert page.evaluate("() => document.activeElement.id") == "cmp-b"
+    assert page.evaluate("() => location.hash") == "#/compare"
+
+
+def test_empty_directory_state_recovers_to_search(page: Page, app_url: str) -> None:
+    page.goto(f"{app_url}#/")
+    search = page.locator("#agency-search")
+    search.fill("zzzz no matching agency")
+    expect(page.locator(".agency-count")).to_contain_text("0 of")
+    expect(page.locator(".agency-count")).to_contain_text("agencies")
+    expect(page.locator(".no-match")).to_be_visible()
+    expect(page.locator("#agency-list .agency-card")).to_have_count(0)
+
+    page.get_by_role("button", name="Clear filters").click()
+    expect(search).to_have_value("")
+    expect(page.locator(".results-hint")).to_be_visible()
+    assert page.evaluate("() => document.activeElement.id") == "agency-search"

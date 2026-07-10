@@ -1,71 +1,87 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 16,
-  "generated_at": "2026-07-02T03:39:07+00:00",
+  "generated_at": "2026-07-10T19:45:48+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "equal_shape_distance_same_coordinates": {
       "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 33.3
     },
     "fast_travel_between_consecutive_stops": {
       "agencies": 1,
+      "instances": 98,
       "prevalence_pct": 33.3
     },
     "missing_recommended_file": {
       "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 33.3
     },
     "mixed_case_recommended_field": {
       "agencies": 2,
+      "instances": 304,
       "prevalence_pct": 66.7
     },
     "same_name_and_description_for_route": {
       "agencies": 1,
+      "instances": 3,
       "prevalence_pct": 33.3
     },
     "scorecard_missing_feed_info_dates": {
       "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 33.3
     },
     "scorecard_no_fare_data": {
       "agencies": 2,
+      "instances": 2,
       "prevalence_pct": 66.7
     },
     "scorecard_no_feed_contact": {
       "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 33.3
     },
     "scorecard_rt_trip_coverage": {
       "agencies": 1,
+      "instances": 2,
       "prevalence_pct": 33.3
     },
     "scorecard_station_no_pathways": {
       "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 33.3
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 3,
+      "instances": 6087,
       "prevalence_pct": 100.0
     },
     "scorecard_wheelchair_boarding_unknown": {
       "agencies": 3,
+      "instances": 864,
       "prevalence_pct": 100.0
     },
     "service_window_outside_feed_period": {
       "agencies": 1,
+      "instances": 1,
       "prevalence_pct": 33.3
     },
     "stop_without_stop_time": {
       "agencies": 1,
+      "instances": 18,
       "prevalence_pct": 33.3
     },
     "unknown_column": {
       "agencies": 1,
+      "instances": 23,
       "prevalence_pct": 33.3
     },
     "unused_shape": {
       "agencies": 1,
+      "instances": 54,
       "prevalence_pct": 33.3
     }
   },

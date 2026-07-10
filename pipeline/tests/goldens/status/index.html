@@ -102,11 +102,13 @@
     <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
     (not just this run -- an agency scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
+    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked agencies, grouped by age of their current scorecard.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:50"><span class="bucket-value">1</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">2</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
+    <details class="viz-data"><summary>Show the table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Agency count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
       <tbody><tr><td>under 1 day</td><td>0</td></tr><tr><td>1-2 days</td><td>1</td></tr><tr><td>3-7 days</td><td>2</td></tr><tr><td>over 7 days</td><td>0</td></tr></tbody>
-    </table></div>
+    </table></div></details>
     </section>
 
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,

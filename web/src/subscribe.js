@@ -16,6 +16,10 @@ const DATA_BASES = [
 const form = /** @type {HTMLFormElement} */ (document.getElementById("subscribe-form"));
 const status = /** @type {HTMLElement} */ (document.getElementById("form-status"));
 const agencySelect = /** @type {HTMLSelectElement} */ (document.getElementById("agency"));
+const emailInput = /** @type {HTMLInputElement} */ (document.getElementById("email"));
+const kindInputs = /** @type {NodeListOf<HTMLInputElement>} */ (
+  form.querySelectorAll('input[name="kinds"]')
+);
 
 /** Fetch index.json from the first base that answers, to fill the agency list. */
 async function fetchIndex() {
@@ -44,15 +48,16 @@ async function populateAgencies() {
   }
 }
 
+/** @param {string} message @param {"ok"|"err"|"info"|""} kind */
 function setStatus(message, kind) {
   status.textContent = message;
-  status.className = `form-status ${kind || ""}`.trim();
+  status.className = `form-status ${kind ? `form-status-${kind}` : ""}`.trim();
 }
 
 if (!SUBSCRIBE_URL) {
   setStatus(
     "Alerts are not enabled on this deployment yet. Check back soon.",
-    "form-error"
+    "info"
   );
   if (form) form.querySelector("button")?.setAttribute("disabled", "true");
 } else {
@@ -63,8 +68,23 @@ if (!SUBSCRIBE_URL) {
     const email = String(data.get("email") || "").trim();
     const agency = String(data.get("agency") || "");
     const kinds = data.getAll("kinds").map(String);
-    if (!email) return setStatus("Enter your email.", "form-error");
-    if (!kinds.length) return setStatus("Choose at least one kind of alert.", "form-error");
+    emailInput.removeAttribute("aria-invalid");
+    for (const input of kindInputs) input.removeAttribute("aria-invalid");
+    if (!email || !emailInput.validity.valid) {
+      setStatus(
+        email ? "Enter a complete email address, like you@agency.gov." : "Enter your email.",
+        "err"
+      );
+      emailInput.setAttribute("aria-invalid", "true");
+      emailInput.focus();
+      return;
+    }
+    if (!kinds.length) {
+      setStatus("Choose at least one kind of alert.", "err");
+      for (const input of kindInputs) input.setAttribute("aria-invalid", "true");
+      kindInputs[0]?.focus();
+      return;
+    }
 
     const payload = agency ? { email, agencies: [agency], kinds } : { email, all: true, kinds };
     setStatus("Sending…", "");
@@ -79,16 +99,16 @@ if (!SUBSCRIBE_URL) {
       if (res.ok) {
         setStatus(
           body.message || "Check your email to confirm your subscription.",
-          "form-ok"
+          "ok"
         );
         form.reset();
       } else if (res.status === 429) {
-        setStatus(body.error || "Too many requests. Try again later.", "form-error");
+        setStatus(body.error || "Too many requests. Try again later.", "err");
       } else {
-        setStatus(body.error || "Something went wrong. Please try again.", "form-error");
+        setStatus(body.error || "Something went wrong. Please try again.", "err");
       }
     } catch {
-      setStatus("Could not reach the server. Please try again.", "form-error");
+      setStatus("Could not reach the server. Please try again.", "err");
     } finally {
       form.querySelector("button")?.removeAttribute("disabled");
     }
