@@ -11,30 +11,36 @@
 [![GTFS Scorecard: a plain-language quality grade for a transit agency's feed](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
 
 A data quality scorecard for small transit agencies. It fetches an agency's
-**GTFS Schedule and GTFS-Realtime** feeds, runs the canonical MobilityData
+**GTFS Schedule** feed and, when one is published and configured, its
+**GTFS-Realtime** feeds; runs the canonical MobilityData
 validator, and turns the results into a letter grade with a short list of
-concrete fixes, including NTD certification readiness, written for the transit
+concrete fixes, including NTD GTFS readiness, written for the transit
 manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the scorecard now tracks ~1,490 agencies across
-the United States and Canada (~1,450 with published scorecard pages), all
-refreshed daily.
+District). Beyond the pilots, the registry now contains ~1,490 feed records
+across the United States and Canada (~1,450 with published scorecard pages),
+refreshed daily. A feed record is not always a distinct transit agency: regional
+feeds, modal variants, and retired aliases are counted separately while the
+identity registry is reconciled.
 
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — refreshed daily by
 a scheduled pipeline run.
 
-**Status:** Beta. All four rubric categories score for ~1,450 agencies across
-the US and Canada; any agency can be added via `agencies.yaml`.
+**Status:** Beta. The three schedule categories score for every published
+scorecard. Realtime quality is scored only when a usable realtime feed is
+configured and measured; otherwise it is shown neutrally as not yet measured.
+Any agency can be added via `agencies.yaml`.
 
 ## What an agency gets
 
-- An overall grade and four category scores: correctness, freshness, rider
-  experience completeness, and realtime quality.
+- An overall grade from the categories that can be measured: correctness,
+  freshness, rider experience completeness, and, when available, realtime
+  quality.
 - "Top 3 things to fix", in plain language with effort hints. Findings are
   framed as fixes, never as failures.
-- An NTD certification-readiness read (published, valid, current) and a flag
+- An NTD GTFS-readiness read (published, valid, current) and a flag
   for whether the feed's `agency_id` matches the agency's NTD ID.
 - Trend history, one JSON artifact per agency per day.
 - An embeddable grade badge (`<agency>/badge.svg`) the agency can put on its

@@ -50,7 +50,7 @@ class Agency:
     # ISO 3166-1 alpha-2 country code, defaulting to US so every existing entry
     # is unchanged. A non-US agency (e.g. "CA") is scored on the same GTFS-quality
     # rubric but skips the US-only surfaces: the FTA National Transit Database
-    # certification-readiness and NTD-id-alignment views, which have no meaning
+    # GTFS-readiness and NTD-id-alignment views, which have no meaning
     # outside the US. See ADR 0026 (internationalization).
     country: str = "US"
     # US state (or territory) the agency operates in, for the directory's
