@@ -403,7 +403,7 @@
         "met": false
       },
       {
-        "detail": "Service data covers the next 26838 days.",
+        "detail": "Service data covers the next 26837 days.",
         "key": "current",
         "met": true
       },
@@ -419,7 +419,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "019dc771436772a2615397a68c5b9e7d881064f8bc9beb0a2038743cdac389cd",
+    "sha256": "dd89bcfd1228d2726f7785b647ca0ea7ab1a2d76c539a36272c2402fe3d2388f",
     "size_bytes": 371063,
     "static_url": "https://vmgoapp.com/gtfs"
   },
@@ -429,7 +429,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -80.42503,
@@ -461,7 +461,7 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data covers the next 26838 days.",
+        "detail": "Service data covers the next 26837 days.",
         "key": "current",
         "status": "ready"
       }
@@ -501,11 +501,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 815,
     "findings": [

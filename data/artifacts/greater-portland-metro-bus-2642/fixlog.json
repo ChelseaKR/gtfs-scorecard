@@ -59,6 +59,12 @@
       "code": "unused_shape",
       "last_seen": "2026-07-06",
       "what": "The feed contains route shapes no trip uses."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_rt_vehicles_off_route",
+      "last_seen": "2026-07-09",
+      "what": "2 of 2 sampled vehicle positions were far from their assigned route (worst: 1951 m)."
     }
   ]
 }

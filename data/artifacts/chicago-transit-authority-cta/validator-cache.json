@@ -6,8 +6,8 @@
         "sample_notices": [
           {
             "actualDistanceBetweenShapePoints": 14.054032464604024,
-            "csvRowNumber": 999917,
-            "prevCsvRowNumber": 999916,
+            "csvRowNumber": 299132,
+            "prevCsvRowNumber": 299131,
             "prevShapeDistTraveled": 12795.0,
             "prevShapePtSequence": 234,
             "shapeDistTraveled": 12795.0,
@@ -16,8 +16,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 7.1519375508971645,
-            "csvRowNumber": 999918,
-            "prevCsvRowNumber": 999917,
+            "csvRowNumber": 299133,
+            "prevCsvRowNumber": 299132,
             "prevShapeDistTraveled": 12795.0,
             "prevShapePtSequence": 235,
             "shapeDistTraveled": 12795.0,
@@ -26,8 +26,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 18.237164764928337,
-            "csvRowNumber": 999934,
-            "prevCsvRowNumber": 999933,
+            "csvRowNumber": 299149,
+            "prevCsvRowNumber": 299148,
             "prevShapeDistTraveled": 13492.0,
             "prevShapePtSequence": 251,
             "shapeDistTraveled": 13492.0,
@@ -36,8 +36,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 1.6862962294851622,
-            "csvRowNumber": 999935,
-            "prevCsvRowNumber": 999934,
+            "csvRowNumber": 299150,
+            "prevCsvRowNumber": 299149,
             "prevShapeDistTraveled": 13492.0,
             "prevShapePtSequence": 252,
             "shapeDistTraveled": 13492.0,
@@ -46,8 +46,8 @@
           },
           {
             "actualDistanceBetweenShapePoints": 8.353680039869229,
-            "csvRowNumber": 1187548,
-            "prevCsvRowNumber": 1187547,
+            "csvRowNumber": 486763,
+            "prevCsvRowNumber": 486762,
             "prevShapeDistTraveled": 1042.0,
             "prevShapePtSequence": 48,
             "shapeDistTraveled": 1042.0,
@@ -56,15 +56,15 @@
           }
         ],
         "severity": "ERROR",
-        "total": 102962
+        "total": 96894
       },
       {
         "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
         "sample_notices": [
           {
             "actualDistanceBetweenShapePoints": 0.8279411898706146,
-            "csvRowNumber": 1187635,
-            "prevCsvRowNumber": 1187634,
+            "csvRowNumber": 486850,
+            "prevCsvRowNumber": 486849,
             "prevShapeDistTraveled": 4148.0,
             "prevShapePtSequence": 135,
             "shapeDistTraveled": 4148.0,
@@ -72,55 +72,64 @@
             "shapePtSequence": 136
           },
           {
+            "actualDistanceBetweenShapePoints": 0.7305472008133636,
+            "csvRowNumber": 910053,
+            "prevCsvRowNumber": 910052,
+            "prevShapeDistTraveled": 38815.0,
+            "prevShapePtSequence": 994,
+            "shapeDistTraveled": 38815.0,
+            "shapeId": "68006402",
+            "shapePtSequence": 995
+          },
+          {
+            "actualDistanceBetweenShapePoints": 0.6089348383254968,
+            "csvRowNumber": 910064,
+            "prevCsvRowNumber": 910063,
+            "prevShapeDistTraveled": 39293.0,
+            "prevShapePtSequence": 1005,
+            "shapeDistTraveled": 39293.0,
+            "shapeId": "68006402",
+            "shapePtSequence": 1006
+          },
+          {
+            "actualDistanceBetweenShapePoints": 0.44478040505395056,
+            "csvRowNumber": 1105737,
+            "prevCsvRowNumber": 1105736,
+            "prevShapeDistTraveled": 5213.0,
+            "prevShapePtSequence": 132,
+            "shapeDistTraveled": 5213.0,
+            "shapeId": "68010902",
+            "shapePtSequence": 133
+          },
+          {
             "actualDistanceBetweenShapePoints": 0.8263655732692953,
-            "csvRowNumber": 990904,
-            "prevCsvRowNumber": 990903,
+            "csvRowNumber": 290119,
+            "prevCsvRowNumber": 290118,
             "prevShapeDistTraveled": 56884.0,
             "prevShapePtSequence": 1618,
             "shapeDistTraveled": 56884.0,
             "shapeId": "67906414",
             "shapePtSequence": 1619
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.8279401534807164,
-            "csvRowNumber": 1187025,
-            "prevCsvRowNumber": 1187024,
-            "prevShapeDistTraveled": 9189.0,
-            "prevShapePtSequence": 233,
-            "shapeDistTraveled": 9189.0,
-            "shapeId": "67910911",
-            "shapePtSequence": 234
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.33402218232484016,
-            "csvRowNumber": 1189402,
-            "prevCsvRowNumber": 1189401,
-            "prevShapeDistTraveled": 8354.0,
-            "prevShapePtSequence": 246,
-            "shapeDistTraveled": 8354.0,
-            "shapeId": "67910916",
-            "shapePtSequence": 247
-          },
-          {
-            "actualDistanceBetweenShapePoints": 0.8275937793495223,
-            "csvRowNumber": 811323,
-            "prevCsvRowNumber": 811322,
-            "prevShapeDistTraveled": 9964.0,
-            "prevShapePtSequence": 243,
-            "shapeDistTraveled": 9964.0,
-            "shapeId": "67902291",
-            "shapePtSequence": 244
           }
         ],
         "severity": "WARNING",
-        "total": 1114
+        "total": 1033
       },
       {
         "code": "equal_shape_distance_same_coordinates",
         "sample_notices": [
           {
-            "csvRowNumber": 989287,
-            "prevCsvRowNumber": 989286,
+            "csvRowNumber": 909060,
+            "prevCsvRowNumber": 909059,
+            "prevShapeDistTraveled": 0.0,
+            "prevShapePtSequence": 1,
+            "shapeDistTraveled": 0.0,
+            "shapeId": "68006402",
+            "shapePtSequence": 2
+          },
+          {
+            "csvRowNumber": 288502,
+            "prevCsvRowNumber": 288501,
             "prevShapeDistTraveled": 0.0,
             "prevShapePtSequence": 1,
             "shapeDistTraveled": 0.0,
@@ -128,71 +137,35 @@
             "shapePtSequence": 2
           },
           {
-            "csvRowNumber": 1189157,
-            "prevCsvRowNumber": 1189156,
+            "csvRowNumber": 910086,
+            "prevCsvRowNumber": 910085,
             "prevShapeDistTraveled": 0.0,
             "prevShapePtSequence": 1,
             "shapeDistTraveled": 0.0,
-            "shapeId": "67910916",
+            "shapeId": "68006403",
             "shapePtSequence": 2
           },
           {
-            "csvRowNumber": 811081,
-            "prevCsvRowNumber": 811080,
+            "csvRowNumber": 908036,
+            "prevCsvRowNumber": 908035,
             "prevShapeDistTraveled": 0.0,
             "prevShapePtSequence": 1,
             "shapeDistTraveled": 0.0,
-            "shapeId": "67902291",
+            "shapeId": "68006400",
             "shapePtSequence": 2
           },
           {
-            "csvRowNumber": 812105,
-            "prevCsvRowNumber": 812104,
+            "csvRowNumber": 1104383,
+            "prevCsvRowNumber": 1104382,
             "prevShapeDistTraveled": 0.0,
             "prevShapePtSequence": 1,
             "shapeDistTraveled": 0.0,
-            "shapeId": "67902292",
-            "shapePtSequence": 2
-          },
-          {
-            "csvRowNumber": 1190606,
-            "prevCsvRowNumber": 1190605,
-            "prevShapeDistTraveled": 0.0,
-            "prevShapePtSequence": 1,
-            "shapeDistTraveled": 0.0,
-            "shapeId": "67910919",
+            "shapeId": "68010901",
             "shapePtSequence": 2
           }
         ],
         "severity": "WARNING",
-        "total": 406
-      },
-      {
-        "code": "expired_calendar",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "serviceId": "67801"
-          },
-          {
-            "csvRowNumber": 3,
-            "serviceId": "67802"
-          },
-          {
-            "csvRowNumber": 4,
-            "serviceId": "67803"
-          },
-          {
-            "csvRowNumber": 5,
-            "serviceId": "67804"
-          },
-          {
-            "csvRowNumber": 6,
-            "serviceId": "67805"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 42
+        "total": 348
       },
       {
         "code": "mixed_case_recommended_field",
@@ -243,22 +216,9 @@
             "shapeId": "67901971",
             "stopId": "18739",
             "stopName": "Milwaukee & Armitage",
-            "stopTimeCsvRowNumber": 132277,
-            "tripCsvRowNumber": 45676,
+            "stopTimeCsvRowNumber": 130557,
+            "tripCsvRowNumber": 45390,
             "tripId": "6790000022020"
-          },
-          {
-            "geoDistanceToShape": 141.49714585470673,
-            "match": [
-              41.917164,
-              -87.68808200000001
-            ],
-            "shapeId": "67806485",
-            "stopId": "18739",
-            "stopName": "Milwaukee & Armitage",
-            "stopTimeCsvRowNumber": 1735814,
-            "tripCsvRowNumber": 45446,
-            "tripId": "6780012541020"
           },
           {
             "geoDistanceToShape": 140.45889923855248,
@@ -269,8 +229,8 @@
             "shapeId": "67908113",
             "stopId": "18839",
             "stopName": "Central Street & Green Bay Rd",
-            "stopTimeCsvRowNumber": 3953873,
-            "tripCsvRowNumber": 19493,
+            "stopTimeCsvRowNumber": 3980227,
+            "tripCsvRowNumber": 19539,
             "tripId": "6790032584020"
           },
           {
@@ -282,8 +242,8 @@
             "shapeId": "67908114",
             "stopId": "18839",
             "stopName": "Central Street & Green Bay Rd",
-            "stopTimeCsvRowNumber": 242116,
-            "tripCsvRowNumber": 19490,
+            "stopTimeCsvRowNumber": 244620,
+            "tripCsvRowNumber": 19536,
             "tripId": "6790000746020"
           },
           {
@@ -295,13 +255,53 @@
             "shapeId": "67908117",
             "stopId": "18839",
             "stopName": "Central Street & Green Bay Rd",
-            "stopTimeCsvRowNumber": 4253063,
-            "tripCsvRowNumber": 19494,
+            "stopTimeCsvRowNumber": 4265424,
+            "tripCsvRowNumber": 19540,
             "tripId": "6790035213020"
+          },
+          {
+            "geoDistanceToShape": 140.45889923855248,
+            "match": [
+              42.06442,
+              -87.701408
+            ],
+            "shapeId": "67908116",
+            "stopId": "18839",
+            "stopName": "Central Street & Green Bay Rd",
+            "stopTimeCsvRowNumber": 1461469,
+            "tripCsvRowNumber": 19537,
+            "tripId": "6790010403020"
           }
         ],
         "severity": "WARNING",
-        "total": 24
+        "total": 11
+      },
+      {
+        "code": "expired_calendar",
+        "sample_notices": [
+          {
+            "csvRowNumber": 3,
+            "serviceId": "67902"
+          },
+          {
+            "csvRowNumber": 17,
+            "serviceId": "67916"
+          },
+          {
+            "csvRowNumber": 18,
+            "serviceId": "67917"
+          },
+          {
+            "csvRowNumber": 21,
+            "serviceId": "67920"
+          },
+          {
+            "csvRowNumber": 22,
+            "serviceId": "67921"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 10
       },
       {
         "code": "stop_too_far_from_shape",
@@ -315,8 +315,8 @@
             "shapeId": "67918413",
             "stopId": "15999",
             "stopName": "State & 95th Street",
-            "stopTimeCsvRowNumber": 516932,
-            "tripCsvRowNumber": 24431,
+            "stopTimeCsvRowNumber": 513396,
+            "tripCsvRowNumber": 23913,
             "tripId": "6790002896020"
           },
           {
@@ -328,8 +328,8 @@
             "shapeId": "67918415",
             "stopId": "15999",
             "stopName": "State & 95th Street",
-            "stopTimeCsvRowNumber": 127338,
-            "tripCsvRowNumber": 24422,
+            "stopTimeCsvRowNumber": 135067,
+            "tripCsvRowNumber": 23904,
             "tripId": "6790000012020"
           },
           {
@@ -338,12 +338,12 @@
               41.720317,
               -87.62363
             ],
-            "shapeId": "67819374",
+            "shapeId": "68018413",
             "stopId": "15999",
             "stopName": "State & 95th Street",
-            "stopTimeCsvRowNumber": 319089,
-            "tripCsvRowNumber": 93474,
-            "tripId": "6780001497020"
+            "stopTimeCsvRowNumber": 513395,
+            "tripCsvRowNumber": 24491,
+            "tripId": "6800002896020"
           },
           {
             "geoDistanceToShape": 124.69259894753921,
@@ -351,12 +351,12 @@
               41.720317,
               -87.62363
             ],
-            "shapeId": "67818412",
+            "shapeId": "68018415",
             "stopId": "15999",
             "stopName": "State & 95th Street",
-            "stopTimeCsvRowNumber": 4456648,
-            "tripCsvRowNumber": 23923,
-            "tripId": "6780035678020"
+            "stopTimeCsvRowNumber": 135068,
+            "tripCsvRowNumber": 24482,
+            "tripId": "6800000012020"
           },
           {
             "geoDistanceToShape": 124.69259894753921,
@@ -364,34 +364,34 @@
               41.720317,
               -87.62363
             ],
-            "shapeId": "67818415",
+            "shapeId": "68019374",
             "stopId": "15999",
             "stopName": "State & 95th Street",
-            "stopTimeCsvRowNumber": 175676,
-            "tripCsvRowNumber": 23831,
-            "tripId": "6780000255020"
+            "stopTimeCsvRowNumber": 234353,
+            "tripCsvRowNumber": 93790,
+            "tripId": "6800000786020"
           }
         ],
         "severity": "WARNING",
-        "total": 9
+        "total": 6
       },
       {
         "code": "leading_or_trailing_whitespaces",
         "sample_notices": [
           {
-            "csvRowNumber": 909,
+            "csvRowNumber": 905,
             "fieldName": "stop_name",
             "fieldValue": "State & Harrison/Ida B Wells Drive ",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 10111,
+            "csvRowNumber": 10063,
             "fieldName": "stop_name",
             "fieldValue": "Ellis & Midway Plaisance ",
             "filename": "stops.txt"
           },
           {
-            "csvRowNumber": 10226,
+            "csvRowNumber": 10178,
             "fieldName": "stop_name",
             "fieldValue": "915 E. 60th Street ",
             "filename": "stops.txt"
@@ -414,33 +414,33 @@
         "code": "unsorted_stop_times",
         "sample_notices": [
           {
-            "endCsvRowNumber": 800780,
-            "startCsvRowNumber": 800247,
+            "endCsvRowNumber": 819604,
+            "startCsvRowNumber": 819083,
             "tripId": "6790005289020"
           },
           {
-            "endCsvRowNumber": 2490293,
-            "startCsvRowNumber": 2489231,
-            "tripId": "6780019138020"
+            "endCsvRowNumber": 243583,
+            "startCsvRowNumber": 243015,
+            "tripId": "6800000744010"
           },
           {
-            "endCsvRowNumber": 2858109,
-            "startCsvRowNumber": 2855950,
+            "endCsvRowNumber": 2876276,
+            "startCsvRowNumber": 2864007,
             "tripId": "6790022624020"
           },
           {
-            "endCsvRowNumber": 3906872,
-            "startCsvRowNumber": 3904726,
-            "tripId": "6790030691070"
+            "endCsvRowNumber": 3820050,
+            "startCsvRowNumber": 3819997,
+            "tripId": "6800031006020"
           },
           {
-            "endCsvRowNumber": 2454872,
-            "startCsvRowNumber": 2452777,
-            "tripId": "6790018128020"
+            "endCsvRowNumber": 3891085,
+            "startCsvRowNumber": 3880980,
+            "tripId": "6790030691070"
           }
         ],
         "severity": "INFO",
-        "total": 57117
+        "total": 90440
       },
       {
         "code": "unknown_column",
@@ -472,6 +472,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "3253ed0b0e19ced092c97d800acb07a7ae9df2bcfb593039e170c684639773d5",
+  "sha256": "cf14e64fa93bb3f5bed661c70d5834beb0be98a677f0b3e3487343bf42a76aa0",
   "validator_version": "8.0.1"
 }

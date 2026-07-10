@@ -117,11 +117,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 12,
+        "distinct_codes": 11,
         "instances_by_severity": {
           "ERROR": 21,
           "INFO": 11,
-          "WARNING": 57
+          "WARNING": 56
         },
         "validator_version": "8.0.1"
       },
@@ -204,17 +204,6 @@
           "why": "See the linked rule for what this affects."
         },
         {
-          "code": "feed_expiration_date30_days",
-          "count": 1,
-          "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 30 days.",
-          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
-        },
-        {
           "code": "stop_too_far_from_shape",
           "count": 1,
           "effort": "A few minutes per flagged stop.",
@@ -260,50 +249,37 @@
         }
       ],
       "name": "correctness",
-      "score": 24.8,
+      "score": 28.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 12 kinds of issue across 89 instances (21 error, 57 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 88 instances (21 error, 56 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 29,
-        "feed_end_date": "2026-08-08",
-        "feed_start_date": "2026-07-08",
+        "days_until_expiry": 30,
+        "feed_end_date": "2026-08-09",
+        "feed_start_date": "2026-07-09",
         "feed_version": "20250228",
         "has_feed_info": true,
         "last_service_date": "2027-12-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 51.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 29 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 48.3,
+      "score": 50.0,
       "status": "measured",
-      "summary": "Service data runs out in 29 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 30 days.",
       "weight": 0.2
     },
     "realtime": {
       "details": {
-        "coverage_pct": 0.0,
-        "covered_trips": 0,
+        "coverage_pct": null,
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 1,
-        "worst_lag_seconds": 2
+        "scheduled_trips_in_window": 0,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -316,23 +292,12 @@
           "severity": "ERROR",
           "what": "The service alerts realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
-        },
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 1,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 35.0,
-          "severity": "WARNING",
-          "what": "1 of 1 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 49.0,
+      "score": 83.3,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions.",
+      "summary": "Sampled 6 times outside service hours: 2 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -358,7 +323,7 @@
         "met": false
       },
       {
-        "detail": "Service data runs out in 29 days; renew to qualify.",
+        "detail": "Service data runs out in 30 days; renew to qualify.",
         "key": "current",
         "met": false
       },
@@ -369,12 +334,12 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. Service data runs out in 29 days; renew to qualify. States wheelchair access on 0% of stops and 87% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 87% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "73b9e20abf24ee03f526f99f79dd0a229d4550939d7ca7beef3cf9d9768126d7",
+    "sha256": "e08070b85f2fb0a314050ccc2cdef01e0cf3d393899914b7bb450fe6d82dc6c0",
     "size_bytes": 381364,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -416,19 +381,19 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data runs out in 29 days; renew before you certify.",
+        "detail": "Service data runs out in 30 days; renew before you certify.",
         "key": "current",
         "status": "at_risk"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. 3 validator errors to resolve. Service data runs out in 29 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. 3 validator errors to resolve. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 42.6,
-    "margin_to_next_band": 17.4,
-    "score": 42.6
+    "margin_to_lower_band": 51.2,
+    "margin_to_next_band": 8.8,
+    "score": 51.2
   },
   "recommendations": [
     {
@@ -683,25 +648,13 @@
   "snapshot_date": "2026-07-10",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 51.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 29 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
-    {
       "code": "stop_time_with_arrival_before_previous_departure_time",
       "count": 18,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 18.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "ERROR",
       "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
@@ -713,9 +666,21 @@
       "fix": "Review the rule documentation for 'start_and_end_range_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 12.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "ERROR",
       "what": "Start and end range out of order (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "block_trips_with_overlapping_stop_times",
+      "count": 1,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'block_trips_with_overlapping_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "Block trips with overlapping stop times (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
     }
   ],

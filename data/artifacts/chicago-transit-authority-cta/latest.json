@@ -26,8 +26,8 @@
         "accessibility": {
           "measures": "presence_not_usability",
           "score": 100.0,
-          "stops_marked_accessible_pct": 99.0,
-          "stops_marked_not_accessible_pct": 1.0,
+          "stops_marked_accessible_pct": 98.9,
+          "stops_marked_not_accessible_pct": 1.1,
           "stops_stated_pct": 100.0,
           "trips_stated_pct": 100.0
         },
@@ -70,12 +70,12 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 11177,
-        "trips": 94420,
+        "stops": 11125,
+        "trips": 94667,
         "wheelchair_accessible_pct": 100.0,
         "wheelchair_boarding_pct": 100.0,
-        "wheelchair_marked_accessible_pct": 99.0,
-        "wheelchair_marked_not_accessible_pct": 1.0
+        "wheelchair_marked_accessible_pct": 98.9,
+        "wheelchair_marked_not_accessible_pct": 1.1
       },
       "findings": [
         {
@@ -91,13 +91,13 @@
         },
         {
           "code": "scorecard_missing_headsigns",
-          "count": 94420,
+          "count": 94667,
           "effort": "Usually a bulk edit in your scheduling software.",
           "fix": "Populate trip_headsign to match what the bus displays.",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "94420 of 94420 trips have no headsign.",
+          "what": "94667 of 94667 trips have no headsign.",
           "why": "Riders at the stop can't tell which direction a bus is going."
         },
         {
@@ -133,16 +133,16 @@
       "details": {
         "distinct_codes": 12,
         "instances_by_severity": {
-          "ERROR": 102962,
-          "INFO": 57120,
-          "WARNING": 1635
+          "ERROR": 96894,
+          "INFO": 90443,
+          "WARNING": 1448
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "equal_shape_distance_diff_coordinates",
-          "count": 102962,
+          "count": 96894,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -153,7 +153,7 @@
         },
         {
           "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
-          "count": 1114,
+          "count": 1033,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -164,7 +164,7 @@
         },
         {
           "code": "equal_shape_distance_same_coordinates",
-          "count": 406,
+          "count": 348,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -172,17 +172,6 @@
           "severity": "WARNING",
           "what": "Equal shape distance same coordinates (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "expired_calendar",
-          "count": 42,
-          "effort": "One setting in most export tools.",
-          "fix": "Remove past service periods the next time you export the feed.",
-          "owner": "Likely your export tool",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "Some service calendars in the feed have already ended.",
-          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
         },
         {
           "code": "mixed_case_recommended_field",
@@ -197,7 +186,7 @@
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 24,
+          "count": 11,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -207,8 +196,19 @@
           "why": "See the linked rule for what this affects."
         },
         {
+          "code": "expired_calendar",
+          "count": 10,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
           "code": "stop_too_far_from_shape",
-          "count": 9,
+          "count": 6,
           "effort": "A few minutes per flagged stop.",
           "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
           "owner": "Likely your export tool",
@@ -241,7 +241,7 @@
         },
         {
           "code": "unsorted_stop_times",
-          "count": 57117,
+          "count": 90440,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -276,32 +276,21 @@
       "name": "correctness",
       "score": 26.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 12 kinds of issue across 161717 instances (102962 error, 1635 warning, 57120 informational).",
+      "summary": "The MobilityData validator flagged 12 kinds of issue across 188785 instances (96894 error, 1448 warning, 90443 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 21,
+        "days_until_expiry": 82,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-07-31",
+        "last_service_date": "2026-09-30",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 59.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 21 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        },
         {
           "code": "scorecard_missing_feed_info_dates",
           "count": 1,
@@ -315,9 +304,9 @@
         }
       ],
       "name": "freshness",
-      "score": 20.0,
+      "score": 85.0,
       "status": "measured",
-      "summary": "Service data runs out in 21 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 82 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -348,9 +337,9 @@
         "met": false
       },
       {
-        "detail": "Service data runs out in 22 days; renew to qualify.",
+        "detail": "Service data covers the next 82 days.",
         "key": "current",
-        "met": false
+        "met": true
       },
       {
         "detail": "States wheelchair access on 100% of stops and 100% of trips.",
@@ -359,13 +348,13 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data runs out in 22 days; renew to qualify."
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "3253ed0b0e19ced092c97d800acb07a7ae9df2bcfb593039e170c684639773d5",
-    "size_bytes": 98307739,
+    "sha256": "cf14e64fa93bb3f5bed661c70d5834beb0be98a677f0b3e3487343bf42a76aa0",
+    "size_bytes": 67896351,
     "static_url": "http://www.transitchicago.com/downloads/sch_data/google_transit.zip"
   },
   "fetch": {
@@ -374,7 +363,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -87.90422,
@@ -383,8 +372,8 @@
       42.07315
     ],
     "lat": 41.86918,
-    "lon": -87.68005,
-    "stop_count": 11177
+    "lon": -87.67999,
+    "stop_count": 11125
   },
   "ntd_id_alignment": {
     "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
@@ -406,19 +395,19 @@
         "status": "at_risk"
       },
       {
-        "detail": "Service data runs out in 22 days; renew before you certify.",
+        "detail": "Service data covers the next 82 days.",
         "key": "current",
-        "status": "at_risk"
+        "status": "ready"
       }
     ],
     "status": "at_risk",
-    "summary": "This feed is close to NTD-ready. 1 validator error to resolve. Service data runs out in 22 days; renew before you certify."
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 35.9,
-    "margin_to_next_band": 24.1,
-    "score": 35.9
+    "margin_to_lower_band": 52.2,
+    "margin_to_next_band": 7.8,
+    "score": 52.2
   },
   "recommendations": [
     {
@@ -436,13 +425,13 @@
     {
       "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
-      "count": 10291,
+      "count": 10243,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "10291 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Jackson & Austin Terminal\", \"Jackson & Lotus\", \"Jackson & Lockwood\", and more).",
+      "what": "10243 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Jackson & Austin Terminal\", \"Jackson & Lotus\", \"Jackson & Lockwood\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
@@ -458,17 +447,12 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
-    "boardable_stops": 11020,
+    "boardable_stops": 10968,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 94420
+    "trips_total": 94667
   },
   "route_map": {
     "drawn_route_count": 133,
@@ -1940,54 +1924,54 @@
         "type_label": "Subway / metro"
       }
     ],
-    "stop_count": 11177,
+    "stop_count": 11125,
     "stop_points_capped": true
   },
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 94420 trips have a shape in shapes.txt.",
+    "detail": "All 94667 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 94420,
-    "trips_with_shape": 94420
+    "total_trips": 94667,
+    "trips_with_shape": 94667
   },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 59.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 21 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
-    {
       "code": "equal_shape_distance_diff_coordinates",
-      "count": 102962,
+      "count": 96894,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",
       "points": 24.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "ERROR",
       "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
       "why": "See the linked rule for what this affects."
     },
     {
       "code": "scorecard_missing_headsigns",
-      "count": 94420,
+      "count": 94667,
       "effort": "Usually a bulk edit in your scheduling software.",
       "fix": "Populate trip_headsign to match what the bus displays.",
       "owner": "Likely your export tool",
       "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "94667 of 94667 trips have no headsign.",
+      "why": "Riders at the stop can't tell which direction a bus is going."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "94420 of 94420 trips have no headsign.",
-      "why": "Riders at the stop can't tell which direction a bus is going."
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

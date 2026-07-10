@@ -227,15 +227,13 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 1,
-        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 0
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -261,7 +259,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 174 days.",
+        "detail": "Service data covers the next 173 days.",
         "key": "current",
         "met": true
       },
@@ -277,7 +275,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "48097caf790e19f9965359a8417e1474fdeb49fad5cbdabd91dd4d6e2f46e427",
+    "sha256": "e859baf2d986333b1ab8b1d1dffd1b8844ef7d5fc3ae34b179cc39942f2ed1ac",
     "size_bytes": 268717,
     "static_url": "http://mountainline.syncromatics.com/gtfs"
   },
@@ -287,7 +285,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -111.69121,
@@ -319,7 +317,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 174 days.",
+        "detail": "Service data covers the next 173 days.",
         "key": "current",
         "status": "ready"
       }
@@ -359,11 +357,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 176,
     "findings": [],

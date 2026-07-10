@@ -237,27 +237,16 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 29,
+        "days_until_expiry": 30,
         "feed_end_date": null,
         "feed_start_date": null,
         "feed_version": null,
         "has_feed_info": false,
-        "last_service_date": "2026-08-08",
+        "last_service_date": "2026-08-09",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
       "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 51.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 29 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        },
         {
           "code": "scorecard_missing_feed_info_dates",
           "count": 1,
@@ -271,9 +260,9 @@
         }
       ],
       "name": "freshness",
-      "score": 33.3,
+      "score": 35.0,
       "status": "measured",
-      "summary": "Service data runs out in 29 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 30 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -283,9 +272,9 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 2,
-        "vehicles_on_route_pct": 0.0,
-        "worst_lag_seconds": 0
+        "vehicles_checked": 1,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
@@ -298,23 +287,12 @@
           "severity": "ERROR",
           "what": "The trip updates realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
-        },
-        {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 2,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
-          "owner": "",
-          "points": 15.0,
-          "severity": "WARNING",
-          "what": "2 of 2 sampled vehicle positions were far from their assigned route (worst: 1951 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         }
       ],
       "name": "realtime",
-      "score": 64.1,
+      "score": 87.2,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 2 of 3 feeds healthy; 0.0% of vehicles on their route.",
+      "summary": "Sampled 9 times outside service hours: 2 of 3 feeds healthy; 100.0% of vehicles on their route.",
       "weight": 0.2
     }
   },
@@ -356,8 +334,8 @@
   "feed": {
     "license_note": "License: https://www.gpmetro.org/about-us/projects-initiatives/developers/",
     "reachable": true,
-    "sha256": "c238b77c65d8750a505d574df1184442ebb668645b2657000017c4bda6265c92",
-    "size_bytes": 1147289,
+    "sha256": "796d9d053b4b8ac94a43bdfc7643affd385f8115fd836208c7a6d8553c54086e",
+    "size_bytes": 1147290,
     "static_url": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip"
   },
   "fetch": {
@@ -366,7 +344,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -70.44817,
@@ -408,9 +386,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 51.1,
-    "margin_to_next_band": 8.9,
-    "score": 51.1
+    "margin_to_lower_band": 56.0,
+    "margin_to_next_band": 4.0,
+    "score": 56.0
   },
   "recommendations": [
     {
@@ -450,11 +428,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 657,
     "findings": [
@@ -649,25 +622,13 @@
   "snapshot_date": "2026-07-10",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 51.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 29 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
-    {
       "code": "scorecard_rt_trip_updates_unreachable",
       "count": 1,
       "effort": "Usually a vendor support ticket.",
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
       "owner": "",
       "points": 8.3,
-      "rank": 2,
+      "rank": 1,
       "severity": "ERROR",
       "what": "The trip updates realtime feed failed during sampling.",
       "why": "When this feed is down, riders see scheduled times presented as if they were live."
@@ -679,10 +640,22 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "1314 of 1314 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1345,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "1345 of 1345 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],
   "validator_version": "8.0.1"

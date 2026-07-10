@@ -39,31 +39,18 @@
         "total": 80
       },
       {
-        "code": "feed_expiration_date30_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260710",
-            "feedEndDate": "20260808",
-            "suggestedExpirationDate": "20260809"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
-      },
-      {
         "code": "service_window_outside_feed_period",
         "sample_notices": [
           {
-            "daysAfterFeedEnd": 505,
-            "daysBeforeFeedStart": 550,
+            "daysAfterFeedEnd": 504,
+            "daysBeforeFeedStart": 551,
             "serviceId": "40586.104745",
             "serviceWindowEndDate": "2027-12-26",
             "serviceWindowStartDate": "2025-01-04"
           },
           {
-            "daysAfterFeedEnd": 510,
-            "daysBeforeFeedStart": 553,
+            "daysAfterFeedEnd": 509,
+            "daysBeforeFeedStart": 554,
             "serviceId": "40586.104564",
             "serviceWindowEndDate": "2027-12-31",
             "serviceWindowStartDate": "2025-01-01"
@@ -75,6 +62,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "4e31edadd13fc4945d6ab0799a198f7fbafc6ba8ca777c11ce09087f047f3134",
+  "sha256": "425d95270ec10ad3b81ff8eaf9cb210e5fba24f7a1e20cd928db904aaa8d446a",
   "validator_version": "8.0.1"
 }

@@ -28,7 +28,7 @@
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
     },
     {
-      "agencies": 15,
+      "agencies": 16,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
@@ -43,7 +43,7 @@
       "fix": "Review the rule documentation for 'invalid_currency_amount' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 8,
+      "agencies": 7,
       "code": "scorecard_feed_expiring_soon",
       "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -143,7 +143,7 @@
     "stale": 44,
     "total": 65
   },
-  "generated_at": "2026-07-10T04:50:54+00:00",
+  "generated_at": "2026-07-10T09:07:04+00:00",
   "grade_distribution": {
     "A": 6,
     "B": 31,
@@ -966,20 +966,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 29 day(s)",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "rosemead-explorer-3098",
-      "name": "Rosemead Explorer",
-      "needs_attention": true,
-      "score": 55.1,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -48,
       "expiry_status": "lapsed",
@@ -1075,6 +1061,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 30 day(s)",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "rosemead-explorer-3098",
+      "name": "Rosemead Explorer",
+      "needs_attention": true,
+      "score": 57.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
