@@ -35,12 +35,13 @@ jobs:
 
       - name: Build the release manifest
         id: manifest
+        env:
+          RESOLVED_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          tag="${{ inputs.tag || github.ref_name }}"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "tag=$RESOLVED_TAG" >> "$GITHUB_OUTPUT"
           {
             echo "repo=${GITHUB_REPOSITORY}"
-            echo "tag=${tag}"
+            echo "tag=${RESOLVED_TAG}"
             echo "commit=$(git rev-parse HEAD)"
           } > release-manifest.txt
           cat release-manifest.txt
