@@ -60,7 +60,11 @@ jobs:
           # only adds/refreshes on top of it and never deletes, so a sync
           # failure here degrades to that committed copy instead of failing
           # the deploy.
+          # Corrected feed ZIPs are served from the artifact CDN and can be
+          # hundreds of MB each; Pages needs the JSON/SVG/GeoJSON public data,
+          # not a duplicate 2.7 GB binary mirror in every deployment artifact.
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" _site/data/artifacts \
+            --exclude "*.zip" --only-show-errors \
             || echo "::warning title=S3 artifact sync failed::serving whatever data/artifacts git still carries"
       - name: Lighthouse CI (accessibility >= 95)
         run: |
@@ -104,6 +108,7 @@ jobs:
           # See the matching step in the lighthouse job above: additive sync
           # on top of the committed fallback, never fails the deploy.
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" _site/data/artifacts \
+            --exclude "*.zip" --only-show-errors \
             || echo "::warning title=S3 artifact sync failed::serving whatever data/artifacts git still carries"
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
