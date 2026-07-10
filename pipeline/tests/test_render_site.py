@@ -23,6 +23,7 @@ from scorecard_pipeline.render_site import (
     _outreach_section,
     _peer_context,
     _render_board_page,
+    _render_claim_page,
     _render_equity_page,
     _render_map_page,
     _rollup_percentile_context,
@@ -56,6 +57,17 @@ def test_rt_schedule_deviation_is_not_labeled_prediction_accuracy() -> None:
 
     assert "Live predictions vs schedule" in html
     assert "Prediction accuracy" not in html
+
+
+def test_claim_page_requires_reviewed_evidence_and_protects_private_data() -> None:
+    html = _render_claim_page()
+    assert "A request is not treated as proof by itself" in html
+    assert "Official webpage" in html
+    assert "Feed-host proof" in html
+    assert "Official-domain email" in html
+    assert "Do not put private email addresses, access" in html
+    assert "template=claim-agency.yml" in html
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/claim/">' in html
 
 
 def _artifact_with_route_map(**route_map: object) -> dict[str, object]:

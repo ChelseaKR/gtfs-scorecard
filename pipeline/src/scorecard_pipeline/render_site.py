@@ -1796,7 +1796,8 @@ def _render_agency(
       · <a href="/agency/{esc(agency_id)}/board/">For your board packet: printable one-pager</a>
       {f'· <a href="/agency/{esc(agency_id)}/fixes/">Fix log: every issue this feed has cleared</a>' if has_fixlog else ""}
       · <a href="/compare/?a={esc(agency_id)}">Compare with another agency</a>
-      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a></p>
+      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a>
+      · <a href="/claim/?agency={esc(agency_id)}">Correct or claim this listing</a></p>
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
     {op_html}
     {_anomaly_note(history)}
@@ -3822,6 +3823,89 @@ def _render_crosswalk_page(md: str) -> str:
         canonical=canonical,
         body=body,
         jsonld=jsonld,
+    )
+
+
+def _render_claim_page() -> str:
+    """Explain the evidence-backed correction and agency-claim process.
+
+    Claims are deliberately reviewed by a person. Opening an issue proves
+    neither employment nor control of a feed, so this page names the accepted
+    proof paths and the public status language before collecting a request.
+    """
+    canonical = f"{BASE_URL}/claim/"
+    issue_url = (
+        "https://github.com/ChelseaKR/gtfs-scorecard/issues/new"
+        "?template=claim-agency.yml&labels=agency-claim"
+    )
+    body = f"""    {_breadcrumb([("Home", "/"), ("Correct or claim a listing", None)])}
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <h1 class="page-title">Correct or claim an agency listing</h1>
+    <p class="page-lede">Tell us when a name, feed URL, service status, or other
+    listing detail is wrong. Agency staff can also ask to become the verified
+    contact for a listing. A request is not treated as proof by itself.</p>
+
+    {_route_rule()}
+    <section aria-labelledby="correction-h"><h2 class="section-title" id="correction-h">Corrections do not require a claim</h2>
+    <p>Anyone can report a factual error. Link to the agency's official website,
+    public feed page, procurement record, or another source that lets a reviewer
+    confirm the change. We correct supported facts without requiring the agency
+    to create or maintain an account.</p></section>
+
+    <section aria-labelledby="proof-h"><h2 class="section-title" id="proof-h">How an agency claim is verified</h2>
+    <p>Use one of these proof paths. Do not put private email addresses, access
+    tokens, or credentials in a public issue.</p>
+    <ul>
+      <li><strong>Official webpage:</strong> publish a short confirmation or the
+      scorecard URL on an agency-controlled website.</li>
+      <li><strong>Feed-host proof:</strong> place the one-time text supplied by a
+      reviewer at the public feed host or in an adjacent public file.</li>
+      <li><strong>Official-domain email:</strong> send confirmation privately from
+      an agency-controlled domain after opening the issue.</li>
+    </ul>
+    <p>Until a reviewer checks one of those paths, the request remains
+    <strong>unverified</strong>. Verification confirms the contact's relationship
+    to the listing; it does not endorse the score or change the rubric.</p></section>
+
+    <section aria-labelledby="review-h"><h2 class="section-title" id="review-h">What happens next</h2>
+    <ol>
+      <li>Open a request and describe the exact correction or claim.</li>
+      <li>A maintainer checks the public evidence and may ask for one missing detail.</li>
+      <li>The underlying registry is changed in a reviewed pull request, leaving a public audit trail.</li>
+      <li>The next scoring run republishes the listing. Removal requests are handled under the same policy.</li>
+    </ol>
+    <p><a class="download-btn" id="claim-issue-link" href="{issue_url}">Open a correction or claim request</a></p>
+    <p class="fineprint">Public issues are appropriate for public facts only. For
+    private proof, open the issue without the private detail and use the maintainer
+    contact it provides.</p></section>
+
+    <script>
+    (function () {{
+      var agency = new URLSearchParams(window.location.search).get("agency");
+      if (!agency || !/^[a-z0-9][a-z0-9-]{{0,119}}$/.test(agency)) return;
+      var link = document.getElementById("claim-issue-link");
+      link.href += "&title=" + encodeURIComponent("Correct or claim: " + agency);
+      var note = document.createElement("p");
+      note.className = "fineprint";
+      note.textContent = "Listing selected: " + agency;
+      link.parentNode.insertBefore(note, link);
+    }})();
+    </script>"""
+    return _page(
+        title="Correct or claim a transit agency listing | GTFS Scorecard",
+        description=(
+            "Report a GTFS listing correction or verify an agency contact using "
+            "public evidence, feed-host proof, or official-domain email."
+        ),
+        canonical=canonical,
+        body=body,
+        jsonld={
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Correct or claim a transit agency listing",
+            "url": canonical,
+            "isPartOf": {"@type": "WebSite", "name": "GTFS Scorecard", "url": BASE_URL},
+        },
     )
 
 
@@ -6964,6 +7048,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
     write("how-to-read/index.html", _render_guide(), f"{BASE_URL}/how-to-read/")
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
+    write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
     # status.json, extending FIX-11's internal run-summary outward. Built from
