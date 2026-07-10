@@ -1060,6 +1060,24 @@ def test_leaderboard_rows_carry_mini_sparklines() -> None:
     assert "spark-mini" not in _leaderboard_sections(board)
 
 
+def test_leaderboard_withholds_ranked_lists_below_minimum_cohort() -> None:
+    from scorecard_pipeline.render_site import _leaderboard_sections
+
+    html = _leaderboard_sections(
+        {
+            "comparison": {
+                "suppressed": True,
+                "eligible_count": 7,
+                "minimum_cohort": 20,
+            },
+            "top": [{"id": "should-not-render", "name": "Hidden"}],
+        }
+    )
+    assert "Comparisons withheld" in html
+    assert "Only 7 feeds" in html
+    assert "Hidden" not in html
+
+
 def test_leaderboard_sections_omit_trips_column_without_ridership() -> None:
     from scorecard_pipeline.render_site import _leaderboard_sections
 

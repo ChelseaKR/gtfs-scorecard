@@ -5164,6 +5164,15 @@ def _leaderboard_sections(
     (ADR 0021) matched at least one of its rows, so an unweighted build renders
     exactly as before."""
     hist = histories or {}
+    comparison = board.get("comparison") or {}
+    if comparison.get("suppressed"):
+        return (
+            '<section class="feed-details"><h2 class="section-title">Comparisons withheld</h2>'
+            f"<p>Only {esc(comparison.get('eligible_count', 0))} feeds meet the comparison "
+            f"rules. At least {esc(comparison.get('minimum_cohort', 20))} are required before "
+            "publishing a ranked list. Individual scorecards and the open dataset remain "
+            "available.</p></section>"
+        )
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
@@ -5215,7 +5224,10 @@ def _leaderboard_sections(
     {_move_table(board.get("most_declined", []), "Needs attention")}
     {_rank_table(board.get("bottom", []), "Lowest scoring")}
     </div>
-    <p class="fineprint">Lowest-scoring feeds are listed to help, not to shame: a low
+    <p class="fineprint">Only comparable feeds are included: the snapshot must be dated,
+    the required schedule categories measured, and service data no more than one year expired.
+    Cohorts below {esc(comparison.get("minimum_cohort", 20))} are withheld. Lowest-scoring feeds
+    are listed to help, not to shame: a low
     grade is usually a vendor export setting, and each scorecard names the fix.
     The same standings are available as
     <abbr title="JavaScript Object Notation">JSON</abbr> at

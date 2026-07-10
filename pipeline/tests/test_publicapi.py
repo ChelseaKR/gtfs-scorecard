@@ -20,7 +20,7 @@ def _pt(date: str, score: float, grade: str) -> dict[str, Any]:
         "date": date,
         "score": score,
         "grade": grade,
-        "categories": {},
+        "categories": {"correctness": 80, "freshness": 80, "completeness": 80},
         "days_until_expiry": 100,
     }
 
@@ -50,7 +50,7 @@ def test_agencies_endpoint_is_the_flat_list() -> None:
 
 def test_leaderboard_ranks_and_finds_movers() -> None:
     idx = _index()
-    board = leaderboard(idx, build_quality_dataset(idx))
+    board = leaderboard(idx, build_quality_dataset(idx), min_cohort=1)
     assert board["top"][0]["id"] == "alpha"  # 90 is highest
     assert board["bottom"][0]["id"] == "charlie"  # 55 is lowest
     # Bravo rose 60 -> 80; Charlie fell 75 -> 55.
@@ -64,7 +64,7 @@ def test_leaderboard_ranks_and_finds_movers() -> None:
 
 def test_leaderboard_without_ridership_omits_trips_field() -> None:
     idx = _index()
-    board = leaderboard(idx, build_quality_dataset(idx))
+    board = leaderboard(idx, build_quality_dataset(idx), min_cohort=1)
     assert all("annual_trips" not in e for e in board["bottom"])
     assert all("annual_trips" not in e for e in board["top"])
 
@@ -81,12 +81,23 @@ def test_leaderboard_ridership_breaks_ties_and_carries_trips() -> None:
         }
     }
     trips = {"big": 5_000_000, "small": 10_000}
-    board = leaderboard(idx, build_quality_dataset(idx), trips)
+    board = leaderboard(idx, build_quality_dataset(idx), trips, min_cohort=1)
     assert board["bottom"][0]["id"] == "big"
     assert board["bottom"][0]["annual_trips"] == 5_000_000
     assert board["bottom"][1]["id"] == "small"
     # Alpha has no ridership record, so its entry omits the field.
     assert all("annual_trips" not in e for e in board["top"] if e["id"] == "alpha")
+
+
+def test_leaderboard_suppresses_small_or_incomparable_cohort() -> None:
+    idx = _index()
+    dataset = build_quality_dataset(idx)
+    dataset["rows"][0]["days_until_expiry"] = -500
+    board = leaderboard(idx, dataset)
+    assert board["comparison"]["suppressed"] is True
+    assert board["comparison"]["eligible_count"] == 2
+    assert board["comparison"]["exclusion_counts"]["service_data_long_expired"] == 1
+    assert board["top"] == []
 
 
 def test_by_state_aggregates_with_unlocated_fallback() -> None:
