@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import re
 from typing import Any
 
@@ -2563,7 +2564,11 @@ def test_guided_fix_flow_empty_without_fixes() -> None:
 def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
     from scorecard_pipeline.render_site import _render_fix
 
-    html = _render_fix("expired_calendar", "# Fix expired calendars\n\nRe-export the feed.\n")
+    html = _render_fix(
+        "expired_calendar",
+        "# Fix expired calendars\n\nRe-export the feed.\n",
+        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+    )
     assert "After you republish" in html
     assert "dated receipt" in html
     assert "the scorecard shows the fix; the agency publishes it." in html
@@ -2580,6 +2585,7 @@ def test_fix_guide_description_skips_the_validator_code_line() -> None:
         "Code: `expired_calendar` (MobilityData validator)\n\n"
         "## What this means\n\n"
         "The service calendar ended in the past, so the feed may stop showing trips.\n",
+        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
     )
 
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
