@@ -33,7 +33,9 @@ Steps, in order:
    `lighthouse` and `deploy` jobs now sync `s3://<bucket>/data/artifacts` into
    `_site/data/artifacts` after the `cp -r data/artifacts` fallback, gated on
    `vars.ARTIFACTS_BUCKET` and non-fatal on failure (`|| echo "::warning
-   ..."`). The role and secret now exist. Before step 3, trigger one deploy
+   ..."`). Corrected feed ZIPs stay on the artifact CDN and are excluded from
+   Pages; only the 560 MiB public JSON/SVG/GeoJSON set is assembled. The role
+   and secret now exist. Before step 3, trigger one deploy
    and confirm in the run log that
    the sync step actually authenticated and copied objects (not just skipped
    on the unset variable).
