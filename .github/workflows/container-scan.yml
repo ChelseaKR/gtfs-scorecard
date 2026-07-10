@@ -42,10 +42,6 @@ concurrency:
   group: container-scan-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  VALIDATOR_VERSION: "8.0.1"
-  VALIDATOR_JAR_SHA256: "19293ddd9b6f954f216d4f12054bd8a3232921751c4484339e339764a91000e2"
-
 jobs:
   trivy:
     name: Trivy image CVE scan (${{ matrix.name }})
@@ -65,18 +61,29 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Stage the gtfs-validator CLI jar (same pinned release + hash the Dockerfile verifies)
+      - name: Stage the gtfs-validator CLI jar (version + hash read from the Dockerfile, not duplicated here)
         # data/cache/ is gitignored (see .gitignore); both Dockerfiles COPY
-        # this exact file and sha256-verify it in a RUN step, so fetching it
-        # here — pinned to the same version and hash — reproduces a real build
-        # rather than faking the input.
+        # this exact file and sha256-verify it in their own RUN step. Parsing
+        # the filename/version and the expected hash out of the Dockerfile
+        # (rather than hardcoding a second copy in this workflow) means a
+        # version bump only has to happen in one place — the Dockerfile — and
+        # this job automatically follows it instead of silently staging a
+        # stale jar the COPY step can't find.
         run: |
           set -euo pipefail
+          dockerfile="${{ matrix.dockerfile }}"
+          jar_rel=$(grep -oE 'data/cache/gtfs-validator-[0-9]+\.[0-9]+\.[0-9]+-cli\.jar' "$dockerfile" | head -1)
+          jar_sha256=$(grep -oE '^RUN echo "[0-9a-f]{64}' "$dockerfile" | grep -oE '[0-9a-f]{64}' | head -1)
+          version=$(echo "$jar_rel" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          if [ -z "$jar_rel" ] || [ -z "$jar_sha256" ] || [ -z "$version" ]; then
+            echo "::error::could not parse validator jar path/version/hash out of $dockerfile" >&2
+            exit 1
+          fi
+          echo "staging $jar_rel (version $version)"
           mkdir -p data/cache
-          jar="data/cache/gtfs-validator-${VALIDATOR_VERSION}-cli.jar"
-          curl -fsSL --retry 3 -o "$jar" \
-            "https://github.com/MobilityData/gtfs-validator/releases/download/v${VALIDATOR_VERSION}/gtfs-validator-${VALIDATOR_VERSION}-cli.jar"
-          echo "${VALIDATOR_JAR_SHA256}  ${jar}" | sha256sum -c -
+          curl -fsSL --retry 3 -o "$jar_rel" \
+            "https://github.com/MobilityData/gtfs-validator/releases/download/v${version}/gtfs-validator-${version}-cli.jar"
+          echo "${jar_sha256}  ${jar_rel}" | sha256sum -c -
 
       - name: Build production image
         run: docker build -f ${{ matrix.dockerfile }} -t ${{ matrix.tag }} .
