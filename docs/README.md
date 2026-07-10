@@ -25,5 +25,6 @@ This index is the handoff point for the documentation sweep last reviewed on 202
 - [User Research](USER-RESEARCH.md)
 - [Accessibility Testing](accessibility-testing.md)
 - [Add Your Agency](add-your-agency.md)
+- [Board-Ready Report](board-report.md)
 - [CI Action](ci-action.md)
 - [Conformance](conformance.md)

@@ -16,6 +16,7 @@ scorecard rollups                                 # portfolio rollup artifacts
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
 scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
+scorecard report --agency unitrans [--brand b.yaml] [--out r.html]  # board-ready report file
 """
 
 from __future__ import annotations
@@ -1720,6 +1721,19 @@ def _cmd_render_constants(args: argparse.Namespace, parser: argparse.ArgumentPar
     return 0
 
 
+def _cmd_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .report import ReportError, generate_report, load_brand
+
+    try:
+        brand = load_brand(args.brand) if args.brand else None
+        path = generate_report(args.agency, brand=brand, out=args.out)
+    except ReportError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    print(path)
+    return 0
+
+
 def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .canary import run_canary
     from .validate import VALIDATOR_VERSION
@@ -2080,6 +2094,24 @@ def main(argv: list[str] | None = None) -> int:
         help="regenerate web/src/generated/constants.js from the Python definitions",
     )
 
+    report = sub.add_parser(
+        "report",
+        help="render one agency's scorecard as a self-contained board-ready HTML report",
+    )
+    report.add_argument("--agency", required=True, help="agency id, e.g. unitrans")
+    report.add_argument(
+        "--brand",
+        type=Path,
+        default=None,
+        help="brand YAML (name, optional logo path, optional #rrggbb accent) for the cover",
+    )
+    report.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="output path (default: <agency>-board-report.html in the current directory)",
+    )
+
     backfill = sub.add_parser(
         "backfill-state", help="fill missing agency state from the Mobility Database catalog"
     )
@@ -2227,6 +2259,7 @@ def main(argv: list[str] | None = None) -> int:
         "reindex": _cmd_reindex,
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
+        "report": _cmd_report,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
         "freshness-sweep": _cmd_freshness_sweep,
