@@ -1,6 +1,6 @@
 {
   "agency_count": 52,
-  "average_score": 53.7,
+  "average_score": 53.6,
   "common_fixes": [
     {
       "agencies": 39,
@@ -74,6 +74,11 @@
     },
     {
       "agencies": 2,
+      "code": "scorecard_feed_expiring_soon",
+      "fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "agencies": 2,
       "code": "scorecard_rt_trip_updates_unreachable",
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
@@ -93,7 +98,7 @@
     "stale": 26,
     "total": 30
   },
-  "generated_at": "2026-07-10T01:11:50+00:00",
+  "generated_at": "2026-07-10T04:50:54+00:00",
   "grade_distribution": {
     "A": 4,
     "C": 6,
@@ -104,7 +109,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1679,
+      "days_until_expiry": -1680,
       "expiry_status": "stale",
       "grade": "F",
       "id": "sarasota-county-area-transit",
@@ -112,13 +117,13 @@
       "needs_attention": true,
       "score": 22.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2105,
+      "days_until_expiry": -2106,
       "expiry_status": "stale",
       "grade": "F",
       "id": "lakeland-area-mass-transit",
@@ -126,13 +131,13 @@
       "needs_attention": true,
       "score": 24.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2016,
+      "days_until_expiry": -2017,
       "expiry_status": "stale",
       "grade": "F",
       "id": "collier-area-transit-cat",
@@ -140,7 +145,7 @@
       "needs_attention": true,
       "score": 30.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -174,7 +179,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2040,
+      "days_until_expiry": -2041,
       "expiry_status": "stale",
       "grade": "F",
       "id": "manatee-county-area-transit",
@@ -182,13 +187,13 @@
       "needs_attention": true,
       "score": 39.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1636,
+      "days_until_expiry": -1637,
       "expiry_status": "stale",
       "grade": "F",
       "id": "votran",
@@ -196,13 +201,13 @@
       "needs_attention": true,
       "score": 39.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1418,
+      "days_until_expiry": -1419,
       "expiry_status": "stale",
       "grade": "F",
       "id": "gainesville-regional-transit-system",
@@ -210,13 +215,13 @@
       "needs_attention": true,
       "score": 40.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1286,
+      "days_until_expiry": -1287,
       "expiry_status": "stale",
       "grade": "F",
       "id": "sunshine-bus-company",
@@ -224,13 +229,13 @@
       "needs_attention": true,
       "score": 41.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1286,
+      "days_until_expiry": -1287,
       "expiry_status": "stale",
       "grade": "F",
       "id": "sunshine-bus-company-350",
@@ -238,13 +243,13 @@
       "needs_attention": true,
       "score": 41.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -542,
+      "days_until_expiry": -543,
       "expiry_status": "stale",
       "grade": "F",
       "id": "key-west-transit",
@@ -252,13 +257,13 @@
       "needs_attention": true,
       "score": 44.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -542,
+      "days_until_expiry": -543,
       "expiry_status": "stale",
       "grade": "F",
       "id": "key-west-transit-322",
@@ -266,13 +271,13 @@
       "needs_attention": true,
       "score": 44.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1104,
+      "days_until_expiry": -1105,
       "expiry_status": "stale",
       "grade": "F",
       "id": "pasco-county-public-transportation",
@@ -280,13 +285,13 @@
       "needs_attention": true,
       "score": 45.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1104,
+      "days_until_expiry": -1105,
       "expiry_status": "stale",
       "grade": "F",
       "id": "pasco-county-public-transportation-340",
@@ -294,13 +299,13 @@
       "needs_attention": true,
       "score": 45.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1346,
+      "days_until_expiry": -1347,
       "expiry_status": "stale",
       "grade": "F",
       "id": "escambia-county-area-transit-ecat",
@@ -308,13 +313,13 @@
       "needs_attention": true,
       "score": 46.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1346,
+      "days_until_expiry": -1347,
       "expiry_status": "stale",
       "grade": "F",
       "id": "escambia-county-area-transit-ecat-335",
@@ -322,13 +327,13 @@
       "needs_attention": true,
       "score": 46.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -326,
+      "days_until_expiry": -327,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "gainesville-regional-transit-system-2412",
@@ -336,13 +341,13 @@
       "needs_attention": true,
       "score": 47.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1073,
+      "days_until_expiry": -1074,
       "expiry_status": "stale",
       "grade": "F",
       "id": "gowal",
@@ -350,7 +355,7 @@
       "needs_attention": true,
       "score": 47.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -369,22 +374,22 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 15 day(s)",
-      "days_until_expiry": 15,
+      "attention_reason": "Service data expires in 14 day(s)",
+      "days_until_expiry": 14,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "collier-area-transit-cat-2259",
       "name": "Collier Area Transit (CAT)",
       "needs_attention": true,
-      "score": 49.2,
+      "score": 48.8,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2271,
+      "days_until_expiry": -2272,
       "expiry_status": "stale",
       "grade": "F",
       "id": "lake-county-connection",
@@ -392,13 +397,13 @@
       "needs_attention": true,
       "score": 49.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3476,
+      "days_until_expiry": -3477,
       "expiry_status": "stale",
       "grade": "F",
       "id": "hernando-county-transit-thebus",
@@ -406,13 +411,13 @@
       "needs_attention": true,
       "score": 50.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3476,
+      "days_until_expiry": -3477,
       "expiry_status": "stale",
       "grade": "F",
       "id": "hernando-county-transit-thebus-341",
@@ -420,13 +425,13 @@
       "needs_attention": true,
       "score": 50.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3660,
+      "days_until_expiry": -3661,
       "expiry_status": "stale",
       "grade": "F",
       "id": "emerald-coast-rider-ecr",
@@ -434,13 +439,13 @@
       "needs_attention": true,
       "score": 51.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3660,
+      "days_until_expiry": -3661,
       "expiry_status": "stale",
       "grade": "F",
       "id": "emerald-coast-rider-ecr-336",
@@ -448,13 +453,13 @@
       "needs_attention": true,
       "score": 51.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -221,
+      "days_until_expiry": -222,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "bay-town-trolley",
@@ -462,13 +467,13 @@
       "needs_attention": true,
       "score": 53.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -221,
+      "days_until_expiry": -222,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "bay-town-trolley-337",
@@ -476,13 +481,27 @@
       "needs_attention": true,
       "score": 53.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
+      "id": "central-florida-regional-transit-authority-lynx",
+      "name": "Central Florida Regional Transit Authority (LYNX)",
+      "needs_attention": true,
+      "score": 54.6,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -707,
+      "days_until_expiry": -708,
       "expiry_status": "stale",
       "grade": "F",
       "id": "suntran-343",
@@ -490,41 +509,27 @@
       "needs_attention": true,
       "score": 54.6,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "F",
-      "id": "central-florida-regional-transit-authority-lynx",
-      "name": "Central Florida Regional Transit Authority (LYNX)",
-      "needs_attention": true,
-      "score": 54.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 37 day(s)",
-      "days_until_expiry": 37,
+      "attention_reason": "Service data expires in 36 day(s)",
+      "days_until_expiry": 36,
       "expiry_status": "current",
       "grade": "F",
       "id": "hillsborough-area-regional-transit-hart",
       "name": "Hillsborough Area Regional Transit (HART)",
       "needs_attention": true,
-      "score": 56.0,
+      "score": 55.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -676,
+      "days_until_expiry": -677,
       "expiry_status": "stale",
       "grade": "F",
       "id": "starmetro",
@@ -532,13 +537,13 @@
       "needs_attention": true,
       "score": 56.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -676,
+      "days_until_expiry": -677,
       "expiry_status": "stale",
       "grade": "F",
       "id": "starmetro-344",
@@ -546,7 +551,7 @@
       "needs_attention": true,
       "score": 56.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -566,7 +571,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Score changed sharply on 2026-07-02",
-      "days_until_expiry": 330,
+      "days_until_expiry": 329,
       "expiry_status": "current",
       "grade": "C",
       "id": "manatee-county-area-transit-2258",
@@ -574,13 +579,13 @@
       "needs_attention": true,
       "score": 74.3,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service window shortened unexpectedly on 2026-07-02",
-      "days_until_expiry": 79,
+      "days_until_expiry": 78,
       "expiry_status": "current",
       "grade": "A",
       "id": "broward-county-transit",
@@ -588,7 +593,7 @@
       "needs_attention": true,
       "score": 90.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
@@ -636,7 +641,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 1086,
+      "days_until_expiry": 1085,
       "expiry_status": "current",
       "grade": "F",
       "id": "sarasota-county-area-transit-scat",
@@ -644,13 +649,13 @@
       "needs_attention": false,
       "score": 51.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 1086,
+      "days_until_expiry": 1085,
       "expiry_status": "current",
       "grade": "F",
       "id": "sarasota-county-area-transit-scat-348",
@@ -658,13 +663,13 @@
       "needs_attention": false,
       "score": 51.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 132,
+      "days_until_expiry": 131,
       "expiry_status": "current",
       "grade": "D",
       "id": "leetran",
@@ -672,7 +677,7 @@
       "needs_attention": false,
       "score": 66.7,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
@@ -692,7 +697,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 72,
+      "days_until_expiry": 71,
       "expiry_status": "current",
       "grade": "D",
       "id": "palm-tran",
@@ -700,7 +705,7 @@
       "needs_attention": false,
       "score": 69.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
@@ -720,7 +725,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 1636,
+      "days_until_expiry": 1635,
       "expiry_status": "current",
       "grade": "C",
       "id": "usf-bull-runner",
@@ -728,13 +733,13 @@
       "needs_attention": false,
       "score": 70.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 176,
+      "days_until_expiry": 175,
       "expiry_status": "current",
       "grade": "C",
       "id": "city-of-miami-beach",
@@ -742,13 +747,13 @@
       "needs_attention": false,
       "score": 72.0,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 176,
+      "days_until_expiry": 175,
       "expiry_status": "current",
       "grade": "C",
       "id": "city-of-miami-gardens",
@@ -756,13 +761,13 @@
       "needs_attention": false,
       "score": 77.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 83,
+      "days_until_expiry": 82,
       "expiry_status": "current",
       "grade": "C",
       "id": "lake-county-connection-2255",
@@ -770,7 +775,7 @@
       "needs_attention": false,
       "score": 77.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
@@ -790,7 +795,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 175,
+      "days_until_expiry": 174,
       "expiry_status": "current",
       "grade": "A",
       "id": "florida-department-of-transportation-sunrail",
@@ -798,13 +803,13 @@
       "needs_attention": false,
       "score": 91.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 114,
+      "days_until_expiry": 113,
       "expiry_status": "current",
       "grade": "A",
       "id": "gulf-islands-national-seashore",
@@ -812,13 +817,13 @@
       "needs_attention": false,
       "score": 96.5,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 114,
+      "days_until_expiry": 113,
       "expiry_status": "current",
       "grade": "A",
       "id": "dry-tortugas-national-park",
@@ -826,7 +831,7 @@
       "needs_attention": false,
       "score": 99.8,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Review the rule documentation for 'big_gap_in_service' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     }
   ],

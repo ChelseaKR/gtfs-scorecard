@@ -49,10 +49,10 @@
     <div class="brief">
     <p class="brief-nav no-print"><a href="/agency/metrolink/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
-      <p class="brief-kicker">Call-prep brief &middot; checked 2026-07-09</p>
+      <p class="brief-kicker">Call-prep brief &middot; checked 2026-07-10</p>
       <h1 class="brief-title">Metrolink</h1>
       <p class="brief-grade">Grade D &middot; 67.1 / 100</p>
-      <p class="brief-trend">Unchanged since 2026-07-08.</p>
+      <p class="brief-trend">Unchanged since 2026-07-09.</p>
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
         confirm the feed is current and the NTD details line up. Each fix is framed as a next step,
         not a failure.</p>
@@ -63,18 +63,18 @@
     </section>
     <section aria-labelledby="brief-fixes-h">
       <h2 id="brief-fixes-h">Top three things to fix</h2>
-      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The trip updates realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 11 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The vehicle positions realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 9 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.</p><p class="brief-fix-why">5 of 5 trips scheduled during the sampling window had no live predictions. Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates.</p><p class="brief-fix-eta">Effort: A vendor data-mapping question.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 80 observed fixes).</p></li></ol>
+      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The trip updates realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 11 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.</p><p class="brief-fix-why">The vehicle positions realtime feed failed during sampling. When this feed is down, riders see scheduled times presented as if they were live.</p><p class="brief-fix-eta">Effort: Usually a vendor support ticket.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 9 observed fixes).</p></li><li class="brief-fix"><p class="brief-fix-do">Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.</p><p class="brief-fix-why">5 of 5 trips scheduled during the sampling window had no live predictions. Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates.</p><p class="brief-fix-eta">Effort: A vendor data-mapping question.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 83 observed fixes).</p></li></ol>
     </section>
     
     <section aria-labelledby="brief-ntd-h">
-      <h2 id="brief-ntd-h">NTD certification readiness: Ready</h2>
+      <h2 id="brief-ntd-h">NTD GTFS readiness: Ready</h2>
       <p class="brief-ntd-summary">This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification.</p><dl class="brief-ntd"><dt>Published <span class="ntd-status ntd-ready">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="ntd-status ntd-ready">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="ntd-status ntd-ready">Ready</span></dt><dd>Service data covers the next 552 days.</dd></dl>
       <p class="brief-align"><strong>agency_id and NTD ID:</strong> Not checked yet. Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don&#x27;t have your NTD ID on file, so this is not checked yet.</p>
     </section>
     
     <section aria-labelledby="brief-facts-h">
       <h2 id="brief-facts-h">Key facts</h2>
-      <dl class="brief-facts"><dt>Feed URL</dt><dd>https://metrolinktrains.com/globalassets/about/gtfs/gtfs.zip</dd><dt>Last checked</dt><dd>2026-07-09</dd><dt>Service window</dt><dd>540 days of service data remain. Last service date 2027-12-31.</dd><dt>Feed version</dt><dd>20260505</dd></dl>
+      <dl class="brief-facts"><dt>Feed URL</dt><dd>https://metrolinktrains.com/globalassets/about/gtfs/gtfs.zip</dd><dt>Last checked</dt><dd>2026-07-10</dd><dt>Service window</dt><dd>539 days of service data remain. Last service date 2027-12-31.</dd><dt>Feed version</dt><dd>20260505</dd></dl>
     </section>
     
     <p class="brief-foot">A data-quality and completeness read to support an agency conversation.
@@ -104,6 +104,7 @@
       <a href="/submit.html">Add your agency</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
+      <a href="/status/">Status</a> ·
       <a href="/support/">Support this project</a> ·
       <a href="/how-to-read/">How to read a scorecard</a> ·
       <a href="/how-to-read/#glossary">Glossary</a> ·
@@ -111,7 +112,6 @@
       <a href="/press/">For reporters</a> ·
       <a href="/data/">Open data</a> ·
       <a href="/accessibility/">Accessibility</a> ·
-      <a href="/status/">Data freshness &amp; uptime</a> ·
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
     </div>
   </footer>

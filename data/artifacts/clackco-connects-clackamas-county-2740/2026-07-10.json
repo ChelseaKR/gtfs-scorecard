@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -233,39 +232,26 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 66.7,
-        "covered_trips": 2,
+        "coverage_pct": null,
         "drift": {
-          "median_seconds": -390,
-          "observations": 58,
-          "on_time_share_pct": 20.7,
-          "p90_abs_seconds": 1620
+          "median_seconds": -199,
+          "observations": 1,
+          "on_time_share_pct": 0.0,
+          "p90_abs_seconds": 199
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 3,
-        "vehicles_checked": 9,
+        "scheduled_trips_in_window": 0,
+        "vehicles_checked": 1,
         "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 4
       },
-      "findings": [
-        {
-          "code": "scorecard_rt_trip_coverage",
-          "count": 1,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
-          "owner": "",
-          "points": 11.7,
-          "severity": "WARNING",
-          "what": "1 of 3 trips scheduled during the sampling window had no live predictions.",
-          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
-        }
-      ],
+      "findings": [],
       "name": "realtime",
-      "score": 88.3,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 66.7% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 390s ahead of schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route; predictions ran a median of 199s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -307,7 +293,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "248764ce984825b480ad9010e6840033a9ea86a90ba07ffb8698cfbe8936f7d2",
+    "sha256": "b03b6d51d8ce7a2a3433ed5d74866a1379b2a0f61f89d0d6cc9ed77bdf652415",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },
@@ -359,9 +345,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 3.4,
-    "margin_to_next_band": 6.6,
-    "score": 63.4
+    "margin_to_lower_band": 5.7,
+    "margin_to_next_band": 4.3,
+    "score": 65.7
   },
   "recommendations": [
     {

@@ -28,7 +28,7 @@
     "stale": 4,
     "total": 4
   },
-  "generated_at": "2026-07-10T01:11:50+00:00",
+  "generated_at": "2026-07-10T04:50:54+00:00",
   "grade_distribution": {
     "D": 2,
     "F": 4
@@ -79,7 +79,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -921,
+      "days_until_expiry": -922,
       "expiry_status": "stale",
       "grade": "F",
       "id": "81-connection-citygo-kanconnect",
@@ -87,7 +87,7 @@
       "needs_attention": true,
       "score": 50.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -107,7 +107,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 175,
+      "days_until_expiry": 174,
       "expiry_status": "current",
       "grade": "D",
       "id": "johnson-county-transit",
@@ -115,7 +115,7 @@
       "needs_attention": false,
       "score": 66.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],

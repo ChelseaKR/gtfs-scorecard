@@ -1,6 +1,6 @@
 {
   "agency_count": 3,
-  "average_score": 53.0,
+  "average_score": 52.9,
   "common_fixes": [
     {
       "agencies": 3,
@@ -23,7 +23,7 @@
     "stale": 1,
     "total": 2
   },
-  "generated_at": "2026-07-10T01:11:50+00:00",
+  "generated_at": "2026-07-10T04:50:54+00:00",
   "grade_distribution": {
     "C": 1,
     "F": 2
@@ -32,7 +32,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -8,
+      "days_until_expiry": -9,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "concord-area-transit",
@@ -40,7 +40,7 @@
       "needs_attention": true,
       "score": 41.1,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -60,15 +60,15 @@
     {
       "annual_trips": null,
       "attention_reason": "Service window shortened unexpectedly on 2026-06-24",
-      "days_until_expiry": 49,
+      "days_until_expiry": 48,
       "expiry_status": "current",
       "grade": "C",
       "id": "dartmouth-college",
       "name": "Dartmouth College",
       "needs_attention": true,
-      "score": 75.6,
+      "score": 75.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],

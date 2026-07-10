@@ -1,6 +1,6 @@
 {
   "agency_count": 5,
-  "average_score": 44.6,
+  "average_score": 44.4,
   "common_fixes": [
     {
       "agencies": 4,
@@ -28,7 +28,7 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-10T01:11:50+00:00",
+  "generated_at": "2026-07-10T04:50:54+00:00",
   "grade_distribution": {
     "F": 5
   },
@@ -63,30 +63,30 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 37 day(s)",
-      "days_until_expiry": 37,
+      "attention_reason": "Service data expires in 36 day(s)",
+      "days_until_expiry": 36,
       "expiry_status": "current",
       "grade": "F",
       "id": "uta-2349",
       "name": "UTA",
       "needs_attention": true,
-      "score": 48.6,
+      "score": 48.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 37 day(s)",
-      "days_until_expiry": 37,
+      "attention_reason": "Service data expires in 36 day(s)",
+      "days_until_expiry": 36,
       "expiry_status": "current",
       "grade": "F",
       "id": "utah-transit-authority-uta",
       "name": "Utah Transit Authority (UTA)",
       "needs_attention": true,
-      "score": 48.6,
+      "score": 48.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
     {
@@ -117,5 +117,5 @@
     "ready": 2,
     "total": 5
   },
-  "state_percentile": 15
+  "state_percentile": 11
 }

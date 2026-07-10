@@ -33,7 +33,7 @@
     "stale": 0,
     "total": 2
   },
-  "generated_at": "2026-07-10T01:11:50+00:00",
+  "generated_at": "2026-07-10T04:50:54+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 1,
@@ -41,9 +41,9 @@
   },
   "members": [
     {
-      "annual_trips": 222475309,
+      "annual_trips": null,
       "attention_reason": "Elevated behavioral lapse risk",
-      "days_until_expiry": 177,
+      "days_until_expiry": 176,
       "expiry_status": "current",
       "grade": "F",
       "id": "new-jersey-transit-nj-transit",
@@ -51,13 +51,13 @@
       "needs_attention": true,
       "score": 39.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -38,
+      "days_until_expiry": -39,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "port-authority-trans-hudson-path",
@@ -65,13 +65,13 @@
       "needs_attention": true,
       "score": 52.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -38,
+      "days_until_expiry": -39,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "port-authority-trans-hudson-path-517",
@@ -79,7 +79,7 @@
       "needs_attention": true,
       "score": 52.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -97,9 +97,9 @@
       "top_fix": "Remove past service periods the next time you export the feed."
     },
     {
-      "annual_trips": 222475309,
+      "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 169,
+      "days_until_expiry": 168,
       "expiry_status": "current",
       "grade": "F",
       "id": "new-jersey-transit-nj-transit-509",
@@ -107,7 +107,7 @@
       "needs_attention": false,
       "score": 43.2,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Review the rule documentation for 'block_trips_with_overlapping_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
@@ -127,7 +127,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 175,
+      "days_until_expiry": 174,
       "expiry_status": "current",
       "grade": "A",
       "id": "patco-speedline-3035",
@@ -135,7 +135,7 @@
       "needs_attention": false,
       "score": 100.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": null
     }
   ],

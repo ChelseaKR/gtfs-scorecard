@@ -101,6 +101,24 @@
       "code": "scorecard_rt_trip_coverage",
       "last_seen": "2026-07-08",
       "what": "5 of 8 trips scheduled during the sampling window had no live predictions."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_rt_predictions_implausible",
+      "last_seen": "2026-07-09",
+      "what": "Some live predictions disagree with the schedule by more than 30 minutes."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_rt_trip_coverage",
+      "last_seen": "2026-07-09",
+      "what": "7 of 8 trips scheduled during the sampling window had no live predictions."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_rt_vehicles_off_route",
+      "last_seen": "2026-07-09",
+      "what": "5 of 22 sampled vehicle positions were far from their assigned route (worst: 1843 m)."
     }
   ]
 }

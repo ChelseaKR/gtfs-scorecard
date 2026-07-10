@@ -242,27 +242,18 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 100.0,
-        "covered_trips": 6,
-        "drift": {
-          "median_seconds": -382,
-          "observations": 40,
-          "on_time_share_pct": 17.5,
-          "p90_abs_seconds": 994
-        },
+        "coverage_pct": null,
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 6,
-        "vehicles_checked": 18,
-        "vehicles_on_route_pct": 100.0,
+        "scheduled_trips_in_window": 0,
         "worst_lag_seconds": 5
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 382s ahead of schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -304,7 +295,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "1954a34ecf69e77f085d8d6ca358ca0e3632671bb8616a76dcb48d253ac66aa5",
+    "sha256": "d22e7c634e79328ddd4250b9f1354c290b601bdb2eeb5cb0bae47fb09d865754",
     "size_bytes": 217904,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },

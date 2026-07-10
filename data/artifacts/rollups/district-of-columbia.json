@@ -28,13 +28,13 @@
     "stale": 6,
     "total": 6
   },
-  "generated_at": "2026-07-10T01:11:50+00:00",
+  "generated_at": "2026-07-10T04:50:54+00:00",
   "grade_distribution": {
     "F": 6
   },
   "members": [
     {
-      "annual_trips": 262474117,
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -637,
       "expiry_status": "stale",
@@ -48,7 +48,21 @@
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
-      "annual_trips": 262474117,
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1560,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "dc-circulator",
+      "name": "Service Discontinued",
+      "needs_attention": true,
+      "score": 39.4,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Service data has expired",
       "days_until_expiry": -566,
       "expiry_status": "stale",
@@ -64,21 +78,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1559,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "dc-circulator",
-      "name": "Service Discontinued",
-      "needs_attention": true,
-      "score": 39.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1134,
+      "days_until_expiry": -1135,
       "expiry_status": "stale",
       "grade": "F",
       "id": "dc-streetcar",
@@ -86,13 +86,13 @@
       "needs_attention": true,
       "score": 45.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1134,
+      "days_until_expiry": -1135,
       "expiry_status": "stale",
       "grade": "F",
       "id": "dc-streetcar-487",
@@ -100,7 +100,7 @@
       "needs_attention": true,
       "score": 45.9,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {

@@ -1,7 +1,7 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "distinct_problems": 118,
-  "generated_at": "2026-07-10T01:12:14+00:00",
+  "generated_at": "2026-07-10T04:51:19+00:00",
   "license": "CC-BY-4.0",
   "prevalence_by_code": {
     "bidirectional_exit_gate": {
@@ -80,9 +80,9 @@
       "prevalence_pct": 4.6
     },
     "feed_expiration_date30_days": {
-      "agencies": 38,
-      "instances": 38,
-      "prevalence_pct": 2.6
+      "agencies": 30,
+      "instances": 30,
+      "prevalence_pct": 2.1
     },
     "feed_expiration_date7_days": {
       "agencies": 508,
@@ -345,9 +345,9 @@
       "prevalence_pct": 42.6
     },
     "scorecard_feed_expiring_soon": {
-      "agencies": 109,
-      "instances": 109,
-      "prevalence_pct": 7.5
+      "agencies": 111,
+      "instances": 111,
+      "prevalence_pct": 7.7
     },
     "scorecard_flex_no_booking_rules": {
       "agencies": 531,
@@ -400,9 +400,9 @@
       "prevalence_pct": 1.1
     },
     "scorecard_rt_predictions_implausible": {
-      "agencies": 7,
-      "instances": 2208,
-      "prevalence_pct": 0.5
+      "agencies": 3,
+      "instances": 2006,
+      "prevalence_pct": 0.2
     },
     "scorecard_rt_service_alerts_unreachable": {
       "agencies": 32,
@@ -415,9 +415,9 @@
       "prevalence_pct": 0.1
     },
     "scorecard_rt_trip_coverage": {
-      "agencies": 55,
-      "instances": 1763,
-      "prevalence_pct": 3.8
+      "agencies": 51,
+      "instances": 1746,
+      "prevalence_pct": 3.5
     },
     "scorecard_rt_trip_updates_unreachable": {
       "agencies": 44,
@@ -430,9 +430,9 @@
       "prevalence_pct": 3.0
     },
     "scorecard_rt_vehicles_off_route": {
-      "agencies": 10,
-      "instances": 171,
-      "prevalence_pct": 0.7
+      "agencies": 8,
+      "instances": 165,
+      "prevalence_pct": 0.6
     },
     "scorecard_station_no_pathways": {
       "agencies": 143,
@@ -451,7 +451,7 @@
     },
     "scorecard_wheelchair_accessible_unknown": {
       "agencies": 1240,
-      "instances": 2071654,
+      "instances": 2071641,
       "prevalence_pct": 85.6
     },
     "scorecard_wheelchair_boarding_unknown": {
@@ -471,7 +471,7 @@
     },
     "service_window_outside_feed_period": {
       "agencies": 723,
-      "instances": 3084,
+      "instances": 3085,
       "prevalence_pct": 49.9
     },
     "single_shape_point": {
@@ -613,7 +613,7 @@
       "code": "scorecard_wheelchair_accessible_unknown",
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
-      "instances": 2071654,
+      "instances": 2071641,
       "prevalence_pct": 85.6,
       "severity": "WARNING",
       "source": "scorecard",
@@ -661,7 +661,7 @@
       "code": "service_window_outside_feed_period",
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
-      "instances": 3084,
+      "instances": 3085,
       "prevalence_pct": 49.9,
       "severity": "INFO",
       "source": "validator",
@@ -713,7 +713,7 @@
       "prevalence_pct": 42.6,
       "severity": "ERROR",
       "source": "scorecard",
-      "what": "Service data ended 2746 day(s) ago.",
+      "what": "Service data ended 2747 day(s) ago.",
       "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
     },
     {

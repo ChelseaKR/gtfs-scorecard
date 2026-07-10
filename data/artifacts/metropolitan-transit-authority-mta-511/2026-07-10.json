@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 1488,
-        "trips": 83588,
+        "trips": 83575,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 83588,
+          "count": 83575,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "83588 of 83588 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "83575 of 83575 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -131,7 +131,7 @@
         "distinct_codes": 4,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 74,
+          "INFO": 75,
           "WARNING": 14
         },
         "validator_version": "8.0.1"
@@ -172,7 +172,7 @@
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 74,
+          "count": 75,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -185,7 +185,7 @@
       "name": "correctness",
       "score": 85.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 4 kinds of issue across 88 instances (0 error, 14 warning, 74 informational).",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 89 instances (0 error, 14 warning, 75 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -250,8 +250,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "4410fe1bc6d66110c786001bd5760b131a4a58151d67e17d6a530dddc07a6719",
-    "size_bytes": 20877304,
+    "sha256": "c84a2b2c7c0d3952b9b6ed4690289350126ea186850131cd96114043de49ba01",
+    "size_bytes": 20874345,
     "static_url": "http://web.mta.info/developers/files/google_transit_supplemented.zip"
   },
   "fetch": {
@@ -361,7 +361,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 83588
+    "trips_total": 83575
   },
   "route_map": {
     "drawn_route_count": 29,
@@ -695,11 +695,11 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "70773 of 83588 trips have a shape; 12815 do not.",
+    "detail": "70822 of 83575 trips have a shape; 12753 do not.",
     "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
     "status": "at_risk",
-    "total_trips": 83588,
-    "trips_with_shape": 70773
+    "total_trips": 83575,
+    "trips_with_shape": 70822
   },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
@@ -717,14 +717,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 83588,
+      "count": 83575,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "83588 of 83588 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "83575 of 83575 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {

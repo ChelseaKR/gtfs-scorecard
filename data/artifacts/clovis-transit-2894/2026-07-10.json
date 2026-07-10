@@ -203,15 +203,13 @@
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 46,
-        "vehicles_on_route_pct": 100.0,
         "worst_lag_seconds": 3
       },
       "findings": [],
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 100.0% of vehicles on their route.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy.",
       "weight": 0.2
     }
   },
@@ -253,7 +251,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "bfe6270f7dc2c6364f18eb7890084549108c0e1024ed0540e8bdbca72e0a1260",
+    "sha256": "cc67d6905a1ce605ccc79891df9efa332191b8dc9564a076e4f3e2e4098605b2",
     "size_bytes": 67981,
     "static_url": "https://passio3.com/clovis/passioTransit/gtfs/google_transit.zip"
   },
