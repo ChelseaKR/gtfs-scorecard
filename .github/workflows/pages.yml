@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   workflow_call:
+    secrets:
+      PAGES_AWS_ROLE_ARN:
+        required: false
   workflow_dispatch:
 
 permissions:
