@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 127,
-        "trips": 2087,
+        "trips": 2088,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 100.0,
         "wheelchair_marked_accessible_pct": 96.1,
@@ -66,13 +66,13 @@
       "findings": [
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 2087,
+          "count": 2088,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "2087 of 2087 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2088 of 2088 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -224,7 +224,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 60 days.",
+        "detail": "Service data covers the next 59 days.",
         "key": "current",
         "met": true
       },
@@ -240,8 +240,8 @@
   "feed": {
     "license_note": "License: https://www.mta.info/developers",
     "reachable": true,
-    "sha256": "157c56e36b3bf4cac64f984f0847c8f3a40c83776561e5d23e31cedba284d9e3",
-    "size_bytes": 1838290,
+    "sha256": "ca66328834427c7c87c6d7a3c28a2da73fab45c48fda63ac67f7662e9506c9be",
+    "size_bytes": 1838579,
     "static_url": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip"
   },
   "fetch": {
@@ -250,7 +250,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.99358,
@@ -284,7 +284,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 60 days.",
+        "detail": "Service data covers the next 59 days.",
         "key": "current",
         "status": "ready"
       }
@@ -324,11 +324,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 127,
     "findings": [
@@ -346,7 +341,7 @@
     ],
     "orphan_stops": 1,
     "single_stop_trips": 0,
-    "trips_total": 2087
+    "trips_total": 2088
   },
   "route_map": {
     "drawn_route_count": 12,
@@ -504,36 +499,24 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 2087 trips have a shape in shapes.txt.",
+    "detail": "All 2088 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 2087,
-    "trips_with_shape": 2087
+    "total_trips": 2088,
+    "trips_with_shape": 2088
   },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 2087,
+      "count": 2088,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "2087 of 2087 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "2088 of 2088 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
-    },
-    {
-      "code": "scorecard_no_fare_data",
-      "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
-      "points": 15.0,
-      "rank": 2,
-      "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
     },
     {
       "code": "scorecard_missing_feed_info_dates",
@@ -542,10 +525,22 @@
       "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "feed_info.txt is missing its start/end dates",
       "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
     }
   ],
   "validator_version": "8.0.1"

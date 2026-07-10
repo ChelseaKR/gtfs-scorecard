@@ -65,6 +65,30 @@
       "code": "service_window_outside_feed_period",
       "last_seen": "2026-06-30",
       "what": "Service window outside feed period (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "block_trips_with_overlapping_stop_times",
+      "last_seen": "2026-07-09",
+      "what": "Block trips with overlapping stop times (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "feed_expiration_date30_days",
+      "last_seen": "2026-07-09",
+      "what": "This feed's service calendar runs out within the next 30 days."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_feed_expired",
+      "last_seen": "2026-07-09",
+      "what": "Service data ended 6 day(s) ago."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "service_window_outside_feed_period",
+      "last_seen": "2026-07-09",
+      "what": "Service window outside feed period (flagged by the MobilityData validator)."
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-10T12:32:02+00:00",
+  "generated_at": "2026-07-10T15:29:18+00:00",
   "license": "CC-BY-4.0",
   "points": [
     {
@@ -142,8 +142,8 @@
         "A": 50,
         "B": 236,
         "C": 285,
-        "D": 152,
-        "F": 726
+        "D": 151,
+        "F": 727
       }
     }
   ],
@@ -179,6 +179,16 @@
       "name": "Roaring Fork Transportation Authority",
       "score_end": 83.7,
       "score_start": 49.2
+    },
+    {
+      "date_end": "2026-07-10",
+      "date_start": "2026-06-19",
+      "delta": 31.7,
+      "grade_end": "C",
+      "id": "detroit-department-of-transportation-ddot",
+      "name": "Detroit Department of Transportation (DDOT)",
+      "score_end": 73.5,
+      "score_start": 41.8
     },
     {
       "date_end": "2026-07-10",
@@ -249,16 +259,6 @@
       "name": "Chittenden County Transportation Authority (CCTA)",
       "score_end": 81.1,
       "score_start": 56.3
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 24.8,
-      "grade_end": "D",
-      "id": "metropolitan-transit-authority-mta-514",
-      "name": "Staten Island Bus",
-      "score_end": 68.0,
-      "score_start": 43.2
     }
   ]
 }

@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 2283,
-        "trips": 2378,
+        "trips": 2444,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 2378,
+          "count": 2444,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "2378 of 2378 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2444 of 2444 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -106,18 +106,18 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 10,
+        "distinct_codes": 9,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 12,
-          "WARNING": 849
+          "WARNING": 969
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "trip_distance_exceeds_shape_distance_below_threshold",
-          "count": 388,
+          "count": 421,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -128,7 +128,7 @@
         },
         {
           "code": "stop_too_far_from_shape_using_user_distance",
-          "count": 170,
+          "count": 256,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_too_far_from_shape_using_user_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -139,7 +139,7 @@
         },
         {
           "code": "equal_shape_distance_same_coordinates",
-          "count": 138,
+          "count": 142,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'equal_shape_distance_same_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -169,17 +169,6 @@
           "severity": "WARNING",
           "what": "Route long name contains short name (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
-        },
-        {
-          "code": "stop_without_stop_time",
-          "count": 3,
-          "effort": "A review pass in your scheduling software.",
-          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "Some stops exist in the feed but no trip ever stops at them.",
-          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
         },
         {
           "code": "missing_feed_info_date",
@@ -227,17 +216,17 @@
         }
       ],
       "name": "correctness",
-      "score": 48.8,
+      "score": 52.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 10 kinds of issue across 861 instances (0 error, 849 warning, 12 informational).",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 981 instances (0 error, 969 warning, 12 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
         "days_until_expiry": 26837,
         "feed_end_date": null,
-        "feed_start_date": "2025-12-09",
-        "feed_version": "262-12/16/2025,272-SBC Autumn (Block Fix),265-SUN Summer",
+        "feed_start_date": "2025-12-15",
+        "feed_version": "262-12/16/2025,272-7/10/2026,265-SUN Summer",
         "has_feed_info": true,
         "last_service_date": "2099-12-31",
         "seasonal_boundary": false,
@@ -290,7 +279,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 26838 days.",
+        "detail": "Service data covers the next 26837 days.",
         "key": "current",
         "met": true
       },
@@ -306,8 +295,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "b446540f489e6378d1cf6cc6dda6090285577369ecb86a3c21ebf3dff982b616",
-    "size_bytes": 1911860,
+    "sha256": "93d6a23d65c5f7f4c8171d442614119a2489c5016d96f14a286835ffab666dfe",
+    "size_bytes": 1928608,
     "static_url": "https://tracksctbus.org/gtfs"
   },
   "fetch": {
@@ -316,7 +305,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.42902,
@@ -350,7 +339,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 26838 days.",
+        "detail": "Service data covers the next 26837 days.",
         "key": "current",
         "status": "ready"
       }
@@ -360,9 +349,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 56.7,
-    "margin_to_next_band": 3.3,
-    "score": 56.7
+    "margin_to_lower_band": 58.4,
+    "margin_to_next_band": 1.6,
+    "score": 58.4
   },
   "recommendations": [
     {
@@ -378,32 +367,15 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 2283,
-    "findings": [
-      {
-        "code": "scorecard_orphan_stops",
-        "count": 3,
-        "effort": "A cleanup pass in your scheduling software.",
-        "fix": "Remove stops no route serves, or add the trips that should call at them.",
-        "owner": "Likely your export tool",
-        "points": 0.0,
-        "severity": "INFO",
-        "what": "3 of 2283 boardable stops are never served by any trip.",
-        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
-      }
-    ],
-    "orphan_stops": 3,
+    "findings": [],
+    "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 2378
+    "trips_total": 2444
   },
   "route_map": {
-    "drawn_route_count": 24,
+    "drawn_route_count": 25,
     "has_shapes": true,
     "path": "data/artifacts/suffolk-county-transit-3115/geometry.geojson",
     "route_count": 25,
@@ -631,7 +603,7 @@
       {
         "color": "0454A2",
         "color_name": "teal",
-        "has_shape": false,
+        "has_shape": true,
         "id": "6879",
         "label": "15",
         "long": "15 - Babylon RR to Robert Moses State Park",
@@ -690,10 +662,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 2378 trips have a shape in shapes.txt.",
+    "detail": "All 2444 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 2378,
-    "trips_with_shape": 2378
+    "total_trips": 2444,
+    "trips_with_shape": 2444
   },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
@@ -711,27 +683,27 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 2378,
+      "count": 2444,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "2378 of 2378 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "2444 of 2444 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
-      "code": "scorecard_no_fare_data",
+      "code": "scorecard_missing_feed_info_dates",
       "count": 1,
-      "effort": "A small file for most flat-fare systems.",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
-      "owner": "",
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "The feed contains no fare information.",
-      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+      "what": "feed_info.txt is missing its start/end dates",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
     }
   ],
   "validator_version": "8.0.1"

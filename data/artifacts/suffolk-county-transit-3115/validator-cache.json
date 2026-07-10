@@ -41,7 +41,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 388
+        "total": 421
       },
       {
         "code": "stop_too_far_from_shape_using_user_distance",
@@ -113,7 +113,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 170
+        "total": 256
       },
       {
         "code": "equal_shape_distance_same_coordinates",
@@ -165,7 +165,7 @@
           }
         ],
         "severity": "WARNING",
-        "total": 138
+        "total": 142
       },
       {
         "code": "mixed_case_recommended_field",
@@ -242,28 +242,6 @@
         "total": 18
       },
       {
-        "code": "stop_without_stop_time",
-        "sample_notices": [
-          {
-            "csvRowNumber": 1540,
-            "stopId": "11284296",
-            "stopName": "Robert Moses State Park"
-          },
-          {
-            "csvRowNumber": 1555,
-            "stopId": "11284311",
-            "stopName": "Babylon LIRR (15)"
-          },
-          {
-            "csvRowNumber": 1978,
-            "stopId": "11284735",
-            "stopName": "Captree State Park Fishing Basin"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 3
-      },
-      {
         "code": "missing_feed_info_date",
         "sample_notices": [
           {
@@ -332,6 +310,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "b446540f489e6378d1cf6cc6dda6090285577369ecb86a3c21ebf3dff982b616",
+  "sha256": "93d6a23d65c5f7f4c8171d442614119a2489c5016d96f14a286835ffab666dfe",
   "validator_version": "8.0.1"
 }

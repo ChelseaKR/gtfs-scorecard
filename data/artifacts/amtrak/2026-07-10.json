@@ -57,7 +57,7 @@
           "pathway_count": 0
         },
         "stops": 646,
-        "trips": 2812,
+        "trips": 2865,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -77,13 +77,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 2812,
+          "count": 2865,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "2812 of 2812 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "2865 of 2865 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -109,7 +109,7 @@
         "distinct_codes": 9,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 734,
+          "INFO": 741,
           "WARNING": 400
         },
         "validator_version": "8.0.1"
@@ -183,7 +183,7 @@
         },
         {
           "code": "service_window_outside_feed_period",
-          "count": 367,
+          "count": 374,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -218,15 +218,15 @@
       "name": "correctness",
       "score": 59.5,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 9 kinds of issue across 1134 instances (0 error, 400 warning, 734 informational).",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 1141 instances (0 error, 400 warning, 741 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 6,
-        "feed_end_date": "2026-07-16",
-        "feed_start_date": "2026-07-10",
-        "feed_version": "20260709",
+        "days_until_expiry": 7,
+        "feed_end_date": "2026-07-17",
+        "feed_start_date": "2026-07-11",
+        "feed_version": "20260710",
         "has_feed_info": true,
         "last_service_date": "2027-07-05",
         "seasonal_boundary": false,
@@ -239,16 +239,16 @@
           "effort": "One export setting.",
           "fix": "Re-export with a validity window that reaches at least 60 days out.",
           "owner": "Likely your export tool",
-          "points": 74.0,
+          "points": 73.0,
           "severity": "WARNING",
-          "what": "Service data runs out in 6 day(s).",
+          "what": "Service data runs out in 7 day(s).",
           "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
         }
       ],
       "name": "freshness",
-      "score": 10.0,
+      "score": 11.7,
       "status": "measured",
-      "summary": "Service data runs out in 6 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data runs out in 7 day(s). Publish an updated feed soon or riders will lose trip planning.",
       "weight": 0.2
     },
     "realtime": {
@@ -295,8 +295,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "7f8db98db030c7812ec0f068a447d69e798ae626739d8fed4bb4cf1ea7fa67d3",
-    "size_bytes": 18514245,
+    "sha256": "6e217b4fb4a7a86a63f7fa2064f086399ef02ac3eb6f6b0c9398dcb7f24b05a2",
+    "size_bytes": 18548468,
     "static_url": "https://content.amtrak.com/content/gtfs/GTFS.zip"
   },
   "fetch": {
@@ -305,7 +305,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -124.16933,
@@ -366,9 +366,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 42.6,
-    "margin_to_next_band": 17.4,
-    "score": 42.6
+    "margin_to_lower_band": 43.0,
+    "margin_to_next_band": 17.0,
+    "score": 43.0
   },
   "recommendations": [
     {
@@ -384,17 +384,12 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 646,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 2812
+    "trips_total": 2865
   },
   "route_map": {
     "drawn_route_count": 44,
@@ -1080,11 +1075,11 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "2177 of 2812 trips have a shape; 635 do not.",
+    "detail": "2230 of 2865 trips have a shape; 635 do not.",
     "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
     "status": "at_risk",
-    "total_trips": 2812,
-    "trips_with_shape": 2177
+    "total_trips": 2865,
+    "trips_with_shape": 2230
   },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
@@ -1094,10 +1089,10 @@
       "effort": "One export setting.",
       "fix": "Re-export with a validity window that reaches at least 60 days out.",
       "owner": "Likely your export tool",
-      "points": 74.0,
+      "points": 73.0,
       "rank": 1,
       "severity": "WARNING",
-      "what": "Service data runs out in 6 day(s).",
+      "what": "Service data runs out in 7 day(s).",
       "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
     },
     {
@@ -1114,14 +1109,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 2812,
+      "count": 2865,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 3,
       "severity": "WARNING",
-      "what": "2812 of 2812 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "2865 of 2865 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     }
   ],

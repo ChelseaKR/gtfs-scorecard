@@ -2,135 +2,372 @@
   "report": {
     "notices": [
       {
-        "code": "fast_travel_between_consecutive_stops",
+        "code": "equal_shape_distance_same_coordinates",
         "sample_notices": [
           {
-            "arrivalTime2": "08:14:50",
-            "csvRowNumber1": 34700,
-            "csvRowNumber2": 34701,
-            "departureTime1": "08:14:40",
-            "distanceKm": 0.4430353153889642,
-            "routeId": "4",
-            "speedKph": 159.4927135400271,
-            "stopId1": "AB638",
-            "stopId2": "AB646",
-            "stopName1": "W Franklin Rd & S Phillippi St NWC",
-            "stopName2": "W Franklin Rd & S Curtis Rd NWC",
-            "stopSequence1": 13,
-            "stopSequence2": 14,
-            "tripCsvRowNumber": 1835,
-            "tripId": "3_-_New_Years_Eve-Th-4-A-TO-1-0800-75ec846"
+            "csvRowNumber": 9318,
+            "prevCsvRowNumber": 9317,
+            "prevShapeDistTraveled": 190.0932546946003,
+            "prevShapePtSequence": 3,
+            "shapeDistTraveled": 190.0932546946003,
+            "shapeId": "Vista to Airport - Outbound",
+            "shapePtSequence": 4
           },
           {
-            "arrivalTime2": "08:14:50",
-            "csvRowNumber1": 34700,
-            "csvRowNumber2": 34701,
-            "departureTime1": "08:14:40",
-            "distanceKm": 0.4430353153889642,
-            "routeId": "4",
-            "speedKph": 159.4927135400271,
-            "stopId1": "AB638",
-            "stopId2": "AB646",
-            "stopName1": "W Franklin Rd & S Phillippi St NWC",
-            "stopName2": "W Franklin Rd & S Curtis Rd NWC",
-            "stopSequence1": 13,
-            "stopSequence2": 14,
-            "tripCsvRowNumber": 806,
-            "tripId": "4_-_MLK_Day-Mo-4-A-TO-1-0800-363ae05"
+            "csvRowNumber": 9320,
+            "prevCsvRowNumber": 9319,
+            "prevShapeDistTraveled": 385.28769090330053,
+            "prevShapePtSequence": 5,
+            "shapeDistTraveled": 385.28769090330053,
+            "shapeId": "Vista to Airport - Outbound",
+            "shapePtSequence": 6
           },
           {
-            "arrivalTime2": "08:14:50",
-            "csvRowNumber1": 34700,
-            "csvRowNumber2": 34701,
-            "departureTime1": "08:14:40",
-            "distanceKm": 0.4430353153889642,
-            "routeId": "4",
-            "speedKph": 159.4927135400271,
-            "stopId1": "AB638",
-            "stopId2": "AB646",
-            "stopName1": "W Franklin Rd & S Phillippi St NWC",
-            "stopName2": "W Franklin Rd & S Curtis Rd NWC",
-            "stopSequence1": 13,
-            "stopSequence2": 14,
-            "tripCsvRowNumber": 3108,
-            "tripId": "5_-_Presidents_Day-Mo-4-A-TO-1-0800-c2a2c61"
+            "csvRowNumber": 9323,
+            "prevCsvRowNumber": 9322,
+            "prevShapeDistTraveled": 511.63028994344086,
+            "prevShapePtSequence": 8,
+            "shapeDistTraveled": 511.63028994344086,
+            "shapeId": "Vista to Airport - Outbound",
+            "shapePtSequence": 9
           },
           {
-            "arrivalTime2": "08:14:50",
-            "csvRowNumber1": 34700,
-            "csvRowNumber2": 34701,
-            "departureTime1": "08:14:40",
-            "distanceKm": 0.4430353153889642,
-            "routeId": "4",
-            "speedKph": 159.4927135400271,
-            "stopId1": "AB638",
-            "stopId2": "AB646",
-            "stopName1": "W Franklin Rd & S Phillippi St NWC",
-            "stopName2": "W Franklin Rd & S Curtis Rd NWC",
-            "stopSequence1": 13,
-            "stopSequence2": 14,
-            "tripCsvRowNumber": 3508,
-            "tripId": "1_-_Regular_Service-Weekday-4-A-TO-1-0800-d9658fe"
+            "csvRowNumber": 9325,
+            "prevCsvRowNumber": 9324,
+            "prevShapeDistTraveled": 584.0001019585325,
+            "prevShapePtSequence": 10,
+            "shapeDistTraveled": 584.0001019585325,
+            "shapeId": "Vista to Airport - Outbound",
+            "shapePtSequence": 11
           },
           {
-            "arrivalTime2": "08:14:50",
-            "csvRowNumber1": 34700,
-            "csvRowNumber2": 34701,
-            "departureTime1": "08:14:40",
-            "distanceKm": 0.4430353153889642,
-            "routeId": "4",
-            "speedKph": 159.4927135400271,
-            "stopId1": "AB638",
-            "stopId2": "AB646",
-            "stopName1": "W Franklin Rd & S Phillippi St NWC",
-            "stopName2": "W Franklin Rd & S Curtis Rd NWC",
-            "stopSequence1": 13,
-            "stopSequence2": 14,
-            "tripCsvRowNumber": 1959,
-            "tripId": "10_-_Veterans_Day-We-4-A-TO-1-0800-7de5f3e"
+            "csvRowNumber": 9328,
+            "prevCsvRowNumber": 9327,
+            "prevShapeDistTraveled": 746.2061865985823,
+            "prevShapePtSequence": 13,
+            "shapeDistTraveled": 746.2061865985823,
+            "shapeId": "Vista to Airport - Outbound",
+            "shapePtSequence": 14
           }
         ],
         "severity": "WARNING",
-        "total": 55
+        "total": 3134
       },
       {
-        "code": "stop_too_far_from_shape_using_user_distance",
+        "code": "leading_or_trailing_whitespaces",
         "sample_notices": [
           {
-            "geoDistanceToShape": 105.26633298136066,
-            "match": [
-              43.61127310345181,
-              -116.27554413792095
-            ],
-            "shapeId": "5-A-TO",
-            "stopId": "AB001",
-            "stopName": "Towne Square Mall P&R",
-            "stopTimeCsvRowNumber": 573,
-            "tripCsvRowNumber": 32,
-            "tripId": "4_-_MLK_Day-Mo-5-A-TO-1550-02082d0"
+            "csvRowNumber": 10528,
+            "fieldName": "shape_id",
+            "fieldValue": "VA_Hyde Park ",
+            "filename": "shapes.txt"
           },
           {
-            "geoDistanceToShape": 105.53950017832122,
-            "match": [
-              43.61127724329828,
-              -116.27554464849521
-            ],
-            "shapeId": "21-A-TO",
-            "stopId": "AB001",
-            "stopName": "Towne Square Mall P&R",
-            "stopTimeCsvRowNumber": 220,
-            "tripCsvRowNumber": 13,
-            "tripId": "8_-_Black_Friday-Fr-21-A-TO-0852-01092eb"
+            "csvRowNumber": 10529,
+            "fieldName": "shape_id",
+            "fieldValue": "VA_Hyde Park ",
+            "filename": "shapes.txt"
+          },
+          {
+            "csvRowNumber": 10530,
+            "fieldName": "shape_id",
+            "fieldValue": "VA_Hyde Park ",
+            "filename": "shapes.txt"
+          },
+          {
+            "csvRowNumber": 10531,
+            "fieldName": "shape_id",
+            "fieldValue": "VA_Hyde Park ",
+            "filename": "shapes.txt"
+          },
+          {
+            "csvRowNumber": 10532,
+            "fieldName": "shape_id",
+            "fieldValue": "VA_Hyde Park ",
+            "filename": "shapes.txt"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 181
+      },
+      {
+        "code": "stop_without_stop_time",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "stopId": "4",
+            "stopName": "12th & Iowa NEC"
+          },
+          {
+            "csvRowNumber": 3,
+            "stopId": "5",
+            "stopName": "12th & Iowa SWC"
+          },
+          {
+            "csvRowNumber": 4,
+            "stopId": "6",
+            "stopName": "12th & Lake Lowell NWC"
+          },
+          {
+            "csvRowNumber": 5,
+            "stopId": "7",
+            "stopName": "12th & Sheridan SWM"
+          },
+          {
+            "csvRowNumber": 6,
+            "stopId": "8",
+            "stopName": "12th & Sherman NWC"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 154
+      },
+      {
+        "code": "expired_calendar",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "serviceId": "547"
+          },
+          {
+            "csvRowNumber": 3,
+            "serviceId": "546"
+          },
+          {
+            "csvRowNumber": 4,
+            "serviceId": "540"
+          },
+          {
+            "csvRowNumber": 5,
+            "serviceId": "539"
+          },
+          {
+            "csvRowNumber": 6,
+            "serviceId": "538"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 62
+      },
+      {
+        "code": "fast_travel_between_consecutive_stops",
+        "sample_notices": [
+          {
+            "arrivalTime2": "17:15:30",
+            "csvRowNumber1": 17337,
+            "csvRowNumber2": 17338,
+            "departureTime1": "17:15:15",
+            "distanceKm": 0.6334825391942418,
+            "routeId": "4 - Roosevelt",
+            "speedKph": 152.03580940661806,
+            "stopId1": "206",
+            "stopId2": "324",
+            "stopName1": "Boise Airport",
+            "stopName2": "W Elder St & W Sunrise Rim Rd NWC",
+            "stopSequence1": 1,
+            "stopSequence2": 2,
+            "tripCsvRowNumber": 845,
+            "tripId": "681-763_6_20201109_20211001_20210222_99991231"
+          },
+          {
+            "arrivalTime2": "12:16:10",
+            "csvRowNumber1": 14433,
+            "csvRowNumber2": 14434,
+            "departureTime1": "12:16:00",
+            "distanceKm": 0.4755072418951183,
+            "routeId": "8 - Five Mile",
+            "speedKph": 171.18260708224258,
+            "stopId1": "407",
+            "stopId2": "399",
+            "stopName1": "N Five Mile Rd & W Cranberry St SWM",
+            "stopName2": "N Five Mile Rd & W Goldenrod Ave NWC",
+            "stopSequence1": 3,
+            "stopSequence2": 4,
+            "tripCsvRowNumber": 699,
+            "tripId": "573-752_3_20201001_20211001_20210331_99991231"
+          },
+          {
+            "arrivalTime2": "06:48:52",
+            "csvRowNumber1": 13569,
+            "csvRowNumber2": 13570,
+            "departureTime1": "06:47:52",
+            "distanceKm": 3.8329391855114636,
+            "routeId": "45 - BSU Express",
+            "speedKph": 229.97635113068782,
+            "stopId1": "425",
+            "stopId2": "363",
+            "stopName1": "W Front St & S 9th St NEC",
+            "stopName2": "W Fairview Ave & N Curtis Rd NEC",
+            "stopSequence1": 4,
+            "stopSequence2": 5,
+            "tripCsvRowNumber": 658,
+            "tripId": "11262"
+          },
+          {
+            "arrivalTime2": "14:16:10",
+            "csvRowNumber1": 14481,
+            "csvRowNumber2": 14482,
+            "departureTime1": "14:16:00",
+            "distanceKm": 0.4755072418951183,
+            "routeId": "8 - Five Mile",
+            "speedKph": 171.18260708224258,
+            "stopId1": "407",
+            "stopId2": "399",
+            "stopName1": "N Five Mile Rd & W Cranberry St SWM",
+            "stopName2": "N Five Mile Rd & W Goldenrod Ave NWC",
+            "stopSequence1": 3,
+            "stopSequence2": 4,
+            "tripCsvRowNumber": 701,
+            "tripId": "577-752_3_20201001_20211001_20210331_99991231"
+          },
+          {
+            "arrivalTime2": "17:03:30",
+            "csvRowNumber1": 14766,
+            "csvRowNumber2": 14767,
+            "departureTime1": "17:02:30",
+            "distanceKm": 4.729146355503137,
+            "routeId": "40 - Nampa/Meridian Express",
+            "speedKph": 283.74878133018825,
+            "stopId1": "419",
+            "stopId2": "731",
+            "stopName1": "E Franklin Rd & N Robinson Rd SEC",
+            "stopName2": "S Ten Mile Rd & S Vanguard Way SWC",
+            "stopSequence1": 14,
+            "stopSequence2": 15,
+            "tripCsvRowNumber": 711,
+            "tripId": "11350"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 46
+      },
+      {
+        "code": "missing_recommended_field",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "fieldName": "agency_id",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 3,
+            "fieldName": "agency_id",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 4,
+            "fieldName": "agency_id",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 5,
+            "fieldName": "agency_id",
+            "filename": "routes.txt"
+          },
+          {
+            "csvRowNumber": 6,
+            "fieldName": "agency_id",
+            "filename": "routes.txt"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 22
+      },
+      {
+        "code": "route_long_name_contains_short_name",
+        "sample_notices": [
+          {
+            "csvRowNumber": 2,
+            "routeId": "1 - Harris Ranch via Parkcenter",
+            "routeLongName": "1 - Harris Ranch via Parkcenter",
+            "routeShortName": "1"
+          },
+          {
+            "csvRowNumber": 3,
+            "routeId": "2 - Broadway",
+            "routeLongName": "2 - Broadway",
+            "routeShortName": "2"
+          },
+          {
+            "csvRowNumber": 4,
+            "routeId": "3 - Vista",
+            "routeLongName": "3 - Vista",
+            "routeShortName": "3"
+          },
+          {
+            "csvRowNumber": 5,
+            "routeId": "4 - Roosevelt",
+            "routeLongName": "4 - Roosevelt",
+            "routeShortName": "4"
+          },
+          {
+            "csvRowNumber": 6,
+            "routeId": "5 - Emerald",
+            "routeLongName": "5 - Emerald",
+            "routeShortName": "5"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 22
+      },
+      {
+        "code": "fast_travel_between_far_stops",
+        "sample_notices": [
+          {
+            "arrivalTime2": "06:35:13",
+            "csvRowNumber1": 13467,
+            "csvRowNumber2": 13468,
+            "departureTime1": "06:23:00",
+            "distanceKm": 38.414292587322976,
+            "routeId": "43 - Caldwell Express",
+            "speedKph": 188.6650113429232,
+            "stopId1": "254",
+            "stopId2": "482",
+            "stopName1": "E Chicago St & N 12th Ave SWC",
+            "stopName2": "W Main St & S 11th St SWC",
+            "stopSequence1": 5,
+            "stopSequence2": 6,
+            "tripCsvRowNumber": 652,
+            "tripId": "239-725_5_20201112_20211001_20201211_99991231"
+          },
+          {
+            "arrivalTime2": "17:40:30",
+            "csvRowNumber1": 13488,
+            "csvRowNumber2": 13489,
+            "departureTime1": "17:31:50",
+            "distanceKm": 38.42177482742967,
+            "routeId": "43 - Caldwell Express",
+            "speedKph": 265.9969026514362,
+            "stopId1": "457",
+            "stopId2": "253",
+            "stopName1": "W Idaho St & N 11th St NWC",
+            "stopName2": "E Chicago St & N 12th Ave NEC",
+            "stopSequence1": 9,
+            "stopSequence2": 10,
+            "tripCsvRowNumber": 653,
+            "tripId": "242-726_4_20201112_20211001_20210112_99991231"
           }
         ],
         "severity": "WARNING",
         "total": 2
       },
       {
-        "code": "missing_feed_contact_email_and_url",
+        "code": "missing_recommended_file",
         "sample_notices": [
           {
-            "csvRowNumber": 2
+            "filename": "feed_info.txt"
+          }
+        ],
+        "severity": "WARNING",
+        "total": 1
+      },
+      {
+        "code": "trip_coverage_not_active_for_next7_days",
+        "sample_notices": [
+          {
+            "currentDate": "20260710",
+            "serviceWindowEndDate": "20250929",
+            "serviceWindowStartDate": "20210503"
           }
         ],
         "severity": "WARNING",
@@ -140,27 +377,37 @@
         "code": "unknown_column",
         "sample_notices": [
           {
-            "fieldName": "block_service_id",
-            "filename": "trips.txt",
-            "index": 11
-          },
-          {
-            "fieldName": "block_name",
-            "filename": "trips.txt",
-            "index": 12
-          },
-          {
             "fieldName": "service_name",
             "filename": "calendar.txt",
             "index": 11
+          },
+          {
+            "fieldName": "eta_schedule_id",
+            "filename": "calendar.txt",
+            "index": 12
+          },
+          {
+            "fieldName": "eta_corridor_id",
+            "filename": "routes.txt",
+            "index": 11
+          },
+          {
+            "fieldName": "eta_pattern_id",
+            "filename": "shapes.txt",
+            "index": 6
+          },
+          {
+            "fieldName": "eta_station_id",
+            "filename": "stops.txt",
+            "index": 13
           }
         ],
         "severity": "INFO",
-        "total": 3
+        "total": 8
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "5db37d0482df30068062a1455619078e64ece9b547c45f92daaf5b676fc7afc9",
+  "sha256": "854f59759f18395e1304fc57e6bef0cfced68f994860d82589a6454a0eb5a39b",
   "validator_version": "8.0.1"
 }

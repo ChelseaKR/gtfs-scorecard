@@ -137,6 +137,24 @@
       "code": "stop_too_far_from_shape_using_user_distance",
       "last_seen": "2026-07-05",
       "what": "Stop too far from shape using user distance (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "missing_feed_contact_email_and_url",
+      "last_seen": "2026-07-09",
+      "what": "Missing feed contact email and url (flagged by the MobilityData validator)."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "scorecard_no_fare_data",
+      "last_seen": "2026-07-09",
+      "what": "The feed contains no fare information."
+    },
+    {
+      "cleared": "2026-07-10",
+      "code": "stop_too_far_from_shape_using_user_distance",
+      "last_seen": "2026-07-09",
+      "what": "Stop too far from shape using user distance (flagged by the MobilityData validator)."
     }
   ]
 }
