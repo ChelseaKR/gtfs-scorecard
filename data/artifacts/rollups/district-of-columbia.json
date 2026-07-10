@@ -28,15 +28,15 @@
     "stale": 6,
     "total": 6
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "F": 6
   },
   "members": [
     {
-      "annual_trips": null,
+      "annual_trips": 262474117,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -636,
+      "days_until_expiry": -637,
       "expiry_status": "stale",
       "grade": "F",
       "id": "washington-metropolitan-area-transit-authority-wmata-1847",
@@ -44,7 +44,21 @@
       "needs_attention": true,
       "score": 26.7,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": 262474117,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -566,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "washington-metropolitan-area-transit-authority-wmata",
+      "name": "Bus",
+      "needs_attention": true,
+      "score": 39.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -58,20 +72,6 @@
       "needs_attention": true,
       "score": 39.4,
       "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -565,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "washington-metropolitan-area-transit-authority-wmata",
-      "name": "Bus",
-      "needs_attention": true,
-      "score": 39.9,
-      "shapes_status": "ready",
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -106,7 +106,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -374,
+      "days_until_expiry": -375,
       "expiry_status": "stale",
       "grade": "F",
       "id": "dc-streetcar-2223",
@@ -114,7 +114,7 @@
       "needs_attention": true,
       "score": 57.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     }
   ],

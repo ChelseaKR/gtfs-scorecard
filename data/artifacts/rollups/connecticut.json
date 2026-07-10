@@ -43,7 +43,7 @@
     "stale": 7,
     "total": 7
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 5,
@@ -54,7 +54,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1651,
+      "days_until_expiry": -1652,
       "expiry_status": "stale",
       "grade": "F",
       "id": "norwalk-transit-district",
@@ -62,7 +62,7 @@
       "needs_attention": true,
       "score": 20.9,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -124,7 +124,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -555,
+      "days_until_expiry": -556,
       "expiry_status": "stale",
       "grade": "F",
       "id": "shore-line-east",
@@ -132,13 +132,13 @@
       "needs_attention": true,
       "score": 47.9,
       "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1140,
+      "days_until_expiry": -1141,
       "expiry_status": "stale",
       "grade": "F",
       "id": "connecticut-transit-597",
@@ -146,7 +146,7 @@
       "needs_attention": true,
       "score": 58.3,
       "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -164,7 +164,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 12658139,
       "attention_reason": null,
       "days_until_expiry": 184,
       "expiry_status": "current",
@@ -248,7 +248,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 12658139,
       "attention_reason": null,
       "days_until_expiry": 113,
       "expiry_status": "current",

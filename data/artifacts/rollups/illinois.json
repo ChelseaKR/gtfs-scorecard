@@ -53,7 +53,7 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "B": 1,
     "C": 3,
@@ -106,7 +106,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -2503,
+      "days_until_expiry": -2504,
       "expiry_status": "stale",
       "grade": "F",
       "id": "connect-transit-1238",
@@ -114,13 +114,13 @@
       "needs_attention": true,
       "score": 37.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -831,
+      "days_until_expiry": -832,
       "expiry_status": "stale",
       "grade": "F",
       "id": "pace-bus",
@@ -128,7 +128,7 @@
       "needs_attention": true,
       "score": 46.9,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -162,15 +162,15 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -33,
+      "days_until_expiry": -34,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "springfield-mass-transit-district-smtd",
       "name": "Springfield Mass Transit District (SMTD)",
       "needs_attention": true,
-      "score": 55.8,
+      "score": 55.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -216,7 +216,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 35051943,
       "attention_reason": null,
       "days_until_expiry": null,
       "expiry_status": "unknown",
@@ -226,11 +226,11 @@
       "needs_attention": false,
       "score": 34.2,
       "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 35051943,
       "attention_reason": null,
       "days_until_expiry": null,
       "expiry_status": "unknown",

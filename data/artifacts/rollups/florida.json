@@ -93,7 +93,7 @@
     "stale": 26,
     "total": 30
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "A": 4,
     "C": 6,
@@ -146,7 +146,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -440,
+      "days_until_expiry": -441,
       "expiry_status": "stale",
       "grade": "F",
       "id": "breeze-transit",
@@ -154,13 +154,13 @@
       "needs_attention": true,
       "score": 31.7,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -33,
+      "days_until_expiry": -34,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "pinellas-suncoast-transit-authority-psta",
@@ -168,7 +168,7 @@
       "needs_attention": true,
       "score": 34.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -356,7 +356,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -555,
+      "days_until_expiry": -556,
       "expiry_status": "stale",
       "grade": "F",
       "id": "citrus-county-transit-2257",
@@ -364,7 +364,7 @@
       "needs_attention": true,
       "score": 48.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -552,7 +552,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1651,
+      "days_until_expiry": -1652,
       "expiry_status": "stale",
       "grade": "F",
       "id": "sanford-trolley",
@@ -560,7 +560,7 @@
       "needs_attention": true,
       "score": 57.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -678,7 +678,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 504,
+      "days_until_expiry": 503,
       "expiry_status": "current",
       "grade": "D",
       "id": "south-florida-regional-transportation-authority-tri-rail",
@@ -686,7 +686,7 @@
       "needs_attention": false,
       "score": 67.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
@@ -706,7 +706,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 8577,
+      "days_until_expiry": 8576,
       "expiry_status": "current",
       "grade": "D",
       "id": "i-ride-trolley-i-ride",
@@ -714,7 +714,7 @@
       "needs_attention": false,
       "score": 69.5,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
@@ -776,7 +776,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 295,
+      "days_until_expiry": 294,
       "expiry_status": "current",
       "grade": "C",
       "id": "brightline-trains-llc",
@@ -784,7 +784,7 @@
       "needs_attention": false,
       "score": 79.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Review the rule documentation for 'invalid_phone_number' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {

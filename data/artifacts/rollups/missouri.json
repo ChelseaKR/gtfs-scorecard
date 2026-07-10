@@ -38,7 +38,7 @@
     "stale": 3,
     "total": 3
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "C": 1,
     "D": 1,
@@ -48,7 +48,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1524,
+      "days_until_expiry": -1525,
       "expiry_status": "stale",
       "grade": "F",
       "id": "madison-county-transit-1145",
@@ -56,7 +56,7 @@
       "needs_attention": true,
       "score": 7.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -143,5 +143,5 @@
     "ready": 2,
     "total": 6
   },
-  "state_percentile": 13
+  "state_percentile": 15
 }

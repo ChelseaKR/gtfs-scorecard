@@ -101,7 +101,7 @@
           {
             "daysAfterFeedEnd": 53,
             "daysBeforeFeedStart": 0,
-            "serviceId": "SIR-FA2017-SI017-Weekday-08_C69",
+            "serviceId": "BSP26GEN-D085-Weekday-00_C28",
             "serviceWindowEndDate": "2026-10-30",
             "serviceWindowStartDate": "2026-05-18"
           },
@@ -115,31 +115,31 @@
           {
             "daysAfterFeedEnd": 53,
             "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-D085-Weekday-00_C27",
-            "serviceWindowEndDate": "2026-10-30",
-            "serviceWindowStartDate": "2026-05-18"
-          },
-          {
-            "daysAfterFeedEnd": 53,
-            "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-F081-Weekday-00_C30",
+            "serviceId": "BSP26GEN-F081-Weekday-00_C31",
             "serviceWindowEndDate": "2026-10-30",
             "serviceWindowStartDate": "2026-05-18"
           },
           {
             "daysAfterFeedEnd": 48,
             "daysBeforeFeedStart": 0,
-            "serviceId": "BSP26GEN-D044-Sunday-00_C50",
+            "serviceId": "BSP26GEN-FS013-Sunday-00",
             "serviceWindowEndDate": "2026-10-25",
             "serviceWindowStartDate": "2026-05-17"
+          },
+          {
+            "daysAfterFeedEnd": 54,
+            "daysBeforeFeedStart": 0,
+            "serviceId": "BSP26GEN-FS012-Saturday-00",
+            "serviceWindowEndDate": "2026-10-31",
+            "serviceWindowStartDate": "2026-05-23"
           }
         ],
         "severity": "INFO",
-        "total": 73
+        "total": 74
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "2cecdc7335b8f058e661a069c6652c26ca7fb839966a5afad31a3a15822b010a",
+  "sha256": "4410fe1bc6d66110c786001bd5760b131a4a58151d67e17d6a530dddc07a6719",
   "validator_version": "8.0.1"
 }

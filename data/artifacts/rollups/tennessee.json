@@ -43,13 +43,27 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "C": 2,
     "D": 2,
     "F": 7
   },
   "members": [
+    {
+      "annual_trips": 2703778,
+      "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
+      "days_until_expiry": 30,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "county-connection-cccta-2421",
+      "name": "County Connection (CCCTA)",
+      "needs_attention": true,
+      "score": 62.5,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -67,7 +81,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -691,
+      "days_until_expiry": -692,
       "expiry_status": "stale",
       "grade": "F",
       "id": "chattanooga-area-regional-transportation-authority-carta-2082",
@@ -75,13 +89,13 @@
       "needs_attention": true,
       "score": 32.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1524,
+      "days_until_expiry": -1525,
       "expiry_status": "stale",
       "grade": "F",
       "id": "chattanooga-area-regional-transportation-authority-carta",
@@ -89,13 +103,13 @@
       "needs_attention": true,
       "score": 33.8,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -486,
+      "days_until_expiry": -487,
       "expiry_status": "stale",
       "grade": "F",
       "id": "memphis-area-transit-authority-2352",
@@ -103,7 +117,7 @@
       "needs_attention": true,
       "score": 40.3,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -136,20 +150,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
-      "days_until_expiry": 30,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "county-connection-cccta-2421",
-      "name": "County Connection (CCCTA)",
-      "needs_attention": true,
-      "score": 62.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data expires in 23 day(s)",
       "days_until_expiry": 23,
       "expiry_status": "expiring_soon",
@@ -179,7 +179,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 26838,
+      "days_until_expiry": 26837,
       "expiry_status": "current",
       "grade": "F",
       "id": "knoxville-area-transit-kat",
@@ -187,7 +187,7 @@
       "needs_attention": false,
       "score": 56.8,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {

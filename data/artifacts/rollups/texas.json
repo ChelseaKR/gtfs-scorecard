@@ -48,7 +48,7 @@
     "stale": 4,
     "total": 5
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 4,
@@ -57,9 +57,9 @@
   },
   "members": [
     {
-      "annual_trips": null,
+      "annual_trips": 30716511,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -795,
+      "days_until_expiry": -796,
       "expiry_status": "stale",
       "grade": "F",
       "id": "via-metropolitan-transit-via",
@@ -67,8 +67,36 @@
       "needs_attention": true,
       "score": 12.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": 30716511,
+      "attention_reason": "Service data expires in 45 day(s)",
+      "days_until_expiry": 45,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "via-metropolitan-transit-via-2348",
+      "name": "VIA Metropolitan Transit (VIA)",
+      "needs_attention": true,
+      "score": 51.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": 26473441,
+      "attention_reason": "Score changed sharply on 2026-07-05",
+      "days_until_expiry": 37,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "capital-metro",
+      "name": "Capital Metro",
+      "needs_attention": true,
+      "score": 73.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-09",
+      "top_fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -101,7 +129,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -415,
+      "days_until_expiry": -416,
       "expiry_status": "stale",
       "grade": "F",
       "id": "corpus-christi-regional-transportation-authority",
@@ -109,7 +137,7 @@
       "needs_attention": true,
       "score": 40.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -129,30 +157,16 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1651,
+      "days_until_expiry": -1652,
       "expiry_status": "stale",
       "grade": "F",
       "id": "amarillo-city-transit",
       "name": "Amarillo City Transit",
       "needs_attention": true,
       "score": 50.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 45 day(s)",
-      "days_until_expiry": 45,
-      "expiry_status": "current",
-      "grade": "F",
-      "id": "via-metropolitan-transit-via-2348",
-      "name": "VIA Metropolitan Transit (VIA)",
-      "needs_attention": true,
-      "score": 51.1,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
@@ -195,20 +209,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-09",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Score changed sharply on 2026-07-05",
-      "days_until_expiry": 37,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "capital-metro",
-      "name": "Capital Metro",
-      "needs_attention": true,
-      "score": 73.2,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
     },
     {
       "annual_trips": null,
@@ -303,9 +303,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 11,
+    "not_measured": 10,
     "not_ready": 0,
-    "ready": 6,
+    "ready": 7,
     "total": 17
   },
   "state_percentile": 54

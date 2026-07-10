@@ -13,7 +13,7 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 26,
+      "agencies": 25,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
@@ -28,7 +28,7 @@
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
     },
     {
-      "agencies": 11,
+      "agencies": 12,
       "code": "scorecard_feed_expiring_soon",
       "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -78,7 +78,7 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-09T23:54:38+00:00",
+  "generated_at": "2026-07-10T01:11:50+00:00",
   "grade_distribution": {
     "B": 17,
     "C": 23,
@@ -87,37 +87,9 @@
   },
   "members": [
     {
-      "annual_trips": null,
+      "annual_trips": 1589693,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -578,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "potomac-and-rappahannock-transportation-commission-prtc",
-      "name": "Potomac and Rappahannock Transportation Commission (PRTC)",
-      "needs_attention": true,
-      "score": 19.0,
-      "shapes_status": "at_risk",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -921,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "fredericksburg-regional-transit",
-      "name": "Fredericksburg Regional Transit",
-      "needs_attention": true,
-      "score": 25.8,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -587,
+      "days_until_expiry": -588,
       "expiry_status": "stale",
       "grade": "F",
       "id": "virginia-railway-express-vre",
@@ -125,13 +97,41 @@
       "needs_attention": true,
       "score": 28.3,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1888,
+      "days_until_expiry": -579,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "potomac-and-rappahannock-transportation-commission-prtc",
+      "name": "Potomac and Rappahannock Transportation Commission (PRTC)",
+      "needs_attention": true,
+      "score": 19.0,
+      "shapes_status": "at_risk",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -922,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "fredericksburg-regional-transit",
+      "name": "Fredericksburg Regional Transit",
+      "needs_attention": true,
+      "score": 25.8,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1889,
       "expiry_status": "stale",
       "grade": "F",
       "id": "harrisonburg-department-of-public-transportation-hdpt",
@@ -139,13 +139,13 @@
       "needs_attention": true,
       "score": 30.4,
       "shapes_status": "at_risk",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -782,
+      "days_until_expiry": -783,
       "expiry_status": "stale",
       "grade": "F",
       "id": "grtc-transit-system",
@@ -153,7 +153,7 @@
       "needs_attention": true,
       "score": 31.8,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -229,7 +229,7 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1470,
+      "days_until_expiry": -1471,
       "expiry_status": "stale",
       "grade": "F",
       "id": "pulaski-area-transit-pat",
@@ -237,7 +237,7 @@
       "needs_attention": true,
       "score": 42.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
@@ -326,30 +326,30 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "radford-transit",
       "name": "Radford Transit",
       "needs_attention": true,
-      "score": 54.8,
+      "score": 52.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
+      "attention_reason": "Service data expires in 21 day(s)",
+      "days_until_expiry": 21,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "blacksburg-transit",
       "name": "Blacksburg Transit",
       "needs_attention": true,
-      "score": 57.4,
+      "score": 57.0,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
@@ -573,7 +573,7 @@
       "needs_attention": false,
       "score": 26.2,
       "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     },
     {
@@ -649,7 +649,7 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 4953,
+      "days_until_expiry": 4952,
       "expiry_status": "current",
       "grade": "D",
       "id": "fairfax-cue-bus-cue",
@@ -657,13 +657,13 @@
       "needs_attention": false,
       "score": 68.3,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 4953,
+      "days_until_expiry": 4952,
       "expiry_status": "current",
       "grade": "D",
       "id": "fairfax-cue-bus-cue-484",
@@ -671,11 +671,11 @@
       "needs_attention": false,
       "score": 68.3,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-09",
+      "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": null,
+      "annual_trips": 2458738,
       "attention_reason": null,
       "days_until_expiry": 326,
       "expiry_status": "current",
@@ -1150,5 +1150,5 @@
     "ready": 23,
     "total": 75
   },
-  "state_percentile": 80
+  "state_percentile": 83
 }
