@@ -417,24 +417,9 @@
   footer a:hover { text-decoration: underline; }
   footer .disc { max-width: 58ch; }
 
-  /* ===================================================================
-     RECENTLY IMPROVED — live movers from the changes feed
-     =================================================================== */
-  /* cream, so it reads distinct from the paper-2 "who" band just above it */
+  /* cream, so the recent-change band reads distinctly from the paper-2
+     directory band just above it */
   .improved { background: var(--paper); }
-  .movers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2.4rem; }
-  .mover-card {
-    display: block; text-decoration: none;
-    background: var(--paper); border: 1.5px solid var(--line-ink); border-radius: var(--radius);
-    padding: 1.3rem 1.4rem; transition: transform .15s ease, border-color .15s ease;
-  }
-  .mover-card:hover { transform: translateY(-3px); border-color: var(--green); }
-  .mover-card .mname { font-family: var(--display); font-weight: 700; font-size: 1.12rem;
-    margin: 0 0 .55rem; letter-spacing: -.01em; color: var(--ink); }
-  .mover-card .mgrade { font-family: var(--mono); font-size: .82rem; color: var(--ink-soft); }
-  .mover-card .mgrade b { color: var(--ink); font-weight: 600; }
-  .mover-card .mdelta { display: flex; align-items: center; gap: .35rem; margin-top: .65rem;
-    font-family: var(--mono); font-weight: 600; font-size: .82rem; color: var(--green); }
   .movers-fallback { color: var(--ink-soft); margin: 2.4rem 0 0; }
   /* sample-card accessibility sub-bar */
   .bar.subbar { font-size: .76rem; }
@@ -448,7 +433,6 @@
     .topbar nav { display: none; }
     .board .wrap { grid-template-columns: 1fr 1fr; }
     .who-grid { grid-template-columns: 1fr; }
-    .movers { grid-template-columns: 1fr; }
     .hero .route { left: 4%; }
     /* Stack the four stops; the horizontal route line and dots are desktop-only. */
     .stops { grid-template-columns: 1fr; padding-top: 0; gap: 1.8rem; }
@@ -697,7 +681,7 @@
   </div>
 </section>
 
-<!-- recently improved (live movers) -->
+<!-- recent changes -->
 <section class="band improved" aria-labelledby="improved-h">
   <div class="wrap">
     <div class="sect-head">
@@ -707,8 +691,7 @@
       </div>
       <p class="sectlede">Some feeds get better every day. A few that improved since their last check.</p>
     </div>
-    <div class="movers" id="movers" hidden></div>
-    <p class="movers-fallback" id="movers-fallback">See which agencies improved or slipped on the <a href="/pulse/#changes">national pulse</a> page.</p>
+    <p class="movers-fallback">See which agencies improved or slipped on the <a href="/pulse/#changes">national pulse</a> page.</p>
     <p style="margin-top:1.8rem"><a class="btn btn-ink" href="/pulse/#changes">See what changed <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
   </div>
 </section>
@@ -721,37 +704,6 @@
     <a class="btn btn-primary" href="/app/">Open the scorecard <span class="arrow" aria-hidden="true">&rarr;</span></a>
   </div>
 </section>
-
-<script>
-  // Fill the "recently improved" strip from the same change feed the
-  // /changes/ page uses. The static fallback link stands if this fails.
-  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  fetch("/data/artifacts/changes/latest.json")
-    .then((r) => (r.ok ? r.json() : null))
-    .then((d) => {
-      const items = ((d && d.changes) || [])
-        .filter((c) => !c.regressed && c.score_delta > 0)
-        .sort((a, b) => b.score_delta - a.score_delta)
-        .slice(0, 3);
-      if (!items.length) return;
-      const movers = document.getElementById("movers");
-      movers.innerHTML = items.map((c) => {
-        const grade = c.from_grade === c.to_grade
-          ? esc(c.to_grade)
-          : `${esc(c.from_grade)} &rarr; ${esc(c.to_grade)}`;
-        return `<a class="mover-card" href="/agency/${encodeURIComponent(c.id)}/">`
-          + `<p class="mname">${esc(c.name)}</p>`
-          + `<span class="mgrade">Grade <b>${grade}</b></span>`
-          + `<span class="mdelta"><span aria-hidden="true">&#9650;</span> up ${Math.round(Number(c.score_delta))} points</span>`
-          + `</a>`;
-      }).join("");
-      movers.hidden = false;
-      const fb = document.getElementById("movers-fallback");
-      if (fb) fb.hidden = true;
-    })
-    .catch(() => {});
-</script>
 
 <footer>
   <div class="wrap">
