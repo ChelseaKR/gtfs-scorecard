@@ -17,6 +17,7 @@ scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity st
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
 scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
 scorecard evidence-packet artifact.json [--format markdown]  # vendor remediation record
+scorecard fix-outcomes [--format markdown]          # observed resolution and recurrence
 """
 
 from __future__ import annotations
@@ -704,6 +705,40 @@ def _cmd_evidence_packet(args: argparse.Namespace, parser: argparse.ArgumentPars
     if args.out:
         Path(args.out).write_text(output)
         log.info("Wrote vendor evidence packet to %s", args.out)
+    else:
+        print(output, end="")
+    return 0
+
+
+def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Measure finding resolution and recurrence from dated artifacts on disk."""
+    from .config import artifacts_dir
+    from .outcomes import build_fix_outcomes, render_fix_outcomes_markdown
+    from .publish import RESERVED_ARTIFACT_DIRS
+
+    histories: dict[str, list[dict[str, Any]]] = {}
+    root = artifacts_dir()
+    if root.exists():
+        for agency_dir in sorted(path for path in root.iterdir() if path.is_dir()):
+            if agency_dir.name in RESERVED_ARTIFACT_DIRS:
+                continue
+            artifacts: list[dict[str, Any]] = []
+            for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
+                try:
+                    artifacts.append(json.loads(dated.read_text()))
+                except (OSError, json.JSONDecodeError):
+                    continue
+            if artifacts:
+                histories[agency_dir.name] = artifacts
+    report = build_fix_outcomes(histories)
+    output = (
+        render_fix_outcomes_markdown(report, min_episodes=args.min_episodes)
+        if args.format == "markdown"
+        else json.dumps(report, indent=2, sort_keys=True) + "\n"
+    )
+    if args.out:
+        Path(args.out).write_text(output)
+        log.info("Wrote finding outcome report to %s", args.out)
     else:
         print(output, end="")
     return 0
@@ -2016,6 +2051,24 @@ def main(argv: list[str] | None = None) -> int:
     evidence_packet.add_argument("--scorecard-url", help="override the canonical scorecard URL")
     evidence_packet.add_argument("--out", help="write the packet here instead of stdout")
 
+    fix_outcomes = sub.add_parser(
+        "fix-outcomes",
+        help="measure finding resolution time and recurrence from dated artifact history",
+    )
+    fix_outcomes.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+        help="output format (default: json)",
+    )
+    fix_outcomes.add_argument(
+        "--min-episodes",
+        type=int,
+        default=1,
+        help="minimum episodes per code in Markdown output (default: 1)",
+    )
+    fix_outcomes.add_argument("--out", help="write the report here instead of stdout")
+
     dataset = sub.add_parser("dataset", help="build the open national quality dataset (JSON + CSV)")
     dataset.add_argument("--out", help="write dataset.json (and a sibling .csv) here")
 
@@ -2272,6 +2325,7 @@ def main(argv: list[str] | None = None) -> int:
         "vendor-report": _cmd_vendor_report,
         "vendor-radar": _cmd_vendor_radar,
         "evidence-packet": _cmd_evidence_packet,
+        "fix-outcomes": _cmd_fix_outcomes,
         "dataset": _cmd_dataset,
         "sensitivity": _cmd_sensitivity,
         "ntd": _cmd_ntd,
