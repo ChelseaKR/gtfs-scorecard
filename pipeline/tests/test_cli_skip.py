@@ -15,13 +15,14 @@ from __future__ import annotations
 import argparse
 import datetime
 import hashlib
+import json
 from collections.abc import Iterator
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from scorecard_pipeline.cli import _cmd_run, _liveness_unchanged
+from scorecard_pipeline.cli import RunOutcome, _cmd_run, _liveness_unchanged
 from scorecard_pipeline.config import AGENCIES, Agency
 from scorecard_pipeline.liveness import (
     CHANGED,
@@ -89,7 +90,10 @@ def test_skip_unchanged_proceeds_when_feed_changed(one_agency: str) -> None:
     parser = argparse.ArgumentParser()
     with (
         patch("scorecard_pipeline.cli._liveness_unchanged", return_value=False),
-        patch("scorecard_pipeline.cli.run_agency", return_value="/tmp/artifact.json"),
+        patch(
+            "scorecard_pipeline.cli.run_agency",
+            return_value=RunOutcome(path="/tmp/artifact.json", mirrored=False, cache_hit=False),
+        ),
     ):
         result = _cmd_run(_run_args(), parser)
 
@@ -103,7 +107,10 @@ def test_skip_unchanged_proceeds_when_no_prior_record(one_agency: str) -> None:
     parser = argparse.ArgumentParser()
     with (
         patch("scorecard_pipeline.cli._liveness_unchanged", return_value=False),
-        patch("scorecard_pipeline.cli.run_agency", return_value="/tmp/artifact.json"),
+        patch(
+            "scorecard_pipeline.cli.run_agency",
+            return_value=RunOutcome(path="/tmp/artifact.json", mirrored=False, cache_hit=False),
+        ),
     ):
         result = _cmd_run(_run_args(), parser)
 
@@ -167,6 +174,83 @@ def test_liveness_unchanged_returns_false_for_unreachable(one_agency: str) -> No
         result = _liveness_unchanged(_TEST_ID)
 
     assert result is False
+
+
+# ---------------------------------------------------------------------------
+# --outcome-out (FIX-11): _cmd_run appends one ndjson outcome line per agency,
+# for run-summary.py to turn into the shard's run-summary.json.
+# ---------------------------------------------------------------------------
+
+
+def test_outcome_out_records_reused_on_skip(one_agency: str, tmp_path: Path) -> None:
+    outcomes_path = tmp_path / "outcomes.ndjson"
+    parser = argparse.ArgumentParser()
+    with (
+        patch("scorecard_pipeline.cli._liveness_unchanged", return_value=True),
+        patch("scorecard_pipeline.cli.run_agency") as mock_score,
+    ):
+        result = _cmd_run(_run_args(outcome_out=str(outcomes_path)), parser)
+
+    assert result == 2
+    mock_score.assert_not_called()
+    lines = [json.loads(line) for line in outcomes_path.read_text().splitlines()]
+    assert lines == [
+        {
+            "agency_id": _TEST_ID,
+            "outcome": "reused",
+            "mirrored": False,
+            "cache_hit": False,
+            "wall_seconds": lines[0]["wall_seconds"],
+        }
+    ]
+
+
+def test_outcome_out_records_scored_with_mirror_and_cache_flags(
+    one_agency: str, tmp_path: Path
+) -> None:
+    from scorecard_pipeline.cli import RunOutcome
+
+    outcomes_path = tmp_path / "outcomes.ndjson"
+    parser = argparse.ArgumentParser()
+    with (
+        patch("scorecard_pipeline.cli._liveness_unchanged", return_value=False),
+        patch(
+            "scorecard_pipeline.cli.run_agency",
+            return_value=RunOutcome(path="/tmp/a.json", mirrored=True, cache_hit=True),
+        ),
+    ):
+        result = _cmd_run(_run_args(outcome_out=str(outcomes_path)), parser)
+
+    assert result == 0
+    (line,) = [json.loads(line) for line in outcomes_path.read_text().splitlines()]
+    assert line["outcome"] == "scored"
+    assert line["mirrored"] is True
+    assert line["cache_hit"] is True
+
+
+def test_outcome_out_records_unreachable_on_failure(one_agency: str, tmp_path: Path) -> None:
+    outcomes_path = tmp_path / "outcomes.ndjson"
+    parser = argparse.ArgumentParser()
+    with (
+        patch("scorecard_pipeline.cli._liveness_unchanged", return_value=False),
+        patch("scorecard_pipeline.cli.run_agency", side_effect=RuntimeError("network error")),
+    ):
+        result = _cmd_run(_run_args(outcome_out=str(outcomes_path)), parser)
+
+    assert result == 1
+    (line,) = [json.loads(line) for line in outcomes_path.read_text().splitlines()]
+    assert line["outcome"] == "unreachable"
+
+
+def test_no_outcome_out_writes_nothing(one_agency: str, tmp_path: Path) -> None:
+    """Without --outcome-out (the default), no outcome log is written."""
+    parser = argparse.ArgumentParser()
+    with (
+        patch("scorecard_pipeline.cli._liveness_unchanged", return_value=True),
+        patch("scorecard_pipeline.cli.run_agency"),
+    ):
+        _cmd_run(_run_args(), parser)
+    assert not (tmp_path / "outcomes.ndjson").exists()
 
 
 def test_liveness_unchanged_persists_state(one_agency: str, tmp_path: Path) -> None:

@@ -2525,3 +2525,155 @@ def test_fixlog_page_frames_receipts_as_the_end_of_the_loop() -> None:
     assert "end of the guided fix loop" in html
     assert "linkable proof for a board packet or NTD" in html
     assert 'href="/agency/demo/"' in html
+
+
+def test_staleness_distribution_buckets_by_snapshot_age() -> None:
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _staleness_distribution
+
+    now = dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC)
+    catalog: list[dict[str, Any]] = [
+        {"id": "a", "retrieved_at": (now - dt.timedelta(hours=2)).isoformat()},
+        {"id": "b", "retrieved_at": (now - dt.timedelta(days=1, hours=12)).isoformat()},
+        {"id": "c", "retrieved_at": (now - dt.timedelta(days=5)).isoformat()},
+        {"id": "d", "retrieved_at": (now - dt.timedelta(days=10)).isoformat()},
+        {"id": "e", "retrieved_at": None},
+        {"id": "f"},
+    ]
+    dist = dict(_staleness_distribution(catalog, now))
+    assert dist["under 1 day"] == 1
+    assert dist["1-2 days"] == 1
+    assert dist["3-7 days"] == 1
+    assert dist["over 7 days"] == 1
+    assert dist["unknown"] == 2
+
+
+def test_staleness_distribution_empty_catalog() -> None:
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _staleness_distribution
+
+    now = dt.datetime(2026, 7, 8, tzinfo=dt.UTC)
+    empty_catalog: list[dict[str, Any]] = []
+    dist = _staleness_distribution(empty_catalog, now)
+    assert all(count == 0 for _, count in dist)
+    assert "unknown" not in dict(dist)
+
+
+def test_status_page_with_no_run_summary_says_not_published_yet() -> None:
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _status_evidence_section
+
+    html = _status_evidence_section(None, [], dt.datetime(2026, 7, 8, tzinfo=dt.UTC))
+    assert "No run-health summary has been published yet" in html
+    assert "Today's evidence" in html
+
+
+def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _status_evidence_section
+
+    now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
+    run_summary = {
+        "generated_at": "2026-07-08T13:30:00+00:00",
+        "shard_count": 2,
+        "agency_count": 100,
+        "scored": 95,
+        "reused": 5,
+        "unreachable": 0,
+        "mirrored": 1,
+        "cache_hit": 40,
+        "unreachable_agencies": [],
+        "degraded": False,
+        "degraded_threshold": 0.05,
+        "shards": [
+            {
+                "shard": "0",
+                "scored": 50,
+                "reused": 2,
+                "unreachable": 0,
+                "mirrored": 1,
+                "cache_hit": 20,
+                "wall_clock_seconds": 120.0,
+            },
+        ],
+    }
+    catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
+    html = _status_evidence_section(run_summary, catalog, now)
+    assert "Healthy" in html
+    assert "Degraded run" not in html
+    assert ">95<" in html  # scored count
+    assert "No agencies were unreachable this run." in html
+
+
+def test_status_page_degraded_run_names_unreachable_agencies() -> None:
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _status_evidence_section
+
+    now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
+    run_summary = {
+        "generated_at": "2026-07-08T13:30:00+00:00",
+        "shard_count": 1,
+        "agency_count": 10,
+        "scored": 5,
+        "reused": 0,
+        "unreachable": 5,
+        "mirrored": 0,
+        "cache_hit": 0,
+        "unreachable_agencies": ["unitrans"],
+        "degraded": True,
+        "degraded_threshold": 0.05,
+        "shards": [],
+    }
+    catalog = [{"id": "unitrans", "name": "Unitrans"}]
+    html = _status_evidence_section(run_summary, catalog, now)
+    assert "Degraded run" in html
+    assert 'href="/agency/unitrans/"' in html
+    assert "Unitrans" in html
+
+
+def test_render_status_combines_commitment_and_evidence_sections() -> None:
+    """The one /status/ page composes EXP-10's commitment section ("what we
+    commit to") and FIX-11's run-evidence section ("today's evidence") --
+    they used to render to the same URL from two separate functions, each
+    silently clobbering the other's file on disk (see _render_status's
+    docstring). Both machine-readable twins must stay cross-linked."""
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _render_status
+    from scorecard_pipeline.status_commitment import build_status_commitment
+
+    now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
+    status_doc = build_status_commitment({}, now, "https://gtfsscorecard.org")
+    run_summary = {
+        "generated_at": "2026-07-08T13:30:00+00:00",
+        "shard_count": 1,
+        "agency_count": 10,
+        "scored": 10,
+        "reused": 0,
+        "unreachable": 0,
+        "mirrored": 0,
+        "cache_hit": 0,
+        "unreachable_agencies": [],
+        "degraded": False,
+        "degraded_threshold": 0.05,
+        "shards": [],
+    }
+    catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
+    html = _render_status(status_doc, run_summary, catalog, now)
+    # The commitment half (EXP-10).
+    assert "What we commit to" in html
+    assert "Intended refresh cadence" in html
+    assert "Degradation policy" in html
+    # The run-evidence half (FIX-11).
+    assert "Today's evidence" in html
+    assert "Per-shard breakdown" in html
+    assert "Catalog freshness" in html
+    # Both JSON twins stay cross-linked, and only one page-level title exists.
+    assert 'href="/api/v1/status.json"' in html
+    assert 'href="/api/v1/run-status.json"' in html
+    assert html.count("<h1") == 1

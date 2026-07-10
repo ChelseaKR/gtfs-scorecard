@@ -36,8 +36,10 @@ log = logging.getLogger(__name__)
 
 # Subdirectories of data/artifacts that hold published aggregates, not agencies.
 # They have no per-agency latest.json/dated artifact shape, so anything walking
-# the artifacts tree as if every dir were an agency must skip them.
-RESERVED_ARTIFACT_DIRS = frozenset({"rollups", "changes"})
+# the artifacts tree as if every dir were an agency must skip them. "run" holds
+# the FIX-11 pipeline run-health summary (run_summary.py), merged there by
+# `scorecard run-summary merge` in the collect job.
+RESERVED_ARTIFACT_DIRS = frozenset({"rollups", "changes", "run"})
 
 # Measurement-confidence levels, weakest first (EXP-01). Words, never a letter
 # or a number, so the read cannot be mistaken for a second grade.

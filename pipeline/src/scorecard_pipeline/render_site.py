@@ -3701,12 +3701,14 @@ def _render_accessibility() -> str:
     )
 
 
-def _render_status(doc: dict[str, Any]) -> str:
-    """The human-readable half of the freshness/uptime commitment (EXP-10):
-    what `api/v1/status.json` says, in prose, so a consumer does not have to
-    parse JSON to decide whether to depend on this feed. Extends FIX-11's
-    internal run-summary outward as a stated, checkable commitment."""
-    canonical = f"{BASE_URL}/status/"
+def _status_commitment_section(doc: dict[str, Any]) -> str:
+    """The "what we commit to" half of /status/ (EXP-10): what
+    `api/v1/status.json` says, in prose, so a consumer does not have to parse
+    JSON to decide whether to depend on this feed -- the cadence tiers, the
+    historical refresh-success record, and the degradation policy. Extends
+    FIX-11's internal run-summary outward as a stated, checkable commitment.
+    Returns a fragment (no page chrome); composed into the combined /status/
+    page by `_render_status` alongside `_status_evidence_section`."""
     record = doc["refresh_success_record"]
     policy = doc["degradation_policy"]
     hours = record["hours_since_last_check"]
@@ -3736,38 +3738,29 @@ def _render_status(doc: dict[str, Any]) -> str:
 
     policy_items = "".join(f"<li>{esc(s)}</li>" for s in policy["statements"])
 
-    body = f"""    {_breadcrumb([("Home", "/"), ("Data freshness & uptime", None)])}
-    <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">Data freshness &amp; uptime commitment</h1>
-    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Here is how
-    often we intend to refresh each feed, how that has actually gone, and what happens when a
-    feed cannot be refreshed on schedule &mdash; so you can decide whether to depend on this
-    data before you build on it. Machine-readable at
+    return f"""    <h2 class="section-title" id="commitment-h">What we commit to</h2>
+    <p>"Refreshed daily" is a claim; this is the record. Here is how often we intend to
+    refresh each feed, how that has actually gone, and what happens when a feed cannot be
+    refreshed on schedule &mdash; so you can decide whether to depend on this data before you
+    build on it. Machine-readable at
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
-    {_route_rule()}
-    <section aria-labelledby="cadence-h"><h2 class="section-title" id="cadence-h">Intended refresh cadence</h2>
+    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
     <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
     every feed runs daily regardless of tier.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
     <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
 
-    <section aria-labelledby="record-h"><h2 class="section-title" id="record-h">Historical refresh-success record</h2>
+    <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
     {record_section}</section>
 
-    <section aria-labelledby="degradation-h"><h2 class="section-title" id="degradation-h">Degradation policy</h2>
+    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
     <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
     <ul>{policy_items}</ul></section>
 
-    <p class="page-lede" style="margin-top:2rem">This commitment is generated fresh with every
-    site build from the same liveness state the intraday refresh keeps, so it cannot say
-    anything the pipeline did not actually observe.</p>"""
-    return _page(
-        title="Data freshness & uptime commitment | GTFS Scorecard",
-        description="The intended refresh cadence per tier, the historical refresh-success record, and the degradation policy, as machine-readable status.json and in plain language.",
-        canonical=canonical,
-        body=body,
-    )
+    <p class="fineprint">This commitment is generated fresh with every site build from the same
+    liveness state the intraday refresh keeps, so it cannot say anything the pipeline did not
+    actually observe.</p>"""
 
 
 def _methodology_versions_section() -> str:
@@ -5967,6 +5960,211 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     )
 
 
+_STALENESS_BUCKETS: tuple[tuple[str, Callable[[float], bool]], ...] = (
+    ("under 1 day", lambda d: d < 1),
+    ("1-2 days", lambda d: 1 <= d < 3),
+    ("3-7 days", lambda d: 3 <= d < 8),
+    ("over 7 days", lambda d: d >= 8),
+)
+
+
+def _staleness_distribution(
+    catalog: list[dict[str, Any]], now: dt.datetime
+) -> list[tuple[str, int]]:
+    """Bucket every tracked agency's snapshot age (catalog[i]["retrieved_at"],
+    which is the artifact's generated_at) so /status/ can answer "how fresh is
+    this dataset right now" without trusting the maintainer's word (FIX-11's
+    "excellent looks like" bar). An unparsable or missing timestamp counts as
+    "unknown" rather than being silently dropped."""
+    counts: dict[str, int] = {label: 0 for label, _ in _STALENESS_BUCKETS}
+    unknown = 0
+    for row in catalog:
+        raw = row.get("retrieved_at")
+        try:
+            when = dt.datetime.fromisoformat(str(raw))
+            if when.tzinfo is None:
+                when = when.replace(tzinfo=dt.UTC)
+        except (TypeError, ValueError):
+            unknown += 1
+            continue
+        age_days = max(0.0, (now - when).total_seconds() / 86400)
+        for label, test in _STALENESS_BUCKETS:
+            if test(age_days):
+                counts[label] += 1
+                break
+    result = [(label, counts[label]) for label, _ in _STALENESS_BUCKETS]
+    if unknown:
+        result.append(("unknown", unknown))
+    return result
+
+
+def _status_shard_rows(shards: list[dict[str, Any]]) -> str:
+    rows = []
+    for s in shards:
+        rows.append(
+            "<tr>"
+            f"<td>{esc(str(s.get('shard', '')))}</td>"
+            f"<td>{s.get('scored', 0)}</td>"
+            f"<td>{s.get('reused', 0)}</td>"
+            f"<td>{s.get('unreachable', 0)}</td>"
+            f"<td>{s.get('mirrored', 0)}</td>"
+            f"<td>{s.get('cache_hit', 0)}</td>"
+            f"<td>{s.get('wall_clock_seconds', 0):.0f}s</td>"
+            "</tr>"
+        )
+    return "".join(rows)
+
+
+def _status_evidence_section(
+    run_summary: dict[str, Any] | None, catalog: list[dict[str, Any]], now: dt.datetime
+) -> str:
+    """The "today's evidence" half of /status/ (FIX-11,
+    docs/ideation/02-large-scale-fixes.md): what the daily run itself did --
+    shard outcomes, unreachable feeds, mirror fallbacks, validator cache hits --
+    plus how stale the published catalog is right now. Users are asked to trust
+    the daily numbers; the operational evidence used to live only in private
+    Actions logs, so one shard failing left ~1/12 of agencies silently showing
+    yesterday's data with no signal anywhere on the site. This section is that
+    signal, built entirely from data/artifacts/run/latest.json (merged by
+    `scorecard run-summary merge` in the collect job) and the same catalog the
+    directory page reads -- no separate trust required. Returns a fragment (no
+    page chrome); composed into the combined /status/ page by `_render_status`
+    alongside `_status_commitment_section`."""
+    staleness = _staleness_distribution(catalog, now)
+    staleness_rows = "".join(
+        f"<tr><td>{esc(label)}</td><td>{count}</td></tr>" for label, count in staleness
+    )
+
+    if run_summary is None:
+        run_section = """    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+    <p>No run-health summary has been published yet. This page fills in the day after the
+    first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>"""
+    else:
+        generated_at = dt.datetime.fromisoformat(run_summary["generated_at"])
+        degraded = bool(run_summary.get("degraded"))
+        threshold_pct = round(run_summary.get("degraded_threshold", 0) * 100)
+        badge_class = "pill-warn" if degraded else "pill-ok"
+        badge_text = "Degraded" if degraded else "Healthy"
+        unreachable_agencies = run_summary.get("unreachable_agencies", [])
+        names_by_id = {row["id"]: row["name"] for row in catalog}
+        unreachable_list = (
+            "<ul>"
+            + "".join(
+                f'<li><a href="/agency/{esc(aid)}/">{esc(names_by_id.get(aid, aid))}</a></li>'
+                for aid in unreachable_agencies
+            )
+            + "</ul>"
+            if unreachable_agencies
+            else "<p>No agencies were unreachable this run.</p>"
+        )
+        degraded_note = (
+            f"""<p><span class="{badge_class}">Degraded run</span>. More than
+        {threshold_pct}% of agencies could not be refreshed. The agencies below are still
+        showing their last good scorecard, not today's data.</p>"""
+            if degraded
+            else ""
+        )
+        shard_count = run_summary.get("shard_count", 0)
+        shard_word = "shard" if shard_count == 1 else "shards"
+        run_section = f"""    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+    <p><span class="{badge_class}">{badge_text}</span>
+    Generated {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}),
+    across {shard_count} {shard_word}, {run_summary.get("agency_count", 0)}
+    agencies attempted.</p>
+    {degraded_note}
+    <dl>
+      <dt>Scored (fresh data this run)</dt><dd>{run_summary.get("scored", 0)}</dd>
+      <dt>Reused (feed unchanged since last check)</dt><dd>{run_summary.get("reused", 0)}</dd>
+      <dt>Unreachable (kept last good artifact)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
+      <dt>Fell back to the Mobility Database mirror</dt><dd>{run_summary.get("mirrored", 0)}</dd>
+      <dt>Validator cache hits</dt><dd>{run_summary.get("cache_hit", 0)}</dd>
+    </dl>
+    </section>
+
+    <section class="feed-details"><h3 class="section-title">Per-shard breakdown</h3>
+    <div style="overflow-x:auto"><table class="trend-table">
+      <caption class="visually-hidden">Outcome counts by CI shard</caption>
+      <thead><tr><th scope="col">Shard</th><th scope="col">Scored</th>
+      <th scope="col">Reused</th><th scope="col">Unreachable</th><th scope="col">Mirrored</th>
+      <th scope="col">Cache hit</th><th scope="col">Wall clock</th></tr></thead>
+      <tbody>{_status_shard_rows(run_summary.get("shards", []))}</tbody>
+    </table></div>
+    </section>
+
+    <section class="feed-details"><h3 class="section-title">Agencies unreachable this run</h3>
+    <p>The pipeline could not fetch or validate these feeds today; each is still showing its
+    last successful scorecard. This is usually the agency's feed host being down, not a
+    pipeline bug -- if a name stays on this list for several days running, its own feed URL
+    is worth checking.</p>
+    {unreachable_list}
+    </section>"""
+
+    return f"""    <h2 class="section-title" id="evidence-h">Today's evidence</h2>
+    <p>What the daily pipeline itself did, published the same way the scorecards are: shard
+    outcomes, feeds it could not reach, and how stale the catalog is right now. No part of this
+    page requires trusting the maintainer's word. Machine-readable at
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+
+{run_section}
+
+    <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
+    <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
+    (not just this run -- an agency scored successfully days ago still counts here if nothing
+    has re-triggered a fetch since).</p>
+    <div style="overflow-x:auto"><table class="trend-table">
+      <caption class="visually-hidden">Agency count by snapshot age</caption>
+      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
+      <tbody>{staleness_rows}</tbody>
+    </table></div>
+    </section>
+
+    <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
+    refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
+    the grades themselves mean.</p>"""
+
+
+def _render_status(
+    status_doc: dict[str, Any],
+    run_summary: dict[str, Any] | None,
+    catalog: list[dict[str, Any]],
+    now: dt.datetime,
+) -> str:
+    """The one public /status/ page. EXP-10 (the freshness/uptime commitment)
+    and FIX-11 (today's concrete run evidence) both used to render their own
+    full page to this same URL, so whichever `write()` ran last silently
+    clobbered the other's file on disk. This composes both instead: the
+    commitment (`_status_commitment_section`, sourced from
+    `api/v1/status.json`) on top, framed as what we commit to; today's run
+    evidence (`_status_evidence_section`, sourced from
+    `api/v1/run-status.json`) below, framed as today's evidence. Both JSON
+    endpoints stay published unchanged and are cross-linked from here and
+    from within each section."""
+    canonical = f"{BASE_URL}/status/"
+    body = f"""    {_breadcrumb([("Home", "/"), ("Status", None)])}
+    <a class="backlink" href="/">&larr; Home</a>
+    <h1 class="page-title">Status.</h1>
+    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
+    we commit to for refresh cadence and uptime; below is concrete evidence from today's run.
+    Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+
+    {_route_rule()}
+{_status_commitment_section(status_doc)}
+
+    {_route_rule()}
+{_status_evidence_section(run_summary, catalog, now)}"""
+    return _page(
+        title="Status | GTFS Scorecard",
+        description=(
+            "What this pipeline commits to for refresh cadence and uptime, the historical "
+            "refresh-success record, and concrete evidence from today's run: shard outcomes, "
+            "unreachable feeds, and catalog freshness."
+        ),
+        canonical=canonical,
+        body=body,
+    )
+
+
 def _render_press_page() -> str:
     """The reporter's page (/press/): how to cite the data, the claims it does
     and does not support, and where the story-ready cuts live. Guards the
@@ -6463,10 +6661,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
-    # status.json plus a human-readable page, extending FIX-11's internal
-    # run-summary outward. Built from the same liveness state the intraday
-    # refresh keeps, so it renders (with an honest empty record) even before
-    # the first refresh has ever run.
+    # status.json, extending FIX-11's internal run-summary outward. Built from
+    # the same liveness state the intraday refresh keeps, so it renders (with
+    # an honest empty record) even before the first refresh has ever run. The
+    # human-readable page is written later, once the run summary and catalog
+    # (FIX-11's half of /status/) are also ready -- see `_render_status`.
     from .status_commitment import build_status_commitment
 
     status_doc = build_status_commitment(_load_liveness(), now, BASE_URL)
@@ -6474,7 +6673,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "api/v1/status.json",
         json.dumps(status_doc, indent=2, sort_keys=True) + "\n",
     )
-    write("status/index.html", _render_status(status_doc), f"{BASE_URL}/status/")
     crosswalk_file = root / "docs" / "crosswalk.md"
     if crosswalk_file.exists():
         write(
@@ -6624,6 +6822,31 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # over same-origin HTTP. One source (score.methodology), two byte-identical
     # copies, so the interactive widget and the pipeline agree by construction.
     write("api/v1/scoring.json", scoring_json)
+
+    # Public pipeline-health surface (FIX-11): what the daily run itself did,
+    # merged by `scorecard run-summary merge` into data/artifacts/run/latest.json
+    # in the collect job. Absent on the first render after this shipped (no run
+    # has published a summary yet); the page and API both degrade to an
+    # explicit "not published yet" rather than a broken page.
+    run_summary_path = art / "run" / "latest.json"
+    run_summary: dict[str, Any] | None = None
+    if run_summary_path.exists():
+        try:
+            run_summary = json.loads(run_summary_path.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            print(
+                f"::warning title=unreadable run summary::{run_summary_path}: {exc}",
+                file=sys.stderr,
+            )
+    write("api/v1/run-status.json", json.dumps(run_summary, indent=2, sort_keys=True) + "\n")
+    # The combined /status/ page (EXP-10 + FIX-11): the commitment (status_doc,
+    # computed above from liveness state) and today's run evidence (run_summary
+    # + catalog, both ready by this point in the render), composed into one page.
+    write(
+        "status/index.html",
+        _render_status(status_doc, run_summary, catalog, now),
+        f"{BASE_URL}/status/",
+    )
 
     # liveness_state was loaded earlier (with the directory page); each agency
     # page below reuses that same read.

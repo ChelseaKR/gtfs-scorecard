@@ -167,6 +167,7 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/submit.html">Add your agency</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
+      <a href="/status/">Status</a> ·
       <a href="/support/">Support this project</a> ·
       <a href="/how-to-read/">How to read a scorecard</a> ·
       <a href="/how-to-read/#glossary">Glossary</a> ·
@@ -174,7 +175,6 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/press/">For reporters</a> ·
       <a href="/data/">Open data</a> ·
       <a href="/accessibility/">Accessibility</a> ·
-      <a href="/status/">Data freshness &amp; uptime</a> ·
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
     </div>
   </footer>"""

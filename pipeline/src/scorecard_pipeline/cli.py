@@ -8,6 +8,8 @@ scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
 scorecard shards --count 4                        # CI fan-out plan (JSON)
+scorecard run-summary build --shard 0 --outcomes o.ndjson --started <iso> --out s.json
+scorecard run-summary merge --out data/artifacts/run/latest.json s0.json s1.json ...
 scorecard alerts [--out digest.md]                # expiry/regression digest
 scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for liaisons
 scorecard rollups                                 # portfolio rollup artifacts
@@ -19,11 +21,13 @@ scorecard reproduce unitrans 2026-06-11            # re-derive a published grade
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import datetime as dt
 import json
 import logging
 import os
 import sys
+import time
 import urllib.parse
 from pathlib import Path
 from typing import Any
@@ -63,6 +67,19 @@ def _maybe_api_report(agency: Agency, sha256: str, validator_version: str):  # t
     return report
 
 
+@dataclasses.dataclass(frozen=True)
+class RunOutcome:
+    """What run_agency actually did, for the FIX-11 run-health summary: the
+    artifact path plus the two operational signals a shard's outcome log
+    (run_summary.py) needs and that only run_agency's own locals know --
+    whether the feed had to fall back to the Mobility Database mirror, and
+    whether the validator report was reused from the sha-keyed cache."""
+
+    path: str
+    mirrored: bool
+    cache_hit: bool
+
+
 def run_agency(  # noqa: C901
     agency_id: str,
     date: dt.date,
@@ -70,8 +87,8 @@ def run_agency(  # noqa: C901
     rt_samples: int = 3,
     rt_interval: int = 30,
     skip_rt: bool = False,
-) -> str:
-    """Run the full pipeline for one agency; return the artifact path."""
+) -> RunOutcome:
+    """Run the full pipeline for one agency; return its RunOutcome."""
     agency = AGENCIES[agency_id]
     fetched = fetch_static(agency, date, force=force_fetch)
 
@@ -92,6 +109,7 @@ def run_agency(  # noqa: C901
     from .vcache import load_cached, store_cached
 
     report = None if force_fetch else load_cached(agency.id, fetched.sha256, VALIDATOR_VERSION)
+    cache_hit = report is not None
     if report is not None:
         log.info("%s: validator cache hit (%s)", agency.id, fetched.sha256[:12])
     else:
@@ -251,7 +269,7 @@ def run_agency(  # noqa: C901
         artifact["overall"]["score"],
         path,
     )
-    return str(path)
+    return RunOutcome(path=str(path), mirrored=fetched.source == "mirror", cache_hit=cache_hit)
 
 
 def run_adhoc(url: str, name: str | None, date: dt.date) -> dict[str, Any]:
@@ -394,13 +412,26 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     targets = sorted(AGENCIES) if args.all else [args.agency]
     failures = 0
     skipped = 0
+    outcome_out = getattr(args, "outcome_out", None)
     for agency_id in targets:
+        started = time.monotonic()
         if getattr(args, "skip_unchanged", False) and _liveness_unchanged(agency_id):
             log.info("Skipping %s: feed unchanged since last check", agency_id)
             skipped += 1
+            if outcome_out:
+                from .run_summary import AgencyOutcome, append_outcome
+
+                append_outcome(
+                    outcome_out,
+                    AgencyOutcome(
+                        agency_id=agency_id,
+                        outcome="reused",
+                        wall_seconds=time.monotonic() - started,
+                    ),
+                )
             continue
         try:
-            path = run_agency(
+            result = run_agency(
                 agency_id,
                 args.date,
                 force_fetch=args.force_fetch,
@@ -408,10 +439,34 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
                 rt_interval=args.rt_interval,
                 skip_rt=args.skip_rt,
             )
-            print(path)
+            print(result.path)
+            if outcome_out:
+                from .run_summary import AgencyOutcome, append_outcome
+
+                append_outcome(
+                    outcome_out,
+                    AgencyOutcome(
+                        agency_id=agency_id,
+                        outcome="scored",
+                        mirrored=result.mirrored,
+                        cache_hit=result.cache_hit,
+                        wall_seconds=time.monotonic() - started,
+                    ),
+                )
         except Exception:
             failures += 1
             log.exception("%s: pipeline run failed", agency_id)
+            if outcome_out:
+                from .run_summary import AgencyOutcome, append_outcome
+
+                append_outcome(
+                    outcome_out,
+                    AgencyOutcome(
+                        agency_id=agency_id,
+                        outcome="unreachable",
+                        wall_seconds=time.monotonic() - started,
+                    ),
+                )
     if failures:
         return 1
     # Single-agency skip: use exit code 2 so the CI shell loop can distinguish
@@ -638,6 +693,7 @@ def _cmd_prune(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
     (review finding). Report-only by default: deletion is a curator decision
     (docs/listing-policy.md), not an automatic one."""
     from .config import artifacts_dir
+    from .publish import RESERVED_ARTIFACT_DIRS
 
     art = artifacts_dir()
     if not art.exists():
@@ -647,7 +703,10 @@ def _cmd_prune(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
     orphans = sorted(
         d.name
         for d in art.iterdir()
-        if d.is_dir() and d.name not in registered and not d.name.startswith(".")
+        if d.is_dir()
+        and d.name not in registered
+        and d.name not in RESERVED_ARTIFACT_DIRS
+        and not d.name.startswith(".")
     )
     if not orphans:
         print("no orphaned artifact directories; every directory has a registry entry")
@@ -1479,6 +1538,51 @@ def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_run_summary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .run_summary import build_shard_summary, merge_run_summaries, read_outcomes
+
+    if args.run_summary_cmd == "build":
+        outcomes = read_outcomes(args.outcomes)
+        summary = build_shard_summary(args.shard, outcomes, args.started, dt.datetime.now(dt.UTC))
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+        log.info(
+            "shard %s: %d scored, %d reused, %d unreachable -> %s",
+            args.shard,
+            summary["scored"],
+            summary["reused"],
+            summary["unreachable"],
+            out,
+        )
+        return 0
+
+    # merge
+    summaries = []
+    for p in args.summaries:
+        path = Path(p)
+        if not path.exists():
+            log.warning(
+                "run-summary merge: %s not found, skipping (shard upload likely failed)", path
+            )
+            continue
+        summaries.append(json.loads(path.read_text()))
+    merged = merge_run_summaries(summaries, dt.datetime.now(dt.UTC))
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(merged, indent=2, sort_keys=True) + "\n")
+    log.info(
+        "merged %d shard summaries: %d scored, %d reused, %d unreachable (degraded=%s) -> %s",
+        merged["shard_count"],
+        merged["scored"],
+        merged["reused"],
+        merged["unreachable"],
+        merged["degraded"],
+        out,
+    )
+    return 0
+
+
 def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest, render_digest
 
@@ -1682,6 +1786,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="skip re-scoring when a cheap conditional GET confirms the feed is unchanged "
         "(exit 2 for a single skipped agency so the CI loop can distinguish skip from error)",
+    )
+    run.add_argument(
+        "--outcome-out",
+        help="append one ndjson outcome line per agency here (FIX-11 shard run-health log; "
+        "the CI shard loop calls `run` once per agency, so lines accumulate across "
+        "invocations, then `scorecard run-summary build` turns the log into a summary)",
     )
 
     adhoc = sub.add_parser("try", help="score any GTFS feed URL ad-hoc (not published)")
@@ -1897,6 +2007,33 @@ def main(argv: list[str] | None = None) -> int:
     shards = sub.add_parser("shards", help="emit a JSON fan-out plan for CI")
     shards.add_argument("--count", type=int, default=4, help="number of shards")
 
+    run_summary = sub.add_parser(
+        "run-summary",
+        help="build/merge per-shard pipeline run-health summaries for /status/ (FIX-11)",
+    )
+    run_summary_sub = run_summary.add_subparsers(dest="run_summary_cmd", required=True)
+    rs_build = run_summary_sub.add_parser(
+        "build", help="turn one shard's --outcome-out ndjson log into its run-summary.json"
+    )
+    rs_build.add_argument("--shard", required=True, help="shard id (e.g. the matrix job index)")
+    rs_build.add_argument(
+        "--outcomes",
+        required=True,
+        help="ndjson outcome log written by `scorecard run --outcome-out`",
+    )
+    rs_build.add_argument(
+        "--started",
+        required=True,
+        type=dt.datetime.fromisoformat,
+        help="ISO 8601 shard start time",
+    )
+    rs_build.add_argument("--out", required=True, help="write this shard's run-summary.json here")
+    rs_merge = run_summary_sub.add_parser(
+        "merge", help="merge every shard's run-summary.json into data/artifacts/run/latest.json"
+    )
+    rs_merge.add_argument("summaries", nargs="+", help="paths to shard run-summary.json files")
+    rs_merge.add_argument("--out", required=True, help="write the merged run summary here")
+
     alerts = sub.add_parser("alerts", help="build the expiry/regression alert digest")
     alerts.add_argument(
         "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
@@ -2082,6 +2219,7 @@ def main(argv: list[str] | None = None) -> int:
         "ntd-crosswalk": _cmd_ntd_crosswalk,
         "ntd-ridership": _cmd_ntd_ridership,
         "shards": _cmd_shards,
+        "run-summary": _cmd_run_summary,
         "alerts": _cmd_alerts,
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
