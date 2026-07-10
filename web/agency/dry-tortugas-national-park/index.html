@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DRTO Ferry Service GTFS data quality: grade A — GTFS Scorecard</title>
-  <meta name="description" content="DRTO Ferry Service&#x27;s GTFS feed scores 99.8 out of 100 (grade A) for data quality: correctness, freshness, rider-experience completeness, and realtime. Plain-language fixes included.">
+  <title>DRTO Ferry Service (Florida) GTFS quality report</title>
+  <meta name="description" content="GTFS quality report for DRTO Ferry Service: current service dates, validator findings, rider information, and prioritized fixes.">
   <link rel="canonical" href="https://gtfsscorecard.org/agency/dry-tortugas-national-park/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="DRTO Ferry Service GTFS data quality: grade A — GTFS Scorecard">
-  <meta property="og:description" content="DRTO Ferry Service&#x27;s GTFS feed scores 99.8 out of 100 (grade A) for data quality: correctness, freshness, rider-experience completeness, and realtime. Plain-language fixes included.">
+  <meta property="og:title" content="DRTO Ferry Service (Florida) GTFS quality report">
+  <meta property="og:description" content="GTFS quality report for DRTO Ferry Service: current service dates, validator findings, rider information, and prioritized fixes.">
   <meta property="og:url" content="https://gtfsscorecard.org/agency/dry-tortugas-national-park/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"DRTO Ferry Service GTFS data quality report","description":"DRTO Ferry Service's GTFS feed scores 99.8 out of 100 (grade A) for data quality: correctness, freshness, rider-experience completeness, and realtime. Plain-language fixes included.","url":"https://gtfsscorecard.org/agency/dry-tortugas-national-park/","includedInDataCatalog":{"@type":"DataCatalog","url":"https://gtfsscorecard.org"},"creator":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"about":{"@type":"Organization","name":"DRTO Ferry Service"},"variableMeasured":[{"@type":"PropertyValue","name":"Correctness","value":99.5},{"@type":"PropertyValue","name":"Freshness","value":100.0},{"@type":"PropertyValue","name":"Rider experience","value":100.0}],"dateModified":"2026-07-10","distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/data/artifacts/dry-tortugas-national-park/latest.json"},"keywords":["GTFS","transit data quality","GTFS feed","DRTO Ferry Service"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"DRTO Ferry Service GTFS data quality report","description":"GTFS quality report for DRTO Ferry Service: current service dates, validator findings, rider information, and prioritized fixes.","url":"https://gtfsscorecard.org/agency/dry-tortugas-national-park/","identifier":[{"@type":"PropertyValue","propertyID":"GTFS Scorecard","value":"dry-tortugas-national-park"},{"@type":"PropertyValue","propertyID":"Mobility Database","value":"3207"}],"license":"https://creativecommons.org/licenses/by/4.0/","isBasedOn":"https://www.nps.gov/external-resources/gtfs/drto/drto-ferry-service.zip","includedInDataCatalog":{"@type":"DataCatalog","url":"https://gtfsscorecard.org"},"creator":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"about":{"@type":"Organization","name":"DRTO Ferry Service"},"variableMeasured":[{"@type":"PropertyValue","name":"Correctness","value":99.5},{"@type":"PropertyValue","name":"Freshness","value":100.0},{"@type":"PropertyValue","name":"Rider experience","value":100.0}],"dateModified":"2026-07-10","distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/data/artifacts/dry-tortugas-national-park/latest.json"},"keywords":["GTFS","transit data quality","GTFS feed","DRTO Ferry Service"]}</script>
   <link rel="alternate" type="application/atom+xml" title="DRTO Ferry Service feed quality changes" href="https://gtfsscorecard.org/agency/dry-tortugas-national-park/feed.xml">
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
@@ -48,13 +48,14 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">DRTO Ferry Service</span></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/agencies/"><span itemprop="name">All agencies</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">DRTO Ferry Service</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <p class="brief-link"><a href="/agency/dry-tortugas-national-park/brief/">Prep for a call: printable one-page brief</a>
       · <a href="/agency/dry-tortugas-national-park/board/">For your board packet: printable one-pager</a>
       
       · <a href="/compare/?a=dry-tortugas-national-park">Compare with another agency</a>
-      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a></p>
+      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a>
+      · <a href="/claim/?agency=dry-tortugas-national-park">Correct or claim this listing</a></p>
     <div class="board-hero"><div class="board-inner"><p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked 2026-07-10</p><h1 class="board-title">DRTO Ferry Service</h1><p class="board-sub">Based on the feed this agency publishes</p><div class="grade-block"><div class="reel" role="img" aria-label="Overall grade A" style="--flap-end: calc(var(--reel-h) * -4)"><div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div></div><div class="score-block"><div><span class="score-big">99.8</span><span class="score-of"> / 100</span></div><p class="score-trend">unchanged since 2026-07-09</p><p class="peer-context">Ahead of 100% of all tracked agencies and 100% of small agencies. Operates in Florida.</p><div class="percentile-strip" role="group" aria-label="Percentile position; higher is better"><div class="percentile-row"><span class="percentile-label">All agencies</span><span class="percentile-value">100%</span><span class="percentile-track" style="--position:100" aria-hidden="true"><span class="percentile-line"></span><span class="percentile-marker"></span></span></div><div class="percentile-row"><span class="percentile-label">small peers</span><span class="percentile-value">100%</span><span class="percentile-track" style="--position:100" aria-hidden="true"><span class="percentile-line"></span><span class="percentile-marker"></span></span></div><div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div></div><div class="chips"><span class="chip ok">Covers 113 days</span><span class="chip">No realtime feed</span></div></div></div></div></div>
     
     
@@ -68,8 +69,8 @@
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
-      <div class="alerts"><div class="alert"><span class="badge sev-info">Fix 01</span><div><p class="afix">Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.</p><p class="awhy">Big gap in service (flagged by the MobilityData validator). See the linked rule for what this affects.</p><p class="aeta">⏱ Varies.</p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 14 observed fixes).</p></div></div></div>
-      <div class="fixloop"><p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, make the change in your tool, and let the next run verify it &mdash; the scorecard shows the fix; the agency publishes it.</p><ol class="fixloop-list"><li class="fixloop-item"><p class="fixloop-name">Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.</p><p class="fixloop-step"><strong>Make the change.</strong> Make this change in whatever tool produces your feed, then re-export.</p><p class="fixloop-step"><strong>Prove it cleared.</strong> The next scorecard run re-checks this automatically and, once it is gone, mints a dated receipt. <a class="fix-guide" href="/check/">Self-check a feed before you publish</a>.</p></li></ol></div>
+      <div class="alerts"><div class="alert"><span class="badge sev-info">Fix 01</span><div><p class="afix">Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.</p><p class="awhy">Big gap in service (flagged by the MobilityData validator). See the linked rule for what this affects.</p><p class="aeta">⏱ Varies.</p></div></div></div>
+      <div class="fixloop"><p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, make the change in your tool, and let the next run verify it &mdash; the scorecard shows the fix; the agency publishes it.</p><ol class="fixloop-list"><li class="fixloop-item"><p class="fixloop-name">Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed. · <a class="fix-guide" href="/fix/big_gap_in_service/">Read the fix guide</a></p><p class="fixloop-step"><strong>Make the change.</strong> Make this change in whatever tool produces your feed, then re-export.</p><p class="fixloop-step"><strong>Prove it cleared.</strong> The next scorecard run re-checks this automatically and, once it is gone, mints a dated receipt. <a class="fix-guide" href="/check/">Self-check a feed before you publish</a>.</p></li></ol></div>
     </section>
     <section class="outreach" id="send-vendor" aria-labelledby="send-vendor-h"><h2 class="section-title" id="send-vendor-h">Send your vendor a fix request</h2><p class="page-lede">You may not control the GTFS export yourself. Copy this and send it to whoever runs your scheduling software export. It names each fix with the validator notice and a guide link.</p><label class="visually-hidden" for="vendor-text">Fix request</label><textarea id="vendor-text" class="outreach-text" rows="10" readonly>Hi,
 
@@ -78,6 +79,7 @@ Our GTFS feed (DRTO Ferry Service) scored A (99.8 out of 100) on the GTFS Scorec
 1. Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.
    What: Big gap in service (flagged by the MobilityData validator).
    Validator notice: big_gap_in_service
+   Guide: https://gtfsscorecard.org/fix/big_gap_in_service/
 
 Full scorecard: https://gtfsscorecard.org/agency/dry-tortugas-national-park/</textarea><button type="button" class="copy-btn" data-copy="vendor-text">Copy request</button></section>
     
@@ -93,7 +95,7 @@ Full scorecard: https://gtfsscorecard.org/agency/dry-tortugas-national-park/</te
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="findings-h">
       <h2 class="section-title" id="findings-h">Everything we checked</h2>
-      <ul class="findings"><li class="finding"><div class="finding-head"><span class="sev sev-info">Info</span><span class="count">1 instance</span></div><p class="what">Big gap in service (flagged by the MobilityData validator).</p><p class="why">See the linked rule for what this affects.</p><p class="how"><strong>Fix:</strong> Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed. <em>(Varies.)</em></p><p class="effort-band">Agencies here usually clear this within about 1 week (based on 14 observed fixes).</p><p class="code">Validator rule: big_gap_in_service · <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#big_gap_in_service-rule">See MobilityData GTFS Validator rules</a><span class="visually-hidden"> (opens the validator rules on an external site)</span></p></li></ul>
+      <ul class="findings"><li class="finding"><div class="finding-head"><span class="sev sev-info">Info</span><span class="count">1 instance</span></div><p class="what">Big gap in service (flagged by the MobilityData validator).</p><p class="why">See the linked rule for what this affects.</p><p class="how"><strong>Fix:</strong> Review the rule documentation for &#x27;big_gap_in_service&#x27; at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed. <em>(Varies.)</em></p><p class="code">Validator rule: big_gap_in_service · <a class="fix-guide" href="/fix/big_gap_in_service/">Read the fix guide</a> · <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#big_gap_in_service-rule">See MobilityData GTFS Validator rules</a><span class="visually-hidden"> (opens the validator rules on an external site)</span></p></li></ul>
     </section>
     
     
@@ -135,11 +137,13 @@ Full scorecard: https://gtfsscorecard.org/agency/dry-tortugas-national-park/</te
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·
