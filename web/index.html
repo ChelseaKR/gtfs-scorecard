@@ -111,14 +111,6 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
-  /* film grain over everything, for warmth/depth */
-  body::after {
-    content: "";
-    position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-    opacity: .035;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
   a { color: inherit; }
   .wrap { width: min(1280px, 92vw); margin-inline: auto; }
   .mono { font-family: var(--mono); }
@@ -335,6 +327,13 @@
      THE LINE — how it works, as stops on a route
      =================================================================== */
   section.band { padding: clamp(3.5rem, 8vw, 6.5rem) 0; }
+  /* Keep below-the-fold sections out of initial layout and paint work. The
+     intrinsic size reserves scroll space until each section approaches the
+     viewport, avoiding both blocking-time spikes and layout shifts on phones. */
+  section.band, .cta, footer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 36rem;
+  }
   .sectlabel { font-family: var(--mono); font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; color: var(--green); margin: 0 0 .8rem; }
   .secttitle { font-family: var(--display); font-weight: 900; font-size: clamp(1.9rem, 4.5vw, 3rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 .6rem; max-width: 18ch; }
   .sectlede { color: var(--ink-soft); max-width: 40ch; margin: 0 0 2.8rem; }
