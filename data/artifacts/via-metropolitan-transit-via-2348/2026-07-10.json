@@ -146,7 +146,7 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 75,
-          "WARNING": 5751
+          "WARNING": 5741
         },
         "validator_version": "8.0.1"
       },
@@ -175,7 +175,7 @@
         },
         {
           "code": "stop_without_stop_time",
-          "count": 61,
+          "count": 51,
           "effort": "A review pass in your scheduling software.",
           "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
           "owner": "Likely your export tool",
@@ -243,7 +243,7 @@
       "name": "correctness",
       "score": 57.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 8 kinds of issue across 5826 instances (0 error, 5751 warning, 75 informational).",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 5816 instances (0 error, 5741 warning, 75 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -251,7 +251,7 @@
         "days_until_expiry": 44,
         "feed_end_date": "2026-08-23",
         "feed_start_date": "2026-05-04",
-        "feed_version": "May 2026_20260708",
+        "feed_version": "May 2026_20260709",
         "has_feed_info": true,
         "last_service_date": "2026-08-23",
         "seasonal_boundary": false,
@@ -292,7 +292,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 45 days.",
+        "detail": "Service data covers the next 44 days.",
         "key": "current",
         "met": true
       },
@@ -308,8 +308,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "b624c94b3889be13db0dade76c7ff2f3ab59e2567f92ac9fdca951a68c92d360",
-    "size_bytes": 6343889,
+    "sha256": "627e312cf834b93d8888844f721345cfec8f16db0886f0d4e2a1b0f38287a017",
+    "size_bytes": 6354451,
     "static_url": "https://www.viainfo.net/BusService/google_transit.zip"
   },
   "fetch": {
@@ -318,7 +318,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -98.73475,
@@ -351,7 +351,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 45 days.",
+        "detail": "Service data covers the next 44 days.",
         "key": "current",
         "status": "ready"
       }
@@ -391,27 +391,22 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 6097,
     "findings": [
       {
         "code": "scorecard_orphan_stops",
-        "count": 61,
+        "count": 51,
         "effort": "A cleanup pass in your scheduling software.",
         "fix": "Remove stops no route serves, or add the trips that should call at them.",
         "owner": "Likely your export tool",
         "points": 0.0,
         "severity": "INFO",
-        "what": "61 of 6097 boardable stops are never served by any trip.",
+        "what": "51 of 6097 boardable stops are never served by any trip.",
         "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
       }
     ],
-    "orphan_stops": 61,
+    "orphan_stops": 51,
     "single_stop_trips": 0,
     "trips_total": 14589
   },

@@ -274,12 +274,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": null,
+        "coverage_pct": 71.4,
+        "covered_trips": 10,
+        "drift": {
+          "median_seconds": -255,
+          "observations": 115,
+          "on_time_share_pct": 24.3,
+          "p90_abs_seconds": 1175
+        },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 0,
-        "worst_lag_seconds": 4
+        "scheduled_trips_in_window": 14,
+        "vehicles_checked": 30,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 1
       },
       "findings": [
         {
@@ -292,12 +301,23 @@
           "severity": "ERROR",
           "what": "The service alerts realtime feed failed during sampling.",
           "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 4,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 10.0,
+          "severity": "WARNING",
+          "what": "4 of 14 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 83.3,
+      "score": 81.7,
       "status": "measured",
-      "summary": "Sampled 6 times outside service hours: 2 of 3 feeds healthy.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 71.4% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 255s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -339,7 +359,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "e08070b85f2fb0a314050ccc2cdef01e0cf3d393899914b7bb450fe6d82dc6c0",
+    "sha256": "c1b2f9f477cf2c51916b1e4a705ba2a89b3f098770b51d0278b7ab628d021ef0",
     "size_bytes": 381364,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
@@ -391,9 +411,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 51.2,
-    "margin_to_next_band": 8.8,
-    "score": 51.2
+    "margin_to_lower_band": 50.9,
+    "margin_to_next_band": 9.1,
+    "score": 50.9
   },
   "recommendations": [
     {

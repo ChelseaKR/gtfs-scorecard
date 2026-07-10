@@ -69,15 +69,15 @@
     <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
-    <p>As of 2026-07-10T09:07:21+00:00, this pipeline is tracking liveness on
+    <p>As of 2026-07-10T12:31:54+00:00, this pipeline is tracking liveness on
         <strong>1453</strong> feeds:
-        <strong>1253</strong> checking in clean (no failed check in a row),
-        <strong>79</strong> with at least one recent failed check but not yet
-        flagged, and <strong>121</strong> flagged unreachable
+        <strong>1254</strong> checking in clean (no failed check in a row),
+        <strong>56</strong> with at least one recent failed check but not yet
+        flagged, and <strong>143</strong> flagged unreachable
         (see the degradation policy below). Time since each feed's last liveness check ranges from
-        0.3 to 255.0 hours, with a median of
-        9.4 hours.</p>
-        <p>Overall clean-check rate: <strong>86.2%</strong>.</p></section>
+        0.3 to 258.4 hours, with a median of
+        8.0 hours.</p>
+        <p>Overall clean-check rate: <strong>86.3%</strong>.</p></section>
 
     <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
     <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
@@ -105,7 +105,7 @@
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Agency count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
-      <tbody><tr><td>under 1 day</td><td>242</td></tr><tr><td>1-2 days</td><td>76</td></tr><tr><td>3-7 days</td><td>41</td></tr><tr><td>over 7 days</td><td>1090</td></tr></tbody>
+      <tbody><tr><td>under 1 day</td><td>249</td></tr><tr><td>1-2 days</td><td>70</td></tr><tr><td>3-7 days</td><td>41</td></tr><tr><td>over 7 days</td><td>1089</td></tr></tbody>
     </table></div>
     </section>
 

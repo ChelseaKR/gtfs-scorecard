@@ -70,7 +70,7 @@
           "pathway_count": 0
         },
         "stops": 19,
-        "trips": 28840,
+        "trips": 28292,
         "wheelchair_accessible_pct": 0.0,
         "wheelchair_boarding_pct": 0.0,
         "wheelchair_marked_accessible_pct": 0.0,
@@ -90,13 +90,13 @@
         },
         {
           "code": "scorecard_wheelchair_accessible_unknown",
-          "count": 28840,
+          "count": 28292,
           "effort": "Often one default setting in your export.",
           "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
           "owner": "Likely your export tool",
           "points": 15.0,
           "severity": "WARNING",
-          "what": "28840 of 28840 trips don't say whether the vehicle is wheelchair accessible.",
+          "what": "28292 of 28292 trips don't say whether the vehicle is wheelchair accessible.",
           "why": "Even with accessible stops, riders need to know the bus itself can take them."
         },
         {
@@ -123,14 +123,14 @@
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 0,
-          "WARNING": 28869
+          "WARNING": 28321
         },
         "validator_version": "8.0.1"
       },
       "findings": [
         {
           "code": "missing_bike_allowance",
-          "count": 28840,
+          "count": 28292,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -187,7 +187,7 @@
       "name": "correctness",
       "score": 72.0,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 5 kinds of issue across 28869 instances (0 error, 28869 warning, 0 informational).",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 28321 instances (0 error, 28321 warning, 0 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -248,7 +248,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 52 days.",
+        "detail": "Service data covers the next 51 days.",
         "key": "current",
         "met": true
       },
@@ -264,8 +264,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "37f298dc4b7e31b888d857144a3db626b9e17c9fbd17b9e87884e358e964fbd4",
-    "size_bytes": 480952,
+    "sha256": "45496f6391a96202cd78dfeb34d05ee6a2cd76c79442adac3fbdc69c61da37da",
+    "size_bytes": 472085,
     "static_url": "https://business.wsdot.wa.gov/Transit/csv_files/wsf/google_transit.zip"
   },
   "fetch": {
@@ -274,7 +274,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -123.01475,
@@ -306,7 +306,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 52 days.",
+        "detail": "Service data covers the next 51 days.",
         "key": "current",
         "status": "ready"
       }
@@ -321,17 +321,12 @@
     "score": 65.4
   },
   "recommendations": [],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 19,
     "findings": [],
     "orphan_stops": 0,
     "single_stop_trips": 0,
-    "trips_total": 28840
+    "trips_total": 28292
   },
   "route_map": {
     "drawn_route_count": 38,
@@ -764,10 +759,10 @@
   "rubric_version": "1.1",
   "schema_version": "1.7",
   "shapes_readiness": {
-    "detail": "All 28840 trips have a shape in shapes.txt.",
+    "detail": "All 28292 trips have a shape in shapes.txt.",
     "status": "ready",
-    "total_trips": 28840,
-    "trips_with_shape": 28840
+    "total_trips": 28292,
+    "trips_with_shape": 28292
   },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
@@ -785,14 +780,14 @@
     },
     {
       "code": "scorecard_wheelchair_accessible_unknown",
-      "count": 28840,
+      "count": 28292,
       "effort": "Often one default setting in your export.",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "28840 of 28840 trips don't say whether the vehicle is wheelchair accessible.",
+      "what": "28292 of 28292 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
     },
     {
