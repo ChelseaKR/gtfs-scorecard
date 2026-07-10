@@ -13,6 +13,7 @@ scorecard run-summary merge --out data/artifacts/run/latest.json s0.json s1.json
 scorecard alerts [--out digest.md]                # expiry/regression digest
 scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for liaisons
 scorecard rollups                                 # portfolio rollup artifacts
+scorecard campaign --rollup id --kind calendar-renewal  # bounded support worklist
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
 scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
 scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
@@ -1768,6 +1769,39 @@ def _cmd_rollups(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
     return 0
 
 
+def _cmd_campaign(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Build one fix-themed support campaign for a configured rollup."""
+    from .campaigns import build_program_campaign, render_program_campaign_markdown
+    from .rollups import _load_latest, load_rollups, resolve_member_ids
+
+    rollup = next((candidate for candidate in load_rollups() if candidate.id == args.rollup), None)
+    if rollup is None:
+        parser.error(f"no rollup with id {args.rollup!r}")
+    artifacts = [
+        artifact
+        for agency_id in resolve_member_ids(rollup)
+        if (artifact := _load_latest(agency_id)) is not None
+    ]
+    campaign = build_program_campaign(
+        rollup_id=rollup.id,
+        rollup_name=rollup.name,
+        kind=args.kind,
+        artifacts=artifacts,
+        as_of=args.date,
+    )
+    output = (
+        render_program_campaign_markdown(campaign)
+        if args.format == "markdown"
+        else json.dumps(campaign, indent=2, sort_keys=True) + "\n"
+    )
+    if args.out:
+        Path(args.out).write_text(output)
+        log.info("Wrote %s campaign for %s to %s", args.kind, rollup.id, args.out)
+    else:
+        print(output, end="")
+    return 0
+
+
 def _cmd_reindex(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .publish import rebuild_index
 
@@ -2179,6 +2213,26 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     sub.add_parser("rollups", help="publish portfolio rollup artifacts")
+    campaign = sub.add_parser(
+        "campaign", help="build a bounded, fix-themed support campaign for a rollup"
+    )
+    campaign.add_argument("--rollup", required=True, help="configured rollup id")
+    campaign.add_argument(
+        "--kind",
+        required=True,
+        choices=["calendar-renewal", "accessibility-fields", "rider-information"],
+        help="campaign theme",
+    )
+    campaign.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+        help="output format (default: json)",
+    )
+    campaign.add_argument(
+        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="baseline date"
+    )
+    campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
     sub.add_parser("render-site", help="generate crawlable static HTML pages, sitemap, robots")
     sub.add_parser(
@@ -2337,6 +2391,7 @@ def main(argv: list[str] | None = None) -> int:
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
         "rollups": _cmd_rollups,
+        "campaign": _cmd_campaign,
         "reindex": _cmd_reindex,
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
