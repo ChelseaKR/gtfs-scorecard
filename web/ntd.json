@@ -1,5 +1,5 @@
 {
-  "at_risk": 161,
+  "at_risk": 159,
   "by_state": {
     "Alabama": {
       "at_risk": 0,
@@ -195,14 +195,14 @@
     },
     "New York": {
       "at_risk": 8,
-      "not_ready": 34,
-      "ready": 45,
+      "not_ready": 33,
+      "ready": 46,
       "total": 87
     },
     "North Carolina": {
       "at_risk": 2,
-      "not_ready": 24,
-      "ready": 10,
+      "not_ready": 22,
+      "ready": 12,
       "total": 36
     },
     "North Dakota": {
@@ -284,9 +284,9 @@
       "total": 28
     },
     "Virginia": {
-      "at_risk": 15,
+      "at_risk": 13,
       "not_ready": 15,
-      "ready": 45,
+      "ready": 47,
       "total": 75
     },
     "Washington": {
@@ -308,7 +308,7 @@
       "total": 22
     }
   },
-  "not_ready": 639,
+  "not_ready": 636,
   "one_fix_from_ready": [
     {
       "fix": "Service data expired 922 days ago, so FTA would find the link out of date.",
@@ -388,22 +388,6 @@
       "name": "Areawide Community Transportation System",
       "pillar": "current",
       "state": "Alabama",
-      "status": "not_ready"
-    },
-    {
-      "fix": "Service data expired 10 days ago, so FTA would find the link out of date.",
-      "id": "asheville-rides-transit",
-      "name": "Asheville Rides Transit",
-      "pillar": "current",
-      "state": "North Carolina",
-      "status": "not_ready"
-    },
-    {
-      "fix": "Service data expired 10 days ago, so FTA would find the link out of date.",
-      "id": "asheville-rides-transit-903",
-      "name": "Asheville Rides Transit",
-      "pillar": "current",
-      "state": "North Carolina",
       "status": "not_ready"
     },
     {
@@ -629,11 +613,27 @@
       "pillar": "current",
       "state": "Virginia",
       "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 566 days ago, so FTA would find the link out of date.",
+      "id": "washington-metropolitan-area-transit-authority-wmata",
+      "name": "Bus",
+      "pillar": "current",
+      "state": "District of Columbia",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 1882 days ago, so FTA would find the link out of date.",
+      "id": "butler-county-regional-transit-authority",
+      "name": "Butler County Regional Transit Authority",
+      "pillar": "current",
+      "state": "Ohio",
+      "status": "not_ready"
     }
   ],
-  "one_fix_total": 480,
-  "pct_ready": 44.7,
-  "ready": 646,
+  "one_fix_total": 475,
+  "pct_ready": 45.0,
+  "ready": 651,
   "shapes": {
     "at_risk": 12,
     "by_state": {
@@ -826,8 +826,8 @@
       "North Carolina": {
         "at_risk": 0,
         "not_ready": 0,
-        "ready": 12,
-        "total": 12
+        "ready": 14,
+        "total": 14
       },
       "North Dakota": {
         "at_risk": 0,
@@ -898,8 +898,8 @@
       "Virginia": {
         "at_risk": 2,
         "not_ready": 1,
-        "ready": 23,
-        "total": 26
+        "ready": 25,
+        "total": 28
       },
       "Washington": {
         "at_risk": 0,
@@ -921,9 +921,9 @@
       }
     },
     "not_ready": 22,
-    "pct_ready": 90.4,
-    "ready": 321,
-    "total": 355
+    "pct_ready": 90.5,
+    "ready": 325,
+    "total": 359
   },
   "total": 1446
 }

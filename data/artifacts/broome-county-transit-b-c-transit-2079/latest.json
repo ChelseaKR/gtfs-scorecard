@@ -129,11 +129,11 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 4,
+        "distinct_codes": 3,
         "instances_by_severity": {
           "ERROR": 0,
           "INFO": 11,
-          "WARNING": 7
+          "WARNING": 6
         },
         "validator_version": "8.0.1"
       },
@@ -148,17 +148,6 @@
           "severity": "WARNING",
           "what": "Some service calendars in the feed have already ended.",
           "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
-        },
-        {
-          "code": "feed_expiration_date30_days",
-          "count": 1,
-          "effort": "Usually a re-export from your scheduling software.",
-          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
-          "owner": "Likely your export tool",
-          "points": 4.0,
-          "severity": "WARNING",
-          "what": "This feed's service calendar runs out within the next 30 days.",
-          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
         },
         {
           "code": "service_window_outside_feed_period",
@@ -184,39 +173,27 @@
         }
       ],
       "name": "correctness",
-      "score": 88.8,
+      "score": 92.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 4 kinds of issue across 18 instances (0 error, 7 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 17 instances (0 error, 6 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
       "details": {
-        "days_until_expiry": -10,
-        "feed_end_date": "2026-06-30",
+        "days_until_expiry": 174,
+        "feed_end_date": "2026-12-31",
         "feed_start_date": "2025-12-11",
-        "feed_version": "20260120",
+        "feed_version": "20260709",
         "has_feed_info": true,
-        "last_service_date": "2026-06-30",
+        "last_service_date": "2026-12-31",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expired",
-          "count": 1,
-          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-          "owner": "Likely your export tool",
-          "points": 100.0,
-          "severity": "ERROR",
-          "what": "Service data ended 10 day(s) ago.",
-          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 0.0,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data ended 10 day(s) ago. Trip planners have likely already dropped this feed.",
+      "summary": "Service data covers the next 174 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -247,9 +224,9 @@
         "met": true
       },
       {
-        "detail": "Service data expired 8 days ago.",
+        "detail": "Service data covers the next 174 days.",
         "key": "current",
-        "met": false
+        "met": true
       },
       {
         "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
@@ -258,13 +235,13 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. Service data expired 8 days ago. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "License: https://www.gobroomecounty.com/transit/gtfs",
     "reachable": true,
-    "sha256": "74a1a232ebd162ab800d13a16254de9c14e736be16d8e8c63459bdda82274fb5",
-    "size_bytes": 529522,
+    "sha256": "fd40c16b36740ed5ef113a6d652d7c0b90e600b3955fa80d673714262b2051ef",
+    "size_bytes": 527766,
     "static_url": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip"
   },
   "fetch": {
@@ -273,7 +250,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-08T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -76.09127,
@@ -305,22 +282,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data expired 8 days ago, so FTA would find the link out of date.",
+        "detail": "Service data covers the next 174 days.",
         "key": "current",
-        "status": "not_ready"
+        "status": "ready"
       }
     ],
-    "status": "not_ready",
-    "summary": "Resolve this before you certify on the D-10. Service data expired 8 days ago, so FTA would find the link out of date."
+    "status": "ready",
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "F",
-    "margin_to_lower_band": 57.6,
-    "margin_to_next_band": 2.4,
-    "score": 57.6
+    "grade": "B",
+    "margin_to_lower_band": 4.3,
+    "margin_to_next_band": 5.7,
+    "score": 84.3
   },
   "recommendations": [
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
       "count": 13,
       "effort": "A per-route color setting in your scheduling software.",
@@ -332,6 +310,7 @@
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 740,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -343,6 +322,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -354,11 +334,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 796,
     "findings": [],
@@ -641,25 +616,13 @@
   "snapshot_date": "2026-07-10",
   "top_fixes": [
     {
-      "code": "scorecard_feed_expired",
-      "count": 1,
-      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-      "owner": "Likely your export tool",
-      "points": 100.0,
-      "rank": 1,
-      "severity": "ERROR",
-      "what": "Service data ended 10 day(s) ago.",
-      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
-    },
-    {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 797,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "797 of 797 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -671,10 +634,22 @@
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
       "owner": "",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "The feed contains no fare information.",
       "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "expired_calendar",
+      "count": 6,
+      "effort": "One setting in most export tools.",
+      "fix": "Remove past service periods the next time you export the feed.",
+      "owner": "Likely your export tool",
+      "points": 6.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some service calendars in the feed have already ended.",
+      "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
     }
   ],
   "validator_version": "8.0.1"

@@ -119,7 +119,7 @@
       "details": {
         "distinct_codes": 11,
         "instances_by_severity": {
-          "ERROR": 21,
+          "ERROR": 41,
           "INFO": 11,
           "WARNING": 56
         },
@@ -128,7 +128,7 @@
       "findings": [
         {
           "code": "stop_time_with_arrival_before_previous_departure_time",
-          "count": 18,
+          "count": 38,
           "effort": "Varies.",
           "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
           "owner": "",
@@ -251,7 +251,7 @@
       "name": "correctness",
       "score": 28.8,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 11 kinds of issue across 88 instances (21 error, 56 warning, 11 informational).",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 108 instances (41 error, 56 warning, 11 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -274,21 +274,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 61.1,
-        "covered_trips": 11,
+        "coverage_pct": 70.6,
+        "covered_trips": 12,
         "drift": {
-          "median_seconds": -197,
-          "observations": 137,
-          "on_time_share_pct": 27.7,
-          "p90_abs_seconds": 1371
+          "median_seconds": -524,
+          "observations": 170,
+          "on_time_share_pct": 8.2,
+          "p90_abs_seconds": 20099
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 18,
-        "vehicles_checked": 40,
-        "vehicles_on_route_pct": 85.0,
-        "worst_lag_seconds": 3
+        "scheduled_trips_in_window": 17,
+        "vehicles_checked": 37,
+        "vehicles_on_route_pct": 94.6,
+        "worst_lag_seconds": 5
       },
       "findings": [
         {
@@ -304,31 +304,31 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 7,
+          "count": 5,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 13.6,
+          "points": 10.3,
           "severity": "WARNING",
-          "what": "7 of 18 trips scheduled during the sampling window had no live predictions.",
+          "what": "5 of 17 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         },
         {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 7,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 170,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
-          "points": 2.3,
+          "points": 0.0,
           "severity": "WARNING",
-          "what": "7 of 40 sampled vehicle positions were far from their assigned route (worst: 29744 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
         }
       ],
       "name": "realtime",
-      "score": 75.8,
+      "score": 80.6,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 61.1% of scheduled trips had live predictions; 85.0% of vehicles on their route; predictions ran a median of 197s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 70.6% of scheduled trips had live predictions; 94.6% of vehicles on their route; predictions ran a median of 524s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -370,8 +370,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "3d5d3d05c4d807200108e58294ca5350e48e6bd0d0815cbdb056d6346885b93f",
-    "size_bytes": 382087,
+    "sha256": "3528d12f8da4637a3fea82c370588f2f29d891083cef5ea0693954c8948fb195",
+    "size_bytes": 383125,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -422,9 +422,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 49.7,
-    "margin_to_next_band": 10.3,
-    "score": 49.7
+    "margin_to_lower_band": 50.7,
+    "margin_to_next_band": 9.3,
+    "score": 50.7
   },
   "recommendations": [
     {
@@ -680,7 +680,7 @@
   "top_fixes": [
     {
       "code": "stop_time_with_arrival_before_previous_departure_time",
-      "count": 18,
+      "count": 38,
       "effort": "Varies.",
       "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
       "owner": "",

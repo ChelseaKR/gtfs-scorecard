@@ -1,6 +1,6 @@
 {
   "agency_count": 36,
-  "average_score": 56.3,
+  "average_score": 57.5,
   "common_fixes": [
     {
       "agencies": 34,
@@ -8,14 +8,14 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "agencies": 24,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
       "agencies": 22,
       "code": "scorecard_wheelchair_accessible_unknown",
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
+    },
+    {
+      "agencies": 22,
+      "code": "scorecard_feed_expired",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "agencies": 6,
@@ -49,6 +49,11 @@
     },
     {
       "agencies": 2,
+      "code": "scorecard_rt_service_alerts_unreachable",
+      "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "agencies": 2,
       "code": "stop_without_stop_time",
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
     },
@@ -59,16 +64,16 @@
     }
   ],
   "expired": {
-    "lapsed": 6,
+    "lapsed": 4,
     "stale": 18,
-    "total": 24
+    "total": 22
   },
-  "generated_at": "2026-07-10T17:29:55+00:00",
+  "generated_at": "2026-07-10T19:06:16+00:00",
   "grade_distribution": {
     "B": 6,
     "C": 3,
-    "D": 3,
-    "F": 24
+    "D": 5,
+    "F": 22
   },
   "members": [
     {
@@ -221,34 +226,6 @@
       "name": "fixed route",
       "needs_attention": true,
       "score": 44.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -10,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "asheville-rides-transit",
-      "name": "Asheville Rides Transit",
-      "needs_attention": true,
-      "score": 46.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -10,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "asheville-rides-transit-903",
-      "name": "Asheville Rides Transit",
-      "needs_attention": true,
-      "score": 46.8,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -437,6 +414,34 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Score changed sharply on 2026-07-10",
+      "days_until_expiry": 174,
+      "expiry_status": "current",
+      "grade": "D",
+      "id": "asheville-rides-transit",
+      "name": "Asheville Rides Transit",
+      "needs_attention": true,
+      "score": 68.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Score changed sharply on 2026-07-10",
+      "days_until_expiry": 174,
+      "expiry_status": "current",
+      "grade": "D",
+      "id": "asheville-rides-transit-903",
+      "name": "Asheville Rides Transit",
+      "needs_attention": true,
+      "score": 68.2,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": "Score changed sharply on 2026-06-30",
       "days_until_expiry": 52,
       "expiry_status": "current",
@@ -584,10 +589,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 24,
+    "not_measured": 22,
     "not_ready": 0,
-    "ready": 12,
+    "ready": 14,
     "total": 36
   },
-  "state_percentile": 48
+  "state_percentile": 57
 }

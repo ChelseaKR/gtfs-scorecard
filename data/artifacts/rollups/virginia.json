@@ -1,6 +1,6 @@
 {
   "agency_count": 75,
-  "average_score": 64.6,
+  "average_score": 65.0,
   "common_fixes": [
     {
       "agencies": 69,
@@ -13,7 +13,7 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 26,
+      "agencies": 28,
       "code": "scorecard_missing_headsigns",
       "fix": "Populate trip_headsign to match what the bus displays."
     },
@@ -28,7 +28,7 @@
       "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
     },
     {
-      "agencies": 11,
+      "agencies": 9,
       "code": "scorecard_feed_expiring_soon",
       "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -78,11 +78,11 @@
     "stale": 13,
     "total": 14
   },
-  "generated_at": "2026-07-10T17:29:55+00:00",
+  "generated_at": "2026-07-10T19:06:16+00:00",
   "grade_distribution": {
-    "B": 17,
+    "B": 19,
     "C": 23,
-    "D": 12,
+    "D": 10,
     "F": 23
   },
   "members": [
@@ -404,34 +404,6 @@
       "name": "Farmville Area Bus",
       "needs_attention": true,
       "score": 64.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "pony-express",
-      "name": "Pony Express",
-      "needs_attention": true,
-      "score": 66.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "pony-express-828",
-      "name": "Pony Express",
-      "needs_attention": true,
-      "score": 66.1,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
@@ -1041,6 +1013,34 @@
     {
       "annual_trips": null,
       "attention_reason": null,
+      "days_until_expiry": 206,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "pony-express",
+      "name": "Pony Express",
+      "needs_attention": false,
+      "score": 81.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 206,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "pony-express-828",
+      "name": "Pony Express",
+      "needs_attention": false,
+      "score": 81.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
       "days_until_expiry": 113,
       "expiry_status": "current",
       "grade": "B",
@@ -1137,7 +1137,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
-  "needs_attention": 34,
+  "needs_attention": 32,
   "rollup": {
     "id": "virginia",
     "name": "Virginia agencies"
@@ -1145,10 +1145,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 2,
-    "not_measured": 49,
+    "not_measured": 47,
     "not_ready": 1,
-    "ready": 23,
+    "ready": 25,
     "total": 75
   },
-  "state_percentile": 78
+  "state_percentile": 83
 }

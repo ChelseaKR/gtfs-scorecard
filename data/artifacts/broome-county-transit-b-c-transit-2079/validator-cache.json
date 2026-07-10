@@ -5,41 +5,28 @@
         "code": "expired_calendar",
         "sample_notices": [
           {
-            "csvRowNumber": 6,
+            "csvRowNumber": 5,
             "serviceId": "mtwtf_BU"
           },
           {
-            "csvRowNumber": 7,
+            "csvRowNumber": 6,
             "serviceId": "mtwtf_SB"
           },
           {
-            "csvRowNumber": 8,
+            "csvRowNumber": 7,
             "serviceId": "mtwtf_BHS-PM"
           },
           {
-            "csvRowNumber": 9,
+            "csvRowNumber": 8,
             "serviceId": "mttf_BHS-AM"
           },
           {
-            "csvRowNumber": 10,
+            "csvRowNumber": 9,
             "serviceId": "w_BHS-AM"
           }
         ],
         "severity": "WARNING",
         "total": 6
-      },
-      {
-        "code": "feed_expiration_date30_days",
-        "sample_notices": [
-          {
-            "csvRowNumber": 2,
-            "currentDate": "20260621",
-            "feedEndDate": "20260630",
-            "suggestedExpirationDate": "20260721"
-          }
-        ],
-        "severity": "WARNING",
-        "total": 1
       },
       {
         "code": "service_window_outside_feed_period",
@@ -48,7 +35,7 @@
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 1895,
             "serviceId": "sat",
-            "serviceWindowEndDate": "2026-06-27",
+            "serviceWindowEndDate": "2026-12-26",
             "serviceWindowStartDate": "2020-10-03"
           },
           {
@@ -62,14 +49,14 @@
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 1894,
             "serviceId": "sun",
-            "serviceWindowEndDate": "2026-06-28",
+            "serviceWindowEndDate": "2026-12-27",
             "serviceWindowStartDate": "2020-10-04"
           },
           {
             "daysAfterFeedEnd": 0,
             "daysBeforeFeedStart": 1897,
             "serviceId": "mtwtf",
-            "serviceWindowEndDate": "2026-06-30",
+            "serviceWindowEndDate": "2026-12-31",
             "serviceWindowStartDate": "2020-10-01"
           },
           {
@@ -125,6 +112,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "74a1a232ebd162ab800d13a16254de9c14e736be16d8e8c63459bdda82274fb5",
+  "sha256": "fd40c16b36740ed5ef113a6d652d7c0b90e600b3955fa80d673714262b2051ef",
   "validator_version": "8.0.1"
 }
