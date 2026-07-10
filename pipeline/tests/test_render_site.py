@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import datetime as dt
+import re
 from typing import Any
 
 from scorecard_pipeline.render_site import (
@@ -822,6 +824,7 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     assert "Trillium" in html
     # It says what the grade does and does not measure.
     assert "not service" in html
+    assert '<meta name="robots" content="noindex,follow">' in html
 
 
 def test_board_page_peer_standing_only_with_percentiles() -> None:
@@ -1427,6 +1430,7 @@ def test_brief_carries_outreach_standards_and_portfolio_link() -> None:
     assert 'href="/program/california/"' in html
     no_rollup = _render_brief(lapsed, dir_record={"state": "California"}, program_ids=set())
     assert 'href="/program/california/"' not in no_rollup
+    assert '<meta name="robots" content="noindex,follow">' in html
 
 
 def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
@@ -2154,6 +2158,20 @@ def test_page_shell_keeps_nav_reachable_without_js() -> None:
     assert ".nav-cluster { display: flex !important" in html
 
 
+def test_page_shell_can_mark_utility_pages_noindex() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    html = _page(
+        title="t",
+        description="d",
+        canonical="https://gtfsscorecard.org/x/",
+        body="<p>hi</p>",
+        robots="noindex,follow",
+    )
+
+    assert '<meta name="robots" content="noindex,follow">' in html
+
+
 def test_map_page_names_its_cdn_fallback() -> None:
     html = _render_map_page(_map_features())
     assert "map-fallback" in html
@@ -2472,6 +2490,69 @@ def test_agency_page_carries_the_confidence_line() -> None:
     html = _render_agency(artifact)
     assert "Measured 2 of 4 score categories from the agency" in html
     assert "How we measured this" in html
+    title = html.split("<title>", 1)[1].split("</title>", 1)[0]
+    description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+    assert title == "Demo Transit GTFS quality report"
+    assert "grade" not in title.lower()
+    assert len(title) <= 60
+    assert len(description) <= 155
+    assert "realtime quality" not in description
+    assert 'itemtype="https://schema.org/BreadcrumbList"' in html
+    assert '"license":"https://creativecommons.org/licenses/by/4.0/"' in html
+    assert '"isBasedOn":"https://ex.org/g.zip"' in html
+
+
+def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
+    import datetime as dt
+    from pathlib import Path
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.fetch import FetchResult
+    from scorecard_pipeline.metrics import CategoryResult
+    from scorecard_pipeline.publish import build_artifact
+    from scorecard_pipeline.render_site import _render_agency
+    from scorecard_pipeline.score import build_scorecard
+
+    agency = Agency(
+        id="long-name",
+        name="A Very Long Regional Transportation Authority and Municipal Transit District",
+        static_gtfs_url="https://ex.org/long.zip",
+    )
+    fetch = FetchResult(
+        agency_id=agency.id,
+        path=Path("/tmp/long.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256="abc",
+        size_bytes=1,
+        reused=False,
+        source="origin",
+    )
+    card = build_scorecard([CategoryResult(name="correctness", score=90.0, summary="s")])
+    artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
+    html = _render_agency(artifact, dir_record={"state": "California"})
+    title = html.split("<title>", 1)[1].split("</title>", 1)[0]
+
+    assert len(title) <= 60
+    assert "(California) GTFS quality report" in title
+    assert "…" in title
+
+
+def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:
+    from scorecard_pipeline.render_site import _sitemap
+
+    xml = _sitemap(
+        [
+            "https://gtfsscorecard.org/x/",
+            "https://gtfsscorecard.org/x/",
+            "https://gtfsscorecard.org/y/",
+        ],
+        {"https://gtfsscorecard.org/x/": "2026-07-09"},
+    )
+
+    assert xml.count("https://gtfsscorecard.org/x/") == 1
+    assert "<lastmod>2026-07-09</lastmod>" in xml
+    assert "<lastmod>" not in xml.split("https://gtfsscorecard.org/y/", 1)[1]
 
 
 def _guided_flow_artifact() -> dict[str, Any]:
@@ -2540,10 +2621,33 @@ def test_guided_fix_flow_empty_without_fixes() -> None:
 def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
     from scorecard_pipeline.render_site import _render_fix
 
-    html = _render_fix("expired_calendar", "# Fix expired calendars\n\nRe-export the feed.\n")
+    html = _render_fix(
+        "expired_calendar",
+        "# Fix expired calendars\n\nRe-export the feed.\n",
+        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+    )
     assert "After you republish" in html
     assert "dated receipt" in html
     assert "the scorecard shows the fix; the agency publishes it." in html
+    assert '<a class="backlink" href="/fix/">' in html
+    assert '"author":{"@type":"Organization","name":"GTFS Scorecard"' in html
+
+
+def test_fix_guide_description_skips_the_validator_code_line() -> None:
+    from scorecard_pipeline.render_site import _render_fix
+
+    html = _render_fix(
+        "expired_calendar",
+        "# Fix expired calendars\n\n"
+        "Code: `expired_calendar` (MobilityData validator)\n\n"
+        "## What this means\n\n"
+        "The service calendar ended in the past, so the feed may stop showing trips.\n",
+        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+    )
+
+    description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+    assert description.startswith("The service calendar ended")
+    assert "Code:" not in description
 
 
 def test_md_to_html_renders_a_table() -> None:
@@ -2551,12 +2655,13 @@ def test_md_to_html_renders_a_table() -> None:
 
     md = "# Title\n\n| A | B |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\nAfter.\n"
     html, title = _md_to_html(md)
+    compact = re.sub(r"\s+", "", html)
     assert title == "Title"
     assert '<table class="leaderboard">' in html
-    assert "<thead><tr><th>A</th><th>B</th></tr></thead>" in html
-    assert "<tr><td>1</td><td>2</td></tr>" in html
-    assert "<tr><td>3</td><td>4</td></tr>" in html
-    assert "</tbody></table>" in html
+    assert "<thead><tr><th>A</th><th>B</th></tr></thead>" in compact
+    assert "<tr><td>1</td><td>2</td></tr>" in compact
+    assert "<tr><td>3</td><td>4</td></tr>" in compact
+    assert "</tbody></table>" in compact
     # The paragraph after the table still renders, so the table doesn't eat
     # the rest of the document.
     assert "<p>After.</p>" in html
@@ -2573,7 +2678,38 @@ def test_md_to_html_table_at_end_of_document_closes_cleanly() -> None:
     from scorecard_pipeline.render_site import _md_to_html
 
     html, _ = _md_to_html("# T\n\n| A |\n|---|\n| 1 |\n")
-    assert html.endswith("</tbody></table>")
+    assert html.endswith("</table>")
+
+
+def test_md_to_html_preserves_wrapped_paragraphs_and_list_continuations() -> None:
+    from scorecard_pipeline.render_site import _md_to_html
+
+    html, _ = _md_to_html(
+        "# T\n\nA paragraph that wraps\nonto another source line.\n\n"
+        "- A list item that wraps\n  onto its continuation.\n"
+    )
+
+    assert "<p>A paragraph that wraps\nonto another source line.</p>" in html
+    assert "<li>A list item that wraps\nonto its continuation.</li>" in html
+
+
+def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
+    from scorecard_pipeline.render_site import _render_fix_index
+
+    html = _render_fix_index(
+        [
+            {
+                "code": "expired_calendar",
+                "title": "Fix expired calendars",
+                "description": "Remove service periods that already ended.",
+                "category": "Service dates and freshness",
+            }
+        ]
+    )
+
+    assert "GTFS errors and fixes" in html
+    assert 'href="/fix/expired_calendar/"' in html
+    assert '"@type":"CollectionPage"' in html
 
 
 def test_render_crosswalk_page_links_the_authoritative_sources() -> None:
