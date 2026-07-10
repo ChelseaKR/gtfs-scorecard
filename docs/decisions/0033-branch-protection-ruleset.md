@@ -17,9 +17,9 @@ blocks nothing, because nothing requires it to pass before merge
 
 **The complication that made this not a trivial toggle:** scheduled Actions
 originally committed generated JSON data directly to `main`. The 2026-07-10
-S3 source-of-truth cutover removed those data commits, but the intraday job
-still commits the small tracked `data/liveness.json` observation. A naive
-"require a PR for every push to main" rule would break that job.
+S3 source-of-truth cutover removed those data commits. The final ruleset
+rollout also moved `data/liveness.json` into S3, so automation no longer needs
+to write to `main` at all.
 
 Two ways to reconcile the two needs:
 
@@ -35,15 +35,10 @@ Two ways to reconcile the two needs:
 
 ## Decision
 
-**Option (a), narrowed after the S3 cutover.** The S3 data plane now avoids
-bulk generated-data commits, while the scoped Actions bypass remains for the
-small liveness commit. Committed as `.github/rulesets/main.json`:
+**Option (b), implemented with the existing S3 data plane.** Code stays on
+`main`; generated score and liveness state stays in S3; Pages assembles both
+at deploy time. Committed as `.github/rulesets/main.json`:
 
-- Bypass actor: `actor_id: 15368`, `actor_type: Integration` — the
-  `github-actions` GitHub App's numeric ID (verified 2026-07-05 via
-  `gh api repos/ChelseaKR/gtfs-scorecard/commits/HEAD/check-runs`, which
-  shows every check run's `app.id` as `15368`, `app.slug: "github-actions"`).
-  `bypass_mode: always` so scheduled-workflow commits are never blocked.
 - Administrator recovery bypass: `actor_id: 5`, `actor_type:
   RepositoryRole`. This lets repository administrators recover a broken
   required check or automation path without weakening the normal contributor
@@ -118,8 +113,8 @@ small liveness commit. Committed as `.github/rulesets/main.json`:
 
   The live ruleset API is the enforcement source; these files are the
   reviewable, reproducible configuration. Verification includes reading the
-  live rulesets back and running the intraday refresh through its S3 publish,
-  liveness commit, and Pages deployment path.
+  live rulesets back and running the intraday refresh through its S3 score and
+  liveness publish plus Pages deployment path.
 - Every future PR now needs the nine listed checks green and one approval
   before merge — including the author's own future PRs, which is the point.
 - If `infra/compute`, CodeQL, dependency-audit, zizmor, or container-scan
@@ -127,8 +122,6 @@ small liveness commit. Committed as `.github/rulesets/main.json`:
   `.github/rulesets/main.json` and the live ruleset updated
   (`gh api .../rulesets/{id} -X PUT`) in the same change that adds the
   workflow — not as a follow-up that might not happen.
-- If option (b) (a dedicated `data` branch) is ever preferred instead — e.g.
-  because the bypass-actor scope is judged too broad, since it also
-  bypasses review for *any* Actions-authored commit, not only the data-bot's
-  — this ADR should be superseded, not edited, per the append-only ADR
-  convention (CQ-46).
+- Generated operational state must remain outside `main`. A future workflow
+  that needs a direct bot push must introduce and justify its own narrowly
+  enforceable protection model before it ships.

@@ -65,6 +65,8 @@ jobs:
             --include "*/geometry.geojson" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
             --only-show-errors
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
+            data/liveness.json --only-show-errors || true
       - name: Render and assemble the Pages site
         run: |
           cd pipeline

@@ -22,7 +22,7 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # commit the small liveness fallback only
+      contents: read
       id-token: write # publish refreshed artifacts through AWS OIDC
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -51,6 +51,8 @@ jobs:
             --include "*/latest.json" --include "*/fixlog.json" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
             --only-show-errors
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
+            data/liveness.json --only-show-errors || true
 
       - name: Select the feeds due this cycle
         working-directory: pipeline
@@ -92,43 +94,11 @@ jobs:
         run: |
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
             --cache-control "max-age=300" --only-show-errors
+          aws s3 cp data/liveness.json \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
+            --cache-control "max-age=300" --only-show-errors
 
-      - name: Commit the refresh
-        run: |
-          git config user.name "scorecard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          # Scored artifacts and generated pages publish from S3/Pages. Git keeps
-          # only this small liveness fallback, so a scheduled run cannot replay
-          # thousands of stale generated files over a newly merged feature.
-          paths=(data/liveness.json)
-          git add -- "${paths[@]}"
-          if git diff --cached --quiet; then
-            echo "No changes this cycle."
-            exit 0
-          fi
-          git commit -m "chore(data): intraday refresh"
-          # main can move during the run. Replay only the liveness file on top
-          # of it; scored artifacts and generated pages never enter this commit.
-          for attempt in 1 2 3 4 5; do
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            echo "push rejected (main moved); replaying liveness onto latest main ($attempt)"
-            git fetch origin main
-            ours=$(git rev-parse HEAD)
-            git reset --hard origin/main
-            git restore --source="$ours" --staged --worktree -- "${paths[@]}"
-            if git diff --cached --quiet; then
-              echo "latest main already carries these artifacts; nothing to push."
-              exit 0
-            fi
-            git commit -m "chore(data): intraday refresh"
-            sleep 3
-          done
-          echo "still rejected after 5 retries; failing so the lost cycle is visible."
-          exit 1
-
-  # GITHUB_TOKEN pushes do not trigger the push-driven Pages workflow, so deploy
+  # Refreshes do not write to main, so deploy the newly published S3 state
   # explicitly after the refresh.
   deploy:
     needs: refresh
