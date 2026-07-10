@@ -270,9 +270,9 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 31 days.",
+        "detail": "Service data runs out in 30 days; renew to qualify.",
         "key": "current",
-        "met": true
+        "met": false
       },
       {
         "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
@@ -281,7 +281,7 @@
       }
     ],
     "status": "not_yet",
-    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+    "summary": "This feed is close to the conformance mark. Service data runs out in 30 days; renew to qualify. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
   },
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
@@ -296,7 +296,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -119.90897,
@@ -328,13 +328,13 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 31 days.",
+        "detail": "Service data runs out in 30 days; renew before you certify.",
         "key": "current",
-        "status": "ready"
+        "status": "at_risk"
       }
     ],
-    "status": "ready",
-    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. Service data runs out in 30 days; renew before you certify."
   },
   "overall": {
     "grade": "F",
@@ -368,11 +368,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1503,
     "findings": [],

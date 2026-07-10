@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -211,25 +210,36 @@
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 2,
+        "covered_trips": 4,
         "drift": {
-          "median_seconds": -339,
-          "observations": 103,
-          "on_time_share_pct": 3.9,
-          "p90_abs_seconds": 14341
+          "median_seconds": -282,
+          "observations": 96,
+          "on_time_share_pct": 19.8,
+          "p90_abs_seconds": 14400
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 2,
-        "vehicles_checked": 7,
-        "vehicles_on_route_pct": 100.0,
+        "scheduled_trips_in_window": 4,
+        "vehicles_checked": 12,
+        "vehicles_on_route_pct": 75.0,
         "worst_lag_seconds": 4
       },
       "findings": [
         {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 3,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 3.8,
+          "severity": "WARNING",
+          "what": "3 of 12 sampled vehicle positions were far from their assigned route (worst: 1600 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+        },
+        {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 103,
+          "count": 96,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -240,9 +250,9 @@
         }
       ],
       "name": "realtime",
-      "score": 100.0,
+      "score": 96.2,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 339s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 75.0% of vehicles on their route; predictions ran a median of 282s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -284,7 +294,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "10e5666aac3b636991b0d2f5de68a3a68c2d0cc212706220ad4dfdd0ab6ab3c4",
+    "sha256": "13ffdb1f359c6245a4b4818198eaceb7985df55a828f32ef2be999bfe55244e5",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },
@@ -336,9 +346,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 7.5,
-    "margin_to_next_band": 2.5,
-    "score": 67.5
+    "margin_to_lower_band": 6.7,
+    "margin_to_next_band": 3.3,
+    "score": 66.7
   },
   "recommendations": [
     {

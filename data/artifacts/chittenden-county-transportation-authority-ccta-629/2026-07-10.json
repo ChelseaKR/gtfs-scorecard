@@ -217,8 +217,8 @@
       "details": {
         "days_until_expiry": 83,
         "feed_end_date": "2026-10-01",
-        "feed_start_date": "2026-07-07",
-        "feed_version": "UTC: 07-Jul-2026 14:39",
+        "feed_start_date": "2026-07-10",
+        "feed_version": "UTC: 10-Jul-2026 16:14",
         "has_feed_info": true,
         "last_service_date": "2026-10-01",
         "seasonal_boundary": false,
@@ -259,7 +259,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 86 days.",
+        "detail": "Service data covers the next 83 days.",
         "key": "current",
         "met": true
       },
@@ -275,8 +275,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "5e794d8aac26c2dfa3f7bb46e08f6ec6819eefe933a995d4f5c4fe161677f919",
-    "size_bytes": 1182179,
+    "sha256": "197d0b4b6c85efaa0b2589fb0488758495b113c247423fb11ddb5d857840a199",
+    "size_bytes": 1182410,
     "static_url": "http://data.trilliumtransit.com/gtfs/ccta-vt-us/ccta-vt-us.zip"
   },
   "fetch": {
@@ -285,7 +285,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-07T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -73.29892,
@@ -318,7 +318,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 86 days.",
+        "detail": "Service data covers the next 83 days.",
         "key": "current",
         "status": "ready"
       }
@@ -334,6 +334,7 @@
   },
   "recommendations": [
     {
+      "category": "flex",
       "code": "scorecard_flex_completeness_no_booking_rules",
       "count": 1,
       "effort": "A small file; one rule often covers the whole service.",
@@ -345,17 +346,19 @@
       "why": "Riders can see the service area but not how to book, so they can't complete a trip."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_route_color_low_contrast",
-      "count": 10,
+      "count": 8,
       "effort": "A per-route color setting in your scheduling software.",
       "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
       "owner": "Likely your export tool",
       "points": 0.0,
       "severity": "WARNING",
-      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (778, 11, 1, 96, 110, and more).",
+      "what": "8 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (778, 11, 1, 96, 5, and more).",
       "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 158,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -367,6 +370,7 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_station_missing_step_free_data",
       "count": 2,
       "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
@@ -378,11 +382,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 1176,
     "findings": [
@@ -406,7 +405,7 @@
     "drawn_route_count": 16,
     "has_shapes": true,
     "path": "data/artifacts/chittenden-county-transportation-authority-ccta-629/geometry.geojson",
-    "route_count": 28,
+    "route_count": 24,
     "routes": [
       {
         "color": "00BEFD",
@@ -548,50 +547,6 @@
         "label": "96",
         "long": "Franklin County Commuter",
         "short": "96",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "C4272F",
-        "color_name": "red",
-        "has_shape": false,
-        "id": "3183",
-        "label": "108",
-        "long": "Mountain Road Shuttle",
-        "short": "108",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "5A9F64",
-        "color_name": "gray",
-        "has_shape": false,
-        "id": "3194",
-        "label": "110",
-        "long": "St Albans Downtown Shuttle",
-        "short": "110",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "7D2B8C",
-        "color_name": "purple",
-        "has_shape": false,
-        "id": "3195",
-        "label": "115",
-        "long": "Alburgh / Georgia Commuter",
-        "short": "115",
-        "text_color": "FFFFFF",
-        "type_label": "Bus"
-      },
-      {
-        "color": "5494D3",
-        "color_name": "teal",
-        "has_shape": false,
-        "id": "3196",
-        "label": "116",
-        "long": "Richford / St Albans Commuter",
-        "short": "116",
         "text_color": "FFFFFF",
         "type_label": "Bus"
       },

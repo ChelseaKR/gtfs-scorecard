@@ -50,24 +50,24 @@
         "code": "unknown_column",
         "sample_notices": [
           {
-            "fieldName": "wkt",
-            "filename": "areas.txt",
-            "index": 2
-          },
-          {
             "fieldName": "tts_agency_name",
             "filename": "agency.txt",
             "index": 8
           },
           {
-            "fieldName": "service_name",
-            "filename": "calendar.txt",
+            "fieldName": "wkt",
+            "filename": "areas.txt",
             "index": 2
           },
           {
             "fieldName": "holiday_name",
             "filename": "calendar_dates.txt",
             "index": 3
+          },
+          {
+            "fieldName": "service_name",
+            "filename": "calendar.txt",
+            "index": 2
           },
           {
             "fieldName": "feed_license",
@@ -91,10 +91,10 @@
             "filename": "farezone_attributes.txt"
           },
           {
-            "filename": "runcut.txt"
+            "filename": "linked_datasets.txt"
           },
           {
-            "filename": "stop_attributes.txt"
+            "filename": "runcut.txt"
           }
         ],
         "severity": "INFO",
@@ -105,9 +105,9 @@
         "sample_notices": [
           {
             "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 150,
+            "daysBeforeFeedStart": 308,
             "serviceId": "c_71552_b_85550_d_31",
-            "serviceWindowEndDate": "2026-07-31",
+            "serviceWindowEndDate": "2027-02-01",
             "serviceWindowStartDate": "2025-09-05"
           }
         ],
@@ -117,6 +117,6 @@
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "a0d23acd05534d0430a353f54774e9d5d93a5ad6866364b485002d5c7061431a",
+  "sha256": "167cb95d4de0e28ff0b651a8dfeebe2375cab54bb9852746197699f6405fac3f",
   "validator_version": "8.0.1"
 }

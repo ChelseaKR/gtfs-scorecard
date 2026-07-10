@@ -178,18 +178,18 @@
         "coverage_pct": 28.6,
         "covered_trips": 2,
         "drift": {
-          "median_seconds": 14538,
-          "observations": 18,
-          "on_time_share_pct": 5.6,
-          "p90_abs_seconds": 16856
+          "median_seconds": 618,
+          "observations": 17,
+          "on_time_share_pct": 0.0,
+          "p90_abs_seconds": 19065
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 7,
-        "vehicles_checked": 18,
-        "vehicles_on_route_pct": 61.1,
-        "worst_lag_seconds": 0
+        "vehicles_checked": 15,
+        "vehicles_on_route_pct": 80.0,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -205,18 +205,18 @@
         },
         {
           "code": "scorecard_rt_vehicles_off_route",
-          "count": 7,
+          "count": 3,
           "effort": "A vendor support ticket with the trip ids attached.",
           "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
           "owner": "",
-          "points": 5.8,
+          "points": 3.0,
           "severity": "WARNING",
-          "what": "7 of 18 sampled vehicle positions were far from their assigned route (worst: 1580 m).",
+          "what": "3 of 15 sampled vehicle positions were far from their assigned route (worst: 718 m).",
           "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         },
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 18,
+          "count": 17,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -227,9 +227,9 @@
         }
       ],
       "name": "realtime",
-      "score": 69.2,
+      "score": 72.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 28.6% of scheduled trips had live predictions; 61.1% of vehicles on their route; predictions ran a median of 14538s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 28.6% of scheduled trips had live predictions; 80.0% of vehicles on their route; predictions ran a median of 618s behind schedule.",
       "weight": 0.2
     }
   },
@@ -271,7 +271,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "2d3837f70ab3ecb2868226e7850b7dc50158c8b7f5493e3ff4b965a3aca91e38",
+    "sha256": "e9351066145d6063a2147b1042ab4f09d59a0adb7507ff8e3bcbc9b1b3ae4f13",
     "size_bytes": 39754,
     "static_url": "https://passio3.com/towson/passioTransit/gtfs/google_transit.zip"
   },
@@ -323,9 +323,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 4.8,
-    "margin_to_next_band": 5.2,
-    "score": 64.8
+    "margin_to_lower_band": 5.3,
+    "margin_to_next_band": 4.7,
+    "score": 65.3
   },
   "recommendations": [
     {

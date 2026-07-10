@@ -28,7 +28,7 @@
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 9,
+      "agencies": 10,
       "code": "scorecard_no_fare_data",
       "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
@@ -74,11 +74,6 @@
     },
     {
       "agencies": 2,
-      "code": "scorecard_rt_trip_coverage",
-      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs."
-    },
-    {
-      "agencies": 2,
       "code": "trip_distance_exceeds_shape_distance",
       "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
@@ -93,7 +88,7 @@
     "stale": 30,
     "total": 35
   },
-  "generated_at": "2026-07-10T15:54:21+00:00",
+  "generated_at": "2026-07-10T17:29:55+00:00",
   "grade_distribution": {
     "B": 23,
     "C": 24,
@@ -614,7 +609,7 @@
       "id": "sandy-area-metro-sam-2739",
       "name": "Static feed for realtime",
       "needs_attention": true,
-      "score": 63.2,
+      "score": 65.5,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -628,7 +623,7 @@
       "id": "clackco-connects-clackamas-county-2740",
       "name": "Static feed for realtime",
       "needs_attention": true,
-      "score": 67.5,
+      "score": 66.7,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -1403,5 +1398,5 @@
     "ready": 20,
     "total": 92
   },
-  "state_percentile": 76
+  "state_percentile": 74
 }

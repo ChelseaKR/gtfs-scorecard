@@ -274,21 +274,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 58.3,
-        "covered_trips": 7,
+        "coverage_pct": 61.1,
+        "covered_trips": 11,
         "drift": {
-          "median_seconds": -325,
-          "observations": 163,
-          "on_time_share_pct": 9.2,
-          "p90_abs_seconds": 8539
+          "median_seconds": -197,
+          "observations": 137,
+          "on_time_share_pct": 27.7,
+          "p90_abs_seconds": 1371
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 12,
-        "vehicles_checked": 31,
-        "vehicles_on_route_pct": 96.8,
-        "worst_lag_seconds": 5
+        "scheduled_trips_in_window": 18,
+        "vehicles_checked": 40,
+        "vehicles_on_route_pct": 85.0,
+        "worst_lag_seconds": 3
       },
       "findings": [
         {
@@ -304,31 +304,31 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 5,
+          "count": 7,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 14.6,
+          "points": 13.6,
           "severity": "WARNING",
-          "what": "5 of 12 trips scheduled during the sampling window had no live predictions.",
+          "what": "7 of 18 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         },
         {
-          "code": "scorecard_rt_predictions_implausible",
-          "count": 163,
-          "effort": "A vendor data-mapping question.",
-          "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 7,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
           "owner": "",
-          "points": 0.0,
+          "points": 2.3,
           "severity": "WARNING",
-          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
-          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that buses are that late."
+          "what": "7 of 40 sampled vehicle positions were far from their assigned route (worst: 29744 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         }
       ],
       "name": "realtime",
-      "score": 76.6,
+      "score": 75.8,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 58.3% of scheduled trips had live predictions; 96.8% of vehicles on their route; predictions ran a median of 325s ahead of schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 61.1% of scheduled trips had live predictions; 85.0% of vehicles on their route; predictions ran a median of 197s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -370,8 +370,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "2d8843d32b747ef4e7a6e4a8520321cdd7d20b3684fb1b48cc6c9acedb0c0337",
-    "size_bytes": 381730,
+    "sha256": "3d5d3d05c4d807200108e58294ca5350e48e6bd0d0815cbdb056d6346885b93f",
+    "size_bytes": 382087,
     "static_url": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip"
   },
   "fetch": {
@@ -422,9 +422,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 49.9,
-    "margin_to_next_band": 10.1,
-    "score": 49.9
+    "margin_to_lower_band": 49.7,
+    "margin_to_next_band": 10.3,
+    "score": 49.7
   },
   "recommendations": [
     {

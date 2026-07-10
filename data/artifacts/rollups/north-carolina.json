@@ -1,6 +1,6 @@
 {
   "agency_count": 36,
-  "average_score": 55.4,
+  "average_score": 56.3,
   "common_fixes": [
     {
       "agencies": 34,
@@ -33,6 +33,11 @@
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
+      "agencies": 3,
+      "code": "scorecard_missing_headsigns",
+      "fix": "Populate trip_headsign to match what the bus displays."
+    },
+    {
       "agencies": 2,
       "code": "scorecard_rt_trip_updates_unreachable",
       "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
@@ -51,11 +56,6 @@
       "agencies": 2,
       "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
       "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_feed_expiring_soon",
-      "fix": "Re-export with a validity window that reaches at least 60 days out."
     }
   ],
   "expired": {
@@ -63,70 +63,14 @@
     "stale": 18,
     "total": 24
   },
-  "generated_at": "2026-07-10T15:54:21+00:00",
+  "generated_at": "2026-07-10T17:29:55+00:00",
   "grade_distribution": {
-    "B": 4,
-    "C": 5,
+    "B": 6,
+    "C": 3,
     "D": 3,
     "F": 24
   },
   "members": [
-    {
-      "annual_trips": 4677637,
-      "attention_reason": "Score changed sharply on 2026-06-30",
-      "days_until_expiry": 52,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "capital-area-transit-goraleigh-2074",
-      "name": "Capital Area Transit (GoRaleigh)",
-      "needs_attention": true,
-      "score": 71.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": 3885139,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -556,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "chapel-hill-transit-cht",
-      "name": "Chapel Hill Transit (CHT)",
-      "needs_attention": true,
-      "score": 41.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": 1878480,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -556,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "gotriangle",
-      "name": "GoTriangle",
-      "needs_attention": true,
-      "score": 50.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": 478594,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -556,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "gocary",
-      "name": "GoCary",
-      "needs_attention": true,
-      "score": 52.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -179,6 +123,20 @@
       "name": "Duke University",
       "needs_attention": true,
       "score": 38.6,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -556,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "chapel-hill-transit-cht",
+      "name": "Chapel Hill Transit (CHT)",
+      "needs_attention": true,
+      "score": 41.5,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -357,6 +315,20 @@
       "days_until_expiry": -556,
       "expiry_status": "stale",
       "grade": "F",
+      "id": "gotriangle",
+      "name": "GoTriangle",
+      "needs_attention": true,
+      "score": 50.2,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -556,
+      "expiry_status": "stale",
+      "grade": "F",
       "id": "gotriangle-374",
       "name": "GoTriangle",
       "needs_attention": true,
@@ -413,6 +385,20 @@
       "days_until_expiry": -556,
       "expiry_status": "stale",
       "grade": "F",
+      "id": "gocary",
+      "name": "GoCary",
+      "needs_attention": true,
+      "score": 52.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -556,
+      "expiry_status": "stale",
+      "grade": "F",
       "id": "gocary-375",
       "name": "GoCary",
       "needs_attention": true,
@@ -451,31 +437,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
+      "attention_reason": "Score changed sharply on 2026-06-30",
+      "days_until_expiry": 52,
+      "expiry_status": "current",
       "grade": "C",
-      "id": "tar-river-transit",
-      "name": "Tar River Transit",
+      "id": "capital-area-transit-goraleigh-2074",
+      "name": "Capital Area Transit (GoRaleigh)",
       "needs_attention": true,
-      "score": 70.1,
+      "score": 71.9,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
-      "grade": "C",
-      "id": "tar-river-transit-472",
-      "name": "Tar River Transit",
-      "needs_attention": true,
-      "score": 70.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -506,7 +478,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 162099,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 386,
       "expiry_status": "current",
@@ -520,7 +492,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 478594,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 147,
       "expiry_status": "current",
@@ -564,6 +536,34 @@
     {
       "annual_trips": null,
       "attention_reason": null,
+      "days_until_expiry": 206,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "tar-river-transit",
+      "name": "Tar River Transit",
+      "needs_attention": false,
+      "score": 85.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 206,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "tar-river-transit-472",
+      "name": "Tar River Transit",
+      "needs_attention": false,
+      "score": 85.9,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
       "days_until_expiry": 233,
       "expiry_status": "current",
       "grade": "B",
@@ -576,7 +576,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
   ],
-  "needs_attention": 29,
+  "needs_attention": 27,
   "rollup": {
     "id": "north-carolina",
     "name": "North Carolina agencies"
@@ -584,10 +584,10 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 26,
+    "not_measured": 24,
     "not_ready": 0,
-    "ready": 10,
+    "ready": 12,
     "total": 36
   },
-  "state_percentile": 46
+  "state_percentile": 48
 }

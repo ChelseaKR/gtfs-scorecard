@@ -6,7 +6,6 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/metro-north-railroad/corrected.zip",
-    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/metro-north-railroad/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -247,15 +246,15 @@
         "coverage_pct": 0.0,
         "covered_trips": 0,
         "drift": {
-          "median_seconds": 120,
-          "observations": 312,
-          "on_time_share_pct": 78.2,
-          "p90_abs_seconds": 360
+          "median_seconds": 180,
+          "observations": 222,
+          "on_time_share_pct": 79.3,
+          "p90_abs_seconds": 420
         },
         "kinds_reachable": 2,
         "rt_freshness": "fresh",
         "samples": 6,
-        "scheduled_trips_in_window": 28,
+        "scheduled_trips_in_window": 29,
         "worst_lag_seconds": 9
       },
       "findings": [
@@ -272,20 +271,20 @@
         },
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 28,
+          "count": 29,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
           "points": 35.0,
           "severity": "WARNING",
-          "what": "28 of 28 trips scheduled during the sampling window had no live predictions.",
+          "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
       "score": 49.0,
       "status": "measured",
-      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 120s behind schedule.",
+      "summary": "Sampled 6 times: 2 of 3 feeds healthy; 0.0% of scheduled trips had live predictions; predictions ran a median of 180s behind schedule.",
       "weight": 0.2
     }
   },
@@ -528,14 +527,14 @@
     },
     {
       "code": "scorecard_rt_trip_coverage",
-      "count": 28,
+      "count": 29,
       "effort": "A vendor data-mapping question.",
       "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
       "owner": "",
       "points": 35.0,
       "rank": 2,
       "severity": "WARNING",
-      "what": "28 of 28 trips scheduled during the sampling window had no live predictions.",
+      "what": "29 of 29 trips scheduled during the sampling window had no live predictions.",
       "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
     },
     {

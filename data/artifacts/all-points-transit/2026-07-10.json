@@ -18,6 +18,10 @@
           "trips_stated_pct": 0.0
         },
         "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
         "components": {
           "contact": 15.0,
           "fares": 15.0,
@@ -186,32 +190,20 @@
     },
     "freshness": {
       "details": {
-        "days_until_expiry": 22,
-        "feed_end_date": "2026-08-01",
-        "feed_start_date": "2026-02-02",
-        "feed_version": "UTC: 02-Feb-2026 20:47",
+        "days_until_expiry": 206,
+        "feed_end_date": "2027-02-01",
+        "feed_start_date": "2026-07-10",
+        "feed_version": "UTC: 10-Jul-2026 16:26",
         "has_feed_info": true,
-        "last_service_date": "2026-08-01",
+        "last_service_date": "2027-02-01",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
-      "findings": [
-        {
-          "code": "scorecard_feed_expiring_soon",
-          "count": 1,
-          "effort": "One export setting.",
-          "fix": "Re-export with a validity window that reaches at least 60 days out.",
-          "owner": "Likely your export tool",
-          "points": 58.0,
-          "severity": "WARNING",
-          "what": "Service data runs out in 22 day(s).",
-          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-        }
-      ],
+      "findings": [],
       "name": "freshness",
-      "score": 36.7,
+      "score": 100.0,
       "status": "measured",
-      "summary": "Service data runs out in 22 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "summary": "Service data covers the next 206 days.",
       "weight": 0.2
     },
     "realtime": {
@@ -220,6 +212,18 @@
       "summary": "Not scored yet. Nothing here counts against the grade.",
       "weight": 0.2
     }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
   },
   "conformance": {
     "awarded": false,
@@ -230,7 +234,7 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 206 days.",
         "key": "current",
         "met": true
       },
@@ -246,11 +250,17 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "a0d23acd05534d0430a353f54774e9d5d93a5ad6866364b485002d5c7061431a",
-    "size_bytes": 354116,
+    "sha256": "167cb95d4de0e28ff0b651a8dfeebe2375cab54bb9852746197699f6405fac3f",
+    "size_bytes": 327575,
     "static_url": "https://data.trilliumtransit.com/gtfs/allpointstransit-co-us/allpointstransit-co-us.zip"
   },
-  "generated_at": "2026-06-27T00:00:00+00:00",
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/allpointstransit-co-us/allpointstransit-co-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -108.57209,
@@ -263,7 +273,7 @@
     "stop_count": 134
   },
   "ntd_id_alignment": {
-    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
     "feed_agency_ids": [
       "1599"
     ],
@@ -282,22 +292,23 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 35 days.",
+        "detail": "Service data covers the next 206 days.",
         "key": "current",
         "status": "ready"
       }
     ],
     "status": "ready",
-    "summary": "This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification."
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "D",
-    "margin_to_lower_band": 1.6,
-    "margin_to_next_band": 8.4,
-    "score": 61.6
+    "grade": "C",
+    "margin_to_lower_band": 7.4,
+    "margin_to_next_band": 2.6,
+    "score": 77.4
   },
   "recommendations": [
     {
+      "category": "flex",
       "code": "scorecard_flex_completeness_no_booking_rules",
       "count": 1,
       "effort": "A small file; one rule often covers the whole service.",
@@ -309,6 +320,7 @@
       "why": "Riders can see the service area but not how to book, so they can't complete a trip."
     },
     {
+      "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
       "count": 87,
       "effort": "A short text field per affected stop; start with the busiest.",
@@ -320,11 +332,6 @@
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 134,
     "findings": [
@@ -344,22 +351,81 @@
     "single_stop_trips": 0,
     "trips_total": 63
   },
+  "route_map": {
+    "drawn_route_count": 5,
+    "has_shapes": true,
+    "path": "data/artifacts/all-points-transit/geometry.geojson",
+    "route_count": 5,
+    "routes": [
+      {
+        "color": "30BD1A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "76429",
+        "label": "MOD Express",
+        "long": "MOD Express",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6601CC",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "76891",
+        "label": "OurWay",
+        "long": "OurWay",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF3EFF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "76892",
+        "label": "Business Express",
+        "long": "Business Express",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0287BF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "76893",
+        "label": "Residential Rider",
+        "long": "Residential Rider",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B9C2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "77074",
+        "label": "Delta Dash",
+        "long": "Delta Dash",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 134,
+    "stop_points_capped": false
+  },
   "rubric_version": "1.1",
-  "schema_version": "1.4",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 63 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 63,
+    "trips_with_shape": 63
+  },
   "snapshot_date": "2026-07-10",
   "top_fixes": [
-    {
-      "code": "scorecard_feed_expiring_soon",
-      "count": 1,
-      "effort": "One export setting.",
-      "fix": "Re-export with a validity window that reaches at least 60 days out.",
-      "owner": "Likely your export tool",
-      "points": 58.0,
-      "rank": 1,
-      "severity": "WARNING",
-      "what": "Service data runs out in 22 day(s).",
-      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
-    },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
       "count": 134,
@@ -367,7 +433,7 @@
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
       "points": 25.0,
-      "rank": 2,
+      "rank": 1,
       "severity": "WARNING",
       "what": "134 of 134 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
@@ -379,10 +445,22 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
       "owner": "Likely your export tool",
       "points": 15.0,
-      "rank": 3,
+      "rank": 2,
       "severity": "WARNING",
       "what": "63 of 63 trips don't say whether the vehicle is wheelchair accessible.",
       "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 53,
+      "effort": "Usually a bulk edit in your scheduling software.",
+      "fix": "Populate trip_headsign to match what the bus displays.",
+      "owner": "Likely your export tool",
+      "points": 12.6,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "53 of 63 trips have no headsign.",
+      "why": "Riders at the stop can't tell which direction a bus is going."
     }
   ],
   "validator_version": "8.0.1"

@@ -48,7 +48,7 @@
     "stale": 10,
     "total": 12
   },
-  "generated_at": "2026-07-10T15:54:21+00:00",
+  "generated_at": "2026-07-10T17:29:55+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 3,
@@ -56,20 +56,6 @@
     "F": 14
   },
   "members": [
-    {
-      "annual_trips": 8843763,
-      "attention_reason": "Service data expires in 44 day(s)",
-      "days_until_expiry": 44,
-      "expiry_status": "current",
-      "grade": "D",
-      "id": "capital-area-transportation-authority-cata",
-      "name": "Capital Area Transportation Authority (CATA)",
-      "needs_attention": true,
-      "score": 64.3,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -237,6 +223,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 44 day(s)",
+      "days_until_expiry": 44,
+      "expiry_status": "current",
+      "grade": "D",
+      "id": "capital-area-transportation-authority-cata",
+      "name": "Capital Area Transportation Authority (CATA)",
+      "needs_attention": true,
+      "score": 64.3,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,

@@ -40,8 +40,6 @@ mountain-express,Flex,F,59.7,2026-07-10,expiring_soon,22,yes,Grade slipped from 
 mountain-family-center,Flex,F,59.7,2026-07-10,expiring_soon,22,yes,Grade slipped from D to F,Re-export with a validity window that reaches at least 60 days out.,
 omnibus,Flex,F,59.7,2026-07-10,expiring_soon,22,yes,Grade slipped from D to F,Re-export with a validity window that reaches at least 60 days out.,
 all-points-transit-2039,Flex v2 included,F,59.8,2026-07-10,expiring_soon,22,yes,Grade slipped from D to F,Re-export with a validity window that reaches at least 60 days out.,
-all-points-transit,All Points Transit,D,61.6,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
-all-points-transit-212,All Points Transit,D,61.6,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
 routt-county-council-on-aging-rccoca-transportation,Flex,D,61.7,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
 pueblo-transit,Flex,D,62.3,2026-07-10,expiring_soon,21,yes,Service data expires in 21 day(s),Re-export with a validity window that reaches at least 60 days out.,
 adams-county,Flex,D,64.4,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
@@ -51,7 +49,7 @@ grand-valley-transit-2288,Flex,D,64.4,2026-07-10,expiring_soon,22,yes,Service da
 la-junta-transit,Flex,D,64.4,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
 lakewood-rides,Flex,D,64.4,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
 mountain-metro-transit,Flex,D,64.4,2026-07-10,expiring_soon,22,yes,Service data expires in 22 day(s),Re-export with a validity window that reaches at least 60 days out.,
-via-mobility-2395,Via Mobility,D,65.3,2026-07-10,expiring_soon,30,yes,Service data expires in 30 day(s),Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.,ready
+via-mobility-2395,Via Mobility,D,66.1,2026-07-10,expiring_soon,30,yes,Service data expires in 30 day(s),Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.,ready
 el-paso-fountain-valley-senior-citizens-program-inc,Flex v2 included,C,72.6,2026-07-10,current,53,yes,Service data expires in 53 day(s),Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 university-of-colorado-boulder,University of Colorado Boulder,C,72.9,2026-07-10,current,41,yes,Service data expires in 41 day(s),"Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
 university-of-colorado-boulder-181,University of Colorado Boulder,C,72.9,2026-07-10,current,41,yes,Service data expires in 41 day(s),"Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
@@ -87,6 +85,8 @@ regional-transportation-district-rtd-178,Regional Transportation District (RTD),
 envida-2044,Flex v2 included,C,76.3,2026-07-10,current,144,no,,Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.,
 colorado-school-of-mines,Colorado School Of Mines,C,76.4,2026-07-10,current,143,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 roaring-fork-transportation-authority-rfta,Flex,C,76.7,2026-07-10,current,83,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
+all-points-transit,All Points Transit,C,77.4,2026-07-10,current,206,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
+all-points-transit-212,All Points Transit,C,77.4,2026-07-10,current,206,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
 cripple-creek-transportation-2042,Flex v2 included,C,77.5,2026-07-10,current,97,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 cripple-creek-transportation,Cripple Creek Transportation,C,78.4,2026-07-10,current,97,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
 cripple-creek-transportation-317,Cripple Creek Transportation,C,78.4,2026-07-10,current,97,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,

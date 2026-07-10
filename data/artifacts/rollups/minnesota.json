@@ -38,7 +38,7 @@
     "stale": 1,
     "total": 2
   },
-  "generated_at": "2026-07-10T15:54:21+00:00",
+  "generated_at": "2026-07-10T17:29:55+00:00",
   "grade_distribution": {
     "B": 2,
     "C": 1,
@@ -46,20 +46,6 @@
     "F": 3
   },
   "members": [
-    {
-      "annual_trips": 47558455,
-      "attention_reason": "Grade slipped from B to C",
-      "days_until_expiry": 42,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "metro-transit",
-      "name": "Metro Transit",
-      "needs_attention": true,
-      "score": 79.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data expires in 30 day(s)",
@@ -143,6 +129,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Grade slipped from B to C",
+      "days_until_expiry": 42,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "metro-transit",
+      "name": "Metro Transit",
+      "needs_attention": true,
+      "score": 79.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     },
     {
       "annual_trips": null,

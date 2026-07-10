@@ -1,6 +1,6 @@
 {
   "agency_count": 126,
-  "average_score": 67.5,
+  "average_score": 67.8,
   "common_fixes": [
     {
       "agencies": 117,
@@ -13,14 +13,14 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
+      "agencies": 35,
+      "code": "scorecard_missing_headsigns",
+      "fix": "Populate trip_headsign to match what the bus displays."
+    },
+    {
       "agencies": 34,
       "code": "scorecard_feed_expired",
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "agencies": 33,
-      "code": "scorecard_missing_headsigns",
-      "fix": "Populate trip_headsign to match what the bus displays."
     },
     {
       "agencies": 19,
@@ -28,7 +28,7 @@
       "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     },
     {
-      "agencies": 18,
+      "agencies": 16,
       "code": "scorecard_feed_expiring_soon",
       "fix": "Re-export with a validity window that reaches at least 60 days out."
     },
@@ -83,12 +83,12 @@
     "stale": 28,
     "total": 34
   },
-  "generated_at": "2026-07-10T15:54:21+00:00",
+  "generated_at": "2026-07-10T17:29:55+00:00",
   "grade_distribution": {
     "A": 2,
     "B": 30,
-    "C": 40,
-    "D": 12,
+    "C": 42,
+    "D": 10,
     "F": 42
   },
   "members": [
@@ -672,34 +672,6 @@
       "days_until_expiry": 22,
       "expiry_status": "expiring_soon",
       "grade": "D",
-      "id": "all-points-transit",
-      "name": "All Points Transit",
-      "needs_attention": true,
-      "score": 61.6,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "all-points-transit-212",
-      "name": "All Points Transit",
-      "needs_attention": true,
-      "score": 61.6,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
       "id": "routt-county-council-on-aging-rccoca-transportation",
       "name": "Flex",
       "needs_attention": true,
@@ -829,7 +801,7 @@
       "id": "via-mobility-2395",
       "name": "Via Mobility",
       "needs_attention": true,
-      "score": 65.3,
+      "score": 66.1,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Review the rule documentation for 'empty_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
@@ -947,7 +919,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 64291997,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 78,
       "expiry_status": "current",
@@ -1269,7 +1241,7 @@
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
-      "annual_trips": 64291997,
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 78,
       "expiry_status": "current",
@@ -1321,6 +1293,34 @@
       "needs_attention": false,
       "score": 76.7,
       "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 206,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "all-points-transit",
+      "name": "All Points Transit",
+      "needs_attention": false,
+      "score": 77.4,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 206,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "all-points-transit-212",
+      "name": "All Points Transit",
+      "needs_attention": false,
+      "score": 77.4,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -1857,7 +1857,7 @@
       "top_fix": "Remove past service periods the next time you export the feed."
     }
   ],
-  "needs_attention": 61,
+  "needs_attention": 59,
   "rollup": {
     "id": "colorado",
     "name": "Colorado agencies"
@@ -1865,9 +1865,9 @@
   "schema_version": "1.7",
   "shapes_readiness": {
     "at_risk": 1,
-    "not_measured": 110,
+    "not_measured": 108,
     "not_ready": 0,
-    "ready": 15,
+    "ready": 17,
     "total": 126
   },
   "state_percentile": 91
