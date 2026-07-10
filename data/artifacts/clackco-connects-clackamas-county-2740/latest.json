@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/clackco-connects-clackamas-county-2740/corrected.zip",
     "fixes": [
       {
         "code": "autofix_trim_whitespace",
@@ -210,25 +211,25 @@
     "realtime": {
       "details": {
         "coverage_pct": 100.0,
-        "covered_trips": 4,
+        "covered_trips": 2,
         "drift": {
-          "median_seconds": -991,
-          "observations": 95,
-          "on_time_share_pct": 6.3,
-          "p90_abs_seconds": 1895
+          "median_seconds": -339,
+          "observations": 103,
+          "on_time_share_pct": 3.9,
+          "p90_abs_seconds": 14341
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 4,
-        "vehicles_checked": 12,
+        "scheduled_trips_in_window": 2,
+        "vehicles_checked": 7,
         "vehicles_on_route_pct": 100.0,
-        "worst_lag_seconds": 2
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 95,
+          "count": 103,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -241,7 +242,7 @@
       "name": "realtime",
       "score": 100.0,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 991s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 339s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -283,7 +284,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "1951536ac1ca3c78c4b4075b0e1bf0f628d9ce633cb8e2d9e8554fd2163342a1",
+    "sha256": "10e5666aac3b636991b0d2f5de68a3a68c2d0cc212706220ad4dfdd0ab6ab3c4",
     "size_bytes": 82374,
     "static_url": "https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip"
   },

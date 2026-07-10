@@ -63,11 +63,11 @@
     "stale": 12,
     "total": 20
   },
-  "generated_at": "2026-07-10T15:28:53+00:00",
+  "generated_at": "2026-07-10T15:54:21+00:00",
   "grade_distribution": {
     "A": 3,
-    "B": 2,
-    "C": 4,
+    "B": 3,
+    "C": 3,
     "D": 3,
     "F": 18
   },
@@ -354,20 +354,6 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Grade slipped from B to C",
-      "days_until_expiry": 107,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "valley-metro-vm",
-      "name": "Valley Metro (VM)",
-      "needs_attention": true,
-      "score": 80.0,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 175,
       "expiry_status": "current",
@@ -419,6 +405,20 @@
       "needs_attention": false,
       "score": 79.4,
       "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 107,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "valley-metro-vm",
+      "name": "Valley Metro (VM)",
+      "needs_attention": false,
+      "score": 80.0,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
@@ -493,7 +493,7 @@
       "top_fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
     }
   ],
-  "needs_attention": 21,
+  "needs_attention": 20,
   "rollup": {
     "id": "arizona",
     "name": "Arizona agencies"
@@ -506,5 +506,5 @@
     "ready": 5,
     "total": 30
   },
-  "state_percentile": 67
+  "state_percentile": 65
 }

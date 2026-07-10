@@ -43,13 +43,27 @@
     "stale": 4,
     "total": 6
   },
-  "generated_at": "2026-07-10T15:28:53+00:00",
+  "generated_at": "2026-07-10T15:54:21+00:00",
   "grade_distribution": {
     "C": 2,
     "D": 2,
     "F": 7
   },
   "members": [
+    {
+      "annual_trips": 2703778,
+      "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
+      "days_until_expiry": 29,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "county-connection-cccta-2421",
+      "name": "County Connection (CCCTA)",
+      "needs_attention": true,
+      "score": 62.1,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
+    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -133,20 +147,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service window shortened unexpectedly on 2026-06-25",
-      "days_until_expiry": 29,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "county-connection-cccta-2421",
-      "name": "County Connection (CCCTA)",
-      "needs_attention": true,
-      "score": 62.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
     },
     {
       "annual_trips": null,

@@ -255,39 +255,39 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 96.1,
-        "covered_trips": 445,
+        "coverage_pct": 97.2,
+        "covered_trips": 416,
         "drift": {
-          "median_seconds": 86,
-          "observations": 11032,
-          "on_time_share_pct": 79.0,
-          "p90_abs_seconds": 328
+          "median_seconds": 69,
+          "observations": 11370,
+          "on_time_share_pct": 80.8,
+          "p90_abs_seconds": 292
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 463,
-        "vehicles_checked": 1349,
-        "vehicles_on_route_pct": 96.1,
-        "worst_lag_seconds": 16
+        "scheduled_trips_in_window": 428,
+        "vehicles_checked": 1235,
+        "vehicles_on_route_pct": 95.1,
+        "worst_lag_seconds": 13
       },
       "findings": [
         {
           "code": "scorecard_rt_trip_coverage",
-          "count": 18,
+          "count": 12,
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 1.4,
+          "points": 1.0,
           "severity": "WARNING",
-          "what": "18 of 463 trips scheduled during the sampling window had no live predictions.",
+          "what": "12 of 428 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 98.0,
+      "score": 98.3,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 96.1% of scheduled trips had live predictions; 96.1% of vehicles on their route; predictions ran a median of 86s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 97.2% of scheduled trips had live predictions; 95.1% of vehicles on their route; predictions ran a median of 69s behind schedule.",
       "weight": 0.2
     }
   },
@@ -381,9 +381,9 @@
     "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
   },
   "overall": {
-    "grade": "C",
-    "margin_to_lower_band": 10.0,
-    "margin_to_next_band": 0.0,
+    "grade": "B",
+    "margin_to_lower_band": 0.0,
+    "margin_to_next_band": 10.0,
     "score": 80.0
   },
   "recommendations": [

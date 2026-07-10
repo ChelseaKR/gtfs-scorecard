@@ -188,21 +188,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 92.8,
-        "covered_trips": 64,
+        "coverage_pct": 94.6,
+        "covered_trips": 87,
         "drift": {
-          "median_seconds": 10,
-          "observations": 4723,
-          "on_time_share_pct": 88.6,
-          "p90_abs_seconds": 294
+          "median_seconds": 9,
+          "observations": 6193,
+          "on_time_share_pct": 85.4,
+          "p90_abs_seconds": 331
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 69,
-        "vehicles_checked": 194,
-        "vehicles_on_route_pct": 98.5,
-        "worst_lag_seconds": 8
+        "scheduled_trips_in_window": 92,
+        "vehicles_checked": 287,
+        "vehicles_on_route_pct": 99.0,
+        "worst_lag_seconds": 12
       },
       "findings": [
         {
@@ -211,16 +211,16 @@
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 2.5,
+          "points": 1.9,
           "severity": "WARNING",
-          "what": "5 of 69 trips scheduled during the sampling window had no live predictions.",
+          "what": "5 of 92 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         }
       ],
       "name": "realtime",
-      "score": 97.2,
+      "score": 97.9,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 92.8% of scheduled trips had live predictions; 98.5% of vehicles on their route; predictions ran a median of 10s behind schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 94.6% of scheduled trips had live predictions; 99.0% of vehicles on their route; predictions ran a median of 9s behind schedule.",
       "weight": 0.2
     }
   },
@@ -315,9 +315,9 @@
   },
   "overall": {
     "grade": "A",
-    "margin_to_lower_band": 0.2,
+    "margin_to_lower_band": 0.3,
     "margin_to_next_band": null,
-    "score": 90.2
+    "score": 90.3
   },
   "recommendations": [
     {

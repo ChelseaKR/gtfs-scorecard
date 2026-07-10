@@ -1,6 +1,6 @@
 {
   "agency_count": 4,
-  "average_score": 56.0,
+  "average_score": 64.0,
   "common_fixes": [
     {
       "agencies": 4,
@@ -13,20 +13,21 @@
       "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
     },
     {
-      "agencies": 3,
+      "agencies": 2,
       "code": "scorecard_feed_expired",
       "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     }
   ],
   "expired": {
-    "lapsed": 1,
+    "lapsed": 0,
     "stale": 2,
-    "total": 3
+    "total": 2
   },
-  "generated_at": "2026-07-10T15:28:53+00:00",
+  "generated_at": "2026-07-10T15:54:21+00:00",
   "grade_distribution": {
     "A": 1,
-    "F": 3
+    "C": 1,
+    "F": 2
   },
   "members": [
     {
@@ -59,17 +60,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service window shortened unexpectedly on 2026-07-10",
-      "days_until_expiry": -284,
-      "expiry_status": "lapsed",
-      "grade": "F",
+      "attention_reason": "Elevated behavioral lapse risk",
+      "days_until_expiry": 334,
+      "expiry_status": "current",
+      "grade": "C",
       "id": "valley-regional-transit",
       "name": "Valley Regional Transit",
       "needs_attention": true,
-      "score": 46.2,
+      "score": 78.4,
       "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -99,5 +100,5 @@
     "ready": 1,
     "total": 4
   },
-  "state_percentile": 50
+  "state_percentile": 78
 }

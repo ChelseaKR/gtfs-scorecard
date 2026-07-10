@@ -219,21 +219,21 @@
     },
     "realtime": {
       "details": {
-        "coverage_pct": 80.0,
-        "covered_trips": 4,
+        "coverage_pct": 83.3,
+        "covered_trips": 5,
         "drift": {
-          "median_seconds": -422,
-          "observations": 43,
-          "on_time_share_pct": 11.6,
-          "p90_abs_seconds": 14388
+          "median_seconds": -548,
+          "observations": 42,
+          "on_time_share_pct": 9.5,
+          "p90_abs_seconds": 14074
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
-        "scheduled_trips_in_window": 5,
-        "vehicles_checked": 15,
-        "vehicles_on_route_pct": 60.0,
-        "worst_lag_seconds": 3
+        "scheduled_trips_in_window": 6,
+        "vehicles_checked": 16,
+        "vehicles_on_route_pct": 93.8,
+        "worst_lag_seconds": 4
       },
       "findings": [
         {
@@ -242,25 +242,14 @@
           "effort": "A vendor data-mapping question.",
           "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
           "owner": "",
-          "points": 7.0,
+          "points": 5.8,
           "severity": "WARNING",
-          "what": "1 of 5 trips scheduled during the sampling window had no live predictions.",
+          "what": "1 of 6 trips scheduled during the sampling window had no live predictions.",
           "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
         },
         {
-          "code": "scorecard_rt_vehicles_off_route",
-          "count": 6,
-          "effort": "A vendor support ticket with the trip ids attached.",
-          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
-          "owner": "",
-          "points": 6.0,
-          "severity": "WARNING",
-          "what": "6 of 15 sampled vehicle positions were far from their assigned route (worst: 401 m).",
-          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
-        },
-        {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 43,
+          "count": 42,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -271,9 +260,9 @@
         }
       ],
       "name": "realtime",
-      "score": 87.0,
+      "score": 93.2,
       "status": "measured",
-      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 80.0% of scheduled trips had live predictions; 60.0% of vehicles on their route; predictions ran a median of 422s ahead of schedule.",
+      "summary": "Sampled 9 times: 3 of 3 feeds healthy; 83.3% of scheduled trips had live predictions; 93.8% of vehicles on their route; predictions ran a median of 548s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -315,7 +304,7 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "5ea75872b99581e3b54aedc3f47de260a50dea8fc2f211d93ebaf97565e6afca",
+    "sha256": "8db3c961beaf43bda0ed54eee483c882cbccd6014f26f6881575b8fe701313cb",
     "size_bytes": 217904,
     "static_url": "https://passio3.com/viaboulder/passioTransit/gtfs/google_transit.zip"
   },
@@ -367,9 +356,9 @@
   },
   "overall": {
     "grade": "D",
-    "margin_to_lower_band": 4.1,
-    "margin_to_next_band": 5.9,
-    "score": 64.1
+    "margin_to_lower_band": 5.3,
+    "margin_to_next_band": 4.7,
+    "score": 65.3
   },
   "recommendations": [
     {

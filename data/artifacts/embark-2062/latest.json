@@ -128,10 +128,10 @@
     },
     "correctness": {
       "details": {
-        "distinct_codes": 9,
+        "distinct_codes": 10,
         "instances_by_severity": {
           "ERROR": 0,
-          "INFO": 19,
+          "INFO": 20,
           "WARNING": 135
         },
         "validator_version": "8.0.1"
@@ -235,12 +235,23 @@
           "severity": "INFO",
           "what": "Big gap in service (flagged by the MobilityData validator).",
           "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Service window outside feed period (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
         }
       ],
       "name": "correctness",
-      "score": 60.8,
+      "score": 60.2,
       "status": "measured",
-      "summary": "The MobilityData validator flagged 9 kinds of issue across 154 instances (0 error, 135 warning, 19 informational).",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 155 instances (0 error, 135 warning, 20 informational).",
       "weight": 0.35
     },
     "freshness": {
@@ -248,9 +259,9 @@
         "days_until_expiry": 364,
         "feed_end_date": "2027-07-09",
         "feed_start_date": "2026-05-11",
-        "feed_version": "08/07/2026-22:30",
+        "feed_version": "09/07/2026-22:30",
         "has_feed_info": true,
-        "last_service_date": "2027-07-09",
+        "last_service_date": "2027-07-10",
         "seasonal_boundary": false,
         "service_type": "fixed"
       },
@@ -305,8 +316,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "77193bf4cfffaf5eba8557f6e11db6df55b47982dec7b6e880021599b0922dd0",
-    "size_bytes": 2778953,
+    "sha256": "57c2edf205c5cfed905b120ea35064ec913890d4a8346e3d9c56b8c94efc8193",
+    "size_bytes": 2778952,
     "static_url": "https://mna.mecatran.com/utw/ws/gtfsfeed/static/okc?apiKey=6a3b186a334d1e3e064f42782f6002520e60394c"
   },
   "fetch": {
@@ -361,9 +372,9 @@
   },
   "overall": {
     "grade": "B",
-    "margin_to_lower_band": 1.9,
-    "margin_to_next_band": 8.1,
-    "score": 81.9
+    "margin_to_lower_band": 1.6,
+    "margin_to_next_band": 8.4,
+    "score": 81.6
   },
   "recommendations": [
     {

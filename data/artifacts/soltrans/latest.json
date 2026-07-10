@@ -6,6 +6,7 @@
   "autofix": {
     "available": true,
     "download_path": "data/artifacts/soltrans/corrected.zip",
+    "download_url": "https://d14aimrgrbaz2a.cloudfront.net/data/artifacts/soltrans/corrected.zip",
     "fixes": [
       {
         "code": "autofix_stop_name_case",
@@ -23,10 +24,10 @@
       "details": {
         "accessibility": {
           "measures": "presence_not_usability",
-          "score": 99.4,
-          "stops_marked_accessible_pct": 99.1,
+          "score": 99.1,
+          "stops_marked_accessible_pct": 98.5,
           "stops_marked_not_accessible_pct": 0.0,
-          "stops_stated_pct": 99.1,
+          "stops_stated_pct": 98.5,
           "trips_stated_pct": 100.0
         },
         "accessibility_measures": "presence_not_usability",
@@ -39,7 +40,7 @@
           "fares": 15.0,
           "headsigns": 15.0,
           "stop_names": 15.0,
-          "wheelchair_stops": 24.8,
+          "wheelchair_stops": 24.6,
           "wheelchair_trips": 15.0
         },
         "fare_free": false,
@@ -68,23 +69,23 @@
           "has_step_free": false,
           "pathway_count": 0
         },
-        "stops": 327,
+        "stops": 329,
         "trips": 1127,
         "wheelchair_accessible_pct": 100.0,
-        "wheelchair_boarding_pct": 99.1,
-        "wheelchair_marked_accessible_pct": 99.1,
+        "wheelchair_boarding_pct": 98.5,
+        "wheelchair_marked_accessible_pct": 98.5,
         "wheelchair_marked_not_accessible_pct": 0.0
       },
       "findings": [
         {
           "code": "scorecard_wheelchair_boarding_unknown",
-          "count": 3,
+          "count": 5,
           "effort": "A column in stops.txt; your scheduling software likely has it.",
           "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
           "owner": "Likely your team",
-          "points": 0.2,
+          "points": 0.4,
           "severity": "WARNING",
-          "what": "3 of 327 stops don't say whether a wheelchair user can board there.",
+          "what": "5 of 329 stops don't say whether a wheelchair user can board there.",
           "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
         },
         {
@@ -111,9 +112,9 @@
         }
       ],
       "name": "completeness",
-      "score": 92.2,
+      "score": 92.1,
       "status": "measured",
-      "summary": "99% of stops state wheelchair accessibility (99% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "summary": "98% of stops state wheelchair accessibility (98% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
       "weight": 0.25
     },
     "correctness": {
@@ -202,12 +203,12 @@
         "met": true
       },
       {
-        "detail": "Service data covers the next 540 days.",
+        "detail": "Service data covers the next 539 days.",
         "key": "current",
         "met": true
       },
       {
-        "detail": "States wheelchair access on 99% of stops and 100% of trips.",
+        "detail": "States wheelchair access on 98% of stops and 100% of trips.",
         "key": "accessible",
         "met": true
       }
@@ -218,8 +219,8 @@
   "feed": {
     "license_note": "No stated data license in the Mobility Database; verify before publishing.",
     "reachable": true,
-    "sha256": "c08cae1802518663d69a64427666736705c262e7ced56026af887f53fd441c55",
-    "size_bytes": 462302,
+    "sha256": "7f658458fca09dca7f86bad84c27ae77d210360293f73347fb86f0449043313b",
+    "size_bytes": 462350,
     "static_url": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip"
   },
   "fetch": {
@@ -228,7 +229,7 @@
     "source": "origin",
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   },
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-10T00:00:00+00:00",
   "geo": {
     "bbox": [
       -122.39524,
@@ -236,9 +237,9 @@
       -121.74849,
       38.53441
     ],
-    "lat": 38.10984,
+    "lat": 38.1099,
     "lon": -122.23821,
-    "stop_count": 327
+    "stop_count": 329
   },
   "ntd_id_alignment": {
     "detail": "Your feed's agency_id is 1; your National Transit Database ID is 90232. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id, so a difference here is a heads-up, not an error.",
@@ -262,7 +263,7 @@
         "status": "ready"
       },
       {
-        "detail": "Service data covers the next 540 days.",
+        "detail": "Service data covers the next 539 days.",
         "key": "current",
         "status": "ready"
       }
@@ -272,9 +273,9 @@
   },
   "overall": {
     "grade": "A",
-    "margin_to_lower_band": 4.1,
+    "margin_to_lower_band": 4.0,
     "margin_to_next_band": null,
-    "score": 94.1
+    "score": 94.0
   },
   "recommendations": [
     {
@@ -292,13 +293,13 @@
     {
       "category": "accessibility",
       "code": "scorecard_stop_name_needs_tts",
-      "count": 313,
+      "count": 315,
       "effort": "A short text field per affected stop; start with the busiest.",
       "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
       "owner": "",
       "points": 0.0,
       "severity": "INFO",
-      "what": "313 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Redwood Pkwy & Cabernet Dr\", \"Columbus Pkwy & Tennessee St\", \"Redwood Pkwy & Eagle Ridge Dr\", and more).",
+      "what": "315 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Redwood Pkwy & Cabernet Dr\", \"Columbus Pkwy & Tennessee St\", \"Redwood Pkwy & Eagle Ridge Dr\", and more).",
       "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
     },
     {
@@ -314,11 +315,6 @@
       "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
     }
   ],
-  "recompute": {
-    "as_of": "2026-07-10",
-    "feed_fetched_date": "2026-07-09",
-    "kind": "freshness"
-  },
   "routability": {
     "boardable_stops": 325,
     "findings": [],
@@ -487,7 +483,7 @@
         "type_label": "Bus"
       }
     ],
-    "stop_count": 327,
+    "stop_count": 329,
     "stop_points_capped": false
   },
   "rubric_version": "1.1",
@@ -526,14 +522,14 @@
     },
     {
       "code": "scorecard_wheelchair_boarding_unknown",
-      "count": 3,
+      "count": 5,
       "effort": "A column in stops.txt; your scheduling software likely has it.",
       "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "owner": "Likely your team",
-      "points": 0.2,
+      "points": 0.4,
       "rank": 3,
       "severity": "WARNING",
-      "what": "3 of 327 stops don't say whether a wheelchair user can board there.",
+      "what": "5 of 329 stops don't say whether a wheelchair user can board there.",
       "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
     }
   ],

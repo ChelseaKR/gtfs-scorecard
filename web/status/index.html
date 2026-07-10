@@ -69,14 +69,14 @@
     <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
-    <p>As of 2026-07-10T15:29:10+00:00, this pipeline is tracking liveness on
+    <p>As of 2026-07-10T15:54:38+00:00, this pipeline is tracking liveness on
         <strong>1453</strong> feeds:
         <strong>1256</strong> checking in clean (no failed check in a row),
         <strong>55</strong> with at least one recent failed check but not yet
         flagged, and <strong>142</strong> flagged unreachable
         (see the degradation policy below). Time since each feed's last liveness check ranges from
-        0.3 to 261.3 hours, with a median of
-        6.7 hours.</p>
+        0.7 to 261.8 hours, with a median of
+        7.1 hours.</p>
         <p>Overall clean-check rate: <strong>86.4%</strong>.</p></section>
 
     <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
@@ -95,8 +95,37 @@
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
     <section class="feed-details"><h3 class="section-title">Last daily run</h3>
-    <p>No run-health summary has been published yet. This page fills in the day after the
-    first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>
+    <p><span class="pill-ok">Healthy</span>
+    Generated just now (2026-07-10 15:54 UTC),
+    across 12 shards, 1488
+    agencies attempted.</p>
+    
+    <dl>
+      <dt>Scored (fresh data this run)</dt><dd>229</dd>
+      <dt>Reused (feed unchanged since last check)</dt><dd>1213</dd>
+      <dt>Unreachable (kept last good artifact)</dt><dd>46</dd>
+      <dt>Fell back to the Mobility Database mirror</dt><dd>192</dd>
+      <dt>Validator cache hits</dt><dd>203</dd>
+    </dl>
+    </section>
+
+    <section class="feed-details"><h3 class="section-title">Per-shard breakdown</h3>
+    <div style="overflow-x:auto"><table class="trend-table">
+      <caption class="visually-hidden">Outcome counts by CI shard</caption>
+      <thead><tr><th scope="col">Shard</th><th scope="col">Scored</th>
+      <th scope="col">Reused</th><th scope="col">Unreachable</th><th scope="col">Mirrored</th>
+      <th scope="col">Cache hit</th><th scope="col">Wall clock</th></tr></thead>
+      <tbody><tr><td>0</td><td>21</td><td>99</td><td>4</td><td>17</td><td>20</td><td>396s</td></tr><tr><td>1</td><td>17</td><td>105</td><td>2</td><td>12</td><td>14</td><td>724s</td></tr><tr><td>10</td><td>14</td><td>107</td><td>3</td><td>14</td><td>14</td><td>263s</td></tr><tr><td>11</td><td>21</td><td>100</td><td>3</td><td>17</td><td>19</td><td>692s</td></tr><tr><td>2</td><td>21</td><td>98</td><td>5</td><td>20</td><td>20</td><td>305s</td></tr><tr><td>3</td><td>18</td><td>105</td><td>1</td><td>14</td><td>15</td><td>237s</td></tr><tr><td>4</td><td>22</td><td>97</td><td>5</td><td>19</td><td>20</td><td>330s</td></tr><tr><td>5</td><td>23</td><td>98</td><td>3</td><td>19</td><td>20</td><td>317s</td></tr><tr><td>6</td><td>18</td><td>99</td><td>7</td><td>14</td><td>14</td><td>355s</td></tr><tr><td>7</td><td>19</td><td>103</td><td>2</td><td>16</td><td>17</td><td>308s</td></tr><tr><td>8</td><td>20</td><td>99</td><td>5</td><td>16</td><td>16</td><td>353s</td></tr><tr><td>9</td><td>15</td><td>103</td><td>6</td><td>14</td><td>14</td><td>286s</td></tr></tbody>
+    </table></div>
+    </section>
+
+    <section class="feed-details"><h3 class="section-title">Agencies unreachable this run</h3>
+    <p>The pipeline could not fetch or validate these feeds today; each is still showing its
+    last successful scorecard. This is usually the agency's feed host being down, not a
+    pipeline bug -- if a name stays on this list for several days running, its own feed URL
+    is worth checking.</p>
+    <ul><li><a href="/agency/alameda-contra-costa-transit-district-ac-transit-2455/">alameda-contra-costa-transit-district-ac-transit-2455</a></li><li><a href="/agency/altamont-corridor-express-2684/">altamont-corridor-express-2684</a></li><li><a href="/agency/anaheim-regional-transportation/">anaheim-regional-transportation</a></li><li><a href="/agency/arvin-transit-2233/">arvin-transit-2233</a></li><li><a href="/agency/baldwin-park-transit-2247/">baldwin-park-transit-2247</a></li><li><a href="/agency/c-tran-3129/">c-tran-3129</a></li><li><a href="/agency/cache-valley-transit-district/">cache-valley-transit-district</a></li><li><a href="/agency/camarillo-area-transit-2234/">camarillo-area-transit-2234</a></li><li><a href="/agency/city-of-dixon/">city-of-dixon</a></li><li><a href="/agency/city-of-wasco/">city-of-wasco</a></li><li><a href="/agency/clean-air-express/">clean-air-express</a></li><li><a href="/agency/danville-mass-transit/">danville-mass-transit</a></li><li><a href="/agency/denton-county-transportation-authority-dcta/">denton-county-transportation-authority-dcta</a></li><li><a href="/agency/eau-claire-transit/">eau-claire-transit</a></li><li><a href="/agency/elk-grove-transit/">Elk Grove Transit</a></li><li><a href="/agency/fairfax-cue-bus-cue-2609/">fairfax-cue-bus-cue-2609</a></li><li><a href="/agency/glendale-beeline-3177/">glendale-beeline-3177</a></li><li><a href="/agency/gomonrovia/">gomonrovia</a></li><li><a href="/agency/greeley-evans-transit-get/">greeley-evans-transit-get</a></li><li><a href="/agency/greenville-transit-authority-greenlink/">greenville-transit-authority-greenlink</a></li><li><a href="/agency/grt-ion-light-rail/">grt-ion-light-rail</a></li><li><a href="/agency/hawai-i-mass-transit-agency-hele-on-bus-2608/">hawai-i-mass-transit-agency-hele-on-bus-2608</a></li><li><a href="/agency/jacksonville-transportation-authority-jta/">jacksonville-transportation-authority-jta</a></li><li><a href="/agency/lakes-region-explorer/">Lakes Region Explorer</a></li><li><a href="/agency/metro-houston/">metro-houston</a></li><li><a href="/agency/monterey-salinas-transit-mst/">Monterey-Salinas Transit (MST)</a></li><li><a href="/agency/mountain-rides-transportation-authority-mrta-2282/">mountain-rides-transportation-authority-mrta-2282</a></li><li><a href="/agency/petaluma-transit-2947/">petaluma-transit-2947</a></li><li><a href="/agency/rockford-mass-transit-district/">rockford-mass-transit-district</a></li><li><a href="/agency/samtrans/">samtrans</a></li><li><a href="/agency/san-clemente-trolley/">san-clemente-trolley</a></li><li><a href="/agency/san-juan-capistrano-free-weekend-trolley-2235/">san-juan-capistrano-free-weekend-trolley-2235</a></li><li><a href="/agency/santa-rosa-citybus-2948/">santa-rosa-citybus-2948</a></li><li><a href="/agency/selah-transit/">Selah Transit</a></li><li><a href="/agency/sonoma-marin-area-rail-transit-smart-3222/">sonoma-marin-area-rail-transit-smart-3222</a></li><li><a href="/agency/south-county-transit-link-2203/">south-county-transit-link-2203</a></li><li><a href="/agency/south-lane-wheels/">south-lane-wheels</a></li><li><a href="/agency/taft-area-transit-2236/">taft-area-transit-2236</a></li><li><a href="/agency/the-rapid/">The Rapid</a></li><li><a href="/agency/thousand-oaks-transit-2237/">thousand-oaks-transit-2237</a></li><li><a href="/agency/tideline-water-taxi/">tideline-water-taxi</a></li><li><a href="/agency/transit-authority-of-river-city-tarc-2662/">Fixed Route</a></li><li><a href="/agency/tri-delta-transit-1974/">tri-delta-transit-1974</a></li><li><a href="/agency/university-of-michigan-transit-services/">University of Michigan Transit Services</a></li><li><a href="/agency/west-berkeley-shuttle-2238/">west-berkeley-shuttle-2238</a></li><li><a href="/agency/xpress-2426/">xpress-2426</a></li></ul>
+    </section>
 
     <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
     <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
@@ -105,7 +134,7 @@
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Agency count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
-      <tbody><tr><td>under 1 day</td><td>258</td></tr><tr><td>1-2 days</td><td>64</td></tr><tr><td>3-7 days</td><td>38</td></tr><tr><td>over 7 days</td><td>1089</td></tr></tbody>
+      <tbody><tr><td>under 1 day</td><td>262</td></tr><tr><td>1-2 days</td><td>62</td></tr><tr><td>3-7 days</td><td>38</td></tr><tr><td>over 7 days</td><td>1087</td></tr></tbody>
     </table></div>
     </section>
 

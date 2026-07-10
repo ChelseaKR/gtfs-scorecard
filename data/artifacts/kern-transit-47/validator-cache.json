@@ -37,24 +37,24 @@
         "code": "unknown_column",
         "sample_notices": [
           {
+            "fieldName": "wkt",
+            "filename": "areas.txt",
+            "index": 2
+          },
+          {
             "fieldName": "tts_agency_name",
             "filename": "agency.txt",
             "index": 8
           },
           {
-            "fieldName": "wkt",
-            "filename": "areas.txt",
+            "fieldName": "service_name",
+            "filename": "calendar.txt",
             "index": 2
           },
           {
             "fieldName": "holiday_name",
             "filename": "calendar_dates.txt",
             "index": 3
-          },
-          {
-            "fieldName": "service_name",
-            "filename": "calendar.txt",
-            "index": 2
           },
           {
             "fieldName": "feed_license",
@@ -64,6 +64,48 @@
         ],
         "severity": "INFO",
         "total": 34
+      },
+      {
+        "code": "service_window_outside_feed_period",
+        "sample_notices": [
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 206,
+            "serviceId": "c_71506_b_85423_d_127",
+            "serviceWindowEndDate": "2027-01-30",
+            "serviceWindowStartDate": "2025-12-15"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 201,
+            "serviceId": "c_71506_b_85423_d_32",
+            "serviceWindowEndDate": "2027-01-30",
+            "serviceWindowStartDate": "2025-12-20"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 206,
+            "serviceId": "c_71506_b_85423_d_21",
+            "serviceWindowEndDate": "2027-01-29",
+            "serviceWindowStartDate": "2025-12-15"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 202,
+            "serviceId": "c_71506_b_85423_d_16",
+            "serviceWindowEndDate": "2027-01-29",
+            "serviceWindowStartDate": "2025-12-19"
+          },
+          {
+            "daysAfterFeedEnd": 0,
+            "daysBeforeFeedStart": 206,
+            "serviceId": "c_71506_b_85423_d_15",
+            "serviceWindowEndDate": "2027-01-28",
+            "serviceWindowStartDate": "2025-12-15"
+          }
+        ],
+        "severity": "INFO",
+        "total": 8
       },
       {
         "code": "unknown_file",
@@ -78,60 +120,18 @@
             "filename": "farezone_attributes.txt"
           },
           {
-            "filename": "linked_datasets.txt"
+            "filename": "runcut.txt"
           },
           {
-            "filename": "runcut.txt"
+            "filename": "stop_attributes.txt"
           }
         ],
         "severity": "INFO",
         "total": 8
-      },
-      {
-        "code": "service_window_outside_feed_period",
-        "sample_notices": [
-          {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 170,
-            "serviceId": "c_71506_b_85423_d_32",
-            "serviceWindowEndDate": "2026-12-26",
-            "serviceWindowStartDate": "2025-12-20"
-          },
-          {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 175,
-            "serviceId": "c_71506_b_85423_d_21",
-            "serviceWindowEndDate": "2026-12-23",
-            "serviceWindowStartDate": "2025-12-15"
-          },
-          {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 171,
-            "serviceId": "c_71506_b_85423_d_16",
-            "serviceWindowEndDate": "2026-12-25",
-            "serviceWindowStartDate": "2025-12-19"
-          },
-          {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 175,
-            "serviceId": "c_71506_b_85423_d_15",
-            "serviceWindowEndDate": "2026-12-24",
-            "serviceWindowStartDate": "2025-12-15"
-          },
-          {
-            "daysAfterFeedEnd": 0,
-            "daysBeforeFeedStart": 175,
-            "serviceId": "c_71506_b_85423_d_63",
-            "serviceWindowEndDate": "2026-12-26",
-            "serviceWindowStartDate": "2025-12-15"
-          }
-        ],
-        "severity": "INFO",
-        "total": 6
       }
     ],
     "validator_version": "8.0.1"
   },
-  "sha256": "291d42d44ebc8d738419ee0e97a20985a0d129113085ec08c1f32c94764554b4",
+  "sha256": "247d97399fbbef35e71d71181fb470593a72e816018d2aa93c480b843b3c0ecc",
   "validator_version": "8.0.1"
 }

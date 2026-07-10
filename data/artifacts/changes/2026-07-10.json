@@ -3,18 +3,6 @@
   "changes": [
     {
       "date": "2026-07-10",
-      "from_grade": "C",
-      "from_score": 78.6,
-      "id": "valley-regional-transit",
-      "name": "Valley Regional Transit",
-      "regressed": true,
-      "score_delta": -32.4,
-      "since": "2026-07-09",
-      "to_grade": "F",
-      "to_score": 46.2
-    },
-    {
-      "date": "2026-07-10",
       "from_grade": "D",
       "from_score": 64.2,
       "id": "spirit-bus-2202",
@@ -44,10 +32,10 @@
       "id": "frederick-county-transit-2432",
       "name": "Frederick County TransIT",
       "regressed": true,
-      "score_delta": -1.4,
+      "score_delta": -1.1,
       "since": "2026-07-09",
       "to_grade": "F",
-      "to_score": 49.6
+      "to_score": 49.9
     },
     {
       "date": "2026-07-10",
@@ -219,18 +207,6 @@
     },
     {
       "date": "2026-07-10",
-      "from_grade": "B",
-      "from_score": 80.1,
-      "id": "valley-metro-vm",
-      "name": "Valley Metro (VM)",
-      "regressed": true,
-      "score_delta": -0.1,
-      "since": "2026-07-09",
-      "to_grade": "C",
-      "to_score": 80.0
-    },
-    {
-      "date": "2026-07-10",
       "from_grade": "F",
       "from_score": 36.0,
       "id": "detroit-department-of-transportation-ddot",
@@ -305,17 +281,17 @@
       "date": "2026-07-10",
       "from_grade": "D",
       "from_score": 64.1,
-      "id": "towson-loop",
-      "name": "Towson Loop",
+      "id": "via-mobility-2395",
+      "name": "Via Mobility",
       "regressed": false,
-      "score_delta": 1.4,
+      "score_delta": 1.2,
       "since": "2026-07-09",
       "to_grade": "D",
-      "to_score": 65.5
+      "to_score": 65.3
     }
   ],
-  "count": 26,
-  "generated_at": "2026-07-10T15:29:11+00:00",
+  "count": 24,
+  "generated_at": "2026-07-10T15:54:38+00:00",
   "license": "CC-BY-4.0",
   "schema_version": "1.7"
 }

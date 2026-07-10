@@ -265,34 +265,34 @@
       "details": {
         "coverage_pct": null,
         "drift": {
-          "median_seconds": 8210,
-          "observations": 114,
-          "on_time_share_pct": 0.0,
-          "p90_abs_seconds": 19754
+          "median_seconds": -1515,
+          "observations": 967,
+          "on_time_share_pct": 1.9,
+          "p90_abs_seconds": 17737
         },
         "kinds_reachable": 3,
         "rt_freshness": "fresh",
         "samples": 9,
         "scheduled_trips_in_window": 0,
-        "vehicles_checked": 21,
-        "vehicles_on_route_pct": 0.0,
-        "worst_lag_seconds": 20
+        "vehicles_checked": 62,
+        "vehicles_on_route_pct": 12.9,
+        "worst_lag_seconds": 18
       },
       "findings": [
         {
           "code": "scorecard_rt_vehicles_off_route",
-          "count": 21,
+          "count": 54,
           "effort": "A vendor support ticket with the trip ids attached.",
           "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
           "owner": "",
-          "points": 15.0,
+          "points": 13.1,
           "severity": "WARNING",
-          "what": "21 of 21 sampled vehicle positions were far from their assigned route (worst: 7145 m).",
+          "what": "54 of 62 sampled vehicle positions were far from their assigned route (worst: 8576 m).",
           "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
         },
         {
           "code": "scorecard_rt_predictions_implausible",
-          "count": 114,
+          "count": 967,
           "effort": "A vendor data-mapping question.",
           "fix": "Spot-check the flagged predictions against what buses actually did; raise trip-matching with your AVL vendor.",
           "owner": "",
@@ -303,9 +303,9 @@
         }
       ],
       "name": "realtime",
-      "score": 76.9,
+      "score": 79.9,
       "status": "measured",
-      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 0.0% of vehicles on their route; predictions ran a median of 8210s behind schedule.",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 feeds healthy; 12.9% of vehicles on their route; predictions ran a median of 1515s ahead of schedule.",
       "weight": 0.2
     }
   },
@@ -400,9 +400,9 @@
   },
   "overall": {
     "grade": "F",
-    "margin_to_lower_band": 55.2,
-    "margin_to_next_band": 4.8,
-    "score": 55.2
+    "margin_to_lower_band": 55.8,
+    "margin_to_next_band": 4.2,
+    "score": 55.8
   },
   "recommendations": [
     {
@@ -802,14 +802,14 @@
     },
     {
       "code": "scorecard_rt_vehicles_off_route",
-      "count": 21,
+      "count": 54,
       "effort": "A vendor support ticket with the trip ids attached.",
       "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
       "owner": "",
-      "points": 15.0,
+      "points": 13.1,
       "rank": 3,
       "severity": "WARNING",
-      "what": "21 of 21 sampled vehicle positions were far from their assigned route (worst: 7145 m).",
+      "what": "54 of 62 sampled vehicle positions were far from their assigned route (worst: 8576 m).",
       "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
     }
   ],
