@@ -8,6 +8,7 @@ re-running a day overwrites that day's artifact byte-for-byte deterministically.
 
 from __future__ import annotations
 
+import contextlib
 import datetime as dt
 import functools
 import json
@@ -394,6 +395,11 @@ def rebuild_index() -> Path:
     merge order.
     """
     root = artifacts_dir()
+    index_path = root / "index.json"
+    previous_index: dict[str, Any] = {"agencies": {}}
+    if index_path.exists():
+        with contextlib.suppress(json.JSONDecodeError, OSError):
+            previous_index = json.loads(index_path.read_text())
     index: dict[str, Any] = {"schema_version": SCHEMA_VERSION, "agencies": {}}
     if not root.exists():
         _write_json(root / "index.json", index)
@@ -412,7 +418,9 @@ def rebuild_index() -> Path:
         newest: dict[str, Any] | None = None
         receipts: list[dict[str, str]] = []
         agency_artifacts: list[dict[str, Any]] = []
-        for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
+        dated_paths = sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
+        present_dates = {path.stem for path in dated_paths}
+        for dated in dated_paths:
             artifact = _read_artifact(dated)
             if artifact is None:
                 continue
@@ -438,14 +446,28 @@ def rebuild_index() -> Path:
             all_receipts = merge_receipts(load_fixlog(agency_dir), receipts)
             if all_receipts:
                 _write_json(agency_dir / "fixlog.json", {"receipts": all_receipts})
-            entry: dict[str, Any] = {"name": name, "history": history}
+            # S3 is the durable dated-history store. A clean CI checkout keeps
+            # only the repository's cutover snapshot plus the newest two days,
+            # while index.json carries the compact complete trend. Preserve
+            # entries whose dated file is simply absent locally; an unreadable
+            # file that is present is still dropped so corruption stays visible.
+            prior_history = (
+                previous_index.get("agencies", {}).get(agency_dir.name, {}).get("history", [])
+            )
+            by_date = {
+                str(item.get("date")): item
+                for item in prior_history
+                if item.get("date") and str(item.get("date")) not in present_dates
+            }
+            by_date.update({str(item["date"]): item for item in history})
+            merged_history = [by_date[date] for date in sorted(by_date)]
+            entry: dict[str, Any] = {"name": name, "history": merged_history}
             if operating_note:
                 entry["operating_note"] = operating_note
             index["agencies"][agency_dir.name] = entry
 
     _write_calibration(stats_from_episodes(all_episodes))
 
-    index_path = root / "index.json"
     _write_json(index_path, index)
     return index_path
 

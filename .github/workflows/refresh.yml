@@ -22,7 +22,8 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # commit + push refreshed artifacts
+      contents: write # commit the small liveness fallback only
+      id-token: write # publish refreshed artifacts through AWS OIDC
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
@@ -32,6 +33,24 @@ jobs:
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
         with:
           python-version: "3.12"
+
+      - name: Authenticate to AWS
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      - name: Hydrate current artifacts from S3
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        run: |
+          today=$(date -u +%Y-%m-%d)
+          yesterday=$(date -u -d yesterday +%Y-%m-%d)
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            --exclude "*" --include "index.json" \
+            --include "*/latest.json" --include "*/fixlog.json" \
+            --include "*/${today}.json" --include "*/${yesterday}.json" \
+            --only-show-errors
 
       - name: Select the feeds due this cycle
         working-directory: pipeline
@@ -62,52 +81,42 @@ jobs:
             echo "::endgroup::"
           done < "$changed"
 
-      - name: Rebuild index, rollups, and static pages
+      - name: Rebuild index and rollups
         working-directory: pipeline
         run: |
           uv run scorecard reindex
           uv run scorecard rollups
-          uv run scorecard render-site
+
+      - name: Publish refreshed artifacts to S3
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        run: |
+          aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
+            --cache-control "max-age=300" --only-show-errors
 
       - name: Commit the refresh
         run: |
           git config user.name "scorecard-bot"
           git config user.email "actions@users.noreply.github.com"
-          # The generated web/ roots come from the manifest render-site emitted
-          # (build/render-manifest.txt), so a newly added page is always published
-          # and can never be silently dropped by a hand-typed list that drifts
-          # (a missing root broke a publish once). data/artifacts + liveness are
-          # added explicitly: they are scoring outputs, not render-site's. The
-          # manifest only ever lists generated paths, so hand-authored web/src, the
-          # static *.html, web/app, and web/tiles stay excluded and a concurrent
-          # merge to them is preserved by the replay.
-          test -s build/render-manifest.txt || { echo "render manifest missing; render-site did not run"; exit 1; }
-          mapfile -t rendered_paths < build/render-manifest.txt
-          paths=(data/artifacts data/liveness.json "${rendered_paths[@]}")
+          # Scored artifacts and generated pages publish from S3/Pages. Git keeps
+          # only this small liveness fallback, so a scheduled run cannot replay
+          # thousands of stale generated files over a newly merged feature.
+          paths=(data/liveness.json)
           git add -- "${paths[@]}"
           if git diff --cached --quiet; then
             echo "No changes this cycle."
             exit 0
           fi
           git commit -m "chore(data): intraday refresh"
-          # main can move during the run (the daily job, a merge). Do NOT rebase:
-          # these are wholesale-regenerated artifacts (and binaries) that both this
-          # run and whatever moved main rewrite, so a 3-way rebase conflicts on
-          # essentially every file. Instead reset onto latest main and replay only
-          # our generated paths; main's non-artifact changes are preserved because
-          # we only re-add the generated paths. (Mirrors scorecard.yml.)
+          # main can move during the run. Replay only the liveness file on top
+          # of it; scored artifacts and generated pages never enter this commit.
           for attempt in 1 2 3 4 5; do
             if git push origin HEAD:main; then
               exit 0
             fi
-            echo "push rejected (main moved); replaying generated files onto latest main ($attempt)"
+            echo "push rejected (main moved); replaying liveness onto latest main ($attempt)"
             git fetch origin main
             ours=$(git rev-parse HEAD)
             git reset --hard origin/main
-            # Replay our generated tree onto latest main. git restore (no-overlay)
-            # re-applies modifications, additions, AND deletions for these paths, so
-            # a page/artifact this cycle pruned is actually removed; a plain
-            # `git checkout -- $paths` is overlay-only and would leave it behind.
             git restore --source="$ours" --staged --worktree -- "${paths[@]}"
             if git diff --cached --quiet; then
               echo "latest main already carries these artifacts; nothing to push."
@@ -128,3 +137,5 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/pages.yml
+    secrets:
+      PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}

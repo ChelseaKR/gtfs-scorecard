@@ -1,15 +1,14 @@
 # ADR 0030: Remediating the accumulated git-committed data history
 
-Status: accepted (decision only — execution gated on the S3 cutover) · Date: 2026-07-08
+Status: accepted and executed 2026-07-10 · Date: 2026-07-08
 
 ## Context
 
 `docs/ideation/02-large-scale-fixes.md` FIX-13 asks the project to decide,
 "once and deliberately," what to do about the data that has already
 accumulated in git, not just about future writes. ADR 0002 already decided to
-stop *future* artifact commits once the S3 cutover lands; that cutover is
-still `deferred` per `docs/follow-ups.md` (steps 1–3 not yet done — the collect
-job still commits `data/artifacts` on every run). This ADR is scoped to the
+stop *future* artifact commits once the S3 cutover lands; that cutover was
+completed on 2026-07-10 and is recorded in `docs/follow-ups.md`. This ADR is scoped to the
 part ADR 0002 did not cover: the history that already exists, and the
 prerendered pages, both of which keep growing regardless of the S3 decision.
 
