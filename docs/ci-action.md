@@ -28,7 +28,7 @@ jobs:
   gtfs-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: ChelseaKR/gtfs-scorecard@v1
+      - uses: ChelseaKR/gtfs-scorecard@v2
         with:
           feed-url: https://example.org/gtfs/feed.zip
           name: Example Transit
@@ -36,7 +36,7 @@ jobs:
           min-days-to-expiry: 14
 ```
 
-`@v1` follows the latest v1 release. Pin a full version tag (`@v1.0.0`) or a
+`@v2` follows the latest v2 release. Pin a full version tag (`@v2.0.0`) or a
 commit SHA when you want an exact, unchanging contract.
 
 ## Inputs
@@ -48,18 +48,45 @@ commit SHA when you want an exact, unchanging contract.
 | `min-days-to-expiry` | no | _(skip)_ | Fail if the feed expires within this many days. A feed with no expiry date fails this check. |
 | `name` | no | feed host | Agency name shown in the printed report. |
 | `html` | no | _(skip)_ | Path to also write a standalone HTML scorecard, relative to the workspace. |
-| `ref` | no | _(action version)_ | Ref of gtfs-scorecard to install the scorer from. Defaults to the version the action was called as, so `@v1` installs the v1 scorer. |
+| `json` | no | runner temporary file | Path for the complete machine-readable scorecard artifact. |
+| `summary` | no | `true` | Write a plain-language scorecard to the GitHub job summary. |
+| `ref` | no | _(action version)_ | Ref of gtfs-scorecard to install the scorer from. Defaults to the version the action was called as, so `@v2` installs the v2 scorer. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor
 `min-days-to-expiry` set, the action prints the scorecard and always passes,
 which is useful as an informational step.
+
+## Outputs and job summary
+
+The action exposes `grade`, `score`, `days-to-expiry`, `passed`, and
+`result-json`. The complete JSON is written before thresholds are applied, so
+later steps can upload or inspect it even when the gate fails.
+
+```yaml
+      - id: gtfs
+        uses: ChelseaKR/gtfs-scorecard@v2
+        with:
+          feed-url: https://example.org/gtfs/feed.zip
+          min-grade: B
+          json: artifacts/gtfs-scorecard.json
+
+      - if: always()
+        run: |
+          echo "grade=${{ steps.gtfs.outputs.grade }}"
+          echo "passed=${{ steps.gtfs.outputs.passed }}"
+          echo "result=${{ steps.gtfs.outputs.result-json }}"
+```
+
+By default the job summary includes the grade, service days remaining, and the
+top three fixes. Set `summary: "false"` to suppress it. A failed gate also emits
+a concise workflow annotation while preserving the full result file.
 
 ## Saving the HTML report
 
 Set `html` to keep the rendered scorecard as a build artifact:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1
+      - uses: ChelseaKR/gtfs-scorecard@v2
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: C
