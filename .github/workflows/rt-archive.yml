@@ -53,7 +53,7 @@ jobs:
             echo "No observations recorded."
           else
             git commit -m "chore(rt): high-cadence archive session"
-            for attempt in 1 2 3 4 5; do
+            for _attempt in 1 2 3 4 5; do
               if git push origin HEAD:main; then break; fi
               git fetch origin main
               git rebase origin/main || { git rebase --abort; exit 1; }

@@ -6,8 +6,8 @@ big ones lives in `docs/roadmap.md`; this file is the operational checklist.
 
 ## S3 as the artifact source of truth (roadmap Year 1)
 
-**Status: steps 1, 2, and 4 landed in code; step 3 (the actual cutover) is
-still deferred pending a live-verified deploy — see below.** The original
+**Status: steps 1 and 4 are applied in AWS and step 2 is wired; step 3 (the
+actual cutover) waits for the first live-verified Pages sync — see below.** The original
 driver was the daily run losing refreshes to git push races. That is now
 fixed in code — shards publish only the agencies they scored (no cross-shard
 clobber), and a rejected push replays the generated files onto the latest
@@ -27,15 +27,14 @@ Steps, in order:
    `s3:ListBucket` on the artifacts bucket, trusted for both
    `repo:ChelseaKR/gtfs-scorecard:ref:refs/heads/main` and
    `repo:ChelseaKR/gtfs-scorecard:environment:github-pages`. Its output
-   `pages_read_role_arn` still needs a human to `terraform apply` and store as
-   the `PAGES_AWS_ROLE_ARN` Actions secret — that has not happened yet.
-2. **Assemble from S3 in `pages.yml` — done, but unverified live.** Both the
+   `pages_read_role_arn` was applied on 2026-07-10 and stored as the
+   `PAGES_AWS_ROLE_ARN` Actions secret.
+2. **Assemble from S3 in `pages.yml` — wired, pending its first live verification.** Both the
    `lighthouse` and `deploy` jobs now sync `s3://<bucket>/data/artifacts` into
    `_site/data/artifacts` after the `cp -r data/artifacts` fallback, gated on
    `vars.ARTIFACTS_BUCKET` and non-fatal on failure (`|| echo "::warning
-   ..."`). This has not run against real infra yet, since step 1's role has
-   not been applied or wired to a secret. Before step 3: apply step 1, set
-   `PAGES_AWS_ROLE_ARN`, trigger one deploy, and confirm in the run log that
+   ..."`). The role and secret now exist. Before step 3, trigger one deploy
+   and confirm in the run log that
    the sync step actually authenticated and copied objects (not just skipped
    on the unset variable).
 3. **Stop committing `data/artifacts`** in the `collect` job (drop it from the
@@ -49,10 +48,10 @@ Steps, in order:
    (`scorecard.yml`) applies the tag to each day's `<agency>/<date>.json` as
    it's synced; `latest.json`, `badge.json`, `directory.json`, and the
    validator cache never match that filename pattern, so they're never tagged
-   and never expire. Artifact history synced to the bucket before this step
+   and never expire. The lifecycle configuration was applied on 2026-07-10.
+   Artifact history synced to the bucket before this step
    existed stays untagged (and therefore un-expiring) until something
-   re-touches it — fails open, not closed. This also needs `terraform apply`
-   to take effect.
+   re-touches it, which fails open rather than deleting unclassified history.
 
 The web app's runtime data source does not change: it keeps reading same-origin
 from Pages, so there is no CDN-staleness risk (see the note in

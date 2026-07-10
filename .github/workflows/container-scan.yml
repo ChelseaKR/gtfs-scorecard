@@ -23,6 +23,9 @@ on:
       - "infra/instant-score/Dockerfile"
       - "pipeline/pyproject.toml"
       - "pipeline/uv.lock"
+      - ".dockerignore"
+      - ".trivyignore.yaml"
+      - "vex.json"
       - ".github/workflows/container-scan.yml"
   pull_request:
     paths:
@@ -30,6 +33,9 @@ on:
       - "infra/instant-score/Dockerfile"
       - "pipeline/pyproject.toml"
       - "pipeline/uv.lock"
+      - ".dockerignore"
+      - ".trivyignore.yaml"
+      - "vex.json"
       - ".github/workflows/container-scan.yml"
   schedule:
     - cron: "0 8 * * 1" # Mondays 08:00 UTC — catch new CVEs against a pinned base image
@@ -97,4 +103,5 @@ jobs:
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
+          trivyignores: .trivyignore.yaml
           exit-code: "1"

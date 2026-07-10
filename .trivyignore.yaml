@@ -1,0 +1,33 @@
+vulnerabilities:
+  # MobilityData 8.0.1 is the latest official gtfs-validator release as of
+  # 2026-07-10. Its shaded CLI jar carries these fixed transitive-library CVEs,
+  # but no patched upstream artifact exists. vex.json records the code-path or
+  # archive-preflight justification for each time-bounded exception. CI tests
+  # keep this list, the VEX, and the validator pin synchronized.
+  - id: CVE-2022-25647
+    statement: "Gson deserialization path is not used for untrusted GTFS input; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2014-0114
+    statement: "BeanUtils property binding is not invoked by the validator CLI; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2019-10086
+    statement: "BeanUtils property binding is not invoked by the validator CLI; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2025-48734
+    statement: "BeanUtils property binding is not invoked by the validator CLI; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2021-35515
+    statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2021-35516
+    statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2021-35517
+    statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2021-36090
+    statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2026-39822
+    statement: "AWS Lambda RIE is not invoked in the managed Lambda runtime; see vex.json."
+    expired_at: 2026-10-08

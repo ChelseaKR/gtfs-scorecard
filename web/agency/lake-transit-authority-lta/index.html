@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lake Transit Authority (LTA) GTFS data quality: grade C — GTFS Scorecard</title>
-  <meta name="description" content="Lake Transit Authority (LTA)&#x27;s GTFS feed scores 79.8 out of 100 (grade C) for data quality: correctness, freshness, rider-experience completeness, and realtime. Plain-language fixes included.">
+  <title>Lake Transit Authority (LT… (California) GTFS quality report</title>
+  <meta name="description" content="GTFS quality report for Lake Transit Authority (LTA): current service dates, validator findings, rider information, and prioritized fixes.">
   <link rel="canonical" href="https://gtfsscorecard.org/agency/lake-transit-authority-lta/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Lake Transit Authority (LTA) GTFS data quality: grade C — GTFS Scorecard">
-  <meta property="og:description" content="Lake Transit Authority (LTA)&#x27;s GTFS feed scores 79.8 out of 100 (grade C) for data quality: correctness, freshness, rider-experience completeness, and realtime. Plain-language fixes included.">
+  <meta property="og:title" content="Lake Transit Authority (LT… (California) GTFS quality report">
+  <meta property="og:description" content="GTFS quality report for Lake Transit Authority (LTA): current service dates, validator findings, rider information, and prioritized fixes.">
   <meta property="og:url" content="https://gtfsscorecard.org/agency/lake-transit-authority-lta/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Lake Transit Authority (LTA) GTFS data quality report","description":"Lake Transit Authority (LTA)'s GTFS feed scores 79.8 out of 100 (grade C) for data quality: correctness, freshness, rider-experience completeness, and realtime. Plain-language fixes included.","url":"https://gtfsscorecard.org/agency/lake-transit-authority-lta/","includedInDataCatalog":{"@type":"DataCatalog","url":"https://gtfsscorecard.org"},"creator":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"about":{"@type":"Organization","name":"Lake Transit Authority (LTA)"},"variableMeasured":[{"@type":"PropertyValue","name":"Correctness","value":86.0},{"@type":"PropertyValue","name":"Freshness","value":100.0},{"@type":"PropertyValue","name":"Rider experience","value":54.9}],"dateModified":"2026-07-10","distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/data/artifacts/lake-transit-authority-lta/latest.json"},"keywords":["GTFS","transit data quality","GTFS feed","Lake Transit Authority (LTA)"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Lake Transit Authority (LTA) GTFS data quality report","description":"GTFS quality report for Lake Transit Authority (LTA): current service dates, validator findings, rider information, and prioritized fixes.","url":"https://gtfsscorecard.org/agency/lake-transit-authority-lta/","identifier":[{"@type":"PropertyValue","propertyID":"GTFS Scorecard","value":"lake-transit-authority-lta"},{"@type":"PropertyValue","propertyID":"Mobility Database","value":"68"}],"license":"https://creativecommons.org/licenses/by/4.0/","isBasedOn":"http://data.trilliumtransit.com/gtfs/laketransit-ca-us/laketransit-ca-us.zip","includedInDataCatalog":{"@type":"DataCatalog","url":"https://gtfsscorecard.org"},"creator":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"about":{"@type":"Organization","name":"Lake Transit Authority (LTA)"},"variableMeasured":[{"@type":"PropertyValue","name":"Correctness","value":86.0},{"@type":"PropertyValue","name":"Freshness","value":100.0},{"@type":"PropertyValue","name":"Rider experience","value":54.9}],"dateModified":"2026-07-10","distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/data/artifacts/lake-transit-authority-lta/latest.json"},"keywords":["GTFS","transit data quality","GTFS feed","Lake Transit Authority (LTA)"]}</script>
   <link rel="alternate" type="application/atom+xml" title="Lake Transit Authority (LTA) feed quality changes" href="https://gtfsscorecard.org/agency/lake-transit-authority-lta/feed.xml">
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
@@ -48,13 +48,14 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Lake Transit Authority (LTA)</span></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/agencies/"><span itemprop="name">All agencies</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Lake Transit Authority (LTA)</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <p class="brief-link"><a href="/agency/lake-transit-authority-lta/brief/">Prep for a call: printable one-page brief</a>
       · <a href="/agency/lake-transit-authority-lta/board/">For your board packet: printable one-pager</a>
       
       · <a href="/compare/?a=lake-transit-authority-lta">Compare with another agency</a>
-      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a></p>
+      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a>
+      · <a href="/claim/?agency=lake-transit-authority-lta">Correct or claim this listing</a></p>
     <div class="board-hero"><div class="board-inner"><p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked 2026-07-10</p><h1 class="board-title">Lake Transit Authority (LTA)</h1><p class="board-sub">Based on the feed this agency publishes</p><div class="grade-block"><div class="reel" role="img" aria-label="Overall grade C" style="--flap-end: calc(var(--reel-h) * -2)"><div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div></div><div class="score-block"><div><span class="score-big">79.8</span><span class="score-of"> / 100</span></div><p class="score-trend">unchanged since 2026-07-09</p><p class="peer-context">Ahead of 79% of all tracked agencies and 79% of mid-size agencies. Operates in California.</p><div class="percentile-strip" role="group" aria-label="Percentile position; higher is better"><div class="percentile-row"><span class="percentile-label">All agencies</span><span class="percentile-value">79%</span><span class="percentile-track" style="--position:79" aria-hidden="true"><span class="percentile-line"></span><span class="percentile-marker"></span></span></div><div class="percentile-row"><span class="percentile-label">mid-size peers</span><span class="percentile-value">79%</span><span class="percentile-track" style="--position:79" aria-hidden="true"><span class="percentile-line"></span><span class="percentile-marker"></span></span></div><div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div></div><div class="chips"><span class="chip ok">Covers 174 days</span><span class="chip warn">Accessibility gaps</span><span class="chip">Flexible service</span><span class="chip">No realtime feed</span></div></div></div></div></div>
     
     
@@ -146,11 +147,13 @@ Full scorecard: https://gtfsscorecard.org/agency/lake-transit-authority-lta/</te
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

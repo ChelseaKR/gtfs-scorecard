@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix: flexible service with no booking rules — GTFS Scorecard</title>
-  <meta name="description" content="Code: scorecard_flex_no_booking_rules">
+  <meta name="description" content="Your feed describes flexible, demand-responsive service (a service area or flexible stops, the GTFS-Flex extension to GTFS Schedule), but it has no…">
   <link rel="canonical" href="https://gtfsscorecard.org/fix/scorecard_flex_no_booking_rules/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Fix: flexible service with no booking rules — GTFS Scorecard">
-  <meta property="og:description" content="Code: scorecard_flex_no_booking_rules">
+  <meta property="og:description" content="Your feed describes flexible, demand-responsive service (a service area or flexible stops, the GTFS-Flex extension to GTFS Schedule), but it has no…">
   <meta property="og:url" content="https://gtfsscorecard.org/fix/scorecard_flex_no_booking_rules/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: flexible service with no booking rules","description":"Code: scorecard_flex_no_booking_rules","url":"https://gtfsscorecard.org/fix/scorecard_flex_no_booking_rules/","about":{"@type":"Thing","name":"GTFS validator notice scorecard_flex_no_booking_rules"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: flexible service with no booking rules","description":"Your feed describes flexible, demand-responsive service (a service area or flexible stops, the GTFS-Flex extension to GTFS Schedule), but it has no\u2026","url":"https://gtfsscorecard.org/fix/scorecard_flex_no_booking_rules/","about":{"@type":"Thing","name":"GTFS validator notice scorecard_flex_no_booking_rules"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-10","mainEntityOfPage":"https://gtfsscorecard.org/fix/scorecard_flex_no_booking_rules/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -47,36 +47,32 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/agencies/">All agencies</a></li><li><span aria-current="page">Fix: scorecard_flex_no_booking_rules</span></li></ol></nav>
-    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: scorecard_flex_no_booking_rules</span><meta itemprop="position" content="3"></li></ol></nav>
+    <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
     <article class="feed-details"><h1>Fix: flexible service with no booking rules</h1>
 <p>Code: <code>scorecard_flex_no_booking_rules</code></p>
 <h2 class="section-title">What this means</h2>
-<p>Your feed describes flexible, demand-responsive service (a service area or</p>
-<p>flexible stops, the GTFS-Flex extension to GTFS Schedule), but it has no</p>
-<p><code>booking_rules.txt</code>.</p>
+<p>Your feed describes flexible, demand-responsive service (a service area or
+flexible stops, the GTFS-Flex extension to GTFS Schedule), but it has no
+<code>booking_rules.txt</code>.</p>
 <h2 class="section-title">Why it matters</h2>
-<p>Riders can see that the service exists and where it covers, but not how or</p>
-<p>when to actually reserve a trip. A service area with no way to book it is not</p>
-<p>usable, no matter how well the rest of the feed is described.</p>
+<p>Riders can see that the service exists and where it covers, but not how or
+when to actually reserve a trip. A service area with no way to book it is not
+usable, no matter how well the rest of the feed is described.</p>
 <h2 class="section-title">How to fix it</h2>
 <ul>
-<li><strong>Add <code>booking_rules.txt</code></strong> with how far ahead a rider needs to book and how</li>
+<li><strong>Add <code>booking_rules.txt</code></strong> with how far ahead a rider needs to book and how
+to reach the service: a phone number, a booking link, or a message.</li>
+<li><strong>One rule can often cover the whole service.</strong> If every flexible route
+books the same way, a single <code>booking_rules.txt</code> row applies to all of
+them; you do not need one per route.</li>
+<li><strong>Link it from <code>stop_times.txt</code>.</strong> Reference the rule through
+<code>pickup_booking_rule_id</code> and <code>drop_off_booking_rule_id</code> so trip planners
+know which booking rule applies to which stop.</li>
 </ul>
-<p>  to reach the service: a phone number, a booking link, or a message.</p>
-<ul>
-<li><strong>One rule can often cover the whole service.</strong> If every flexible route</li>
-</ul>
-<p>  books the same way, a single <code>booking_rules.txt</code> row applies to all of</p>
-<p>  them; you do not need one per route.</p>
-<ul>
-<li><strong>Link it from <code>stop_times.txt</code>.</strong> Reference the rule through</li>
-</ul>
-<p>  <code>pickup_booking_rule_id</code> and <code>drop_off_booking_rule_id</code> so trip planners</p>
-<p>  know which booking rule applies to which stop.</p>
 <h2 class="section-title">How long it usually takes</h2>
-<p>A small file; for most small agencies, one booking rule describes the entire</p>
-<p>demand-responsive service.</p>
+<p>A small file; for most small agencies, one booking rule describes the entire
+demand-responsive service.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p>The GTFS Validator does not flag this, so the expectation comes from the field's definition in the GTFS Schedule reference. <a class="rule-ref" href="https://gtfs.org/schedule/reference/#booking_rulestxt">Read the relevant GTFS Schedule reference section</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
   </main>
@@ -95,11 +91,13 @@
       <a href="/adoption/">What feeds publish</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
       <a href="/try.html">Score any feed now</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

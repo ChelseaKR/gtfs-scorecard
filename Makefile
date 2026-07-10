@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl render-site render-constants test contrast readability no-todos sync-static-nav mutation mutation-results
+.PHONY: verify tiles tiles-geojsonl render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -36,6 +36,12 @@ readability:
 
 render-site:
 	cd pipeline && uv run scorecard render-site
+
+# Deliberately refresh deterministic render and report contracts after reviewing
+# an intentional public-output change.
+golden-refresh:
+	cd pipeline && uv run python scripts/refresh_goldens.py
+	cd pipeline && REPORT_GOLDEN_REGEN=1 uv run pytest tests/test_report_golden.py -q
 
 # Regenerate web/src/generated/constants.js (grade bands and ranks, category and
 # severity labels, rule links, thresholds) from the Python definitions in

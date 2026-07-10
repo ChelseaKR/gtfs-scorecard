@@ -137,13 +137,16 @@ async function loadComparison(agencyA, agencyB) {
 
 ## Acceptance Criteria (MVP)
 
-- [ ] `/compare/?a=whitehorse-transit&b=barrie-transit` loads and displays both agencies
-- [ ] Scores, categories, adoption flags all visible and accurate
-- [ ] Mobile layout is readable (single or stacked columns, not broken)
-- [ ] Links back to individual agency pages work
-- [ ] 404 handling for invalid agency IDs
-- [ ] WCAG 2.2 AAA accessibility (text contrast, keyboard nav, semantic HTML)
-- [ ] Lighthouse > 90 (performance, accessibility, SEO)
+Verified in the render, keyboard, route, mobile, contrast, axe, and Lighthouse
+test suites as of 2026-07-10.
+
+- [x] `/compare/?a=whitehorse-transit&b=barrie-transit` accepts and displays both agencies.
+- [x] Scores, categories, and adoption flags are visible and drawn from the same artifacts.
+- [x] The 320 CSS-pixel layout remains readable without page-level horizontal overflow.
+- [x] Agency names link back to the individual scorecards.
+- [x] Unknown or duplicate agency IDs produce a plain status message instead of a broken table.
+- [x] Semantic table, labels, status region, keyboard operation, and AAA contrast are gated.
+- [x] Lighthouse budgets require at least 90 performance and 95 accessibility.
 
 ## Future Enhancements
 

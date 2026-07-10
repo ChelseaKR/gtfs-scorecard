@@ -26,6 +26,7 @@ from scorecard_pipeline.render_site import (
     _render_claim_page,
     _render_equity_page,
     _render_map_page,
+    _render_spanish_rider_page,
     _rollup_percentile_context,
     _route_map_section,
     _rt_accuracy_section,
@@ -34,6 +35,21 @@ from scorecard_pipeline.render_site import (
     _vendor_section,
     compute_changes,
 )
+
+
+def test_spanish_rider_page_is_localized_accessible_and_scoped() -> None:
+    html = _render_spanish_rider_page()
+
+    assert '<html lang="es">' in html
+    assert html.count("<h1") == 1
+    assert "¿Verán los pasajeros mi servicio de transporte?" in html
+    assert 'class="skip-link"' in html and "Saltar al contenido principal" in html
+    assert '<form id="agency-search-es"' in html
+    assert '<datalist id="agency-options-es">' in html
+    assert 'id="agency-status-es" class="form-status" role="status"' in html
+    assert 'src="/src/es.js"' in html
+    assert 'hreflang="en"' in html and 'hreflang="es"' in html
+    assert "No certifica la calidad del servicio" in html
 
 
 def test_rt_schedule_deviation_is_not_labeled_prediction_accuracy() -> None:

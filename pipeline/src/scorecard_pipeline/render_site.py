@@ -40,6 +40,7 @@ from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
 from .google_gate import from_artifact as google_from_artifact
+from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalogs
 from .instance import ORG_NAME
 from .metrics import expiry_status, operating_signal
 from .mobilitydb import canonical_state
@@ -3909,6 +3910,62 @@ def _render_claim_page() -> str:
     )
 
 
+def _render_spanish_rider_page() -> str:
+    """Spanish-first agency lookup, the first localized rider-facing surface."""
+    text = load_catalog("es")
+    canonical = f"{BASE_URL}/es/"
+    body = f"""    <nav class="breadcrumb" aria-label="Migas de pan"><ol>
+      <li><a href="/">GTFS Scorecard</a></li>
+      <li><span aria-current="page">Espa&ntilde;ol</span></li>
+    </ol></nav>
+    <p><a href="/" hreflang="en">Read this site in English</a></p>
+    <h1 class="page-title">{esc(text["spanish_page_title"])}</h1>
+    <p class="page-lede">{esc(text["spanish_page_lede"])}</p>
+
+    {_route_rule()}
+    <section class="feed-details" aria-labelledby="buscar-agencia">
+      <h2 class="section-title" id="buscar-agencia">Busca tu agencia</h2>
+      <form id="agency-search-es" class="check-form"
+            data-ready="{esc(text["agency_search_ready"])}"
+            data-error="{esc(text["agency_search_error"])}"
+            data-missing="{esc(text["agency_search_missing"])}">
+        <label for="agency-es">{esc(text["agency_search_label"])}</label>
+        <input id="agency-es" name="agency" list="agency-options-es" autocomplete="off"
+               placeholder="{esc(text["agency_search_placeholder"])}" required>
+        <datalist id="agency-options-es"></datalist>
+        <p><button type="submit" disabled>{esc(text["agency_search_button"])}</button></p>
+        <p id="agency-status-es" class="form-status" role="status" aria-live="polite">
+          {esc(text["agency_search_loading"])}
+        </p>
+      </form>
+      <noscript><p><a href="/agencies/" hreflang="en">Abre el directorio completo (en ingl&eacute;s)</a>.</p></noscript>
+    </section>
+
+    <section aria-labelledby="que-significa">
+      <h2 class="section-title" id="que-significa">Qu&eacute; significa la ficha</h2>
+      <p>{esc(text["spanish_page_scope"])}</p>
+      <ul>
+        <li><strong>Vigencia:</strong> si el calendario publicado cubre los pr&oacute;ximos d&iacute;as.</li>
+        <li><strong>Experiencia del pasajero:</strong> si el feed incluye nombres, destinos y datos de accesibilidad.</li>
+        <li><strong>Correcciones:</strong> acciones concretas que la agencia o su proveedor puede revisar.</li>
+      </ul>
+      <p>Las fichas detalladas est&aacute;n disponibles actualmente en ingl&eacute;s. Los grados,
+      las fechas y los valores num&eacute;ricos no cambian con el idioma.</p>
+    </section>"""
+    return _page(
+        title=f"{text['spanish_page_title']} | GTFS Scorecard",
+        description=str(text["spanish_page_lede"]),
+        canonical=canonical,
+        body=body,
+        lang="es",
+        head_extra=(
+            '<link rel="alternate" hreflang="en" href="https://gtfsscorecard.org/">\n'
+            '  <link rel="alternate" hreflang="es" href="https://gtfsscorecard.org/es/">\n'
+            '  <script src="/src/es.js" defer></script>'
+        ),
+    )
+
+
 def _sitemap(urls: list[str], lastmods: dict[str, str] | None = None) -> str:
     """Render a deduplicated sitemap with truthful per-URL modification dates."""
     modified = lastmods or {}
@@ -7061,6 +7118,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("how-to-read/index.html", _render_guide(), f"{BASE_URL}/how-to-read/")
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
     write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
+    validate_catalogs()
+    write("es/index.html", _render_spanish_rider_page(), f"{BASE_URL}/es/")
+    for locale in SUPPORTED_LOCALES:
+        write(f"locales/{locale}.json", (CATALOG_DIR / f"{locale}.json").read_text())
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
     # status.json, extending FIX-11's internal run-summary outward. Built from
