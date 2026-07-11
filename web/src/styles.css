@@ -1053,11 +1053,44 @@ main:focus { outline: none; }
   background: var(--card);
 }
 /* Placeholder text inside the map container; MapLibre clears it when it
-   initialises, so it only shows while (or if) the CDN library never loads. */
+   initialises, so it shows until the visitor requests the enhancement. */
 .national-map .map-fallback {
   padding: 1.2rem;
   color: var(--muted, inherit);
   max-width: 44ch;
+}
+
+.map-load-panel {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-block: 1rem 0.75rem;
+}
+
+.map-load-panel .fineprint {
+  margin: 0;
+  max-width: 52rem;
+}
+
+.national-map-pending {
+  align-items: center;
+  display: flex;
+  height: auto;
+  justify-content: center;
+  min-height: 12rem;
+}
+
+@media (max-width: 40rem) {
+  .map-load-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .map-load-panel .button {
+    text-align: center;
+    width: 100%;
+  }
 }
 .map-legend {
   display: flex;

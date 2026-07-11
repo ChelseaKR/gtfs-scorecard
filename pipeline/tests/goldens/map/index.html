@@ -15,13 +15,8 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -70,10 +65,16 @@
         <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
       </div>
     </form>
-    <div id="map" class="national-map" aria-hidden="true"><p class="map-fallback">The map
-      draws here once its library loads from a content delivery network. If it stays
-      blank (a blocked or slow network), the agency list below carries everything the
-      map shows.</p></div>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="map-load">
+        Load interactive map
+      </button>
+      <p id="map-load-status" class="fineprint" role="status">The agency list is ready now.
+        Load the map only when you want the geographic view. It uses additional data.</p>
+    </div>
+    <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
+      The interactive map has not loaded. The agency list below carries the same agencies,
+      grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
@@ -89,16 +90,19 @@
         <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
       </table>
     </section>
-    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script>
       (function () {
         var gradeEl = document.getElementById("map-grade");
         var stateEl = document.getElementById("map-state");
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
+        var loadEl = document.getElementById("map-load");
+        var loadStatusEl = document.getElementById("map-load-status");
+        var mapEl = document.getElementById("map");
         var rows = Array.prototype.slice.call(
           document.querySelectorAll("#map-tbody tr"));
         var all = null;  // the full FeatureCollection, fetched once
+        var map = null;
 
         function matches(grade, state, country, hasFlex) {
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
@@ -129,16 +133,10 @@
         // filter never moves focus: on a native <select>, keyboard arrow keys
         // fire "change" per option, and moving focus then would yank the caret
         // out of the control mid-choice (WCAG 3.2.2 On Input).
-        if (!window.maplibregl) {
-          gradeEl.addEventListener("change", filterTable);
-          stateEl.addEventListener("change", filterTable);
-          if (flexEl) flexEl.addEventListener("change", filterTable);
-          filterTable();
-          return;
-        }
+        function initMap() {
         var reduce = window.matchMedia
           && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var map = new maplibregl.Map({
+        map = new maplibregl.Map({
           container: "map",
           style: "https://tiles.openfreemap.org/styles/positron",
           center: [-96, 38], zoom: 3, keyboard: false,
@@ -218,7 +216,7 @@
         }
         function applyFilter() {
           filterTable();
-          var src = map.getSource("agencies");
+          var src = map && map.getSource("agencies");
           if (src) src.setData(filtered());
         }
 
@@ -287,6 +285,8 @@
           if (current !== null) {
             map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
           }
+          mapEl.classList.remove("national-map-pending");
+          if (loadStatusEl) loadStatusEl.textContent = "Interactive map loaded.";
           fetch("/map.geojson").then(function (r) { return r.json(); })
             .then(function (gj) { all = gj; applyFilter(); })
             .catch(function () {});
@@ -332,10 +332,49 @@
           map.on("mouseenter", "clusters", function () { map.getCanvas().style.cursor = "pointer"; });
           map.on("mouseleave", "clusters", function () { map.getCanvas().style.cursor = ""; });
         });
-        function onFilterChange() { applyFilter(); }
+        }
+        function onFilterChange() {
+          // Filtering the accessible table never depends on the optional map.
+          filterTable();
+          if (!map || !all) return;
+          var src = map.getSource("agencies");
+          if (src) {
+            src.setData({
+              type: "FeatureCollection",
+              features: all.features.filter(function (f) {
+                var p = f.properties || {};
+                return matches(p.grade, p.state || "", p.country || "", p.has_flex);
+              })
+            });
+          }
+        }
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
+        filterTable();
+
+        loadEl.addEventListener("click", function () {
+          loadEl.disabled = true;
+          loadEl.textContent = "Loading map…";
+          if (loadStatusEl) loadStatusEl.textContent = "Loading the interactive map.";
+          var css = document.createElement("link");
+          css.rel = "stylesheet";
+          css.href = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css";
+          document.head.appendChild(css);
+          var script = document.createElement("script");
+          script.src = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js";
+          script.onload = function () {
+            loadEl.hidden = true;
+            initMap();
+          };
+          script.onerror = function () {
+            loadEl.disabled = false;
+            loadEl.textContent = "Try loading the map again";
+            if (loadStatusEl) loadStatusEl.textContent =
+              "The map could not load. The complete agency list is still available below.";
+          };
+          document.head.appendChild(script);
+        });
       })();
     </script>
   </main>

@@ -35,8 +35,9 @@ Steps, in order:
    CDN, keeping deployments bounded as the archive grows.
 3. **Stop committing generated data and pages — done.** Daily and intraday jobs
    publish score artifacts to S3. Pages renders the public tree in CI. Git keeps
-   the cutover snapshot as an outage/fork fallback, while the intraday job only
-   commits `data/liveness.json`. `publish.rebuild_index()` preserves compact
+   the cutover snapshot as an outage/fork fallback. The intraday job publishes
+   `liveness.json` to S3, so no scheduled automation writes generated data to
+   `main`. `publish.rebuild_index()` preserves compact
    S3-only trend points that are absent from a clean checkout.
 4. **Lifecycle policy — done.** `aws_s3_bucket_lifecycle_configuration.artifacts`
    in `infra/artifacts/main.tf` expires objects tagged `artifact-class=dated`

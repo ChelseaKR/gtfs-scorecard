@@ -8,7 +8,7 @@ session, so the SPA shell at /app/, the prerendered /agency/<id>/ pages, and
 the JSON artifacts app.js fetches (its "../data/artifacts" DATA_BASES entry
 resolves to /data/artifacts from /app/) all come from this repository.
 
-Every request that would leave 127.0.0.1 (the fonts CDN, for instance) is
+Every request that would leave 127.0.0.1 (a mapping CDN, for instance) is
 aborted, so the tests exercise committed data only and never touch the network.
 """
 
