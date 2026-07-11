@@ -4,7 +4,7 @@ name = "scorecard-pipeline"
 # in CITATION.cff and server.json; a `make verify` check (scripts/check_versions.py)
 # fails CI if they drift. Follows the already-published tags (v1, v1.0.0) rather
 # than the reverse, since those tags are immutable (REL-07) and public.
-version = "1.0.0"
+version = "1.1.0"
 description = "Ingestion and scoring pipeline for the small-agency GTFS quality scorecard"
 license = "Apache-2.0"
 requires-python = ">=3.12"
