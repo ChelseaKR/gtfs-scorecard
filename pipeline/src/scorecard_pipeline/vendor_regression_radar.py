@@ -272,7 +272,7 @@ def load_runs(agency_ids: list[str] | None = None) -> list[AgencyRun]:
     """
     import json
 
-    from .config import artifacts_dir
+    from .config import AGENCIES, artifacts_dir
     from .publish import RESERVED_ARTIFACT_DIRS
 
     root = artifacts_dir()
@@ -282,6 +282,10 @@ def load_runs(agency_ids: list[str] | None = None) -> list[AgencyRun]:
     runs: list[AgencyRun] = []
     for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
         if agency_dir.name in RESERVED_ARTIFACT_DIRS:
+            continue
+        # An S3-hydrated tree can hold directories for agencies no registry
+        # version lists; the radar reads only listed agencies.
+        if AGENCIES and agency_dir.name not in AGENCIES:
             continue
         if wanted is not None and agency_dir.name not in wanted:
             continue

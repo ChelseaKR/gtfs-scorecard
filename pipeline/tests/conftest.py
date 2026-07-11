@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import zipfile
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from pathlib import Path
 
 import pytest
@@ -28,3 +28,18 @@ def isolated_repo_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Point all pipeline paths at a throwaway directory."""
     monkeypatch.setenv("SCORECARD_ROOT", str(tmp_path / "repo"))
     return tmp_path / "repo"
+
+
+@pytest.fixture(autouse=True)
+def isolated_registry() -> Generator[None, None, None]:
+    """Empty the module-global registry around every test.
+
+    A test that calls load_agencies() otherwise leaks the real registry into
+    every later test in the process, and artifact-tree walkers are bounded to
+    registered ids whenever the registry is non-empty.
+    """
+    from scorecard_pipeline.config import AGENCIES
+
+    AGENCIES.clear()
+    yield
+    AGENCIES.clear()

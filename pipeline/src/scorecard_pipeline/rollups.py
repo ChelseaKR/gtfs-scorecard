@@ -44,13 +44,20 @@ class Rollup:
 
 
 def _available_agency_ids() -> list[str]:
+    # Bounded to the registry: an S3-hydrated tree can hold directories for
+    # agencies no registry version lists, and a rollup must not count those.
+    from .config import AGENCIES
+
     root = artifacts_dir()
     if not root.exists():
         return []
     return sorted(
         p.name
         for p in root.iterdir()
-        if p.is_dir() and p.name not in RESERVED_ARTIFACT_DIRS and (p / "latest.json").exists()
+        if p.is_dir()
+        and p.name not in RESERVED_ARTIFACT_DIRS
+        and (p / "latest.json").exists()
+        and (not AGENCIES or p.name in AGENCIES)
     )
 
 

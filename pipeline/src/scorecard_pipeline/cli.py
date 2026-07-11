@@ -1495,7 +1495,7 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
     import json as _json
 
     from .config import artifacts_dir
-    from .publish import RESERVED_ARTIFACT_DIRS, publish
+    from .publish import publish, registered_agency_dirs
     from .sweep import needs_sweep, resweep
 
     today = args.date
@@ -1506,9 +1506,9 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
 
     swept = 0
     changes: list[dict[str, Any]] = []
-    for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
-        if agency_dir.name in RESERVED_ARTIFACT_DIRS:
-            continue
+    # Bounded to the registry: re-stamping an unlisted S3-hydrated directory
+    # keeps a delisted feed looking alive (docs/listing-policy.md).
+    for agency_dir in registered_agency_dirs(root):
         latest = agency_dir / "latest.json"
         if not latest.exists():
             continue

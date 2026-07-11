@@ -381,6 +381,34 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Path]:
+    """Agency directories under ``root``, bounded to the loaded registry.
+
+    The S3 artifacts store is additive and outlives registry edits, so a
+    hydrated tree can hold directories for agencies that were removed from
+    agencies.yaml, or that a since-abandoned run published and no registry
+    version ever listed. agencies.yaml is the sole source of what is listed
+    (docs/listing-policy.md), so walkers must not treat those directories as
+    listings; cleanup stays a curator decision (`scorecard prune`). With no
+    registry loaded (library callers, most unit tests) every directory is
+    returned unchanged.
+    """
+    from .config import AGENCIES
+
+    dirs = sorted(p for p in root.iterdir() if p.is_dir() and p.name not in RESERVED_ARTIFACT_DIRS)
+    if not AGENCIES:
+        return dirs
+    unregistered = [p.name for p in dirs if p.name not in AGENCIES]
+    if unregistered and log_skipped:
+        log.warning(
+            "skipping %d artifact directories with no agencies.yaml entry"
+            " (run `scorecard prune` to review): %s",
+            len(unregistered),
+            ", ".join(unregistered[:10]) + (", ..." if len(unregistered) > 10 else ""),
+        )
+    return [p for p in dirs if p.name in AGENCIES]
+
+
 def rebuild_index() -> Path:
     """Rebuild index.json, and reconcile each agency's latest.json + badge, from
     every dated artifact on disk.
@@ -393,6 +421,10 @@ def rebuild_index() -> Path:
     are the source of truth; this collect step derives latest.json and the badge
     from the newest dated artifact per agency, making the result independent of
     merge order.
+
+    Only registered agencies are indexed (see :func:`registered_agency_dirs`);
+    indexing whatever is on disk let unlisted S3 directories resurface as live
+    listings after the S3 source-of-truth cutover.
     """
     root = artifacts_dir()
     index_path = root / "index.json"
@@ -409,9 +441,7 @@ def rebuild_index() -> Path:
     # the corpus-level effort-calibration.json costs no extra artifact reads
     # (effort_calibration.py).
     all_episodes: list[Any] = []
-    for agency_dir in sorted(
-        p for p in root.iterdir() if p.is_dir() and p.name not in RESERVED_ARTIFACT_DIRS
-    ):
+    for agency_dir in registered_agency_dirs(root, log_skipped=True):
         history = []
         name = agency_dir.name
         operating_note = ""
