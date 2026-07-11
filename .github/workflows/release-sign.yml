@@ -45,7 +45,12 @@ jobs:
       - name: Normalize and validate the CycloneDX 1.7 release documents
         run: |
           set -euo pipefail
-          jq '.specVersion = "1.7"' sbom.cdx.json > sbom.cdx.tmp
+          # Syft catalogs the repo's workflow files as version-less
+          # `type: "file"` components (which failed the every-component-has-a-
+          # version check on the v1.1.0 tag). A file path is not a dependency;
+          # keep the SBOM to identifiable packages and drop the file entries.
+          jq '.specVersion = "1.7" | .components |= map(select(.type != "file"))' \
+            sbom.cdx.json > sbom.cdx.tmp
           mv sbom.cdx.tmp sbom.cdx.json
           jq -e '
             .bomFormat == "CycloneDX" and
