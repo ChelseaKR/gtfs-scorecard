@@ -19,8 +19,8 @@ manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry now contains ~1,490 feed records
-across the United States and Canada (~1,450 with published scorecard pages),
+District). Beyond the pilots, the registry now contains ~1,140 feed records
+across the United States and Canada (~1,120 with published scorecard pages),
 refreshed daily. A feed record is not always a distinct transit agency: regional
 feeds, modal variants, and retired aliases are counted separately while the
 identity registry is reconciled.
@@ -186,8 +186,9 @@ current deployment status.
 | Fan-out compute (Year 2) | `infra/compute` (SQS + worker) | built; apply when the daily run outgrows the Actions matrix |
 
 The cohort drafted from the Mobility Database has grown well past the first
-California pass: [`agencies.yaml`](agencies.yaml) now carries ~1,490 curated
-agencies across the US and Canada, scored daily.
+California pass: [`agencies.yaml`](agencies.yaml) now carries ~1,140 curated
+agencies across the US and Canada, scored daily (a 2026-07 dedupe pass
+removed ~350 records that duplicated an already-listed feed).
 
 ## Add your agency
 

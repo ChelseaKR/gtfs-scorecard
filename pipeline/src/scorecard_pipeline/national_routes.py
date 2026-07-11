@@ -114,7 +114,13 @@ def iter_national_route_features(
     id), so the stream is deterministic. Each yielded feature carries only the
     properties the national map uses, keeping the vector tiles small.
     """
+    from .config import AGENCIES
+
     for agency_dir in sorted(p for p in artifacts_root.iterdir() if p.is_dir()):
+        # An S3-hydrated tree can hold directories for agencies no registry
+        # version lists; the national map draws only listed agencies.
+        if AGENCIES and agency_dir.name not in AGENCIES:
+            continue
         geometry_path = agency_dir / "geometry.geojson"
         if not geometry_path.exists():
             continue

@@ -90,27 +90,32 @@ agencies:
     ntd_id: "90092"
     name: Fairfield and Suisun Transit (FAST)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip
+    mdb_id: 76
     license_note: No stated data license in the Mobility Database; verify before relying on.
 
   - id: yuba-sutter-transit
     name: Yuba-Sutter Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/yubasutter-ca-us/yubasutter-ca-us.zip
+    mdb_id: 79
     license_note: No stated data license in the Mobility Database; verify before relying on.
 
   - id: placer-county-transit
     name: Placer County Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/placercounty-ca-us/placercounty-ca-us.zip
+    mdb_id: 77
     license_note: No stated data license in the Mobility Database; verify before relying on.
 
   - id: rio-vista-delta-breeze
     ntd_id: "91014"
     name: Rio Vista Delta Breeze
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip
+    mdb_id: 81
     license_note: No stated data license in the Mobility Database; verify before relying on.
 
   - id: lake-transit
     name: Lake Transit Authority (LTA)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/laketransit-ca-us/laketransit-ca-us.zip
+    mdb_id: 68
     license_note: No stated data license in the Mobility Database; verify before relying on.
     rt_note: >-
       Lake Transit publishes realtime, but the feed needs an access key we don't
@@ -120,16 +125,16 @@ agencies:
   # dead feeds dropped). Licenses were unstated in the catalog; verify before
   # relying on.
 
-
-
   - id: alhambra-community-transit
     name: Alhambra Community Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/alhambra-ca-us/alhambra-ca-us.zip
+    mdb_id: 211
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: amador-transit
     name: Amador Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/amador-ca-us/amador-ca-us.zip
+    mdb_id: 92
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: amtrak-san-joaquins
@@ -140,27 +145,32 @@ agencies:
   - id: arcadia-transit
     name: Arcadia Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/arcadia-ca-us/arcadia-ca-us.zip
+    mdb_id: 215
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: arvin-transit
     name: Arvin Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip
+    mdb_id: 216
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: auburn-transit
     name: Auburn Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/auburntransit-ca-us/auburntransit-ca-us.zip
+    mdb_id: 217
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: avalon-transit
     name: Avalon Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/avalon-ca-us/avalon-ca-us.zip
+    mdb_id: 12
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: baldwin-park-transit
     name: Baldwin Park Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/baldwinpark-ca-us/baldwinpark-ca-us.zip
+    mdb_id: 219
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: beach-cities-transit-1999
@@ -171,6 +181,7 @@ agencies:
   - id: beaumont-transit
     name: Beaumont Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip
+    mdb_id: 106
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: bellflower-bus-3095
@@ -181,6 +192,7 @@ agencies:
   - id: blossom-express
     name: Blossom Express
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/blossomexpress-ca-us/blossomexpress-ca-us.zip
+    mdb_id: 236
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: burbankbus
@@ -191,17 +203,20 @@ agencies:
   - id: calabasas-transit-system
     name: Calabasas Transit System
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/calabasas-ca-us/calabasas-ca-us.zip
+    mdb_id: 296
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: calaveras-transit
     name: Calaveras Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/calaveras-ca-us/calaveras-ca-us.zip
+    mdb_id: 93
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: camarillo-area-transit
     ntd_id: "90163"
     name: Camarillo Area Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip
+    mdb_id: 297
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: capitol-corridor-joint-powers-authority-capitol-corridor
@@ -212,32 +227,38 @@ agencies:
   - id: carson-circuit
     name: Carson Circuit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/carson-ca-us/carson-ca-us.zip
+    mdb_id: 298
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: catalina-flyer
     name: Catalina Flyer
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/catalinaflyer-ca-us/catalinaflyer-ca-us.zip
+    mdb_id: 300
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-coach
     name: City Coach
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip
+    mdb_id: 599
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-of-banning-transit
     name: City of Banning Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/banning-ca-us/banning-ca-us.zip
+    mdb_id: 220
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-of-bell-la-campana
     name: City of Bell (La Campana)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lacampana-ca-us/lacampana-ca-us.zip
+    mdb_id: 562
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-of-madera
     name: City of Madera
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofmadera-ca-us/cityofmadera-ca-us.zip
+    mdb_id: 91
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-of-san-luis-obispo-transit
@@ -253,11 +274,13 @@ agencies:
   - id: city-of-tracy-tracer
     name: City of Tracy (TRACER)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
+    mdb_id: 877
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: clovis-transit
     name: Clovis Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/clovistransit-ca-us/clovistransit-ca-us.zip
+    mdb_id: 89
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: commerce-municipal-bus-lines
@@ -277,11 +300,13 @@ agencies:
   - id: corona-cruiser
     name: Corona Cruiser
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip
+    mdb_id: 104
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cudahy-area-rapid-transit
     name: Cudahy Area Rapid Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cudahy-ca-us/cudahy-ca-us.zip
+    mdb_id: 318
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: culver-city-bus
@@ -302,37 +327,44 @@ agencies:
   - id: duarte-transit
     name: Duarte Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/duartetransit-ca-us/duartetransit-ca-us.zip
+    mdb_id: 105
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: eastern-sierra-transit
     name: Eastern Sierra Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/easternsierra-ca-us/easternsierra-ca-us.zip
+    mdb_id: 25
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: el-dorado-transit-agency
     name: El Dorado County Transit Authority
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/eldoradotransit-ca-us/eldoradotransit-ca-us.zip
+    mdb_id: 75
     license_note: "License: https://eldoradotransit.com/trip-planner-information/gtfs-data/"
 
   - id: el-monte-transit
     name: El Monte Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/elmonte-ca-us/elmonte-ca-us.zip
+    mdb_id: 103
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: el-segundo-transportation
     name: El Segundo Transportation
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/elsegundo-ca-us/elsegundo-ca-us.zip
+    mdb_id: 458
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: emery-go-round
     name: Emery Go-Round
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/emerygoround-ca-us/emerygoround-ca-us.zip
+    mdb_id: 63
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: etrans
     name: eTrans
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/escalon-ca-us/escalon-ca-us.zip
+    mdb_id: 65
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: glendora-transportation-division-3097
@@ -343,11 +375,13 @@ agencies:
   - id: glenn-transit-service
     name: Glenn Transit Service
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/glenn-ca-us/glenn-ca-us.zip
+    mdb_id: 835
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: go-west-shuttle
     name: Go West Shuttle
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/westcovina-ca-us/westcovina-ca-us.zip
+    mdb_id: 623
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: golden-empire-transit-district-get
@@ -363,16 +397,19 @@ agencies:
   - id: gtrans
     name: GTrans
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/gtrans-ca-us/gtrans-ca-us.zip
+    mdb_id: 616
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: guadalupe-flyer
     name: Guadalupe Flyer
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/guadalupeflyer-ca-us/guadalupeflyer-ca-us.zip
+    mdb_id: 617
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: humboldt-transit-authority
     name: Humboldt Transit Authority
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/humboldtcounty-ca-us/humboldtcounty-ca-us.zip
+    mdb_id: 19
     rt_urls:
       service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -385,37 +422,44 @@ agencies:
   - id: kern-transit
     name: Kern Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kerncounty-ca-us/kerncounty-ca-us.zip
+    mdb_id: 47
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: kings-area-rural-transit
     name: Kings Area Rural Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kcapta-ca-us/kcapta-ca-us.zip
+    mdb_id: 42
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: la-puente-link
     name: La Puente LINK
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lapuente-ca-us/lapuente-ca-us.zip
+    mdb_id: 563
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: laguna-beach-transit-lbt
     name: Laguna Beach Transit (LBT)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip
+    mdb_id: 16
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: lassen-rural-bus-lrb
     name: Lassen Rural Bus (LRB)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip
+    mdb_id: 118
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: lawndale-beat
     name: Lawndale Beat
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityoflawndale-ca-us/cityoflawndale-ca-us.zip
+    mdb_id: 36
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: los-angeles-county-department-of-public-works-the-link-and-shuttles
     name: Los Angeles County Department of Public Works (the LINK and shuttles)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/dpwlacounty-ca-us/dpwlacounty-ca-us.zip
+    mdb_id: 28
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: los-angeles-department-of-transportation-ladot-dash-commuter-express
@@ -426,6 +470,7 @@ agencies:
   - id: madera-county-transit
     name: Madera County Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/maderactc-ca-us/maderactc-ca-us.zip
+    mdb_id: 572
     rt_urls:
       service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/maderactc-ca-us/service_alerts.proto
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -444,11 +489,13 @@ agencies:
   - id: mendocino-transit-authority
     name: Mendocino Transit Authority
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip
+    mdb_id: 69
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: merced-county-transit-the-bus
     name: Merced County Transit (The Bus)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mercedthebus-ca-us/mercedthebus-ca-us.zip
+    mdb_id: 86
     rt_urls:
       vehicle_positions: https://thebuslive.com/gtfs-rt/vehiclepositions
       service_alerts: https://thebuslive.com/gtfs-rt/alerts
@@ -469,22 +516,26 @@ agencies:
   - id: montebello-bus-lines
     name: Montebello Bus Lines
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/montebello-ca-us/montebello-ca-us.zip
+    mdb_id: 577
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: moorpark-city-transit
     ntd_id: "90227"
     name: Moorpark City Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip
+    mdb_id: 578
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: morongo-basin-transit-authority
     name: Morongo Basin Transit Authority
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip
+    mdb_id: 579
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-transit
     name: Mountain Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bigbear-ca-us/bigbear-ca-us.zip
+    mdb_id: 107
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-view-community-shuttle
@@ -500,17 +551,20 @@ agencies:
   - id: needles-area-transit
     name: Needles Area Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip
+    mdb_id: 583
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: nevada-county-connects-gold-country-stage
     name: Nevada County Connects (Gold Country Stage)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/goldcountrystage-ca-us/goldcountrystage-ca-us.zip
+    mdb_id: 84
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: http://creativecommons.org/licenses/by/4.0/"
 
   - id: norwalk-transit-system-nts
     name: Norwalk Transit System (NTS)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/nts-ca-us/nts-ca-us.zip
+    mdb_id: 102
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: palo-verde-valley-transit-agency-2190
@@ -521,6 +575,7 @@ agencies:
   - id: palos-verdes-peninsula-transit-authority-pvpta
     name: Palos Verdes Peninsula Transit Authority (PVPTA)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip
+    mdb_id: 35
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: pasadena-transit
@@ -535,16 +590,19 @@ agencies:
     ntd_id: "90213"
     name: Petaluma Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip
+    mdb_id: 72
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: plumas-transit
     name: Plumas Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/plumas-ca-us/plumas-ca-us.zip
+    mdb_id: 119
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: porterville-transit
     name: Porterville Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/porterville-ca-us/porterville-ca-us.zip
+    mdb_id: 48
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: redding-area-bus-authority
@@ -556,11 +614,13 @@ agencies:
   - id: redding-area-bus-authority-raba
     name: Redding Area Bus Authority (RABA)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/redding-ca-us/redding-ca-us.zip
+    mdb_id: 114
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: redwood-coast-transit-rct
     name: Redwood Coast Transit (RCT)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip
+    mdb_id: 20
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: relaxsan
@@ -576,6 +636,7 @@ agencies:
   - id: ridgerunner
     name: Ridgerunner
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofridgecrest-ca-us/cityofridgecrest-ca-us.zip
+    mdb_id: 311
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: rosemead-explorer-3098
@@ -591,11 +652,13 @@ agencies:
   - id: sage-stage
     name: Sage Stage
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sagestage-ca-us/sagestage-ca-us.zip
+    mdb_id: 113
     license_note: "License: http://sagestage.com/gtfs-data/"
 
   - id: san-benito-county-express-sbce
     name: San Benito County Express (SBCE)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanbenitocounty-ca-us/sanbenitocounty-ca-us.zip
+    mdb_id: 58
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: san-joaquin-regional-transit-district
@@ -606,11 +669,13 @@ agencies:
   - id: san-juan-capistrano-free-weekend-trolley
     name: San Juan Capistrano Free Weekend Trolley
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanjuancapistrano-ca-us/sanjuancapistrano-ca-us.zip
+    mdb_id: 596
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: san-leandro-links
     name: San Leandro Links
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanleandro-ca-us/sanleandro-ca-us.zip
+    mdb_id: 810
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: san-luis-obispo-regional-transit-authority-slorta
@@ -632,6 +697,7 @@ agencies:
   - id: santa-maria-area-transit
     name: Santa Maria Area Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/smat-ca-us/smat-ca-us.zip
+    mdb_id: 26
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: santa-rosa-citybus-1986
@@ -643,50 +709,59 @@ agencies:
   - id: santa-ynez-valley-transit
     name: Santa Ynez Valley Transit
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/syvt_google_transit.zip
+    mdb_id: 813
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: sierra-madre-gateway-coach
     name: Sierra Madre Gateway Coach
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sierramadre-ca-us/sierramadre-ca-us.zip
+    mdb_id: 829
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: simi-valley-transit
     ntd_id: "90050"
     name: Simi Valley Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip
+    mdb_id: 40
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: siskiyou-county
     name: Siskiyou County
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip
+    mdb_id: 117
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: sonoma-county-airport-express
     name: Sonoma County Airport Express
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/airportexpressinc-ca-us/airportexpressinc-ca-us.zip
+    mdb_id: 66
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: sonoma-county-transit-sct
     ntd_id: "90089"
     name: Sonoma County Transit (SCT)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip
+    mdb_id: 70
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: sonoma-marin-area-rail-transit-smart
     ntd_id: "90299"
     name: Sonoma-Marin Area Rail Transit (SMART)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip
+    mdb_id: 815
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: south-county-transit-link
     name: South County Transit Link
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/southcountytransitlink-ca-us/southcountytransitlink-ca-us.zip
+    mdb_id: 817
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: spirit-bus
     name: Spirit Bus
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/montereypark-ca-us/montereypark-ca-us.zip
+    mdb_id: 39
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: stanislaus-regional-transit-authority
@@ -706,6 +781,7 @@ agencies:
   - id: stanislaus-regional-transit-start
     name: Stanislaus Regional Transit (StaRT)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/stanislaus-ca-us/stanislaus-ca-us.zip
+    mdb_id: 87
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: sunline-transit-agency
@@ -716,16 +792,19 @@ agencies:
   - id: taft-area-transit
     name: Taft Area Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip
+    mdb_id: 821
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: tahoe-area-regional-transit-tart-north-lake-tahoe-express
     name: Placer County
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/laketahoe-ca-us/laketahoe-ca-us.zip
+    mdb_id: 94
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: tehama-rural-area-express-trax-susanville-indian-rancheria-public-transportation-program
     name: Tehama Rural Area Express (TRAX), Susanville Indian Rancheria Public Transportation Program
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tehama-ca-us/tehama-ca-us.zip
+    mdb_id: 116
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: the-santa-cruzer
@@ -737,6 +816,7 @@ agencies:
     ntd_id: "90165"
     name: Thousand Oaks Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip
+    mdb_id: 33
     rt_urls:
       service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/thousandoaks-ca-us/service_alerts.proto
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -749,6 +829,7 @@ agencies:
   - id: trinity-transit
     name: Trinity Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/weaverville-ca-us/weaverville-ca-us.zip
+    mdb_id: 115
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: tulare-county-area-transit-tcat
@@ -759,6 +840,7 @@ agencies:
   - id: turlock-transit
     name: Turlock Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/turlock-ca-us/turlock-ca-us.zip
+    mdb_id: 619
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -771,12 +853,14 @@ agencies:
   - id: university-of-california-berkeley-shuttle-bear-transit
     name: University of California Berkeley Shuttle (Bear Transit)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/beartransit-ca-us/beartransit-ca-us.zip
+    mdb_id: 226
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: ventura-county-transportation-commission
     ntd_id: "90164"
     name: Ventura County Transportation Commission
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/vctc-ca-us/vctc-ca-us.zip
+    mdb_id: 31
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: vine-transit
@@ -790,11 +874,13 @@ agencies:
     ntd_id: "90159"
     name: WestCAT
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip
+    mdb_id: 78
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: yosemite-area-regional-transportation-system-yarts
     name: Yosemite Area Regional Transportation System (YARTS)
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/yosemite-ca-us/yosemite-ca-us.zip
+    mdb_id: 88
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   # Drained from agencies.california.proposed.yaml (2026-06-17). The other 108
@@ -919,14 +1005,14 @@ agencies:
 
   - id: los-angeles-county-metropolitan-transportation-authority-la-metro
     ntd_id: "90154"
-    name: Bus
+    name: Los Angeles County Metropolitan Transportation Authority (LA Metro) Bus
     static_gtfs_url: https://gitlab.com/LACMTA/gtfs_bus/raw/master/gtfs_bus.zip
     mdb_id: 29
     license_note: "License: http://developer.metro.net/the-basics/policies/terms-and-conditions/"
 
   - id: los-angeles-county-metropolitan-transportation-authority-la-metro-30
     ntd_id: "90154"
-    name: Rail
+    name: Los Angeles County Metropolitan Transportation Authority (LA Metro) Rail
     static_gtfs_url: https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip
     mdb_id: 30
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
@@ -1378,12 +1464,6 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/startransit-tx-us/startransit-tx-us.zip
     mdb_id: 153
     license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: metro-houston
-    name: METRO Houston
-    static_gtfs_url: http://www.ridemetro.org/Downloads/google_transit.zip
-    mdb_id: 154
-    license_note: "License: https://www.ridemetro.org/Pages/DigitalAssets.aspx"
 
   - id: jtran
     name: JTRAN
@@ -3495,7 +3575,7 @@ agencies:
     license_note: "License: http://mdtrip.org/About/DeveloperResources.aspx"
 
   - id: southeastern-pennsylvania-transportation-authority-septa
-    name: Bus
+    name: Southeastern Pennsylvania Transportation Authority (SEPTA) Bus
     static_gtfs_url: https://www3.septa.org/developer/google_bus.zip
     mdb_id: 502
     rt_urls:
@@ -3505,7 +3585,7 @@ agencies:
     license_note: "License: https://www3.septa.org/developer/"
 
   - id: southeastern-pennsylvania-transportation-authority-septa-503
-    name: Rail
+    name: Southeastern Pennsylvania Transportation Authority (SEPTA) Rail
     static_gtfs_url: https://www3.septa.org/developer/google_rail.zip
     mdb_id: 503
     rt_urls:
@@ -3542,14 +3622,14 @@ agencies:
 
   - id: new-jersey-transit-nj-transit
     ntd_id: "20080"
-    name: Bus
+    name: New Jersey Transit (NJ Transit) Bus
     static_gtfs_url: https://www.njtransit.com/bus_data.zip
     mdb_id: 508
     license_note: "License: https://www.njtransit.com/developer-tools"
 
   - id: new-jersey-transit-nj-transit-509
     ntd_id: "20080"
-    name: Rail
+    name: New Jersey Transit (NJ Transit) Rail
     static_gtfs_url: https://www.njtransit.com/rail_data.zip
     mdb_id: 509
     license_note: "License: https://www.njtransit.com/developer-tools"
@@ -4128,12 +4208,6 @@ agencies:
     name: Graham Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/grahamtransit-va-us/grahamtransit-va-us.zip
     mdb_id: 611
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: greeley-evans-transit-get
-    name: Greeley-Evans Transit (GET)
-    static_gtfs_url: https://nextcloud.greeleygov.com/index.php/s/yf5gysdomcLyCib/download
-    mdb_id: 612
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: greene-county-transit
@@ -4752,7 +4826,7 @@ agencies:
     license_note: "License: https://github.com/laidig/rioc-gtfs/blob/master/README.md"
 
   - id: wave-transit
-    name: fixed route
+    name: Wave Transit
     static_gtfs_url: https://www.wavetransit.com/gtransit/google_transit.zip
     mdb_id: 1110
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -4904,7 +4978,7 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: pueblo-transit
-    name: Flex
+    name: Pueblo Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/pueblo-co-us/pueblo-co-us--flex-v2.zip
     mdb_id: 1232
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -5149,24 +5223,6 @@ agencies:
     mdb_id: 1788
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: gomonrovia
-    name: GoMonrovia
-    static_gtfs_url: https://gtfs.calitp.org/test/TestFlex1.zip
-    mdb_id: 1817
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-dixon
-    name: City of Dixon
-    static_gtfs_url: https://gtfs.calitp.org/test/TestFlex2.zip
-    mdb_id: 1818
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: anaheim-regional-transportation
-    name: Anaheim Regional Transportation
-    static_gtfs_url: https://gtfs.calitp.org/test/TestFlex3.zip
-    mdb_id: 1819
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: bettendorf-transit
     name: Bettendorf Transit
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip
@@ -5181,7 +5237,7 @@ agencies:
 
   - id: washington-metropolitan-area-transit-authority-wmata
     ntd_id: "30030"
-    name: Bus
+    name: Washington Metropolitan Area Transit Authority (WMATA) Bus
     static_gtfs_url: https://api.wmata.com/gtfs/bus-gtfs-static.zip
     mdb_id: 1846
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
@@ -5189,17 +5245,11 @@ agencies:
 
   - id: washington-metropolitan-area-transit-authority-wmata-1847
     ntd_id: "30030"
-    name: Rail
+    name: Washington Metropolitan Area Transit Authority (WMATA) Rail
     static_gtfs_url: https://api.wmata.com/gtfs/rail-gtfs-static.zip
     mdb_id: 1847
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: https://developer.wmata.com/license"
-
-  - id: wave-transit-1861
-    name: fixed route
-    static_gtfs_url: https://drive.google.com/u/0/uc?id=18zwweT64NI5O_goGVc_h-OGTTShfiacG&export=download
-    mdb_id: 1861
-    license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: wave-transit-1862
     name: UNCW Seahawk Shuttle
@@ -5261,14 +5311,6 @@ agencies:
     static_gtfs_url: https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip
     mdb_id: 1973
     license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: tri-delta-transit-1974
-    ntd_id: "90162"
-    name: Tri Delta Transit
-    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=3D
-    mdb_id: 1974
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf"
 
   - id: mountain-line-transit
     name: Mountain Line Transit
@@ -5339,104 +5381,104 @@ agencies:
     license_note: "License: https://www.looptrolley.com/resources"
 
   - id: brown-county-heartland-express
-    name: Flex v2 included
+    name: Brown County Heartland Express Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/browncounty-mn-us/browncounty-mn-us--flex-v2.zip
     mdb_id: 2037
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: the-otter-express
-    name: Flex v2 included
+    name: The Otter Express Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/otterexpress-mn-us/otterexpress-mn-us--flex-v2.zip
     mdb_id: 2038
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: all-points-transit-2039
-    name: Flex v2 included
+    name: All Points Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/allpointstransit-co-us/allpointstransit-co-us--flex-v2.zip
     mdb_id: 2039
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: avon-transit-2040
-    name: Flex v2 included
+    name: Avon Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us--flex-v2.zip
     mdb_id: 2040
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: blackhawk-and-central-city-tramway-2041
-    name: Flex v2 included
+    name: Blackhawk and Central City Tramway Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/blackhawktramway-co-us/blackhawktramway-co-us--flex-v2.zip
     mdb_id: 2041
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cripple-creek-transportation-2042
-    name: Flex v2 included
+    name: Cripple Creek Transportation Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cripplecreek-co-us/cripplecreek-co-us--flex-v2.zip
     mdb_id: 2042
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: discover-goodwill
-    name: Flex v2 included
+    name: Discover Goodwill Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/discovergoodwill-co-us/discovergoodwill-co-us--flex-v2.zip
     mdb_id: 2043
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: envida-2044
-    name: Flex v2 included
+    name: Envida Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/dsi-co-us/dsi-co-us--flex-v2.zip
     mdb_id: 2044
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: eco-transit-2045
-    name: Flex v2 included
+    name: ECO Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/ecotransit-co-us/ecotransit-co-us--flex-v2.zip
     mdb_id: 2045
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: el-paso-fountain-valley-senior-citizens-program-inc
-    name: Flex v2 included
+    name: El Paso Fountain Valley Senior Citizens Program Inc Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/elpaso-co-us/elpaso-co-us--flex-v2.zip
     mdb_id: 2046
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: estes-transit-2047
-    name: Flex v2 included
+    name: Estes Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/estestransit-co-us/estestransit-co-us--flex-v2.zip
     mdb_id: 2047
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: gunnison-valley-rta
-    name: Flex v2 included
+    name: Gunnison Valley RTA Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/gunnisonvalleyrta-co-us/gunnisonvalleyrta-co-us--flex-v2.zip
     mdb_id: 2048
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: prowers-area-transit
-    name: Flex v2 included
+    name: Prowers Area Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/prowerscounty-co-us/prowerscounty-co-us--flex-v2.zip
     mdb_id: 2049
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: town-of-telluride-2050
-    name: Flex v2 included
+    name: Town of Telluride Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip
     mdb_id: 2050
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: steamboat-springs-transit
-    name: Flex v2 included
+    name: Steamboat Springs Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us--flex-v2.zip
     mdb_id: 2051
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: tsc-transit
-    name: Flex v2 included
+    name: TSC Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tsctransit-co-us/tsctransit-co-us--flex-v2.zip
     mdb_id: 2052
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: regional-transportation-district
     ntd_id: "80006"
-    name: Flex v2 included
+    name: Regional Transportation District
     static_gtfs_url: https://www.rtd-denver.com/files/gtfs/google_transit_flex.zip
     mdb_id: 2054
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -5620,103 +5662,103 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: adams-county
-    name: Flex
+    name: Adams County Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/adamscounty-co-us/adamscounty-co-us--flex-v2.zip
     mdb_id: 2156
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: bent-county-transportation
-    name: Flex
+    name: Bent County Transportation Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bentcounty-co-us/bentcounty-co-us--flex-v2.zip
     mdb_id: 2157
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-of-loveland
-    name: Flex
+    name: City of Loveland Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofloveland-co-us/cityofloveland-co-us--flex-v2.zip
     mdb_id: 2161
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: concord-area-transit
-    name: Flex
+    name: Concord Area Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/concordareatransit-nh-us/concordareatransit-nh-us--flex-v2.zip
     mdb_id: 2164
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: continuum
-    name: Flex
+    name: Continuum Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/continuum-co-us/continuum-co-us--flex-v2.zip
     mdb_id: 2165
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: kiowa-county-transit
-    name: Flex
+    name: Kiowa County Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kiowacounty-co-us/kiowacounty-co-us--flex-v2.zip
     mdb_id: 2169
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: la-junta-transit
-    name: Flex
+    name: La Junta Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lajunta-co-us/lajunta-co-us--flex-v2.zip
     mdb_id: 2170
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: lakewood-rides
-    name: Flex
+    name: Lakewood Rides Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lakewoodrides-co-us/lakewoodrides-co-us--flex-v2.zip
     mdb_id: 2171
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-family-center
-    name: Flex
+    name: Mountain Family Center Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainfamilycenter-co-us/mountainfamilycenter-co-us--flex-v2.zip
     mdb_id: 2173
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: omnibus
-    name: Flex
+    name: Omnibus Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/omnibus-co-us/omnibus-co-us--flex-v2.zip
     mdb_id: 2175
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: routt-county-council-on-aging-rccoca-transportation
-    name: Flex
+    name: Routt County Council on Aging (RCCOCA) Transportation Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/rccoa-co-us/rccoa-co-us--flex-v2.zip
     mdb_id: 2178
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: roaring-fork-transportation-authority-rfta
-    name: Flex
+    name: Roaring Fork Transportation Authority (RFTA) Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/rfta-co-us/rfta-co-us--flex-v2.zip
     mdb_id: 2179
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: south-central-council-of-governments-sccog
-    name: Flex
+    name: South Central Council of Governments (SCCOG) Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sccog-co-us/sccog-co-us--flex-v2.zip
     mdb_id: 2181
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: silver-key-senior-services
-    name: Flex
+    name: Silver Key Senior Services Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/silverkey-co-us/silverkey-co-us--flex-v2.zip
     mdb_id: 2182
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: southwest-rides
-    name: Flex
+    name: Southwest Rides Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/southwestrides-co-us/southwestrides-co-us--flex-v2.zip
     mdb_id: 2184
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: senior-resource-development-agency
-    name: Flex
+    name: Senior Resource Development Agency Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/srda-co-us/srda-co-us--flex-v2.zip
     mdb_id: 2185
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: upper-arkansas-area-council-of-governments
-    name: Flex
+    name: Upper Arkansas Area Council of Governments Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/uaacog-co-us/uaacog-co-us--flex-v2.zip
     mdb_id: 2188
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -5795,12 +5837,6 @@ agencies:
       service_alerts: https://passio3.com/montereyp/passioTransit/gtfs/realtime/serviceAlerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: south-county-transit-link-2203
-    name: South County Transit Link
-    static_gtfs_url: https://iportal.sacrt.com/gtfs/SCTLink/southcountytransitlink-ca-us.zip
-    mdb_id: 2203
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: kings-area-rural-transit-2204
     name: Kings Area Rural Transit
     static_gtfs_url: http://kart.connexionz.net/rtt/public/utility/gtfs.aspx
@@ -5877,44 +5913,6 @@ agencies:
     mdb_id: 2232
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: arvin-transit-2233
-    name: Arvin Transit
-    static_gtfs_url: https://gtfs.calitp.org/production/ArvinGTFS.zip
-    mdb_id: 2233
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: camarillo-area-transit-2234
-    ntd_id: "90163"
-    name: Camarillo Area Transit
-    static_gtfs_url: https://gtfs.calitp.org/production/CamarilloGTFS.zip
-    mdb_id: 2234
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: san-juan-capistrano-free-weekend-trolley-2235
-    name: San Juan Capistrano Free Weekend Trolley
-    static_gtfs_url: https://gtfs.calitp.org/production/SanJuanCapistranoGTFS.zip
-    mdb_id: 2235
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: taft-area-transit-2236
-    name: Taft Area Transit
-    static_gtfs_url: https://gtfs.calitp.org/production/TaftGTFS.zip
-    mdb_id: 2236
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: thousand-oaks-transit-2237
-    ntd_id: "90165"
-    name: Thousand Oaks Transit
-    static_gtfs_url: https://gtfs.calitp.org/production/ThousandOaksDialARideParatransitandConnectFlex.zip
-    mdb_id: 2237
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: west-berkeley-shuttle-2238
-    name: West Berkeley Shuttle
-    static_gtfs_url: https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip
-    mdb_id: 2238
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: janesville-transit-system-2239
     name: Janesville Transit System
     static_gtfs_url: https://gtfs.remix.com/Janesville_Transit.zip
@@ -5961,12 +5959,6 @@ agencies:
     name: Ryde Racine
     static_gtfs_url: https://racine.connexionz.net/rtt/public/utility/gtfs.aspx
     mdb_id: 2246
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: baldwin-park-transit-2247
-    name: Baldwin Park Transit
-    static_gtfs_url: https://baldwinpark.tectransit.com/api/public/fixedRoute/gtfs
-    mdb_id: 2247
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cudahy-area-rapid-transit-2248
@@ -6144,12 +6136,6 @@ agencies:
     mdb_id: 2281
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: mountain-rides-transportation-authority-mrta-2282
-    name: Mountain Rides Transportation Authority (MRTA)
-    static_gtfs_url: https://apps.itd.idaho.gov/apps/pt/mrtagtfs.zip
-    mdb_id: 2282
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: city-of-corvallis-2283
     name: City of Corvallis
     static_gtfs_url: http://www.corvallistransit.com/rtt/public/resource/gtfs.zip
@@ -6182,37 +6168,37 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: grand-valley-transit-2288
-    name: Flex
+    name: Grand Valley Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/grandvalleytransit-co-us/grandvalleytransit-co-us--flex-v2.zip
     mdb_id: 2288
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: durango-transit-2290
-    name: Flex
+    name: Durango Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/durangotransit-co-us/durangotransit-co-us--flex-v2.zip
     mdb_id: 2290
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: lake-county-senior-center-transportation-program
-    name: Flex
+    name: Lake County Senior Center Transportation Program Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lakecounty-co-us/lakecounty-co-us--flex-v2.zip
     mdb_id: 2291
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-metro-transit
-    name: Flex
+    name: Mountain Metro Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/coloradosprings-co-us/coloradosprings-co-us--flex-v2.zip
     mdb_id: 2292
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: transfort
-    name: Flex
+    name: Transfort Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/transfort-co-us/transfort-co-us--flex-v2.zip
     mdb_id: 2293
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-express
-    name: Flex
+    name: Mountain Express Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainexpress-co-us/mountainexpress-co-us--flex-v2.zip
     mdb_id: 2294
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -6272,7 +6258,7 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: outback-express
-    name: Flex
+    name: Outback Express Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/eccog-co-us/eccog-co-us--flex-v2.zip
     mdb_id: 2306
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -6523,7 +6509,7 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: loudoun-county-transit-2411
-    name: Flex
+    name: Loudoun County Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/loudouncounty-va-us/loudouncounty-va-us--flex-v2.zip
     mdb_id: 2411
     license_note: "License: http://virginia-gtfs.com/"
@@ -6597,12 +6583,6 @@ agencies:
       service_alerts: https://rt.scmetro.org/gtfsrt/alerts
     license_note: "License: https://developer.scmetro.org/"
 
-  - id: xpress-2426
-    name: Xpress
-    static_gtfs_url: https://gamobility.info/wp-content/uploads/2025/02/Google_Transit.zip
-    mdb_id: 2426
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: fredericksburg-regional-transit-2430
     name: Fredericksburg Regional Transit
     static_gtfs_url: https://www.fredericksburgva.gov/DocumentCenter/View/28958/FXBGO-GTFS-Q1-CY2025
@@ -6625,102 +6605,94 @@ agencies:
     license_note: "License: https://creativecommons.org/licenses/by/4.0/"
 
   - id: arlington-transit-2434
-    name: Flex
+    name: Arlington Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/arlington-va-us/arlington-va-us--flex-v2.zip
     mdb_id: 2434
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cortran
-    name: Flex
+    name: CORTRAN Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cortran-va-us/cortran-va-us--flex-v2.zip
     mdb_id: 2435
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-empire-transit
-    name: Flex
+    name: Mountain Empire Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainempire-va-us/mountainempire-va-us--flex-v2.zip
     mdb_id: 2436
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: valley-metro-2437
-    name: Flex
+    name: Valley Metro Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/valleymetro-va-us/valleymetro-va-us--flex-v2.zip
     mdb_id: 2437
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: williamsburg-area-transit-authority-2438
-    name: Flex
+    name: Williamsburg Area Transit Authority Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us--flex-v2.zip
     mdb_id: 2438
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: bay-transit-2439
-    name: Flex
+    name: Bay Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/baytransit-va-us/baytransit-va-us--flex-v2.zip
     mdb_id: 2439
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: danville-transit
-    name: Flex
+    name: Danville Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/danville-va-us/danville-va-us--flex-v2.zip
     mdb_id: 2440
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: petersburg-area-transit-2441
-    name: Flex
+    name: Petersburg Area Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us--flex-v2.zip
     mdb_id: 2441
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: pulaski-area-transit-pat-2442
-    name: Flex
+    name: Pulaski Area Transit (PAT) Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/pulaski-va-us/pulaski-va-us--flex-v2.zip
     mdb_id: 2442
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: radar-2443
-    name: Flex
+    name: RADAR Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/radar-va-us/radar-va-us--flex-v2.zip
     mdb_id: 2443
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: star-transit-2444
-    name: Flex
+    name: STAR Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us--flex-v2.zip
     mdb_id: 2444
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: virginia-regional-transit-2445
-    name: Flex
+    name: Virginia Regional Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us--flex-v2.zip
     mdb_id: 2445
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cape-cod-regional-transit-authority
-    name: Flex
+    name: Cape Cod Regional Transit Authority Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/capecod-ma-us/capecod-ma-us--flex-v2.zip
     mdb_id: 2446
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: mountain-lynx-transit-2447
-    name: Flex
+    name: Mountain Lynx Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/districtthree-va-us/districtthree-va-us--flex-v2.zip
     mdb_id: 2447
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: four-county-transit-2448
-    name: Flex
+    name: Four County Transit Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/fourcounty-va-us/fourcounty-va-us--flex-v2.zip
     mdb_id: 2448
     license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: alameda-contra-costa-transit-district-ac-transit-2455
-    ntd_id: "90014"
-    name: Alameda-Contra Costa Transit District (AC Transit)
-    static_gtfs_url: https://api.actransit.org/transit/gtfs/download
-    mdb_id: 2455
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: https://www.actransit.org/data-terms-and-conditions/"
 
   - id: city-of-ellensburg-public-transit-central-transit-2456
     name: City of Ellensburg Public Transit (Central Transit)
@@ -6728,18 +6700,6 @@ agencies:
     mdb_id: 2456
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: hawai-i-mass-transit-agency-hele-on-bus-2608
-    name: Hawai'i Mass Transit Agency (Hele-On Bus)
-    static_gtfs_url: https://www.heleonbus.hawaiicounty.gov/home/showpublisheddocument/307470/638458319827900000
-    mdb_id: 2608
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: fairfax-cue-bus-cue-2609
-    name: Fairfax CUE Bus (CUE)
-    static_gtfs_url: https://www.fairfaxva.gov/home/showpublisheddocument/22883/638499935919070000
-    mdb_id: 2609
-    license_note: "License: https://www.fairfaxva.gov/government/public-works/cue-bus-map-schedule#GTFS%20Schedule%20Data%20anchor"
 
   - id: st-lawrence-county-public-transit-2611
     name: St Lawrence County Public Transit
@@ -6803,7 +6763,7 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: transit-authority-of-river-city-tarc-2662
-    name: Fixed Route
+    name: Transit Authority of River City (TARC) Fixed Route
     static_gtfs_url: https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx
     mdb_id: 2662
     rt_urls:
@@ -6817,13 +6777,6 @@ agencies:
     static_gtfs_url: https://www.nps.gov/external-resources/gtfs/boha/boston-harbor-islands-ferry.zip
     mdb_id: 2679
     license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: altamont-corridor-express-2684
-    ntd_id: "90182"
-    name: Altamont Corridor Express
-    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=CE
-    mdb_id: 2684
-    license_note: "License: https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf"
 
   - id: south-metro-area-regional-transit-smart-2706
     name: South Metro Area Regional Transit (SMART)
@@ -6849,7 +6802,7 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: sandy-area-metro-sam-2739
-    name: Static feed for realtime
+    name: Sandy Area Metro (SAM) Realtime Static
     static_gtfs_url: https://passio3.com/sandyor/passioTransit/gtfs/google_transit.zip
     mdb_id: 2739
     rt_urls:
@@ -6859,7 +6812,7 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: clackco-connects-clackamas-county-2740
-    name: Static feed for realtime
+    name: ClackCo Connects (Clackamas County) Realtime Static
     static_gtfs_url: https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip
     mdb_id: 2740
     rt_urls:
@@ -6870,13 +6823,13 @@ agencies:
 
   - id: clackco-connects-clackamas-county-2741
     ntd_id: "00363"
-    name: Flex
+    name: ClackCo Connects (Clackamas County) Flex
     static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/clackamascounty-or-us/clackamascounty-or-us--flex-v2.zip
     mdb_id: 2741
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: marble-valley-regional-transit-district-mvrtd-2831
-    name: Flex
+    name: Marble Valley Regional Transit District (MVRTD) Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/thebus-vt-us/thebus-vt-us--flex-v2.zip
     mdb_id: 2831
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -6889,7 +6842,7 @@ agencies:
     license_note: "License: https://www.cttransit.com/about/developers/terms-of-use"
 
   - id: redding-area-bus-authority-2853
-    name: Flex
+    name: Redding Area Bus Authority Flex
     static_gtfs_url: https://rabagtfs.z5.web.core.windows.net/rabagtfs_flex.zip
     mdb_id: 2853
     license_note: "License: https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1"
@@ -7043,20 +6996,6 @@ agencies:
       service_alerts: https://marintransit.net/gtfs-rt/alerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: petaluma-transit-2947
-    ntd_id: "90213"
-    name: Petaluma Transit
-    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=PE
-    mdb_id: 2947
-    license_note: "License: https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf"
-
-  - id: santa-rosa-citybus-2948
-    ntd_id: "90017"
-    name: Santa Rosa CityBus
-    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=SR
-    mdb_id: 2948
-    license_note: "License: https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf"
-
   - id: redding-area-bus-authority-3031
     name: Redding Area Bus Authority
     static_gtfs_url: https://gtfs.remix.com/redding_area_bus_authority.zip
@@ -7205,12 +7144,6 @@ agencies:
     mdb_id: 3117
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: c-tran-3129
-    name: The Current (C-TRAN Flex)
-    static_gtfs_url: https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip
-    mdb_id: 3129
-    license_note: "License: https://c-tran.com/about-c-tran/business/c-tran-gtfs-data"
-
   - id: transportation-management-association-of-chester-county-tmacc
     name: Transportation Management Association of Chester County (TMACC)
     static_gtfs_url: https://www.modeshift.app/api/v1/0045359e-7cae-4a10-b680-cafe365c6554/transport/gtfs/gtfs.zip
@@ -7240,12 +7173,6 @@ agencies:
     name: GRT ION Light Rail
     static_gtfs_url: https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/2
     mdb_id: 3151
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: glendale-beeline-3177
-    name: Glendale Beeline
-    static_gtfs_url: https://www.glendaleca.gov/home/showdocument?id=29549
-    mdb_id: 3177
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cecil-transit-3178
@@ -7337,1987 +7264,16 @@ agencies:
     static_gtfs_url: https://d2igk3wxwksqfb.cloudfront.net/dallashostcommitteedata.zip
     mdb_id: 3218
     license_note: No stated data license in the Mobility Database; verify before publishing.
-  - id: avalon-transit-12
-    name: Avalon Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/avalon-ca-us/avalon-ca-us.zip
-    mdb_id: 12
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: laguna-beach-transit-lbt-16
-    name: Laguna Beach Transit (LBT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip
-    mdb_id: 16
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: palo-verde-valley-transit-agency-18
-    name: Palo Verde Valley Transit Agency
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/paloverde_valley-ca-us/paloverde_valley-ca-us.zip
-    mdb_id: 18
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: humboldt-transit-authority-19
-    name: Humboldt Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/humboldtcounty-ca-us/humboldtcounty-ca-us.zip
-    mdb_id: 19
-    rt_urls:
-      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: redwood-coast-transit-rct-20
-    name: Redwood Coast Transit (RCT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip
-    mdb_id: 20
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: eastern-sierra-transit-25
-    name: Eastern Sierra Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/easternsierra-ca-us/easternsierra-ca-us.zip
-    mdb_id: 25
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: santa-maria-area-transit-26
-    name: Santa Maria Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/smat-ca-us/smat-ca-us.zip
-    mdb_id: 26
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: airport-valet-express-27
-    name: Airport Valet Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/airportvaletexpress-ca-us/airportvaletexpress-ca-us.zip
-    mdb_id: 27
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: los-angeles-county-department-of-public-works-the-link-and-shuttles-28
-    name: Los Angeles County Department of Public Works (the LINK and shuttles)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/dpwlacounty-ca-us/dpwlacounty-ca-us.zip
-    mdb_id: 28
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: ventura-county-transportation-commission-31
-    name: Ventura County Transportation Commission
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/vctc-ca-us/vctc-ca-us.zip
-    mdb_id: 31
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: thousand-oaks-transit-33
-    name: Thousand Oaks Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip
-    mdb_id: 33
-    rt_urls:
-      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/thousandoaks-ca-us/service_alerts.proto
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: palos-verdes-peninsula-transit-authority-pvpta-35
-    name: Palos Verdes Peninsula Transit Authority (PVPTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip
-    mdb_id: 35
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: lawndale-beat-36
-    name: Lawndale Beat
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cityoflawndale-ca-us/cityoflawndale-ca-us.zip
-    mdb_id: 36
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: spirit-bus-39
-    name: Spirit Bus
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/montereypark-ca-us/montereypark-ca-us.zip
-    mdb_id: 39
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: simi-valley-transit-40
-    name: Simi Valley Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip
-    mdb_id: 40
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: kings-area-rural-transit-42
-    name: Kings Area Rural Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/kcapta-ca-us/kcapta-ca-us.zip
-    mdb_id: 42
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: morro-bay-transit-45
-    name: Morro Bay Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/morrobay_google_transit.zip
-    mdb_id: 45
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: kern-transit-47
-    name: Kern Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/kerncounty-ca-us/kerncounty-ca-us.zip
-    mdb_id: 47
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: porterville-transit-48
-    name: Porterville Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/porterville-ca-us/porterville-ca-us.zip
-    mdb_id: 48
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mission-bay-transportation-management-association-tma-51
-    name: Mission Bay Transportation Management Association (TMA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/missionbaytma-ca-us/missionbaytma-ca-us.zip
-    mdb_id: 51
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: caltrain-54
-    name: Caltrain
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip
-    mdb_id: 54
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: san-benito-county-express-sbce-58
-    name: San Benito County Express (SBCE)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sanbenitocounty-ca-us/sanbenitocounty-ca-us.zip
-    mdb_id: 58
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mountain-view-transportation-management-association-mvgo-60
-    name: Mountain View Transportation Management Association (MVgo)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/mountainview-ca-us/mountainview-ca-us.zip
-    mdb_id: 60
-    rt_urls:
-      trip_updates: https://ridemvgo.org/gtfs-rt/tripupdates
-      vehicle_positions: https://ridemvgo.org/gtfs-rt/vehiclepositions
-      service_alerts: https://ridemvgo.org/gtfs-rt/alerts
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: commute-org-san-mateo-county-shuttles-61
-    name: Commute.org San Mateo County Shuttles
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/commute-ca-us/commute-ca-us.zip
-    mdb_id: 61
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: san-francisco-bay-area-water-emergency-transportation-authority-weta-62
-    name: San Francisco Bay Area Water Emergency Transportation Authority (WETA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sfbayferry-ca-us/sfbayferry-ca-us.zip
-    mdb_id: 62
-    license_note: "License: http://assets.511.org/pdf/nextgen/developers/511_Data_Agreement_Final.pdf"
-
-  - id: emery-go-round-63
-    name: Emery Go-Round
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/emerygoround-ca-us/emerygoround-ca-us.zip
-    mdb_id: 63
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: etrans-65
-    name: eTrans
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/escalon-ca-us/escalon-ca-us.zip
-    mdb_id: 65
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sonoma-county-airport-express-66
-    name: Sonoma County Airport Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/airportexpressinc-ca-us/airportexpressinc-ca-us.zip
-    mdb_id: 66
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: lake-transit-authority-lta
-    name: Lake Transit Authority (LTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/laketransit-ca-us/laketransit-ca-us.zip
-    mdb_id: 68
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mendocino-transit-authority-69
-    name: Mendocino Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip
-    mdb_id: 69
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sonoma-county-transit-sct-70
-    name: Sonoma County Transit (SCT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip
-    mdb_id: 70
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: petaluma-transit-72
-    name: Petaluma Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip
-    mdb_id: 72
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: el-dorado-transit
-    name: El Dorado Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/eldoradotransit-ca-us/eldoradotransit-ca-us.zip
-    mdb_id: 75
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: fairfield-and-suisun-transit-fast-transit
-    name: Fairfield and Suisun Transit (FAST Transit)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip
-    mdb_id: 76
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: placer-county-transit-77
-    name: Placer County Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/placercounty-ca-us/placercounty-ca-us.zip
-    mdb_id: 77
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: westcat-78
-    name: WestCAT
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip
-    mdb_id: 78
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: yuba-sutter-transit-79
-    name: Yuba-Sutter Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/yubasutter-ca-us/yubasutter-ca-us.zip
-    mdb_id: 79
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: rio-vista-delta-breeze-81
-    name: Rio Vista Delta Breeze
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip
-    mdb_id: 81
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: nevada-county-connects-gold-country-stage-84
-    name: Nevada County Connects (Gold Country Stage)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/goldcountrystage-ca-us/goldcountrystage-ca-us.zip
-    mdb_id: 84
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: http://creativecommons.org/licenses/by/4.0/"
-
-  - id: merced-county-transit-the-bus-86
-    name: Merced County Transit (The Bus)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/mercedthebus-ca-us/mercedthebus-ca-us.zip
-    mdb_id: 86
-    rt_urls:
-      vehicle_positions: https://thebuslive.com/gtfs-rt/vehiclepositions
-      service_alerts: https://thebuslive.com/gtfs-rt/alerts
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: stanislaus-regional-transit-start-87
-    name: Stanislaus Regional Transit (StaRT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/stanislaus-ca-us/stanislaus-ca-us.zip
-    mdb_id: 87
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: yosemite-area-regional-transportation-system-yarts-88
-    name: Yosemite Area Regional Transportation System (YARTS)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/yosemite-ca-us/yosemite-ca-us.zip
-    mdb_id: 88
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: clovis-transit-89
-    name: Clovis Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/clovistransit-ca-us/clovistransit-ca-us.zip
-    mdb_id: 89
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-madera-91
-    name: City of Madera
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cityofmadera-ca-us/cityofmadera-ca-us.zip
-    mdb_id: 91
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: amador-transit-92
-    name: Amador Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/amador-ca-us/amador-ca-us.zip
-    mdb_id: 92
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: calaveras-transit-93
-    name: Calaveras Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/calaveras-ca-us/calaveras-ca-us.zip
-    mdb_id: 93
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: tahoe-area-regional-transit-tart-north-lake-tahoe-express-94
-    name: Placer County
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/laketahoe-ca-us/laketahoe-ca-us.zip
-    mdb_id: 94
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: victor-valley-transit-authority-vvta-99
-    name: Victor Valley Transit Authority (VVTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/victorville-ca-us/victorville-ca-us.zip
-    mdb_id: 99
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: norwalk-transit-system-nts-102
-    name: Norwalk Transit System (NTS)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/nts-ca-us/nts-ca-us.zip
-    mdb_id: 102
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: el-monte-transit-103
-    name: El Monte Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/elmonte-ca-us/elmonte-ca-us.zip
-    mdb_id: 103
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: corona-cruiser-104
-    name: Corona Cruiser
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip
-    mdb_id: 104
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: duarte-transit-105
-    name: Duarte Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/duartetransit-ca-us/duartetransit-ca-us.zip
-    mdb_id: 105
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: beaumont-transit-106
-    name: Beaumont Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip
-    mdb_id: 106
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mountain-transit-107
-    name: Mountain Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bigbear-ca-us/bigbear-ca-us.zip
-    mdb_id: 107
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: bullhead-area-transit-system-109
-    name: Bullhead Area Transit System
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bullheadareatransit-az-us/bullheadareatransit-az-us.zip
-    mdb_id: 109
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sage-stage-113
-    name: Sage Stage
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sagestage-ca-us/sagestage-ca-us.zip
-    mdb_id: 113
-    license_note: "License: http://sagestage.com/gtfs-data/"
-
-  - id: redding-area-bus-authority-raba-114
-    name: Redding Area Bus Authority (RABA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/redding-ca-us/redding-ca-us.zip
-    mdb_id: 114
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: trinity-transit-115
-    name: Trinity Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/weaverville-ca-us/weaverville-ca-us.zip
-    mdb_id: 115
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: tehama-rural-area-express-trax-susanville-indian-rancheria-public-transportation-program-116
-    name: Tehama Rural Area Express (TRAX), Susanville Indian Rancheria Public Transportation Program
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tehama-ca-us/tehama-ca-us.zip
-    mdb_id: 116
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: siskiyou-county-117
-    name: Siskiyou County
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip
-    mdb_id: 117
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: lassen-rural-bus-lrb-118
-    name: Lassen Rural Bus (LRB)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip
-    mdb_id: 118
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: plumas-transit-119
-    name: Plumas Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/plumas-ca-us/plumas-ca-us.zip
-    mdb_id: 119
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: regional-transportation-commission-rtc-120
-    name: Regional Transportation Commission (RTC)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/rtc-nv-us/rtc-nv-us.zip
-    mdb_id: 120
-    license_note: "License: https://www.rtcwashoe.com/terms-of-use/"
-
-  - id: rogue-valley-transportation-district-rvtd-122
-    name: Rogue Valley Transportation District (RVTD)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/rvtd-or-us/rvtd-or-us.zip
-    mdb_id: 122
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: utrans-123
-    name: UTrans
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/umpquatransit-or-us/umpquatransit-or-us.zip
-    mdb_id: 123
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-corvallis-136
-    name: City of Corvallis
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/corvallis-or-us/corvallis-or-us.zip
-    mdb_id: 136
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
-
-  - id: cascades-east-transit-cet-138
-    name: Cascades East Transit (CET)
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/cascadeseast-or-us/cascadeseast-or-us.zip
-    mdb_id: 138
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mountain-rides-transportation-authority-mrta-143
-    name: Mountain Rides Transportation Authority (MRTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/mountainrides-id-us/mountainrides-id-us.zip
-    mdb_id: 143
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cat-tran-shuttle-146
-    name: Cat Tran Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cattran-az-us/cattran-az-us.zip
-    mdb_id: 146
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: star-transit-153
-    name: STAR Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/startransit-tx-us/startransit-tx-us.zip
-    mdb_id: 153
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: jtran-155
-    name: JTRAN
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/jatran-ms-us/jatran-ms-us.zip
-    mdb_id: 155
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: groome-transportation-arizona-shuttle-156
-    name: Groome Transportation - Arizona Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/arizonashuttle-az-us/arizonashuttle-az-us.zip
-    mdb_id: 156
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: navajo-transit-system-157
-    name: Navajo Transit System
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/navajo_google_transit.zip
-    mdb_id: 157
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cottonwood-area-transit-cat-158
-    name: Cottonwood Area Transit (CAT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cottonwood-az-us/cottonwood-az-us.zip
-    mdb_id: 158
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: verde-lynx-159
-    name: Verde Lynx
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/verdelynx-az-us/verdelynx-az-us.zip
-    mdb_id: 159
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: red-apple-transit-160
-    name: Red Apple Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/redappletransit-nm-us/redappletransit-nm-us.zip
-    mdb_id: 160
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: roaring-fork-transportation-authority-162
-    name: Roaring Fork Transportation Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/rfta-co-us/rfta-co-us.zip
-    mdb_id: 162
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: gunnison-valley-transportation-authority-rta-163
-    name: Gunnison Valley Transportation Authority (RTA)
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/gunnisonrta_google_transit.zip
-    mdb_id: 163
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: snowmass-village-transportation-164
-    name: Snowmass Village Transportation
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip
-    mdb_id: 164
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sandia-shuttle-167
-    name: Sandia Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sandiashuttle-nm-us/sandiashuttle-nm-us.zip
-    mdb_id: 167
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: groome-transportation-colorado-springs-shuttle-168
-    name: Groome Transportation - Colorado Springs Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/coloradoshuttle-co-us/coloradoshuttle-co-us.zip
-    mdb_id: 168
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: regional-transportation-district-rtd-169
-    name: Bustang
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bustang-co-us/bustang-co-us.zip
-    mdb_id: 169
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: colorado-mountain-express-172
-    name: Colorado Mountain Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cme-co-us/cme-co-us.zip
-    mdb_id: 172
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: vail-transit-174
-    name: Vail Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/vailtransit-co-us/vailtransit-co-us.zip
-    mdb_id: 174
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: winter-park-transit-175
-    name: Winter Park Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/winterpark-co-us/winterpark-co-us.zip
-    mdb_id: 175
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: rocky-mountain-national-park-shuttles-176
-    name: Rocky Mountain National Park Shuttles
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/rockymountainnationalpark-co-us/rockymountainnationalpark-co-us.zip
-    mdb_id: 176
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: via-mobility-180
-    name: Via Mobility
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/viamobilityservices-co-us/viamobilityservices-co-us.zip
-    mdb_id: 180
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: university-of-colorado-boulder-181
-    name: University of Colorado Boulder
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/universitycoloradoboulder-co-us/universitycoloradoboulder-co-us.zip
-    mdb_id: 181
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: jeffco-express-189
-    name: JeffCo Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/jeffersoncounty-mo-us/jeffersoncounty-mo-us.zip
-    mdb_id: 189
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sioux-city-transit-system-191
-    name: Sioux City Transit System
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/siouxcity-ia-us/siouxcity-ia-us.zip
-    mdb_id: 191
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sioux-area-metro-sam-192
-    name: Sioux Area Metro (SAM)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip
-    mdb_id: 192
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: marshalltown-municipal-transit-194
-    name: Marshalltown Municipal Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/marshalltownmunicipaltransit-ia-us/marshalltownmunicipaltransit-ia-us.zip
-    mdb_id: 194
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: 10-15-transit-195
-    name: 10-15 Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip
-    mdb_id: 195
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: coralville-transit-196
-    name: Coralville Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/coralvilletransitsystem-ia-us/coralvilletransitsystem-ia-us.zip
-    mdb_id: 196
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: university-of-iowa-cambus-cambus-197
-    name: University of Iowa - CAMBUS (CAMBUS)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cambus-ia-us/cambus-ia-us.zip
-    mdb_id: 197
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cedar-rapids-transit-198
-    name: Cedar Rapids Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cedarrapids-ia-us/cedarrapids-ia-us.zip
-    mdb_id: 198
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: burlington-urban-service-199
-    name: Burlington Urban Service
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip
-    mdb_id: 199
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: muscabus-200
-    name: MuscaBus
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/muscabus-ia-us/muscabus-ia-us.zip
-    mdb_id: 200
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: clinton-municipal-transit-administration-clinton-mta-202
-    name: Clinton Municipal Transit Administration (Clinton MTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/clintonmta-ia-us/clintonmta-ia-us.zip
-    mdb_id: 202
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: dodger-area-rapid-transit-203
-    name: Dodger Area Rapid Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/dart-ia-us/dart-ia-us.zip
-    mdb_id: 203
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mason-city-public-transit-204
-    name: Mason City Public Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip
-    mdb_id: 204
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: alhambra-community-transit-211
-    name: Alhambra Community Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/alhambra-ca-us/alhambra-ca-us.zip
-    mdb_id: 211
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: all-points-transit-212
-    name: All Points Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/allpointstransit-co-us/allpointstransit-co-us.zip
-    mdb_id: 212
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: arcadia-transit-215
-    name: Arcadia Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/arcadia-ca-us/arcadia-ca-us.zip
-    mdb_id: 215
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: arvin-transit-216
-    name: Arvin Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip
-    mdb_id: 216
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: auburn-transit-217
-    name: Auburn Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/auburntransit-ca-us/auburntransit-ca-us.zip
-    mdb_id: 217
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: avon-transit-218
-    name: Avon Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip
-    mdb_id: 218
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: baldwin-park-transit-219
-    name: Baldwin Park Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/baldwinpark-ca-us/baldwinpark-ca-us.zip
-    mdb_id: 219
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-banning-transit-220
-    name: City of Banning Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/banning-ca-us/banning-ca-us.zip
-    mdb_id: 220
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: bay-area-transportation-authority-223
-    name: Bay Area Transportation Authority
-    static_gtfs_url: http://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5109/BATA_GTFS.zip
-    mdb_id: 223
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: bay-transit-224
-    name: Bay Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/baytransit-va-us/baytransit-va-us.zip
-    mdb_id: 224
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: university-of-california-berkeley-shuttle-bear-transit-226
-    name: University of California Berkeley Shuttle (Bear Transit)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/beartransit-ca-us/beartransit-ca-us.zip
-    mdb_id: 226
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: benson-area-transit-229
-    name: Benson Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/benson-az-us/benson-az-us.zip
-    mdb_id: 229
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: bent-county-transit-230
-    name: Bent County Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bentcounty-co-us/bentcounty-co-us.zip
-    mdb_id: 230
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: blackhawk-and-central-city-tramway-234
-    name: Blackhawk and Central City Tramway
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/blackhawktramway-co-us/blackhawktramway-co-us.zip
-    mdb_id: 234
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: blackstone-area-bus-service-235
-    name: Blackstone Area Bus Service
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/blackstone-va-us/blackstone-va-us.zip
-    mdb_id: 235
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: blossom-express-236
-    name: Blossom Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/blossomexpress-ca-us/blossomexpress-ca-us.zip
-    mdb_id: 236
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: breckenridge-free-ride-237
-    name: Breckenridge Free Ride
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/breckenridgefreeride-co-us/breckenridgefreeride-co-us.zip
-    mdb_id: 237
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: bristol-virginia-transit-238
-    name: Bristol Virginia Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bristol-va-us/bristol-va-us.zip
-    mdb_id: 238
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: pacific-transit-242
-    name: Pacific Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/pacific_google_transit.zip
-    mdb_id: 242
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: inter-island-ferry-243
-    name: Inter-Island Ferry
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/interisland-ak-us/interisland-ak-us.zip
-    mdb_id: 243
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: ketchikan-gateway-borough-244
-    name: The Bus
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/kgb-ak-us/kgb-ak-us.zip
-    mdb_id: 244
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: south-metro-area-regional-transit-smart-248
-    name: South Metro Area Regional Transit (SMART)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/wilsonville-or-us/wilsonville-or-us.zip
-    mdb_id: 248
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: wahkiakum-on-the-move-249
-    name: Wahkiakum on the Move
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/wotm-wa-us/wotm-wa-us.zip
-    mdb_id: 249
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: blue-star-bus-256
-    name: Blue Star Bus
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/bluestar-or-us/bluestar-or-us.zip
-    mdb_id: 256
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: rivercities-transit-rct-259
-    name: RiverCities Transit (RCT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/rivercitiestransit-wa-us/rivercitiestransit-wa-us.zip
-    mdb_id: 259
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: grays-harbor-transit-263
-    name: Grays Harbor Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/graysharbor_google_transit.zip
-    mdb_id: 263
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: kayak-transit-ctuir-272
-    name: Kayak Transit (CTUIR)
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/ctuir-or-us/ctuir-or-us.zip
-    mdb_id: 272
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-milton-freewater-public-transportation-274
-    name: City of Milton-Freewater Public Transportation
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/milton-freewater-or-us/milton-freewater-or-us.zip
-    mdb_id: 274
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: union-gap-277
-    name: Union Gap
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/uniongap-wa-us/uniongap-wa-us.zip
-    mdb_id: 277
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: clallam-transit-system-279
-    name: Clallam Transit System
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/clallam_google_transit.zip
-    mdb_id: 279
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: puget-sound-express-281
-    name: Puget Sound Express
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/pse_google_transit.zip
-    mdb_id: 281
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: jamestown-s-klallam-285
-    name: Jamestown S'klallam
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/sevencedars_google_transit.zip
-    mdb_id: 285
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: black-ball-ferry-line-286
-    name: Black Ball Ferry Line
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/blackball_google_transit.zip
-    mdb_id: 286
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: butte-silver-bow-291
-    name: Butte-Silver Bow
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/butte-mt-us/butte-mt-us.zip
-    mdb_id: 291
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: university-of-montana-udash-293
-    name: University of Montana (UDASH)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/udash-mt-us/udash-mt-us.zip
-    mdb_id: 293
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: capital-transit-294
-    name: Capital Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cityandboroughofjuneau-ak-us/cityandboroughofjuneau-ak-us.zip
-    mdb_id: 294
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: streamline-295
-    name: Streamline
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip
-    mdb_id: 295
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: calabasas-transit-system-296
-    name: Calabasas Transit System
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/calabasas-ca-us/calabasas-ca-us.zip
-    mdb_id: 296
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: camarillo-area-transit-297
-    name: Camarillo Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip
-    mdb_id: 297
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: carson-circuit-298
-    name: Carson Circuit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/carson-ca-us/carson-ca-us.zip
-    mdb_id: 298
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: catalina-express
     name: Catalina Express
     static_gtfs_url: https://gitlab.com/LACMTA/gtfs_lax/-/archive/master/gtfs_lax-master.zip?path=catalina_express
     mdb_id: 299
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: catalina-flyer-300
-    name: Catalina Flyer
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/catalinaflyer-ca-us/catalinaflyer-ca-us.zip
-    mdb_id: 300
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-ellensburg-public-transit-central-transit-303
-    name: City of Ellensburg Public Transit (Central Transit)
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/centraltransit_google_transit.zip
-    mdb_id: 303
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cincinnati-metro-307
-    name: Cincinnati Metro
-    static_gtfs_url: http://www.go-metro.com/uploads/GTFS/google_transit_info.zip
-    mdb_id: 307
-    rt_urls:
-      trip_updates: https://tmgtfsprd.sorttrpcloud.com/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb
-      vehicle_positions: https://tmgtfsprd.sorttrpcloud.com/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb
-      service_alerts: https://tmgtfsprd.sorttrpcloud.com/TMGTFSRealTimeWebService/alert/alerts.pb
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: dekalb-public-transit-308
-    name: DeKalb Public Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip
-    mdb_id: 308
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-fountain-transit-309
-    name: City of Fountain Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cityoffountaintransit-co-us/cityoffountaintransit-co-us.zip
-    mdb_id: 309
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: ridgerunner-311
-    name: Ridgerunner
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cityofridgecrest-ca-us/cityofridgecrest-ca-us.zip
-    mdb_id: 311
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: clackco-connects-clackamas-county-312
-    name: ClackCo Connects (Clackamas County)
-    static_gtfs_url: http://oregon-gtfs.trilliumtransit.com/gtfs_data/clackamascounty-or-us/clackamascounty-or-us.zip
-    mdb_id: 312
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: clear-creek-county-transit-313
-    name: Clear Creek County Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip
-    mdb_id: 313
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: corridorrides-316
-    name: CorridorRides
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/corridorrides-ia-us/corridorrides-ia-us.zip
-    mdb_id: 316
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cripple-creek-transportation-317
-    name: Cripple Creek Transportation
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cripplecreek-co-us/cripplecreek-co-us.zip
-    mdb_id: 317
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cudahy-area-rapid-transit-318
-    name: Cudahy Area Rapid Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cudahy-ca-us/cudahy-ca-us.zip
-    mdb_id: 318
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: groome-transportation-319
-    name: Groome Transportation
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/groometransportation-us/groometransportation-us.zip
-    mdb_id: 319
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: key-west-transit-322
-    name: Key West Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/keywest-fl-us/keywest-fl-us.zip
-    mdb_id: 322
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mountain-lynx-transit-334
-    name: Mountain Lynx Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/districtthree-va-us/districtthree-va-us.zip
-    mdb_id: 334
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: escambia-county-area-transit-ecat-335
-    name: Escambia County Area Transit (ECAT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ecat-fl-us/ecat-fl-us.zip
-    mdb_id: 335
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: emerald-coast-rider-ecr-336
-    name: Emerald Coast Rider (ECR)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/okaloosacountytransit-fl-us/okaloosacountytransit-fl-us.zip
-    mdb_id: 336
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: bay-town-trolley-337
-    name: Bay Town Trolley
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/baytowntrolley-fl-us/baytowntrolley-fl-us.zip
-    mdb_id: 337
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: montgomery-transit-338
-    name: Montgomery Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip
-    mdb_id: 338
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: pasco-county-public-transportation-340
-    name: Pasco County Public Transportation
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/pascocountypublictransit-fl-us/pascocountypublictransit-fl-us.zip
-    mdb_id: 340
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: hernando-county-transit-thebus-341
-    name: Hernando County Transit (TheBus)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/thehernandoexpress-fl-us/thehernandoexpress-fl-us.zip
-    mdb_id: 341
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: starmetro-344
-    name: StarMetro
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/starmetro-fl-us/starmetro-fl-us.zip
-    mdb_id: 344
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sarasota-county-area-transit-scat-348
-    name: Sarasota County Area Transit (SCAT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip
-    mdb_id: 348
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sunshine-bus-company-350
-    name: Sunshine Bus Company
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sunshinebuscompany-fl-us/sunshinebuscompany-fl-us.zip
-    mdb_id: 350
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: charleston-area-regional-transportation-authority-carta-352
-    name: Charleston Area Regional Transportation Authority (CARTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/carta-sc-us/carta-sc-us.zip
-    mdb_id: 352
-    rt_urls:
-      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/carta-sc-us/service_alerts.proto
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: franklin-transit-authority-361
-    name: Franklin Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tma-tn-us/tma-tn-us.zip
-    mdb_id: 361
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: blue-grass-community-action-partnership-362
-    name: Bluegrass Ultra-Transit Service
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bgcap-ky-us/bgcap-ky-us.zip
-    mdb_id: 362
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: gwinnett-county-transit-369
-    name: Gwinnett County Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/gwinnettcountytransit-ga-us/gwinnettcountytransit-ga-us.zip
-    mdb_id: 369
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: concord-kannapolis-area-transit-rider-transit-372
-    name: Concord Kannapolis Area Transit (Rider Transit)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ckrider-nc-us/ckrider-nc-us.zip
-    mdb_id: 372
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: piedmont-authority-for-regional-transportation-part-373
-    name: Piedmont Authority for Regional Transportation (PART)
-    static_gtfs_url: http://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5137/gtfs.zip
-    mdb_id: 373
-    license_note: "License: https://creativecommons.org/licenses/by/4.0/"
-
-  - id: gotriangle-374
-    name: GoTriangle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tta-regionalbus-nc-us/tta-regionalbus-nc-us.zip
-    mdb_id: 374
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: gocary-375
-    name: GoCary
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cary-transit-nc-us/cary-transit-nc-us.zip
-    mdb_id: 375
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: chapel-hill-transit-cht-376
-    name: Chapel Hill Transit (CHT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/chapel-hill-transit-nc-us/chapel-hill-transit-nc-us.zip
-    mdb_id: 376
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: godurham-377
-    name: GoDurham
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/durham-area-transit-authority-nc-us/durham-area-transit-authority-nc-us.zip
-    mdb_id: 377
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: duke-university-378
-    name: Duke University
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip
-    mdb_id: 378
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: greater-lynchburg-transit-co-381
-    name: Greater Lynchburg Transit Co.
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/gltc-lynchburg-va-us/gltc-lynchburg-va-us.zip
-    mdb_id: 381
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: indian-trails-detroit-ann-arbor-express-384
-    name: Indian Trails, Detroit Ann Arbor Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/indiantrails-mi-us/indiantrails-mi-us.zip
-    mdb_id: 384
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: greater-peoria-mass-transit-citylink-386
-    name: Greater Peoria Mass Transit (CityLink)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ridecitylink-il-us/ridecitylink-il-us.zip
-    mdb_id: 386
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: terre-haute-transit-utility-387
-    name: Terre Haute Transit Utility
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/terrehautetransit-in-us/terrehautetransit-in-us.zip
-    mdb_id: 387
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: beloit-transit-392
-    name: Beloit Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/beloittransit-wi-us/beloittransit-wi-us.zip
-    mdb_id: 392
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: janesville-transit-system-393
-    name: Janesville Transit System
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip
-    mdb_id: 393
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: ryde-racine-395
-    name: Ryde Racine
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/racine-wi-us/racine-wi-us.zip
-    mdb_id: 395
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: waukesha-metro-transit-396
-    name: Waukesha Metro Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/waukeshacounty-wi-us/waukeshacounty-wi-us.zip
-    mdb_id: 396
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: go-transit-397
-    name: GO Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/oshkosh-wi-us/oshkosh-wi-us.zip
-    mdb_id: 397
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: shoreline-metro-399
-    name: Shoreline Metro
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip
-    mdb_id: 399
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: laketran-410
-    name: Laketran
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip
-    mdb_id: 410
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: erie-metropolitan-transit-authority-412
-    name: Erie Metropolitan Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip
-    mdb_id: 412
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: michigan-flyer-413
-    name: Michigan Flyer
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/michiganflyer-mi-us/michiganflyer-mi-us.zip
-    mdb_id: 413
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: greater-attleboro-taunton-regional-transit-authority-gatra-418
-    name: Greater Attleboro Taunton Regional Transit Authority (GATRA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/gatra-ma-us/gatra-ma-us.zip
-    mdb_id: 418
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: vineyard-fast-ferry-419
-    name: Vineyard Fast Ferry
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/vineyardfastferry-ri-us/vineyardfastferry-ri-us.zip
-    mdb_id: 419
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: martha-s-vineyard-transit-authority-420
-    name: Martha's Vineyard Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/marthasvineyard-ma-us/marthasvineyard-ma-us.zip
-    mdb_id: 420
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: southeastern-regional-transit-authority-srta-421
-    name: Southeastern Regional Transit Authority (SRTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/srta-ma-us/srta-ma-us.zip
-    mdb_id: 421
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: brockton-area-transit-authority-bat-422
-    name: Brockton Area Transit Authority (BAT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/brockton-ma-us/brockton-ma-us.zip
-    mdb_id: 422
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cuttyhunk-ferry-company-423
-    name: Cuttyhunk Ferry Company
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/cuttyhunkferryco-ma-us/cuttyhunkferryco-ma-us.zip
-    mdb_id: 423
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: patriots-party-boats-424
-    name: Patriots Party Boats
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/patriotpartyboats-ma-us/patriotpartyboats-ma-us.zip
-    mdb_id: 424
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: freedom-cruise-line-425
-    name: Freedom Cruise Line
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/freedomcruiseline-ma-us/freedomcruiseline-ma-us.zip
-    mdb_id: 425
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: nantucket-regional-transit-authority-wave-426
-    name: Nantucket Regional Transit Authority (WAVE)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/nantucket-ma-us/nantucket-ma-us.zip
-    mdb_id: 426
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: hy-line-cruises-427
-    name: Hy-Line Cruises
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/hylinecruises-ma-us/hylinecruises-ma-us.zip
-    mdb_id: 427
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: the-current-428
-    name: The Current
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/crtransit-vt-us/crtransit-vt-us.zip
-    mdb_id: 428
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: marble-valley-regional-transit-district-mvrtd-430
-    name: Marble Valley Regional Transit District (MVRTD)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/thebus-vt-us/thebus-vt-us.zip
-    mdb_id: 430
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: massachusetts-area-express-max-431
-    name: Massachusetts Area Express (MAX)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/truenorthtransit-ma-us/truenorthtransit-ma-us.zip
-    mdb_id: 431
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: worcester-regional-transit-authority-wrta-432
-    name: Worcester Regional Transit Authority (WRTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip
-    mdb_id: 432
-    license_note: "License: https://www.massdot.state.ma.us/Portals/0/docs/developers/develop_license_agree.pdf"
-
-  - id: montachusett-regional-transit-authority-mart-433
-    name: Montachusett Regional Transit Authority (MART)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/montachusett-ma-us/montachusett-ma-us.zip
-    mdb_id: 433
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: moover-434
-    name: MOOver
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/dvtamoover-vt-us/dvtamoover-vt-us.zip
-    mdb_id: 434
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: coach-company-436
-    name: Coach Company
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/coachcompany-ma-us/coachcompany-ma-us.zip
-    mdb_id: 436
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: limoliner-438
-    name: LimoLiner
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/limoliner-ma-us/limoliner-ma-us.zip
-    mdb_id: 438
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: 128-business-council-440
-    name: 128 Business Council
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/route128corridor-ma-us/route128corridor-ma-us.zip
-    mdb_id: 440
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: middlesex-3-tma-442
-    name: Middlesex 3 TMA
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/middlesex-ma-us/middlesex-ma-us.zip
-    mdb_id: 442
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: yankee-line-443
-    name: Yankee Line
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/yankeeline-ma-us/yankeeline-ma-us.zip
-    mdb_id: 443
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: lowell-regional-transit-authority-lrta-444
-    name: Lowell Regional Transit Authority (LRTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lowell-ma-us/lowell-ma-us.zip
-    mdb_id: 444
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: merrimack-valley-regional-transit-authority-mvrta-445
-    name: Merrimack Valley Regional Transit Authority (MVRTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/merrimackvalley-ma-us/merrimackvalley-ma-us.zip
-    mdb_id: 445
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cape-ann-transportation-authority-cata-447
-    name: Cape Ann Transportation Authority (CATA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip
-    mdb_id: 447
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: rural-community-transportation-rct-448
-    name: Rural Community Transportation (RCT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us.zip
-    mdb_id: 448
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: stagecoach-transportation-services-sts-449
-    name: Stagecoach Transportation Services (STS)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/stagecoach-vt-us/stagecoach-vt-us.zip
-    mdb_id: 449
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: vermont-translines-450
-    name: Vermont Translines
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/vttranslines-vt-us/vttranslines-vt-us.zip
-    mdb_id: 450
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: envida-455
-    name: Envida
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/dsi-co-us/dsi-co-us.zip
-    mdb_id: 455
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: el-segundo-transportation-458
-    name: El Segundo Transportation
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/elsegundo-ca-us/elsegundo-ca-us.zip
-    mdb_id: 458
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: estes-transit-459
-    name: Estes Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/estestransit-co-us/estestransit-co-us.zip
-    mdb_id: 459
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: express-arrow-460
-    name: Express Arrow
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/expressarrow_google_transit.zip
-    mdb_id: 460
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: farmville-area-bus-461
-    name: Farmville Area Bus
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/farmville-va-us/farmville-va-us.zip
-    mdb_id: 461
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: gallup-express-462
-    name: Gallup Express
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/gallupexpress_google_transit.zip
-    mdb_id: 462
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: greensville-emporia-transit-463
-    name: Greensville Emporia Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/get-va-us/get-va-us.zip
-    mdb_id: 463
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: capital-area-transit-goraleigh-471
-    name: Capital Area Transit (GoRaleigh)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/capital-area-transit-nc-us/capital-area-transit-nc-us.zip
-    mdb_id: 471
-    license_note: "License: https://goraleigh.org/developer-terms-and-conditions"
-
-  - id: tar-river-transit-472
-    name: Tar River Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip
-    mdb_id: 472
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: fairfax-cue-bus-cue-484
-    name: Fairfax CUE Bus (CUE)
-    static_gtfs_url: http://www.fairfaxva.gov/Home/ShowDocument?id=6713
-    mdb_id: 484
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: dc-streetcar-487
-    name: DC Streetcar
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/dcstreetcar-dc-us/dcstreetcar-dc-us.zip
-    mdb_id: 487
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: regional-transportation-agency-of-central-maryland-rta-489
-    name: Regional Transportation Agency of Central Maryland (RTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/centralmarylandrta-md-us/centralmarylandrta-md-us.zip
-    mdb_id: 489
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: peter-pan-496
-    name: Peter Pan
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/peterpan-ma-us/peterpan-ma-us.zip
-    mdb_id: 496
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: port-authority-trans-hudson-path-517
-    name: Port Authority Trans-Hudson (PATH)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip
-    mdb_id: 517
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: downtown-alliance-519
-    name: Downtown Alliance
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/downtown_nyc_google_transit.zip
-    mdb_id: 519
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: greater-bridgeport-transit-530
-    name: Greater Bridgeport Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip
-    mdb_id: 530
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: rochester-genesee-regional-transportation-authority-rgrta-533
-    name: Rochester-Genesee Regional Transportation Authority (RGRTA)
-    static_gtfs_url: http://scheduledata.rgrta.com/google_transit.zip
-    mdb_id: 533
-    rt_urls:
-      vehicle_positions: https://api.rgrta.com/rtgvehicles?key=00e2dbf6b15742febb37d0a1d7d3acd5
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: berkshire-regional-transit-authority-brta-537
-    name: Berkshire Regional Transit Authority (BRTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/berkshire-ma-us/berkshire-ma-us.zip
-    mdb_id: 537
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: green-mountain-community-network-gmcn-539
-    name: Green Mountain Community Network (GMCN)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/greenmtncn-vt-us/greenmtncn-vt-us.zip
-    mdb_id: 539
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: addison-county-transit-actr-543
-    name: Addison County Transit (ACTR)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/addisoncounty-vt-us/addisoncounty-vt-us.zip
-    mdb_id: 543
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: lake-champlain-ferries-547
-    name: Lake Champlain Ferries
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lctferries-vt-us/lctferries-vt-us.zip
-    mdb_id: 547
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: middletown-area-transit-mat-551
-    name: Middletown Area Transit (MAT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ninetown-connecticut-us/ninetown-connecticut-us.zip
-    mdb_id: 551
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: southeast-area-transit-district-552
-    name: Southeast Area Transit District
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/seatbus-ct-us/seatbus-ct-us.zip
-    mdb_id: 552
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: block-island-ferry-554
-    name: Block Island Ferry
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/blockislandferry-ri-us/blockislandferry-ri-us.zip
-    mdb_id: 554
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: dattco-motorcoach-555
-    name: DATTCO Motorcoach
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/dattco-ma-us/dattco-ma-us.zip
-    mdb_id: 555
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: plymouth-brockton-street-railway-co-556
-    name: Plymouth & Brockton Street Railway Co
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/plymouthbrockton-ma-us/plymouthbrockton-ma-us.zip
-    mdb_id: 556
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: iowa-city-transit-system-559
-    name: Iowa City Transit System
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/iowacitytransit-ia-us/iowacitytransit-ia-us.zip
-    mdb_id: 559
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-bell-la-campana-562
-    name: City of Bell (La Campana)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lacampana-ca-us/lacampana-ca-us.zip
-    mdb_id: 562
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: la-puente-link-563
-    name: La Puente LINK
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lapuente-ca-us/lapuente-ca-us.zip
-    mdb_id: 563
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: roadrunner-transit-564
-    name: RoadRUNNER Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/lascrucesroadrunner_google_transit.zip
-    mdb_id: 564
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-las-vegas-565
-    name: City of Las Vegas
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lasvegasloop-nv-us/lasvegasloop-nv-us.zip
-    mdb_id: 565
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: l-e-w-i-s-mountain-highway-transit-567
-    name: L.E.W.I.S. Mountain Highway Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lmht-morton-us/lmht-morton-us.zip
-    mdb_id: 567
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: lower-columbia-cap-community-action-program-568
-    name: Lower Columbia CAP (Community Action Program)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lowercolumbiacap-wa-us/lowercolumbiacap-wa-us.zip
-    mdb_id: 568
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: citibus-569
-    name: Citibus
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip
-    mdb_id: 569
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: madera-county-transit-572
-    name: Madera County Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/maderactc-ca-us/maderactc-ca-us.zip
-    mdb_id: 572
-    rt_urls:
-      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/maderactc-ca-us/service_alerts.proto
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: makah-public-transit-574
-    name: Makah Public Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/makah_google_transit.zip
-    mdb_id: 574
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: middletown-area-transit-576
-    name: Middletown Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/middletown-ct-us/middletown-ct-us.zip
-    mdb_id: 576
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: montebello-bus-lines-577
-    name: Montebello Bus Lines
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/montebello-ca-us/montebello-ca-us.zip
-    mdb_id: 577
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: moorpark-city-transit-578
-    name: Moorpark City Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip
-    mdb_id: 578
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: morongo-basin-transit-authority-579
-    name: Morongo Basin Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip
-    mdb_id: 579
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mount-adams-transportation-service-580
-    name: Mount Adams Transportation Service
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/mountadams-wa-us/mountadams-wa-us.zip
-    mdb_id: 580
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: mountain-express-mtnexp-581
-    name: Mountain Express (MtnExp)
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/cb_mtnexpress_google_transit.zip
-    mdb_id: 581
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: needles-area-transit-583
-    name: Needles Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip
-    mdb_id: 583
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: petersburg-area-transit-591
-    name: Petersburg Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us.zip
-    mdb_id: 591
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: town-of-mountain-village-594
-    name: Town of Mountain Village
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/mountainvillage-co-us/mountainvillage-co-us.zip
-    mdb_id: 594
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet-595
-    name: Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue & Gold Fleet
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bayareaferries-ca-us/bayareaferries-ca-us.zip
-    mdb_id: 595
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: san-juan-capistrano-free-weekend-trolley-596
-    name: San Juan Capistrano Free Weekend Trolley
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sanjuancapistrano-ca-us/sanjuancapistrano-ca-us.zip
-    mdb_id: 596
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-coach-599
-    name: City Coach
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip
-    mdb_id: 599
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: logan-express-601
-    name: Logan Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/loganexpress-ma-us/loganexpress-ma-us.zip
-    mdb_id: 601
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: town-of-telluride-603
-    name: Town of Telluride
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/telluride-co-us/telluride-co-us.zip
-    mdb_id: 603
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: wahkiakum-ferry-604
-    name: Wahkiakum Ferry
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/wahkiakumferry-or-us/wahkiakumferry-or-us.zip
-    mdb_id: 604
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: home-james-607
-    name: Home James
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/homejames-co-us/homejames-co-us.zip
-    mdb_id: 607
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: wintran-608
-    name: WinTran
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/wintran-va-us/wintran-va-us.zip
-    mdb_id: 608
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: graham-transit-611
-    name: Graham Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/grahamtransit-va-us/grahamtransit-va-us.zip
-    mdb_id: 611
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: gtrans-616
-    name: GTrans
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/gtrans-ca-us/gtrans-ca-us.zip
-    mdb_id: 616
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: guadalupe-flyer-617
-    name: Guadalupe Flyer
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/guadalupeflyer-ca-us/guadalupeflyer-ca-us.zip
-    mdb_id: 617
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: harbor-connector-618
-    name: Harbor Connector
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/harborconnector-md-us/harborconnector-md-us.zip
-    mdb_id: 618
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: turlock-transit-619
-    name: Turlock Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/turlock-ca-us/turlock-ca-us.zip
-    mdb_id: 619
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: valparaiso-transit-620
-    name: Valparaiso Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/valpotransit-chi-us/valpotransit-chi-us.zip
-    mdb_id: 620
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: virginia-regional-transit-621
-    name: Virginia Regional Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us.zip
-    mdb_id: 621
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: west-berkeley-shuttle-622
-    name: West Berkeley Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/westberkeleyshuttle-ca-us/westberkeleyshuttle-ca-us.zip
-    mdb_id: 622
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: go-west-shuttle-623
-    name: Go West Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/westcovina-ca-us/westcovina-ca-us.zip
-    mdb_id: 623
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: chittenden-county-transportation-authority-ccta-629
-    name: Chittenden County Transportation Authority (CCTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ccta-vt-us/ccta-vt-us.zip
-    mdb_id: 629
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: advance-transit-631
-    name: Advance Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/advancetransit-vt-us/advancetransit-vt-us.zip
-    mdb_id: 631
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: hut-airport-shuttle-635
-    name: HUT Airport Shuttle
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/hut-or-us/hut-or-us.zip
-    mdb_id: 635
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: high-desert-point-636
-    name: High Desert Point
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/highdesertpoint-or-us/highdesertpoint-or-us.zip
-    mdb_id: 636
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: roadrunner-644
-    name: RoadRunner
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/naipta-az-us/naipta-az-us.zip
-    mdb_id: 644
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: cape-cod-regional-transportation-authority-cape-cod-rta-645
-    name: Cape Cod Regional Transportation Authority (Cape Cod RTA)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/capecod-ma-us/capecod-ma-us.zip
-    mdb_id: 645
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: clemson-area-transit-cat-798
-    name: Clemson Area Transit (CAT)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip
-    mdb_id: 798
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: playa-vista-shuttle-799
-    name: Playa Vista Shuttle
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/playavistashuttle-ca-us/playavistashuttle-ca-us.zip
-    mdb_id: 799
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: oregon-department-of-transportation-800
-    name: Oregon Department of Transportation
-    static_gtfs_url: http://oregon-gtfs.trilliumtransit.com/gtfs_data/point-or-us/point-or-us.zip
-    mdb_id: 800
-    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
-
-  - id: prairie-express-transit-801
-    name: Prairie Express Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip
-    mdb_id: 801
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: qline-detroit-802
-    name: Qline Detroit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/qline-mi-us/qline-mi-us.zip
-    mdb_id: 802
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: san-leandro-links-810
-    name: San Leandro Links
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sanleandro-ca-us/sanleandro-ca-us.zip
-    mdb_id: 810
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: san-miguel-authority-for-regional-transportation-smart-811
-    name: San Miguel Authority for Regional Transportation (SMART)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sanmiguel-co-us/sanmiguel-co-us.zip
-    mdb_id: 811
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: santa-ynez-valley-transit-813
-    name: Santa Ynez Valley Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/syvt_google_transit.zip
-    mdb_id: 813
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sonoma-marin-area-rail-transit-smart-815
-    name: Sonoma-Marin Area Rail Transit (SMART)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip
-    mdb_id: 815
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: south-county-transit-link-817
-    name: South County Transit Link
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/southcountytransitlink-ca-us/southcountytransitlink-ca-us.zip
-    mdb_id: 817
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: summit-stage-820
-    name: Summit Stage
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip
-    mdb_id: 820
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: taft-area-transit-821
-    name: Taft Area Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip
-    mdb_id: 821
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: ruraltransit-822
-    name: ruralTRANSIT
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/thurston-wa-us/thurston-wa-us.zip
-    mdb_id: 822
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: teller-senior-coalition-transit-tsc-transit-827
-    name: Teller Senior Coalition Transit (TSC Transit)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tsctransit-co-us/tsctransit-co-us.zip
-    mdb_id: 827
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: pony-express-828
-    name: Pony Express
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ponyexpress-va-us/ponyexpress-va-us.zip
-    mdb_id: 828
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sierra-madre-gateway-coach-829
-    name: Sierra Madre Gateway Coach
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/sierramadre-ca-us/sierramadre-ca-us.zip
-    mdb_id: 829
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: metro-ride-830
-    name: Metro Ride
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip
-    mdb_id: 830
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: radar-832
-    name: RADAR
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/radar-va-us/radar-va-us.zip
-    mdb_id: 832
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: glenn-transit-service-835
-    name: Glenn Transit Service
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/glenn-ca-us/glenn-ca-us.zip
-    mdb_id: 835
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: jefferson-transit-authority-838
-    name: Jefferson Transit Authority
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/jefferson_google_transit.zip
-    mdb_id: 838
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: santa-fe-trails-839
-    name: Santa Fe Trails
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/santafetrails_google_transit.zip
-    mdb_id: 839
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: squaxin-island-transit-846
-    name: Squaxin Island Transit
-    static_gtfs_url: http://mjcaction.com/MJC_GTFS_Public/squaxintribe_google_transit.zip
-    mdb_id: 846
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: tri-valley-transit-852
-    name: Tri-Valley Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip
-    mdb_id: 852
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: city-of-tracy-tracer-877
-    name: City of Tracy (TRACER)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
-    mdb_id: 877
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: philomath-connection-878
-    name: Philomath Connection
-    static_gtfs_url: http://oregon-gtfs.com/gtfs_data/philomathconnection-or-us/philomathconnection-or-us.zip
-    mdb_id: 878
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: garden-of-the-gods-879
-    name: Garden of the Gods
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/gardenofthegods-co-us/gardenofthegods-co-us.zip
-    mdb_id: 879
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: boulder-county-880
-    name: Boulder County
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/bouldercounty-co-us/bouldercounty-co-us.zip
-    mdb_id: 880
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: altavista-community-transit-system-882
-    name: Altavista Community Transit System
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/altavista-va-us/altavista-va-us.zip
-    mdb_id: 882
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: tahoe-transportation-district-897
-    name: Tahoe Transportation District
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/tahoe-ca-us/tahoe-ca-us.zip
-    mdb_id: 897
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: williamsburg-area-transit-authority-901
-    name: Williamsburg Area Transit Authority
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us.zip
-    mdb_id: 901
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: asheville-rides-transit-903
-    name: Asheville Rides Transit
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/asheville-nc-us/asheville-nc-us.zip
-    mdb_id: 903
-    rt_urls:
-      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/asheville-nc-us/service_alerts.proto
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: roosevelt-island-operating-corporation-tramway-rioc-tramway-1109
-    name: Roosevelt Island Operating Corporation Tramway (RIOC Tramway)
-    static_gtfs_url: http://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7707/gtfs.zip
-    mdb_id: 1109
-    license_note: "License: https://github.com/laidig/rioc-gtfs/blob/master/README.md"
-
-  - id: xpress-1118
-    name: Xpress
-    static_gtfs_url: http://gamobility.info/GTFS/Google_Transit.zip
-    mdb_id: 1118
-    license_note: "License: http://atlantaregional.com/File%20Library/Transportation/Transit/Developers-Agreement-for-Web.pdf"
-
-  - id: the-comet-1197
-    name: The Comet
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/thecomet-sc-us/thecomet-sc-us.zip
-    mdb_id: 1197
-    license_note: "License: http://data.trilliumtransit.com/gtfs/thecomet-sc-us/thecomet-sc-us.zip"
-
-  - id: valley-metro-1239
-    name: Valley Metro
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/roanoke-va-us/roanoke-va-us.zip
-    mdb_id: 1239
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: north-carolina-state-university-ncsu-1289
-    name: North Carolina State University (NCSU)
-    static_gtfs_url: http://data.trilliumtransit.com/gtfs/ncsu-wolfline-nc-us/ncsu-wolfline-nc-us.zip
-    mdb_id: 1289
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
   - id: yolo-county-transportation-district-yolobus
     name: Yolo County Transportation District (Yolobus)
     static_gtfs_url: http://www.yolobus.com/GTFS/google_transit.zip
     mdb_id: 1295
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: sacramento-regional-transit-sacrt-1296
-    name: Sacramento Regional Transit (SacRT)
-    static_gtfs_url: http://iportal.sacrt.com/GTFS/SRTD/google_transit.zip
-    mdb_id: 1296
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: catholic-community-services
@@ -9398,9 +7354,3 @@ agencies:
     mdb_id: 3219
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  - id: sonoma-marin-area-rail-transit-smart-3222
-    name: Sonoma Marin Area Rail Transit (SMART)
-    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=SA
-    mdb_id: 3222
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf"

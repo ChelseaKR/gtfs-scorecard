@@ -6,6 +6,8 @@ import datetime as dt
 import json
 from pathlib import Path
 
+import pytest
+
 from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.metrics import CategoryResult
@@ -54,3 +56,34 @@ def test_reindex_ignores_rollups_dir() -> None:
     rebuild_index()
     index = json.loads((artifacts_dir() / "index.json").read_text())
     assert "rollups" not in index["agencies"]
+
+
+def test_reindex_skips_directories_absent_from_registry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The S3 artifacts store is additive and outlives registry edits, so a
+    # hydrated tree can hold directories no agencies.yaml version lists (the
+    # 2026-07 directory-count jump). With a populated registry, reindex must
+    # list only registered agencies.
+    from scorecard_pipeline.config import AGENCIES
+
+    _publish("a", dt.date(2026, 6, 12), 80.0)
+    _publish("ghost", dt.date(2026, 6, 12), 70.0)
+
+    monkeypatch.setitem(
+        AGENCIES, "a", Agency(id="a", name="a Transit", static_gtfs_url="https://ex.org/g.zip")
+    )
+    rebuild_index()
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    assert set(index["agencies"]) == {"a"}
+
+
+def test_reindex_indexes_everything_when_no_registry_is_loaded() -> None:
+    # Library callers (and most unit tests) run with an empty registry; the
+    # bound only applies once agencies.yaml has been loaded.
+    _publish("a", dt.date(2026, 6, 12), 80.0)
+    _publish("b", dt.date(2026, 6, 12), 70.0)
+
+    rebuild_index()
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    assert set(index["agencies"]) == {"a", "b"}
