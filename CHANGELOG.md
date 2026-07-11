@@ -20,8 +20,19 @@ the declared public surface).
 > release (e.g. `v1.0.1` or `v1.1.0`) against current `main` as part of
 > landing the real release pipeline (remediation P1-10), and treat `v1.0.0`
 > as a permanently historical marker rather than trying to move it.
+>
+> **Resolved 2026-07-11:** done as recommended. `v1.1.0` is an annotated,
+> signed tag on current `main`; the floating `v1` tag was moved to it;
+> `v1.0.0` stays as a historical marker.
 
 ## [Unreleased]
+
+## [1.1.0] - 2026-07-11
+
+Cut from current `main` to re-anchor releases to reachable history:
+`v1.0.0` was orphaned by a branch rewrite (see the note above) and stays as
+a historical marker. The floating `v1` tag now points at this release, which
+is also the release submitted to the GitHub Actions Marketplace.
 
 ### Added
 - Searchable, quality-gated fix library; canonical feed identity ledger;
@@ -95,5 +106,6 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.0.0
