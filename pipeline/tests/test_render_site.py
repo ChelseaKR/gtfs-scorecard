@@ -1924,9 +1924,13 @@ def test_render_map_page_marker_shows_grade_not_color_only() -> None:
     assert "cluster: true" in html
     assert "prefers-reduced-motion" in html
     # The canvas is an enhancement: aria-hidden, no on-canvas controls.
-    assert 'id="map" class="national-map" aria-hidden="true"' in html
+    assert 'id="map" class="national-map national-map-pending" aria-hidden="true"' in html
     assert "NavigationControl" not in html
     assert "attributionControl: false" in html
+    # The expensive visual enhancement loads only after an explicit request.
+    assert 'id="map-load"' in html
+    assert '<script src="https://unpkg.com/maplibre-gl' not in html
+    assert 'script.src = "https://unpkg.com/maplibre-gl' in html
 
 
 # ---- equity choropleth (/equity/) ----
@@ -2204,6 +2208,21 @@ def test_page_shell_keeps_nav_reachable_without_js() -> None:
     assert ".nav-cluster { display: flex !important" in html
 
 
+def test_page_shell_uses_local_system_font_fallbacks() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    html = _page(
+        title="t",
+        description="d",
+        canonical="https://gtfsscorecard.org/x/",
+        body="<p>hi</p>",
+    )
+
+    assert "fonts.googleapis.com" not in html
+    assert "fonts.gstatic.com" not in html
+    assert '<link rel="stylesheet" href="/src/styles.css">' in html
+
+
 def test_page_shell_can_mark_utility_pages_noindex() -> None:
     from scorecard_pipeline.site_shell import _page
 
@@ -2221,7 +2240,9 @@ def test_page_shell_can_mark_utility_pages_noindex() -> None:
 def test_map_page_names_its_cdn_fallback() -> None:
     html = _render_map_page(_map_features())
     assert "map-fallback" in html
-    assert "the agency list below carries everything" in html
+    assert "The agency list below carries the same agencies" in html
+    assert 'id="map-load-status"' in html
+    assert "The map could not load" in html
 
 
 def test_ntd_section_carries_curator_reporting_context() -> None:

@@ -5007,10 +5007,16 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
       </div>
     </form>
-    <div id="map" class="national-map" aria-hidden="true"><p class="map-fallback">The map
-      draws here once its library loads from a content delivery network. If it stays
-      blank (a blocked or slow network), the agency list below carries everything the
-      map shows.</p></div>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="map-load">
+        Load interactive map
+      </button>
+      <p id="map-load-status" class="fineprint" role="status">The agency list is ready now.
+        Load the map only when you want the geographic view. It uses additional data.</p>
+    </div>
+    <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
+      The interactive map has not loaded. The agency list below carries the same agencies,
+      grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours">{legend_items}</ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
@@ -5026,16 +5032,19 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         <tbody id="map-tbody">{table_rows}</tbody>
       </table>
     </section>
-    <script src="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js"></script>
     <script>
       (function () {{
         var gradeEl = document.getElementById("map-grade");
         var stateEl = document.getElementById("map-state");
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
+        var loadEl = document.getElementById("map-load");
+        var loadStatusEl = document.getElementById("map-load-status");
+        var mapEl = document.getElementById("map");
         var rows = Array.prototype.slice.call(
           document.querySelectorAll("#map-tbody tr"));
         var all = null;  // the full FeatureCollection, fetched once
+        var map = null;
 
         function matches(grade, state, country, hasFlex) {{
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
@@ -5066,16 +5075,10 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // filter never moves focus: on a native <select>, keyboard arrow keys
         // fire "change" per option, and moving focus then would yank the caret
         // out of the control mid-choice (WCAG 3.2.2 On Input).
-        if (!window.maplibregl) {{
-          gradeEl.addEventListener("change", filterTable);
-          stateEl.addEventListener("change", filterTable);
-          if (flexEl) flexEl.addEventListener("change", filterTable);
-          filterTable();
-          return;
-        }}
+        function initMap() {{
         var reduce = window.matchMedia
           && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var map = new maplibregl.Map({{
+        map = new maplibregl.Map({{
           container: "map",
           style: "https://tiles.openfreemap.org/styles/positron",
           center: [-96, 38], zoom: 3, keyboard: false,
@@ -5155,7 +5158,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         }}
         function applyFilter() {{
           filterTable();
-          var src = map.getSource("agencies");
+          var src = map && map.getSource("agencies");
           if (src) src.setData(filtered());
         }}
 
@@ -5224,6 +5227,8 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           if (current !== null) {{
             map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
           }}
+          mapEl.classList.remove("national-map-pending");
+          if (loadStatusEl) loadStatusEl.textContent = "Interactive map loaded.";
           fetch("/map.geojson").then(function (r) {{ return r.json(); }})
             .then(function (gj) {{ all = gj; applyFilter(); }})
             .catch(function () {{}});
@@ -5269,23 +5274,57 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           map.on("mouseenter", "clusters", function () {{ map.getCanvas().style.cursor = "pointer"; }});
           map.on("mouseleave", "clusters", function () {{ map.getCanvas().style.cursor = ""; }});
         }});
-        function onFilterChange() {{ applyFilter(); }}
+        }}
+        function onFilterChange() {{
+          // Filtering the accessible table never depends on the optional map.
+          filterTable();
+          if (!map || !all) return;
+          var src = map.getSource("agencies");
+          if (src) {{
+            src.setData({{
+              type: "FeatureCollection",
+              features: all.features.filter(function (f) {{
+                var p = f.properties || {{}};
+                return matches(p.grade, p.state || "", p.country || "", p.has_flex);
+              }})
+            }});
+          }}
+        }}
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
+        filterTable();
+
+        loadEl.addEventListener("click", function () {{
+          loadEl.disabled = true;
+          loadEl.textContent = "Loading map…";
+          if (loadStatusEl) loadStatusEl.textContent = "Loading the interactive map.";
+          var css = document.createElement("link");
+          css.rel = "stylesheet";
+          css.href = "https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css";
+          document.head.appendChild(css);
+          var script = document.createElement("script");
+          script.src = "https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js";
+          script.onload = function () {{
+            loadEl.hidden = true;
+            initMap();
+          }};
+          script.onerror = function () {{
+            loadEl.disabled = false;
+            loadEl.textContent = "Try loading the map again";
+            if (loadStatusEl) loadStatusEl.textContent =
+              "The map could not load. The complete agency list is still available below.";
+          }};
+          document.head.appendChild(script);
+        }});
       }})();
     </script>"""  # noqa: S608 - static HTML template text (the national map page), never executed as SQL
-    head_extra = (
-        f'<link rel="stylesheet" '
-        f'href="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css">'
-    )
     return _page(
         title="National map — GTFS Scorecard",
         description="A national map of transit agencies labelled and coloured by GTFS data quality grade.",
         canonical=f"{BASE_URL}/map/",
         wide=True,
         body=body,
-        head_extra=head_extra,
     )
 
 

@@ -40,6 +40,14 @@ def test_active_section_targets_a_real_nav_item() -> None:
         assert active is None or active in hrefs, f"{rel}: active {active!r} not in _NAV_ITEMS"
 
 
+def test_hand_authored_pages_do_not_block_on_remote_fonts() -> None:
+    pages = set(STATIC_NAV_PAGES) | {"concept/index.html"}
+    for rel in pages:
+        html = (_REPO / "web" / rel).read_text()
+        assert "fonts.googleapis.com" not in html, rel
+        assert "fonts.gstatic.com" not in html, rel
+
+
 def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
     html = (_REPO / "web" / "app" / "index.html").read_text()
 
