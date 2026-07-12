@@ -16,12 +16,54 @@
     "categories",
     "top_fixes"
   ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "pattern": "^1\\.(?:[89]|[1-9][0-9]+)$"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "required": [
+          "scoring_profile"
+        ]
+      }
+    }
+  ],
   "properties": {
     "schema_version": {
       "type": "string"
     },
     "rubric_version": {
       "type": "string"
+    },
+    "scoring_profile": {
+      "type": "object",
+      "description": "Identity and provenance of the scoring contract that produced the unchanged score fields. This is not a jurisdiction overlay or compliance determination.",
+      "required": [
+        "id",
+        "rubric_version",
+        "provenance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^gtfs-scorecard-[0-9]+\\.[0-9]+$"
+        },
+        "rubric_version": {
+          "type": "string"
+        },
+        "provenance": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
     },
     "validator_version": {
       "type": [

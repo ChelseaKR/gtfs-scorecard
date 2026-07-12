@@ -6,7 +6,12 @@ import datetime as dt
 import json
 from pathlib import Path
 
-from scorecard_pipeline import SCHEMA_VERSION
+from scorecard_pipeline import (
+    RUBRIC_VERSION,
+    SCHEMA_VERSION,
+    SCORING_PROFILE_ID,
+    SCORING_PROFILE_PROVENANCE,
+)
 from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import USER_AGENT, FetchResult
 from scorecard_pipeline.metrics import CategoryResult
@@ -46,6 +51,11 @@ ALL_CATEGORIES = ("correctness", "freshness", "completeness", "realtime")
 def test_artifact_schema_essentials() -> None:
     artifact = make_artifact(dt.date(2026, 6, 11))
     assert artifact["schema_version"] == SCHEMA_VERSION
+    assert artifact["scoring_profile"] == {
+        "id": SCORING_PROFILE_ID,
+        "rubric_version": RUBRIC_VERSION,
+        "provenance": SCORING_PROFILE_PROVENANCE,
+    }
     assert artifact["agency"] == {"id": "unitrans", "name": "Unitrans"}
     assert artifact["snapshot_date"] == "2026-06-11"
     assert artifact["feed"]["sha256"] == "abc123"

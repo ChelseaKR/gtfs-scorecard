@@ -48,7 +48,7 @@ the covered set, not the universe of US agencies.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.7`). The rule for
+Every artifact carries a `schema_version` (currently `1.8`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -91,6 +91,11 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.8` adds the required `scoring_profile` block to every per-agency
+  artifact. It identifies the scoring contract independently from the API
+  schema and states that its weights, deductions, thresholds, grade bands,
+  and fix ranking are project choices, not worldwide authority. No existing
+  score, category, grade, or top-fix field moved or changed. Additive.
 - `1.7` adds portable agency location fields: ISO 3166-1 `country`, ISO 3166-2
   `subdivision_code`, and practitioner-facing `subdivision_name`. The legacy
   `state` field remains available for existing US consumers. Additive.
@@ -118,8 +123,13 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "rubric_version": "1.1",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.1",
+    "rubric_version": "1.1",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination."
+  },
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
   "agency": { "id": "barrie-transit", "name": "Barrie Transit (Ontario)",
               "country": "CA", "subdivision_code": "CA-ON",
@@ -158,6 +168,13 @@ Changelog:
                    "effort": "...", "severity": "WARNING", "count": 0 } ]
 }
 ```
+
+`scoring_profile.id` is the stable identifier consumers should use when they
+need to compare like-for-like grades. It changes when the scoring contract
+changes, while `schema_version` changes when the artifact shape changes. The
+duplicated `rubric_version` makes the relationship explicit without requiring
+consumers to parse the profile identifier. This block describes the one shared
+profile only; it does not select or apply a jurisdiction overlay.
 
 In a scorecard's `agency` block, an omitted `country` means the legacy `US`
 default. The portable subdivision fields are optional when the primary
@@ -219,7 +236,7 @@ a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "rubric_version": "1.1",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -340,7 +357,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "count": 2,
@@ -356,7 +373,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

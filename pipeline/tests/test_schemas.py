@@ -177,6 +177,20 @@ def test_publish_refuses_an_artifact_missing_feed_provenance() -> None:
         publish(artifact)
 
 
+def test_current_artifact_requires_scoring_profile() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    del artifact["scoring_profile"]
+    with pytest.raises(ValidationError, match="scoring_profile"):
+        validate_artifact(artifact)
+
+
+def test_historical_artifact_before_scoring_profile_still_conforms() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["schema_version"] = "1.7"
+    del artifact["scoring_profile"]
+    validate_artifact(artifact)
+
+
 def test_a_measured_category_must_carry_score_findings_and_details() -> None:
     artifact = make_artifact(dt.date(2026, 6, 11))
     del artifact["categories"]["correctness"]["details"]
