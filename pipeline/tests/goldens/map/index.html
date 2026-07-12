@@ -59,7 +59,7 @@
         <label for="map-grade">Grade</label>
         <select id="map-grade" name="grade"><option value="">All grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option><option value="D">Grade D</option><option value="F">Grade F</option></select>
         <label for="map-state">Location</label>
-        <select id="map-state" name="state"><option value="">All locations</option><option value="Canada">Canada</option></select>
+        <select id="map-state" name="state"><option value="">All locations</option><option value="country:CA">Canada</option></select>
       </div>
       <div class="map-filter-row">
         <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
@@ -87,7 +87,7 @@
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
-        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
+        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="Ontario" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>Ontario</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>United States</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>United States</td><td>82.5</td></tr></tbody>
       </table>
     </section>
     <script>
@@ -106,7 +106,11 @@
 
         function matches(grade, state, country, hasFlex) {
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
-          var locOk = !loc || state === loc || (loc === "Canada" && country === "CA");
+          var countryPrefix = "country:";
+          var locOk = !loc ||
+            (loc.indexOf(countryPrefix) === 0
+              ? country === loc.slice(countryPrefix.length)
+              : state === loc);
           // hasFlex is a string from the table's data attribute and a boolean
           // from the GeoJSON properties; accept both.
           var flexOk = !f || hasFlex === true || hasFlex === "true";
@@ -151,6 +155,7 @@
         // a cluster zooms in; the table is the operable primary.
 
         var NONE = "__none__";  // sentinel agency id; no real feature matches
+        var fittedLocation = "";  // last location that changed the default camera
 
         // Agency id -> table row, so a hovered map point can light up its row
         // and the reverse. Visual only: the row text is the accessible source.
@@ -214,10 +219,49 @@
             })
           };
         }
+        function fitFiltered(data) {
+          // The default camera serves the US corpus. Once a reader chooses a
+          // location, move the optional visual map to those results so a
+          // configured country outside North America never appears empty.
+          if (!map) return;
+          var location = stateEl.value;
+          if (!location) {
+            // Clearing a location restores the default camera once. Grade and
+            // Flex changes with no active location leave a reader's pan/zoom
+            // alone instead of repeatedly snapping the map back.
+            if (fittedLocation) {
+              map.easeTo({
+                center: [-96, 38], zoom: 3,
+                animate: !reduce, duration: reduce ? 0 : 500
+              });
+            }
+            fittedLocation = "";
+            return;
+          }
+          fittedLocation = location;
+          if (!data.features.length) return;
+          if (data.features.length === 1) {
+            map.easeTo({
+              center: data.features[0].geometry.coordinates,
+              zoom: 7, animate: !reduce, duration: reduce ? 0 : 500
+            });
+            return;
+          }
+          var bounds = new maplibregl.LngLatBounds();
+          data.features.forEach(function (feature) {
+            bounds.extend(feature.geometry.coordinates);
+          });
+          map.fitBounds(bounds, {
+            padding: 48, maxZoom: 8,
+            animate: !reduce, duration: reduce ? 0 : 500
+          });
+        }
         function applyFilter() {
           filterTable();
+          var data = filtered();
           var src = map && map.getSource("agencies");
-          if (src) src.setData(filtered());
+          if (src) src.setData(data);
+          fitFiltered(data);
         }
 
         map.on("load", function () {
@@ -335,18 +379,8 @@
         }
         function onFilterChange() {
           // Filtering the accessible table never depends on the optional map.
-          filterTable();
-          if (!map || !all) return;
-          var src = map.getSource("agencies");
-          if (src) {
-            src.setData({
-              type: "FeatureCollection",
-              features: all.features.filter(function (f) {
-                var p = f.properties || {};
-                return matches(p.grade, p.state || "", p.country || "", p.has_flex);
-              })
-            });
-          }
+          if (!map || !all) { filterTable(); return; }
+          applyFilter();
         }
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);

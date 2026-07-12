@@ -162,6 +162,43 @@ subdivisions and are rewritten only after the visitor changes a control. A
 directory document without the new fields continues to use the former state
 controls, which keeps partial and cached deployments usable.
 
+## Country activation checklist
+
+Country support is an explicit deployment capability, not a JSON Schema enum.
+Published country fields validate the stable ISO 3166-1 alpha-2 shape so an API
+v1 consumer does not break when coverage expands. The curated registry remains
+closed to countries that are not enabled in the country capability configuration.
+This keeps typo rejection and product review at the write boundary without
+requiring every downstream schema consumer to upgrade for each country.
+
+Before enabling another country in `jurisdictions.yaml`:
+
+1. Record its uppercase ISO 3166-1 alpha-2 code, practitioner-facing country
+   name, and the ISO 3166-2 subdivisions the deployment will accept. Add catalog
+   aliases or source-specific fixups only when the source evidence is documented;
+   unknown places must remain unknown rather than being guessed.
+2. Verify at least one canonical GTFS Schedule endpoint, its license or
+   redistribution terms, update cadence, and operator or local-steward context.
+   The Global South pilot also requires the consent and partnership gates in
+   ADR 0028 before a feed is listed.
+3. Exercise one synthetic canary through registry parsing, artifact validation,
+   directory and `api/v1/by-location.json` generation, country/subdivision search,
+   portable deep links, static rendering, and mobile/keyboard accessibility. Keep
+   omitted historical `country` values defaulting to `US`, and keep the legacy
+   `state` and `by-state.json` contracts unchanged.
+4. Confirm every US-only surface stays absent for the canary: FTA NTD readiness,
+   NTD identifier alignment, ACS equity, and US guidance. Add local guidance or
+   an equity overlay only when a cited source exists; neither is required to
+   score the universal GTFS core.
+5. Review the public scope copy, structured data, map framing, and MCP/API search
+   descriptions so the new country is visible without being described as US,
+   Canadian, or unlocated. For a new interface language, complete the locale,
+   translation, pseudolocale, and RTL gates separately before claiming support.
+
+Only after those checks pass should production agency records be added. Activating
+a country does not change weights, thresholds, grades, or the shared
+`scoring_profile`; any jurisdiction-specific scoring change needs its own decision.
+
 ## Related
 
 ADR 0015 (equity, state-level first), 0016 (NTD id alignment), 0025

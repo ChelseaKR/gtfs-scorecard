@@ -22,6 +22,7 @@ from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE, SCHEMA_VERSION
 from ._stats import _percentile
+from .location import country_name
 
 # Size tiers by number of stops in the feed. The breakpoints sort the long tail
 # of small and rural systems (the audience) away from the big-city feeds, so a
@@ -77,9 +78,12 @@ def _state_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     by_state: dict[str, list[dict[str, Any]]] = {}
     for r in records:
-        # A Canadian agency has no US state; it belongs under Canada in the
-        # browse-by-place grid, never in the Unlocated bucket (ADR 0026).
-        place = r.get("state") or ("Canada" if r.get("country") == "CA" else "Unlocated")
+        # A non-US agency has no legacy US state; keep it findable under its
+        # configured country name instead of mixing it into Unlocated. Existing
+        # Canadian rows still publish under the exact same "Canada" label.
+        country_code = str(r.get("country") or "")
+        non_us_country = country_name(country_code) if country_code not in ("", "US") else ""
+        place = r.get("state") or non_us_country or "Unlocated"
         by_state.setdefault(place, []).append(r)
 
     rows: list[dict[str, Any]] = []
@@ -97,9 +101,6 @@ def _state_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         )
     rows.sort(key=lambda row: (-row["agencies"], row["state"]))
     return rows
-
-
-_COUNTRY_NAMES = {"US": "United States", "CA": "Canada"}
 
 
 def _rollup_row(
@@ -136,7 +137,7 @@ def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
             code_key="country_code",
             code=country_code or None,
             name_key="country_name",
-            name=_COUNTRY_NAMES.get(country_code, "Unlocated"),
+            name=country_name(country_code),
         )
         by_subdivision: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for member in members:

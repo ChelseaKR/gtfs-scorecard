@@ -11,11 +11,13 @@ from __future__ import annotations
 import datetime as dt
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
+from scorecard_pipeline import SCHEMA_VERSION
 from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.metrics import CategoryResult, Finding
@@ -140,6 +142,78 @@ def test_by_location_api_conforms_to_its_schema() -> None:
         },
     )
     _validator("by-location.schema.json").validate(payload)
+
+
+def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
+    """Minimal published documents carrying one portable country location."""
+    subdivision_code, subdivision_name, country_name = {
+        "US": ("US-CA", "California", "United States"),
+        "CA": ("CA-ON", "Ontario", "Canada"),
+    }.get(country_code, ("GB-ENG", "England", "United Kingdom"))
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["agency"]["country"] = country_code
+    artifact["agency"]["subdivision_code"] = subdivision_code
+    artifact["agency"]["subdivision_name"] = subdivision_name
+    agency = {
+        "id": "demo-gb",
+        "name": "Demo GB",
+        "grade": "B",
+        "score": 80.0,
+        "country": country_code,
+        "subdivision_code": subdivision_code,
+        "subdivision_name": subdivision_name,
+    }
+    distribution = {"A": 0, "B": 1, "C": 0, "D": 0, "F": 0}
+    country = {
+        "country_code": country_code,
+        "country_name": country_name,
+        "count": 1,
+        "median_score": 80.0,
+        "grade_distribution": distribution,
+        "subdivisions": [],
+    }
+    directory_country = {
+        "country_code": country_code,
+        "country_name": country_name,
+        "agencies": 1,
+        "subdivisions": [],
+    }
+    return {
+        "artifact.schema.json": artifact,
+        "catalog.schema.json": {"schema_version": SCHEMA_VERSION, "agencies": [agency]},
+        "directory.schema.json": {
+            "schema_version": SCHEMA_VERSION,
+            "summary": {
+                "agencies": 1,
+                "grade_distribution": distribution,
+                "countries": [directory_country],
+            },
+            "agencies": [agency],
+        },
+        "by-location.schema.json": {"countries": [country]},
+    }
+
+
+def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
+    """Public schemas describe the portable shape, not the deployment allowlist."""
+    assert SCHEMA_VERSION == "1.9"
+    for schema_name, document in _country_contract_documents("GB").items():
+        _validator(schema_name).validate(document)
+
+
+def test_historical_1_8_us_and_canada_documents_remain_valid() -> None:
+    for country_code in ("US", "CA"):
+        for schema_name, document in _country_contract_documents(country_code).items():
+            if "schema_version" in document:
+                document["schema_version"] = "1.8"
+            _validator(schema_name).validate(document)
+
+
+@pytest.mark.parametrize("country_code", ["gb", "GBR", "G1", "G-"])
+def test_country_contract_rejects_malformed_country_codes(country_code: str) -> None:
+    for schema_name, document in _country_contract_documents(country_code).items():
+        with pytest.raises(ValidationError, match="does not match"):
+            _validator(schema_name).validate(document)
 
 
 @pytest.mark.parametrize(

@@ -34,3 +34,6 @@ jobs:
       # CQ-10's missing half: the package must actually build as a wheel on
       # every PR, not just declare a hatchling backend.
       - run: uv build --wheel
+      # Import and dispatch from the built artifact, not the editable checkout.
+      # This catches package-data omissions in Marketplace/uvx installations.
+      - run: uvx --from dist/scorecard_pipeline-*.whl scorecard --help

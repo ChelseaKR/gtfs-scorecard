@@ -28,6 +28,7 @@ from .comparisons import (
 from .config import Agency
 from .dataset import build_quality_dataset, national_summary
 from .identity import build_identity_ledger
+from .location import country_name
 
 API_VERSION = "v1"
 
@@ -241,7 +242,6 @@ def _location_summary(
 
 def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -> dict[str, Any]:
     """Country aggregates with nested ISO 3166-2 subdivision aggregates."""
-    country_names = {"US": "United States", "CA": "Canada"}
     by_country: dict[str, list[dict[str, Any]]] = {}
     for row in dataset.get("rows", []):
         country_code = str((locations.get(str(row["id"])) or {}).get("country") or "")
@@ -254,7 +254,7 @@ def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -
             code_key="country_code",
             code=country_code or None,
             name_key="country_name",
-            name=country_names.get(country_code, "Unlocated"),
+            name=country_name(country_code),
         )
         subdivisions: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for member in members:

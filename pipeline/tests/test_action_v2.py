@@ -105,3 +105,16 @@ def test_cli_json_output_is_written_before_gate_result(
     )
     assert cli._cmd_try(args, argparse.ArgumentParser()) == 1
     assert json.loads(output.read_text())["overall"]["grade"] == "C"
+
+
+def test_installed_action_command_does_not_require_an_agency_registry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import cli
+
+    def registry_must_not_load() -> None:
+        raise AssertionError("scorecard try must be registry-free")
+
+    monkeypatch.setattr(cli, "load_agencies", registry_must_not_load)
+    monkeypatch.setattr(cli, "_cmd_try", lambda _args, _parser: 0)
+    assert cli.main(["try", "https://example.org/gtfs.zip"]) == 0

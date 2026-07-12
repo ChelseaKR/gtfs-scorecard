@@ -1975,12 +1975,11 @@ def _cmd_reproduce(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
 
 
 def main(argv: list[str] | None = None) -> int:
-    load_agencies()
     parser = argparse.ArgumentParser(prog="scorecard", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
     run = sub.add_parser("run", help="fetch, validate, score, and publish")
-    run.add_argument("--agency", choices=sorted(AGENCIES), help="one agency id")
+    run.add_argument("--agency", help="one agency id")
     run.add_argument("--all", action="store_true", help="run every registered agency")
     run.add_argument(
         "--date",
@@ -2439,7 +2438,7 @@ def main(argv: list[str] | None = None) -> int:
         "rt-health",
         help="sample realtime feeds and append an uptime/freshness observation",
     )
-    rthealth.add_argument("--agency", choices=sorted(AGENCIES), help="one agency id (default: all)")
+    rthealth.add_argument("--agency", help="one agency id (default: all)")
     rthealth.add_argument("--samples", type=int, default=2, help="samples per feed this run")
     rthealth.add_argument(
         "--interval", type=int, default=30, help="seconds between samples (polling etiquette)"
@@ -2449,7 +2448,7 @@ def main(argv: list[str] | None = None) -> int:
         "rt-archive",
         help="high-cadence realtime archiving session for one agency (ADR 0012)",
     )
-    rtarchive.add_argument("--agency", required=True, choices=sorted(AGENCIES), help="agency id")
+    rtarchive.add_argument("--agency", required=True, help="agency id")
     rtarchive.add_argument(
         "--duration", type=int, default=600, help="session length in seconds (default: 600)"
     )
@@ -2506,6 +2505,16 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+
+    # The ad-hoc scorer is intentionally registry-free: it is the Marketplace
+    # action and installed-wheel entry point for checking one supplied URL.
+    # Every registry-backed command loads only after argparse has handled help,
+    # so `scorecard --help` and `scorecard try` work from a standalone wheel.
+    if args.command != "try":
+        load_agencies()
+        agency_id = getattr(args, "agency", None)
+        if agency_id and agency_id not in AGENCIES:
+            parser.error(f"unknown agency: {agency_id}")
 
     handlers = {
         "run": _cmd_run,
