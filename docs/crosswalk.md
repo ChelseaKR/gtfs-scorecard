@@ -1,9 +1,8 @@
 # How the grade maps to the standards
 
-The scorecard's four categories are its own. This page shows how each one lines
-up with the two standards California small agencies are actually held to, so the
-grade is legible to someone who already knows those standards, and so a manager
-can move from "scorecard says B" to "here is the official thing this relates to."
+The scorecard's four categories are its own. The grade and thresholds do not
+change by country. This page separates the universal GTFS references behind the
+quality lens from jurisdiction guidance that applies only in a particular place.
 
 This is a crosswalk, not a compliance determination. A category being strong here
 does not certify a feed against any guideline, and a weak one does not fail it.
@@ -11,10 +10,25 @@ For the official assessment, use the sources linked below.
 
 ## The standards
 
-Three of these apply to every US agency; the fourth is the agency's own state
-guideline, shown only where one exists. On an agency page, the "How this agency
-maps to the standards" section shows the universal three plus the state guideline
-for that agency's state.
+The agency page builds its guidance in layers. Every agency receives the
+universal GTFS layer. A US agency also receives the FTA National Transit Database
+layer. California receives its published state guideline, while selected state
+programs are labelled as support resources rather than scoring authorities.
+
+### Universal GTFS layer
+
+- **[GTFS Schedule Best Practices](https://gtfs.org/schedule/best-practices/)**
+  and **[GTFS-Realtime Best Practices](https://gtfs.org/realtime/best-practices/)**
+  describe useful, interoperable rider information. They apply regardless of
+  country.
+- The [MobilityData GTFS Grading Scheme](https://github.com/MobilityData/gtfs-grading-scheme)
+  is a qualitative check of rider-facing values against the real world. The
+  scorecard automates narrower presence and plausibility proxies; it does not
+  replace that human review.
+- Trip-planner publication expectations explain why validation and current
+  calendars matter to riders. They are operational context, not a legal standard.
+
+### United States overlay
 
 - **The [FTA National Transit Database](https://www.transit.dot.gov/ntd) GTFS
   requirement.** Since Report Year 2023, every NTD reporter with fixed-route
@@ -28,7 +42,9 @@ for that agency's state.
   instead. When the agency's NTD ID is on file, the NTD readiness section on its
   scorecard checks the alignment and frames it as an optional convenience, never
   a required feed change and not part of the grade.
-- **A state's own guideline or program, where it has one.** California is
+### State and provincial overlays
+
+- **A jurisdiction's own guideline, where one has been mapped.** California is
   currently the only US state with a formal published GTFS quality *guideline*:
   the [California Transit Data Guidelines](https://dot.ca.gov/cal-itp/california-transit-data-guidelines)
   and [Minimum GTFS Guidelines](https://dot.ca.gov/cal-itp/california-minimum-general-transit-feed-specification-gtfs-guidelines-v2_0),
@@ -36,19 +52,16 @@ for that agency's state.
   a ten-point checklist. This scorecard's rubric is anchored to them, so for
   California agencies it is shown as the guideline the score maps to.
   Other states (Colorado, Michigan, Minnesota, Oregon, Washington) run GTFS
-  *programs* rather than a quality rubric; for agencies in those states the
-  program is shown as a support resource, not as a standard the score maps to.
-  The registry adds a state in one block.
-- The [MobilityData GTFS Grading Scheme](https://github.com/MobilityData/gtfs-grading-scheme):
-  a qualitative check that rider-facing values match the real world (route names
-  and colors, stop names and locations, trip headsigns). It deliberately does not
-  cover accessibility, fares, or feed validity, which is where this scorecard adds
-  to it.
-- **Google Transit (Google Maps).** Not a published rubric, but the de-facto
-  gate beyond California: to appear and stay in Google Maps a feed has to pass
-  Google's own validation and stay current. A feed that does not validate, or
-  whose calendar has expired, is dropped. In practice this tracks the scorecard's
-  Correctness and Freshness categories. Apple Maps applies a similar bar.
+  *programs* rather than a quality rubric. Their links are shown as support
+  resources, explicitly not as authorities that set or certify the score.
+- No Canadian federal or provincial compliance overlay is claimed yet. Canadian
+  agencies receive the universal GTFS layer, and never the US NTD layer. A future
+  Canadian overlay must cite the responsible authority before it is added.
+
+The source-of-truth records live in
+`pipeline/src/scorecard_pipeline/jurisdiction_guidance.py`. The browser constants
+are generated from that Python module, so static and interactive pages use the
+same applicability rules.
 
 ## The Grading Scheme's seven fields, mapped
 

@@ -22,7 +22,12 @@ import {
   GRADE_BANDS,
   GRADE_RANK,
   SEVERITY_LABELS,
+  JURISDICTION_GUIDANCE,
+  SUPPORT_RESOURCES,
   TIER_LABELS,
+  UNIVERSAL_GUIDANCE,
+  US_NTD_GUIDANCE,
+  US_STATE_SUBDIVISION_CODES,
   VALIDATOR_RULES_PAGE,
 } from "./generated/constants.js";
 import { compareText, formatDate, formatNumber } from "./locale.js";
@@ -955,7 +960,7 @@ function renderScorecard(artifact, history, dirRecord) {
     ${sep(confHtml)}
 
     ${routeRule()}
-    ${standardsSection(dirRecord && dirRecord.state)}
+    ${standardsSection(artifact, dirRecord)}
 
     ${routeRule()}
     ${badgeSection(artifact.agency.id)}
@@ -1336,31 +1341,6 @@ function setupFindings(findings) {
   apply("ALL");
 }
 
-/** A state's own GTFS guideline or program, shown to agencies in that state.
- *  `kind` keeps it honest: "guideline" is a quality rubric the score maps to
- *  (California only); "program" is a state support resource. Mirror of
- *  STATE_STANDARDS in render_site.py. */
-const STATE_STANDARDS = {
-  California: { kind: "guideline", name: "California Transit Data Guidelines",
-    url: "https://dot.ca.gov/cal-itp/california-transit-data-guidelines",
-    note: "Caltrans' published quality guidelines and compliance checklist." },
-  Colorado: { kind: "program", name: "CDOT Digital Transit Mobility",
-    url: "https://www.codot.gov/programs/innovativemobility/mobility-technology/digital-transit-mobility",
-    note: "Colorado's program coordinating GTFS data across transit providers." },
-  Michigan: { kind: "program", name: "Michigan Public Transit Open Data Program",
-    url: "https://miruralmobility.org/",
-    note: "MDOT's program helping agencies produce and maintain GTFS and GTFS-Flex." },
-  Minnesota: { kind: "program", name: "MnDOT Transit",
-    url: "https://www.dot.state.mn.us/transit/",
-    note: "Minnesota's statewide transit program and data resources." },
-  Oregon: { kind: "program", name: "Oregon ODOT Public Transportation",
-    url: "https://www.oregon.gov/odot/rptd/pages/index.aspx",
-    note: "ODOT's Public Transportation Division, which supports statewide GTFS." },
-  Washington: { kind: "program", name: "WSDOT Transportation Data",
-    url: "https://wsdot.wa.gov/about/transportation-data",
-    note: "WSDOT builds and publishes GTFS for Washington transit agencies." },
-};
-
 // Status labels for the NTD / conformance blocks. The text label carries the
 // meaning; the color class only reinforces it, never the sole cue. Mirrors the
 // static page (pipeline/src/scorecard_pipeline/render_site.py) so the SPA card
@@ -1403,6 +1383,7 @@ function ntdAlignmentRow(artifact) {
  *  whatever is present and is "" only when both are absent (older artifacts).
  *  @param {any} artifact */
 function ntdSection(artifact) {
+  if (String(artifact.agency?.country || "US").toUpperCase() !== "US") return "";
   const r = artifact.ntd_readiness;
   const alignRow = ntdAlignmentRow(artifact);
   if (!r && !alignRow) return "";
@@ -1531,34 +1512,39 @@ function autofixSection(artifact) {
   </section>`;
 }
 
-/** How each category relates to the standards an agency is held to: the FTA NTD
- *  GTFS requirement, the MobilityData grading scheme, the Google Transit gate,
- *  plus the agency's state guideline when its state has one. docs/crosswalk.md. */
-function standardsSection(state) {
-  const CW = "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/crosswalk.md";
-  const NTD = "https://www.transit.dot.gov/ntd";
-  const MD = "https://github.com/MobilityData/gtfs-grading-scheme";
-  const rows = [
-    ["Correctness", "GTFS Schedule best practices via the MobilityData validator. MobilityData grading: stop locations, route names and colors."],
-    ["Freshness", "The FTA National Transit Database expectation of a valid, current feed. An expired calendar drops the agency from Google Maps."],
-    ["Rider experience", "GTFS Best Practices for rider-facing fields. MobilityData grading: stop names and headsigns."],
-    ["Realtime quality", "GTFS-Realtime best practices: a stable URL, high uptime, and frequent updates."],
-  ]
-    .map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`)
+/** Jurisdiction-aware guidance overlay. The grade never changes: this only
+ *  selects references that apply to the agency's country and subdivision. */
+function standardsSection(artifact, dirRecord) {
+  const CW = "/crosswalk/";
+  const country = String(artifact.agency?.country || "US").toUpperCase();
+  const state = String(dirRecord?.state || "");
+  const subdivision = String(
+    dirRecord?.subdivision_code || (country === "US" ? US_STATE_SUBDIVISION_CODES[state] : "") || "",
+  ).toUpperCase();
+  const national = country === "US" ? US_NTD_GUIDANCE : null;
+  const local = JURISDICTION_GUIDANCE[subdivision] || SUPPORT_RESOURCES[subdivision];
+  const rows = CATEGORY_ORDER.map((key) => {
+    let note = UNIVERSAL_GUIDANCE.category_notes[key];
+    if (national?.category_notes[key]) note += ` ${national.category_notes[key]}`;
+    return `<dt>${esc(CATEGORY_LABELS[key])}</dt><dd>${esc(note)}</dd>`;
+  })
     .join("");
-  const std = STATE_STANDARDS[state];
-  const lead = std && std.kind === "guideline"
-    ? `In ${esc(state)}, the published guideline is `
-    : "Your state runs a transit-data program that can help: ";
-  const stateHtml = std
-    ? `<p class="page-lede">${lead}<a href="${esc(std.url)}">${esc(std.name)}</a>. ${esc(std.note)}</p>`
+  const lead = local && local.kind === "guideline"
+    ? (state ? `In ${esc(state)}, the published guideline is ` : "The published guideline for this jurisdiction is ")
+    : "A local transit-data support resource is ";
+  const localBoundary = local?.kind === "support"
+    ? " This resource supports agencies; it is not a scoring authority."
     : "";
+  const stateHtml = local
+    ? `<p class="page-lede">${lead}<a href="${esc(local.url)}">${esc(local.name)}</a>. ${esc(local.note)}${localBoundary}</p>`
+    : "";
+  const refs = [...UNIVERSAL_GUIDANCE.references, ...(national ? [national] : [])]
+    .map((ref) => `<a href="${esc(ref.url)}">${esc(ref.name)}</a>`)
+    .join(", ");
   return `<section aria-labelledby="standards-h" class="feed-details reveal">
     <h2 class="section-title" id="standards-h">How this maps to the standards</h2>
-    <p class="page-lede">A data-quality lens, not a compliance determination. Each category
-    relates to the <a href="${NTD}"><abbr title="Federal Transit Administration">FTA</abbr> National Transit Database</a> GTFS requirement, the
-    <a href="${MD}">MobilityData grading scheme</a>, and the Google Transit gate.
-    Read the full standards crosswalk: <a href="${CW}">standards crosswalk (docs/crosswalk.md)</a>.</p>
+    <p class="page-lede">${esc(UNIVERSAL_GUIDANCE.note)} Useful references here are ${refs}.
+    Read the full <a href="${CW}">standards crosswalk</a>.</p>
     ${stateHtml}
     <dl>${rows}</dl>
   </section>`;
