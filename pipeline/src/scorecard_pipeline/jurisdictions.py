@@ -11,7 +11,6 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass
-from importlib import resources
 from pathlib import Path
 from typing import NoReturn
 
@@ -173,7 +172,7 @@ def _default_source() -> tuple[str, str]:
     root_path = repo_root() / "jurisdictions.yaml"
     if os.environ.get("SCORECARD_ROOT") or root_path.exists():
         return str(root_path), root_path.read_text(encoding="utf-8")
-    packaged = resources.files("scorecard_pipeline").joinpath("jurisdictions.yaml")
+    packaged = Path(__file__).with_name("jurisdictions.yaml")
     return "scorecard_pipeline/jurisdictions.yaml", packaged.read_text(encoding="utf-8")
 
 
