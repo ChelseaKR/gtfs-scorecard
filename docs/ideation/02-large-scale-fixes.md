@@ -462,7 +462,8 @@ like:** any consumer can answer "how fresh is this dataset right now?" from
 
 ## FIX-12 — Registry at scale: shard and schema-gate `agencies.yaml`
 
-**Status: schema gate done, split still open (verified 2026-07-12).** The
+**Status: schema gate and transition loader done; mechanical split and writer
+migration still open (verified 2026-07-12).** The
 gate half this item sequences first already exists: `agencies.parse_agencies`
 fails the load on a malformed id, a non-URL, an unknown field, an unknown
 `rt_urls` kind, a bad `ntd_id` or `service_type`, or a duplicate id, and
@@ -472,7 +473,10 @@ with the registry dedupe, so CI now runs `lint --strict` and blocks any
 regression. What remains is the mechanical per-state split
 (`registry/<country>/<state>.yaml` with merged loading and writer updates),
 which this item itself says should land as one dedicated mechanical PR, not
-inside an unrelated one.
+inside an unrelated one. The loader now supports an explicit
+`registry/index.yaml` shard list while retaining `agencies.yaml` as a fallback.
+It rejects ambiguous or partial migrations, validates ids across the merged
+registry, and swaps the process registry only after the complete load succeeds.
 
 **Pitch.** Split the 447 KB single-file registry into per-state files with a
 validated schema, so curation scales past one careful maintainer.
