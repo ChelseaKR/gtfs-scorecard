@@ -64,6 +64,8 @@ agencies:
   - id: whitehorse-transit
     name: Whitehorse Transit (Yukon)
     country: CA
+    subdivision_code: CA-YT
+    subdivision_name: Yukon
     mdb_id: 689
     static_gtfs_url: https://data.whitehorse.ca/Google_transit_Feed_Docs.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
@@ -71,6 +73,8 @@ agencies:
   - id: barrie-transit
     name: Barrie Transit (Ontario)
     country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
     mdb_id: 3
     static_gtfs_url: http://www.myridebarrie.ca/gtfs/Google_transit.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
@@ -78,6 +82,8 @@ agencies:
   - id: london-transit-commission
     name: London Transit Commission (Ontario)
     country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
     mdb_id: 2
     static_gtfs_url: http://www.londontransit.ca/gtfsfeed/google_transit.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.

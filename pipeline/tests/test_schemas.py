@@ -94,6 +94,7 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "rollup.schema.json",
         "rollup-index.schema.json",
         "coverage.schema.json",
+        "by-location.schema.json",
     } <= names
 
 
@@ -115,6 +116,30 @@ def test_coverage_api_conforms_to_its_schema() -> None:
         [Agency("demo", "Demo", "https://example.org/feed.zip")],
     )
     _validator("coverage.schema.json").validate(payload)
+
+
+def test_by_location_api_conforms_to_its_schema() -> None:
+    from scorecard_pipeline.dataset import build_quality_dataset
+    from scorecard_pipeline.publicapi import by_location
+
+    index = {
+        "agencies": {
+            "demo": {
+                "history": [{"score": 80.0, "grade": "B"}],
+            }
+        }
+    }
+    payload = by_location(
+        build_quality_dataset(index),
+        {
+            "demo": {
+                "country": "CA",
+                "subdivision_code": "CA-ON",
+                "subdivision_name": "Ontario",
+            }
+        },
+    )
+    _validator("by-location.schema.json").validate(payload)
 
 
 @pytest.mark.parametrize(
