@@ -26,10 +26,11 @@ jobs:
       # what this covers: lint, format, mypy, tests+coverage, contrast,
       # readability, version-agreement, no-bare-TODO.
       - run: make -C .. verify
-      # Registry hygiene report. Informational while the catalog-sourced cohort
-      # still carries feed-descriptor names (cleared on the next network re-sync);
-      # switch to `--strict` once that backlog is gone to fail on regressions.
-      - run: uv run scorecard lint
+      # Registry hygiene gate. The feed-descriptor-name backlog cleared with
+      # the registry dedupe, so --strict now blocks any regression; the
+      # remaining non-blocking kinds (non-HTTPS URLs, missing mdb_ids) still
+      # print as the report.
+      - run: uv run scorecard lint --strict
       # CQ-10's missing half: the package must actually build as a wheel on
       # every PR, not just declare a hatchling backend.
       - run: uv build --wheel
