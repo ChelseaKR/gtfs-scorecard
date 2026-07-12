@@ -25,6 +25,7 @@ import {
   TIER_LABELS,
   VALIDATOR_RULES_PAGE,
 } from "./generated/constants.js";
+import { compareText, formatDate, formatNumber } from "./locale.js";
 
 /** Candidate locations for published artifacts. A configured CDN base
  *  (web/src/config.js) is tried first, then the deployed-site and repo
@@ -159,18 +160,6 @@ function esc(text) {
 /** @param {string} grade @returns {string} */
 function gradeClass(grade) {
   return `grade-${grade.toLowerCase()}`;
-}
-
-/** @param {string} iso @returns {string} */
-function formatDate(iso) {
-  const [y, m, d] = String(iso).split("-").map(Number);
-  const date = new Date(y, m - 1, d);
-  if (Number.isNaN(date.getTime())) return String(iso); // malformed date: show as-is
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 }
 
 function routeRule() {
@@ -319,7 +308,7 @@ function renderOverview(directory) {
       date: a.snapshot_date,
       search: `${a.name} ${a.id} ${a.state || ""} ${a.country === "CA" ? "canada" : ""}`.toLowerCase(),
     }))
-    .sort((x, y) => x.name.localeCompare(y.name));
+    .sort((x, y) => compareText(x.name, y.name));
 
   const total = agencies.length;
   const expired = s.expired || { total: 0 };
@@ -355,7 +344,7 @@ function renderOverview(directory) {
     <section class="overview-summary reveal" aria-labelledby="ov-h">
       <h2 class="visually-hidden" id="ov-h">National summary</h2>
       <div class="summary-stats">
-        ${stat(total.toLocaleString(), "agencies tracked")}
+        ${stat(formatNumber(total), "agencies tracked")}
         ${stat(s.median_score == null ? "—" : s.median_score, "median score")}
         ${stat(s.expiring_soon || 0, "feeds expiring within 30 days")}
         ${stat(expired.total || 0, "feeds already expired")}
@@ -367,7 +356,7 @@ function renderOverview(directory) {
       <label for="agency-search" class="visually-hidden">Search agencies by name or state</label>
       <input id="agency-search" class="agency-search" type="search" autocomplete="off"
         enterkeyhint="search" aria-controls="agency-list"
-        placeholder="Find your agency among ${total.toLocaleString()}…">
+        placeholder="Find your agency among ${formatNumber(total)}…">
       <div class="picker-sort">
         <label for="agency-sort">Sort</label>
         <select id="agency-sort">
@@ -533,7 +522,7 @@ function setupOverview(agencies, total, summary) {
       )
     );
     const noun = matches.length === 1 ? "agency" : "agencies";
-    count.textContent = `${matches.length.toLocaleString()} of ${total.toLocaleString()} ${noun}`;
+    count.textContent = `${formatNumber(matches.length)} of ${formatNumber(total)} ${noun}`;
     noMatch.hidden = matches.length !== 0;
     paintMore();
   }
@@ -1624,7 +1613,7 @@ function renderNotFound(agencyId) {
 async function renderCompare(aId, bId) {
   document.title = "Compare agencies — GTFS Scorecard";
   const dir = await loadDirectory();
-  const agencies = (dir.agencies || []).slice().sort((x, y) => x.name.localeCompare(y.name));
+  const agencies = (dir.agencies || []).slice().sort((x, y) => compareText(x.name, y.name));
   const byId = new Map(agencies.map((a) => [a.id, a]));
   const valid = (id) => !!id && byId.has(id);
 

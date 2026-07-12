@@ -6,6 +6,8 @@
  * configured, the form degrades to an explanation.
  */
 
+import { compareText } from "./locale.js";
+
 const SUBSCRIBE_URL = /** @type {any} */ (window).SCORECARD_SUBSCRIBE_URL || null;
 const DATA_BASES = [
   /** @type {any} */ (window).SCORECARD_DATA_BASE,
@@ -39,7 +41,7 @@ async function populateAgencies() {
   if (!index || !index.agencies) return;
   const entries = Object.entries(index.agencies)
     .map(([id, a]) => ({ id, name: /** @type {any} */ (a).name }))
-    .sort((x, y) => x.name.localeCompare(y.name));
+    .sort((x, y) => compareText(x.name, y.name));
   for (const { id, name } of entries) {
     const opt = document.createElement("option");
     opt.value = id;
