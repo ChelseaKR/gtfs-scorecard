@@ -107,5 +107,10 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/pages.yml
+    with:
+      # Data refresh: performance budgets warn instead of blocking, so a
+      # Lighthouse variance cannot stale the pages (FIX-14). Accessibility
+      # still blocks.
+      perf_gate: advisory
     secrets:
       PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}

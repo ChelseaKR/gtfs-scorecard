@@ -4,6 +4,16 @@ on:
   push:
     branches: [main]
   workflow_call:
+    inputs:
+      perf_gate:
+        # "block" fails the deploy when the Lighthouse performance budgets
+        # are missed; "advisory" reports the miss as a warning and deploys
+        # anyway. Data-refresh callers pass "advisory" so a performance
+        # variance can never hold fresh data hostage; code pushes always
+        # block (ideation FIX-14). Accessibility blocks in both modes.
+        type: string
+        required: false
+        default: block
     secrets:
       PAGES_AWS_ROLE_ARN:
         required: false
@@ -21,10 +31,13 @@ concurrency:
 
 jobs:
   # Deploy gate for the declared quality bar (CLAUDE.md: "Lighthouse
-  # accessibility score >= 95"): render and assemble _site exactly as a11y.yml
-  # does, serve it locally, and assert the score with Lighthouse CI. Thresholds
-  # live in lighthouserc.json at the repo root; only the accessibility category
-  # is asserted because that is the only category the >=95 claim covers (BL-12).
+  # accessibility score >= 95", "loads under 2s on 4G"): render and assemble
+  # _site exactly as a11y.yml does, serve it locally, and assert with
+  # Lighthouse CI. Thresholds live in lighthouserc.json at the repo root.
+  # Accessibility always blocks. The performance budgets block on code pushes
+  # and are advisory on data-refresh deploys, where the moving input is data
+  # size and a synthetic perf variance must not stale the pages (FIX-14; the
+  # 2026-07-11 dispatch run showed the failure mode).
   lighthouse:
     runs-on: ubuntu-latest
     permissions:
@@ -75,13 +88,31 @@ jobs:
           mkdir -p _site/data
           cp -r web/. _site/
           cp -r data/artifacts _site/data/artifacts
-      - name: Lighthouse CI (accessibility >= 95)
+      - name: Lighthouse CI (accessibility >= 95; performance per gate mode)
+        env:
+          PERF_GATE: ${{ inputs.perf_gate || 'block' }}
         run: |
+          set -o pipefail
+          CONFIG=lighthouserc.json
+          if [ "$PERF_GATE" = "advisory" ]; then
+            # Derive the advisory config from the blocking one so the two can
+            # never drift: accessibility keeps its error level, every other
+            # assertion is demoted to a warning.
+            jq '.ci.assert.assertions |= with_entries(
+                  if .key == "categories:accessibility" then .
+                  else .value[0] = "warn" end)' \
+              lighthouserc.json > lighthouserc.advisory.json
+            CONFIG=lighthouserc.advisory.json
+          fi
           python3 -m http.server 8080 --directory _site &
           SRV=$!
           for _attempt in $(seq 1 30); do curl -sf http://127.0.0.1:8080/ >/dev/null && break; sleep 1; done
-          npx --yes @lhci/cli@0.14 autorun
+          npx --yes @lhci/cli@0.14 autorun --config="$CONFIG" | tee lhci-output.log
           kill $SRV
+          if [ "$PERF_GATE" = "advisory" ] && grep -Eq "warning for" lhci-output.log; then
+            echo "::warning title=Performance budget missed (advisory)::This data-refresh deploy missed a Lighthouse performance budget and deployed anyway (FIX-14). Investigate before the next code push, where the budget blocks."
+            echo "Performance budget missed on a data-refresh deploy (advisory, FIX-14); see the Lighthouse output above." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: _site
