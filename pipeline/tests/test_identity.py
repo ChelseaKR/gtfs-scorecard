@@ -48,7 +48,10 @@ def test_identity_ledger_keeps_denominators_separate() -> None:
     assert ledger["configured_feed_records"] == 3
     assert ledger["active_feed_records"] == 2
     assert ledger["canonical_feed_records"] == 2
+    assert ledger["active_canonical_feed_records"] == 2
     assert ledger["distinct_organizations"] == 1
+    assert ledger["distinct_organization_keys"] == 1
+    assert ledger["provisional_organization_keys"] == 0
     assert ledger["alias_records"] == 1
     assert ledger["official_sources"] == 1
     assert ledger["unresolved_duplicate_mdb_ids"] == []
@@ -67,3 +70,4 @@ def test_identity_ledger_reports_unresolved_canonical_duplicates() -> None:
     assert ledger["unresolved_duplicate_feed_urls"] == [
         {"key": "example.org/feed.zip", "ids": ["one", "two"]}
     ]
+    assert ledger["provisional_organization_keys"] == 2

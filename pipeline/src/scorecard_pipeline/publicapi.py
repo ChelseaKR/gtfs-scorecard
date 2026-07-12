@@ -16,6 +16,7 @@ a leaderboard, per-state aggregates, and national stats.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE
@@ -24,7 +25,9 @@ from .comparisons import (
     comparison_eligible,
     comparison_exclusions,
 )
+from .config import Agency
 from .dataset import build_quality_dataset, national_summary
+from .identity import build_identity_ledger
 
 API_VERSION = "v1"
 
@@ -220,6 +223,53 @@ def stats_endpoint(dataset: dict[str, Any]) -> dict[str, Any]:
     return summary
 
 
+def coverage_endpoint(
+    index: dict[str, Any], dataset: dict[str, Any], agencies: Iterable[Agency]
+) -> dict[str, Any]:
+    """Explicit registry and publication denominators.
+
+    Feed records, organization keys, rendered scorecards, and scored rows are
+    different populations. Keeping them in one named endpoint prevents a
+    consumer from treating the backwards-compatible ``stats.agency_count`` as
+    all four. Organization keys that fall back to a feed id remain explicitly
+    provisional until a curator supplies ``organization_id``.
+    """
+    identity = build_identity_ledger(agencies)
+    rows = dataset.get("rows", [])
+    return {
+        "configured_feed_records": identity["configured_feed_records"],
+        "active_canonical_feed_records": identity["active_canonical_feed_records"],
+        "distinct_organization_keys": identity["distinct_organization_keys"],
+        "provisional_organization_keys": identity["provisional_organization_keys"],
+        "published_scorecard_pages": len(index.get("agencies") or {}),
+        "scored_latest_rows": sum(
+            isinstance(row.get("score"), (int, float)) and not isinstance(row.get("score"), bool)
+            for row in rows
+        ),
+        "definitions": {
+            "configured_feed_records": (
+                "Entries in the curated feed registry, including inactive records and aliases."
+            ),
+            "active_canonical_feed_records": (
+                "Active registry entries that are not aliases of another feed record."
+            ),
+            "distinct_organization_keys": (
+                "Distinct explicit organization IDs or provisional feed-ID fallbacks "
+                "among active canonical feeds."
+            ),
+            "provisional_organization_keys": (
+                "Active canonical feeds still using their feed ID because no curated "
+                "organization ID is recorded."
+            ),
+            "published_scorecard_pages": (
+                "Feed scorecard entries present in the published artifact index, including "
+                "retained pages for records no longer configured."
+            ),
+            "scored_latest_rows": "Published latest rows whose overall score is numeric.",
+        },
+    }
+
+
 def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
     """The API's self-description: version, endpoints, license, and provenance."""
     base = f"{base_url}/api/{API_VERSION}"
@@ -233,6 +283,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
             "leaderboard": f"{base}/leaderboard.json",
             "by_state": f"{base}/by-state.json",
             "stats": f"{base}/stats.json",
+            "coverage": f"{base}/coverage.json",
             "equity": f"{base}/equity.json",
             "canada_equity": f"{base}/canada-equity.json",
             "accessibility": f"{base}/accessibility.json",
@@ -255,6 +306,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
 def build_api(
     index: dict[str, Any],
     *,
+    agencies: Iterable[Agency],
     states: dict[str, str],
     base_url: str,
     generated_at: str,
@@ -267,4 +319,5 @@ def build_api(
         "leaderboard.json": leaderboard(index, dataset),
         "by-state.json": by_state(dataset, states),
         "stats.json": stats_endpoint(dataset),
+        "coverage.json": coverage_endpoint(index, dataset, agencies),
     }
