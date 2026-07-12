@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
@@ -30,6 +31,80 @@ def _first_rollup() -> tuple[str, str]:
     return str(rollup["id"]), str(rollup["name"])
 
 
+def _portable_directory() -> dict[str, Any]:
+    """Current directory enriched with the additive portable location fields.
+
+    The committed production snapshot predates the generated contract. Keeping
+    this browser fixture local lets the SPA behavior be exercised without
+    changing the pipeline or checked-in operational data.
+    """
+    directory = json.loads((ARTIFACTS / "directory.json").read_text())
+    canadian = {
+        "barrie-transit": ("CA-ON", "Ontario"),
+        "london-transit-commission": ("CA-ON", "Ontario"),
+    }
+    california_count = 0
+    for agency in directory["agencies"]:
+        if agency["id"] in canadian:
+            agency["subdivision_code"], agency["subdivision_name"] = canadian[agency["id"]]
+        elif agency.get("country") == "US" and agency.get("state") == "California":
+            agency["subdivision_code"] = "US-CA"
+            agency["subdivision_name"] = "California"
+            california_count += 1
+    directory["summary"]["countries"] = [
+        {
+            "country_code": "US",
+            "country_name": "United States",
+            "agencies": sum(a.get("country") == "US" for a in directory["agencies"]),
+            "subdivisions": [
+                {
+                    "subdivision_code": "US-CA",
+                    "subdivision_name": "California",
+                    "agencies": california_count,
+                },
+                {
+                    "subdivision_code": None,
+                    "subdivision_name": "Unlocated",
+                    "agencies": sum(
+                        a.get("country") == "US" and not a.get("subdivision_code")
+                        for a in directory["agencies"]
+                    ),
+                },
+            ],
+        },
+        {
+            "country_code": "CA",
+            "country_name": "Canada",
+            "agencies": 3,
+            "subdivisions": [
+                {"subdivision_code": "CA-ON", "subdivision_name": "Ontario", "agencies": 2},
+                {"subdivision_code": None, "subdivision_name": "Unlocated", "agencies": 1},
+            ],
+        },
+        {
+            "country_code": "GB",
+            "country_name": 'Quoted "country" onmouseover="window.__pwned=1" <test>',
+            "agencies": 0,
+            "subdivisions": [],
+        },
+    ]
+    return cast(dict[str, Any], directory)
+
+
+def _serve_directory(page: Page, directory: dict[str, Any]) -> None:
+    page.route(
+        "**/data/artifacts/directory.json",
+        lambda route: route.fulfill(json=directory),
+    )
+
+
+def _hash_params(page: Page) -> dict[str, str]:
+    return cast(
+        dict[str, str],
+        page.evaluate("() => Object.fromEntries(new URLSearchParams(location.hash.split('?')[1]))"),
+    )
+
+
 def _assert_not_stuck_loading(page: Page) -> None:
     """Both spinners render as role=status .loading inside #main; a finished
     route replaces main's innerHTML, so none may remain."""
@@ -39,9 +114,7 @@ def _assert_not_stuck_loading(page: Page) -> None:
 
 def test_overview_route_renders_directory(page: Page, app_url: str) -> None:
     page.goto(f"{app_url}#/")
-    expect(page.locator("#main h1.page-title")).to_have_text(
-        "How is the country's transit data doing?"
-    )
+    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
     expect(page.locator("#agency-search")).to_be_visible()
     _assert_not_stuck_loading(page)
 
@@ -74,15 +147,11 @@ def test_program_route_renders_members(page: Page, app_url: str) -> None:
 def test_hash_navigation_reroutes_without_reload(page: Page, app_url: str) -> None:
     """The hashchange listener re-renders in place, both forward and back."""
     page.goto(f"{app_url}#/")
-    expect(page.locator("#main h1.page-title")).to_have_text(
-        "How is the country's transit data doing?"
-    )
+    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
     page.locator('#main a[href="#/programs"]').click()
     expect(page.locator("#main h1.page-title")).to_have_text("Program rollups.")
     page.go_back()
-    expect(page.locator("#main h1.page-title")).to_have_text(
-        "How is the country's transit data doing?"
-    )
+    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
     _assert_not_stuck_loading(page)
 
 
@@ -128,3 +197,100 @@ def test_empty_directory_state_recovers_to_search(page: Page, app_url: str) -> N
     expect(search).to_have_value("")
     expect(page.locator(".results-hint")).to_be_visible()
     assert page.evaluate("() => document.activeElement.id") == "agency-search"
+
+
+def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> None:
+    _serve_directory(page, _portable_directory())
+    page.goto(f"{app_url}#/?country=us&subdivision=ca-on")
+
+    # The valid subdivision is authoritative even when the supplied country is
+    # inconsistent, and the original bookmark is not rewritten on page load.
+    expect(page.locator('.location-country[data-country="CA"]').first).to_have_attribute(
+        "aria-pressed", "true"
+    )
+    expect(page.locator('.location-subdivision[data-subdivision="CA-ON"]').first).to_have_attribute(
+        "aria-pressed", "true"
+    )
+    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    assert page.evaluate("() => location.hash") == "#/?country=us&subdivision=ca-on"
+
+    # Any user change writes the canonical, upper-case portable keys while
+    # preserving the other active controls.
+    page.locator("#agency-sort").select_option("best")
+    params = _hash_params(page)
+    assert params == {"country": "CA", "subdivision": "CA-ON", "sort": "best"}
+
+    page.locator('.location-subdivision[data-subdivision="CA-ON"]').first.click()
+    page.locator('.location-country[data-country="CA"]').first.click()
+    page.locator("#agency-search").fill("CA-ON")
+    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    page.locator("#agency-search").fill("Ontario")
+    expect(page.locator(".agency-count")).to_contain_text("2 of")
+
+    # Quotes and angle brackets from the directory stay text; they cannot add
+    # event-handler attributes to location controls.
+    expect(
+        page.get_by_role(
+            "button", name='Quoted "country" onmouseover="window.__pwned=1" <test> 0'
+        ).first
+    ).to_be_visible()
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert page.evaluate("() => window.__pwned") is None
+
+
+def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: str) -> None:
+    _serve_directory(page, _portable_directory())
+    page.goto(f"{app_url}#/?state=California")
+    expect(page.locator('.location-country[data-country="US"]').first).to_have_attribute(
+        "aria-pressed", "true"
+    )
+    expect(page.locator('.location-subdivision[data-subdivision="US-CA"]').first).to_have_attribute(
+        "aria-pressed", "true"
+    )
+    assert page.evaluate("() => location.hash") == "#/?state=California"
+
+    page.locator("#agency-sort").select_option("worst")
+    params = _hash_params(page)
+    assert params == {"country": "US", "subdivision": "US-CA", "sort": "worst"}
+
+
+def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(
+    page: Page, app_url: str
+) -> None:
+    _serve_directory(page, _portable_directory())
+    page.goto(f"{app_url}#/?state=Unlocated")
+
+    us = page.locator(
+        '.location-subdivision[data-country="US"][data-subdivision="UNLOCATED"]'
+    ).first
+    ca = page.locator(
+        '.location-subdivision[data-country="CA"][data-subdivision="UNLOCATED"]'
+    ).first
+    expect(us).to_have_attribute("aria-pressed", "true")
+    expect(ca).to_have_attribute("aria-pressed", "false")
+    assert page.evaluate("() => location.hash") == "#/?state=Unlocated"
+
+    ca.click()
+    expect(us).to_have_attribute("aria-pressed", "false")
+    expect(ca).to_have_attribute("aria-pressed", "true")
+    assert _hash_params(page) == {"country": "CA", "subdivision": "UNLOCATED"}
+    expect(page.locator(".agency-count")).to_contain_text("1 of")
+
+
+def test_old_directory_keeps_state_and_canada_behavior(page: Page, app_url: str) -> None:
+    directory = _portable_directory()
+    directory["summary"].pop("countries")
+    for agency in directory["agencies"]:
+        agency.pop("subdivision_code", None)
+        agency.pop("subdivision_name", None)
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?state=Canada")
+
+    expect(page.locator('.legacy-location[data-state="Canada"]')).to_have_attribute(
+        "aria-pressed", "true"
+    )
+    expect(page.locator(".agency-count")).to_contain_text("3 of")
+    assert page.evaluate("() => location.hash") == "#/?state=Canada"
+    page.locator("#agency-search").fill("Barrie")
+    params = _hash_params(page)
+    assert params == {"state": "Canada", "q": "Barrie"}
