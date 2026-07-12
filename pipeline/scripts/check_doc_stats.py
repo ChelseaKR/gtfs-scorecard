@@ -37,24 +37,32 @@ TOLERANCE = 0.01
 # (file, pattern, denominator). A missing pattern fails so rewording cannot
 # silently drop the check.
 RULES: list[tuple[str, str, str]] = [
-    (r"README.md", r"registry now contains\s+~([\d,]+)\s+feed\s+records", "registry"),
+    (r"README.md", r"registry contains\s+~([\d,]+)\s+curated feed\s+records", "registry"),
     (r"README.md", r"\(~([\d,]+)\s+published\s+scorecard pages\)", "pages"),
     (r"README.md", r"carries\s+~([\d,]+)\s+curated", "registry"),
-    (r"docs/feeds.md", r"~([\d,]+)\s+feed records across the US and Canada", "registry"),
-    (r"docs/support.md", r"about ([\d,]+)\s+configured feeds across the US and Canada", "registry"),
+    (r"docs/feeds.md", r"full registry has ~([\d,]+)\s+feed records", "registry"),
+    (
+        r"docs/support.md",
+        r"about ([\d,]+)\s+configured feeds in the current worldwide coverage",
+        "registry",
+    ),
     (r"docs/follow-ups.md", r"At ~([\d,]+)\s+configured feeds", "registry"),
-    (r"docs/roadmap.md", r"~([\d,]+)\s+configured feeds across the US and Canada", "registry"),
+    (
+        r"docs/roadmap.md",
+        r"~([\d,]+)\s+configured feeds in the current worldwide coverage",
+        "registry",
+    ),
     (r"docs/roadmap.md", r"\(~([\d,]+)\s+scored latest rows with published", "scored"),
     (
         r"docs/product-roadmap.md",
-        r"About ([\d,]+)\s+US and Canadian scorecards have numeric latest scores",
+        r"About ([\d,]+)\s+scorecards have numeric latest scores",
         "scored",
     ),
-    (r"docs/feature-roadmap.md", r"about ([\d,]+)\s+published scorecards", "pages"),
-    (r"CLAUDE.md", r"~([\d,]+)\s+published scorecards across the US and Canada", "pages"),
+    (r"docs/feature-roadmap.md", r"about ([\d,]+)\s+published\s+scorecard pages", "pages"),
+    (r"CLAUDE.md", r"~([\d,]+)\s+published scorecards, still concentrated", "pages"),
     (
         r"web/support/index.html",
-        r"about\s+([\d,]+)\s+configured feeds across the US and Canada",
+        r"about\s+([\d,]+)\s+configured feeds in the current worldwide coverage",
         "registry",
     ),
 ]

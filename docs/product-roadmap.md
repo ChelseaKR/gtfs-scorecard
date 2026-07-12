@@ -12,13 +12,17 @@ workspace, and how it sustains itself — see [`service-plan.md`](service-plan.m
 
 ## Who it is for, and the one job
 
-Two users share one screen:
+Three users share the same evidence, with different entry points:
 
 - The transit manager who inherited a GTFS export from a vendor and has no way
   to know whether it is any good.
 - The program liaison (a Caltrans-district or Cal-ITP-style customer success
   role) who needs one screen open during an agency check-in that says how the
   data is doing and the three things to fix.
+- The rider or community advocate who needs a plain answer about whether the
+  published feed states accessibility, fares, current service, and live-arrival
+  information. Rider-facing summaries translate the same facts without exposing
+  the agency workflow or weakening it.
 
 The job the product does is to turn a wall of validator output into a grade, a
 reason to care, and the next fix, written in plain language and framed as fixes
@@ -40,18 +44,20 @@ Every item below is checked against these.
 
 ## Where the product is today
 
-About 1,450 US and Canadian scorecards have numeric latest scores (piloted with Unitrans and
-Yolobus, first cohort drawn from California); per-agency scorecards with a
+About 1,450 scorecards have numeric latest scores, still concentrated in the
+United States and Canada, with official first canaries in Japan, Australia, and
+Ireland (piloted with Unitrans and Yolobus); per-agency scorecards with a
 grade, top-three fixes, a full findings list, and a named "fixed since last
 check" diff; companion pages per agency for a board packet, call prep, and the
 fix log; an "over time" trend with a per-category "what changed" summary;
-program rollups for 46 states plus DC and named cohorts; opt-in feed-health
+program rollups for 46 U.S. states plus DC and named cohorts; opt-in feed-health
 email digests and webhooks, with a weekly portfolio digest for liaisons;
 embeddable badges and conformance marks; a notice-to-fix knowledge base with
-per-vendor tool profiles; a searchable national directory; self-serve
+per-vendor tool profiles; a country-first searchable directory; self-serve
 submission and on-the-spot feed scoring; a versioned read API with a Parquet
-table and a read-only MCP server; national views of problems, adoption,
-realtime reliability, equity, and NTD readiness; crawlable pages on its own
+table and a read-only MCP server; coverage views of problems, adoption, and
+realtime reliability; clearly scoped U.S. equity and NTD readiness modules;
+crawlable pages on its own
 domain; and a security-hardened pipeline. The next three years make it a
 habit, then a reference, then infrastructure.
 
@@ -79,11 +85,13 @@ organic entry points, and the first agencies that visibly raise their grade.
 
 ## Year 2: broaden and benchmark
 
-Coverage and context. Once the corpus is national, the product can tell each
-agency where it stands and tell a program where to spend its time.
+Coverage and context. As the corpus becomes geographically diverse, the product
+can tell each agency where it stands and tell a program where to spend its time
+without pretending the registry is a census of any country.
 
-- **National coverage**, drawn from the Mobility Database. The scoring already
-  generalizes; this is curation and trust at scale.
+- **Worldwide coverage**, drawn from official/operator sources and global
+  catalogues. The scoring core generalizes; the hard work is curation,
+  licensing, local stewardship, and honest denominators.
 - **Benchmarking with care.** Percentile context for an agency's own size band,
   shown privately on its page and framed as encouragement, never as a ranking.
 - **Vendor-level intelligence.** Aggregate by the scheduling tool that produced
@@ -113,8 +121,8 @@ Let other tools and programs build on it, and let agencies own their place in it
 - **White-label for programs.** The same rubric and pipeline under a statewide
   program's banner and agency list. Because the system is static artifacts plus a
   stateless pipeline, an instance is a configuration and a deploy, not a fork.
-- **Beyond the US.** The region-specific parts of the rubric become pluggable so
-  other jurisdictions map it to their own guidance.
+- **Localized regional guidance.** The shared GTFS core stays stable while
+  jurisdictions map it to their own rules and practitioner language.
 - **The dataset as a public good.** Years of daily scores is a record of how
   transit data quality changes over time, useful to researchers and policy and
   published openly.

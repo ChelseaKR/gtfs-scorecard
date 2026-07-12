@@ -1,9 +1,9 @@
-"""Build the directory dataset the web app's national view reads.
+"""Build the directory dataset the web app's covered-set view reads.
 
 At ~1,200 agencies the front door can't be a flat alphabetical list. This
 turns the per-agency artifacts into one slim document the app loads once:
 
-- a national **summary** (grade distribution, how many feeds are expiring or
+- a corpus **summary** (grade distribution, how many feeds are expiring or
   expired, the median score) so the landing screen leads with the picture,
 - a **by-state** rollup so a manager can browse to their own state and a
   liaison can treat a state as a portfolio,
@@ -128,7 +128,9 @@ def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Portable country rows with nested first-level subdivision rows."""
     by_country: dict[str, list[dict[str, Any]]] = {}
     for record in records:
-        by_country.setdefault(str(record.get("country") or ""), []).append(record)
+        # Records published before portable locations are U.S. records under
+        # the directory v1 compatibility contract.
+        by_country.setdefault(str(record.get("country") or "US"), []).append(record)
 
     countries: list[dict[str, Any]] = []
     for country_code, members in by_country.items():

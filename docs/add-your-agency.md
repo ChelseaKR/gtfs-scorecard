@@ -11,10 +11,13 @@ on the spot, without registering or publishing it:
 
 ```sh
 cd pipeline
-uv run scorecard try https://example.org/gtfs/google_transit.zip --name "My Agency"
+uv run scorecard try https://example.org/gtfs/google_transit.zip \
+  --country CA --name "My Agency"
 ```
 
-It prints the overall grade, the score in each category, and the top things
+Pass the feed's assigned ISO 3166-1 alpha-2 country so country-sensitive
+validator rules use the right jurisdiction; `--country` defaults to `US` for
+compatibility. The command prints the overall grade, the score in each category, and the top things
 to fix. Add `--html scorecard.html` to also write a standalone page you can
 open in a browser. Nothing is uploaded; the download stays in your local
 cache.
@@ -36,7 +39,7 @@ cache.
    ```yaml
    - id: my-agency            # lowercase slug, used in URLs and file paths
      name: My Agency Transit  # shown on the scorecard
-     country: CA              # ISO 3166-1 alpha-2; omit for US
+     country: CA              # assigned ISO 3166-1 alpha-2 code
      subdivision_code: CA-ON  # ISO 3166-2 province, territory, or state code
      subdivision_name: Ontario
      static_gtfs_url: https://example.org/gtfs/google_transit.zip
@@ -47,15 +50,14 @@ cache.
        service_alerts: https://example.org/rt/ServiceAlerts.pb
    ```
 
-   `country` defaults to `US` so existing US entries keep working. For a new
-   entry outside the US, set `country`, `subdivision_code`, and
-   `subdivision_name` together. Use the full ISO 3166-2 code, such as `CA-ON`,
-   and the name practitioners use locally. Production currently activates `US`
-   and `CA` in its country capability configuration. The public JSON schemas
-   accept any well-formed ISO alpha-2 code so API clients remain forward-
-   compatible, but that does not activate a country or let an arbitrary code
-   into the curated registry. Enabling another country follows the config-backed
-   checklist in [ADR 0026](decisions/0026-internationalization.md#country-activation-checklist).
+   State `country` on every new entry. Its legacy default is `US` only so older
+   registry records keep working. Use the full assigned ISO 3166-2 code, such as
+   `CA-ON`, and the canonical subdivision name. All 249 assigned countries and
+   their ISO subdivisions are accepted without a country-specific code change;
+   malformed, unassigned, cross-country, and unknown codes are rejected. If a
+   subdivision name is ambiguous, the code is required. The first production
+   feed in a country follows the coverage checks in
+   [ADR 0026](decisions/0026-internationalization.md#global-iso-vocabulary-and-coverage-checklist).
    New integrations should use the portable fields for location and grouping.
    The published `state` field remains available for existing US consumers.
 

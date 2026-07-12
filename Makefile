@@ -6,8 +6,9 @@
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
 verify:
-	cd pipeline && uv run ruff check src tests
-	cd pipeline && uv run ruff format --check src tests
+	cd pipeline && uv run python scripts/generate_iso3166.py --check
+	cd pipeline && uv run ruff check src tests scripts/generate_iso3166.py
+	cd pipeline && uv run ruff format --check src tests scripts/generate_iso3166.py
 	cd pipeline && uv run mypy
 	cd pipeline && uv run pytest -q --cov=scorecard_pipeline --cov-branch --cov-fail-under=92
 	cd pipeline && uv run python scripts/check_contrast.py

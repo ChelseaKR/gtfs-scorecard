@@ -35,6 +35,10 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.15",
     "mypy>=1.10",
+    # Generation-only sources for the committed global ISO location vocabulary.
+    # Runtime and installed-wheel consumers read the generated JSON package data.
+    "pycountry==26.2.16",
+    "babel==2.18.0",
     "types-requests",
     "types-PyYAML",
     "duckdb>=1.0",

@@ -16,6 +16,9 @@ def _artifact(
     accessible: float | None = 40.0,
     stops: int | None = 100,
     status: str = "measured",
+    country: str | None = None,
+    subdivision_code: str = "",
+    subdivision_name: str = "",
 ) -> dict[str, Any]:
     details: dict[str, Any] = {"stops": stops}
     if boarding is not None:
@@ -23,8 +26,17 @@ def _artifact(
     if accessible is not None:
         details["wheelchair_accessible_pct"] = accessible
     details["accessibility"] = {"score": 50.0}
+    agency = {
+        "id": agency_id,
+        "name": name or agency_id,
+        "state": state,
+        "subdivision_code": subdivision_code,
+        "subdivision_name": subdivision_name,
+    }
+    if country is not None:
+        agency["country"] = country
     return {
-        "agency": {"id": agency_id, "name": name or agency_id, "state": state},
+        "agency": agency,
         "categories": {"completeness": {"status": status, "details": details}},
     }
 
@@ -44,6 +56,23 @@ def test_coverage_record_extracts_fields() -> None:
     assert rec["name"] == "Agency A"
     assert rec["wheelchair_boarding_pct"] == 60.0
     assert rec["wheelchair_accessible_pct"] == 30.0
+    assert rec["country"] == "US"
+
+
+def test_coverage_record_promotes_legacy_us_state_to_iso_subdivision() -> None:
+    full_name = coverage_record(_artifact("full", state="California"))
+    abbreviation = coverage_record(_artifact("abbr", state="CA"))
+
+    assert full_name is not None
+    assert abbreviation is not None
+    assert (full_name["subdivision_code"], full_name["subdivision_name"]) == (
+        "US-CA",
+        "California",
+    )
+    assert (abbreviation["subdivision_code"], abbreviation["subdivision_name"]) == (
+        "US-CA",
+        "California",
+    )
 
 
 def test_coverage_record_skips_unmeasured_or_missing() -> None:
@@ -101,3 +130,32 @@ def test_empty_input_is_safe() -> None:
     assert cov["bands"] == {"none": 0, "some": 0, "most": 0}
     assert cov["average_boarding_pct"] is None
     assert cov["states"] == []
+    assert cov["countries"] == []
+
+
+def test_portable_country_and_subdivision_accessibility_rollups() -> None:
+    raw = [
+        coverage_record(_artifact("us", state="California", boarding=100.0)),
+        coverage_record(
+            _artifact(
+                "ca-on",
+                state="",
+                country="CA",
+                subdivision_code="CA-ON",
+                subdivision_name="Ontario",
+                boarding=50.0,
+            )
+        ),
+        coverage_record(_artifact("ca-any", state="", country="CA", boarding=0.0)),
+    ]
+    records = [record for record in raw if record is not None]
+    cov = national_coverage(records)
+    assert [state["state"] for state in cov["states"]] == ["California"]
+    countries = {row["country_code"]: row for row in cov["countries"]}
+    assert countries["US"]["most"] == 1
+    assert countries["US"]["subdivisions"][0]["subdivision_code"] == "US-CA"
+    assert countries["CA"]["agencies"] == 2
+    assert countries["CA"]["average_boarding_pct"] == 25.0
+    subdivisions = {row["subdivision_code"]: row for row in countries["CA"]["subdivisions"]}
+    assert subdivisions["CA-ON"]["average_boarding_pct"] == 50.0
+    assert subdivisions[None]["none"] == 1

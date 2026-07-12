@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>National map — GTFS Scorecard</title>
-  <meta name="description" content="A national map of transit agencies labelled and coloured by GTFS data quality grade.">
+  <title>Agency map — GTFS Scorecard</title>
+  <meta name="description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
   <link rel="canonical" href="https://gtfsscorecard.org/map/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="National map — GTFS Scorecard">
-  <meta property="og:description" content="A national map of transit agencies labelled and coloured by GTFS data quality grade.">
+  <meta property="og:title" content="Agency map — GTFS Scorecard">
+  <meta property="og:description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
   <meta property="og:url" content="https://gtfsscorecard.org/map/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -40,11 +40,11 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">National map</span><meta itemprop="position" content="2"></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Agency map</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">The national map.</h1>
+    <h1 class="page-title">Agency map.</h1>
     <p class="page-lede">Every tracked agency with a locatable
     <abbr title="General Transit Feed Specification">GTFS</abbr> feed, placed at its
     service area, labelled with its grade letter and coloured by grade. 3 agencies
@@ -59,7 +59,7 @@
         <label for="map-grade">Grade</label>
         <select id="map-grade" name="grade"><option value="">All grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option><option value="D">Grade D</option><option value="F">Grade F</option></select>
         <label for="map-state">Location</label>
-        <select id="map-state" name="state"><option value="">All locations</option><option value="country:CA">Canada</option></select>
+        <select id="map-state" name="state"><option value="">All locations</option><optgroup label="Countries"><option value="country:CA">Canada</option><option value="country:US">United States</option></optgroup><optgroup label="Subdivisions"><option value="subdivision:CA-ON">Ontario, Canada</option></optgroup></select>
       </div>
       <div class="map-filter-row">
         <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
@@ -83,11 +83,11 @@
       <p class="map-count" role="status"><span id="map-result-count">3</span> of 3
         agencies shown.</p>
       <table class="leaderboard map-table">
-        <caption class="visually-hidden">Agencies on the national map, with grade, location,
+        <caption class="visually-hidden">Agencies on the coverage map, with grade, location,
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
-        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="Ontario" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>Ontario</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>United States</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>United States</td><td>82.5</td></tr></tbody>
+        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
       </table>
     </section>
     <script>
@@ -104,12 +104,15 @@
         var all = null;  // the full FeatureCollection, fetched once
         var map = null;
 
-        function matches(grade, state, country, hasFlex) {
+        function matches(grade, state, country, subdivision, hasFlex) {
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
           var countryPrefix = "country:";
+          var subdivisionPrefix = "subdivision:";
           var locOk = !loc ||
             (loc.indexOf(countryPrefix) === 0
               ? country === loc.slice(countryPrefix.length)
+              : loc.indexOf(subdivisionPrefix) === 0
+              ? subdivision === loc.slice(subdivisionPrefix.length)
               : state === loc);
           // hasFlex is a string from the table's data attribute and a boolean
           // from the GeoJSON properties; accept both.
@@ -124,6 +127,7 @@
             var ok = matches(tr.getAttribute("data-grade"),
                              tr.getAttribute("data-state"),
                              tr.getAttribute("data-country"),
+                             tr.getAttribute("data-subdivision"),
                              tr.getAttribute("data-has-flex"));
             tr.hidden = !ok;
             if (ok) shown++;
@@ -140,10 +144,13 @@
         function initMap() {
         var reduce = window.matchMedia
           && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var worldBounds = [[-180, -85], [180, 85]];
         map = new maplibregl.Map({
           container: "map",
           style: "https://tiles.openfreemap.org/styles/positron",
-          center: [-96, 38], zoom: 3, keyboard: false,
+          bounds: worldBounds,
+          fitBoundsOptions: { padding: 16, duration: 0 },
+          keyboard: false,
           attributionControl: false
         });
         // Take the canvas out of the tab order synchronously (not only on load),
@@ -215,14 +222,19 @@
             type: "FeatureCollection",
             features: all.features.filter(function (f) {
               var p = f.properties || {};
-              return matches(p.grade, p.state || "", p.country || "", p.has_flex);
+              return matches(
+                p.grade,
+                p.state || "",
+                p.country || "",
+                p.subdivision_code || "",
+                p.has_flex
+              );
             })
           };
         }
         function fitFiltered(data) {
-          // The default camera serves the US corpus. Once a reader chooses a
-          // location, move the optional visual map to those results so a
-          // configured country outside North America never appears empty.
+          // The default camera shows the world. Once a reader chooses a
+          // location, move the optional visual map to those results.
           if (!map) return;
           var location = stateEl.value;
           if (!location) {
@@ -230,9 +242,8 @@
             // Flex changes with no active location leave a reader's pan/zoom
             // alone instead of repeatedly snapping the map back.
             if (fittedLocation) {
-              map.easeTo({
-                center: [-96, 38], zoom: 3,
-                animate: !reduce, duration: reduce ? 0 : 500
+              map.fitBounds(worldBounds, {
+                padding: 16, animate: !reduce, duration: reduce ? 0 : 500
               });
             }
             fittedLocation = "";
@@ -418,13 +429,15 @@
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
       <a href="/fix/">GTFS errors &amp; fixes</a> ·

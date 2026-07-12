@@ -25,7 +25,9 @@ def test_action_declares_stable_outputs_and_json_input() -> None:
     }
     assert action["inputs"]["json"]["required"] is False
     assert action["inputs"]["summary"]["default"] == "true"
+    assert action["inputs"]["country"]["default"] == "US"
     run = action["runs"]["steps"][-1]["run"]
+    assert '--country "$FEED_COUNTRY"' in run
     assert '--json-out "$result_json"' in run
     assert 'exit "$gate_rc"' in run
 
@@ -90,7 +92,7 @@ def test_cli_json_output_is_written_before_gate_result(
         },
         "top_fixes": [],
     }
-    monkeypatch.setattr(cli, "run_adhoc", lambda *_args: artifact)
+    monkeypatch.setattr(cli, "run_adhoc", lambda *_args, **_kwargs: artifact)
     output = tmp_path / "nested/result.json"
     args = argparse.Namespace(
         url="https://example.org/gtfs.zip",

@@ -116,6 +116,24 @@ def test_by_state_aggregates_with_unlocated_fallback() -> None:
     assert states["California"]["grade_distribution"]["A"] == 1
 
 
+def test_by_state_excludes_explicit_non_us_records() -> None:
+    ds = build_quality_dataset(_index())
+    out = by_state(
+        ds,
+        {"alpha": "California", "bravo": "Ontario"},
+        {
+            "alpha": {"country": "US"},
+            "bravo": {"country": "CA"},
+            # A missing historical location remains a U.S. unlocated record.
+        },
+    )
+    states = {row["state"]: row for row in out["states"]}
+
+    assert states["California"]["count"] == 1
+    assert states["Unlocated"]["count"] == 1
+    assert "Ontario" not in states
+
+
 def test_by_location_groups_countries_and_nested_subdivisions() -> None:
     ds = build_quality_dataset(_index())
     out = by_location(
@@ -136,10 +154,11 @@ def test_by_location_groups_countries_and_nested_subdivisions() -> None:
     countries = {row["country_code"]: row for row in out["countries"]}
     assert countries["US"]["country_name"] == "United States"
     assert countries["CA"]["country_name"] == "Canada"
-    assert countries["US"]["count"] == 1
-    assert countries["US"]["subdivisions"][0]["subdivision_code"] == "US-CA"
+    assert countries["US"]["count"] == 2
+    us_subdivisions = {row["subdivision_code"]: row for row in countries["US"]["subdivisions"]}
+    assert us_subdivisions["US-CA"]["subdivision_name"] == "California"
     assert countries["CA"]["subdivisions"][0]["subdivision_name"] == "Ontario"
-    assert countries[None]["count"] == 1
+    assert us_subdivisions[None]["count"] == 1
 
 
 def test_by_location_uses_configured_country_name(monkeypatch: pytest.MonkeyPatch) -> None:

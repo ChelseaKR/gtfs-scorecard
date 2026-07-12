@@ -45,7 +45,7 @@
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a>
       <button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button>
       <div class="nav-cluster" id="nav-cluster">
-        <nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav>
+        <nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav>
         <div id="theme-control"></div>
       </div>
     </div>
@@ -73,6 +73,15 @@
         <p class="field">
           <label for="try-name">Agency name <span class="hint">(optional, labels the result)</span></label>
           <input id="try-name" name="name" type="text" maxlength="200" autocomplete="organization">
+        </p>
+        <p class="field">
+          <label for="try-country">Country or territory code
+            <span class="req">(required)</span></label>
+          <input id="try-country" name="country" type="text" required maxlength="2"
+            pattern="[A-Za-z]{2}" autocomplete="off" autocapitalize="characters"
+            spellcheck="false" aria-describedby="try-country-hint">
+          <span class="hint" id="try-country-hint">Use the two-letter ISO code for the
+          feed's primary location, such as CA, GB, or NZ.</span>
         </p>
         <p class="field">
           <button type="submit" class="submit-button">Score this feed</button>
@@ -121,13 +130,15 @@
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
       <a href="/fix/">GTFS errors &amp; fixes</a> ·

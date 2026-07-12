@@ -3,9 +3,10 @@
 The MobilityData Java validator is the most expensive step in a score, and the
 daily run re-validates every feed even though most feeds are byte-identical to
 the day before. This caches the normalized validator report next to a feed's
-artifacts, keyed by the feed's sha256 and the validator version. A re-score whose
-bytes and validator version both match the cache reuses the report and skips the
-Java run entirely; anything else re-validates and refreshes the cache.
+artifacts, keyed by the feed's sha256, validator version, and validator country.
+A re-score whose bytes, version, and country all match the cache reuses the
+report and skips the Java run entirely; anything else re-validates and refreshes
+the cache.
 
 The cache lives at data/artifacts/<id>/validator-cache.json so it rides the same
 upload-and-commit path as the artifacts and is ignored by the index and rollup
@@ -33,6 +34,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import artifacts_dir
+from .location import normalize_country_code
 from .validate import NoticeGroup, ValidationReport
 
 log = logging.getLogger(__name__)
@@ -72,14 +74,36 @@ def cache_path(agency_id: str) -> Path:
     return artifacts_dir() / agency_id / "validator-cache.json"
 
 
-def _matching_report(data: Any, sha256: str, validator_version: str) -> ValidationReport | None:
-    """The stored report when both the feed bytes and validator version match.
+def _cache_country(country_code: str) -> str:
+    country = normalize_country_code(country_code)
+    if not country:
+        raise ValueError(
+            "validator cache country must be an assigned ISO 3166-1 alpha-2 code, "
+            f"got {country_code!r}"
+        )
+    return country
 
-    A mismatch on either (the feed changed, or the validator was upgraded and may
-    emit different notices) is a miss, so the caller re-validates."""
+
+def _matching_report(
+    data: Any,
+    sha256: str,
+    validator_version: str,
+    country_code: str = "US",
+) -> ValidationReport | None:
+    """The stored report when feed bytes, version, and country all match.
+
+    A mismatch on any input is a miss, so the caller re-validates. Cache files
+    written before country-aware validation omitted ``country_code``; those are
+    known U.S. runs and remain reusable only for U.S. requests.
+    """
     if not isinstance(data, dict):
         return None
-    if data.get("sha256") != sha256 or data.get("validator_version") != validator_version:
+    stored_country = normalize_country_code(str(data.get("country_code") or "US"))
+    if (
+        data.get("sha256") != sha256
+        or data.get("validator_version") != validator_version
+        or stored_country != _cache_country(country_code)
+    ):
         return None
     report = data.get("report")
     if not isinstance(report, dict):
@@ -144,25 +168,31 @@ def _s3_store(bucket: str, agency_id: str, payload: dict[str, Any]) -> None:
 # --- Public API -------------------------------------------------------------
 
 
-def load_cached(agency_id: str, sha256: str, validator_version: str) -> ValidationReport | None:
-    """The cached report when bytes and validator version match, else None.
+def load_cached(
+    agency_id: str,
+    sha256: str,
+    validator_version: str,
+    country_code: str = "US",
+) -> ValidationReport | None:
+    """The cached report when bytes, version, and country match, else None.
 
     Checks the local file first (fast, no network), then the S3 tier if a bucket
     is configured. An S3 hit is written through to the local file so the rest of
     this run, and any commit or upload step, sees it."""
+    country = _cache_country(country_code)
     path = cache_path(agency_id)
     try:
         local = json.loads(path.read_text())
     except (FileNotFoundError, ValueError):
         local = None
-    hit = _matching_report(local, sha256, validator_version)
+    hit = _matching_report(local, sha256, validator_version, country)
     if hit is not None:
         return hit
 
     bucket = _cache_bucket()
     if bucket:
         remote = _s3_load(bucket, agency_id)
-        hit = _matching_report(remote, sha256, validator_version)
+        hit = _matching_report(remote, sha256, validator_version, country)
         if hit is not None and isinstance(remote, dict):
             _write_local(path, remote)
             return hit
@@ -170,12 +200,17 @@ def load_cached(agency_id: str, sha256: str, validator_version: str) -> Validati
 
 
 def store_cached(
-    agency_id: str, sha256: str, validator_version: str, report: ValidationReport
+    agency_id: str,
+    sha256: str,
+    validator_version: str,
+    report: ValidationReport,
+    country_code: str = "US",
 ) -> Path:
-    """Write the report to the local file and, if configured, the S3 tier."""
+    """Write a country-bound report locally and, if configured, to S3."""
     payload = {
         "sha256": sha256,
         "validator_version": validator_version,
+        "country_code": _cache_country(country_code),
         "report": _report_to_json(report),
     }
     path = cache_path(agency_id)

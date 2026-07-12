@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from scorecard_pipeline.config import AGENCIES, Agency
 from scorecard_pipeline.rt_national import national_rt, reliability_band
 
 
@@ -15,8 +16,11 @@ def _summary(
     observations: int = 5,
     uptime: float = 100.0,
     lag: int | None = 5,
+    country: str | None = None,
+    subdivision_code: str = "",
+    subdivision_name: str = "",
 ) -> dict[str, Any]:
-    return {
+    summary = {
         "id": agency_id,
         "name": name or agency_id,
         "state": state,
@@ -24,6 +28,15 @@ def _summary(
         "uptime_pct": uptime,
         "median_lag_seconds": lag,
     }
+    if country is not None:
+        summary.update(
+            {
+                "country": country,
+                "subdivision_code": subdivision_code,
+                "subdivision_name": subdivision_name,
+            }
+        )
+    return summary
 
 
 def test_reliability_bands() -> None:
@@ -102,4 +115,47 @@ def test_empty_input_is_safe() -> None:
     assert nat["bands"] == {"reliable": 0, "mostly": 0, "spotty": 0}
     assert nat["median_uptime_pct"] is None
     assert nat["states"] == []
+    assert nat["countries"] == []
     assert nat["most_reliable"] == []
+
+
+def test_portable_country_and_subdivision_realtime_rollups() -> None:
+    summaries = [
+        _summary("us", state="California", uptime=99.0),
+        _summary(
+            "ca-on",
+            state="",
+            country="CA",
+            subdivision_code="CA-ON",
+            subdivision_name="Ontario",
+            uptime=100.0,
+        ),
+        _summary("ca-any", state="", country="CA", uptime=90.0),
+    ]
+    nat = national_rt(summaries)
+    assert [state["state"] for state in nat["states"]] == ["California"]
+    countries = {row["country_code"]: row for row in nat["countries"]}
+    assert countries["US"]["reliable"] == 1
+    assert countries["CA"]["agencies"] == 2
+    assert countries["CA"]["median_uptime_pct"] == 95.0
+    subdivisions = {row["subdivision_code"]: row for row in countries["CA"]["subdivisions"]}
+    assert subdivisions["CA-ON"]["reliable"] == 1
+    assert subdivisions[None]["subdivision_name"] == "Unlocated"
+
+
+def test_realtime_uses_registry_location_for_legacy_health_summary(
+    monkeypatch: Any,
+) -> None:
+    agency = Agency(
+        id="registry-ca",
+        name="Registry Canada",
+        static_gtfs_url="https://example.ca/gtfs.zip",
+        country="CA",
+        subdivision_code="CA-ON",
+        subdivision_name="Ontario",
+    )
+    monkeypatch.setitem(AGENCIES, agency.id, agency)
+    nat = national_rt([_summary(agency.id, state="")])
+    assert nat["states"] == []
+    assert nat["countries"][0]["country_code"] == "CA"
+    assert nat["countries"][0]["subdivisions"][0]["subdivision_code"] == "CA-ON"

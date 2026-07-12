@@ -3,7 +3,7 @@ operational commands the rollout roadmap (docs/roadmap.md) needs.
 
 scorecard run --all
 scorecard run --agency unitrans [--date 2026-06-11] [--force-fetch]
-scorecard try <gtfs-zip-url> [--name "Agency"] [--html out.html]  # ad-hoc, unpublished
+scorecard try <gtfs-zip-url> [--country CA] [--name "Agency"]  # ad-hoc, unpublished
 scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import datetime as dt
+import hashlib
 import json
 import logging
 import os
@@ -48,7 +49,12 @@ from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
 from .score import build_scorecard
-from .validate import parse_report, run_validator
+from .validate import (
+    country_scoped_output_dir,
+    parse_report,
+    run_validator,
+    validator_country_code,
+)
 
 log = logging.getLogger(__name__)
 
@@ -56,13 +62,14 @@ log = logging.getLogger(__name__)
 def _maybe_api_report(agency: Agency, sha256: str, validator_version: str):  # type: ignore[no-untyped-def]
     """MobilityData's validation report for this feed's bytes, or None.
 
-    Only attempted when the agency pins an mdb id and a Feed API token is in the
-    environment (MOBILITY_FEED_API_TOKEN). Every failure path returns None so the
-    caller runs the validator as usual; this only ever saves work, never blocks a
-    score.
+    Only attempted for U.S. feeds when the agency pins an mdb id and a Feed API
+    token is in the environment (MOBILITY_FEED_API_TOKEN). The Feed API response
+    proves feed hash and validator version but does not expose the validator's
+    country flag, so reusing it abroad could import country-sensitive notices
+    produced under the wrong rules. Every miss falls back to the local validator.
     """
     token = os.environ.get("MOBILITY_FEED_API_TOKEN", "")
-    if not agency.mdb_id or not token:
+    if validator_country_code(agency.country) != "US" or not agency.mdb_id or not token:
         return None
     from .feedapi import try_cached_report
 
@@ -113,7 +120,16 @@ def run_agency(  # noqa: C901
     from .validate import VALIDATOR_VERSION
     from .vcache import load_cached, store_cached
 
-    report = None if force_fetch else load_cached(agency.id, fetched.sha256, VALIDATOR_VERSION)
+    report = (
+        None
+        if force_fetch
+        else load_cached(
+            agency.id,
+            fetched.sha256,
+            VALIDATOR_VERSION,
+            country_code=agency.country,
+        )
+    )
     cache_hit = report is not None
     if report is not None:
         log.info("%s: validator cache hit (%s)", agency.id, fetched.sha256[:12])
@@ -124,12 +140,25 @@ def run_agency(  # noqa: C901
         # miss falls through to a local run (feedapi.py).
         report = _maybe_api_report(agency, fetched.sha256, VALIDATOR_VERSION)
         if report is None:
-            report_dir = raw_dir() / agency.id / date.isoformat() / "validator"
+            report_dir = country_scoped_output_dir(
+                raw_dir() / agency.id / date.isoformat() / "validator",
+                agency.country,
+            )
             report_path = report_dir / "report.json"
             if not report_path.exists() or force_fetch:
-                report_path = run_validator(fetched.path, report_dir)
+                report_path = run_validator(
+                    fetched.path,
+                    report_dir,
+                    country_code=agency.country,
+                )
             report = parse_report(report_path)
-        store_cached(agency.id, fetched.sha256, VALIDATOR_VERSION, report)
+        store_cached(
+            agency.id,
+            fetched.sha256,
+            VALIDATOR_VERSION,
+            report,
+            country_code=agency.country,
+        )
 
     cats = [
         correctness(report),
@@ -289,7 +318,12 @@ def run_agency(  # noqa: C901
     return RunOutcome(path=str(path), mirrored=fetched.source == "mirror", cache_hit=cache_hit)
 
 
-def run_adhoc(url: str, name: str | None, date: dt.date) -> dict[str, Any]:
+def run_adhoc(
+    url: str,
+    name: str | None,
+    date: dt.date,
+    country: str = "US",
+) -> dict[str, Any]:
     """Score an arbitrary GTFS Schedule feed without registering or publishing.
 
     For live, exploratory use: point it at any feed zip and get the same grade,
@@ -298,11 +332,19 @@ def run_adhoc(url: str, name: str | None, date: dt.date) -> dict[str, Any]:
     land in the gitignored data/raw cache. Realtime is not sampled (an ad-hoc
     URL carries no RT endpoints), so that category shows as not yet measured.
     """
+    country_code = validator_country_code(country)
     label = name or urllib.parse.urlparse(url).netloc or "Ad-hoc feed"
-    agency = Agency(id="_adhoc", name=label, static_gtfs_url=url)
-    fetched = fetch_static(agency, date, force=True)
-    report_dir = raw_dir() / agency.id / date.isoformat() / "validator"
-    report = parse_report(run_validator(fetched.path, report_dir))
+    agency = Agency(id="_adhoc", name=label, static_gtfs_url=url, country=country_code)
+    # Keep the public artifact identity stable while isolating scratch files by
+    # URL and validator country. Several local/worker invocations can score
+    # different feeds at once; a shared `_adhoc/<date>` path lets one download
+    # replace another between fetch and validation.
+    scratch_key = f"{country_code}\0{url}".encode()
+    scratch_id = f"_adhoc-{hashlib.sha256(scratch_key).hexdigest()[:16]}"
+    scratch_agency = dataclasses.replace(agency, id=scratch_id)
+    fetched = fetch_static(scratch_agency, date, force=True)
+    report_dir = raw_dir() / scratch_id / date.isoformat() / "validator"
+    report = parse_report(run_validator(fetched.path, report_dir, country_code=country_code))
     cats = [
         correctness(report),
         freshness(read_feed_dates(str(fetched.path)), today=date),
@@ -348,7 +390,12 @@ def _print_scorecard_summary(artifact: dict[str, Any]) -> None:
 
 def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     try:
-        artifact = run_adhoc(args.url, args.name, args.date)
+        artifact = run_adhoc(
+            args.url,
+            args.name,
+            args.date,
+            country=getattr(args, "country", "US"),
+        )
     except Exception as exc:
         log.error("could not score %s: %s", args.url, exc)
         return 1
@@ -405,6 +452,14 @@ def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:
     for f in failures:
         log.error("gate failed: %s", f)
     return 1 if failures else 0
+
+
+def _country_arg(value: str) -> str:
+    """Argparse adapter for assigned ISO 3166-1 alpha-2 country codes."""
+    try:
+        return validator_country_code(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
 def _liveness_unchanged(agency_id: str) -> bool:
@@ -896,7 +951,7 @@ def _cmd_dataset(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
         print(to_csv(dataset), end="")
     summary = national_summary(dataset)
     log.info(
-        "National dataset: %d agencies, average %s, %s%% current.",
+        "Covered dataset: %d agencies, average %s, %s%% current.",
         summary["agency_count"],
         summary["average_score"],
         summary["pct_current"],
@@ -2008,6 +2063,12 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument("url", help="direct link to a GTFS Schedule zip")
     adhoc.add_argument("--name", help="agency name to show (default: the feed host)")
     adhoc.add_argument(
+        "--country",
+        type=_country_arg,
+        default="US",
+        help="assigned ISO 3166-1 alpha-2 feed country (default: US)",
+    )
+    adhoc.add_argument(
         "--date",
         type=dt.date.fromisoformat,
         default=dt.date.today(),
@@ -2074,7 +2135,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     query = sub.add_parser(
-        "query", help="run SQL over the national dataset (DuckDB), or export Parquet"
+        "query", help="run SQL over the covered dataset (DuckDB), or export Parquet"
     )
     query.add_argument("sql", nargs="?", help="SQL against the 'agencies' table")
     query.add_argument("--export", help="write the dataset to this Parquet path and exit")
@@ -2209,7 +2270,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     fix_outcomes.add_argument("--out", help="write the report here instead of stdout")
 
-    dataset = sub.add_parser("dataset", help="build the open national quality dataset (JSON + CSV)")
+    dataset = sub.add_parser("dataset", help="build the open covered-set dataset (JSON + CSV)")
     dataset.add_argument("--out", help="write dataset.json (and a sibling .csv) here")
 
     sensitivity = sub.add_parser(

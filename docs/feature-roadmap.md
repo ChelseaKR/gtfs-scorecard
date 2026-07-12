@@ -31,8 +31,8 @@ predictive freshness, and registry themes) has shipped and moved to
 | Vendor view of stale feeds | `vendors.py`, expiry aggregated by serving host |
 
 The competitive sequence from [ADR 0005](decisions/0005-competitive-positioning.md)
-also played out: fetching was hardened, coverage went national (about 1,450
-published scorecards across the US and Canada), the crosswalk became an
+also played out: fetching was hardened, coverage grew to about 1,450 published
+scorecard pages and the location model became worldwide-capable, the crosswalk became an
 on-site page, and the vendor view exists as an operator surface.
 
 ## What comes next

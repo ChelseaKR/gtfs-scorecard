@@ -38,6 +38,10 @@ inputs:
     description: "Agency name to show in the report (default: the feed host)."
     required: false
     default: ""
+  country:
+    description: "Assigned ISO 3166-1 alpha-2 feed country used by the validator."
+    required: false
+    default: "US"
   html:
     description: "Path to also write a standalone HTML scorecard (relative to the workspace). Leave blank to skip."
     required: false
@@ -73,6 +77,7 @@ runs:
         MIN_GRADE: ${{ inputs.min-grade }}
         MIN_DAYS: ${{ inputs.min-days-to-expiry }}
         FEED_NAME: ${{ inputs.name }}
+        FEED_COUNTRY: ${{ inputs.country }}
         HTML_OUT: ${{ inputs.html }}
         JSON_OUT: ${{ inputs.json }}
         WRITE_SUMMARY: ${{ inputs.summary }}
@@ -84,6 +89,7 @@ runs:
         set -euo pipefail
         result_json="${JSON_OUT:-${RUNNER_TEMP}/gtfs-scorecard-result.json}"
         args=("$FEED_URL")
+        args+=(--country "$FEED_COUNTRY")
         if [[ -n "$FEED_NAME" ]]; then args+=(--name "$FEED_NAME"); fi
         if [[ -n "$HTML_OUT" ]]; then args+=(--html "$HTML_OUT"); fi
         if [[ -n "$MIN_GRADE" ]]; then args+=(--min-grade "$MIN_GRADE"); fi

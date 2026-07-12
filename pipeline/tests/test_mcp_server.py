@@ -14,6 +14,9 @@ _CATALOG = {
             "grade": "B",
             "score": 80.8,
             "state": "California",
+            "country": "US",
+            "subdivision_code": "US-CA",
+            "subdivision_name": "California",
             "days_until_expiry": 83,
             "ntd_ready": "ready",
             "scorecard_url": "https://gtfsscorecard.org/agency/unitrans/",
@@ -23,9 +26,12 @@ _CATALOG = {
             "name": "Barrie Transit (Ontario)",
             "grade": "C",
             "score": 71.0,
-            "state": "Ontario",
+            "state": None,
+            "country": "CA",
+            "subdivision_code": "CA-ON",
+            "subdivision_name": "Ontario",
             "days_until_expiry": 40,
-            "ntd_ready": "not_ready",
+            "ntd_ready": None,
             "scorecard_url": "https://gtfsscorecard.org/agency/barrie-transit/",
         },
     ]
@@ -66,6 +72,13 @@ def _fetch(url: str) -> Any:
         return _ARTIFACT
     if url.endswith("/api/v1/stats.json"):
         return {"agencies": 2}
+    if url.endswith("/api/v1/by-location.json"):
+        return {
+            "countries": [
+                {"country_code": "US", "country_name": "United States", "count": 1},
+                {"country_code": "CA", "country_name": "Canada", "count": 1},
+            ]
+        }
     if url.endswith("/ntd.json"):
         return {"pct_ready": 50.0}
     raise AssertionError(f"unexpected fetch: {url}")
@@ -80,7 +93,7 @@ def test_initialize_and_tools_list_shape() -> None:
     assert listed is not None
     names = {t["name"] for t in listed["result"]["tools"]}
     assert names == {t["name"] for t in TOOLS}
-    assert {"search_agencies", "get_scorecard", "national_stats"} <= names
+    assert {"search_agencies", "get_scorecard", "coverage_stats", "national_stats"} <= names
     # Every tool carries a JSON schema, the contract a client codes against.
     assert all("inputSchema" in t for t in listed["result"]["tools"])
 
@@ -98,6 +111,26 @@ def test_search_agencies_filters_by_state_and_grade() -> None:
     assert [a["id"] for a in graded["agencies"]] == ["unitrans"]
     named = call_tool("search_agencies", {"query": "davis"}, _fetch)
     assert named["total"] == 1
+
+
+def test_search_agencies_filters_and_returns_portable_location() -> None:
+    by_country = call_tool("search_agencies", {"country": "ca"}, _fetch)
+    assert [a["id"] for a in by_country["agencies"]] == ["barrie-transit"]
+    by_code = call_tool("search_agencies", {"subdivision": "ca-on"}, _fetch)
+    assert by_code["agencies"] == by_country["agencies"]
+    by_name = call_tool("search_agencies", {"subdivision": "Ontario"}, _fetch)
+    assert by_name["agencies"] == by_country["agencies"]
+    row = by_country["agencies"][0]
+    assert (row["country"], row["subdivision_code"], row["subdivision_name"]) == (
+        "CA",
+        "CA-ON",
+        "Ontario",
+    )
+
+
+def test_legacy_state_filter_matches_portable_subdivision_name() -> None:
+    ontario = call_tool("search_agencies", {"state": "Ontario"}, _fetch)
+    assert [a["id"] for a in ontario["agencies"]] == ["barrie-transit"]
 
 
 def test_get_scorecard_trims_and_frames_as_fixes() -> None:
@@ -137,6 +170,19 @@ def test_tools_call_wraps_payload_and_errors_in_content() -> None:
     assert missing["result"]["isError"] is True
 
 
+def test_coverage_stats_is_portable_and_national_stats_marks_us_scope() -> None:
+    coverage = call_tool("coverage_stats", {}, _fetch)
+    assert {row["country_code"] for row in coverage["by_location"]["countries"]} == {
+        "US",
+        "CA",
+    }
+    assert "not every transit operator" in coverage["note"]
+    legacy = call_tool("national_stats", {}, _fetch)
+    assert legacy["scope"]["stats"] == "covered_corpus"
+    assert legacy["scope"]["ntd_readiness"]["country"] == "US"
+    assert "United States-only" in legacy["scope"]["note"]
+
+
 def test_search_limit_zero_returns_none_and_catalog_is_cached() -> None:
     import scorecard_pipeline.mcp_server as mcp
 
@@ -161,6 +207,9 @@ def test_search_rows_carry_the_documented_readiness_fields() -> None:
     # refetch the raw catalog for them.
     row = call_tool("search_agencies", {"query": "davis"}, _fetch)["agencies"][0]
     for field in (
+        "country",
+        "subdivision_code",
+        "subdivision_name",
         "expiry_status",
         "national_percentile",
         "peer_percentile",

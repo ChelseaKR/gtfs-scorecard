@@ -35,7 +35,13 @@ from .fetch import FetchResult, fetch_static
 from .gtfs import read_feed_dates
 from .metrics import correctness, freshness
 from .score import GRADE_BANDS, build_scorecard
-from .validate import VALIDATOR_VERSION, ValidationReport, parse_report, run_validator
+from .validate import (
+    VALIDATOR_VERSION,
+    ValidationReport,
+    country_scoped_output_dir,
+    parse_report,
+    run_validator,
+)
 from .vcache import load_cached, store_cached
 
 log = logging.getLogger(__name__)
@@ -105,19 +111,45 @@ def shadow_score_agency(
     """
     fetched = fetch_static(agency, date)
 
-    baseline_report = load_cached(agency.id, fetched.sha256, VALIDATOR_VERSION)
+    baseline_report = load_cached(
+        agency.id,
+        fetched.sha256,
+        VALIDATOR_VERSION,
+        country_code=agency.country,
+    )
     if baseline_report is None:
-        base_dir = raw_dir() / agency.id / date.isoformat() / "validator"
+        base_dir = country_scoped_output_dir(
+            raw_dir() / agency.id / date.isoformat() / "validator",
+            agency.country,
+        )
         base_path = base_dir / "report.json"
         if not base_path.exists():
-            base_path = run_validator(fetched.path, base_dir)
+            base_path = run_validator(
+                fetched.path,
+                base_dir,
+                country_code=agency.country,
+            )
         baseline_report = parse_report(base_path)
-        store_cached(agency.id, fetched.sha256, VALIDATOR_VERSION, baseline_report)
+        store_cached(
+            agency.id,
+            fetched.sha256,
+            VALIDATOR_VERSION,
+            baseline_report,
+            country_code=agency.country,
+        )
 
-    cand_dir = raw_dir() / agency.id / date.isoformat() / f"validator-canary-{candidate_version}"
+    cand_dir = country_scoped_output_dir(
+        raw_dir() / agency.id / date.isoformat() / f"validator-canary-{candidate_version}",
+        agency.country,
+    )
     cand_path = cand_dir / "report.json"
     if not cand_path.exists():
-        cand_path = run_validator(fetched.path, cand_dir, version=candidate_version)
+        cand_path = run_validator(
+            fetched.path,
+            cand_dir,
+            country_code=agency.country,
+            version=candidate_version,
+        )
     candidate_report = parse_report(cand_path)
 
     return (

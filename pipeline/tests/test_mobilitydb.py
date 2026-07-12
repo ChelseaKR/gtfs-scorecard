@@ -215,7 +215,7 @@ def test_canadian_proposal_preserves_location_through_yaml_round_trip() -> None:
     assert agency.subdivision_name == "Ontario"
 
 
-def test_unsupported_country_is_preserved_instead_of_defaulting_to_us() -> None:
+def test_global_country_preserves_location_through_yaml_round_trip() -> None:
     catalog = (
         "mdb_source_id,data_type,location.country_code,location.subdivision_code,"
         "location.subdivision_name,provider,name,urls.direct_download\n"
@@ -225,9 +225,24 @@ def test_unsupported_country_is_preserved_instead_of_defaulting_to_us() -> None:
     (proposal,) = propose_agencies(parse_catalog(catalog), country="GB")
 
     assert proposal.country == "GB"
+    assert proposal.subdivision_code == "GB-ENG"
+    assert proposal.subdivision_name == "England"
     rendered = render_yaml([proposal])
     assert "    country: GB\n" in rendered
-    with pytest.raises(AgencyConfigError, match="Supporting a new country is deliberate work"):
+    (agency,) = parse_agencies(yaml.safe_load("agencies:\n" + rendered))
+    assert (agency.country, agency.subdivision_code) == ("GB", "GB-ENG")
+
+
+def test_unassigned_catalog_country_is_preserved_for_explicit_rejection() -> None:
+    catalog = (
+        "mdb_source_id,data_type,location.country_code,provider,name,urls.direct_download\n"
+        "xk-1,gtfs,XK,Example Bus,Example Bus,https://example.org/example.zip\n"
+    )
+    (proposal,) = propose_agencies(parse_catalog(catalog), country="XK")
+
+    assert proposal.country == "XK"
+    rendered = render_yaml([proposal])
+    with pytest.raises(AgencyConfigError, match="assigned ISO 3166-1"):
         parse_agencies(yaml.safe_load("agencies:\n" + rendered))
 
 

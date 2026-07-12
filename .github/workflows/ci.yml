@@ -37,3 +37,12 @@ jobs:
       # Import and dispatch from the built artifact, not the editable checkout.
       # This catches package-data omissions in Marketplace/uvx installations.
       - run: uvx --from dist/scorecard_pipeline-*.whl scorecard --help
+      - name: Verify packaged global ISO vocabulary
+        run: |
+          wheel="$(pwd)/$(find dist -name 'scorecard_pipeline-*.whl' -print -quit)"
+          isolated="$(mktemp -d)"
+          uv venv "$isolated/venv"
+          uv pip install --python "$isolated/venv/bin/python" "$wheel"
+          cd "$isolated"
+          "$isolated/venv/bin/python" -c \
+            "from scorecard_pipeline.jurisdictions import JURISDICTIONS; assert len(JURISDICTIONS.countries) == 249; assert JURISDICTIONS.countries['JP'].subdivisions['JP-13'] == 'Tokyo'"

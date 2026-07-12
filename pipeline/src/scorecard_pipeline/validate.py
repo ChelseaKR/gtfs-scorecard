@@ -18,6 +18,7 @@ from typing import Any
 
 from .config import cache_dir
 from .fetch import USER_AGENT
+from .location import normalize_country_code
 from .net import safe_get
 
 log = logging.getLogger(__name__)
@@ -82,17 +83,45 @@ def ensure_validator(version: str = VALIDATOR_VERSION) -> Path:
     return jar
 
 
+def validator_country_code(country_code: str) -> str:
+    """Canonical assigned country code accepted by the validator boundary."""
+    country = normalize_country_code(country_code)
+    if not country:
+        raise ValueError(
+            f"validator country must be an assigned ISO 3166-1 alpha-2 code, got {country_code!r}"
+        )
+    return country
+
+
+def country_scoped_output_dir(base_dir: Path, country_code: str) -> Path:
+    """Country-bind a reusable report directory while preserving the U.S. path.
+
+    Existing U.S. raw reports live at directories such as ``validator`` and
+    remain reusable. A non-U.S. run uses ``validator-ca`` (or the corresponding
+    country suffix), so changing registry geography cannot pick up a report
+    produced with a different validator country.
+    """
+    country = validator_country_code(country_code)
+    if country == "US":
+        return base_dir
+    return base_dir.with_name(f"{base_dir.name}-{country.lower()}")
+
+
 def run_validator(
     gtfs_zip: Path,
     output_dir: Path,
-    country_code: str = "us",
+    country_code: str = "US",
     version: str = VALIDATOR_VERSION,
 ) -> Path:
     """Run the validator on a GTFS zip; return the path to report.json.
 
     ``version`` defaults to the pinned production validator; the canary shadow
     run (canary.py) passes a candidate version to dual-score the same feed.
+    ``country_code`` is the feed's assigned ISO 3166-1 alpha-2 country. The
+    Java CLI expects its lower-case form; rejecting an unassigned code here
+    keeps every caller on the same validator-country contract.
     """
+    country = validator_country_code(country_code)
     jar = ensure_validator(version)
     output_dir.mkdir(parents=True, exist_ok=True)
     cmd = [
@@ -104,7 +133,7 @@ def run_validator(
         "-o",
         str(output_dir),
         "-c",
-        country_code,
+        country.lower(),
     ]
     log.info("running gtfs-validator on %s", gtfs_zip)
     # Reasoning for the S603 suppression below: argv list (no shell=True), every

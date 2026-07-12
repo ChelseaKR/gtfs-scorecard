@@ -84,9 +84,13 @@ still runs only on the feeds that actually changed.
 The daily run still re-validates every feed, but most feeds are byte-identical to
 the day before, so most of those Java runs are redundant. Each score now caches
 its normalized validator report at `data/artifacts/<id>/validator-cache.json`,
-keyed by the feed's sha256 and the validator version. A re-score whose bytes and
-validator version both match reuses the cached report and skips the validator; a
-changed feed or an upgraded validator re-runs and refreshes the cache. The cache
+keyed by the feed's sha256, validator version, and assigned country. A re-score
+whose bytes, validator version, and country all match reuses the cached report
+and skips the validator; changed bytes, an upgraded validator, or a country
+correction re-runs and refreshes the cache. Historical cache records without a
+country are treated as U.S. records only. Reusable raw reports use the same
+country boundary: the legacy `validator/` path remains U.S.-only, while a
+non-U.S. run writes to a suffixed path such as `validator-ca/`. The cache
 rides the existing artifact upload-and-commit path and is ignored by the index
 and rollup walkers, which read only dated files and latest.json.
 

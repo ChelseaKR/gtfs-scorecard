@@ -160,6 +160,16 @@ def test_country_rollup_nests_subdivisions_without_changing_legacy_states() -> N
     ]
 
 
+def test_country_rollup_defaults_historical_country_to_us() -> None:
+    legacy = _rec("legacy", 80, "B")
+    del legacy["country"]
+
+    countries = build_directory([legacy], "t")["summary"]["countries"]
+
+    assert countries[0]["country_code"] == "US"
+    assert countries[0]["country_name"] == "United States"
+
+
 def test_configured_non_us_country_keeps_legacy_place_rollup_findable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

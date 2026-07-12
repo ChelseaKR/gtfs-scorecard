@@ -33,3 +33,12 @@ def test_fallback_is_readable_and_links_rules() -> None:
     t = translate("some_future_notice_code")
     assert "Some future notice code" in t.what
     assert RULES_URL in t.fix
+
+
+def test_non_ascii_identifier_guidance_preserves_rider_facing_language() -> None:
+    t = translate("non_ascii_or_non_printable_char")
+
+    assert "valid UTF-8 data" in t.why
+    assert "support in older apps" in t.why
+    assert "original language" in t.fix
+    assert "internal IDs" in t.what

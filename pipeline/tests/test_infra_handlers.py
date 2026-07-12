@@ -11,7 +11,10 @@ are exercised with a fake table.
 from __future__ import annotations
 
 import importlib.util
+import json
+import sys
 import time
+import types
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +41,7 @@ class FakeTable:
 
     def __init__(self, item: dict[str, Any] | None = None) -> None:
         self._item = item
+        self.put_item_value: dict[str, Any] | None = None
         self.updated = False
         self.deleted = False
 
@@ -46,6 +50,9 @@ class FakeTable:
 
     def update_item(self, **_: Any) -> None:
         self.updated = True
+
+    def put_item(self, Item: dict[str, Any]) -> None:
+        self.put_item_value = Item
 
     def delete_item(self, Key: dict[str, Any]) -> None:
         self.deleted = True
@@ -169,7 +176,31 @@ def test_validate_score_request_normalizes_url_and_name() -> None:
     out = instant_score.validate_score_request(
         {"url": "  https://example.org/gtfs.zip  ", "name": "  Demo  "}
     )
-    assert out == {"url": "https://example.org/gtfs.zip", "name": "Demo"}
+    assert out == {
+        "url": "https://example.org/gtfs.zip",
+        "name": "Demo",
+        "country": "US",
+    }
+
+
+def test_validate_score_request_normalizes_an_assigned_country() -> None:
+    out = instant_score.validate_score_request(
+        {"url": "https://example.org/gtfs.zip", "country": " ca "}
+    )
+    assert out["country"] == "CA"
+
+
+def test_validate_score_request_rejects_unassigned_country_codes() -> None:
+    for country in ("ZZ", "UK", "USA", 7):
+        with pytest.raises(instant_score.BadRequest, match="country"):
+            instant_score.validate_score_request(
+                {"url": "https://example.org/gtfs.zip", "country": country}
+            )
+
+
+def test_instant_score_country_codes_match_the_packaged_iso_vocabulary() -> None:
+    source = json.loads((REPO / "pipeline/src/scorecard_pipeline/data/iso3166.json").read_text())
+    assert frozenset(source["countries"]) == instant_score._ASSIGNED_COUNTRY_CODES
 
 
 def test_validate_score_request_rejects_missing_or_bad_url() -> None:
@@ -213,13 +244,32 @@ def test_instant_score_async_self_invoke_runs_the_job(monkeypatch: pytest.Monkey
     monkeypatch.setattr(
         instant_score,
         "_run_scoring_job",
-        lambda job_id, url, name: calls.append((job_id, url, name)),
+        lambda job_id, url, name, country: calls.append((job_id, url, name, country)),
     )
     result = instant_score.handler(
-        {"job_id": "abc123", "url": "https://x.test/g.zip", "name": "X"}, None
+        {
+            "job_id": "abc123",
+            "url": "https://x.test/g.zip",
+            "name": "X",
+            "country": "CA",
+        },
+        None,
     )
     assert result is None
-    assert calls == [("abc123", "https://x.test/g.zip", "X")]
+    assert calls == [("abc123", "https://x.test/g.zip", "X", "CA")]
+
+
+def test_instant_score_async_legacy_event_defaults_to_us(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = []
+    monkeypatch.setattr(
+        instant_score,
+        "_run_scoring_job",
+        lambda job_id, url, name, country: calls.append(country),
+    )
+    instant_score.handler({"job_id": "abc123", "url": "https://x.test/g.zip", "name": "X"}, None)
+    assert calls == ["US"]
 
 
 # --- instant-score: POST /score ---
@@ -247,19 +297,43 @@ def test_instant_score_post_starts_a_job(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(
         instant_score,
         "_start_scoring",
-        lambda job_id, url, name: started.append((job_id, url, name)),
+        lambda job_id, url, name, country: started.append((job_id, url, name, country)),
     )
-    body = '{"url": "https://x.test/g.zip", "name": "X Transit"}'
+    body = '{"url": "https://x.test/g.zip", "name": "X Transit", "country": "nz"}'
     resp = instant_score.handler(
         {"requestContext": {"http": {"method": "POST"}}, "body": body}, None
     )
     assert resp["statusCode"] == 202
     assert len(started) == 1
-    job_id, url, name = started[0]
+    job_id, url, name, country = started[0]
     assert instant_score._JOB_ID_RE.match(job_id)
     assert url == "https://x.test/g.zip"
     assert name == "X Transit"
+    assert country == "NZ"
     assert job_id in resp["body"]
+
+
+def test_start_scoring_carries_country_into_the_async_event(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    table = FakeTable()
+    invoked: dict[str, Any] = {}
+
+    class FakeLambdaClient:
+        def invoke(self, **kwargs: Any) -> None:
+            invoked.update(kwargs)
+
+    fake_boto3 = types.ModuleType("boto3")
+    fake_boto3.__dict__["client"] = lambda *args, **kwargs: FakeLambdaClient()
+    monkeypatch.setitem(sys.modules, "boto3", fake_boto3)
+    monkeypatch.setattr(instant_score, "_jobs_table", lambda: table)
+    monkeypatch.setenv("FUNCTION_NAME", "instant-score")
+
+    instant_score._start_scoring("abc12345", "https://x.test/g.zip", "X Transit", "CA")
+
+    assert table.put_item_value is not None
+    assert table.put_item_value["country"] == "CA"
+    assert json.loads(invoked["Payload"])["country"] == "CA"
 
 
 def test_instant_score_post_actually_rate_limited_returns_429(
@@ -345,12 +419,19 @@ def test_run_scoring_job_records_done_on_success(monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr(instant_score, "_prepare_runtime", lambda: None)
     table = FakeTable()
     artifact = {"overall": {"grade": "A"}}
-    monkeypatch.setattr("scorecard_pipeline.cli.run_adhoc", lambda *a, **k: artifact)
+    calls = []
+
+    def score(url: str, name: str, date: object, *, country: str) -> dict[str, Any]:
+        calls.append((url, name, date, country))
+        return artifact
+
+    monkeypatch.setattr("scorecard_pipeline.cli.run_adhoc", score)
     monkeypatch.setattr(instant_score, "_jobs_table", lambda: table)
     monkeypatch.setattr(
         instant_score,
         "_publish_result",
         lambda job_id, art: "https://gtfsscorecard.org/scratch/abc12345/latest.json",
     )
-    instant_score._run_scoring_job("abc12345", "https://x.test/g.zip", "X")
+    instant_score._run_scoring_job("abc12345", "https://x.test/g.zip", "X", "NZ")
     assert table.updated is True
+    assert calls[0][3] == "NZ"

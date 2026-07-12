@@ -166,6 +166,42 @@ def test_run_validator_returns_report_even_on_nonzero_exit(
     assert validate.run_validator(gtfs, out) == out / "report.json"
 
 
+def test_run_validator_passes_normalized_country_to_java(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls: list[list[str]] = []
+
+    def fake_run(cmd: list[str], **_k: object) -> subprocess.CompletedProcess[str]:
+        calls.append(cmd)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "report.json").write_text("{}")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    validate.run_validator(gtfs, out, country_code=" ca ")
+
+    assert calls[0][-2:] == ["-c", "ca"]
+
+
+def test_run_validator_rejects_unassigned_country(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    with pytest.raises(ValueError, match="assigned ISO 3166-1 alpha-2"):
+        validate.run_validator(gtfs, tmp_path / "out", country_code="ZZ")
+
+
+def test_country_scoped_output_dir_preserves_us_and_isolates_other_countries(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "validator"
+    assert validate.country_scoped_output_dir(base, "US") == base
+    assert validate.country_scoped_output_dir(base, "ca") == tmp_path / "validator-ca"
+    assert validate.country_scoped_output_dir(base, "GB") == tmp_path / "validator-gb"
+
+
 def test_run_validator_raises_when_no_report_produced(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

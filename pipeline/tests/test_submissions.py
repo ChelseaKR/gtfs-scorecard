@@ -25,6 +25,7 @@ def test_form_to_entry_derives_slug_and_rt() -> None:
     entry = form_to_entry(FORM)
     assert entry["id"] == "fairfield-and-suisun-transit"
     assert entry["rt_urls"] == {"vehicle_positions": "https://example.org/fast/vp.pb"}
+    assert "country" not in entry  # legacy API payload keeps the registry's US default
 
 
 def test_submission_yaml_parses_and_includes_new_agency() -> None:
@@ -36,6 +37,62 @@ def test_submission_yaml_parses_and_includes_new_agency() -> None:
     assert {"unitrans", "yolobus"} <= ids
     assert sub.branch == "submit-fairfield-and-suisun-transit"
     assert "fasttransit.example" in sub.pr_body
+    assert "- Location: US" in sub.pr_body
+
+
+def test_international_submission_preserves_explicit_portable_location() -> None:
+    form = {
+        **FORM,
+        "name": "Barrie Transit Test",
+        "country": "ca",
+        "subdivision_code": "ca-on",
+        "subdivision_name": "Ontario",
+    }
+    entry = form_to_entry(form)
+    assert entry["country"] == "CA"
+    assert entry["subdivision_code"] == "CA-ON"
+    assert entry["subdivision_name"] == "Ontario"
+    sub = build_submission(form, REPO_YAML)
+    agencies = parse_agencies(yaml.safe_load(sub.file_content))
+    added = next(a for a in agencies if a.id == "barrie-transit-test")
+    assert (added.country, added.subdivision_code, added.subdivision_name) == (
+        "CA",
+        "CA-ON",
+        "Ontario",
+    )
+    assert "- Location: CA / CA-ON (Ontario)" in sub.pr_body
+
+
+def test_country_only_international_submission_is_valid() -> None:
+    form = {**FORM, "name": "National Feed Test", "country": "CA"}
+    entry = form_to_entry(form)
+    assert entry["country"] == "CA"
+    assert "subdivision_code" not in entry
+    sub = build_submission(form, REPO_YAML)
+    agencies = parse_agencies(yaml.safe_load(sub.file_content))
+    added = next(a for a in agencies if a.id == "national-feed-test")
+    assert (added.country, added.subdivision_code, added.subdivision_name) == ("CA", "", "")
+
+
+@pytest.mark.parametrize(
+    "updates, message",
+    [
+        (
+            {"country": "CA", "subdivision_code": "CA-ON"},
+            "both an ISO subdivision code and subdivision name",
+        ),
+        (
+            {"country": "CA", "subdivision_name": "Ontario"},
+            "both an ISO subdivision code and subdivision name",
+        ),
+        ({"subdivision_code": "US-CA", "subdivision_name": "California"}, "Country is required"),
+    ],
+)
+def test_ambiguous_international_location_is_rejected(
+    updates: dict[str, str], message: str
+) -> None:
+    with pytest.raises(AgencyConfigError, match=message):
+        form_to_entry({**FORM, **updates})
 
 
 def test_duplicate_agency_is_rejected() -> None:

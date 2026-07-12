@@ -172,16 +172,27 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     }
 
 
-def by_state(dataset: dict[str, Any], states: dict[str, str]) -> dict[str, Any]:
-    """Per-state aggregates: agency count, median score, and grade distribution.
+def by_state(
+    dataset: dict[str, Any],
+    states: dict[str, str],
+    locations: dict[str, dict[str, str]] | None = None,
+) -> dict[str, Any]:
+    """Legacy U.S.-state aggregates: count, median score, and grade distribution.
 
-    State comes from the supplied map (the published catalog), so an agency
-    without a known state is grouped under "Unlocated" rather than dropped.
+    State comes from the supplied map (the published catalog). Explicitly
+    non-U.S. records are excluded; a U.S. agency without a known state is
+    grouped under ``Unlocated``. A missing location record retains the historical
+    U.S. interpretation for backwards-compatible direct callers.
     """
     grades = ("A", "B", "C", "D", "F")
     buckets: dict[str, dict[str, Any]] = {}
+    location_map = locations or {}
     for row in dataset.get("rows", []):
-        state = states.get(row["id"]) or "Unlocated"
+        agency_id = str(row["id"])
+        location = location_map.get(agency_id) or {}
+        if str(location.get("country") or "US").strip().upper() != "US":
+            continue
+        state = states.get(agency_id) or "Unlocated"
         b = buckets.setdefault(
             state,
             {
@@ -244,7 +255,10 @@ def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -
     """Country aggregates with nested ISO 3166-2 subdivision aggregates."""
     by_country: dict[str, list[dict[str, Any]]] = {}
     for row in dataset.get("rows", []):
-        country_code = str((locations.get(str(row["id"])) or {}).get("country") or "")
+        # The v1 location fields were added after the original U.S. corpus.
+        # Omitted historical country values therefore mean US, matching the
+        # artifact, directory, MCP, and aggregate compatibility contracts.
+        country_code = str((locations.get(str(row["id"])) or {}).get("country") or "US")
         by_country.setdefault(country_code, []).append(row)
 
     countries: list[dict[str, Any]] = []
@@ -388,7 +402,7 @@ def build_api(
         "index.json": api_index(base_url, generated_at),
         "agencies.json": agencies_endpoint(dataset),
         "leaderboard.json": leaderboard(index, dataset),
-        "by-state.json": by_state(dataset, states),
+        "by-state.json": by_state(dataset, states, locations),
         "by-location.json": by_location(dataset, locations),
         "stats.json": stats_endpoint(dataset),
         "coverage.json": coverage_endpoint(index, dataset, agencies),

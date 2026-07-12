@@ -12,6 +12,11 @@ It is pure over the findings the renderer already reads, so the artifact is
 reproducible and adds no per-agency work. Prevalence is the share of tracked feeds
 carrying a finding, framed as how many agencies share the same fixable problem,
 never as a ranking of who is worst. It changes no grade.
+
+This rollup deliberately has no geographic breakdown. Its input is a list of
+finding lists with agency identity and location already removed, so attaching a
+country afterward would require guessing. A future country split must begin with
+an identity-carrying input rather than force location rows onto this contract.
 """
 
 from __future__ import annotations

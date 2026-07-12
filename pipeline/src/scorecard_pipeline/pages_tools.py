@@ -213,7 +213,7 @@ _QUERY_EXAMPLES = [
         "ORDER BY days_until_expiry\nLIMIT 15",
     ),
     (
-        "National category averages",
+        "Covered-set category averages",
         "SELECT round(avg(correctness), 1) AS correctness,\n"
         "       round(avg(freshness), 1) AS freshness,\n"
         "       round(avg(completeness), 1) AS completeness\nFROM agencies",
@@ -223,7 +223,7 @@ _QUERY_EXAMPLES = [
 
 def _render_query_page() -> str:
     """The in-browser SQL page (/query/): DuckDB-WASM over the published
-    parquet, so an analyst or journalist can run SQL against the national
+    parquet, so an analyst or journalist can run SQL against the covered
     dataset with no backend added and nothing installed
     (docs/expansion-ideation-2026-07.md, section C).
 
@@ -241,7 +241,7 @@ def _render_query_page() -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("Query the dataset", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Query the dataset.</h1>
-    <p class="page-lede">Run SQL against the national scorecard dataset, right here in your
+    <p class="page-lede">Run SQL against the covered scorecard dataset, right here in your
     browser. One table, <code>agencies</code>, holds every tracked agency's latest snapshot:
     <code>id</code>, <code>name</code>, <code>date</code>, <code>grade</code>,
     <code>score</code>, <code>days_until_expiry</code>, and the
@@ -352,7 +352,7 @@ def _render_query_page() -> str:
     return _page(
         title="Query the dataset in your browser — GTFS Scorecard",
         description=(
-            "Run SQL against the national GTFS quality dataset in your browser with "
+            "Run SQL against the covered GTFS quality dataset in your browser with "
             "DuckDB: grades, category scores, and freshness for every tracked agency."
         ),
         canonical=f"{BASE_URL}/query/",
@@ -701,7 +701,7 @@ _TOOLS = [
         "Score any feed now",
         "Paste a published feed URL and get the full graded scorecard back.",
     ),
-    ("/query/", "Query the dataset", "Run SQL over the national dataset, right in the page."),
+    ("/query/", "Query the dataset", "Run SQL over the covered dataset, right in the page."),
     (
         "/subscribe.html",
         "Feed-health alerts",
@@ -721,7 +721,7 @@ _TOOLS = [
     (
         "/data/",
         "Open data",
-        "Download the national dataset, CC BY 4.0, with a versioned public API.",
+        "Download the covered dataset, CC BY 4.0, with a versioned public API.",
     ),
 ]
 

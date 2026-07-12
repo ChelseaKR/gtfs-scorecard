@@ -18,6 +18,9 @@ def _art(
     pathways: bool = False,
     step_free: bool = False,
     no_details: bool = False,
+    country: str | None = None,
+    subdivision_code: str = "",
+    subdivision_name: str = "",
 ) -> dict[str, Any]:
     comp: dict[str, Any] = {"status": "measured" if measured else "not_measured", "details": {}}
     if measured and not no_details:
@@ -26,8 +29,17 @@ def _art(
             "flex": {"has_flex": flex},
             "pathways": {"has_pathways": pathways, "has_step_free": step_free},
         }
+    agency = {
+        "id": aid,
+        "name": name,
+        "state": state,
+        "subdivision_code": subdivision_code,
+        "subdivision_name": subdivision_name,
+    }
+    if country is not None:
+        agency["country"] = country
     return {
-        "agency": {"id": aid, "name": name, "state": state},
+        "agency": agency,
         "categories": {"completeness": comp},
     }
 
@@ -38,6 +50,7 @@ def test_record_extracts_capabilities() -> None:
     assert r["has_flex"] and r["has_fares"] and r["has_fares_v2"]
     assert r["has_pathways"] and r["has_step_free"]
     assert r["fare_model"] == "v2" and r["state"] == "CA"
+    assert r["country"] == "US"  # omitted historical country keeps the API default
 
 
 def test_record_skips_unmeasured_or_missing_details() -> None:
@@ -76,3 +89,31 @@ def test_national_adoption_counts_shares_and_state_split() -> None:
 def test_empty_input() -> None:
     nat = national_adoption([])
     assert nat["agency_count"] == 0 and nat["flex"]["pct"] == 0.0
+
+
+def test_portable_country_and_subdivision_adoption_rollups() -> None:
+    raw = [
+        adoption_record(_art("us", "US", "California", flex=True)),
+        adoption_record(
+            _art(
+                "ca-on",
+                "Ontario",
+                "",
+                country="CA",
+                subdivision_code="CA-ON",
+                subdivision_name="Ontario",
+                fares="v2",
+            )
+        ),
+        adoption_record(_art("ca-any", "Canada", "", country="CA", pathways=True)),
+    ]
+    records = [record for record in raw if record is not None]
+    nat = national_adoption(records)
+    assert [state["state"] for state in nat["states"]] == ["California"]
+    countries = {row["country_code"]: row for row in nat["countries"]}
+    assert countries["US"]["flex"] == 1
+    assert countries["CA"]["agencies"] == 2
+    assert countries["CA"]["fares_v2"] == 1
+    subdivisions = {row["subdivision_code"]: row for row in countries["CA"]["subdivisions"]}
+    assert subdivisions["CA-ON"]["subdivision_name"] == "Ontario"
+    assert subdivisions[None]["subdivision_name"] == "Unlocated"

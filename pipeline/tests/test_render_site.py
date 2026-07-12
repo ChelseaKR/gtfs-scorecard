@@ -308,6 +308,20 @@ def test_changes_page_has_friendly_empty_states() -> None:
     assert "good day" in html
 
 
+def test_static_directory_card_isolates_international_agency_name() -> None:
+    from scorecard_pipeline.render_site import _index_card
+
+    html = _index_card(
+        "example-global",
+        {
+            "name": "هيئة النقل",
+            "history": [{"grade": "A", "score": 91.0, "date": "2026-07-12"}],
+        },
+    )
+
+    assert '<a href="/agency/example-global/"><bdi>هيئة النقل</bdi></a>' in html
+
+
 def test_grade_distribution_bar_renders_only_nonzero_grades() -> None:
     html = _grade_distribution_bar({"A": 2, "B": 0, "C": "3", "F": None}, 5)
     assert "grade-seg grade-a" in html
@@ -867,7 +881,7 @@ def test_peer_context_renders_national_and_size_peer_and_state() -> None:
     )
     assert "Ahead of 53% of all tracked agencies" in html
     assert "68% of large agencies" in html
-    assert "Operates in New Mexico." in html
+    assert "Operates in <bdi>New Mexico</bdi>." in html
     assert 'class="percentile-strip"' in html
     assert 'class="percentile-strip" role="group"' in html
     assert 'style="--position:53"' in html
@@ -1594,12 +1608,17 @@ def test_canadian_brief_omits_us_ntd_language() -> None:
     }
     html = _render_brief(
         artifact,
-        dir_record={"state": "Ontario", "subdivision_code": "CA-ON"},
+        dir_record={
+            "country": "CA",
+            "subdivision_code": "CA-ON",
+            "subdivision_name": "Ontario",
+        },
     )
     assert 'id="brief-ntd-h"' not in html
     assert "NTD details line up" not in html
     assert "rider information is complete" in html
     assert "guidance, and key feed facts" in html
+    assert "<dt>Location</dt><dd>Ontario, Canada</dd>" in html
 
 
 def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
@@ -1907,8 +1926,12 @@ def test_map_feature_none_without_geometry() -> None:
 
 def _map_features() -> list[dict[str, Any]]:
     feats = [
-        _map_feature("alpha-transit", _sample_artifact("A", -97.0, 40.0), "Iowa"),
-        _map_feature("bravo-transit", _sample_artifact("F", -80.0, 35.0), "Ohio"),
+        _map_feature(
+            "alpha-transit", _sample_artifact("A", -97.0, 40.0), "Iowa", "US", "US-IA", "Iowa"
+        ),
+        _map_feature(
+            "bravo-transit", _sample_artifact("F", -80.0, 35.0), "Ohio", "US", "US-OH", "Ohio"
+        ),
     ]
     return [f for f in feats if f is not None]
 
@@ -1956,9 +1979,9 @@ def test_render_map_page_links_points_to_rows_with_keyboard_model() -> None:
 def test_render_map_page_filters_cover_grade_and_state() -> None:
     html = _render_map_page(_map_features())
     assert 'id="map-grade"' in html and 'id="map-state"' in html
-    # State options are derived from the agencies actually on the map.
-    assert '<option value="Iowa">Iowa</option>' in html
-    assert '<option value="Ohio">Ohio</option>' in html
+    # Portable subdivision options are namespaced and country-qualified.
+    assert '<option value="subdivision:US-IA">Iowa, United States</option>' in html
+    assert '<option value="subdivision:US-OH">Ohio, United States</option>' in html
 
 
 def test_render_map_page_generates_configured_non_us_country_filter(
@@ -1967,18 +1990,48 @@ def test_render_map_page_generates_configured_non_us_country_filter(
     from scorecard_pipeline.location import COUNTRY_NAMES
 
     monkeypatch.setitem(COUNTRY_NAMES, "GB", "United Kingdom")
-    feature = _map_feature("example-gb", _sample_artifact("B", -1.5, 52.3), "England", "GB")
+    feature = _map_feature(
+        "example-gb", _sample_artifact("B", -1.5, 52.3), "", "GB", "GB-ENG", "England"
+    )
     assert feature is not None
     html = _render_map_page([feature])
     assert '<option value="country:GB">United Kingdom</option>' in html
+    assert '<option value="subdivision:GB-ENG">England, United Kingdom</option>' in html
     assert 'data-country="GB"' in html
-    assert ">England</td>" in html
+    assert "<bdi>England, United Kingdom</bdi>" in html
     assert "country === loc.slice(countryPrefix.length)" in html
     assert 'loc === "Canada"' not in html
     assert "map.fitBounds(bounds" in html
     assert "animate: !reduce" in html
     assert "if (fittedLocation)" in html
-    assert "center: [-96, 38], zoom: 3" in html
+    assert "var worldBounds = [[-180, -85], [180, 85]];" in html
+    assert "bounds: worldBounds" in html
+    assert "map.fitBounds(worldBounds" in html
+
+
+def test_render_map_page_disambiguates_duplicate_subdivision_names_with_iso_code() -> None:
+    first = _sample_artifact("B", -1.5, 52.3)
+    first["agency"]["name"] = "First Transit"
+    second = _sample_artifact("A", -3.2, 55.9)
+    second["agency"]["name"] = "Second Transit"
+    features = [
+        _map_feature("first", first, "", "GB", "GB-ENG", "Central"),
+        _map_feature("second", second, "", "GB", "GB-SCT", "Central"),
+    ]
+
+    html = _render_map_page([feature for feature in features if feature is not None])
+
+    assert '<option value="subdivision:GB-ENG">Central (GB-ENG), United Kingdom</option>' in html
+    assert '<option value="subdivision:GB-SCT">Central (GB-SCT), United Kingdom</option>' in html
+
+
+def test_routes_map_initial_bounds_include_high_arctic_agencies() -> None:
+    from scorecard_pipeline.render_site import _routes_map_script
+
+    script = _routes_map_script()
+
+    assert "var worldBounds = [[-180, -85], [180, 85]];" in script
+    assert "bounds: worldBounds" in script
 
 
 def test_map_feature_reads_flex_from_completeness_details() -> None:
@@ -2288,6 +2341,65 @@ def test_rt_page_most_reliable_rows_carry_mini_sparklines() -> None:
     assert '<span class="spark-none">&mdash;</span>' in _render_rt_page(nat)
 
 
+def test_rt_page_renders_collapsed_worldwide_rollups_and_isolated_sample_labels() -> None:
+    from scorecard_pipeline.render_site import _render_rt_page
+
+    nat = {
+        "monitored_count": 2,
+        "median_uptime_pct": 98.5,
+        "median_lag_seconds": 18,
+        "bands": {"reliable": 1, "mostly": 1, "spotty": 0},
+        "most_reliable": [
+            {
+                "id": "nasu-bus",
+                "name": "那須町町民バス",
+                "country": "JP",
+                "subdivision_code": "JP-09",
+                "subdivision_name": "Tochigi",
+                "uptime_pct": 99.8,
+                "median_lag_seconds": 8,
+            }
+        ],
+        "countries": [
+            {
+                "country_code": "JP",
+                "country_name": "Japan",
+                "agencies": 1,
+                "median_uptime_pct": 99.8,
+                "reliable": 1,
+                "subdivisions": [
+                    {
+                        "subdivision_code": "JP-09",
+                        "subdivision_name": "Tochigi",
+                        "agencies": 1,
+                        "median_uptime_pct": 99.8,
+                        "reliable": 1,
+                    }
+                ],
+            },
+            {
+                "country_code": "US",
+                "country_name": "United States",
+                "agencies": 1,
+                "median_uptime_pct": 97.2,
+                "reliable": 0,
+                "subdivisions": [],
+            },
+        ],
+        "states": [{"state": "Iowa", "agencies": 1, "median_uptime_pct": 97.2, "reliable": 0}],
+    }
+
+    html = _render_rt_page(nat)
+
+    assert "<bdi>Japan</bdi>" in html
+    assert "<bdi>Tochigi</bdi>" in html
+    assert "Show 1 covered subdivision in <bdi>Japan</bdi>" in html
+    assert '<details class="subdivision-rollup">' in html
+    assert '<a href="/agency/nasu-bus/"><bdi>那須町町民バス</bdi></a>' in html
+    assert "<td><bdi>Tochigi, Japan</bdi></td>" in html
+    assert '<h2 class="section-title">United States by state</h2>' in html
+
+
 def test_query_page_is_lazy_local_and_honest_about_frame() -> None:
     from scorecard_pipeline.pages_tools import _render_query_page
 
@@ -2493,6 +2605,8 @@ def test_pulse_page_combines_rankings_changes_and_trend() -> None:
     # The absorbed pages' content is all present.
     assert "Highest scoring" in html and "Alpha" in html
     assert "Up Transit" in html and "up 9" in html
+    assert '<a href="/agency/a-t/"><bdi>Alpha</bdi></a>' in html
+    assert '<a class="delta-cat" href="/agency/up1/"><bdi>Up Transit</bdi></a>' in html
     # Common problems stays its own page, linked from here.
     assert 'href="/problems/"' in html
     # The covered-set framing survives the merge, and the page renders wide.
@@ -2554,6 +2668,81 @@ def test_adoption_page_absorbs_access_coverage() -> None:
     assert 'class="service-chart access-coverage-chart"' in html
     assert "5 of 10 feeds" in html
     assert html.index("Fare data (any model)") < html.index("Flexible (demand-responsive) service")
+
+
+def test_adoption_page_renders_collapsed_worldwide_rollups_and_isolated_samples() -> None:
+    from scorecard_pipeline.render_site import _render_adoption_page
+
+    adoption = {
+        "agency_count": 2,
+        "flex": {"count": 1, "pct": 50.0},
+        "fares": {"count": 1, "pct": 50.0},
+        "fares_v2": {"count": 0, "pct": 0.0},
+        "pathways": {"count": 0, "pct": 0.0},
+        "step_free": {"count": 0, "pct": 0.0},
+        "cemv": {"count": 0, "pct": 0.0},
+        "flex_sample": [
+            {
+                "id": "example-gb",
+                "name": "ناقل لندن",
+                "country": "GB",
+                "subdivision_code": "GB-ENG",
+                "subdivision_name": "England",
+            }
+        ],
+        "countries": [
+            {
+                "country_code": "GB",
+                "country_name": "United Kingdom",
+                "agencies": 1,
+                "flex": 1,
+                "fares": 1,
+                "fares_v2": 0,
+                "pathways": 0,
+                "subdivisions": [
+                    {
+                        "subdivision_code": "GB-ENG",
+                        "subdivision_name": "England",
+                        "agencies": 1,
+                        "flex": 1,
+                        "fares": 1,
+                        "fares_v2": 0,
+                        "pathways": 0,
+                    }
+                ],
+            },
+            {
+                "country_code": "US",
+                "country_name": "United States",
+                "agencies": 1,
+                "flex": 0,
+                "fares": 0,
+                "fares_v2": 0,
+                "pathways": 0,
+                "subdivisions": [],
+            },
+        ],
+        "states": [
+            {
+                "state": "Iowa",
+                "agencies": 1,
+                "flex": 0,
+                "fares": 0,
+                "fares_v2": 0,
+                "pathways": 0,
+            }
+        ],
+    }
+
+    html = _render_adoption_page(adoption, {"agency_count": 0})
+
+    assert "<bdi>United Kingdom</bdi>" in html
+    assert "<bdi>England</bdi>" in html
+    assert "Show 1 covered subdivision in <bdi>United Kingdom</bdi>" in html
+    assert '<details class="subdivision-rollup">' in html
+    assert '<a href="/agency/example-gb/"><bdi>ناقل لندن</bdi></a>' in html
+    assert "<td><bdi>England, United Kingdom</bdi></td>" in html
+    assert '<h2 class="section-title">United States by state</h2>' in html
 
 
 def test_problem_page_visualizes_prevalence_without_hiding_fix_text() -> None:
@@ -2747,6 +2936,26 @@ def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
     assert len(title) <= 60
     assert "(California) GTFS quality report" in title
     assert "…" in title
+
+
+def test_non_us_agency_title_and_peer_context_include_country() -> None:
+    from scorecard_pipeline.render_site import _peer_context, _render_agency
+
+    artifact = _board_artifact()
+    artifact["agency"]["country"] = "GB"
+    record = {
+        "country": "GB",
+        "subdivision_code": "GB-ENG",
+        "subdivision_name": "England",
+        "national_percentile": 60,
+        "peer_percentile": 55,
+        "size_tier": "small",
+    }
+    html = _render_agency(artifact, dir_record=record)
+    title = html.split("<title>", 1)[1].split("</title>", 1)[0]
+
+    assert "(England, United Kingdom) GTFS quality report" in title
+    assert "Operates in <bdi>England, United Kingdom</bdi>." in _peer_context(record)
 
 
 def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:

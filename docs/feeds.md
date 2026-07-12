@@ -1,10 +1,58 @@
-# Pilot agency feeds
+# Hand-verified feed references
 
-Source endpoints, licenses, and polling etiquette for the two pilot agencies,
-Unitrans and Yolobus. This page is the hand-verified reference for the pilots;
-the full registry (~1,140 feed records across the US and Canada) lives in `agencies.yaml`, with the
+Source endpoints, licenses, and polling etiquette for the original Yolo County
+pilots and the first worldwide canaries. This page is the hand-verified reference;
+the full registry has ~1,140 feed records, still mostly in the United States and
+Canada, and lives in `agencies.yaml`, with the
 discovery process documented in `docs/feed-discovery.md`. Every URL below was
 verified with a live request on the date stamped at the bottom of this page.
+
+## First worldwide canaries
+
+These feeds are official, openly reusable, and deliberately span three
+continents. They exercise the same worldwide GTFS quality core as every other
+agency. Country-specific policy fields do not apply unless a separate regional
+module says so.
+
+### Nasu Town Community Bus (Japan)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://api.gtfs-data.jp/v2/organizations/nasutown/feeds/nasutown/files/feed.zip?rid=current` |
+| Location | Japan (`JP`), Tochigi (`JP-09`) |
+| Status | Verified 200 and ZIP signature; 81 KB at verification time |
+| License | [Nasu Town publishes the dataset under CC BY 4.0](https://www.town.nasu.lg.jp/0085/info-0000001422-1.html). |
+| Update cadence | No fixed cadence stated. The verified release was published 2026-03-31 and covers service from 2026-04-01 through 2027-03-31. |
+
+This is the highest-value language and scale canary: an official Japanese-name
+feed for a small rural operator, close to the scorecard's primary audience.
+
+### Adelaide Metro (Australia)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://gtfs.adelaidemetro.com.au/v1/static/latest/google_transit.zip` |
+| Location | Australia (`AU`), South Australia (`AU-SA`) |
+| Status | Verified 200 and ZIP signature; 18.9 MB at verification time |
+| License | [Creative Commons Attribution](https://data.sa.gov.au/data/dataset/https-gtfs-adelaidemetro-com-au). Attribute Adelaide Metro, Department for Infrastructure and Transport, South Australia. |
+| Update cadence | Daily, per the South Australian government data catalog. |
+
+### Dublin Bus via Transport for Ireland (Ireland)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://www.transportforireland.ie/transitData/Data/GTFS_Dublin_Bus.zip` |
+| Location | Ireland (`IE`), Dublin (`IE-D`) |
+| Status | Verified 200 and ZIP signature; 18.6 MB at verification time |
+| License | [National Transport Authority GTFS is CC BY 4.0](https://data.gov.ie/en_GB/dataset/nta-gtfs). |
+| Update cadence | The catalog metadata is daily; operator files are replaced when timetables change. |
+
+Hong Kong is the next technical canary because it has no ISO 3166-2 subdivision
+and publishes frequency-based schedules. It remains out of production until the
+freshness behavior for those schedules is reviewed. Community or informal feeds
+in lower- and middle-income countries follow the partnership and consent gate in
+[ADR 0028](decisions/0028-global-south-pilot.md); they are not added merely to
+create a broader-looking map.
 
 ## Unitrans (ASUCD / City of Davis)
 
@@ -73,4 +121,4 @@ Feed quirks the pipeline must tolerate:
 - transit.land feed pages for the two Onestop IDs above.
 - unitrans.ucdavis.edu/gtfs (agency GTFS page).
 
-Last verified: 2026-06-11 · Recheck cadence: monthly, and before any demo.
+Last verified: 2026-07-12 · Recheck cadence: monthly, and before any demo.

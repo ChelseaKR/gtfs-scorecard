@@ -107,31 +107,22 @@ def test_subdivision_must_match_country_and_legacy_state() -> None:
 
 
 def test_country_rejects_non_iso_code() -> None:
-    with pytest.raises(AgencyConfigError, match="country must be one of"):
+    with pytest.raises(AgencyConfigError, match="assigned ISO 3166-1"):
         parse_agencies(entry(country="Canada"))
 
 
-def test_agency_country_allowlist_comes_from_jurisdiction_config() -> None:
+def test_agency_country_validation_uses_the_global_iso_vocabulary() -> None:
     assert frozenset(JURISDICTIONS.countries) == SUPPORTED_COUNTRY_CODES
-    with pytest.raises(AgencyConfigError, match=r"add it to jurisdictions[.]yaml"):
-        parse_agencies(entry(country="GB", subdivision_code="GB-ENG", subdivision_name="England"))
-
-
-def test_fresh_process_activates_a_country_from_configuration_only(tmp_path: Path) -> None:
-    (tmp_path / "jurisdictions.yaml").write_text(
-        yaml.safe_dump(
-            {
-                "countries": {
-                    "US": {"name": "United States", "subdivisions": {}},
-                    "GB": {
-                        "name": "United Kingdom",
-                        "subdivisions": {"GB-ENG": "England"},
-                    },
-                }
-            },
-            sort_keys=False,
-        )
+    assert len(SUPPORTED_COUNTRY_CODES) == 249
+    (british,) = parse_agencies(
+        entry(country="GB", subdivision_code="GB-ENG", subdivision_name="England")
     )
+    assert (british.country, british.subdivision_code) == ("GB", "GB-ENG")
+    with pytest.raises(AgencyConfigError, match="assigned ISO 3166-1"):
+        parse_agencies(entry(country="XK"))
+
+
+def test_fresh_process_accepts_a_global_country_without_activation(tmp_path: Path) -> None:
     (tmp_path / "agencies.yaml").write_text(
         yaml.safe_dump(
             {
@@ -164,6 +155,20 @@ def test_fresh_process_activates_a_country_from_configuration_only(tmp_path: Pat
         env=env,
     )
     assert result.stdout.strip() == "GB GB-ENG England"
+
+
+def test_ambiguous_subdivision_name_requires_an_iso_code() -> None:
+    with pytest.raises(AgencyConfigError, match="matches more than one ISO subdivision"):
+        parse_agencies(entry(country="AZ", subdivision_name="Lənkəran"))
+    (agency,) = parse_agencies(
+        entry(country="AZ", subdivision_code="AZ-LA", subdivision_name="Lənkəran")
+    )
+    assert agency.subdivision_code == "AZ-LA"
+
+
+def test_subdivision_name_typo_is_rejected_even_when_the_code_is_valid() -> None:
+    with pytest.raises(AgencyConfigError, match="subdivision_code and subdivision_name disagree"):
+        parse_agencies(entry(country="GB", subdivision_code="GB-ENG", subdivision_name="Englnd"))
 
 
 def test_repo_registry_includes_canada_pilot() -> None:
@@ -484,7 +489,7 @@ def test_alias_cycles_are_rejected() -> None:
         parse_agencies(raw)
 
 
-def test_country_typo_fails_with_supported_list() -> None:
+def test_country_typo_fails_against_assigned_iso_codes() -> None:
     import pytest
 
     from scorecard_pipeline.agencies import AgencyConfigError, parse_agencies
@@ -494,7 +499,7 @@ def test_country_typo_fails_with_supported_list() -> None:
             {"id": "x", "name": "X", "static_gtfs_url": "https://ex.org/g.zip", "country": "UU"}
         ]
     }
-    with pytest.raises(AgencyConfigError, match="country must be one of"):
+    with pytest.raises(AgencyConfigError, match="assigned ISO 3166-1"):
         parse_agencies(raw)
 
 

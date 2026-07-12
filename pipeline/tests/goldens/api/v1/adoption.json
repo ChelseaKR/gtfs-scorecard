@@ -5,6 +5,56 @@
     "count": 0,
     "pct": 0.0
   },
+  "countries": [
+    {
+      "agencies": 1,
+      "cemv": 0,
+      "country_code": "CA",
+      "country_name": "Canada",
+      "fares": 0,
+      "fares_v2": 0,
+      "flex": 0,
+      "pathways": 0,
+      "step_free": 0,
+      "subdivisions": [
+        {
+          "agencies": 1,
+          "cemv": 0,
+          "fares": 0,
+          "fares_v2": 0,
+          "flex": 0,
+          "pathways": 0,
+          "step_free": 0,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    },
+    {
+      "agencies": 2,
+      "cemv": 0,
+      "country_code": "US",
+      "country_name": "United States",
+      "fares": 1,
+      "fares_v2": 1,
+      "flex": 0,
+      "pathways": 0,
+      "step_free": 0,
+      "subdivisions": [
+        {
+          "agencies": 2,
+          "cemv": 0,
+          "fares": 1,
+          "fares_v2": 1,
+          "flex": 0,
+          "pathways": 0,
+          "step_free": 0,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    }
+  ],
   "fare_models": {
     "legacy": 0,
     "none": 2,
@@ -20,9 +70,12 @@
   },
   "fares_v2_sample": [
     {
+      "country": "US",
       "id": "unitrans",
       "name": "Unitrans (ASUCD / City of Davis)",
-      "state": "Unlocated"
+      "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": ""
     }
   ],
   "flex": {
@@ -30,7 +83,7 @@
     "pct": 0.0
   },
   "flex_sample": [],
-  "generated_at": "2026-07-12T19:56:05+00:00",
+  "generated_at": "2026-07-12T21:07:06+00:00",
   "license": "CC-BY-4.0",
   "pathways": {
     "count": 0,
@@ -39,7 +92,7 @@
   "pathways_sample": [],
   "states": [
     {
-      "agencies": 3,
+      "agencies": 2,
       "fares": 1,
       "fares_v2": 1,
       "flex": 0,
