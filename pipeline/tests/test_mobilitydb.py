@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 import yaml
 
-from scorecard_pipeline.agencies import parse_agencies
+from scorecard_pipeline.agencies import AgencyConfigError, parse_agencies
 from scorecard_pipeline.mobilitydb import (
     apply_replacements,
     apply_state_backfill,
@@ -189,6 +189,76 @@ def test_rendered_yaml_parses_back_into_valid_agencies() -> None:
     agencies = parse_agencies(yaml.safe_load(block))
     ids = {a.id for a in agencies}
     assert {"davis-community-transit", "capitol-shuttle"} <= ids
+
+
+def test_canadian_proposal_preserves_location_through_yaml_round_trip() -> None:
+    catalog = (
+        "mdb_source_id,data_type,location.country_code,location.subdivision_code,"
+        "location.subdivision_name,provider,name,urls.direct_download\n"
+        "ca-1,gtfs,CA,CA-ON,Ontario,Barrie Transit,Barrie Transit,"
+        "https://example.ca/barrie.zip\n"
+    )
+    (proposal,) = propose_agencies(parse_catalog(catalog), country="CA")
+
+    assert proposal.country == "CA"
+    assert proposal.subdivision_code == "CA-ON"
+    assert proposal.subdivision_name == "Ontario"
+
+    block = "agencies:\n" + render_yaml([proposal])
+    assert "    country: CA\n" in block
+    assert "    subdivision_code: CA-ON\n" in block
+    assert "    subdivision_name: Ontario\n" in block
+
+    (agency,) = parse_agencies(yaml.safe_load(block))
+    assert agency.country == "CA"
+    assert agency.subdivision_code == "CA-ON"
+    assert agency.subdivision_name == "Ontario"
+
+
+def test_unsupported_country_is_preserved_instead_of_defaulting_to_us() -> None:
+    catalog = (
+        "mdb_source_id,data_type,location.country_code,location.subdivision_code,"
+        "location.subdivision_name,provider,name,urls.direct_download\n"
+        "gb-1,gtfs,GB,GB-ENG,England,Example Bus,Example Bus,"
+        "https://example.org/england.zip\n"
+    )
+    (proposal,) = propose_agencies(parse_catalog(catalog), country="GB")
+
+    assert proposal.country == "GB"
+    rendered = render_yaml([proposal])
+    assert "    country: GB\n" in rendered
+    with pytest.raises(AgencyConfigError, match="Supporting a new country is deliberate work"):
+        parse_agencies(yaml.safe_load("agencies:\n" + rendered))
+
+
+def test_us_proposal_resolves_subdivision_name_to_iso_code() -> None:
+    proposals = propose_agencies(parse_catalog(CATALOG), providers=["Davis Community Transit"])
+    (dct,) = proposals
+
+    assert dct.country == "US"
+    assert dct.subdivision_code == "US-CA"
+    assert dct.subdivision_name == "California"
+    rendered = render_yaml([dct])
+    assert "    country:" not in rendered  # US remains the registry default.
+    assert "    subdivision_code: US-CA\n" in rendered
+    assert "    subdivision_name: California\n" in rendered
+
+
+def test_unknown_subdivision_name_is_preserved_without_a_guessed_code() -> None:
+    catalog = (
+        "mdb_source_id,data_type,location.country_code,location.subdivision_name,"
+        "provider,name,urls.direct_download\n"
+        "unknown-1,gtfs,US,Some County,County Bus,County Bus,"
+        "https://example.org/county.zip\n"
+    )
+    (proposal,) = propose_agencies(parse_catalog(catalog))
+
+    assert proposal.country == "US"
+    assert proposal.subdivision_code == ""
+    assert proposal.subdivision_name == "Some County"
+    rendered = render_yaml([proposal])
+    assert "    subdivision_code:" not in rendered
+    assert "    subdivision_name: Some County\n" in rendered
 
 
 # A catalog where one tracked agency's URL is unchanged, one has moved to a new

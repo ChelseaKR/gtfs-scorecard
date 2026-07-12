@@ -61,7 +61,16 @@
         },
         "state": {
           "type": "string",
-          "description": "US state or territory; omitted when unlocated."
+          "description": "Deprecated US-only compatibility name; omitted when unlocated."
+        },
+        "subdivision_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$",
+          "description": "Primary catalog subdivision as an ISO 3166-2 code; omitted when unknown."
+        },
+        "subdivision_name": {
+          "type": "string",
+          "description": "Practitioner-facing name of the primary catalog subdivision; omitted when unknown."
         }
       },
       "additionalProperties": false

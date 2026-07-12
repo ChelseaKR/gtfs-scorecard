@@ -36,6 +36,9 @@ cache.
    ```yaml
    - id: my-agency            # lowercase slug, used in URLs and file paths
      name: My Agency Transit  # shown on the scorecard
+     country: CA              # ISO 3166-1 alpha-2; omit for US
+     subdivision_code: CA-ON  # ISO 3166-2 province, territory, or state code
+     subdivision_name: Ontario
      static_gtfs_url: https://example.org/gtfs/google_transit.zip
      license_note: CC-BY 4.0  # or where the license question stands
      rt_urls:                 # omit this whole section if not applicable
@@ -43,6 +46,15 @@ cache.
        vehicle_positions: https://example.org/rt/VehiclePositions.pb
        service_alerts: https://example.org/rt/ServiceAlerts.pb
    ```
+
+   `country` defaults to `US` so existing US entries keep working. For a new
+   entry outside the US, set `country`, `subdivision_code`, and
+   `subdivision_name` together. Use the full ISO 3166-2 code, such as `CA-ON`,
+   and the name practitioners use locally. The registry currently accepts `US`
+   and `CA`; enabling another country also requires adding its location support
+   in the pipeline. New integrations should use the portable fields for
+   location and grouping. The published `state` field remains available for
+   existing US consumers.
 
    If your agency has realtime tracking but the feed needs an API key,
    omit `rt_urls` and add an `rt_note` saying so; the scorecard shows the

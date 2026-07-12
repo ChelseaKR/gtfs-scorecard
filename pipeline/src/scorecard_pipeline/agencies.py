@@ -13,6 +13,7 @@ from pathlib import Path
 import yaml
 
 from .config import AGENCIES, Agency, register, repo_root
+from .location import normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 NTD_ID_PATTERN = re.compile(r"^\d{4,5}$")
@@ -90,6 +91,8 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
             "is_official",
             "ntd_id",
             "country",
+            "subdivision_code",
+            "subdivision_name",
             "state",
             "service_type",
             "fare_free",
@@ -131,6 +134,11 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
             _fail(label, f"is_official must be true or false, got {official_raw!r}")
 
         country = str(entry.get("country") or "US").strip().upper()
+        subdivision_code = str(entry.get("subdivision_code") or "").strip().upper()
+        subdivision_name = str(entry.get("subdivision_name") or "").strip()
+        state = str(entry.get("state") or "").strip()
+        if country != "US" and state:
+            _fail(label, "state is a deprecated US-only field; use subdivision_code/name")
         if country not in SUPPORTED_COUNTRIES:
             _fail(
                 label,
@@ -139,6 +147,28 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
                 "standards framing; ADR 0026), so extend SUPPORTED_COUNTRIES alongside "
                 "that plumbing.",
             )
+        location = normalize_location(country, subdivision_code, subdivision_name)
+        issue_messages = {
+            "malformed_subdivision_code": (
+                "subdivision_code must be an ISO 3166-2 code such as US-CA or CA-ON"
+            ),
+            "subdivision_country_mismatch": "subdivision_code country prefix must match country",
+            "unknown_subdivision_code": "subdivision_code is not recognized for this country",
+            "subdivision_name_mismatch": "subdivision_code and subdivision_name disagree",
+        }
+        blocking_issues = [issue for issue in location.issues if issue in issue_messages]
+        if blocking_issues:
+            _fail(label, issue_messages[blocking_issues[0]])
+        if state:
+            legacy_location = normalize_location(country, "", state)
+            if legacy_location.issues:
+                _fail(label, "state must be a recognized US state or territory name")
+            if location.subdivision_name and (
+                location.subdivision_code != legacy_location.subdivision_code
+                or location.subdivision_name != legacy_location.subdivision_name
+            ):
+                _fail(label, "state conflicts with subdivision_code/name")
+            location = legacy_location
 
         agencies.append(
             Agency(
@@ -157,8 +187,10 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
                 feed_status=feed_status,
                 is_official=official_raw,
                 ntd_id=ntd_id,
-                country=country,
-                state=str(entry.get("state") or "").strip(),
+                country=location.country,
+                subdivision_code=location.subdivision_code,
+                subdivision_name=location.subdivision_name,
+                state=state,
                 service_type=service_type,
                 fare_free=fare_free,
             )

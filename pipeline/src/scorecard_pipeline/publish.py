@@ -163,6 +163,10 @@ def build_artifact(
     # offline, without re-deriving location from the Mobility Database catalog.
     if agency.state:
         agency_block["state"] = agency.state
+    if agency.subdivision_code:
+        agency_block["subdivision_code"] = agency.subdivision_code
+    if agency.subdivision_name:
+        agency_block["subdivision_name"] = agency.subdivision_name
     # Fetch provenance: how the graded bytes were obtained — origin vs the
     # Mobility Database mirror, the URL that actually served them, and the
     # User-Agent presented — so a grade is a citable record and a mirror-scored

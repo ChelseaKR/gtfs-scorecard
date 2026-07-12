@@ -7,6 +7,12 @@
 # Fields:
 #   id               short slug, lowercase letters/digits/hyphens (required)
 #   name             shown on the scorecard (required)
+#   country          ISO 3166-1 alpha-2 country code (defaults to US)
+#   subdivision_code ISO 3166-2 code for the state, province, or territory
+#   subdivision_name practitioner-facing name for that subdivision
+#                    (e.g. CA-YT and Yukon). New entries outside the US should
+#                    set all three location fields. Existing US entries may
+#                    continue to rely on the legacy state mapping.
 #   static_gtfs_url  direct link to your GTFS zip (required)
 #   rt_urls          GTFS-Realtime endpoints, if published without a key:
 #                    trip_updates / vehicle_positions / service_alerts
@@ -64,6 +70,8 @@ agencies:
   - id: whitehorse-transit
     name: Whitehorse Transit (Yukon)
     country: CA
+    subdivision_code: CA-YT
+    subdivision_name: Yukon
     mdb_id: 689
     static_gtfs_url: https://data.whitehorse.ca/Google_transit_Feed_Docs.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
@@ -71,6 +79,8 @@ agencies:
   - id: barrie-transit
     name: Barrie Transit (Ontario)
     country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
     mdb_id: 3
     static_gtfs_url: http://www.myridebarrie.ca/gtfs/Google_transit.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
@@ -78,6 +88,8 @@ agencies:
   - id: london-transit-commission
     name: London Transit Commission (Ontario)
     country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
     mdb_id: 2
     static_gtfs_url: http://www.londontransit.ca/gtfsfeed/google_transit.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
@@ -7353,4 +7365,3 @@ agencies:
     static_gtfs_url: https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip
     mdb_id: 3219
     license_note: No stated data license in the Mobility Database; verify before publishing.
-

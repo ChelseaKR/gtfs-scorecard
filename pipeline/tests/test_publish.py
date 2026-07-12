@@ -275,6 +275,31 @@ def test_country_is_persisted_only_when_not_us() -> None:
     assert "country" not in make_artifact(dt.date(2026, 6, 11))["agency"]
 
 
+def test_iso_subdivision_is_persisted_without_changing_legacy_state() -> None:
+    agency = Agency(
+        id="barrie",
+        name="Barrie Transit",
+        static_gtfs_url="https://example.org/g.zip",
+        country="CA",
+        subdivision_code="CA-ON",
+        subdivision_name="Ontario",
+    )
+    fetch = FetchResult(
+        agency_id=agency.id,
+        path=Path("/tmp/gtfs.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256="abc123",
+        size_bytes=1024,
+        reused=False,
+    )
+    card = build_scorecard([CategoryResult(name="correctness", score=88.0, summary="s")])
+    artifact = build_artifact(agency, fetch, card, GENERATED_AT)
+    assert artifact["agency"]["subdivision_code"] == "CA-ON"
+    assert artifact["agency"]["subdivision_name"] == "Ontario"
+    assert "state" not in artifact["agency"]
+
+
 def test_operating_note_absent_keeps_agency_block_minimal() -> None:
     # The default AGENCY has no operating_note; the agency block stays two keys.
     artifact = make_artifact(dt.date(2026, 6, 11))

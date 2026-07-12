@@ -110,7 +110,8 @@ def test_artifact_with_every_optional_agency_field_conforms() -> None:
         name="Barrie Transit",
         static_gtfs_url="https://example.org/g.zip",
         country="CA",
-        state="CA",
+        subdivision_code="CA-ON",
+        subdivision_name="Ontario",
         operating_note="Confirmed operating.",
         ntd_note="Shared regional feed.",
     )
