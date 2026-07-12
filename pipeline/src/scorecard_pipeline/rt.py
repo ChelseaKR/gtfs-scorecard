@@ -53,6 +53,12 @@ FRESH_ZERO_SECONDS = 600
 # expired schedule. It reads as a freshness failure, not a missing-feed zero.
 RT_LAPSED_SECONDS = 3600
 
+# An alert whose every active period ended this long ago and that is still
+# being served has been forgotten, not scheduled: riders reading "detour ends
+# May 3" in July learn to ignore every future alert (EXP-19). Thirty days
+# gives planned multi-phase work generous room before the flag fires.
+ALERT_STALE_SECONDS = 30 * 86400
+
 
 def _human_duration(seconds: int) -> str:
     """A coarse, readable age for a stale realtime header (e.g. '2 hours')."""
@@ -86,6 +92,27 @@ class VehicleObs:
 
 
 @dataclass(frozen=True)
+class AlertObs:
+    """Content observations for one service alert entity (EXP-19).
+
+    Alerts are the one realtime payload a rider reads verbatim, so what is
+    observed is mechanical readability: is there plain header text, a longer
+    description, a stated cause and effect, an informed entity scoping it to
+    routes or stops, and has its active period already ended. Judgments stay
+    mechanical (presence and dates), never stylistic.
+    """
+
+    has_header_text: bool
+    has_description: bool
+    has_cause: bool
+    has_effect: bool
+    has_informed_entity: bool
+    # Latest end across active periods, unix seconds; None means open-ended
+    # (an alert with no stated end can't be called stale by date).
+    period_end: int | None
+
+
+@dataclass(frozen=True)
 class RtSample:
     """One fetch of one realtime endpoint."""
 
@@ -97,6 +124,7 @@ class RtSample:
     trip_ids: frozenset[str] = frozenset()
     stop_time_events: tuple[StopTimeEvent, ...] = ()
     vehicles: tuple[VehicleObs, ...] = ()
+    alerts: tuple[AlertObs, ...] = ()
     error: str | None = None
 
     @property
@@ -128,6 +156,64 @@ class RtWindow:
         for s in self.for_kind("trip_updates"):
             seen |= s.trip_ids
         return frozenset(seen)
+
+
+def alerts_content(window: RtWindow) -> dict[str, int] | None:
+    """Summarize alert content over a window's newest good alerts snapshot.
+
+    An alerts feed is a full snapshot, so the newest successful sample speaks
+    for the whole window; staleness is judged against that sample's own fetch
+    time, which keeps the read reproducible. None when the window holds no
+    successful alerts sample (nothing measured is reported as nothing, never
+    as a zero). An empty feed is a normal, healthy state: no disruptions.
+    """
+    samples = [s for s in window.for_kind("service_alerts") if s.ok]
+    if not samples:
+        return None
+    newest = max(samples, key=lambda s: s.fetched_at)
+    alerts = newest.alerts
+    return {
+        "alerts": len(alerts),
+        "with_header_text": sum(1 for a in alerts if a.has_header_text),
+        "with_description": sum(1 for a in alerts if a.has_description),
+        "with_cause_and_effect": sum(1 for a in alerts if a.has_cause and a.has_effect),
+        "with_informed_entity": sum(1 for a in alerts if a.has_informed_entity),
+        "ended_over_30_days_ago": sum(
+            1
+            for a in alerts
+            if a.period_end is not None and newest.fetched_at - a.period_end > ALERT_STALE_SECONDS
+        ),
+    }
+
+
+def _has_text(translated: object) -> bool:
+    """Whether a TranslatedString carries any non-blank text."""
+    return any(t.text.strip() for t in getattr(translated, "translation", ()))
+
+
+def parse_alerts(msg: gtfs_realtime_pb2.FeedMessage) -> tuple[AlertObs, ...]:
+    """Content observations for every alert entity in one snapshot (EXP-19)."""
+    observations: list[AlertObs] = []
+    for entity in msg.entity:
+        if not entity.HasField("alert"):
+            continue
+        alert = entity.alert
+        # The latest stated end across periods; any open-ended period means
+        # the alert as a whole has no end date.
+        period_end: int | None = None
+        if alert.active_period and all(p.HasField("end") for p in alert.active_period):
+            period_end = max(int(p.end) for p in alert.active_period)
+        observations.append(
+            AlertObs(
+                has_header_text=_has_text(alert.header_text),
+                has_description=_has_text(alert.description_text),
+                has_cause=alert.HasField("cause"),
+                has_effect=alert.HasField("effect"),
+                has_informed_entity=len(alert.informed_entity) > 0,
+                period_end=period_end,
+            )
+        )
+    return tuple(observations)
 
 
 def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample:
@@ -177,6 +263,8 @@ def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample
                     )
                 )
 
+    alerts = parse_alerts(msg) if kind == "service_alerts" else ()
+
     return RtSample(
         kind=kind,
         fetched_at=fetched_at,
@@ -186,6 +274,7 @@ def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample
         trip_ids=frozenset(trip_ids),
         stop_time_events=tuple(events),
         vehicles=tuple(vehicles),
+        alerts=alerts,
     )
 
 
@@ -434,6 +523,47 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         "worst_lag_seconds": worst,
         "rt_freshness": rt_freshness,
     }
+
+    # Service-alert content (EXP-19): observed and reported, not scored. Any
+    # weight for it enters through the governed shadow-scoring path (FIX-06),
+    # never a quiet commit, so every finding below carries deduction=0.0.
+    alert_summary = alerts_content(window)
+    if alert_summary is not None:
+        details["alerts_content"] = alert_summary
+        stale_count = alert_summary["ended_over_30_days_ago"]
+        if stale_count:
+            findings.append(
+                Finding(
+                    code="scorecard_rt_alerts_ended",
+                    severity="WARNING",
+                    count=stale_count,
+                    what=f"{stale_count} of {alert_summary['alerts']} published service "
+                    "alerts ended more than 30 days ago.",
+                    why="A rider who reads an alert about a detour that finished weeks "
+                    "ago learns to ignore every future alert.",
+                    fix="Remove or close out ended alerts in your alerts tool; most "
+                    "publish an end date and clear them automatically.",
+                    effort="A few minutes in your alerts tool.",
+                    deduction=0.0,
+                )
+            )
+        missing_text = alert_summary["alerts"] - alert_summary["with_header_text"]
+        if missing_text:
+            findings.append(
+                Finding(
+                    code="scorecard_rt_alerts_missing_text",
+                    severity="INFO",
+                    count=missing_text,
+                    what=f"{missing_text} of {alert_summary['alerts']} published service "
+                    "alerts have no header text.",
+                    why="An alert without text shows riders an empty or generic notice, "
+                    "so the disruption it describes goes unread.",
+                    fix="Give every alert a one-line plain-language header in your "
+                    "alerts tool; the description field can carry the detail.",
+                    effort="A habit in your alerts tool, not a code change.",
+                    deduction=0.0,
+                )
+            )
 
     # Weighted components; None fraction means "not measurable this window".
     coverage_fraction: float | None = None
