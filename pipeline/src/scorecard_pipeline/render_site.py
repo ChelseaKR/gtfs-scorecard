@@ -7104,6 +7104,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/",
         f"{BASE_URL}/about/",
         f"{BASE_URL}/support/",
+        f"{BASE_URL}/fetcher/",
         f"{BASE_URL}/data/",
         f"{BASE_URL}/concept/",
         f"{BASE_URL}/submit.html",

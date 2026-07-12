@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About our fetcher — GTFS Scorecard</title>
+  <meta name="description"
+        content="How the GTFS Scorecard downloads feeds: request identity, polling cadence, retry and mirror behavior, safety guards, and how to reach us about traffic from this project.">
+  <link rel="canonical" href="https://gtfsscorecard.org/fetcher/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="About our fetcher — GTFS Scorecard">
+  <meta property="og:description" content="How the GTFS Scorecard downloads feeds: request identity, polling cadence, retry and mirror behavior, and how to reach us.">
+  <meta property="og:url" content="https://gtfsscorecard.org/fetcher/">
+  <meta property="og:image" content="https://gtfsscorecard.org/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <script src="/analytics.js" defer></script>
+  <link rel="stylesheet" href="/src/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash (1.4.8). */
+    try {
+      var t = localStorage.getItem("scorecard-theme");
+      if (t && ["light", "contrast", "dark"].indexOf(t) >= 0)
+        document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <script src="/src/theme.js" defer></script>
+  <script src="/src/nav.js" defer></script>
+  <noscript><style>
+    /* Without JS the menu button cannot expand the collapsed nav, so show the
+       stacked nav permanently and hide the button (content stays operable
+       without scripting). nav.js never runs here, so nothing double-toggles. */
+    @media (max-width: 1400px) {
+      .nav-menu-btn { display: none !important; }
+      .nav-cluster { display: flex !important; position: static; }
+    }
+  </style></noscript>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/" aria-current="page"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+
+  <main id="main" class="wrap" tabindex="-1">
+    <a class="backlink" href="/about/">&larr; About</a>
+    <h1 class="page-title">About our fetcher</h1>
+    <p class="page-lede">If you run a transit agency's web server, this page explains the
+    traffic this project sends you: what it requests, how often, what it looks like in your
+    logs, and how to reach us. Every scorecard also records exactly how its feed copy was
+    obtained, so what we state publicly here matches what each artifact states about itself.</p>
+
+    <section aria-labelledby="what-h">
+      <h2 class="section-title" id="what-h">What we request, and how often</h2>
+      <ul>
+        <li><strong>Your GTFS Schedule zip, once a day.</strong> The daily scoring run
+        downloads each configured feed one time, in the early afternoon UTC.</li>
+        <li><strong>Cheap liveness checks in between.</strong> Hourly refreshes use
+        conditional requests (<code>If-None-Match</code> / <code>If-Modified-Since</code>),
+        so an unchanged feed answers with an empty 304 and transfers nothing.</li>
+        <li><strong>GTFS-Realtime in short bursts.</strong> Realtime endpoints are sampled in
+        a brief burst every three hours, never faster than one request every 30 seconds per
+        feed, matching the spec's own polling guidance.</li>
+      </ul>
+      <p>Requests come from GitHub Actions runners, so they do not arrive from a fixed set of
+      addresses. Downloads are capped in size, follow at most five redirects, and only ever
+      touch the URLs configured for your agency in the public
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/agencies.yaml">registry</a>.</p>
+    </section>
+
+    <section aria-labelledby="ua-h">
+      <h2 class="section-title" id="ua-h">The User-Agent, stated honestly</h2>
+      <p>Our requests currently present a standard desktop-browser User-Agent (Chrome on
+      Linux) rather than a custom bot string. That is a deliberate, documented choice: many
+      transit feeds sit behind bot filters that answer a non-browser User-Agent with a 403,
+      and a feed we cannot read becomes a feed we cannot help fix. We would rather state the
+      practice plainly here than present a bot string and silently lose the agencies this
+      tool exists for.</p>
+      <p>An honest-first experiment (try a
+      <code>gtfs-scorecard/&lt;version&gt;</code> User-Agent, fall back to the browser
+      string, and record which one succeeded) is on the roadmap so this choice can rest on
+      measured data. If it ships, this page will say so.</p>
+    </section>
+
+    <section aria-labelledby="retry-h">
+      <h2 class="section-title" id="retry-h">Retries and the mirror fallback</h2>
+      <p>A failed download is retried a small number of times with exponential backoff, and
+      only on responses that usually mean "try again" (403 from a web application firewall,
+      408, 425, 429, and 5xx). If your endpoint still cannot be reached, we fall back to the
+      MobilityData hosted mirror of your feed rather than drop your agency, and the scorecard
+      then says so: the artifact's fetch block records <code>source: mirror</code>, and the
+      agency page notes the copy that was scored. A feed that cannot be fetched at all is
+      shown as unreachable with its last known grade, never as a zero.</p>
+    </section>
+
+    <section aria-labelledby="contact-h">
+      <h2 class="section-title" id="contact-h">If our traffic is a problem</h2>
+      <p>Tell us and we will fix it. The fastest route is a
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Fetcher%20traffic">GitHub issue</a>;
+      the <a href="/claim/">correct-or-claim form</a> works too, and the
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">listing
+      policy</a> explains how to update your feed URL or ask not to be listed at all. If you
+      prefer we score the MobilityData mirror instead of your origin server, that is a
+      one-line registry change.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>An open-source data quality tool for small and rural transit agencies.</p>
+      <p><strong>Agencies:</strong>
+      <a href="/agencies/">Directory</a> ·
+      <a href="/app/">Interactive app</a> ·
+      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>The nation:</strong>
+      <a href="/pulse/">National pulse</a> ·
+      <a href="/problems/">Common problems</a> ·
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>Tools:</strong>
+      <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
+      <a href="/check/">Check a feed before you publish</a> ·
+      <a href="/try.html">Score any feed now</a> ·
+      <a href="/query/">Query the dataset</a> ·
+      <a href="/subscribe.html">Feed-health alerts</a> ·
+      <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
+      <a href="/procurement/">For agencies: procurement</a></p>
+      <p><a href="/about/">About</a> ·
+      <a href="/status/">Status</a> ·
+      <a href="/support/">Support this project</a> ·
+      <a href="/how-to-read/">How to read a scorecard</a> ·
+      <a href="/how-to-read/#glossary">Glossary</a> ·
+      <a href="/crosswalk/">Standards crosswalk</a> ·
+      <a href="/press/">For reporters</a> ·
+      <a href="/data/">Open data</a> ·
+      <a href="/accessibility/">Accessibility</a> ·
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+    </div>
+  </footer>
+</body>
+</html>

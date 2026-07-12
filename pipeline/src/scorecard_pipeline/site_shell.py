@@ -153,6 +153,7 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     "about/index.html": "/about/",
     "data/index.html": None,
     "support/index.html": "/about/",
+    "fetcher/index.html": "/about/",
 }
 
 # The one shared footer, single-sourced here so the generated pages and the

@@ -129,6 +129,7 @@ Changelog:
                "margin_to_next_band": 5.9, "margin_to_lower_band": 4.1 },
   "fetch": { "source": "origin",      // or "mirror" (MobilityData hosted copy); "unknown" for
                                       // snapshots downloaded before provenance recording
+                                      // (fetch policy itself: gtfsscorecard.org/fetcher/)
              "final_url": "...",      // the URL that actually served the graded bytes
              "user_agent": "...",     // the User-Agent presented to that server
              "max_attempts": 4,       // configured attempt ceiling; omitted when unknown

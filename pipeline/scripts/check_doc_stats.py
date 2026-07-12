@@ -53,6 +53,10 @@ RULES: list[tuple[str, str]] = [
     ),
     (r"docs/feature-roadmap.md", r"about ([\d,]+)\s+agencies scored daily"),
     (r"CLAUDE.md", r"~([\d,]+)\s+agencies tracked across the US and Canada"),
+    (
+        r"web/support/index.html",
+        r"about\s+([\d,]+)\s+agencies across the US and Canada",
+    ),
 ]
 
 
