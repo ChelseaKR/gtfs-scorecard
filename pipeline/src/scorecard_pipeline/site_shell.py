@@ -41,12 +41,12 @@ def esc(text: object) -> str:
 
 
 # Six stops, one per question, instead of a flat list of every page: find an
-# agency, take the nation's pulse, open a dimensional lens, act with a tool,
+# agency, review coverage, open a dimensional lens, act with a tool,
 # learn how to read the thing, and who made it. The pages those groups absorb
 # stay reachable from each hub (and from _NAV_SECTION_PREFIXES for wayfinding).
 _NAV_ITEMS = [
     ("Agencies", "/agencies/"),
-    ("National pulse", "/pulse/"),
+    ("Coverage", "/pulse/"),
     ("Focus areas", "/focus/"),
     ("Tools", "/tools/"),
     ("How to read", "/how-to-read/"),
@@ -55,7 +55,7 @@ _NAV_ITEMS = [
 
 _NAV_ITEMS_ES = [
     ("Agencias", "/agencies/"),
-    ("Pulso nacional", "/pulse/"),
+    ("Cobertura", "/pulse/"),
     ("Temas", "/focus/"),
     ("Herramientas", "/tools/"),
     ("Cómo leer", "/how-to-read/"),
@@ -164,13 +164,15 @@ FOOTER_HTML = """<footer class="site-footer">
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
       <a href="/fix/">GTFS errors &amp; fixes</a> ·

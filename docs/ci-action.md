@@ -32,6 +32,7 @@ jobs:
         with:
           feed-url: https://example.org/gtfs/feed.zip
           name: Example Transit
+          country: CA
           min-grade: B
           min-days-to-expiry: 14
 ```
@@ -47,6 +48,7 @@ commit SHA when you want an exact, unchanging contract.
 | `min-grade` | no | _(skip)_ | Fail if the overall grade is below this letter: A, B, C, D, or F. |
 | `min-days-to-expiry` | no | _(skip)_ | Fail if the feed expires within this many days. A feed with no expiry date fails this check. |
 | `name` | no | feed host | Agency name shown in the printed report. |
+| `country` | no | `US` | Assigned ISO 3166-1 alpha-2 feed country passed to the validator. |
 | `html` | no | _(skip)_ | Path to also write a standalone HTML scorecard, relative to the workspace. |
 | `json` | no | runner temporary file | Path for the complete machine-readable scorecard artifact. |
 | `summary` | no | `true` | Write a plain-language scorecard to the GitHub job summary. |

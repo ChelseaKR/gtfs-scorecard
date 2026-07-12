@@ -16,12 +16,14 @@ def test_recases_shouty_stop_names_but_leaves_acronyms() -> None:
             {"stop_id": "1", "stop_name": "MAIN ST & 2ND AVE"},
             {"stop_id": "2", "stop_name": "UCD"},  # short acronym, left alone
             {"stop_id": "3", "stop_name": "Davis Depot"},  # already mixed
+            {"stop_id": "4", "stop_name": "那須町役場前"},  # uncased script, left alone
         ]
     }
     results = {r.code: r for r in apply_fixes(tables)}
     assert tables["stops.txt"][0]["stop_name"] == "Main St & 2nd Ave"
     assert tables["stops.txt"][1]["stop_name"] == "UCD"
     assert tables["stops.txt"][2]["stop_name"] == "Davis Depot"
+    assert tables["stops.txt"][3]["stop_name"] == "那須町役場前"
     assert results["autofix_stop_name_case"].count == 1
 
 

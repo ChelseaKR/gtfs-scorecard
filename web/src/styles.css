@@ -769,7 +769,6 @@ main:focus { outline: none; }
 }
 .location-group h3 { margin: 0 0 0.6rem; font-size: 1rem; }
 .location-group[hidden] { display: none; }
-.map-beyond-country { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
 .state-chip {
   font: inherit;
   font-size: 0.9rem;
@@ -895,10 +894,6 @@ main:focus { outline: none; }
 }
 .us-state.selected { stroke: var(--ink); stroke-width: 2.4; }
 
-.map-beyond {
-  margin: 0.5rem 0 0;
-  font-size: 0.9rem;
-}
 .map-legend {
   display: flex;
   flex-wrap: wrap;

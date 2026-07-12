@@ -181,10 +181,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if country not in SUPPORTED_COUNTRY_CODES:
             _fail(
                 label,
-                f"country must be one of {sorted(SUPPORTED_COUNTRY_CODES)}, got {country!r}. "
-                "Supporting a new country is deliberate work (state/province handling, "
-                "standards framing; ADR 0026), so add it to jurisdictions.yaml alongside "
-                "that plumbing.",
+                f"country must be an assigned ISO 3166-1 alpha-2 code, got {country!r}",
                 entry_source,
             )
         location = normalize_location(country, subdivision_code, subdivision_name)
@@ -195,6 +192,9 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             "subdivision_country_mismatch": "subdivision_code country prefix must match country",
             "unknown_subdivision_code": "subdivision_code is not recognized for this country",
             "subdivision_name_mismatch": "subdivision_code and subdivision_name disagree",
+            "ambiguous_subdivision_name": (
+                "subdivision_name matches more than one ISO subdivision; provide subdivision_code"
+            ),
         }
         blocking_issues = [issue for issue in location.issues if issue in issue_messages]
         if blocking_issues:

@@ -51,6 +51,30 @@ def test_miss_when_validator_version_changed(tmp_path, monkeypatch) -> None:  # 
     assert vcache.load_cached("demo", "abc123", "9.0.0") is None
 
 
+def test_miss_when_validator_country_changed(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _point_cache_at(tmp_path, monkeypatch)
+    vcache.store_cached("demo", "abc123", "8.0.1", REPORT, country_code="CA")
+
+    assert vcache.load_cached("demo", "abc123", "8.0.1", country_code="CA") is not None
+    assert vcache.load_cached("demo", "abc123", "8.0.1", country_code="US") is None
+
+
+def test_historical_countryless_cache_is_us_only(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _point_cache_at(tmp_path, monkeypatch)
+    path = vcache.cache_path("demo")
+    vcache._write_local(
+        path,
+        {
+            "sha256": "abc123",
+            "validator_version": "8.0.1",
+            "report": vcache._report_to_json(REPORT),
+        },
+    )
+
+    assert vcache.load_cached("demo", "abc123", "8.0.1", country_code="US") is not None
+    assert vcache.load_cached("demo", "abc123", "8.0.1", country_code="GB") is None
+
+
 def test_miss_when_no_cache_file(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     _point_cache_at(tmp_path, monkeypatch)
     assert vcache.load_cached("never-scored", "abc123", "8.0.1") is None

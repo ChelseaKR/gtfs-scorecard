@@ -270,6 +270,7 @@ def test_arbitrary_country_deep_link_filters_searches_and_canonicalizes(
     ).to_have_attribute("aria-pressed", "true")
     expect(page.locator(".agency-count")).to_contain_text("1 of")
     expect(page.get_by_role("link", name="Example GB Transit")).to_be_visible()
+    expect(page.locator(".agency-card .meta")).to_contain_text("England, United Kingdom")
     assert page.evaluate("() => location.hash") == "#/?country=gb&subdivision=gb-eng"
 
     # The first user interaction rewrites portable location keys to their
@@ -285,6 +286,46 @@ def test_arbitrary_country_deep_link_filters_searches_and_canonicalizes(
     expect(page.locator(".agency-count")).to_contain_text("1 of")
     page.locator("#agency-search").fill("United Kingdom")
     expect(page.locator(".agency-count")).to_contain_text("1 of")
+
+
+def test_us_detail_map_is_regional_and_only_appears_for_us_selection(
+    page: Page, app_url: str
+) -> None:
+    _serve_directory(page, _portable_directory())
+    page.goto(f"{app_url}#/")
+
+    # Country controls are the primary worldwide browser. The optional U.S.
+    # state choropleth must not frame every other country as an exception.
+    expect(page.locator(".country-grid .location-country")).to_have_count(4)
+    expect(page.locator(".location-group:visible")).to_have_count(0)
+    expect(page.locator(".location-subdivision")).to_have_count(0)
+    expect(page.locator("#us-map")).to_be_hidden()
+    expect(page.get_by_text("Not on this US map", exact=False)).to_have_count(0)
+    assert page.evaluate(
+        """() => {
+          const countries = document.querySelector('.country-grid');
+          const map = document.querySelector('#us-map');
+          const subdivisions = document.querySelector('.location-groups');
+          return Boolean(
+            countries && map && subdivisions &&
+            (countries.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+            (map.compareDocumentPosition(subdivisions) & Node.DOCUMENT_POSITION_FOLLOWING)
+          );
+        }"""
+    )
+
+    page.locator('.location-country[data-country="US"]').first.click()
+    expect(page.locator('.location-group[data-location-group="US"]')).to_be_visible()
+    expect(page.locator(".location-group:visible")).to_have_count(1)
+    expect(page.locator('.location-subdivision[data-country="US"]')).to_have_count(2)
+    expect(page.locator('.location-subdivision:not([data-country="US"])')).to_have_count(0)
+    expect(page.locator("#us-map")).to_be_visible()
+    expect(page.locator("#us-map .us-map-svg")).to_be_visible()
+
+    page.locator('.location-country[data-country="CA"]').first.click()
+    expect(page.locator("#us-map")).to_be_hidden()
+    expect(page.locator('.location-subdivision[data-country="CA"]')).to_have_count(2)
+    expect(page.locator('.location-subdivision:not([data-country="CA"])')).to_have_count(0)
 
 
 def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: str) -> None:
@@ -316,11 +357,16 @@ def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(
         '.location-subdivision[data-country="CA"][data-subdivision="UNLOCATED"]'
     ).first
     expect(us).to_have_attribute("aria-pressed", "true")
-    expect(ca).to_have_attribute("aria-pressed", "false")
+    expect(ca).to_have_count(0)
     assert page.evaluate("() => location.hash") == "#/?state=Unlocated"
 
+    page.locator('.location-country[data-country="CA"]').first.click()
+    ca = page.locator(
+        '.location-subdivision[data-country="CA"][data-subdivision="UNLOCATED"]'
+    ).first
+    expect(ca).to_have_attribute("aria-pressed", "false")
     ca.click()
-    expect(us).to_have_attribute("aria-pressed", "false")
+    expect(us).to_have_count(0)
     expect(ca).to_have_attribute("aria-pressed", "true")
     assert _hash_params(page) == {"country": "CA", "subdivision": "UNLOCATED"}
     expect(page.locator(".agency-count")).to_contain_text("1 of")
@@ -339,6 +385,7 @@ def test_old_directory_keeps_state_and_canada_behavior(page: Page, app_url: str)
         "aria-pressed", "true"
     )
     expect(page.locator(".agency-count")).to_contain_text("3 of")
+    expect(page.locator("#us-map")).to_be_visible()
     assert page.evaluate("() => location.hash") == "#/?state=Canada"
     page.locator("#agency-search").fill("Barrie")
     params = _hash_params(page)

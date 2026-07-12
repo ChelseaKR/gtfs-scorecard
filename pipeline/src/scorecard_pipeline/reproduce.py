@@ -93,7 +93,12 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
         zip_path.write_bytes(body)
 
         version_kwargs = {"version": validator_version} if validator_version else {}
-        report_path = run_validator(zip_path, tmp_dir / "validator", **version_kwargs)
+        report_path = run_validator(
+            zip_path,
+            tmp_dir / "validator",
+            country_code=agency.country,
+            **version_kwargs,
+        )
         report = parse_report(report_path)
 
         as_of = dt.date.fromisoformat(date)

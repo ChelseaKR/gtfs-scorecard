@@ -1,10 +1,9 @@
-"""Country and subdivision normalization for the supported agency registry.
+"""Country and subdivision normalization for the global agency registry.
 
 The registry stores ISO 3166 identifiers, while source catalogs sometimes
-provide a subdivision name instead of a code.  Normalization is deliberately
-conservative: only supported countries and known subdivisions are returned.
-Unknown values stay unknown rather than being inferred from a city or agency
-name.
+provide a subdivision name instead of a code. Normalization is deliberately
+conservative: only assigned countries and known subdivisions are returned.
+Unknown or ambiguous values stay unknown rather than being guessed.
 """
 
 from __future__ import annotations
@@ -19,8 +18,8 @@ SUBDIVISIONS_BY_COUNTRY = JURISDICTIONS.subdivisions_by_country
 SUPPORTED_COUNTRY_CODES = frozenset(COUNTRY_NAMES)
 
 # Compatibility exports used by existing callers and tests. Their values now
-# come from jurisdictions.yaml, so extending the registry does not require
-# another country-specific constant in Python.
+# come from the generated global ISO vocabulary, so recognizing another valid
+# country never requires a country-specific code change.
 US_SUBDIVISIONS = SUBDIVISIONS_BY_COUNTRY["US"]
 CA_SUBDIVISIONS = SUBDIVISIONS_BY_COUNTRY.get("CA", {})
 
@@ -36,8 +35,15 @@ def country_name(country_code: str, fallback: str = "Unlocated") -> str:
     return COUNTRY_NAMES.get(country_code.strip().upper(), fallback)
 
 
+def _codes_by_name(subdivisions: dict[str, str]) -> dict[str, tuple[str, ...]]:
+    by_name: dict[str, list[str]] = {}
+    for code, name in subdivisions.items():
+        by_name.setdefault(_name_key(name), []).append(code)
+    return {name: tuple(codes) for name, codes in by_name.items()}
+
+
 _SUBDIVISION_CODES_BY_NAME = {
-    country: {_name_key(name): code for code, name in subdivisions.items()}
+    country: _codes_by_name(subdivisions)
     for country, subdivisions in SUBDIVISIONS_BY_COUNTRY.items()
 }
 
@@ -56,6 +62,16 @@ _SUBDIVISION_NAME_ALIASES = {
     ("CA", "newfoundland & labrador"): "CA-NL",
     ("CA", "québec"): "CA-QC",
 }
+
+
+def _validate_alias_targets() -> None:
+    for aliases in (_SUBDIVISION_NAME_ALIASES, _MDB_SUBDIVISION_FIXUPS):
+        for (country, _name), code in aliases.items():
+            if code not in SUBDIVISIONS_BY_COUNTRY.get(country, {}):
+                raise RuntimeError(f"location alias points to unknown subdivision {code}")
+
+
+_validate_alias_targets()
 
 
 @dataclass(frozen=True)
@@ -118,13 +134,13 @@ def resolve_published_location(
 
 
 def normalize_country_code(country_code: str) -> str:
-    """Return a supported canonical ISO 3166-1 alpha-2 code, or ``""``."""
+    """Return an assigned canonical ISO 3166-1 alpha-2 code, or ``""``."""
     normalized = country_code.strip().upper()
     return normalized if normalized in SUPPORTED_COUNTRY_CODES else ""
 
 
 def is_valid_country_code(country_code: str) -> bool:
-    """Whether *country_code* is already a supported canonical alpha-2 code."""
+    """Whether *country_code* is an assigned canonical alpha-2 code."""
     return country_code in SUPPORTED_COUNTRY_CODES
 
 
@@ -137,12 +153,26 @@ def is_valid_subdivision_code(country_code: str, subdivision_code: str) -> bool:
     return subdivision_code in SUBDIVISIONS_BY_COUNTRY[country_code]
 
 
+def _subdivision_name_candidates(country: str, value: str) -> tuple[str, ...]:
+    """All canonical codes matching a name or reviewed source alias."""
+    key = _name_key(value)
+    codes = _SUBDIVISION_CODES_BY_NAME[country].get(key, ())
+    if codes:
+        return codes
+    alias = _SUBDIVISION_NAME_ALIASES.get((country, key))
+    if alias is None:
+        alias = _MDB_SUBDIVISION_FIXUPS.get((country, key))
+    return (alias,) if alias is not None else ()
+
+
 def normalize_subdivision(country_code: str, subdivision: str) -> tuple[str, str]:
     """Return ``(ISO code, canonical name)`` for a known subdivision.
 
     ``subdivision`` may be an ISO 3166-2 code, a canonical name, a supported
     name alias, or one of the explicitly documented Mobility Database fixups.
-    Unknown and cross-country values return ``("", "")``.
+    Unknown, ambiguous, and cross-country values return ``("", "")``. A code
+    is required when ISO assigns the same normalized name to several
+    subdivisions in one country.
     """
     country = normalize_country_code(country_code)
     if not country:
@@ -154,15 +184,35 @@ def normalize_subdivision(country_code: str, subdivision: str) -> tuple[str, str
     if is_valid_subdivision_code(country, candidate_code):
         return candidate_code, subdivisions[candidate_code]
 
-    key = _name_key(value)
-    code = _SUBDIVISION_CODES_BY_NAME[country].get(key)
-    if code is None:
-        code = _SUBDIVISION_NAME_ALIASES.get((country, key))
-    if code is None:
-        code = _MDB_SUBDIVISION_FIXUPS.get((country, key))
-    if code is None:
+    codes = _subdivision_name_candidates(country, value)
+    if len(codes) != 1:
         return "", ""
+    code = codes[0]
     return code, subdivisions[code]
+
+
+def _apply_subdivision_name(
+    country: str,
+    raw_name: str,
+    code: str,
+    name: str,
+    issues: list[str],
+) -> tuple[str, str]:
+    if not raw_name:
+        return code, name
+    candidates = _subdivision_name_candidates(country, raw_name)
+    name_code, canonical_name = normalize_subdivision(country, raw_name)
+    if code:
+        if code not in candidates:
+            issues.append("subdivision_name_mismatch")
+        return code, name
+    if name_code:
+        return name_code, canonical_name
+    if len(candidates) > 1:
+        issues.append("ambiguous_subdivision_name")
+    else:
+        issues.append("unknown_subdivision_name")
+    return "", raw_name
 
 
 def normalize_location(
@@ -201,14 +251,6 @@ def normalize_location(
             code = candidate_code
             name = SUBDIVISIONS_BY_COUNTRY[country][code]
 
-    name_code, canonical_name = normalize_subdivision(country, raw_name)
-    if code:
-        if name_code and name_code != code:
-            issues.append("subdivision_name_mismatch")
-    elif name_code:
-        code, name = name_code, canonical_name
-    elif raw_name:
-        name = raw_name
-        issues.append("unknown_subdivision_name")
+    code, name = _apply_subdivision_name(country, raw_name, code, name, issues)
 
     return NormalizedLocation(country, code, name, tuple(issues))

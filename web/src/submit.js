@@ -13,15 +13,20 @@ const DOCS_URL =
   "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/add-your-agency.md";
 
 // Prefill from an instant-score "track this feed daily" handoff
-// (web/try.html), which links here with ?url=&name=.
+// (web/try.html), which links here with ?url=&name=&country=.
 {
   const params = new URLSearchParams(location.search);
   const urlField = /** @type {HTMLInputElement | null} */ (
     form?.querySelector('[name="static_gtfs_url"]')
   );
   const nameField = /** @type {HTMLInputElement | null} */ (form?.querySelector('[name="name"]'));
+  const countryField = /** @type {HTMLInputElement | null} */ (
+    form?.querySelector('[name="country"]')
+  );
   if (urlField && params.get("url")) urlField.value = params.get("url") || "";
   if (nameField && params.get("name")) nameField.value = params.get("name") || "";
+  const country = String(params.get("country") || "").trim().toUpperCase();
+  if (countryField && /^[A-Z]{2}$/.test(country)) countryField.value = country;
 }
 
 /** @param {string} message @param {"ok"|"err"|"info"} kind */
@@ -62,10 +67,22 @@ form.addEventListener("submit", async (event) => {
     form.querySelector('[name="static_gtfs_url"]')
   );
   const nameField = /** @type {HTMLInputElement | null} */ (form.querySelector('[name="name"]'));
+  const countryField = /** @type {HTMLInputElement | null} */ (
+    form.querySelector('[name="country"]')
+  );
+  const subdivisionCodeField = /** @type {HTMLInputElement | null} */ (
+    form.querySelector('[name="subdivision_code"]')
+  );
+  const subdivisionNameField = /** @type {HTMLInputElement | null} */ (
+    form.querySelector('[name="subdivision_name"]')
+  );
   const typedFields = /** @type {HTMLInputElement[]} */ (
     Array.from(form.querySelectorAll('input[type="url"], input[type="email"]'))
   );
   nameField?.removeAttribute("aria-invalid");
+  countryField?.removeAttribute("aria-invalid");
+  subdivisionCodeField?.removeAttribute("aria-invalid");
+  subdivisionNameField?.removeAttribute("aria-invalid");
   for (const field of typedFields) field.removeAttribute("aria-invalid");
   if (!data.name || !data.static_gtfs_url) {
     setStatus("Please give at least an agency name and a GTFS Schedule URL.", "err");
@@ -86,6 +103,34 @@ form.addEventListener("submit", async (event) => {
       return;
     }
   }
+  if (!data.country) {
+    setStatus("Please give the agency's two-letter country code.", "err");
+    countryField?.setAttribute("aria-invalid", "true");
+    countryField?.focus();
+    return;
+  }
+  if (countryField && !countryField.validity.valid) {
+    setStatus("Enter a two-letter ISO country code, like US or CA.", "err");
+    countryField.setAttribute("aria-invalid", "true");
+    countryField.focus();
+    return;
+  }
+  const country = String(data.country).trim().toUpperCase();
+  const subdivisionCode = String(data.subdivision_code || "").trim().toUpperCase();
+  const subdivisionName = String(data.subdivision_name || "").trim();
+  if (Boolean(subdivisionCode) !== Boolean(subdivisionName)) {
+    setStatus(
+      "Give both the subdivision code and name, or leave both blank.",
+      "err"
+    );
+    const missing = subdivisionCode ? subdivisionNameField : subdivisionCodeField;
+    missing?.setAttribute("aria-invalid", "true");
+    missing?.focus();
+    return;
+  }
+  data.country = country;
+  data.subdivision_code = subdivisionCode;
+  data.subdivision_name = subdivisionName;
 
   if (!endpoint) {
     setStatus("", "info");

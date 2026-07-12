@@ -1,9 +1,10 @@
 """Rider experience completeness: the fields riders feel directly.
 
-Anchored to the Recommended tier of the California Transit Data Guidelines
-v4.0 (see docs/rubric.md "Rider experience completeness"). Accessibility
-fields carry the most weight on purpose: they are both a values statement
-and the most common real gap in small-agency feeds.
+Based on portable GTFS fields and Best Practices, with the California Transit
+Data Guidelines documented as one source in the published scoring profile (see
+docs/rubric.md "Rider experience completeness"). Accessibility fields carry
+the most weight on purpose: they are both a values statement and a common gap
+in small-agency feeds.
 """
 
 from __future__ import annotations
@@ -35,9 +36,18 @@ def _fraction_with_value(rows: list[dict[str, str]], field: str, allowed: set[st
 
 def _is_shouty(name: str) -> bool:
     """True for names written LIKE THIS. Short tokens ('4 & B', 'UCD') are
-    fine; only a fully-uppercase word of 4+ letters reads as shouting."""
+    fine; only a fully-uppercase word of 4+ letters in a cased script reads as
+    shouting. Scripts without letter case (for example Japanese or Arabic)
+    must never be treated as uppercase."""
     words = ["".join(c for c in token if c.isalpha()) for token in name.split()]
-    return any(len(w) >= 4 and w == w.upper() for w in words) and name == name.upper()
+    cased = [c for c in name if c.isalpha() and c.lower() != c.upper()]
+    return (
+        bool(cased)
+        and all(c == c.upper() for c in cased)
+        and any(
+            len(w) >= 4 and any(c.lower() != c.upper() for c in w) and w == w.upper() for w in words
+        )
+    )
 
 
 def _fraction_mixed_case(rows: list[dict[str, str]], field: str) -> float:
@@ -116,9 +126,9 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
                 what=f"{missing} of {len(trips)} trips don't say whether the vehicle "
                 "is wheelchair accessible.",
                 why="Even with accessible stops, riders need to know the bus itself can take them.",
-                fix="Set wheelchair_accessible on every trip (most small-agency "
-                "fleets are 100% accessible, so this is often a single default).",
-                effort="Often one default setting in your export.",
+                fix="Set wheelchair_accessible on every trip. If every vehicle is "
+                "accessible, this may be one default; otherwise use the value for each trip.",
+                effort="A default or per-trip field in your export.",
                 deduction=round((1 - wa) * WEIGHTS["wheelchair_trips"], 1),
             )
         )
@@ -173,7 +183,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
                 what=f"About {shouty} stop names are written in ALL CAPS.",
                 why="Mixed-case names are easier to read in apps and are read "
                 "more naturally by screen readers.",
-                fix="Rename stops to mixed case (e.g. 'Main St & 2nd Ave').",
+                fix="Rename stops to mixed case where the language has letter case "
+                "(for example, 'Central Station').",
                 effort="Often a bulk fix in your scheduling software.",
                 deduction=round((1 - mixed) * WEIGHTS["stop_names"], 1),
             )
@@ -220,7 +231,7 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
                 count=1,
                 what="feed_info.txt has no technical contact (feed_contact_email or "
                 "feed_contact_url).",
-                why="App makers and state data programs have nobody to email when "
+                why="Trip-planning apps and regional data coordinators have nobody to email when "
                 "they spot a problem with your feed, so problems linger.",
                 fix="Add feed_contact_email to feed_info.txt.",
                 effort="One field.",

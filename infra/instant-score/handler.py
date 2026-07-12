@@ -3,8 +3,9 @@
 A container-image Lambda behind API Gateway (this account blocks public
 Function URLs; see infra/alerts/main.tf). Three routes:
 
-  POST /score        {url, name?}  -> validate, rate-limit, kick off scoring
-                      asynchronously, return {job_id, status: "pending"}.
+  POST /score        {url, name?, country?} -> validate, rate-limit, kick off
+                      scoring asynchronously, return
+                      {job_id, status: "pending"}.
   GET  /score/{id}    -> the job's current status: pending, done (with a
                       shareable result URL), or error.
   (async, self-invoked, no HTTP route) -> run the actual scoring: fetch the
@@ -55,6 +56,41 @@ _URL_RE = re.compile(r"^https?://.+", re.IGNORECASE)
 _JOB_ID_RE = re.compile(r"^[A-Za-z0-9_-]{8,32}$")
 MAX_NAME_LEN = 200
 
+# Assigned ISO 3166-1 alpha-2 codes, kept local so the public request can be
+# rejected before the scoring pipeline is imported. This handler is also
+# loaded as a standalone Lambda module, so importing scorecard_pipeline just
+# to validate two characters would make its HTTP path depend on container
+# setup that only the async scoring path needs.
+_ASSIGNED_COUNTRY_CODES = frozenset(
+    """
+    AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ
+    BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ
+    CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ
+    DE DJ DK DM DO DZ
+    EC EE EG EH ER ES ET
+    FI FJ FK FM FO FR
+    GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY
+    HK HM HN HR HT HU
+    ID IE IL IM IN IO IQ IR IS IT
+    JE JM JO JP
+    KE KG KH KI KM KN KP KR KW KY KZ
+    LA LB LC LI LK LR LS LT LU LV LY
+    MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ
+    NA NC NE NF NG NI NL NO NP NR NU NZ
+    OM
+    PA PE PF PG PH PK PL PM PN PR PS PT PW PY
+    QA
+    RE RO RS RU RW
+    SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ
+    TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ
+    UA UG UM US UY UZ
+    VA VC VE VG VI VN VU
+    WF WS
+    YE YT
+    ZA ZM ZW
+    """.split()
+)
+
 # A stricter quota than the alerts endpoint: scoring runs a JVM over a
 # downloaded feed and costs real compute per request, unlike sending an email.
 IP_LIMIT = 5
@@ -82,7 +118,16 @@ def validate_score_request(body: dict[str, Any]) -> dict[str, str]:
     name = body.get("name")
     if name is not None and not isinstance(name, str):
         raise BadRequest("name must be a string if present")
-    out = {"url": url.strip()}
+    raw_country = body.get("country", "US")
+    if raw_country is None:
+        raw_country = "US"
+    if not isinstance(raw_country, str):
+        raise BadRequest("country must be an ISO 3166-1 alpha-2 code if present")
+    country = raw_country.strip().upper() or "US"
+    if country not in _ASSIGNED_COUNTRY_CODES:
+        raise BadRequest("country must be an assigned ISO 3166-1 alpha-2 code")
+
+    out = {"url": url.strip(), "country": country}
     if name:
         out["name"] = name.strip()[:MAX_NAME_LEN]
     return out
@@ -91,7 +136,9 @@ def validate_score_request(body: dict[str, Any]) -> dict[str, str]:
 def _cors_headers() -> dict[str, str]:
     return {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": os.environ.get("ALLOW_ORIGIN", "https://gtfsscorecard.org"),
+        "Access-Control-Allow-Origin": os.environ.get(
+            "ALLOW_ORIGIN", "https://gtfsscorecard.org"
+        ),
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
     }
@@ -105,7 +152,9 @@ def _jobs_table() -> Any:
     import boto3  # noqa: PLC0415 - lazy; provided by the Lambda runtime
 
     region = os.environ.get("AWS_REGION", "us-west-2")
-    return boto3.resource("dynamodb", region_name=region).Table(os.environ["JOBS_TABLE"])
+    return boto3.resource("dynamodb", region_name=region).Table(
+        os.environ["JOBS_TABLE"]
+    )
 
 
 def _ip_rate_limited(event: dict[str, Any]) -> bool:
@@ -118,7 +167,9 @@ def _ip_rate_limited(event: dict[str, Any]) -> bool:
     import boto3  # noqa: PLC0415 - lazy; provided by the Lambda runtime
 
     region = os.environ.get("AWS_REGION", "us-west-2")
-    table = boto3.resource("dynamodb", region_name=region).Table(os.environ["RATELIMIT_TABLE"])
+    table = boto3.resource("dynamodb", region_name=region).Table(
+        os.environ["RATELIMIT_TABLE"]
+    )
     now = int(time.time())
     bucket = now // IP_WINDOW
     resp = table.update_item(
@@ -131,7 +182,7 @@ def _ip_rate_limited(event: dict[str, Any]) -> bool:
     return int(resp["Attributes"]["count"]) > IP_LIMIT
 
 
-def _start_scoring(job_id: str, url: str, name: str) -> None:
+def _start_scoring(job_id: str, url: str, name: str, country: str = "US") -> None:
     """Fire off the actual scoring work asynchronously and record the job as
     pending. Returns immediately; the async invocation below does the work."""
     import boto3  # noqa: PLC0415 - lazy; provided by the Lambda runtime
@@ -142,15 +193,20 @@ def _start_scoring(job_id: str, url: str, name: str) -> None:
             "job_id": job_id,
             "status": STATUS_PENDING,
             "url": url,
+            "country": country,
             "created_at": now,
             "expires_at": now + JOB_TTL_SECONDS,
         }
     )
-    lambda_client = boto3.client("lambda", region_name=os.environ.get("AWS_REGION", "us-west-2"))
+    lambda_client = boto3.client(
+        "lambda", region_name=os.environ.get("AWS_REGION", "us-west-2")
+    )
     lambda_client.invoke(
         FunctionName=os.environ["FUNCTION_NAME"],
         InvocationType="Event",
-        Payload=json.dumps({"job_id": job_id, "url": url, "name": name}),
+        Payload=json.dumps(
+            {"job_id": job_id, "url": url, "name": name, "country": country}
+        ),
     )
 
 
@@ -167,7 +223,7 @@ def _handle_post(event: dict[str, Any]) -> dict[str, Any]:
         return _json(400, {"error": str(exc)})
 
     job_id = secrets.token_urlsafe(9)
-    _start_scoring(job_id, req["url"], req.get("name", ""))
+    _start_scoring(job_id, req["url"], req.get("name", ""), req["country"])
     return _json(202, {"job_id": job_id, "status": STATUS_PENDING})
 
 
@@ -197,14 +253,16 @@ def _prepare_runtime() -> None:
     from scorecard_pipeline.config import cache_dir  # noqa: PLC0415 - after env is set
     from scorecard_pipeline.validate import VALIDATOR_VERSION
 
-    baked = Path(os.environ.get("BAKED_VALIDATOR_JAR", "/opt/validator/gtfs-validator-cli.jar"))
+    baked = Path(
+        os.environ.get("BAKED_VALIDATOR_JAR", "/opt/validator/gtfs-validator-cli.jar")
+    )
     cache_dir().mkdir(parents=True, exist_ok=True)
     target = cache_dir() / f"gtfs-validator-{VALIDATOR_VERSION}-cli.jar"
     if baked.exists() and not target.exists():
         shutil.copyfile(baked, target)
 
 
-def _run_scoring_job(job_id: str, url: str, name: str) -> None:
+def _run_scoring_job(job_id: str, url: str, name: str, country: str = "US") -> None:
     """The async half: score the feed, publish the result, record the outcome.
     Never raises; every failure path writes an error job record so a poller
     always gets a terminal status rather than hanging forever."""
@@ -212,7 +270,7 @@ def _run_scoring_job(job_id: str, url: str, name: str) -> None:
     from scorecard_pipeline.cli import run_adhoc
 
     try:
-        artifact = run_adhoc(url, name or None, dt.date.today())
+        artifact = run_adhoc(url, name or None, dt.date.today(), country=country)
     except Exception as exc:  # noqa: BLE001 - any failure becomes a job error, never a crash
         # Safe, generic message: the exception text can include a raw path or
         # subprocess output that should not reach an untrusted requester.
@@ -261,11 +319,16 @@ def _publish_result(job_id: str, artifact: dict[str, Any]) -> str:
 def handler(event: dict[str, Any], context: object) -> dict[str, Any] | None:
     """Entrypoint. Three shapes reach here: an API Gateway v2 HTTP event (POST
     or GET), an OPTIONS preflight, or this function's own async self-invoke
-    payload (no requestContext, just {job_id, url, name})."""
+    payload (no requestContext, just {job_id, url, name, country})."""
     if "requestContext" not in event:
         # Async self-invoke: do the actual scoring. No HTTP response is sent
         # or expected (InvocationType="Event" discards the return value).
-        _run_scoring_job(event["job_id"], event["url"], event.get("name", ""))
+        _run_scoring_job(
+            event["job_id"],
+            event["url"],
+            event.get("name", ""),
+            event.get("country", "US"),
+        )
         return None
 
     ctx = event.get("requestContext", {}).get("http", {})

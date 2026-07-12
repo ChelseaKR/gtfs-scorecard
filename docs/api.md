@@ -15,7 +15,7 @@ domain. Every path below is relative to that base.
 | Path | What it is |
 | --- | --- |
 | `index.json` | Every agency with its score/grade history. Powers the picker and trends. |
-| `directory.json` | Slim national directory: per-agency grade, state, size tier, percentiles, plus a national and per-state summary. |
+| `directory.json` | Slim covered-set directory: per-agency grade, portable location, size tier, percentiles, plus corpus-wide, country/subdivision, and legacy place summaries. |
 | `changes/latest.json` | Agencies whose grade or score moved since their last check (a daily transition feed). Immutable dated copy at `changes/<date>.json`. |
 | `<agency>/latest.json` | The most recent full scorecard for one agency. |
 | `<agency>/<date>.json` | The scorecard for one agency on one date (`YYYY-MM-DD`). |
@@ -104,10 +104,10 @@ the bytes analysed. Releases:
 Changelog:
 
 - `1.9` broadens portable country fields from the initial US/Canada values to
-  any ISO 3166-1 alpha-2 country activated in `jurisdictions.yaml`. Published
-  schemas validate the stable alpha-2 shape; the curated registry remains the
-  stricter admission boundary. Scores and the scoring profile are unchanged.
-  Additive.
+  every assigned ISO 3166-1 alpha-2 country. Published schemas validate the
+  stable alpha-2 shape; the generated global ISO vocabulary remains the
+  stricter admission boundary for country and subdivision codes. Scores and
+  the scoring profile are unchanged. Additive.
 - `1.8` adds the required `scoring_profile` block to every per-agency
   artifact. It identifies the scoring contract independently from the API
   schema and states that its weights, deductions, thresholds, grade bands,
@@ -200,8 +200,9 @@ subdivision is not known. US artifacts may also carry `state` as a compatibility
 alias; non-US artifacts do not use it. Consumers must treat `country` as an open
 ISO 3166-1 alpha-2 value rather than an enum of the countries covered today. A
 new country can appear within API v1 without changing the field's meaning or
-type. The curated registry remains stricter than this published shape and only
-admits countries activated in the deployment's jurisdiction configuration.
+type. The agency registry determines which countries currently have scorecards;
+it does not determine which assigned ISO locations the data model can represent.
+The write boundary validates codes against the packaged global ISO vocabulary.
 
 A category is either `"status": "measured"` (has `score`, `summary`,
 `findings`, `details`) or not measured (`"status": "not_yet_measured"` with a
@@ -311,13 +312,13 @@ consuming directly rather than re-deriving:
 
 ## Directory (`directory.json`)
 
-The national document the web app's overview reads: one record per agency with
+The covered-set document the web app's overview reads: one record per agency with
 the same fields as a catalog row (identity, grade, freshness, readiness,
 provenance, size tier, and percentiles) plus a `summary` block with the
-national grade distribution, expiring and expired counts, median score, a
-per-state rollup, and size-tier counts. It carries the same `license` and
+corpus grade distribution, expiring and expired counts, median score, a portable
+country/subdivision rollup, the legacy state/place rollup, and size-tier counts. It carries the same `license` and
 `attribution` as the catalog. Prefer it over `index.json` when you want the
-current national picture without the full per-agency history.
+current coverage picture without the full per-agency history.
 
 ## Versioned cross-agency API (`api/v1/`)
 
@@ -332,27 +333,47 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/index.json` | The API's self-description: version, endpoint list, license, attribution. |
 | `api/v1/agencies.json` | Every agency's latest check in one list (id, name, date, grade, score, the four category scores, days to expiry). `realtime` is null when not published. |
 | `api/v1/leaderboard.json` | `top` and `bottom` by score, and `most_improved` / `most_declined` by the change since each agency's previous check. |
-| `api/v1/by-state.json` | Per-state agency count, median score, and grade distribution. Agencies without a known state group under `Unlocated`. |
+| `api/v1/by-state.json` | Legacy U.S.-state agency count, median score, and grade distribution. U.S. agencies without a known state group under `Unlocated`. |
 | `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivision counts, median scores, and grade distributions. Null codes collect rows whose curated location is unknown. `by-state.json` remains unchanged for existing US consumers. |
-| `api/v1/stats.json` | National count, average and median score, grade distribution, and the share of feeds not expired. |
-| `api/v1/equity.json` | Per-state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades, with the high-need states that carry many low-grade feeds. Refreshed weekly from Census ACS. |
+| `api/v1/stats.json` | Covered-feed count, average and median score, grade distribution, and the share of feeds not expired. |
+| `api/v1/equity.json` | United States-only state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades. Refreshed weekly from U.S. Census ACS. |
 | `api/v1/ids.json` | Identity crosswalk: every agency's scorecard slug joined to its Mobility Database id, NTD id, and feed URL, so grades join to either registry (or FTA data) without fuzzy matching. |
-| `api/v1/ridership-impact.json` | National quality weighted by NTD annual rider-trips (ADR 0021): trips covered, trips by grade, and the share of trips on expired feeds, with the matched coverage stated. Present when the daily run's NTD fetch succeeded. |
+| `api/v1/ridership-impact.json` | United States-only quality context weighted by NTD annual rider-trips (ADR 0021): trips covered, trips by grade, and the share on expired feeds, with matched coverage stated. Present when the daily run's NTD fetch succeeded. |
 | `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
-| `api/v1/accessibility.json` | National accessibility-data completeness: how many feeds populate wheelchair fields, and where the gaps sit. Backs the coverage section at `/adoption/#access`. |
-| `api/v1/adoption.json` | Which newer GTFS capabilities (Flex, Fares v2, pathways, cEMV) feeds actually publish. Backs `/adoption/`. |
-| `api/v1/realtime.json` | National realtime reliability: uptime and freshness of RT feeds over the sampled windows. Backs `/realtime/`. |
-| `api/v1/problems.json` | The most common validator findings nationally, with prevalence counts. Backs `/problems/`. |
-| `api/v1/trend.json` | The national quality time series: is the covered set improving? Backs the trend section at `/pulse/#trend`. |
+| `api/v1/accessibility.json` | Covered-set accessibility-data completeness: how many feeds populate wheelchair fields, overall and by portable country/subdivision. Backs the coverage section at `/adoption/#access`. |
+| `api/v1/adoption.json` | Which newer GTFS capabilities (Flex, Fares v2, pathways, cEMV) feeds publish, overall and by portable country/subdivision. Backs `/adoption/`. |
+| `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. |
+| `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
+| `api/v1/trend.json` | The covered-set quality time series. Backs the trend section at `/pulse/#trend`. |
 | `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run. |
 
 Per-agency detail stays the published artifact (`<agency>/latest.json`); the API
 does not duplicate it. The human standings render on
-[the national pulse](https://gtfsscorecard.org/pulse/).
+[the coverage overview](https://gtfsscorecard.org/pulse/).
+
+### Portable geography on aggregate endpoints
+
+`accessibility.json`, `adoption.json`, and `realtime.json` each add a
+`countries` array. Every country row carries `country_code`, `country_name`,
+that endpoint's metric fields, and a nested `subdivisions` array. Subdivision
+rows carry `subdivision_code` (null when unknown), `subdivision_name`, and the
+same metric fields. An unknown subdivision is retained as `Unlocated`; it is
+never inferred from an agency name.
+
+Their existing `states` arrays remain U.S.-only compatibility views with the
+same row shapes and metric meanings. New consumers should use `countries`.
+Historical source records that omit `country` remain U.S. records by the v1
+contract. The additive country rows do not change overall counts, scores,
+bands, samples, or grades.
+
+`problems.json` is intentionally the exception. Its aggregation input contains
+only finding lists after agency identity has been removed, so a geographic
+split would require guessing or changing the upstream contract. It remains a
+covered-corpus prevalence view until identity-carrying inputs are available.
 
 ### Bulk table and SQL (`api/v1/agencies.parquet`)
 
-For arbitrary filters and joins, the same national table is published as Parquet
+For arbitrary filters and joins, the same covered-set table is published as Parquet
 at `api/v1/agencies.parquet`. A DuckDB or Athena user queries it directly with no
 server:
 
@@ -369,7 +390,7 @@ the dataset locally (the table is named `agencies`), and `scorecard query
 ### Scaling
 
 The static JSON serves the bounded cross-agency reads; the Parquet table serves
-arbitrary SQL over the national dataset, both from object storage with no query
+arbitrary SQL over the covered dataset, both from object storage with no query
 server (ADR 0013). A managed database follows only if interactive multi-tenant
 queries genuinely appear. The decision and trigger are in
 `docs/decisions/0013-static-public-api.md`.
@@ -451,11 +472,14 @@ fail the build on a low grade or an imminent expiry, using the same scoring the
 site uses (no on-demand public endpoint; it runs in your own CI):
 
 ```bash
-uvx --from gtfs-scorecard scorecard try "$FEED_URL" \
+uvx --from gtfs-scorecard scorecard try "$FEED_URL" --country CA \
   --min-grade B --min-days-to-expiry 30
 ```
 
-The command prints the grade, category bars, and top fixes, and exits non-zero
+`--country` accepts an assigned ISO 3166-1 alpha-2 code and defaults to `US` so
+existing commands retain their behavior. It is passed to the MobilityData
+validator and written into the ad-hoc artifact. The command prints the grade,
+category bars, and top fixes, and exits non-zero
 when a threshold is not met. `--min-grade` and `--min-days-to-expiry` are
 optional; with neither, it just reports.
 

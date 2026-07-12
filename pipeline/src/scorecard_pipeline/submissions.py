@@ -56,6 +56,23 @@ def form_to_entry(form: dict[str, str]) -> dict[str, object]:
         "name": name,
         "static_gtfs_url": _clean(form, "static_gtfs_url"),
     }
+    country = _clean(form, "country").upper()
+    subdivision_code = _clean(form, "subdivision_code").upper()
+    subdivision_name = _clean(form, "subdivision_name")
+    if not country and (subdivision_code or subdivision_name):
+        raise AgencyConfigError("Country is required when a subdivision code or name is submitted.")
+    if bool(subdivision_code) != bool(subdivision_name):
+        raise AgencyConfigError(
+            "Submit both an ISO subdivision code and subdivision name, or leave both blank."
+        )
+    # An omitted country is the legacy API shape and intentionally keeps the
+    # registry's US default. New browser submissions always send this field.
+    if country:
+        entry["country"] = country
+    if subdivision_code:
+        entry["subdivision_code"] = subdivision_code
+    if subdivision_name:
+        entry["subdivision_name"] = subdivision_name
     rt_urls = {field: _clean(form, field) for field in RT_FIELDS if _clean(form, field)}
     if rt_urls:
         entry["rt_urls"] = rt_urls
@@ -95,6 +112,9 @@ def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
         id=agency_id,
         name=str(entry["name"]),
         static_gtfs_url=str(entry["static_gtfs_url"]),
+        country=str(entry.get("country") or "US"),
+        subdivision_code=str(entry.get("subdivision_code") or ""),
+        subdivision_name=str(entry.get("subdivision_name") or ""),
         rt_urls=dict(rt_urls_entry) if isinstance(rt_urls_entry, dict) else {},
         rt_note=str(entry.get("rt_note") or ""),
         license_note=str(entry.get("license_note") or ""),
@@ -104,6 +124,9 @@ def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
 
     submitter = _clean(form, "submitter_email")
     credit = f"\n\nSubmitted via the self-serve form by {submitter}." if submitter else ""
+    location = str(entry.get("country") or "US")
+    if entry.get("subdivision_code"):
+        location += f" / {entry['subdivision_code']} ({entry.get('subdivision_name', '')})"
     return Submission(
         agency_id=agency_id,
         branch=f"submit-{agency_id}",
@@ -113,6 +136,7 @@ def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
         pr_body=(
             f"Adds **{entry['name']}** (`{agency_id}`) to `agencies.yaml`.\n\n"
             f"- Static GTFS: {entry['static_gtfs_url']}\n"
+            f"- Location: {location}\n"
             f"- Realtime: {'yes' if proposal.rt_urls else 'none submitted'}\n\n"
             "The daily pipeline will score it automatically once merged. Please "
             "verify the feed URL and license before merging." + credit

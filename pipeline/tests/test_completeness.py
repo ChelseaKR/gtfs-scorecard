@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from scorecard_pipeline.completeness import WEIGHTS, completeness
+from scorecard_pipeline.completeness import WEIGHTS, _is_shouty, completeness
 
 COMPLETE_FEED = {
     "agency.txt": (
@@ -54,6 +54,14 @@ def test_bare_feed_scores_low_with_findings(make_gtfs_zip: Callable[..., Path]) 
     assert "scorecard_missing_headsigns" in codes
     assert "scorecard_no_feed_contact" in codes
     assert "scorecard_bad_agency_url" in codes
+
+
+def test_uncased_scripts_are_not_misread_as_all_caps() -> None:
+    assert not _is_shouty("那須町役場前")
+    assert not _is_shouty("محطة الحافلات المركزية")
+    assert _is_shouty("ЦЕНТРАЛЬНЫЙ ВОКЗАЛ")
+    assert _is_shouty("CENTRAL STATION")
+    assert not _is_shouty("Central Station")
 
 
 def test_accessibility_sub_score_is_published(make_gtfs_zip: Callable[..., Path]) -> None:

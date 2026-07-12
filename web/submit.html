@@ -45,7 +45,7 @@
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a>
       <button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button>
       <div class="nav-cluster" id="nav-cluster">
-        <nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav>
+        <nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav>
         <div id="theme-control"></div>
       </div>
     </div>
@@ -75,6 +75,24 @@
         <span class="hint">A direct link to your GTFS .zip. If you are not sure, your
         scheduling vendor or your page on the Mobility Database has it.</span>
       </p>
+      <fieldset class="field">
+        <legend>Primary location <span class="req">(required)</span></legend>
+        <label for="country">Country code</label>
+        <input id="country" name="country" type="text" required maxlength="2"
+          pattern="[A-Za-z]{2}" autocomplete="off" autocapitalize="characters"
+          spellcheck="false" placeholder="e.g. US or CA">
+        <span class="hint">Use the two-letter ISO country code. This identifies the feed's
+        primary catalog location; it does not limit a service that crosses a border.</span>
+        <label for="subdivision_code">Subdivision code</label>
+        <input id="subdivision_code" name="subdivision_code" type="text" maxlength="7"
+          pattern="[A-Za-z]{2}-[A-Za-z0-9]{1,3}" placeholder="e.g. CA-ON">
+        <label for="subdivision_name">Subdivision name</label>
+        <input id="subdivision_name" name="subdivision_name" type="text"
+          placeholder="e.g. Ontario">
+        <span class="hint">Subdivision is optional for national, cross-border, city-state, or
+        genuinely unlocated feeds. If you provide it, include both the ISO 3166-2 code and the
+        local practitioner-facing name.</span>
+      </fieldset>
       <fieldset class="field">
         <legend><abbr title="GTFS Realtime">GTFS-Realtime</abbr> URLs (optional)</legend>
         <label for="trip_updates">Trip updates</label>
@@ -109,13 +127,15 @@
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
       <a href="/fix/">GTFS errors &amp; fixes</a> ·

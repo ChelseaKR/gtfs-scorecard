@@ -301,10 +301,9 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
                 name=name,
                 static_gtfs_url=feed.direct_download,
                 mdb_id=feed.mdb_id,
-                # Preserve the catalog country even when this deployment does
-                # not support rendering it yet. The registry will then reject
-                # it with the deliberate country-support message instead of a
-                # rendered proposal silently falling back to US.
+                # Preserve an unassigned or malformed catalog country so the
+                # registry rejects it explicitly instead of a proposal silently
+                # falling back to the legacy US default.
                 country=location.country_code or feed.country.strip().upper(),
                 subdivision_code=location.subdivision_code,
                 # Keep catalog context even when it is not a recognized ISO

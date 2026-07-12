@@ -8,13 +8,16 @@ produced without touching artifacts_dir().
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import io
 from contextlib import redirect_stdout
 from pathlib import Path
 
+import pytest
+
 from scorecard_pipeline import cli
-from scorecard_pipeline.config import artifacts_dir
+from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.validate import NoticeGroup, ValidationReport
 
@@ -57,6 +60,104 @@ def test_run_adhoc_defaults_name_to_host(monkeypatch) -> None:  # type: ignore[n
     _stub_fetch(monkeypatch)
     artifact = cli.run_adhoc("https://transit.example.org/feed.zip", None, dt.date(2026, 6, 11))
     assert artifact["agency"]["name"] == "transit.example.org"
+
+
+def test_run_adhoc_isolates_parallel_work_by_url(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _stub_fetch(monkeypatch)
+    scratch_ids: list[str] = []
+    report_dirs: list[Path] = []
+    fr = FetchResult(
+        agency_id="_adhoc",
+        path=FIXTURE,
+        url="https://example.test/gtfs.zip",
+        fetched_date=dt.date(2026, 6, 11),
+        sha256="ab" * 32,
+        size_bytes=FIXTURE.stat().st_size,
+        reused=False,
+    )
+
+    def fetch(agency: Agency, *_args: object, **_kwargs: object) -> FetchResult:
+        scratch_ids.append(agency.id)
+        return fr
+
+    def validate(_feed: Path, output_dir: Path, *, country_code: str = "US") -> Path:
+        report_dirs.append(output_dir)
+        return Path("unused.json")
+
+    monkeypatch.setattr(cli, "fetch_static", fetch)
+    monkeypatch.setattr(cli, "run_validator", validate)
+    first = cli.run_adhoc("https://one.example/feed.zip", "One", dt.date(2026, 6, 11))
+    second = cli.run_adhoc("https://two.example/feed.zip", "Two", dt.date(2026, 6, 11))
+
+    assert scratch_ids[0] != scratch_ids[1]
+    assert all(value.startswith("_adhoc-") for value in scratch_ids)
+    assert report_dirs[0] != report_dirs[1]
+    assert first["agency"]["id"] == second["agency"]["id"] == "_adhoc"
+
+
+def test_run_adhoc_passes_country_to_validator_and_artifact(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _stub_fetch(monkeypatch)
+    countries: list[str] = []
+
+    def validate(
+        _feed: Path,
+        _output_dir: Path,
+        *,
+        country_code: str = "US",
+    ) -> Path:
+        countries.append(country_code)
+        return Path("unused.json")
+
+    monkeypatch.setattr(cli, "run_validator", validate)
+    artifact = cli.run_adhoc(
+        "https://example.test/gtfs.zip",
+        "Canadian Example",
+        dt.date(2026, 6, 11),
+        country="ca",
+    )
+
+    assert countries == ["CA"]
+    assert artifact["agency"]["country"] == "CA"
+
+
+def test_run_adhoc_country_is_part_of_scratch_identity(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _stub_fetch(monkeypatch)
+    scratch_ids: list[str] = []
+
+    def fetch(agency: Agency, *_args: object, **_kwargs: object) -> FetchResult:
+        scratch_ids.append(agency.id)
+        return FetchResult(
+            agency_id=agency.id,
+            path=FIXTURE,
+            url="https://example.test/gtfs.zip",
+            fetched_date=dt.date(2026, 6, 11),
+            sha256="ab" * 32,
+            size_bytes=FIXTURE.stat().st_size,
+            reused=False,
+        )
+
+    monkeypatch.setattr(cli, "fetch_static", fetch)
+    cli.run_adhoc("https://example.test/gtfs.zip", None, dt.date(2026, 6, 11), country="US")
+    cli.run_adhoc("https://example.test/gtfs.zip", None, dt.date(2026, 6, 11), country="CA")
+
+    assert scratch_ids[0] != scratch_ids[1]
+
+
+def test_try_cli_normalizes_assigned_country(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    seen: list[str] = []
+
+    def command(args: argparse.Namespace, _parser: argparse.ArgumentParser) -> int:
+        seen.append(str(args.country))
+        return 0
+
+    monkeypatch.setattr(cli, "_cmd_try", command)
+    assert cli.main(["try", "https://example.test/gtfs.zip", "--country", "ca"]) == 0
+    assert seen == ["CA"]
+
+
+def test_try_cli_rejects_unassigned_country() -> None:
+    with pytest.raises(SystemExit):
+        cli.main(["try", "https://example.test/gtfs.zip", "--country", "ZZ"])
 
 
 def test_print_summary_includes_grade_and_fixes() -> None:

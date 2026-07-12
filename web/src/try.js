@@ -46,12 +46,23 @@ if (!TRY_URL) {
     const data = Object.fromEntries(new FormData(form).entries());
     const url = String(data.url || "").trim();
     const name = String(data.name || "").trim();
+    const country = String(data.country || "").trim().toUpperCase();
     const urlField = /** @type {HTMLInputElement} */ (form.querySelector("#try-url"));
+    const countryField = /** @type {HTMLInputElement} */ (
+      form.querySelector("#try-country")
+    );
     urlField.removeAttribute("aria-invalid");
+    countryField.removeAttribute("aria-invalid");
     if (!urlField.validity.valid || !/^https?:\/\/.+/i.test(url)) {
       setStatus("The GTFS Schedule URL should start with http:// or https://.", "err");
       urlField.setAttribute("aria-invalid", "true");
       urlField.focus();
+      return;
+    }
+    if (!countryField.validity.valid || !/^[A-Z]{2}$/.test(country)) {
+      setStatus("Enter a two-letter ISO country or territory code, like CA or NZ.", "err");
+      countryField.setAttribute("aria-invalid", "true");
+      countryField.focus();
       return;
     }
 
@@ -65,7 +76,7 @@ if (!TRY_URL) {
       const resp = await fetch(TRY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, name }),
+        body: JSON.stringify({ url, name, country }),
       });
       const body = await resp.json().catch(() => ({}));
       if (resp.status === 429) {
@@ -80,7 +91,7 @@ if (!TRY_URL) {
         "Downloading your feed and running the validator. This takes about a minute…",
         "info"
       );
-      await poll(body.job_id, url, name);
+      await poll(body.job_id, url, name, country);
     } catch {
       setStatus("Could not reach the scoring service. Please try again later.", "err");
     } finally {
@@ -89,8 +100,13 @@ if (!TRY_URL) {
   });
 }
 
-/** @param {string} jobId @param {string} url @param {string} name */
-async function poll(jobId, url, name) {
+/**
+ * @param {string} jobId
+ * @param {string} url
+ * @param {string} name
+ * @param {string} country
+ */
+async function poll(jobId, url, name, country) {
   const deadline = Date.now() + POLL_TIMEOUT_MS;
   const base = TRY_URL.replace(/\/$/, "");
   while (Date.now() < deadline) {
@@ -105,7 +121,7 @@ async function poll(jobId, url, name) {
     }
     if (job.status === "done") {
       setStatus("Done.", "ok");
-      await showResult(job, url, name);
+      await showResult(job, url, name, country);
       return;
     }
     if (job.status === "error") {
@@ -119,8 +135,13 @@ async function poll(jobId, url, name) {
   );
 }
 
-/** @param {any} job @param {string} url @param {string} name */
-async function showResult(job, url, name) {
+/**
+ * @param {any} job
+ * @param {string} url
+ * @param {string} name
+ * @param {string} country
+ */
+async function showResult(job, url, name, country) {
   /** @type {any} */
   let artifact = null;
   if (job.result_url) {
@@ -131,7 +152,10 @@ async function showResult(job, url, name) {
       /* fall back to the grade-only summary below */
     }
   }
-  const trackUrl = `submit.html?url=${encodeURIComponent(url)}${name ? `&name=${encodeURIComponent(name)}` : ""}`;
+  const trackUrl =
+    `submit.html?url=${encodeURIComponent(url)}` +
+    `${name ? `&name=${encodeURIComponent(name)}` : ""}` +
+    `&country=${encodeURIComponent(country)}`;
 
   if (!artifact) {
     result.innerHTML = `

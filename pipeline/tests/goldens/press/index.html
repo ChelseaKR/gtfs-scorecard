@@ -40,7 +40,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">For reporters</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
@@ -54,19 +54,19 @@
     <ul>
       <li>"Agency X's published schedule data expired on [date], so trip planners like
       Google Maps stop showing its service." Expiry is read directly from the feed.</li>
-      <li>"N of the M feeds tracked in [state] have expired." Counts over the covered
-      set, with the state named.</li>
+      <li>"N of the M feeds this site tracks in [country or subdivision] have expired."
+      Counts over the covered set, with the exact geographic scope named.</li>
       <li>"Agency X's feed does not say which stops are wheelchair accessible." A statement
       about published data, and usually a one-setting fix in the agency's software.</li>
-      <li>"Nationally, [pct]% of tracked feeds look ready for the federal
-      <abbr title="National Transit Database">NTD</abbr> GTFS requirement."</li>
+      <li>"Across the feeds currently covered, [pct]% publish fare data." This is a claim
+      about this site's corpus, not about all agencies in the world.</li>
     </ul></section>
 
     <section class="feed-details"><h2 class="section-title">Claims it does not support</h2>
     <ul>
-      <li><strong>"The worst transit agency in America."</strong> The scorecard covers the
-      feeds it tracks, not every agency; absence means not covered, never failing, and a
-      position on a list here is not a national rank.</li>
+      <li><strong>"The worst transit agency in [country]."</strong> The scorecard covers a
+      curated set of feeds, not every agency in any country; absence means not covered,
+      never failing, and a position here is not a national rank.</li>
       <li><strong>"Agency X's buses are inaccessible."</strong> The accessibility number
       measures whether the data is published, never whether a stop or vehicle is usable.</li>
       <li><strong>"Agency X is out of compliance."</strong> Nothing here is an official
@@ -78,18 +78,22 @@
     </ul></section>
 
     <section class="feed-details"><h2 class="section-title">Story-ready data</h2>
-    <p>Every number on this site is downloadable. For a local story, start with your
-    state: the <a href="/pulse/">national pulse</a> for the picture, your state's
-    program page (linked from any agency in it) for the portfolio, and the per-state
-    rows in <a href="/api/v1/by-state.json">the by-state API</a>. For a citable
-    snapshot, use a dated
+    <p>Every number on this site is downloadable. Start with the
+    <a href="/pulse/">coverage overview</a>, then use the country and subdivision
+    rows in <a href="/api/v1/by-location.json">the location API</a> to state the
+    denominator precisely. For a citable snapshot, use a dated
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/releases">dataset release</a>
     rather than the live site, which changes daily. Methodology, rubric weights, and
     the validator version are all published:
     <a href="/how-to-read/">how to read a scorecard</a> and
-    <a href="/data/">the open dataset</a>. For the Report Year 2026 shapes.txt
-    requirement, <a href="/ntd/shapes/">the explainer</a> carries the national and
-    per-state numbers and the claims they support.</p></section>
+    <a href="/data/">the open dataset</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">United States reporting context</h2>
+    <p>U.S.-only reporting can also use the <a href="/ntd/">FTA NTD readiness</a>
+    view, <a href="/ntd/shapes/">Report Year 2026 shapes.txt explainer</a>, state
+    program pages, and the compatibility
+    <a href="/api/v1/by-state.json">by-state API</a>. These sources support claims
+    about the covered U.S. feeds and should not be generalized to other countries.</p></section>
 
     <p class="fineprint">Questions about a specific number, or a correction? Open an
     issue on <a href="https://github.com/ChelseaKR/gtfs-scorecard">the repository</a>;
@@ -101,13 +105,15 @@
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
       <a href="/fix/">GTFS errors &amp; fixes</a> ·

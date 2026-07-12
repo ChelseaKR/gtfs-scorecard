@@ -94,6 +94,36 @@ agencies:
     static_gtfs_url: http://www.londontransit.ca/gtfsfeed/google_transit.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
 
+  # First worldwide canaries: official open feeds on three continents. These
+  # exercise the shared GTFS rubric, Unicode names, and country-first browsing;
+  # U.S.-specific NTD and equity modules do not apply. Sources and reuse terms
+  # were verified 2026-07-12 and are recorded in docs/feeds.md.
+  - id: nasu-town-community-bus
+    name: Nasu Town Community Bus (那須町町民バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nasutown/feeds/nasutown/files/feed.zip?rid=current
+    license_note: CC BY 4.0; published as open data by Nasu Town.
+
+  - id: adelaide-metro
+    name: Adelaide Metro
+    country: AU
+    subdivision_code: AU-SA
+    subdivision_name: South Australia
+    static_gtfs_url: https://gtfs.adelaidemetro.com.au/v1/static/latest/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution; attribute Adelaide Metro, Department for
+      Infrastructure and Transport, South Australia.
+
+  - id: dublin-bus
+    name: Dublin Bus (Transport for Ireland)
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Dublin_Bus.zip
+    license_note: CC BY 4.0; published by Ireland's National Transport Authority.
+
   # Sacramento-region small and rural agencies, drafted from the Mobility
   # Database (scorecard sync) and curated from agencies.california.proposed.yaml.
   # They give the program rollup views a real worst-first cohort beyond the two

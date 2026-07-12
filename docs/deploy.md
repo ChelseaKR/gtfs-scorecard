@@ -141,7 +141,9 @@ comes.
 
 Scores any GTFS URL on demand for `web/try.html`: a container-image Lambda
 (the same JVM base as `compute/`) behind API Gateway, with a DynamoDB jobs
-table, per-IP rate limiting, and a reserved concurrency cap. This is the one
+table, per-IP rate limiting, explicit country context passed to the validator,
+and a reserved concurrency cap. The public form requires a country; only
+omitted legacy HTTP requests default to `US`. This is the one
 deliberate exception to the cost ceiling (roughly $20-60/month at demo-era
 volume); the funnel case and the guardrails are in
 `docs/decisions/0029-instant-score-funnel.md`. Build and push the image, then:

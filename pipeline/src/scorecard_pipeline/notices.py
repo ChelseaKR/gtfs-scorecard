@@ -155,6 +155,14 @@ TRANSLATIONS: dict[str, Translation] = {
         "2nd Ave', not 'MAIN ST & 2ND AVE').",
         effort="Often a bulk fix in your scheduling software.",
     ),
+    "non_ascii_or_non_printable_char": Translation(
+        what="Some internal IDs use characters outside the basic text set.",
+        why="These IDs are valid UTF-8 data. This warning is only about support in older "
+        "apps. It does not mean that names in other languages are wrong.",
+        fix="Only change the flagged IDs if an app needs basic ASCII values. Update each place "
+        "that uses the ID. Keep all names and headsigns in their original language.",
+        effort="A planned ID change, not a quick text cleanup.",
+    ),
     "missing_recommended_file": Translation(
         what="A file GTFS asks for (usually feed_info.txt) is missing.",
         why="feed_info.txt tells apps who publishes the feed and when it "

@@ -43,9 +43,17 @@ Table = list[dict[str, str]]
 def _is_shouty(name: str) -> bool:
     """True for names written LIKE THIS. Mirrors the completeness check so the
     fix targets exactly what that finding flags: a fully-uppercase name with at
-    least one 4+ letter word, leaving short acronyms ('UCD', '4 & B') alone."""
+    least one 4+ letter word in a cased script, leaving short acronyms ('UCD',
+    '4 & B') and uncased scripts alone."""
     words = ["".join(c for c in token if c.isalpha()) for token in name.split()]
-    return any(len(w) >= 4 and w == w.upper() for w in words) and name == name.upper()
+    cased = [c for c in name if c.isalpha() and c.lower() != c.upper()]
+    return (
+        bool(cased)
+        and all(c == c.upper() for c in cased)
+        and any(
+            len(w) >= 4 and any(c.lower() != c.upper() for c in w) and w == w.upper() for w in words
+        )
+    )
 
 
 def _titlecase(name: str) -> str:

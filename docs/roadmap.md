@@ -1,7 +1,7 @@
-# Roadmap: scaling the scorecard from two agencies to a national service
+# Roadmap: scaling the scorecard from two agencies to a worldwide service
 
 > A multiyear plan for growing the GTFS Scorecard from its two pilot feeds to
-> as many transit agencies as want it, and the tooling and infrastructure that
+> responsibly curated agencies anywhere GTFS is published, and the tooling and infrastructure that
 > growth requires. This picks up where the build plan in `CLAUDE.md` leaves
 > off (Phase 4, "generalize"). It is a planning document, not a commitment;
 > revise it as the pilot teaches us what agencies actually need.
@@ -52,8 +52,9 @@ below is checked against them.
 ## Year 1 — from two feeds to a region (target: 50 to 200 agencies)
 
 > Status (2026-07): the registry passed this target ahead of plan and now
-> tracks ~1,140 configured feeds across the US and Canada (~1,450 scored latest rows with published
-> pages). The Year 1 work below is done; what remains is the storage/serving
+> tracks ~1,140 configured feeds in the current worldwide coverage, still mostly
+> in the US and Canada (~1,450 scored latest rows with published pages). The Year
+> 1 work below is done; what remains is the storage/serving
 > move (see `docs/follow-ups.md`).
 
 The goal of year one is to prove the tool works unattended across a whole
@@ -227,7 +228,7 @@ is the largest line item because it runs sustained polling windows, which is
 why it is scoped to windows rather than continuous, and only for feeds that
 publish realtime.
 
-## Year 3 — from a country to a platform (target: 2,500+, including global)
+## Year 3 — from a covered corpus to a platform (target: 2,500+, worldwide)
 
 Year three is about durability and reach rather than raw scale: making the tool
 something agencies and programs can build on and trust over the long term, and
@@ -270,14 +271,15 @@ item: making the rubric itself pluggable per region (RR:E11) rather than
 shared, and an operator-facing self-management layer if demand for
 white-label ever outgrows "edit two YAML files and deploy."
 
-### Internationalization and the global catalogue
+### Localization and the worldwide catalogue
 
 GTFS is a global standard and the Mobility Database is a global catalogue. The
-scoring logic is already feed-agnostic. Year three handles the rest: rubric
-elements that are region-specific (the California guidelines citations) become
-pluggable so other jurisdictions can map the rubric to their own guidance, and
-the UI copy is structured for translation. This is gated on demand, not built
-speculatively.
+country-first model, full ISO vocabulary, worldwide map defaults, portable
+API/MCP fields, and first official canaries shipped in 2026. The remaining work
+is continuous rather than a late expansion phase: add coverage only from
+verified sources, translate practitioner and rider surfaces with local review,
+and attach jurisdiction-specific guidance without changing the shared GTFS
+quality core. The Global South partnership gate in ADR 0028 remains binding.
 
 ### Year 3 additions summary
 
@@ -286,7 +288,7 @@ Read API (API Gateway / signed URLs)  ->  third-party tools, agency sites
 Embeddable badge  ->  agency dev pages  ->  inbound links
 Verified claim (domain/DNS proof + Cognito)  ->  agency self-manages entry
 White-label config  ->  per-program branded static deploys
-Pluggable region rubric + i18n copy  ->  beyond California / US
+Pluggable regional guidance + localized copy  ->  locally reviewed worldwide use
 ```
 
 ## The tools, gathered in one place

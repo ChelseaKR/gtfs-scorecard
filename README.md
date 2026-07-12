@@ -14,14 +14,16 @@ A data quality scorecard for small transit agencies. It fetches an agency's
 **GTFS Schedule** feed and, when one is published and configured, its
 **GTFS-Realtime** feeds; runs the canonical MobilityData
 validator, and turns the results into a letter grade with a short list of
-concrete fixes, including NTD GTFS readiness, written for the transit
+concrete fixes, written for the transit
 manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry now contains ~1,140 feed records
-across the United States and Canada (~1,450 published scorecard pages),
-refreshed daily. A feed record is not always a distinct transit agency: regional
+District). Beyond the pilots, the registry contains ~1,140 curated feed records,
+mostly in the United States and Canada, plus official first canaries in Japan,
+Australia, and Ireland (~1,450 published scorecard pages). Scores are refreshed
+daily. A feed record
+is not always a distinct transit agency: regional
 feeds, modal variants, and retired aliases are counted separately while the
 identity registry is reconciled.
 
@@ -40,8 +42,8 @@ Any agency can be added via `agencies.yaml`.
   quality.
 - "Top 3 things to fix", in plain language with effort hints. Findings are
   framed as fixes, never as failures.
-- An NTD GTFS-readiness read (published, valid, current) and a flag
-  for whether the feed's `agency_id` matches the agency's NTD ID.
+- For U.S. agencies only, an NTD GTFS-readiness read (published, valid,
+  current) and an optional `agency_id`/NTD ID alignment flag.
 - Trend history, one JSON artifact per agency per day.
 - An embeddable grade badge (`<agency>/badge.svg`) the agency can put on its
   own developer page.
@@ -64,11 +66,11 @@ different seats at an agency check-in: a board one-pager
 (`/agency/<id>/board/`), a call-prep brief (`/brief/`), and a fix log
 (`/fixes/`). Around those sit:
 
-- **National views** — the national pulse (`/pulse/`), most common problems
+- **Coverage views** — the coverage overview (`/pulse/`), most common problems
   (`/problems/`), realtime reliability (`/realtime/`), newer-capability
-  adoption and accessibility data coverage (`/adoption/`), NTD readiness
-  (`/ntd/`), US and Canada equity overlays (`/equity/`), and national route
-  maps (`/map/`, `/routes/`).
+  adoption and accessibility data coverage (`/adoption/`), and worldwide
+  agency and route maps (`/map/`, `/routes/`). U.S.-specific NTD readiness
+  (`/ntd/`) and equity (`/equity/`) stay available as regional modules.
 - **Program pages** (`/program/<state>/`) for 46 states plus DC and named
   cohorts from [`rollups.yaml`](rollups.yaml), each with the fixes shared
   across the group.
@@ -94,7 +96,7 @@ uv sync
 uv run scorecard run --all
 ```
 
-This fetches today's snapshot of each pilot feed, validates and scores it,
+This fetches today's snapshot of every configured feed, validates and scores it,
 and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
 `latest.json` and a cross-agency `index.json`. Re-running a day is
 idempotent. Checks (from the repo root; mirrors the CI gate):
@@ -130,11 +132,13 @@ the feed drops below `min-grade` or expires within `min-days-to-expiry`:
 - uses: ChelseaKR/gtfs-scorecard@v1
   with:
     feed-url: https://your-agency.example/google_transit.zip
+    country: CA
     min-grade: C
     min-days-to-expiry: 14
 ```
 
-Both thresholds are optional; leave one blank to skip that check. Full input
+`country` is the feed's assigned ISO 3166-1 alpha-2 code; it defaults to `US`
+for existing workflows. Both thresholds are optional; leave one blank to skip that check. Full input
 reference and a complete workflow are in [docs/ci-action.md](docs/ci-action.md).
 
 ## Operating at scale
@@ -170,8 +174,8 @@ and `/catalog.csv` so a consumer needs one request, not one per agency.
 
 ### Roadmap status: built vs deployed
 
-The [roadmap](docs/roadmap.md) plans the path from two pilot feeds to a national
-service. The Year 1 software is built, tested, and mostly deployed; the
+The [roadmap](docs/roadmap.md) plans the path from two pilot feeds to a
+worldwide-capable service. The Year 1 software is built, tested, and mostly deployed; the
 [deploy runbook](docs/deploy.md) walks through the AWS stacks and carries the
 current deployment status.
 
@@ -187,8 +191,9 @@ current deployment status.
 
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: [`agencies.yaml`](agencies.yaml) now carries ~1,140 curated
-agencies across the US and Canada, scored daily (a 2026-07 dedupe pass
-removed ~350 records that duplicated an already-listed feed).
+agencies, mostly across the US and Canada and now with a geographically diverse
+official canary cohort, scored daily (a 2026-07 dedupe pass removed ~350 records
+that duplicated an already-listed feed).
 
 ## Add your agency
 

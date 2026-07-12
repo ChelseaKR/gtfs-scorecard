@@ -77,3 +77,5 @@ def test_empty_input_is_safe() -> None:
     assert nat["distinct_problems"] == 0
     assert nat["problems"] == []
     assert nat["prevalence_by_code"] == {}
+    # This input has findings only, with no agency identity/location to group.
+    assert "countries" not in nat

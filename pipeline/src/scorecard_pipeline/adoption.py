@@ -1,4 +1,4 @@
-"""A national view of which newer GTFS capabilities agencies actually publish.
+"""A covered-set view of which newer GTFS capabilities agencies publish.
 
 The completeness category already records, per agency, whether a feed carries
 GTFS-Flex (demand-responsive/dial-a-ride service), fare data (legacy
@@ -6,21 +6,22 @@ GTFS-Flex (demand-responsive/dial-a-ride service), fare data (legacy
 modelling with GTFS-Pathways (see ``flex.py``, ``fares.py``, ``pathways.py``).
 That answers the question for one agency. Programs deciding where to invest, and
 anyone asking whether it is worth adding these to a feed, ask a different one:
-across the country, how many feeds publish each of these newer parts of the
-spec, and where?
+across the feeds tracked here, how many publish each newer part of the spec,
+and where?
 
-This module rolls the per-agency detail up into one national picture: the share
+This module rolls the per-agency detail up into one covered-set picture: the share
 of feeds publishing flexible service, fare data (and how many use Fares v2), and
-accessible station paths, plus a per-state breakdown and a short sample of feeds
-that already publish each. It is pure over the per-agency artifacts the renderer
-already reads, so it adds no per-agency work and is safe to re-run. It changes no
-grade; it is a lens on where the newer spec is spreading, framed as adoption to
-encourage rather than gaps to shame.
+accessible station paths, plus portable country/subdivision groups, a legacy
+U.S.-state breakdown, and a short sample of feeds that already publish each. It
+is pure over the per-agency artifacts the renderer already reads, so it adds no
+per-agency work and is safe to re-run. It changes no grade.
 """
 
 from __future__ import annotations
 
 from typing import Any
+
+from .location_rollups import portable_location_fields, portable_location_rollups
 
 # Fare model values recorded by fares.detect_fares(): no fare data, the legacy
 # fare_attributes model, or the newer Fares v2 products + leg rules.
@@ -53,10 +54,12 @@ def adoption_record(artifact: dict[str, Any]) -> dict[str, Any] | None:
     if fare_model not in _FARE_MODELS:
         fare_model = "none"
     agency = artifact.get("agency", {})
+    location = portable_location_fields(agency)
     return {
         "id": agency.get("id", ""),
         "name": agency.get("name", agency.get("id", "")),
-        "state": agency.get("state", "") or "Unlocated",
+        "state": (agency.get("state", "") or "Unlocated") if location["country"] == "US" else "",
+        **location,
         "has_flex": bool(flex.get("has_flex")),
         "fare_model": fare_model,
         "has_fares": fare_model != "none",
@@ -73,21 +76,36 @@ def _share(records: list[dict[str, Any]], key: str) -> dict[str, Any]:
     return {"count": n, "pct": round(100 * n / total, 1) if total else 0.0}
 
 
+def _location_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Capability counts for one country or subdivision."""
+    return {
+        "agencies": len(records),
+        "flex": sum(bool(record.get("has_flex")) for record in records),
+        "fares": sum(bool(record.get("has_fares")) for record in records),
+        "fares_v2": sum(bool(record.get("has_fares_v2")) for record in records),
+        "pathways": sum(bool(record.get("has_pathways")) for record in records),
+        "step_free": sum(bool(record.get("has_step_free")) for record in records),
+        "cemv": sum(bool(record.get("has_cemv")) for record in records),
+    }
+
+
 def national_adoption(records: list[dict[str, Any]], *, top: int = 10) -> dict[str, Any]:
-    """Roll per-agency adoption records up into the national picture.
+    """Roll per-agency adoption records up into the covered-set picture.
 
     Reports how many feeds were read, the count and share publishing each
-    capability (flexible service, fare data, Fares v2, station pathways, step-free
-    paths), the fare-model split, a per-state breakdown, and a short sample of
-    feeds already publishing flex, Fares v2, and pathways (encouragement). Derived
-    entirely from ``adoption_record`` output, so it is deterministic and safe to
-    re-run. ``top`` caps the sample lists so the artifact stays light.
+    capability (flexible service, fare data, Fares v2, station pathways,
+    step-free paths), the fare-model split, portable location groups, a
+    U.S.-state breakdown, and a sample of feeds already publishing flex, Fares
+    v2, and pathways. Derived entirely from ``adoption_record`` output, it is
+    deterministic and safe to re-run. ``top`` caps the sample lists.
     """
     count = len(records)
     fare_models = {"none": 0, "legacy": 0, "v2": 0}
     by_state: dict[str, dict[str, Any]] = {}
     for r in records:
         fare_models[r["fare_model"]] += 1
+        if r.get("country") != "US":
+            continue
         bucket = by_state.setdefault(
             r["state"],
             {
@@ -113,7 +131,14 @@ def national_adoption(records: list[dict[str, Any]], *, top: int = 10) -> dict[s
 
     def sample(key: str) -> list[dict[str, Any]]:
         return [
-            {"id": r["id"], "name": r["name"], "state": r["state"]}
+            {
+                "id": r["id"],
+                "name": r["name"],
+                "state": r["state"],
+                "country": r["country"],
+                "subdivision_code": r["subdivision_code"],
+                "subdivision_name": r["subdivision_name"],
+            }
             for r in sorted((x for x in records if x.get(key)), key=lambda r: r["name"])
         ][:top]
 
@@ -127,6 +152,7 @@ def national_adoption(records: list[dict[str, Any]], *, top: int = 10) -> dict[s
         "cemv": _share(records, "has_cemv"),
         "fare_models": fare_models,
         "states": states,
+        "countries": portable_location_rollups(records, _location_summary),
         "flex_sample": sample("has_flex"),
         "fares_v2_sample": sample("has_fares_v2"),
         "pathways_sample": sample("has_pathways"),

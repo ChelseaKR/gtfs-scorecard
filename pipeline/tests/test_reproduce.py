@@ -102,6 +102,29 @@ def test_reproduce_reports_identical_when_scores_match(tmp_path, monkeypatch) ->
     assert result["validator_version"] == "8.0.1"
 
 
+def test_reproduce_passes_agency_country_to_validator(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _write_artifact(tmp_path, PUBLISHED_ARTIFACT)
+    _wire_common(tmp_path, monkeypatch)
+    _wire_categories(monkeypatch)
+    calls: list[dict[str, object]] = []
+
+    def validate(*_args: object, **kwargs: object) -> Path:
+        calls.append(kwargs)
+        return Path("/tmp/fake-report.json")
+
+    monkeypatch.setattr(reproduce, "run_validator", validate)
+    canadian = Agency(
+        id=AGENCY.id,
+        name=AGENCY.name,
+        static_gtfs_url=AGENCY.static_gtfs_url,
+        country="CA",
+    )
+
+    reproduce.reproduce(canadian, DATE)
+
+    assert calls == [{"country_code": "CA", "version": "8.0.1"}]
+
+
 def test_reproduce_reports_the_diff_when_a_category_moved(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     _write_artifact(tmp_path, PUBLISHED_ARTIFACT)
     _wire_common(tmp_path, monkeypatch)

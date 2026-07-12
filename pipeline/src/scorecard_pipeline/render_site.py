@@ -24,6 +24,7 @@ import json
 import math
 import re
 import sys
+from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -117,7 +118,7 @@ def _rule_ref_link(code: str) -> str:
     """Inline link to a finding's authoritative rule, for the 'Validator rule'
     line on agency findings. Links the canonical gtfs-validator notice (or the
     relevant GTFS Best Practice / reference) so the Cal-ITP / state-DOT reader
-    lands on the same rule their statewide reports already cite. Empty when no
+    lands on the canonical rule used across validator reports. Empty when no
     honest mapping exists (some scorecard-only completeness checks)."""
     link = rule_link_for(code)
     if link is None:
@@ -142,14 +143,13 @@ def _fix_rule_reference(code: str) -> str:
         if link.canonical:
             lead = (
                 f"This scorecard finding maps to the canonical MobilityData "
-                f"GTFS Validator notice <code>{esc(notice)}</code>, the same rule "
-                f"behind the statewide GTFS quality reports."
+                f"GTFS Validator notice <code>{esc(notice)}</code>, so the finding "
+                f"can be checked against the ecosystem's shared rule text."
             )
         else:
             lead = (
                 f"<code>{esc(code)}</code> is a canonical MobilityData GTFS "
-                f"Validator notice, the same rule behind the statewide GTFS "
-                f"quality reports."
+                f"Validator notice used in validator reports across the GTFS ecosystem."
             )
         link_text = f"Read the authoritative rule for {notice} in the GTFS Validator rules"
     elif link.kind == BEST_PRACTICE:
@@ -808,7 +808,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     return (
         '<div class="board-hero"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
-        f'<h1 class="board-title">{esc(agency_name)}</h1>'
+        f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
         '<p class="board-sub">Based on the feed this agency publishes</p>'
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
@@ -824,7 +824,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 
 
 def _peer_context(record: dict[str, Any] | None) -> str:
-    """Where this agency stands against the national set and its size peers, the
+    """Where this agency stands against the covered set and its size peers, the
     server-rendered twin of the app's peer line, so crawlers and no-JS visitors
     see the same context. Empty when the directory record or its percentiles are
     missing."""
@@ -842,7 +842,8 @@ def _peer_context(record: dict[str, Any] | None) -> str:
         if peer is not None and tier_key not in (None, "unknown")
         else ""
     )
-    where = f" Operates in {esc(record['state'])}." if record.get("state") else ""
+    location = _location_label(record)
+    where = f" Operates in <bdi>{esc(location)}</bdi>." if location else ""
     rows = [
         '<div class="percentile-row">'
         '<span class="percentile-label">All agencies</span>'
@@ -1787,6 +1788,25 @@ def _effort_band_html(code: str, effort_bands: dict[str, str] | None) -> str:
     return f'<p class="effort-band">{esc(band)}</p>' if band else ""
 
 
+def _location_label(record: dict[str, Any] | None) -> str:
+    """Human location label from the portable directory contract.
+
+    Existing U.S. pages keep their familiar state-only label. Everywhere else
+    includes the country so names such as Georgia, Victoria, and England are
+    not presented without geographic context.
+    """
+    row = record or {}
+    country = str(row.get("country") or "US").strip().upper()
+    subdivision = str(row.get("subdivision_name") or "").strip()
+    legacy_state = str(row.get("state") or "").strip()
+    if country == "US":
+        return subdivision or legacy_state
+    country_label = country_name(country, country)
+    if subdivision:
+        return f"{subdivision}, {country_label}"
+    return country_label or legacy_state
+
+
 def _render_agency(
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -1803,8 +1823,12 @@ def _render_agency(
     agency_id, agency_name = name
     overall = artifact["overall"]
     canonical = f"{BASE_URL}/agency/{agency_id}/"
-    state = str((dir_record or {}).get("state") or "").strip()
-    title_qualifier = f" ({state})" if state else ""
+    location_record = dict(dir_record or {})
+    location_record["country"] = location_record.get("country") or artifact.get("agency", {}).get(
+        "country", "US"
+    )
+    location_label = _location_label(location_record) if dir_record else ""
+    title_qualifier = f" ({location_label})" if location_label else ""
     title_suffix = f"{title_qualifier} GTFS quality report"
     max_name = max(18, 60 - len(title_suffix))
     title_name = (
@@ -2141,6 +2165,11 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     agency_name = artifact["agency"]["name"]
     overall = artifact["overall"]
     canonical = f"{BASE_URL}/agency/{agency_id}/brief/"
+    location_record = dict(dir_record or {})
+    location_record["country"] = location_record.get("country") or artifact.get("agency", {}).get(
+        "country", "US"
+    )
+    location_label = _location_label(location_record) if dir_record else ""
 
     # Top three fixes, imperative, with the effort hint, straight from the artifact.
     fixes = artifact.get("top_fixes", [])[:3]
@@ -2213,13 +2242,13 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     if contact:
         facts.append(f"<dt>Agency contact</dt><dd>{esc(str(contact))}</dd>")
     where = (dir_record or {}).get("state")
-    if where:
-        facts.append(f"<dt>State</dt><dd>{esc(str(where))}</dd>")
+    if location_label:
+        facts.append(f"<dt>Location</dt><dd>{esc(location_label)}</dd>")
 
     # Portfolio backlink: only when the state's rollup page is actually
     # published, so the brief never links a 404.
     portfolio_html = ""
-    if where:
+    if where and str((dir_record or {}).get("country") or "US").upper() == "US":
         slug = str(where).lower().replace(" ", "-")
         if program_ids and slug in program_ids:
             portfolio_html = (
@@ -2393,7 +2422,7 @@ def _render_board_page(
         tier_key = dir_record.get("size_tier")
         tier = TIER_LABELS.get(str(tier_key), str(tier_key))
         peer_part = (
-            f", and ahead of {peer}% of {esc(tier)} agencies nationwide"
+            f", and ahead of {peer}% of covered {esc(tier)} agencies"
             if peer is not None and tier_key not in (None, "unknown")
             else ""
         )
@@ -3362,7 +3391,7 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
     return (
         f'<li class="agency-card"><span class="grade-chip {_grade_class(last["grade"])}">'
         f'{esc(last["grade"])}<span class="visually-hidden"> grade</span></span>'
-        f'<div><h3><a href="/agency/{esc(aid)}/">{esc(a["name"])}</a></h3>'
+        f'<div><h3><a href="/agency/{esc(aid)}/"><bdi>{esc(a["name"])}</bdi></a></h3>'
         f'<p class="meta">Overall {last["score"]} out of 100 · '
         f"checked {esc(last['date'])}</p>{extra}{op}</div></li>"
     )
@@ -4136,7 +4165,7 @@ def _render_accessibility() -> str:
     <a href="{repo}/blob/main/docs/vpat.md">508-edition <abbr title="Voluntary Product Accessibility Template">VPAT</abbr></a>.</p></section>
 
     <section><h2 class="section-title">Known limitations</h2>
-    <p>We keep an honest list. The national map is a convenience layer built on a
+    <p>We keep an honest list. The agency map is a convenience layer built on a
     third-party component; everything it shows is also on the fully accessible
     <a href="/agencies/">agency list</a>, so no one is stranded. A few linked external
     documents (federal rules, validator docs) are outside our control; we summarise
@@ -4243,8 +4272,9 @@ def _methodology_versions_section() -> str:
     <section aria-labelledby="methodology-h"><h2 class="section-title" id="methodology-h">Methodology and versions</h2>
     <p>Every grade is computed by scorecard rubric <strong>v{esc(RUBRIC_VERSION)}</strong> on top of the
     MobilityData <abbr title="GTFS Schedule Validator">gtfs-validator</abbr> <strong>{esc(VALIDATOR_VERSION)}</strong>,
-    anchored to the California Transit Data Guidelines v4.0. The same validator and rubric version are
-    stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
+    using portable GTFS fields and published weights. California guidance informed the first profile and
+    remains a local authority for California, not a worldwide compliance standard. The same validator and
+    rubric version are stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
     with citations, is in the <a href="{repo}/blob/main/docs/rubric.md">scoring rubric</a>.</p>
     <p>When the rubric changes we log it here with the date it took effect, so a score change is never a
     silent rule change:</p>
@@ -4548,7 +4578,7 @@ def _render_guide() -> str:
     <p>Transit apps and trip planners read a file your agency publishes, called a
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed.
     It lists your stops, routes, and schedule. This tool downloads that feed every day, runs the
-    same validator the State and the apps use, and turns the result into a grade and a short list
+    canonical validator used across the GTFS ecosystem, and turns the result into a grade and a short list
     of fixes. It does not look at your buses or your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
@@ -4607,14 +4637,21 @@ def _render_guide() -> str:
       <dd>The live companion to GTFS: real-time trip updates, vehicle positions, and service alerts.</dd>
       <dt><dfn id="g-rt"><abbr title="realtime">RT</abbr></dfn></dt>
       <dd>Short for realtime: live arrival and position data, as opposed to the static schedule.</dd>
+    </dl>
+    <h3 class="section-sub">United States terms</h3>
+    <p>These appear only on the site's explicitly U.S.-scoped reporting and equity views.</p>
+    <dl class="standards-list">
       <dt><dfn id="g-ntd"><abbr title="National Transit Database">NTD</abbr></dfn></dt>
-      <dd>The Federal Transit Administration's national reporting system for transit agencies.</dd>
+      <dd>The U.S. Federal Transit Administration's reporting system for transit agencies.</dd>
       <dt><dfn id="g-fta"><abbr title="Federal Transit Administration">FTA</abbr></dfn></dt>
-      <dd>The federal agency that funds transit and runs the National Transit Database.</dd>
+      <dd>The United States federal agency that funds transit and runs the National Transit Database.</dd>
       <dt><dfn id="g-d10"><abbr title="FTA NTD certification form D-10">D-10</abbr></dfn></dt>
-      <dd>The annual NTD certification form on which an agency certifies its GTFS feed.</dd>
+      <dd>The annual U.S. NTD form on which an agency certifies its GTFS feed.</dd>
       <dt><dfn id="g-acs"><abbr title="American Community Survey">ACS</abbr></dfn></dt>
-      <dd>The Census Bureau survey used for the equity overlay's poverty and access indicators.</dd>
+      <dd>The U.S. Census Bureau survey used for the U.S. equity overlay's poverty and access indicators.</dd>
+    </dl>
+    <h3 class="section-sub">Data and implementation terms</h3>
+    <dl class="standards-list">
       <dt><dfn id="g-mdb"><abbr title="Mobility Database">MDB</abbr></dfn></dt>
       <dd>The Mobility Database, the open catalog of transit feeds the scorecard discovers feeds from.</dd>
       <dt><dfn id="g-gbfs"><abbr title="General Bikeshare Feed Specification">GBFS</abbr></dfn></dt>
@@ -4774,7 +4811,7 @@ def _changes_sections(changes: list[dict[str, Any]]) -> str:
             )
             rows.append(
                 f'<li class="delta-row">'
-                f'<a class="delta-cat" href="/agency/{esc(c["id"])}/">{esc(c["name"])}</a>'
+                f'<a class="delta-cat" href="/agency/{esc(c["id"])}/"><bdi>{esc(c["name"])}</bdi></a>'
                 f'<span class="delta {cls}"><span aria-hidden="true">{arrow}</span> '
                 f"{word} {delta:g} &middot; {grade}</span></li>"
             )
@@ -4797,11 +4834,11 @@ def _changes_sections(changes: list[dict[str, Any]]) -> str:
 
 
 def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
-    """One national sentence weighting quality by rider-trips (ADR 0021).
+    """One United States context sentence weighting quality by rider-trips (ADR 0021).
 
     Rendered only when the NTD ridership snapshot matched enough feeds to be
-    honest, and always with its coverage stated, so the number can never read
-    as more national than it is. A stat about trips, never a ranking."""
+    honest, and always with its coverage stated. A stat about trips, never a
+    worldwide ranking."""
     if not impact or not impact.get("matched_agencies"):
         return ""
     matched = impact["matched_agencies"]
@@ -4809,7 +4846,8 @@ def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
     trips = impact.get("total_annual_trips", 0)
     pct = impact.get("expired_trips_pct", 0)
     return (
-        '<p class="page-lede">Weighted by ridership, these feeds carry about '
+        '<p class="page-lede"><strong>United States ridership context:</strong> '
+        "weighted by ridership, feeds with a matched NTD record carry about "
         f"<strong>{trips:,}</strong> annual rider-trips (the {matched} of {total} "
         f"tracked agencies with a matched NTD ridership record), and "
         f"<strong>{pct}%</strong> of those trips ride on a feed that has expired. "
@@ -4827,7 +4865,7 @@ def _render_pulse_page(
     ridership_impact: dict[str, Any] | None = None,
     histories: dict[str, list[dict[str, Any]]] | None = None,
 ) -> str:
-    """The national pulse (/pulse/): rankings, what changed, and the trend on
+    """The coverage overview (/pulse/): rankings, what changed, and the trend on
     one page instead of three thin ones. Each former page is a titled section
     with a stable anchor, reached by a plain jump nav (no JS, no tabs), so the
     retired /leaderboard/, /changes/, and /trends/ URLs redirect here without
@@ -4838,14 +4876,13 @@ def _render_pulse_page(
         '<a href="#rankings">Rankings</a> · <a href="#changes">What changed</a> · '
         '<a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>'
     )
-    body = f"""    {_breadcrumb([("Home", "/"), ("National pulse", None)])}
+    body = f"""    {_breadcrumb([("Home", "/"), ("Coverage overview", None)])}
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">The national pulse.</h1>
-    <p class="page-lede">How the country's transit data is doing, on one page: how
-    agencies rank, who moved since their last check, and whether the whole corpus is
-    getting better. These views cover the feeds this site tracks, not every transit
-    agency in the country; an agency that is absent is simply not covered yet, never
-    failing.</p>
+    <h1 class="page-title">Coverage overview.</h1>
+    <p class="page-lede">How the public transit feeds in this site's current coverage
+    are doing: how agencies compare, who moved since their last check, and whether the
+    covered corpus is getting better. This is not a census of any country or of the
+    world. An agency that is absent is simply not covered yet, never failing.</p>
     {jump}
     <section id="rankings" aria-labelledby="rankings-h" tabindex="-1">
       <h2 class="section-title" id="rankings-h">Rankings</h2>
@@ -4862,16 +4899,16 @@ def _render_pulse_page(
       <h2 class="section-title" id="trend-h">Is transit data getting better?</h2>
       {_trend_sections(trend_points, trend_sum, improvers)}
     </section>
-    <p class="plain-summary"><strong>In plain words:</strong> this page tracks the whole
-    country at once, not any single agency. The <a href="/problems/">most common
+    <p class="plain-summary"><strong>In plain words:</strong> this page tracks the covered
+    corpus at once, not any single agency. The <a href="/problems/">most common
     problems</a> page names the recurring fixes behind these numbers. Writing about
     this data? <a href="/press/">Start with the reporter's page.</a></p>"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
-        title="The national pulse — GTFS Scorecard",
+        title="Coverage overview — GTFS Scorecard",
         description=(
-            "How US transit data is doing on one page: agency rankings, who improved "
-            "or slipped since their last check, and the national trend over time."
+            "How the public GTFS feeds covered by this site are doing: agency comparisons, "
+            "who improved or slipped, and the corpus trend over time."
         ),
         canonical=f"{BASE_URL}/pulse/",
         body=body,
@@ -4891,26 +4928,12 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
     this hub is the front door the primary nav points at."""
     pct_ready = ntd_payload.get("pct_ready", 0)
     monitored = rt_rollup.get("monitored_count", 0)
-    areas = [
-        (
-            "/ntd/",
-            "NTD GTFS readiness",
-            f"{pct_ready}% of tracked feeds look ready to certify",
-            "Which feeds are published, valid, and current against the FTA "
-            "requirement, nationally and by state.",
-        ),
+    universal_areas = [
         (
             "/realtime/",
             "Realtime reliability",
             f"{monitored} realtime feeds monitored",
             "Uptime and freshness for the agencies that publish GTFS-Realtime.",
-        ),
-        (
-            "/equity/",
-            "Equity overlay",
-            "Where weak data meets high need",
-            "States ordered by how much low-grade data lands on riders with the "
-            "fewest alternatives.",
         ),
         (
             "/adoption/",
@@ -4920,27 +4943,48 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
             "wheelchair-access data is.",
         ),
     ]
-    items = "".join(
-        f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a> '
-        f'<span class="count">{esc(stat)}</span></p>'
-        f'<p class="why">{esc(what)}</p></li>'
-        for href, name, stat, what in areas
-    )
+    us_areas = [
+        (
+            "/ntd/",
+            "NTD GTFS readiness",
+            f"{pct_ready}% of assessed U.S. feeds look ready to certify",
+            "Which U.S. feeds are published, valid, and current against the FTA "
+            "requirement, with a state breakdown.",
+        ),
+        (
+            "/equity/",
+            "U.S. equity overlay",
+            "Where weak data meets high need",
+            "A U.S.-specific view using domestic demographic sources and state geography.",
+        ),
+    ]
+
+    def area_items(areas: list[tuple[str, str, str, str]]) -> str:
+        return "".join(
+            f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a> '
+            f'<span class="count">{esc(stat)}</span></p>'
+            f'<p class="why">{esc(what)}</p></li>'
+            for href, name, stat, what in areas
+        )
+
     body = f"""    {_breadcrumb([("Home", "/"), ("Focus areas", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Focus areas.</h1>
-    <p class="page-lede">One national lens per question: certification, realtime,
-    equity, and what feeds publish. Each opens a full page with the by-state
-    breakdown and the agencies leading it.</p>
-    <ul class="findings">{items}</ul>
+    <p class="page-lede">Open one lens per question. Realtime reliability and GTFS
+    feature adoption apply across the covered corpus. Regional policy views are
+    separated below and only apply where their source data and rules do.</p>
+    <h2 class="section-title">Across current coverage</h2>
+    <ul class="findings">{area_items(universal_areas)}</ul>
+    <h2 class="section-title">United States</h2>
+    <ul class="findings">{area_items(us_areas)}</ul>
     <p class="fineprint">Every lens measures published data, never a compliance
     determination or on-the-ground service quality, and none of them changes a
     grade.</p>"""
     return _page(
         title="Focus areas — GTFS Scorecard",
         description=(
-            "National lenses on US transit data: NTD GTFS readiness, realtime "
-            "reliability, the equity overlay, and what feeds publish."
+            "Worldwide GTFS quality lenses, plus clearly scoped regional policy views "
+            "for jurisdictions where local source data applies."
         ),
         canonical=f"{BASE_URL}/focus/",
         body=body,
@@ -5002,13 +5046,17 @@ _MAP_GRADE_COLOR = {
 
 
 def _map_feature(
-    agency_id: str, artifact: dict[str, Any], state: str = "", country: str = ""
+    agency_id: str,
+    artifact: dict[str, Any],
+    state: str = "",
+    country: str = "",
+    subdivision_code: str = "",
+    subdivision_name: str = "",
 ) -> dict[str, Any] | None:
     """A GeoJSON point feature for an agency, or None when it has no geometry.
 
-    ``state`` and ``country`` come from the directory record (the artifact itself
-    carries country but not state); they ride along so the map and list share one
-    filter.
+    Location fields come from the portable directory record; they ride along so
+    the map and accessible list share country and subdivision filters.
     """
     geo = artifact.get("geo")
     if not isinstance(geo, dict):
@@ -5034,6 +5082,8 @@ def _map_feature(
             "score": overall.get("score"),
             "state": state or "",
             "country": country or "",
+            "subdivision_code": subdivision_code or "",
+            "subdivision_name": subdivision_name or state or "",
             "has_flex": has_flex,
             # The grade letter is drawn as the marker's label so grade is never
             # carried by colour alone (WCAG 1.4.1); colour only reinforces it.
@@ -5047,7 +5097,7 @@ _MAP_LIB_VERSION = "4.7.1"
 
 
 def _render_map_page(features: list[dict[str, Any]]) -> str:
-    """The national map page: every located agency as a point labelled with its
+    """The agency map page: every located agency as a point labelled with its
     grade letter and coloured by grade, rendered client-side by MapLibre over the
     keyless OpenFreeMap basemap and clustered at low zoom.
 
@@ -5082,6 +5132,8 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
                 "grade": str(p.get("grade", "?")),
                 "state": str(p.get("state", "") or ""),
                 "country": str(p.get("country", "") or ""),
+                "subdivision_code": str(p.get("subdivision_code", "") or ""),
+                "subdivision_name": str(p.get("subdivision_name", "") or ""),
                 "country_name": country_name(
                     str(p.get("country", "") or ""), str(p.get("country", "") or "")
                 ),
@@ -5098,31 +5150,71 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         f'<tr data-id="{esc(r["id"])}" data-grade="{esc(r["grade"])}" '
         f'data-state="{esc(r["state"])}" '
         f'data-country="{esc(r["country"])}" '
+        f'data-subdivision="{esc(r["subdivision_code"])}" '
         f'data-has-flex="{str(r["has_flex"]).lower()}" '
         f'data-name="{esc(r["name"].lower())}">'
-        f'<td><a href="/agency/{esc(r["id"])}/">{esc(r["name"])}</a></td>'
+        f'<td><a href="/agency/{esc(r["id"])}/"><bdi>{esc(r["name"])}</bdi></a></td>'
         f"<td>{esc(r['grade'])}</td>"
-        f"<td>{esc(r['state'] or r['country_name']) or '&mdash;'}</td>"
+        f"<td><bdi>{esc(_location_label(r)) or '&mdash;'}</bdi></td>"
         f"<td>{esc(r['score'])}</td></tr>"
         for r in rows_data
     )
-    # US state labels remain the legacy values. Every configured non-US country
-    # gets a code-scoped option, so adding one cannot collide with a state label
-    # or require another branch in this renderer.
-    us_states = sorted({r["state"] for r in rows_data if r["state"] and r["country"] in ("", "US")})
-    location_opts = "".join(f'<option value="{esc(s)}">{esc(s)}</option>' for s in us_states)
-    non_us_countries = sorted(
-        {(r["country"], r["country_name"]) for r in rows_data if r["country"] not in ("", "US")},
+    # Countries are the primary scope. Every covered ISO subdivision is a
+    # namespaced drill-down, so adding a country needs no renderer branch and
+    # names such as Georgia cannot collide.
+    countries = sorted(
+        {(r["country"], r["country_name"]) for r in rows_data if r["country"]},
         key=lambda row: (row[1], row[0]),
     )
-    location_opts += "".join(
-        f'<option value="country:{esc(code)}">{esc(name)}</option>'
-        for code, name in non_us_countries
+    country_opts = "".join(
+        f'<option value="country:{esc(code)}">{esc(name)}</option>' for code, name in countries
+    )
+    subdivisions = sorted(
+        {
+            (
+                r["subdivision_code"],
+                r["subdivision_name"],
+                r["country_name"],
+                r["country"],
+            )
+            for r in rows_data
+            if r["subdivision_code"] and r["subdivision_name"]
+        },
+        key=lambda row: (row[2], row[1], row[0]),
+    )
+    subdivision_name_counts = Counter((code, name.casefold()) for _, name, _, code in subdivisions)
+    subdivision_options = []
+    for code, name, parent, country in subdivisions:
+        disambiguator = (
+            f" ({esc(code)})" if subdivision_name_counts[(country, name.casefold())] > 1 else ""
+        )
+        subdivision_options.append(
+            f'<option value="subdivision:{esc(code)}">{esc(name)}{disambiguator}, '
+            f"{esc(parent)}</option>"
+        )
+    subdivision_opts = "".join(subdivision_options)
+    legacy_states = sorted(
+        {
+            r["state"]
+            for r in rows_data
+            if r["state"] and r["country"] in ("", "US") and not r["subdivision_code"]
+        }
+    )
+    legacy_opts = "".join(
+        f'<option value="{esc(state)}">{esc(state)}, United States</option>'
+        for state in legacy_states
+    )
+    location_opts = (
+        f'<optgroup label="Countries">{country_opts}</optgroup>' if country_opts else ""
+    ) + (
+        f'<optgroup label="Subdivisions">{subdivision_opts}{legacy_opts}</optgroup>'
+        if subdivision_opts or legacy_opts
+        else ""
     )
     grade_opts = "".join(f'<option value="{g}">Grade {g}</option>' for g in _MAP_GRADE_COLOR)
-    body = f"""    {_breadcrumb([("Home", "/"), ("National map", None)])}
+    body = f"""    {_breadcrumb([("Home", "/"), ("Agency map", None)])}
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">The national map.</h1>
+    <h1 class="page-title">Agency map.</h1>
     <p class="page-lede">Every tracked agency with a locatable
     <abbr title="General Transit Feed Specification">GTFS</abbr> feed, placed at its
     service area, labelled with its grade letter and coloured by grade. {count} agencies
@@ -5161,7 +5253,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
       <p class="map-count" role="status"><span id="map-result-count">{count}</span> of {count}
         agencies shown.</p>
       <table class="leaderboard map-table">
-        <caption class="visually-hidden">Agencies on the national map, with grade, location,
+        <caption class="visually-hidden">Agencies on the coverage map, with grade, location,
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
@@ -5182,12 +5274,15 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         var all = null;  // the full FeatureCollection, fetched once
         var map = null;
 
-        function matches(grade, state, country, hasFlex) {{
+        function matches(grade, state, country, subdivision, hasFlex) {{
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
           var countryPrefix = "country:";
+          var subdivisionPrefix = "subdivision:";
           var locOk = !loc ||
             (loc.indexOf(countryPrefix) === 0
               ? country === loc.slice(countryPrefix.length)
+              : loc.indexOf(subdivisionPrefix) === 0
+              ? subdivision === loc.slice(subdivisionPrefix.length)
               : state === loc);
           // hasFlex is a string from the table's data attribute and a boolean
           // from the GeoJSON properties; accept both.
@@ -5202,6 +5297,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             var ok = matches(tr.getAttribute("data-grade"),
                              tr.getAttribute("data-state"),
                              tr.getAttribute("data-country"),
+                             tr.getAttribute("data-subdivision"),
                              tr.getAttribute("data-has-flex"));
             tr.hidden = !ok;
             if (ok) shown++;
@@ -5218,10 +5314,13 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         function initMap() {{
         var reduce = window.matchMedia
           && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var worldBounds = [[-180, -85], [180, 85]];
         map = new maplibregl.Map({{
           container: "map",
           style: "https://tiles.openfreemap.org/styles/positron",
-          center: [-96, 38], zoom: 3, keyboard: false,
+          bounds: worldBounds,
+          fitBoundsOptions: {{ padding: 16, duration: 0 }},
+          keyboard: false,
           attributionControl: false
         }});
         // Take the canvas out of the tab order synchronously (not only on load),
@@ -5293,14 +5392,19 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             type: "FeatureCollection",
             features: all.features.filter(function (f) {{
               var p = f.properties || {{}};
-              return matches(p.grade, p.state || "", p.country || "", p.has_flex);
+              return matches(
+                p.grade,
+                p.state || "",
+                p.country || "",
+                p.subdivision_code || "",
+                p.has_flex
+              );
             }})
           }};
         }}
         function fitFiltered(data) {{
-          // The default camera serves the US corpus. Once a reader chooses a
-          // location, move the optional visual map to those results so a
-          // configured country outside North America never appears empty.
+          // The default camera shows the world. Once a reader chooses a
+          // location, move the optional visual map to those results.
           if (!map) return;
           var location = stateEl.value;
           if (!location) {{
@@ -5308,9 +5412,8 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             // Flex changes with no active location leave a reader's pan/zoom
             // alone instead of repeatedly snapping the map back.
             if (fittedLocation) {{
-              map.easeTo({{
-                center: [-96, 38], zoom: 3,
-                animate: !reduce, duration: reduce ? 0 : 500
+              map.fitBounds(worldBounds, {{
+                padding: 16, animate: !reduce, duration: reduce ? 0 : 500
               }});
             }}
             fittedLocation = "";
@@ -5488,10 +5591,13 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           document.head.appendChild(script);
         }});
       }})();
-    </script>"""  # noqa: S608 - static HTML template text (the national map page), never executed as SQL
+    </script>"""  # noqa: S608 - static HTML template text, never executed as SQL
     return _page(
-        title="National map — GTFS Scorecard",
-        description="A national map of transit agencies labelled and coloured by GTFS data quality grade.",
+        title="Agency map — GTFS Scorecard",
+        description=(
+            "A world map of the transit agencies currently covered, labelled and coloured "
+            "by GTFS data quality grade."
+        ),
         canonical=f"{BASE_URL}/map/",
         wide=True,
         body=body,
@@ -5540,7 +5646,7 @@ def _grade_color_expr() -> list[Any]:
 
 
 def _routes_map_script() -> str:
-    """The MapLibre bootstrap for the national all-routes map.
+    """The MapLibre bootstrap for the all-routes coverage map.
 
     Reads the vector tiles from a single PMTiles archive over the pmtiles://
     protocol (range requests, no tile server), draws every agency's route lines,
@@ -5562,10 +5668,12 @@ def _routes_map_script() -> str:
         var gradeColor = {grade_expr};
         var protocol = new pmtiles.Protocol();
         maplibregl.addProtocol("pmtiles", protocol.tile);
+        var worldBounds = [[-180, -85], [180, 85]];
         var map = new maplibregl.Map({{
           container: "routes-map",
           style: "https://tiles.openfreemap.org/styles/positron",
-          center: [-96, 38], zoom: 3,
+          bounds: worldBounds,
+          fitBoundsOptions: {{ padding: 16, duration: 0 }},
           attributionControl: false,
           keyboard: false
         }});
@@ -5626,11 +5734,11 @@ def _routes_map_script() -> str:
 
 
 def _render_routes_page(summary: dict[str, Any]) -> str:
-    """The national all-routes map: every agency's route shapes on one canvas,
+    """The all-routes coverage map: every agency's route shapes on one canvas,
     rendered from a single PMTiles archive of vector tiles.
 
     This is an exploratory enhancement, not the conformant data interface. A
-    national map of route lines cannot be a literal data table, so the page leads
+    map of route lines cannot be a literal data table, so the page leads
     with a prominent bypass to the equivalents that *are* AAA-conformant: the
     sortable agencies list and the per-agency route tables. See docs/vpat.md.
     """
@@ -5657,10 +5765,10 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
     <p class="page-lede"><strong>This map is a visual extra, not the accessible way
     to read the data.</strong> A map of this many route lines can't be a data table.
     For a screen-reader and keyboard friendly view, use
-    <a href="/agencies/">the sortable agencies list</a>; each agency's own scorecard
+    <a href="/agencies/">the grade-grouped agency list</a>; each agency's own scorecard
     carries <a href="/agency/unitrans/">a route-by-route table</a> of its lines.</p>
     <section aria-labelledby="routes-map-h" class="route-map-section">
-      <h2 id="routes-map-h" class="section-title">National all-routes map</h2>
+      <h2 id="routes-map-h" class="section-title">All tracked routes</h2>
       <a class="skip-link-inline" href="#routes-after-map">Skip to the accessible agency list</a>
       <fieldset class="map-colormode">
         <legend>Colour routes by</legend>
@@ -5674,13 +5782,13 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
     <div id="routes-after-map" tabindex="-1"></div>
     <p class="page-lede">Read the data without the map:</p>
     <ul class="route-skip-targets">
-      <li><a href="/agencies/">All agencies</a>, sortable by grade, state, and size.</li>
-      <li><a href="/pulse/#rankings">National pulse rankings</a> of the highest and lowest scoring feeds.</li>
+      <li><a href="/app/">All agencies</a>, searchable by name, country, subdivision, grade, and size.</li>
+      <li><a href="/pulse/#rankings">Coverage rankings</a> of the highest and lowest scoring feeds.</li>
       <li>Each scorecard (for example <a href="/agency/unitrans/">Unitrans</a>) lists its
         routes and stops in a table.</li>
     </ul>
     <p class="fineprint">Routes are one representative shape per route, simplified for
-    the national view; zoom in for detail. Tiles are served as a single PMTiles
+    the combined view; zoom in for detail. Tiles are served as a single PMTiles
     archive over HTTP range requests. Basemap: OpenFreeMap, &copy; OpenStreetMap
     contributors. Data: this scorecard, CC BY 4.0.</p>
 {_routes_map_script()}"""
@@ -5691,7 +5799,7 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
     return _page(
         title="Every route on one map — GTFS Scorecard",
         description=(
-            "A national vector map of every tracked agency's transit routes, "
+            "A world vector map of every tracked agency's transit routes, "
             "coloured by route type or data-quality grade."
         ),
         canonical=f"{BASE_URL}/routes/",
@@ -5733,7 +5841,8 @@ def _leaderboard_sections(
             return ""
         show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
-            f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
+            f'<tr><td><a href="/agency/{esc(r["id"])}/"><bdi>'
+            f"{esc(r.get('name', r['id']))}</bdi></a></td>"
             f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
             f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
             for r in rows
@@ -5751,7 +5860,8 @@ def _leaderboard_sections(
             return ""
         show_trips = any(r.get("annual_trips") is not None for r in rows)
         items = "".join(
-            f'<tr><td><a href="/agency/{esc(r["id"])}/">{esc(r.get("name", r["id"]))}</a></td>'
+            f'<tr><td><a href="/agency/{esc(r["id"])}/"><bdi>'
+            f"{esc(r.get('name', r['id']))}</bdi></a></td>"
             f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
             f"<td>{'+' if r['score_delta'] > 0 else ''}{esc(r['score_delta'])}</td>"
             f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
@@ -6323,10 +6433,64 @@ _ACCESS_BAND_LABELS = {
 }
 
 
+def _portable_rollup_table(
+    countries: list[dict[str, Any]], columns: list[tuple[str, str, str]]
+) -> str:
+    """Country-first aggregate table with nested covered subdivisions.
+
+    ``columns`` is ``(payload key, heading, suffix)``. The API remains the
+    authoritative machine contract; this is its small accessible HTML twin.
+    """
+    if not countries:
+        return ""
+
+    def cells(row: dict[str, Any]) -> str:
+        parts = []
+        for key, _label, suffix in columns:
+            value = row.get(key)
+            rendered = "&mdash;" if value is None else f"{esc(value)}{suffix}"
+            parts.append(f"<td>{rendered}</td>")
+        return "".join(parts)
+
+    rows: list[str] = []
+    subdivision_disclosures: list[str] = []
+    headings = "".join(f'<th scope="col">{esc(label)}</th>' for _key, label, _ in columns)
+    for country in countries:
+        label = str(country.get("country_name") or country.get("country_code") or "Unlocated")
+        rows.append(f'<tr><th scope="row"><bdi>{esc(label)}</bdi></th>{cells(country)}</tr>')
+        subdivisions = country.get("subdivisions") or []
+        if not subdivisions:
+            continue
+        subdivision_rows: list[str] = []
+        for subdivision in subdivisions:
+            sub_label = str(subdivision.get("subdivision_name") or "Unlocated")
+            subdivision_rows.append(
+                f'<tr><th scope="row"><span aria-hidden="true">↳ </span><bdi>{esc(sub_label)}</bdi>'
+                f'<span class="visually-hidden">, <bdi>{esc(label)}</bdi></span></th>'
+                f"{cells(subdivision)}</tr>"
+            )
+        noun = "subdivision" if len(subdivisions) == 1 else "subdivisions"
+        subdivision_disclosures.append(
+            '<details class="subdivision-rollup"><summary>Show '
+            f"{len(subdivisions)} covered {noun} in <bdi>{esc(label)}</bdi></summary>"
+            '<div class="table-wrap"><table class="leaderboard">'
+            f'<caption class="visually-hidden">Covered subdivisions in {esc(label)}</caption>'
+            f'<thead><tr><th scope="col">Subdivision</th>{headings}</tr></thead>'
+            f"<tbody>{''.join(subdivision_rows)}</tbody></table></div></details>"
+        )
+    return (
+        '<section class="feed-details"><h2 class="section-title">By country and subdivision</h2>'
+        '<div class="table-wrap"><table class="leaderboard"><thead><tr>'
+        f'<th scope="col">Location</th>{headings}</tr></thead>'
+        f"<tbody>{''.join(rows)}</tbody></table></div>"
+        f"{''.join(subdivision_disclosures)}</section>"
+    )
+
+
 def _access_sections(coverage: dict[str, Any]) -> str:
     """The accessibility-data coverage sections, inside the What-feeds-publish
     page: how many feeds let a wheelchair user plan a trip at all (the share of
-    stops carrying ``wheelchair_boarding``), nationally and by state, with the
+    stops carrying ``wheelchair_boarding``), across the corpus and by U.S. state, with the
     most complete feeds highlighted. Changes no grade; framed as coverage to
     build on, for the advocate and the program staff who support them."""
     count = coverage.get("agency_count", 0)
@@ -6358,8 +6522,8 @@ def _access_sections(coverage: dict[str, Any]) -> str:
         )
         complete = coverage.get("most_complete", [])
         complete_rows = "".join(
-            f'<tr><td><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a></td>'
-            f"<td>{esc(m.get('state'))}</td><td>{esc(m['pct'])}%</td></tr>"
+            f'<tr><td><a href="/agency/{esc(m["id"])}/"><bdi>{esc(m["name"])}</bdi></a></td>'
+            f"<td><bdi>{esc(_location_label(m))}</bdi></td><td>{esc(m['pct'])}%</td></tr>"
             for m in complete
         )
         complete_table = (
@@ -6367,7 +6531,7 @@ def _access_sections(coverage: dict[str, Any]) -> str:
                 '<section class="feed-details"><h2 class="section-title">Most complete</h2>'
                 '<p class="page-lede">Feeds whose stops are the most fully marked for '
                 "wheelchair access. A target to aim for.</p>"
-                '<table class="leaderboard"><thead><tr><th>Agency</th><th>State</th>'
+                '<table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th>'
                 f"<th>Stops marked</th></tr></thead><tbody>{complete_rows}</tbody></table></section>"
             )
             if complete
@@ -6380,10 +6544,19 @@ def _access_sections(coverage: dict[str, Any]) -> str:
             for s in coverage.get("states", [])
         )
         state_table = (
-            '<section class="feed-details"><h2 class="section-title">By state</h2>'
+            '<section class="feed-details"><h2 class="section-title">United States by state</h2>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Agencies</th>'
             "<th>Avg stops marked</th><th>Nearly all</th><th>None yet</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table></section>"
+        )
+        location_table = _portable_rollup_table(
+            coverage.get("countries") or [],
+            [
+                ("agencies", "Agencies", ""),
+                ("average_boarding_pct", "Avg stops marked", "%"),
+                ("most", "Nearly all", ""),
+                ("none", "None yet", ""),
+            ],
         )
         lead = (
             f"Across {esc(count)} feeds, an average of "
@@ -6392,7 +6565,7 @@ def _access_sections(coverage: dict[str, Any]) -> str:
             "wheelchair cannot tell from a trip planner whether they can board there."
         )
     else:
-        band_table = complete_table = state_table = ""
+        band_table = complete_table = state_table = location_table = ""
         lead = "No accessibility coverage has been measured yet."
     return f"""<p class="page-lede">{lead}
     <strong>What this measures:</strong> whether feeds publish the data, never
@@ -6401,10 +6574,13 @@ def _access_sections(coverage: dict[str, Any]) -> str:
     {band_table}
     {complete_table}
     </div>
+    {location_table}
     {state_table}
     <p class="fineprint">Coverage is the share of a feed's stops carrying
     <code>wheelchair_boarding</code> and trips carrying <code>wheelchair_accessible</code>,
-    the fields the California Transit Data Guidelines ask for. It never changes a grade. The
+    the portable GTFS accessibility fields used by trip planners. California's
+    Transit Data Guidelines are one regional source for this published scoring profile,
+    not its worldwide authority. It never changes a grade. The
     same data is at <a href="/api/v1/accessibility.json">the accessibility API
     (accessibility.json)</a>. This page is about data completeness; for how this site itself
     meets <abbr title="Web Content Accessibility Guidelines">WCAG</abbr>, see
@@ -6415,7 +6591,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     """What feeds publish (/adoption/): the capability-adoption view (flexible
     service, fares and Fares v2, station pathways) and the accessibility-data
     coverage view, one page instead of two with identical skeletons. Reads the
-    ``adoption.national_adoption`` and ``access.national_coverage`` rollups.
+    the corpus adoption and accessibility-coverage rollups.
     Changes no grade; a lens on where the spec is spreading, framed as adoption
     to encourage. The retired /access/ URL redirects to #access here."""
     count = adoption.get("agency_count", 0)
@@ -6460,8 +6636,8 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
         )
         flex_sample = adoption.get("flex_sample", [])
         flex_rows = "".join(
-            f'<tr><td><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a></td>'
-            f"<td>{esc(m.get('state'))}</td></tr>"
+            f'<tr><td><a href="/agency/{esc(m["id"])}/"><bdi>{esc(m["name"])}</bdi></a></td>'
+            f"<td><bdi>{esc(_location_label(m))}</bdi></td></tr>"
             for m in flex_sample
         )
         flex_table = (
@@ -6469,7 +6645,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
                 '<section class="feed-details"><h2 class="section-title">Publishing flexible '
                 'service</h2><p class="page-lede">Feeds that already describe demand-responsive or '
                 "dial-a-ride service in GTFS-Flex, so a trip planner can offer it.</p>"
-                '<table class="leaderboard"><thead><tr><th>Agency</th><th>State</th></tr></thead>'
+                '<table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th></tr></thead>'
                 f"<tbody>{flex_rows}</tbody></table></section>"
             )
             if flex_sample
@@ -6482,10 +6658,20 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             for s in adoption.get("states", [])
         )
         state_table = (
-            '<section class="feed-details"><h2 class="section-title">By state</h2>'
+            '<section class="feed-details"><h2 class="section-title">United States by state</h2>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Agencies</th>'
             "<th>Flex</th><th>Fares</th><th>Fares v2</th><th>Pathways</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table></section>"
+        )
+        location_table = _portable_rollup_table(
+            adoption.get("countries") or [],
+            [
+                ("agencies", "Agencies", ""),
+                ("flex", "Flex", ""),
+                ("fares", "Fares", ""),
+                ("fares_v2", "Fares v2", ""),
+                ("pathways", "Pathways", ""),
+            ],
         )
         flex_s = adoption.get("flex", {})
         fares = adoption.get("fares", {})
@@ -6499,7 +6685,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             "These are the newer, optional parts of GTFS; adoption shows where the spec is spreading."
         )
     else:
-        cap_table = flex_table = state_table = ""
+        cap_table = flex_table = state_table = location_table = ""
         lead = "No capability adoption has been measured yet."
     jump = (
         '<nav class="grade-jump" aria-label="Jump to section">Jump to: '
@@ -6520,6 +6706,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
       {cap_table}
       {flex_table}
       </div>
+      {location_table}
       {state_table}
     </section>
     {_route_rule()}
@@ -6539,7 +6726,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     return _page(
         title="What feeds publish — GTFS Scorecard",
         description=(
-            "Which GTFS features US transit feeds publish (flexible service, fares and "
+            "Which GTFS features covered transit feeds publish (flexible service, fares and "
             "Fares v2, station pathways) and how complete their accessibility data is."
         ),
         canonical=f"{BASE_URL}/adoption/",
@@ -6779,19 +6966,19 @@ def _render_press_page() -> str:
     <ul>
       <li>"Agency X's published schedule data expired on [date], so trip planners like
       Google Maps stop showing its service." Expiry is read directly from the feed.</li>
-      <li>"N of the M feeds tracked in [state] have expired." Counts over the covered
-      set, with the state named.</li>
+      <li>"N of the M feeds this site tracks in [country or subdivision] have expired."
+      Counts over the covered set, with the exact geographic scope named.</li>
       <li>"Agency X's feed does not say which stops are wheelchair accessible." A statement
       about published data, and usually a one-setting fix in the agency's software.</li>
-      <li>"Nationally, [pct]% of tracked feeds look ready for the federal
-      <abbr title="National Transit Database">NTD</abbr> GTFS requirement."</li>
+      <li>"Across the feeds currently covered, [pct]% publish fare data." This is a claim
+      about this site's corpus, not about all agencies in the world.</li>
     </ul></section>
 
     <section class="feed-details"><h2 class="section-title">Claims it does not support</h2>
     <ul>
-      <li><strong>"The worst transit agency in America."</strong> The scorecard covers the
-      feeds it tracks, not every agency; absence means not covered, never failing, and a
-      position on a list here is not a national rank.</li>
+      <li><strong>"The worst transit agency in [country]."</strong> The scorecard covers a
+      curated set of feeds, not every agency in any country; absence means not covered,
+      never failing, and a position here is not a national rank.</li>
       <li><strong>"Agency X's buses are inaccessible."</strong> The accessibility number
       measures whether the data is published, never whether a stop or vehicle is usable.</li>
       <li><strong>"Agency X is out of compliance."</strong> Nothing here is an official
@@ -6803,18 +6990,22 @@ def _render_press_page() -> str:
     </ul></section>
 
     <section class="feed-details"><h2 class="section-title">Story-ready data</h2>
-    <p>Every number on this site is downloadable. For a local story, start with your
-    state: the <a href="/pulse/">national pulse</a> for the picture, your state's
-    program page (linked from any agency in it) for the portfolio, and the per-state
-    rows in <a href="/api/v1/by-state.json">the by-state API</a>. For a citable
-    snapshot, use a dated
+    <p>Every number on this site is downloadable. Start with the
+    <a href="/pulse/">coverage overview</a>, then use the country and subdivision
+    rows in <a href="/api/v1/by-location.json">the location API</a> to state the
+    denominator precisely. For a citable snapshot, use a dated
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/releases">dataset release</a>
     rather than the live site, which changes daily. Methodology, rubric weights, and
     the validator version are all published:
     <a href="/how-to-read/">how to read a scorecard</a> and
-    <a href="/data/">the open dataset</a>. For the Report Year 2026 shapes.txt
-    requirement, <a href="/ntd/shapes/">the explainer</a> carries the national and
-    per-state numbers and the claims they support.</p></section>
+    <a href="/data/">the open dataset</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">United States reporting context</h2>
+    <p>U.S.-only reporting can also use the <a href="/ntd/">FTA NTD readiness</a>
+    view, <a href="/ntd/shapes/">Report Year 2026 shapes.txt explainer</a>, state
+    program pages, and the compatibility
+    <a href="/api/v1/by-state.json">by-state API</a>. These sources support claims
+    about the covered U.S. feeds and should not be generalized to other countries.</p></section>
 
     <p class="fineprint">Questions about a specific number, or a correction? Open an
     issue on <a href="https://github.com/ChelseaKR/gtfs-scorecard">the repository</a>;
@@ -6881,13 +7072,13 @@ def _render_procurement() -> str:
 
     <section class="feed-details"><h2 class="section-title">What each part buys you</h2>
     <ul>
-      <li><strong>Zero validator errors</strong> is the same bar the apps and state programs
-      apply, so your feed loads everywhere riders look.</li>
+      <li><strong>Zero validator errors</strong> is the same baseline publishers and
+      trip-planning apps apply, so your feed loads everywhere riders look.</li>
       <li><strong>A 30-day forward window</strong> stops the silent failure where a feed
       quietly expires and trip planners drop your agency.</li>
       <li><strong>Accessibility fields</strong> let a wheelchair user plan a trip at all.</li>
-      <li><strong>A stable public URL</strong> is the first thing the
-      <abbr title="Federal Transit Administration">FTA</abbr> looks for at NTD time.</li>
+      <li><strong>A stable public URL</strong> lets trip planners refresh the feed
+      reliably instead of silently retaining an obsolete copy.</li>
     </ul></section>
 
     <section class="feed-details"><h2 class="section-title">Verify it cheaply</h2>
@@ -6911,10 +7102,10 @@ _RT_BAND_LABELS = {
 def _render_rt_page(
     nat: dict[str, Any], histories: dict[str, list[dict[str, Any]]] | None = None
 ) -> str:
-    """The national realtime-reliability view, for a data team or a state program.
+    """The corpus realtime-reliability view, for a data team or a regional program.
     Reads the rollup (``rt_national.national_rt``) over the uptime and header-lag
     samples the monitor already records and shows how many realtime feeds are
-    reliable, the national median uptime and freshness, a per-state breakdown, and
+    reliable, the corpus median uptime and freshness, a U.S. state breakdown, and
     the most reliable feeds. It changes no grade; absence of a realtime feed is
     shown neutrally elsewhere, so this page only covers agencies that publish one.
     """
@@ -6947,8 +7138,8 @@ def _render_rt_page(
         reliable = nat.get("most_reliable", [])
         hist = histories or {}
         reliable_rows = "".join(
-            f'<tr><td><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a></td>'
-            f"<td>{esc(m.get('state'))}</td><td>{esc(m['uptime_pct'])}%</td>"
+            f'<tr><td><a href="/agency/{esc(m["id"])}/"><bdi>{esc(m["name"])}</bdi></a></td>'
+            f"<td><bdi>{esc(_location_label(m))}</bdi></td><td>{esc(m['uptime_pct'])}%</td>"
             f"<td>{esc(m.get('median_lag_seconds'))}</td>"
             f"<td>{_spark_mini(hist.get(str(m['id'])), str(m['name']))}</td></tr>"
             for m in reliable
@@ -6958,7 +7149,7 @@ def _render_rt_page(
                 '<section class="feed-details"><h2 class="section-title">Most reliable</h2>'
                 '<p class="page-lede">Feeds that responded on nearly every check, freshest '
                 "first. A target to aim for.</p>"
-                '<table class="leaderboard"><thead><tr><th>Agency</th><th>State</th>'
+                '<table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th>'
                 "<th>Uptime</th><th>Median lag (s)</th><th>Score trend</th></tr></thead>"
                 f"<tbody>{reliable_rows}</tbody></table></section>"
             )
@@ -6971,10 +7162,18 @@ def _render_rt_page(
             for s in nat.get("states", [])
         )
         state_table = (
-            '<section class="feed-details"><h2 class="section-title">By state</h2>'
+            '<section class="feed-details"><h2 class="section-title">United States by state</h2>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Feeds</th>'
             "<th>Median uptime</th><th>Reliable</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table></section>"
+        )
+        location_table = _portable_rollup_table(
+            nat.get("countries") or [],
+            [
+                ("agencies", "Feeds", ""),
+                ("median_uptime_pct", "Median uptime", "%"),
+                ("reliable", "Reliable", ""),
+            ],
         )
         lag = nat.get("median_lag_seconds")
         lag_txt = f"{esc(lag)} seconds" if lag is not None else "not recorded"
@@ -6984,13 +7183,13 @@ def _render_rt_page(
             f"with the data arriving about {lag_txt} behind real time."
         )
     else:
-        band_table = reliable_table = state_table = ""
+        band_table = reliable_table = state_table = location_table = ""
         lead = "No realtime feeds have been monitored yet."
     return _page(
         title="Realtime reliability — GTFS Scorecard",
         description=(
-            "How reliable transit agencies' GTFS-Realtime feeds are across the country: "
-            "uptime and freshness, nationally and by state."
+            "How reliable the covered transit agencies' GTFS-Realtime feeds are: "
+            "uptime and freshness across the corpus, with regional breakdowns."
         ),
         canonical=f"{BASE_URL}/realtime/",
         wide=True,
@@ -7000,6 +7199,7 @@ def _render_rt_page(
     <p class="page-lede">{lead}</p>
     {band_table}
     {reliable_table}
+    {location_table}
     {state_table}
     <p class="plain-summary"><strong>In plain words:</strong> a realtime feed is only useful if
     it is actually up and current. This tracks whether each agency's feed responded when we
@@ -7025,10 +7225,10 @@ _PROBLEM_CHART_LABELS = {
 
 
 def _problem_chart_label(problem: dict[str, Any]) -> str:
-    """Stable national label for a problem whose ``what`` may contain one
+    """Stable corpus label for a problem whose ``what`` may contain one
     agency's instance counts. Known common findings get practitioner-facing
     copy; other validator codes get a readable fallback rather than presenting
-    one feed's numbers as the name of a national metric."""
+    one feed's numbers as the name of a corpus metric."""
     code = str(problem.get("code") or "problem")
     if code in _PROBLEM_CHART_LABELS:
         return _PROBLEM_CHART_LABELS[code]
@@ -7036,8 +7236,8 @@ def _problem_chart_label(problem: dict[str, Any]) -> str:
 
 
 def _render_problems_page(nat: dict[str, Any]) -> str:
-    """The national "most common GTFS problems" knowledge base, for a practitioner
-    or a journalist. Reads the prevalence rollup (``findings_national``) and lists
+    """The corpus "most common GTFS problems" knowledge base, for a practitioner
+    or a journalist. Reads the prevalence rollup and lists
     the most widespread problems across tracked feeds, each with how many feeds
     share it, what it means, and the one fix. Framed as common, fixable problems,
     never as a ranking of who is worst; it changes no grade.
@@ -7092,7 +7292,7 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
     else:
         body_problems = ""
         lead = "No findings have been aggregated yet."
-    # Plain-language coverage governance: how much of what readers see nationally
+    # Plain-language coverage governance: how much of what readers see in the corpus
     # carries curated what/why/fix text, plus the queue of what to curate next.
     # The metric makes the curation debt visible, which is the feature.
     coverage = plain_language_coverage(nat)
@@ -7112,12 +7312,12 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
                 f"<tbody>{queue_rows}</tbody></table></div>"
             )
         else:
-            queue_table = "<p>Every problem code seen nationally has curated text.</p>"
+            queue_table = "<p>Every problem code seen in the covered corpus has curated text.</p>"
         coverage_section = (
             '<section class="feed-details" aria-labelledby="coverage-h">'
             '<h2 class="section-title" id="coverage-h">Plain-language coverage</h2>'
             f"<p>Of the <strong>{esc(coverage['total_codes'])}</strong> distinct problem "
-            f"codes seen nationally, <strong>{esc(coverage['curated_codes'])}</strong> carry "
+            f"codes seen in the covered corpus, <strong>{esc(coverage['curated_codes'])}</strong> carry "
             "vetted plain-language text: "
             f"<strong>{esc(coverage['distinct_code_coverage'])}%</strong> of codes and "
             f"<strong>{esc(coverage['instance_weighted_coverage'])}%</strong> of all finding "
@@ -7130,7 +7330,7 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
     return _page(
         title="The most common GTFS problems — GTFS Scorecard",
         description=(
-            "The most widespread GTFS data problems across US transit feeds, how many "
+            "The most widespread GTFS data problems across covered transit feeds, how many "
             "agencies share each, and the one fix for each."
         ),
         canonical=f"{BASE_URL}/problems/",
@@ -7158,7 +7358,7 @@ def _trend_sections(
     summary: dict[str, Any],
     improvers: list[dict[str, Any]] | None = None,
 ) -> str:
-    """The national quality trend, inside the pulse page: the average score over
+    """The corpus quality trend, inside the coverage page: the average score over
     time as an autoscaled line plus a by-date table and the 90-day improvers.
     A measure of the whole corpus, not of any one agency; changes no grade."""
     if len(points) >= 2:
@@ -7170,7 +7370,7 @@ def _trend_sections(
         # numbers also live in the aria-label and the by-date table below.
         spark = _spark_svg(
             [(str(p["date"]), p["average_score"]) for p in points],
-            aria_label=f"National average score by date (axis {lo:.1f} to {hi:.1f})",
+            aria_label=f"Covered-corpus average score by date (axis {lo:.1f} to {hi:.1f})",
             w=640,
             h=120,
             pad=12,
@@ -7203,22 +7403,22 @@ def _trend_sections(
             else f"slipped {abs(delta)} points"
         )
         lead = (
-            f"Across the feeds we track, the national average score {move} between "
+            f"Across the feeds we track, the corpus average score {move} between "
             f"{esc(summary['first']['date'])} and {esc(summary['last']['date'])} "
             f"(now {esc(summary['last']['average_score'])})."
         )
-        chart = f'<section class="feed-details"><h2 class="section-title">National average score</h2><p>{spark}</p>{axis}</section>'
+        chart = f'<section class="feed-details"><h2 class="section-title">Covered-corpus average score</h2><p>{spark}</p>{axis}</section>'
     else:
         table = chart = ""
         lead = (
-            "A national trend appears here once the corpus has been checked on more than one day."
+            "A coverage trend appears here once the corpus has been checked on more than one day."
         )
 
     # Top improvers section
     if improvers:
         imp_rows = "".join(
             f"<tr>"
-            f'<td><a href="/agency/{esc(r["id"])}/">{esc(r["name"])}</a></td>'
+            f'<td><a href="/agency/{esc(r["id"])}/"><bdi>{esc(r["name"])}</bdi></a></td>'
             f"<td>{esc(r['score_start'])}</td>"
             f"<td>{esc(r['score_end'])}</td>"
             f"<td>+{esc(r['delta'])}</td>"
@@ -7586,8 +7786,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         feature = _map_feature(
             agency_id,
             artifact,
-            by_id[agency_id].get("subdivision_name") or by_id[agency_id].get("state", ""),
+            by_id[agency_id].get("state", ""),
             by_id[agency_id].get("country", ""),
+            by_id[agency_id].get("subdivision_code", ""),
+            by_id[agency_id].get("subdivision_name", ""),
         )
         if feature is not None:
             map_features.append(feature)
@@ -7865,7 +8067,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         )
         + "\n",
     )
-    write("trends/index.html", _redirect_page("/pulse/#trend", "The national trend"))
+    write("trends/index.html", _redirect_page("/pulse/#trend", "Coverage trend"))
 
     # National map: a single small GeoJSON of every located agency as a point
     # coloured by grade, rendered client-side (no tile server). Agencies whose
@@ -7976,11 +8178,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         + "\n",
     )
 
-    # Rider-trips impact (ADR 0021): when the NTD ridership snapshot is present
+    # United States rider-trips context (ADR 0021): when the NTD ridership snapshot is present
     # (the daily run fetches it via `scorecard ntd-ridership --fetch`), weight
     # quality by annual unlinked passenger trips and publish the national
     # numbers. National framing only: trips on expired feeds, never a ranking.
-    from .ridership import annual_trips_for, load_ridership, weighted_impact
+    from .ridership import load_ridership, weighted_impact
 
     ridership_impact: dict[str, Any] | None = None
     ridership_csv = root / "data" / "ntd-ridership.csv"
@@ -7989,12 +8191,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         rid_records = []
         for a in ntd_artifacts:
             cfg = AGENCIES.get(str(a.get("agency", {}).get("id", "")))
+            if cfg is None or cfg.country != "US":
+                continue
             days = (a.get("categories", {}).get("freshness", {}).get("details", {})).get(
                 "days_until_expiry"
             )
             rid_records.append(
                 {
-                    "ntd_id": cfg.ntd_id if cfg else "",
+                    "ntd_id": cfg.ntd_id,
                     "score": a.get("overall", {}).get("score"),
                     "grade": a.get("overall", {}).get("grade"),
                     "expiry_status": expiry_status(days),
@@ -8017,21 +8221,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             + "\n",
         )
 
-    # Ridership-weighted standings (ADR 0021, R16): when the NTD snapshot matched
-    # any feeds, tie-break the "worst" boards toward higher-ridership agencies and
-    # give each matched row a rider-count. Resolved through the same id join as
-    # the national impact stat above, so the two agree on which feeds are matched.
-    annual_trips_by_agency: dict[str, int] | None = None
-    if rid:
-        annual_trips_by_agency = {}
-        for aid, cfg in AGENCIES.items():
-            trips = annual_trips_for({"ntd_id": cfg.ntd_id}, rid)
-            if trips is not None:
-                annual_trips_by_agency[aid] = trips
-
-    # The national pulse: rankings, movers, and the trend on one page; the three
+    # The coverage overview: worldwide comparisons stay score/delta-only. U.S.
+    # NTD ridership is shown in the explicitly labelled context sentence above,
+    # never used to move U.S. feeds ahead of equally scored feeds elsewhere.
     # retired URLs redirect to their anchors so old links keep working.
-    board = leaderboard(index, build_quality_dataset(index), annual_trips_by_agency)
+    board = leaderboard(index, build_quality_dataset(index))
     write(
         "pulse/index.html",
         _render_pulse_page(

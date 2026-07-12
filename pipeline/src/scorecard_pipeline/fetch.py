@@ -33,7 +33,6 @@ USER_AGENT = (
 FEED_HEADERS = {
     "User-Agent": USER_AGENT,
     "Accept": "application/zip,application/octet-stream,application/x-zip-compressed,*/*",
-    "Accept-Language": "en-US,en;q=0.9",
 }
 # (connect, read) timeouts. A reachable server completes the TCP handshake in
 # well under a second; a host firewalling our IP range never answers, so a short

@@ -57,8 +57,9 @@ class Agency:
     # means no NTD ID on file and the check is shown as not-yet-checked. See
     # ntd.assess_id_alignment.
     ntd_id: str = ""
-    # ISO 3166-1 alpha-2 country code, defaulting to US so every existing entry
-    # is unchanged. A non-US agency (e.g. "CA") is scored on the same GTFS-quality
+    # Assigned ISO 3166-1 alpha-2 country code. It defaults to US only as a
+    # compatibility behavior for registry entries that predate this field. A
+    # non-US agency (e.g. "CA") is scored on the same GTFS-quality
     # rubric but skips the US-only surfaces: the FTA National Transit Database
     # GTFS-readiness and NTD-id-alignment views, which have no meaning
     # outside the US. See ADR 0026 (internationalization).

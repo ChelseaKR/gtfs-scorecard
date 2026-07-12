@@ -60,6 +60,10 @@ table this module owns outright.
 - **The validator jar is baked into the image** (same jar, same SHA-256 check,
   as `infra/compute`'s Dockerfile) so a cold start never depends on a network
   call to GitHub Releases.
+- **Country is explicit at the validation boundary.** The form accepts an
+  assigned ISO 3166-1 alpha-2 code, carries it through the asynchronous job,
+  and passes it to `scorecard try`; omitted historical requests default to
+  `US`. The resulting scratch artifact retains the country.
 - **The cost ceiling is deliberately relaxed.** CLAUDE.md's
   single-digit-dollars-a-month guardrail is a hard constraint for the
   always-on render path, but the growth-plans folder's Tier-1 analysis frames

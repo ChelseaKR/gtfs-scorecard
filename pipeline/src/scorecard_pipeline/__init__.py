@@ -3,9 +3,9 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
-# 1.9: country fields accept any configured ISO 3166-1 alpha-2 jurisdiction;
-# schemas describe that portable shape while jurisdictions.yaml remains the
-# stricter deployment admission list. No score or rubric field changed.
+# 1.9: country fields accept every assigned ISO 3166-1 alpha-2 jurisdiction;
+# schemas describe that portable shape while the generated ISO vocabulary is
+# the stricter write boundary. No score or rubric field changed.
 # 1.8: additive scoring_profile metadata on every per-agency artifact. The
 # profile identifies the project-authored scoring contract independently from
 # the artifact schema and states its provenance and limits explicitly.
