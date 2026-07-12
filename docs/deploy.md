@@ -168,6 +168,7 @@ Actions; this is the inventory an operator should know exists:
 | --- | --- | --- |
 | `scorecard.yml` | daily | The full sharded re-score, commit, deploy, optional S3 mirror and SES digest. |
 | `refresh.yml` | hourly | Cheap intraday tier: change/down detection by conditional GET, no validator (ADR 0010). |
+| `targeted-score.yml` | manual | Activates up to 25 reviewed registry agencies against the authoritative S3 corpus, then deploys. |
 | `rt-monitor.yml` | every 3 h | Short realtime sampling burst across agencies into `data/rt-health` (ADR 0012). |
 | `rt-archive.yml` | manual | Bounded high-resolution realtime polling session for one agency (ADR 0012). |
 | `watchdog.yml` | every 6 h | Independent uptime and freshness check, no AWS dependency. |
@@ -181,6 +182,38 @@ Actions; this is the inventory an operator should know exists:
 | `tiles.yml` | manual | Rebuilds the national PMTiles route archive (needs tippecanoe). |
 | `mutation.yml` | weekly | Advisory mutation testing of the scoring math. |
 | `ci.yml`, `a11y.yml`, `e2e.yml`, `security.yml`, `pages.yml` | push/PR | The merge and deploy gates. |
+
+### Targeted agency activation
+
+Use **Actions → Targeted agency activation → Run workflow** when a reviewed
+agency is already present on the default branch but should be scored and made
+visible before the next daily run. Enter one to 25 exact `agencies.yaml` ids;
+commas, spaces, and newlines are accepted. The dispatch rejects an empty list,
+unknown or malformed ids, normalized duplicates, and more than 25 targets.
+
+This path requires `ARTIFACTS_BUCKET` and the same `AWS_ROLE_ARN` OIDC role as
+the daily publisher. It is intentionally unavailable to Pages-only forks:
+without the authoritative bucket, a partial checkout cannot safely rebuild the
+worldwide directory.
+
+The workflow serializes with the daily collect and hourly refresh writer jobs.
+Their shared concurrency group uses the 100-run FIFO queue, so a new hourly
+refresh cannot replace a waiting activation or daily collect. The activation
+hydrates every current agency score and fix receipt, the dated file behind each
+current score, all current aggregate namespaces, and each selected agency's
+complete retained directory. It captures the authoritative `index.json` bytes
+and ETag in one request, checks the ETag again before the first write, and uses
+the same ETag as an `If-Match` condition on the final index commit. An unexpected
+change aborts the commit and the operator can re-run against the new state.
+
+Publication is additive and path-bounded: only selected agency directories,
+`directory.json`, `scoring.json`, `rollups/`, `changes/`, and a changed
+`index.json` are uploaded. There is no whole-tree sync and no remote delete.
+The selected dated snapshots receive the same lifecycle tag as daily scores.
+The targeted run reads but never writes `run/`, so `/status/` continues to
+describe the daily pipeline rather than presenting a manual activation as a
+full-corpus run. A successful publish calls the normal Pages workflow with the
+data-refresh performance gate in advisory mode; accessibility still blocks.
 
 ## Teardown
 

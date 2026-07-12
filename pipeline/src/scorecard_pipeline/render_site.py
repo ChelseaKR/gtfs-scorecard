@@ -1034,7 +1034,7 @@ def _citation_reference(
     claim: which record (the dated JSON, not the page that keeps changing),
     what methodology produced it (rubric + validator version), and what feed
     bytes it scored (the sha256 already carried in ``feed`` for FIX-01
-    provenance), so a manager, board packet, or NTD narrative can cite a grade
+    provenance), so a manager, board packet, or regulatory filing can cite a grade
     the way a paper cites a dataset snapshot instead of a URL that quietly
     drifts."""
     date = str(artifact.get("snapshot_date", ""))
@@ -1081,7 +1081,7 @@ def _citation_bibtex(
 
 def _citation_section(artifact: dict[str, Any], agency_id: str, agency_name: str) -> str:
     """A 'Cite this record' affordance (EXP-09): a stable, versioned, per-agency
-    record any manager, board, or NTD narrative can point at, distinct from the
+    record any manager, board, or regulatory filing can point at, distinct from the
     live page above (which is overwritten on every check). The record it cites
     is the dated JSON artifact the publish step already writes and never
     overwrites (``<agency>/<date>.json``), pinning grade, category scores,
@@ -1105,7 +1105,7 @@ def _citation_section(artifact: dict[str, Any], agency_id: str, agency_name: str
         f'the dated file this grade came from, published at <a href="{esc(record_url)}">'
         f"{esc(record_url)}</a> and never overwritten, pinning the grade, category scores, "
         "rubric version, validator version, and the scored feed's sha256 as they stood on "
-        f"{esc(date)}. Use it in a board packet, an NTD narrative, or a research citation "
+        f"{esc(date)}. Use it in a board packet, a regulatory filing, or a research citation "
         "instead of linking the live page, whose content will differ on your next visit.</p>"
         '<label class="visually-hidden" for="cite-text">Formatted reference</label>'
         f'<textarea id="cite-text" class="outreach-text" rows="3" readonly>{esc(reference)}</textarea>'
@@ -2492,7 +2492,7 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
     """The durable fix log (/agency/<id>/fixes/): every finding this feed has
     cleared, dated, newest first, each entry with its own link. The agency page's
     "resolved since last check" line is gone the next day; this is the citable
-    record a manager can put in a board packet or an NTD narrative (docs/
+    record a manager can put in a board packet or a regulatory filing (docs/
     expansion-ideation-2026-07.md, fix verification as a product)."""
     agency_id = artifact["agency"]["id"]
     agency_name = artifact["agency"]["name"]
@@ -2523,7 +2523,7 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
       <h1 class="page-title">Fix log: {esc(agency_name)}</h1>
       <p class="page-lede">A dated record of every data issue this feed has cleared since
       tracking began. Each entry keeps its own link, so a specific fix can be cited in a
-      board packet, a grant report, or an NTD narrative.</p>
+      board packet, a grant report, or a regulatory filing.</p>
     </header>
     <section aria-labelledby="fixlog-h">
       <h2 class="section-title" id="fixlog-h">{len(receipts)} verified {"fix" if len(receipts) == 1 else "fixes"}</h2>
@@ -2532,8 +2532,8 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
       finding that returns and clears again appears as a separate entry.</p>
       <p class="fixloop-close">This log is the end of the guided fix loop: you make a change,
       republish, and the next run verifies it and records it here as
-      <a href="/agency/{esc(agency_id)}/">linkable proof for a board packet or NTD
-      narrative</a>.</p>
+      <a href="/agency/{esc(agency_id)}/">linkable proof for a board packet or
+      regulatory filing</a>.</p>
     </section>"""
     desc = (
         f"Dated, linkable record of {len(receipts)} data-quality "

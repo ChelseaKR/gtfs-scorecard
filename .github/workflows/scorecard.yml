@@ -107,7 +107,8 @@ jobs:
                 --include "${today}.json" --include "${yesterday}.json" \
                 --only-show-errors
             fi
-            uv run --with boto3 scorecard run --agency "$id" --skip-unchanged --outcome-out "$outcomes" && EXIT=0 || EXIT=$?
+            uv run --with boto3 python -m scorecard_pipeline.cli run \
+              --agency "$id" --skip-unchanged --outcome-out "$outcomes" && EXIT=0 || EXIT=$?
             if [ "$EXIT" -eq 0 ]; then
               mkdir -p "$stage/$id"
               cp -a "$GITHUB_WORKSPACE/data/artifacts/$id/." "$stage/$id/"
@@ -148,6 +149,10 @@ jobs:
   collect:
     needs: score
     runs-on: ubuntu-latest
+    concurrency:
+      group: artifacts-publish
+      cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       id-token: write # OIDC for the optional CDN mirror
@@ -297,7 +302,7 @@ jobs:
         env:
           SUBSCRIPTIONS_TABLE: gtfs-scorecard-subscriptions
           ALERTS_API_BASE: https://5oemr66b9a.execute-api.us-west-2.amazonaws.com
-        run: uv run --with boto3 scorecard notify --send --from "${{ vars.SES_FROM }}"
+        run: uv run --with boto3 python -m scorecard_pipeline.cli notify --send --from "${{ vars.SES_FROM }}"
 
       # The digest silently never sending is worse than it loudly not sending:
       # if the variable is unset, say so in the run summary every day so an

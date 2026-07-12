@@ -8,6 +8,7 @@ scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
 scorecard shards --count 4                        # CI fan-out plan (JSON)
+scorecard activation-targets --ids "unitrans yolobus"  # validate manual publish scope
 scorecard run-summary build --shard 0 --outcomes o.ndjson --started <iso> --out s.json
 scorecard run-summary merge --out data/artifacts/run/latest.json s0.json s1.json ...
 scorecard alerts [--out digest.md]                # expiry/regression digest
@@ -1688,6 +1689,23 @@ def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_activation_targets(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Validate and materialize a bounded manual activation selection."""
+    from .activation import ActivationTargetError, parse_activation_targets
+
+    try:
+        targets = parse_activation_targets(args.ids, AGENCIES)
+    except ActivationTargetError as exc:
+        parser.error(str(exc))
+    output = "".join(f"{target}\n" for target in targets)
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(output)
+    else:
+        print(output, end="")
+    return 0
+
+
 def _cmd_run_summary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .run_summary import build_shard_summary, merge_run_summaries, read_outcomes
 
@@ -2314,6 +2332,21 @@ def main(argv: list[str] | None = None) -> int:
     shards = sub.add_parser("shards", help="emit a JSON fan-out plan for CI")
     shards.add_argument("--count", type=int, default=4, help="number of shards")
 
+    activation_targets = sub.add_parser(
+        "activation-targets",
+        help="validate a bounded manual agency selection against the registry",
+    )
+    activation_targets.add_argument(
+        "--ids",
+        required=True,
+        help="agency ids separated by commas, spaces, or newlines (maximum 25)",
+    )
+    activation_targets.add_argument(
+        "--out",
+        type=Path,
+        help="write one validated agency id per line instead of stdout",
+    )
+
     run_summary = sub.add_parser(
         "run-summary",
         help="build/merge per-shard pipeline run-health summaries for /status/ (FIX-11)",
@@ -2594,6 +2627,7 @@ def main(argv: list[str] | None = None) -> int:
         "ntd-crosswalk": _cmd_ntd_crosswalk,
         "ntd-ridership": _cmd_ntd_ridership,
         "shards": _cmd_shards,
+        "activation-targets": _cmd_activation_targets,
         "run-summary": _cmd_run_summary,
         "alerts": _cmd_alerts,
         "notify": _cmd_notify,

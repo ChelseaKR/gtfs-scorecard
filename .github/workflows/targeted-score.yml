@@ -1,0 +1,254 @@
+name: Targeted agency activation
+
+# Operator-only path for activating a small, reviewed registry set without
+# waiting for the next full daily matrix. S3 remains authoritative: hydrate a
+# bounded complete view, score sequentially, then publish only the selected
+# agency directories and aggregates derived from the complete current corpus.
+
+on:
+  workflow_dispatch:
+    inputs:
+      agency_ids:
+        description: "Registry agency ids (comma, newline, or space separated; maximum 25)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # AWS OIDC for the authoritative artifact store and validator cache
+    # All artifact publishers share this repository-wide lock. Scoring shards
+    # remain parallel; only jobs that can mutate the public S3 state serialize.
+    concurrency:
+      group: artifacts-publish
+      cancel-in-progress: false
+      queue: max
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Require the authoritative artifact bucket
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          if [ -z "$ARTIFACTS_BUCKET" ]; then
+            echo "::error title=ARTIFACTS_BUCKET is required::Targeted activation cannot safely publish without the authoritative S3 store."
+            exit 1
+          fi
+
+      - name: Validate the bounded registry selection
+        working-directory: pipeline
+        env:
+          TARGET_INPUT: ${{ inputs.agency_ids }}
+        run: uv run scorecard activation-targets --ids "$TARGET_INPUT" --out "$RUNNER_TEMP/targets.txt"
+
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      - name: Hydrate the authoritative corpus and selected history
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          artifact_uri="s3://${ARTIFACTS_BUCKET}/data/artifacts"
+
+          # Checkout contains a deliberately small committed snapshot whose
+          # file mtimes are newer than S3. Start clean so `aws s3 sync` cannot
+          # mistake a same-sized stale checkout file for authoritative state.
+          rm -rf data/artifacts
+          mkdir -p data/artifacts
+          rm -f data/liveness.json
+
+          # index.json is the durable compact history. Preserve its exact bytes
+          # for a conditional publish and its ETag for the optimistic guard.
+          aws s3api get-object \
+            --bucket "$ARTIFACTS_BUCKET" \
+            --key data/artifacts/index.json \
+            --query ETag --output text \
+            data/artifacts/index.json > "$RUNNER_TEMP/index.etag"
+          cp data/artifacts/index.json "$RUNNER_TEMP/index.before.json"
+
+          # The complete current corpus needed by reindex/render-site starts
+          # with every current score and fix receipt. Older trend points stay
+          # in the compact index instead of downloading the lifecycle-managed
+          # archive.
+          aws s3 sync "$artifact_uri" data/artifacts \
+            --exclude "*" \
+            --include "*/latest.json" --include "*/fixlog.json" \
+            --exact-timestamps --only-show-errors
+
+          # reindex treats dated files as the source of truth for latest.json.
+          # Hydrate the dated object referenced by every current score in one
+          # filtered S3 sync; using only today's date would drop a feed whose
+          # last good snapshot is older. The argument array is bounded by the
+          # curated registry and avoids one AWS process per agency.
+          current_dated=(--exclude "*")
+          for latest in data/artifacts/*/latest.json; do
+            id=$(basename "$(dirname "$latest")")
+            case "$id" in rollups|changes|run) continue ;; esac
+            snapshot_date=$(jq -er '.snapshot_date' "$latest")
+            current_dated+=(--include "${id}/${snapshot_date}.json")
+          done
+          aws s3 sync "$artifact_uri" data/artifacts "${current_dated[@]}" \
+            --exact-timestamps --only-show-errors
+          for latest in data/artifacts/*/latest.json; do
+            id=$(basename "$(dirname "$latest")")
+            case "$id" in rollups|changes|run) continue ;; esac
+            # A selected feed will produce a new dated snapshot below. Do not
+            # recreate one of its lifecycle-expired historical objects merely
+            # to support the intermediate local rebuild.
+            if grep -Fxq "$id" "$RUNNER_TEMP/targets.txt"; then
+              continue
+            fi
+            snapshot_date=$(jq -er '.snapshot_date' "$latest")
+            dated="data/artifacts/${id}/${snapshot_date}.json"
+            if [ ! -f "$dated" ]; then
+              # A lifecycle-expired dated object can outlive a feed outage.
+              # latest.json is the same published payload, so reconstruct the
+              # local reindex input without recreating the expired S3 object.
+              cp "$latest" "$dated"
+              echo "::warning title=current dated snapshot expired::reconstructed ${id}/${snapshot_date}.json locally from authoritative latest.json"
+            fi
+          done
+
+          # These aggregate namespaces are small and stateful; hydrate them in
+          # full. run/* is input to the rendered status page but is never
+          # published by this workflow, preserving the daily run's evidence.
+          for namespace in rollups changes run; do
+            aws s3 sync "${artifact_uri}/${namespace}" "data/artifacts/${namespace}" \
+              --exact-timestamps --only-show-errors
+          done
+          aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/liveness.json" \
+            data/liveness.json --only-show-errors || true
+
+          # Selected agency directories are fully hydrated so fix receipts,
+          # corrected feeds, structure, geometry, and all retained history are
+          # additive and cannot be lost when their bounded directories sync.
+          while IFS= read -r id; do
+            aws s3 sync "${artifact_uri}/${id}" "data/artifacts/${id}" \
+              --exact-timestamps --only-show-errors
+          done < "$RUNNER_TEMP/targets.txt"
+
+      - name: Score selected agencies sequentially
+        working-directory: pipeline
+        env:
+          VALIDATOR_CACHE_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
+          SCORECARD_CDN_BASE: ${{ format('https://{0}', vars.ARTIFACTS_CDN || 'd14aimrgrbaz2a.cloudfront.net') }}
+        run: |
+          set -euo pipefail
+          while IFS= read -r id; do
+            echo "::group::score $id"
+            uv run --with boto3 python -m scorecard_pipeline.cli run --agency "$id"
+            echo "::endgroup::"
+          done < "$RUNNER_TEMP/targets.txt"
+
+      - name: Rebuild corpus aggregates
+        working-directory: pipeline
+        run: |
+          set -euo pipefail
+          # `scorecard run` maintains index.json incrementally from the selected
+          # directories. Restore the authoritative compact history first so
+          # reindex merges retained S3 dates instead of truncating other trend
+          # points that have already reached their lifecycle expiry.
+          cp "$RUNNER_TEMP/index.before.json" ../data/artifacts/index.json
+          uv run scorecard reindex
+          uv run scorecard rollups
+          uv run scorecard render-site
+
+      - name: Guard and publish only the bounded change set
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          artifact_uri="s3://${ARTIFACTS_BUCKET}/data/artifacts"
+          expected_etag=$(<"$RUNNER_TEMP/index.etag")
+          current_etag=$(aws s3api head-object \
+            --bucket "$ARTIFACTS_BUCKET" \
+            --key data/artifacts/index.json \
+            --query ETag --output text)
+          if [ "$current_etag" != "$expected_etag" ]; then
+            echo "::error title=artifact index changed::Another publisher changed index.json after hydration; no targeted artifacts were published. Re-run this activation."
+            exit 1
+          fi
+
+          # Upload and tag the immutable dated snapshot before latest.json can
+          # expose it. A tagging failure therefore leaves only an unreachable
+          # dated object and safely blocks the aggregate/index commit.
+          while IFS= read -r id; do
+            snapshot_date=$(jq -er '.snapshot_date' "data/artifacts/${id}/latest.json")
+            dated="data/artifacts/${id}/${snapshot_date}.json"
+            if [ ! -f "$dated" ]; then
+              echo "::error title=dated artifact missing::${id}/${snapshot_date}.json was not produced"
+              exit 1
+            fi
+            aws s3 cp "$dated" "${artifact_uri}/${id}/${snapshot_date}.json" \
+              --cache-control "max-age=300" --only-show-errors
+            aws s3api put-object-tagging \
+              --bucket "$ARTIFACTS_BUCKET" \
+              --key "data/artifacts/${id}/${snapshot_date}.json" \
+              --tagging 'TagSet=[{Key=artifact-class,Value=dated}]'
+
+            # Publish each remaining selected-directory file, never the whole
+            # tree. Additive sync only: no --delete or unrelated agency path.
+            aws s3 sync "data/artifacts/${id}" "${artifact_uri}/${id}" \
+              --exclude "${snapshot_date}.json" \
+              --cache-control "max-age=300" --only-show-errors
+          done < "$RUNNER_TEMP/targets.txt"
+
+          # Aggregates were regenerated from every authoritative latest.json.
+          # run/* is deliberately absent: targeted activation is not a daily
+          # pipeline run and must not replace its public health status.
+          aws s3 cp data/artifacts/directory.json "${artifact_uri}/directory.json" \
+            --cache-control "max-age=300" --only-show-errors
+          aws s3 cp data/artifacts/scoring.json "${artifact_uri}/scoring.json" \
+            --cache-control "max-age=300" --only-show-errors
+          aws s3 sync data/artifacts/rollups "${artifact_uri}/rollups" \
+            --cache-control "max-age=300" --only-show-errors
+          aws s3 sync data/artifacts/changes "${artifact_uri}/changes" \
+            --cache-control "max-age=300" --only-show-errors
+
+          # index.json is the commit pointer and goes last, only when its bytes
+          # changed. If-Match makes the final write itself conditional on the
+          # exact bytes hydrated, closing the race after the early ETag guard.
+          if ! cmp -s "$RUNNER_TEMP/index.before.json" data/artifacts/index.json; then
+            aws s3api put-object \
+              --bucket "$ARTIFACTS_BUCKET" \
+              --key data/artifacts/index.json \
+              --body data/artifacts/index.json \
+              --if-match "$expected_etag" \
+              --cache-control "max-age=300" \
+              --content-type application/json >/dev/null
+          fi
+
+  # S3 writes do not update main, so explicitly render and deploy the newly
+  # activated records. Performance remains advisory for a data-only refresh;
+  # the reusable Pages workflow still blocks on accessibility.
+  deploy:
+    needs: activate
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+    with:
+      perf_gate: advisory
+    secrets:
+      PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}
