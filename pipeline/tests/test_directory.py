@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from scorecard_pipeline.directory import build_directory, size_tier
+from scorecard_pipeline.location import COUNTRY_NAMES
 
 
 def _rec(
@@ -134,6 +137,7 @@ def test_country_rollup_nests_subdivisions_without_changing_legacy_states() -> N
     summary = build_directory(recs, "t")["summary"]
     countries = {row["country_code"]: row for row in summary["countries"]}
     assert countries["US"]["country_name"] == "United States"
+    assert countries["CA"]["country_name"] == "Canada"
     assert countries["CA"]["agencies"] == 2
     subdivisions = {row["subdivision_code"]: row for row in countries["CA"]["subdivisions"]}
     assert subdivisions["CA-ON"]["subdivision_name"] == "Ontario"
@@ -154,6 +158,28 @@ def test_country_rollup_nests_subdivisions_without_changing_legacy_states() -> N
             "expired": 0,
         },
     ]
+
+
+def test_configured_non_us_country_keeps_legacy_place_rollup_findable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(COUNTRY_NAMES, "GB", "United Kingdom")
+    summary = build_directory(
+        [
+            _rec(
+                "eng",
+                80,
+                "B",
+                state="",
+                country="GB",
+                subdivision_code="GB-ENG",
+                subdivision_name="England",
+            )
+        ],
+        "t",
+    )["summary"]
+    assert summary["states"][0]["state"] == "United Kingdom"
+    assert summary["countries"][0]["country_name"] == "United Kingdom"
 
 
 def test_records_without_a_score_get_null_percentiles() -> None:

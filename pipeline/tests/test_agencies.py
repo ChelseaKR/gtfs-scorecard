@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -14,6 +17,8 @@ from scorecard_pipeline.agencies import (
     read_agencies,
 )
 from scorecard_pipeline.config import AGENCIES
+from scorecard_pipeline.jurisdictions import JURISDICTIONS
+from scorecard_pipeline.location import SUPPORTED_COUNTRY_CODES
 
 REPO_YAML = Path(__file__).resolve().parents[2] / "agencies.yaml"
 
@@ -104,6 +109,61 @@ def test_subdivision_must_match_country_and_legacy_state() -> None:
 def test_country_rejects_non_iso_code() -> None:
     with pytest.raises(AgencyConfigError, match="country must be one of"):
         parse_agencies(entry(country="Canada"))
+
+
+def test_agency_country_allowlist_comes_from_jurisdiction_config() -> None:
+    assert frozenset(JURISDICTIONS.countries) == SUPPORTED_COUNTRY_CODES
+    with pytest.raises(AgencyConfigError, match=r"add it to jurisdictions[.]yaml"):
+        parse_agencies(entry(country="GB", subdivision_code="GB-ENG", subdivision_name="England"))
+
+
+def test_fresh_process_activates_a_country_from_configuration_only(tmp_path: Path) -> None:
+    (tmp_path / "jurisdictions.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "countries": {
+                    "US": {"name": "United States", "subdivisions": {}},
+                    "GB": {
+                        "name": "United Kingdom",
+                        "subdivisions": {"GB-ENG": "England"},
+                    },
+                }
+            },
+            sort_keys=False,
+        )
+    )
+    (tmp_path / "agencies.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "agencies": [
+                    {
+                        "id": "example-gb",
+                        "name": "Example GB Transit",
+                        "static_gtfs_url": "https://example.org/gtfs.zip",
+                        "country": "GB",
+                        "subdivision_code": "GB-ENG",
+                        "subdivision_name": "England",
+                    }
+                ]
+            },
+            sort_keys=False,
+        )
+    )
+    env = os.environ.copy()
+    env["SCORECARD_ROOT"] = str(tmp_path)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from scorecard_pipeline.agencies import read_agencies; "
+            "a = read_agencies()[0]; print(a.country, a.subdivision_code, a.subdivision_name)",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert result.stdout.strip() == "GB GB-ENG England"
 
 
 def test_repo_registry_includes_canada_pilot() -> None:

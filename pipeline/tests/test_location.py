@@ -1,7 +1,18 @@
 """Tests for conservative ISO country and subdivision normalization."""
 
+from pathlib import Path
+
+import pytest
+
+from scorecard_pipeline.jurisdictions import (
+    ISO_ALPHA2_CODES,
+    JurisdictionConfigError,
+    load_jurisdictions,
+    parse_jurisdictions,
+)
 from scorecard_pipeline.location import (
     CA_SUBDIVISIONS,
+    COUNTRY_NAMES,
     US_SUBDIVISIONS,
     NormalizedLocation,
     is_valid_country_code,
@@ -23,6 +34,7 @@ def test_country_normalization_supports_us_and_canada_only() -> None:
 
 
 def test_maps_cover_us_states_territories_and_canadian_subdivisions() -> None:
+    assert COUNTRY_NAMES == {"US": "United States", "CA": "Canada"}
     assert len(US_SUBDIVISIONS) == 57
     assert US_SUBDIVISIONS["US-DC"] == "District of Columbia"
     assert US_SUBDIVISIONS["US-PR"] == "Puerto Rico"
@@ -30,6 +42,92 @@ def test_maps_cover_us_states_territories_and_canadian_subdivisions() -> None:
     assert len(CA_SUBDIVISIONS) == 13
     assert CA_SUBDIVISIONS["CA-NU"] == "Nunavut"
     assert CA_SUBDIVISIONS["CA-QC"] == "Quebec"
+
+
+def test_jurisdiction_config_can_add_a_country_without_python_changes() -> None:
+    assert len(ISO_ALPHA2_CODES) == 249
+    registry = parse_jurisdictions(
+        {
+            "countries": {
+                "US": {"name": "United States", "subdivisions": {}},
+                "GB": {"name": "United Kingdom", "subdivisions": {"GB-ENG": "England"}},
+            }
+        },
+        source="test-jurisdictions.yaml",
+    )
+    assert registry.country_names["GB"] == "United Kingdom"
+    assert registry.subdivisions_by_country["GB"] == {"GB-ENG": "England"}
+
+
+def test_jurisdiction_config_rejects_cross_country_and_duplicate_names() -> None:
+    with pytest.raises(JurisdictionConfigError, match="must use country prefix GB-"):
+        parse_jurisdictions(
+            {
+                "countries": {
+                    "US": {"name": "United States", "subdivisions": {}},
+                    "GB": {"name": "United Kingdom", "subdivisions": {"CA-ON": "England"}},
+                }
+            }
+        )
+    with pytest.raises(JurisdictionConfigError, match="duplicate subdivision name"):
+        parse_jurisdictions(
+            {
+                "countries": {
+                    "US": {
+                        "name": "United States",
+                        "subdivisions": {"US-AA": "Example", "US-BB": " example "},
+                    }
+                }
+            }
+        )
+
+
+@pytest.mark.parametrize("country_code", ["UK", "UU", "ZZ"])
+def test_jurisdiction_config_rejects_unassigned_country_codes(country_code: str) -> None:
+    with pytest.raises(JurisdictionConfigError, match="not an assigned ISO 3166-1"):
+        parse_jurisdictions(
+            {
+                "countries": {
+                    "US": {"name": "United States", "subdivisions": {}},
+                    country_code: {"name": "Not assigned", "subdivisions": {}},
+                }
+            }
+        )
+
+
+@pytest.mark.parametrize(
+    "text, duplicate",
+    [
+        (
+            "countries:\n  US:\n    name: First\n    subdivisions: {}\n"
+            "  US:\n    name: Second\n    subdivisions: {}\n",
+            "US",
+        ),
+        (
+            "countries:\n  US:\n    name: United States\n    subdivisions:\n"
+            "      US-CA: California\n      US-CA: Calif.\n",
+            "US-CA",
+        ),
+    ],
+)
+def test_jurisdiction_file_rejects_duplicate_yaml_keys(
+    tmp_path: Path, text: str, duplicate: str
+) -> None:
+    path = tmp_path / "jurisdictions.yaml"
+    path.write_text(text)
+    with pytest.raises(JurisdictionConfigError, match=rf"duplicate YAML key '{duplicate}'"):
+        load_jurisdictions(path)
+
+
+def test_packaged_jurisdiction_default_matches_deployment_config() -> None:
+    root = Path(__file__).resolve().parents[2]
+    packaged = root / "pipeline" / "src" / "scorecard_pipeline" / "jurisdictions.yaml"
+    assert packaged.read_bytes() == (root / "jurisdictions.yaml").read_bytes()
+
+
+def test_load_jurisdictions_reports_a_missing_explicit_file(tmp_path: Path) -> None:
+    with pytest.raises(JurisdictionConfigError, match="could not read jurisdiction registry"):
+        load_jurisdictions(tmp_path / "missing.yaml")
 
 
 def test_subdivision_code_requires_pattern_prefix_and_known_code() -> None:

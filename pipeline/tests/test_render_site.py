@@ -6,6 +6,8 @@ import datetime as dt
 import re
 from typing import Any
 
+import pytest
+
 from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
@@ -1957,6 +1959,26 @@ def test_render_map_page_filters_cover_grade_and_state() -> None:
     # State options are derived from the agencies actually on the map.
     assert '<option value="Iowa">Iowa</option>' in html
     assert '<option value="Ohio">Ohio</option>' in html
+
+
+def test_render_map_page_generates_configured_non_us_country_filter(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline.location import COUNTRY_NAMES
+
+    monkeypatch.setitem(COUNTRY_NAMES, "GB", "United Kingdom")
+    feature = _map_feature("example-gb", _sample_artifact("B", -1.5, 52.3), "England", "GB")
+    assert feature is not None
+    html = _render_map_page([feature])
+    assert '<option value="country:GB">United Kingdom</option>' in html
+    assert 'data-country="GB"' in html
+    assert ">England</td>" in html
+    assert "country === loc.slice(countryPrefix.length)" in html
+    assert 'loc === "Canada"' not in html
+    assert "map.fitBounds(bounds" in html
+    assert "animate: !reduce" in html
+    assert "if (fittedLocation)" in html
+    assert "center: [-96, 38], zoom: 3" in html
 
 
 def test_map_feature_reads_flex_from_completeness_details() -> None:

@@ -13,16 +13,12 @@ from pathlib import Path
 import yaml
 
 from .config import AGENCIES, Agency, repo_root
-from .location import normalize_location
+from .location import SUPPORTED_COUNTRY_CODES, normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 NTD_ID_PATTERN = re.compile(r"^\d{4,5}$")
 RT_KINDS = ("trip_updates", "vehicle_positions", "service_alerts")
 
-# Countries the pipeline knows how to render fairly (state/province handling,
-# standards framing per ADR 0026). A typo like "UU" must fail here, not pass a
-# shape check and silently drop the agency from the US-only surfaces.
-SUPPORTED_COUNTRIES = {"US", "CA"}
 FEED_STATUSES = {"active", "deprecated", "inactive", "development"}
 
 
@@ -182,12 +178,12 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 "state is a deprecated US-only field; use subdivision_code/name",
                 entry_source,
             )
-        if country not in SUPPORTED_COUNTRIES:
+        if country not in SUPPORTED_COUNTRY_CODES:
             _fail(
                 label,
-                f"country must be one of {sorted(SUPPORTED_COUNTRIES)}, got {country!r}. "
+                f"country must be one of {sorted(SUPPORTED_COUNTRY_CODES)}, got {country!r}. "
                 "Supporting a new country is deliberate work (state/province handling, "
-                "standards framing; ADR 0026), so extend SUPPORTED_COUNTRIES alongside "
+                "standards framing; ADR 0026), so add it to jurisdictions.yaml alongside "
                 "that plumbing.",
                 entry_source,
             )

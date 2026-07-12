@@ -51,6 +51,16 @@ def _portable_directory() -> dict[str, Any]:
             agency["subdivision_code"] = "US-CA"
             agency["subdivision_name"] = "California"
             california_count += 1
+    british = {
+        **directory["agencies"][0],
+        "id": "example-gb-transit",
+        "name": "Example GB Transit",
+        "country": "GB",
+        "state": "",
+        "subdivision_code": "GB-ENG",
+        "subdivision_name": "England",
+    }
+    directory["agencies"].append(british)
     directory["summary"]["countries"] = [
         {
             "country_code": "US",
@@ -83,6 +93,14 @@ def _portable_directory() -> dict[str, Any]:
         },
         {
             "country_code": "GB",
+            "country_name": "United Kingdom",
+            "agencies": 1,
+            "subdivisions": [
+                {"subdivision_code": "GB-ENG", "subdivision_name": "England", "agencies": 1}
+            ],
+        },
+        {
+            "country_code": "XK",
             "country_name": 'Quoted "country" onmouseover="window.__pwned=1" <test>',
             "agencies": 0,
             "subdivisions": [],
@@ -236,6 +254,37 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     ).to_be_visible()
     expect(page.locator("[onmouseover]")).to_have_count(0)
     assert page.evaluate("() => window.__pwned") is None
+
+
+def test_arbitrary_country_deep_link_filters_searches_and_canonicalizes(
+    page: Page, app_url: str
+) -> None:
+    _serve_directory(page, _portable_directory())
+    page.goto(f"{app_url}#/?country=gb&subdivision=gb-eng")
+
+    expect(page.locator('.location-country[data-country="GB"]').first).to_have_attribute(
+        "aria-pressed", "true"
+    )
+    expect(
+        page.locator('.location-subdivision[data-subdivision="GB-ENG"]').first
+    ).to_have_attribute("aria-pressed", "true")
+    expect(page.locator(".agency-count")).to_contain_text("1 of")
+    expect(page.get_by_role("link", name="Example GB Transit")).to_be_visible()
+    assert page.evaluate("() => location.hash") == "#/?country=gb&subdivision=gb-eng"
+
+    # The first user interaction rewrites portable location keys to their
+    # canonical upper-case form while retaining the active sort.
+    page.locator("#agency-sort").select_option("best")
+    assert _hash_params(page) == {
+        "country": "GB",
+        "subdivision": "GB-ENG",
+        "sort": "best",
+    }
+
+    page.locator("#agency-search").fill("GB-ENG")
+    expect(page.locator(".agency-count")).to_contain_text("1 of")
+    page.locator("#agency-search").fill("United Kingdom")
+    expect(page.locator(".agency-count")).to_contain_text("1 of")
 
 
 def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: str) -> None:

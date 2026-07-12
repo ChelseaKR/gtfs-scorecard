@@ -50,11 +50,14 @@ cache.
    `country` defaults to `US` so existing US entries keep working. For a new
    entry outside the US, set `country`, `subdivision_code`, and
    `subdivision_name` together. Use the full ISO 3166-2 code, such as `CA-ON`,
-   and the name practitioners use locally. The registry currently accepts `US`
-   and `CA`; enabling another country also requires adding its location support
-   in the pipeline. New integrations should use the portable fields for
-   location and grouping. The published `state` field remains available for
-   existing US consumers.
+   and the name practitioners use locally. Production currently activates `US`
+   and `CA` in its country capability configuration. The public JSON schemas
+   accept any well-formed ISO alpha-2 code so API clients remain forward-
+   compatible, but that does not activate a country or let an arbitrary code
+   into the curated registry. Enabling another country follows the config-backed
+   checklist in [ADR 0026](decisions/0026-internationalization.md#country-activation-checklist).
+   New integrations should use the portable fields for location and grouping.
+   The published `state` field remains available for existing US consumers.
 
    If your agency has realtime tracking but the feed needs an API key,
    omit `rt_urls` and add an `rt_note` saying so; the scorecard shows the

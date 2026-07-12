@@ -60,7 +60,7 @@
           "properties": {
             "country_code": {
               "type": ["string", "null"],
-              "enum": ["US", "CA", null]
+              "pattern": "^[A-Z]{2}$"
             },
             "country_name": {"type": "string"},
             "subdivisions": {

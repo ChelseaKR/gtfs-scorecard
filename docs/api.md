@@ -60,7 +60,7 @@ published score dataset.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.8`). The rule for
+Every artifact carries a `schema_version` (currently `1.9`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -103,6 +103,11 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.9` broadens portable country fields from the initial US/Canada values to
+  any ISO 3166-1 alpha-2 country activated in `jurisdictions.yaml`. Published
+  schemas validate the stable alpha-2 shape; the curated registry remains the
+  stricter admission boundary. Scores and the scoring profile are unchanged.
+  Additive.
 - `1.8` adds the required `scoring_profile` block to every per-agency
   artifact. It identifies the scoring contract independently from the API
   schema and states that its weights, deductions, thresholds, grade bands,
@@ -110,7 +115,8 @@ Changelog:
   score, category, grade, or top-fix field moved or changed. Additive.
 - `1.7` adds portable agency location fields: ISO 3166-1 `country`, ISO 3166-2
   `subdivision_code`, and practitioner-facing `subdivision_name`. The legacy
-  `state` field remains available for existing US consumers. Additive.
+  `state` field remains available for existing US consumers. The initial
+  published values were `US` and `CA`. Additive.
 - `1.7` adds `state_percentile` to per-state rollup payloads (`null` on the
   "all" rollup and named cohorts, which are not peers of a 50-state
   comparison), so a program page can say how its average compares to other
@@ -135,7 +141,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.8",
+  "schema_version": "1.9",
   "rubric_version": "1.1",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.1",
@@ -191,7 +197,11 @@ profile only; it does not select or apply a jurisdiction overlay.
 In a scorecard's `agency` block, an omitted `country` means the legacy `US`
 default. The portable subdivision fields are optional when the primary
 subdivision is not known. US artifacts may also carry `state` as a compatibility
-alias; non-US artifacts do not use it.
+alias; non-US artifacts do not use it. Consumers must treat `country` as an open
+ISO 3166-1 alpha-2 value rather than an enum of the countries covered today. A
+new country can appear within API v1 without changing the field's meaning or
+type. The curated registry remains stricter than this published shape and only
+admits countries activated in the deployment's jurisdiction configuration.
 
 A category is either `"status": "measured"` (has `score`, `summary`,
 `findings`, `details`) or not measured (`"status": "not_yet_measured"` with a
@@ -248,7 +258,7 @@ a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.8",
+  "schema_version": "1.9",
   "rubric_version": "1.1",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -286,7 +296,9 @@ consuming directly rather than re-deriving:
 - `stops` (integer or null): boardable stop count read from the feed's
   stops.txt, a rough size signal alongside `size_tier`.
 - `country` (string): ISO 3166-1 alpha-2 country code. It defaults to `US` for
-  registry entries that predate the international location fields.
+  registry entries that predate the international location fields. The schema
+  validates the portable alpha-2 shape, not a closed list of countries; clients
+  should preserve unfamiliar valid codes.
 - `subdivision_code` (string or null): ISO 3166-2 code for the agency's state,
   province, or territory, such as `US-CA` or `CA-ON`.
 - `subdivision_name` (string or null): practitioner-facing subdivision name,
@@ -371,7 +383,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.8",
+  "schema_version": "1.9",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "count": 2,
@@ -387,7 +399,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.8",
+  "schema_version": "1.9",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

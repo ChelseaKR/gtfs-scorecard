@@ -44,7 +44,7 @@ from .google_gate import from_artifact as google_from_artifact
 from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalogs
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
-from .location import resolve_published_location
+from .location import country_name, resolve_published_location
 from .metrics import expiry_status, operating_signal
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
@@ -5082,6 +5082,9 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
                 "grade": str(p.get("grade", "?")),
                 "state": str(p.get("state", "") or ""),
                 "country": str(p.get("country", "") or ""),
+                "country_name": country_name(
+                    str(p.get("country", "") or ""), str(p.get("country", "") or "")
+                ),
                 "has_flex": bool(p.get("has_flex", False)),
                 "score": p.get("score"),
             }
@@ -5098,16 +5101,24 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         f'data-has-flex="{str(r["has_flex"]).lower()}" '
         f'data-name="{esc(r["name"].lower())}">'
         f'<td><a href="/agency/{esc(r["id"])}/">{esc(r["name"])}</a></td>'
-        f"<td>{esc(r['grade'])}</td><td>{esc(r['state'] or r['country']) or '&mdash;'}</td>"
+        f"<td>{esc(r['grade'])}</td>"
+        f"<td>{esc(r['state'] or r['country_name']) or '&mdash;'}</td>"
         f"<td>{esc(r['score'])}</td></tr>"
         for r in rows_data
     )
-    # Build location options: US states + Canada (using "Canada" as value to avoid
-    # collision with California's "CA" state code)
-    us_states = sorted({r["state"] for r in rows_data if r["state"]})
+    # US state labels remain the legacy values. Every configured non-US country
+    # gets a code-scoped option, so adding one cannot collide with a state label
+    # or require another branch in this renderer.
+    us_states = sorted({r["state"] for r in rows_data if r["state"] and r["country"] in ("", "US")})
     location_opts = "".join(f'<option value="{esc(s)}">{esc(s)}</option>' for s in us_states)
-    if any(r["country"] == "CA" for r in rows_data):
-        location_opts += '<option value="Canada">Canada</option>'
+    non_us_countries = sorted(
+        {(r["country"], r["country_name"]) for r in rows_data if r["country"] not in ("", "US")},
+        key=lambda row: (row[1], row[0]),
+    )
+    location_opts += "".join(
+        f'<option value="country:{esc(code)}">{esc(name)}</option>'
+        for code, name in non_us_countries
+    )
     grade_opts = "".join(f'<option value="{g}">Grade {g}</option>' for g in _MAP_GRADE_COLOR)
     body = f"""    {_breadcrumb([("Home", "/"), ("National map", None)])}
     <a class="backlink" href="/">&larr; Home</a>
@@ -5173,7 +5184,11 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
 
         function matches(grade, state, country, hasFlex) {{
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
-          var locOk = !loc || state === loc || (loc === "Canada" && country === "CA");
+          var countryPrefix = "country:";
+          var locOk = !loc ||
+            (loc.indexOf(countryPrefix) === 0
+              ? country === loc.slice(countryPrefix.length)
+              : state === loc);
           // hasFlex is a string from the table's data attribute and a boolean
           // from the GeoJSON properties; accept both.
           var flexOk = !f || hasFlex === true || hasFlex === "true";
@@ -5218,6 +5233,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // a cluster zooms in; the table is the operable primary.
 
         var NONE = "__none__";  // sentinel agency id; no real feature matches
+        var fittedLocation = "";  // last location that changed the default camera
 
         // Agency id -> table row, so a hovered map point can light up its row
         // and the reverse. Visual only: the row text is the accessible source.
@@ -5281,10 +5297,49 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             }})
           }};
         }}
+        function fitFiltered(data) {{
+          // The default camera serves the US corpus. Once a reader chooses a
+          // location, move the optional visual map to those results so a
+          // configured country outside North America never appears empty.
+          if (!map) return;
+          var location = stateEl.value;
+          if (!location) {{
+            // Clearing a location restores the default camera once. Grade and
+            // Flex changes with no active location leave a reader's pan/zoom
+            // alone instead of repeatedly snapping the map back.
+            if (fittedLocation) {{
+              map.easeTo({{
+                center: [-96, 38], zoom: 3,
+                animate: !reduce, duration: reduce ? 0 : 500
+              }});
+            }}
+            fittedLocation = "";
+            return;
+          }}
+          fittedLocation = location;
+          if (!data.features.length) return;
+          if (data.features.length === 1) {{
+            map.easeTo({{
+              center: data.features[0].geometry.coordinates,
+              zoom: 7, animate: !reduce, duration: reduce ? 0 : 500
+            }});
+            return;
+          }}
+          var bounds = new maplibregl.LngLatBounds();
+          data.features.forEach(function (feature) {{
+            bounds.extend(feature.geometry.coordinates);
+          }});
+          map.fitBounds(bounds, {{
+            padding: 48, maxZoom: 8,
+            animate: !reduce, duration: reduce ? 0 : 500
+          }});
+        }}
         function applyFilter() {{
           filterTable();
+          var data = filtered();
           var src = map && map.getSource("agencies");
-          if (src) src.setData(filtered());
+          if (src) src.setData(data);
+          fitFiltered(data);
         }}
 
         map.on("load", function () {{
@@ -5402,18 +5457,8 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         }}
         function onFilterChange() {{
           // Filtering the accessible table never depends on the optional map.
-          filterTable();
-          if (!map || !all) return;
-          var src = map.getSource("agencies");
-          if (src) {{
-            src.setData({{
-              type: "FeatureCollection",
-              features: all.features.filter(function (f) {{
-                var p = f.properties || {{}};
-                return matches(p.grade, p.state || "", p.country || "", p.has_flex);
-              }})
-            }});
-          }}
+          if (!map || !all) {{ filterTable(); return; }}
+          applyFilter();
         }}
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
@@ -7541,8 +7586,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         feature = _map_feature(
             agency_id,
             artifact,
-            by_id[agency_id].get("state", ""),
-            artifact.get("agency", {}).get("country", ""),
+            by_id[agency_id].get("subdivision_name") or by_id[agency_id].get("state", ""),
+            by_id[agency_id].get("country", ""),
         )
         if feature is not None:
             map_features.append(feature)

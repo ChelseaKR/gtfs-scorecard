@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.dataset import build_quality_dataset
+from scorecard_pipeline.location import COUNTRY_NAMES
 from scorecard_pipeline.publicapi import (
     agencies_endpoint,
     api_index,
@@ -131,10 +134,30 @@ def test_by_location_groups_countries_and_nested_subdivisions() -> None:
         },
     )
     countries = {row["country_code"]: row for row in out["countries"]}
+    assert countries["US"]["country_name"] == "United States"
+    assert countries["CA"]["country_name"] == "Canada"
     assert countries["US"]["count"] == 1
     assert countries["US"]["subdivisions"][0]["subdivision_code"] == "US-CA"
     assert countries["CA"]["subdivisions"][0]["subdivision_name"] == "Ontario"
     assert countries[None]["count"] == 1
+
+
+def test_by_location_uses_configured_country_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(COUNTRY_NAMES, "GB", "United Kingdom")
+    ds = build_quality_dataset(
+        {"agencies": {"alpha": {"name": "Alpha", "history": [_pt("2026-07-01", 90, "A")]}}}
+    )
+    out = by_location(
+        ds,
+        {
+            "alpha": {
+                "country": "GB",
+                "subdivision_code": "GB-ENG",
+                "subdivision_name": "England",
+            }
+        },
+    )
+    assert out["countries"][0]["country_name"] == "United Kingdom"
 
 
 def test_stats_has_median_and_grade_distribution() -> None:

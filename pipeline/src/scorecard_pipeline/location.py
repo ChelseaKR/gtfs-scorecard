@@ -12,94 +12,28 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-SUPPORTED_COUNTRY_CODES = frozenset({"CA", "US"})
+from .jurisdictions import JURISDICTIONS
 
-US_SUBDIVISIONS = {
-    "US-AL": "Alabama",
-    "US-AK": "Alaska",
-    "US-AS": "American Samoa",
-    "US-AZ": "Arizona",
-    "US-AR": "Arkansas",
-    "US-CA": "California",
-    "US-CO": "Colorado",
-    "US-CT": "Connecticut",
-    "US-DE": "Delaware",
-    "US-DC": "District of Columbia",
-    "US-FL": "Florida",
-    "US-GA": "Georgia",
-    "US-GU": "Guam",
-    "US-HI": "Hawaii",
-    "US-ID": "Idaho",
-    "US-IL": "Illinois",
-    "US-IN": "Indiana",
-    "US-IA": "Iowa",
-    "US-KS": "Kansas",
-    "US-KY": "Kentucky",
-    "US-LA": "Louisiana",
-    "US-ME": "Maine",
-    "US-MD": "Maryland",
-    "US-MA": "Massachusetts",
-    "US-MI": "Michigan",
-    "US-MN": "Minnesota",
-    "US-MS": "Mississippi",
-    "US-MO": "Missouri",
-    "US-MT": "Montana",
-    "US-NE": "Nebraska",
-    "US-NV": "Nevada",
-    "US-NH": "New Hampshire",
-    "US-NJ": "New Jersey",
-    "US-NM": "New Mexico",
-    "US-NY": "New York",
-    "US-NC": "North Carolina",
-    "US-ND": "North Dakota",
-    "US-MP": "Northern Mariana Islands",
-    "US-OH": "Ohio",
-    "US-OK": "Oklahoma",
-    "US-OR": "Oregon",
-    "US-PA": "Pennsylvania",
-    "US-PR": "Puerto Rico",
-    "US-RI": "Rhode Island",
-    "US-SC": "South Carolina",
-    "US-SD": "South Dakota",
-    "US-TN": "Tennessee",
-    "US-TX": "Texas",
-    "US-UM": "United States Minor Outlying Islands",
-    "US-UT": "Utah",
-    "US-VT": "Vermont",
-    "US-VA": "Virginia",
-    "US-VI": "U.S. Virgin Islands",
-    "US-WA": "Washington",
-    "US-WV": "West Virginia",
-    "US-WI": "Wisconsin",
-    "US-WY": "Wyoming",
-}
+COUNTRY_NAMES = JURISDICTIONS.country_names
+SUBDIVISIONS_BY_COUNTRY = JURISDICTIONS.subdivisions_by_country
+SUPPORTED_COUNTRY_CODES = frozenset(COUNTRY_NAMES)
 
-CA_SUBDIVISIONS = {
-    "CA-AB": "Alberta",
-    "CA-BC": "British Columbia",
-    "CA-MB": "Manitoba",
-    "CA-NB": "New Brunswick",
-    "CA-NL": "Newfoundland and Labrador",
-    "CA-NS": "Nova Scotia",
-    "CA-NT": "Northwest Territories",
-    "CA-NU": "Nunavut",
-    "CA-ON": "Ontario",
-    "CA-PE": "Prince Edward Island",
-    "CA-QC": "Quebec",
-    "CA-SK": "Saskatchewan",
-    "CA-YT": "Yukon",
-}
-
-SUBDIVISIONS_BY_COUNTRY = {
-    "US": US_SUBDIVISIONS,
-    "CA": CA_SUBDIVISIONS,
-}
+# Compatibility exports used by existing callers and tests. Their values now
+# come from jurisdictions.yaml, so extending the registry does not require
+# another country-specific constant in Python.
+US_SUBDIVISIONS = SUBDIVISIONS_BY_COUNTRY["US"]
+CA_SUBDIVISIONS = SUBDIVISIONS_BY_COUNTRY.get("CA", {})
 
 _SUBDIVISION_CODE = re.compile(r"^[A-Z]{2}-[A-Z0-9]{1,3}$")
 
 
 def _name_key(value: str) -> str:
     return " ".join(value.strip().casefold().split())
+
+
+def country_name(country_code: str, fallback: str = "Unlocated") -> str:
+    """Configured practitioner-facing country name, or *fallback* when unknown."""
+    return COUNTRY_NAMES.get(country_code.strip().upper(), fallback)
 
 
 _SUBDIVISION_CODES_BY_NAME = {

@@ -3,6 +3,9 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.9: country fields accept any configured ISO 3166-1 alpha-2 jurisdiction;
+# schemas describe that portable shape while jurisdictions.yaml remains the
+# stricter deployment admission list. No score or rubric field changed.
 # 1.8: additive scoring_profile metadata on every per-agency artifact. The
 # profile identifies the project-authored scoring contract independently from
 # the artifact schema and states its provenance and limits explicitly.
@@ -23,7 +26,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.8"
+SCHEMA_VERSION = "1.9"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)

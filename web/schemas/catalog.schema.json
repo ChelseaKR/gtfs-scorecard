@@ -192,11 +192,8 @@
         },
         "country": {
           "type": "string",
-          "enum": [
-            "US",
-            "CA"
-          ],
-          "description": "ISO 3166-1 alpha-2 country code; US unless the agency is Canadian."
+          "pattern": "^[A-Z]{2}$",
+          "description": "ISO 3166-1 alpha-2 country code. Registry configuration determines which well-formed country codes this deployment activates."
         }
       }
     }
