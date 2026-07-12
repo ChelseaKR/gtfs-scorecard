@@ -24,6 +24,10 @@ architecture or the existing rubric's spirit.
 
 ### EXP-01 — A measurement-confidence read on every scorecard
 
+**Status: Done (verified 2026-07-12).** `render_site._confidence_section`
+renders what was and was not measured on the agency page, sourced from the
+artifact's fetch provenance (`confidence.fetch_source`).
+
 **Pitch.** Show, on each card, how much of the grade the pipeline could actually
 measure and from what source, as one legible confidence signal.
 
@@ -48,6 +52,12 @@ schema bump). Never a second grade — a legibility layer on the one grade.
 tell a fully-measured A from a two-category A without opening the docs.
 
 ### EXP-02 — The grade story: an agency's history in plain language
+
+**Status: Done (verified 2026-07-12).** `timemachine.py` narrates the dated
+history and `feeddiff.py` reports what changed between the last two checks;
+both render on the agency page. Scope note: `feeddiff.py` diffs quality
+artifacts (findings appeared, cleared, moved), not the feed's own content —
+a structural export diff remains open as EXP-18 in `06-sweep-2026-07-12.md`.
 
 **Pitch.** Auto-write a short, honest narrative of how a feed's grade moved and
 why, from the dated artifacts.
@@ -172,6 +182,10 @@ framed as progress.
 
 ### EXP-06 — An interactive methodology sandbox
 
+**Status: Done (verified 2026-07-12).** `/how-to-read/#sandbox` reweights the
+four categories client-side from the generated constants (FIX-03) and shows
+the effect, with a reset to the published weights.
+
 **Pitch.** Let a skeptic re-weight the rubric in the browser and watch the
 leaderboard reorder, live.
 
@@ -202,6 +216,11 @@ New surfaces and audiences built over data the pipeline already produces. None
 requires new always-on infrastructure; each opens a role the tool underserves.
 
 ### EXP-07 — A national vendor-regression radar, public and constructive
+
+**Status: Partial (verified 2026-07-12).** `vendor_regression_radar.py` runs
+in the daily job via `scorecard vendor-report`, but the output goes to the
+private run summary only. The public, constructive surface this item
+describes (and its vendor-interview gate) remains open.
 
 **Pitch.** Detect the day a scheduling-vendor export change quietly breaks the
 same finding across many of its feeds, and surface it constructively rather than
@@ -255,6 +274,11 @@ its detected tool.
 
 ### EXP-09 — A citable, per-agency feed-quality record
 
+**Status: Done (verified 2026-07-12).** The agency page carries a "Cite this
+record" affordance over the dated, schema-versioned artifacts, and the
+monthly `dataset-YYYY-MM` releases with `CITATION.cff` anchor the
+corpus-level citation.
+
 **Pitch.** Give every agency a stable, permanent, referenceable record of its
 feed quality over time, not just a live page.
 
@@ -275,6 +299,10 @@ for a schema-stable shape. **Excellence bar:** any quality claim about an agency
 resolves to a fixed, dated, reproducible record with its methodology stamped.
 
 ### EXP-10 — A consumer-facing data freshness and uptime commitment
+
+**Status: Done (verified 2026-07-12).** `status_commitment.py` states the
+cadence and uptime commitment and `/status/` renders it beside the actual
+refresh record (FIX-11), commitment and evidence on one page.
 
 **Pitch.** Publish a plain, machine-readable statement of how fresh the data is
 meant to be and how it has actually performed, so a downstream consumer can depend
@@ -297,6 +325,11 @@ bar:** a consumer can read the actual freshness track record before depending on
 the data, and the stated commitment matches measured reality.
 
 ### EXP-11 — A closed-loop guided fix with a verification receipt
+
+**Status: Done (verified 2026-07-12).** `autofix.py` produces the
+conservative corrected feed, and `fixlog.py` mints a dated receipt only for
+findings verified gone between runs, persisted per agency in `fixlog.json`
+and rendered on the agency page.
 
 **Pitch.** Walk a manager from a named finding, through the exact export setting
 and a safe auto-patch, to a dated receipt proving it cleared — one continuous
@@ -325,6 +358,13 @@ guardrail is that `autofix.py` stays conservative and the agency always publishe
 without leaving the tool and without the tool ever touching their published feed.
 
 ### EXP-12 — A scheduled portfolio digest for liaisons and state programs
+
+**Status: Done (2026-07-12).** `portfolio_digest.py` and the
+`scorecard portfolio-digest` command shipped earlier; the missing schedule
+now runs in the daily workflow on Mondays with `--save`, publishing the
+digest beside the rollups and persisting each cohort's weekly baseline
+through S3. Email delivery stays behind its consent gate, as this item
+required.
 
 **Pitch.** Email a liaison a weekly "what moved in your cohort" digest, the way
 the agency alert loop already emails managers.
@@ -356,6 +396,10 @@ each is listed here to be evaluated, not started.
 
 ### EXP-13 — Predict which feeds are about to lapse, before the date says so
 
+**Status: Done (verified 2026-07-12).** `lapse_risk.assess` reads each
+feed's dated history for behavioral lapse patterns and feeds the alert loop
+(`alerts.py` kind `lapse_risk`, delivered by `notify.py`).
+
 **Pitch.** Use each feed's behavioral history to flag the feeds most likely to
 silently expire, ahead of the deterministic expiry window.
 
@@ -378,6 +422,11 @@ supporters earlier than the date-based alert, each with a stated, inspectable
 reason.
 
 ### EXP-14 — A place-based "open mobility data health" index across standards
+
+**Status: Partial (verified 2026-07-12).** `gbfs.py`, `fares.py`, and
+`flex.py` measure the adjacent standards and render on per-agency pages and
+the national adoption view. The place-based composite index this item
+actually proposes (and its named-place-user gate) remains open.
 
 **Pitch.** Score not just one GTFS feed but a place's whole open-mobility data
 picture — GTFS Schedule, GTFS-RT, GTFS-Flex, Fares v2, and GBFS — as one honest

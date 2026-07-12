@@ -381,8 +381,11 @@ daily collect run cannot publish a shape change without a schema update.
 against the published schemas and checks each schema itself. The first
 validation run surfaced the predicted payoff: `ntd_ready` is null for non-US
 agencies (ADR 0026) but the catalog/directory schemas said non-nullable string;
-both schemas were corrected. Follow-up (not done here): `rollup.schema.json`,
-and wiring schema-version bumps to a required schema diff in PRs.
+both schemas were corrected. Follow-up closed 2026-07-12: `rollup.schema.json`
+and `rollup-index.schema.json` now cover the program rollups and their index,
+validated in `tests/test_schemas.py` against a direct `build_rollup()` call,
+every published rollup, and the golden-site fixtures. Still open: wiring
+schema-version bumps to a required schema diff in PRs.
 
 **Pitch.** A JSON Schema for the per-agency artifact — the primary public
 contract — validated in CI against everything the pipeline publishes.
@@ -414,6 +417,11 @@ published document type.
 ---
 
 ## FIX-11 — Operational transparency: a public pipeline-health surface
+
+**Status: Done (verified 2026-07-12).** `run_summary.py` builds a per-shard
+outcome record inside `run_agency`, the collect job merges shards into
+`data/artifacts/run/latest.json`, and `/status/` renders the commitment,
+the historical refresh record, and today's shard outcomes publicly.
 
 **Pitch.** Publish what the pipeline itself did each day — shard outcomes,
 fetch failures, mirror fallbacks, validator cache hits — as a status page and
@@ -491,6 +499,16 @@ directories. Execution (the actual `pages.yml` change and dropping
 `follow-ups.md` steps 1–3 (the S3 cutover itself) ship, per the sequencing
 this item always called for — that part remains a maintainer-scheduled
 migration, not done here.
+
+**Update (2026-07-12):** the gate cleared and most of the execution landed
+with the cutover. `follow-ups.md` records the S3 source of truth complete as
+of 2026-07-10, automation no longer writes to `main` (#63), and `pages.yml`
+renders and assembles the site in CI from S3-hydrated artifacts. The
+committed `data/artifacts/**` snapshot now serves as the fork fallback when
+no bucket is configured, and the committed `web/agency/**` copies are frozen
+at the cutover date. Whether to prune those committed copies (and reclaim the
+git history size named below) stays a maintainer decision per ADR 0030's
+no-rewrite rule.
 
 **Pitch.** Decide, once and deliberately, what to do about the data already in
 git — 521 MB of `.git`, 382 MB of committed artifacts, 1,449 prerendered pages,
