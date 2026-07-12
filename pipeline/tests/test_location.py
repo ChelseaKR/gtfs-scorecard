@@ -9,6 +9,7 @@ from scorecard_pipeline.location import (
     normalize_country_code,
     normalize_location,
     normalize_subdivision,
+    resolve_published_location,
 )
 
 
@@ -90,3 +91,45 @@ def test_normalize_location_distinguishes_bad_codes_and_conflicts() -> None:
 
 def test_normalized_location_exposes_country_alias() -> None:
     assert normalize_location("ca", "CA-BC").country == "CA"
+
+
+def test_published_location_precedence_is_registry_artifact_then_legacy() -> None:
+    registry = resolve_published_location(
+        registry_country="CA",
+        registry_subdivision_code="CA-ON",
+        registry_subdivision_name="Ontario",
+        artifact_country="US",
+        artifact_subdivision_code="US-NY",
+        legacy_state="California",
+    )
+    assert (registry.country_code, registry.subdivision_code) == ("CA", "CA-ON")
+
+    artifact = resolve_published_location(
+        artifact_country="CA",
+        artifact_subdivision_code="CA-BC",
+        artifact_subdivision_name="British Columbia",
+        legacy_state="California",
+    )
+    assert (artifact.country_code, artifact.subdivision_code) == ("CA", "CA-BC")
+
+    legacy = resolve_published_location(legacy_state="California")
+    assert (legacy.country_code, legacy.subdivision_code, legacy.subdivision_name) == (
+        "US",
+        "US-CA",
+        "California",
+    )
+
+
+def test_published_location_defaults_retained_legacy_artifact_to_us() -> None:
+    retained = resolve_published_location()
+    assert retained == NormalizedLocation("US", "", "")
+
+
+def test_published_location_does_not_mix_cross_country_fallbacks() -> None:
+    unresolved = resolve_published_location(
+        registry_country="CA",
+        artifact_country="US",
+        artifact_subdivision_code="US-CA",
+        legacy_state="California",
+    )
+    assert unresolved == NormalizedLocation("CA", "", "")

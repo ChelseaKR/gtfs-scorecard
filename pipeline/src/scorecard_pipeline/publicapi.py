@@ -210,6 +210,75 @@ def by_state(dataset: dict[str, Any], states: dict[str, str]) -> dict[str, Any]:
     return {"states": out}
 
 
+def _location_summary(
+    members: list[dict[str, Any]],
+    *,
+    code_key: str,
+    code: str | None,
+    name_key: str,
+    name: str,
+) -> dict[str, Any]:
+    grades = ("A", "B", "C", "D", "F")
+    scores = [
+        float(member["score"])
+        for member in members
+        if isinstance(member.get("score"), (int, float))
+        and not isinstance(member.get("score"), bool)
+    ]
+    median = _median(scores)
+    distribution = dict.fromkeys(grades, 0)
+    for member in members:
+        if member.get("grade") in distribution:
+            distribution[member["grade"]] += 1
+    return {
+        code_key: code,
+        name_key: name,
+        "count": len(members),
+        "median_score": round(median, 1) if median is not None else None,
+        "grade_distribution": distribution,
+    }
+
+
+def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -> dict[str, Any]:
+    """Country aggregates with nested ISO 3166-2 subdivision aggregates."""
+    country_names = {"US": "United States", "CA": "Canada"}
+    by_country: dict[str, list[dict[str, Any]]] = {}
+    for row in dataset.get("rows", []):
+        country_code = str((locations.get(str(row["id"])) or {}).get("country") or "")
+        by_country.setdefault(country_code, []).append(row)
+
+    countries: list[dict[str, Any]] = []
+    for country_code, members in by_country.items():
+        country_summary = _location_summary(
+            members,
+            code_key="country_code",
+            code=country_code or None,
+            name_key="country_name",
+            name=country_names.get(country_code, "Unlocated"),
+        )
+        subdivisions: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for member in members:
+            location = locations.get(str(member["id"])) or {}
+            key = (
+                str(location.get("subdivision_code") or ""),
+                str(location.get("subdivision_name") or ""),
+            )
+            subdivisions.setdefault(key, []).append(member)
+        country_summary["subdivisions"] = [
+            _location_summary(
+                subdivision_members,
+                code_key="subdivision_code",
+                code=code or None,
+                name_key="subdivision_name",
+                name=name or "Unlocated",
+            )
+            for (code, name), subdivision_members in sorted(subdivisions.items())
+        ]
+        countries.append(country_summary)
+    countries.sort(key=lambda row: (row["country_code"] is None, row["country_code"] or ""))
+    return {"countries": countries}
+
+
 def stats_endpoint(dataset: dict[str, Any]) -> dict[str, Any]:
     """National headline statistics: count, average and median score, grade mix."""
     summary = national_summary(dataset)
@@ -282,6 +351,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
             "agencies": f"{base}/agencies.json",
             "leaderboard": f"{base}/leaderboard.json",
             "by_state": f"{base}/by-state.json",
+            "by_location": f"{base}/by-location.json",
             "stats": f"{base}/stats.json",
             "coverage": f"{base}/coverage.json",
             "equity": f"{base}/equity.json",
@@ -308,6 +378,7 @@ def build_api(
     *,
     agencies: Iterable[Agency],
     states: dict[str, str],
+    locations: dict[str, dict[str, str]],
     base_url: str,
     generated_at: str,
 ) -> dict[str, dict[str, Any]]:
@@ -318,6 +389,7 @@ def build_api(
         "agencies.json": agencies_endpoint(dataset),
         "leaderboard.json": leaderboard(index, dataset),
         "by-state.json": by_state(dataset, states),
+        "by-location.json": by_location(dataset, locations),
         "stats.json": stats_endpoint(dataset),
         "coverage.json": coverage_endpoint(index, dataset, agencies),
     }

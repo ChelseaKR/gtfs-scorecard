@@ -10,6 +10,7 @@ from scorecard_pipeline.publicapi import (
     agencies_endpoint,
     api_index,
     build_api,
+    by_location,
     by_state,
     coverage_endpoint,
     leaderboard,
@@ -112,6 +113,30 @@ def test_by_state_aggregates_with_unlocated_fallback() -> None:
     assert states["California"]["grade_distribution"]["A"] == 1
 
 
+def test_by_location_groups_countries_and_nested_subdivisions() -> None:
+    ds = build_quality_dataset(_index())
+    out = by_location(
+        ds,
+        {
+            "alpha": {
+                "country": "US",
+                "subdivision_code": "US-CA",
+                "subdivision_name": "California",
+            },
+            "bravo": {
+                "country": "CA",
+                "subdivision_code": "CA-ON",
+                "subdivision_name": "Ontario",
+            },
+        },
+    )
+    countries = {row["country_code"]: row for row in out["countries"]}
+    assert countries["US"]["count"] == 1
+    assert countries["US"]["subdivisions"][0]["subdivision_code"] == "US-CA"
+    assert countries["CA"]["subdivisions"][0]["subdivision_name"] == "Ontario"
+    assert countries[None]["count"] == 1
+
+
 def test_stats_has_median_and_grade_distribution() -> None:
     ds = build_quality_dataset(_index())
     st = stats_endpoint(ds)
@@ -155,6 +180,7 @@ def test_api_index_lists_endpoints_and_license() -> None:
     assert idx["version"] == "v1"
     assert idx["endpoints"]["agencies"].endswith("/api/v1/agencies.json")
     assert idx["endpoints"]["coverage"].endswith("/api/v1/coverage.json")
+    assert idx["endpoints"]["by_location"].endswith("/api/v1/by-location.json")
     assert "{agency_id}" in idx["endpoints"]["agency_detail"]
     assert idx["license"]
 
@@ -164,6 +190,13 @@ def test_build_api_returns_every_endpoint() -> None:
         _index(),
         agencies=[Agency("alpha", "Alpha", "https://example.org/a.zip")],
         states={"alpha": "California"},
+        locations={
+            "alpha": {
+                "country": "US",
+                "subdivision_code": "US-CA",
+                "subdivision_name": "California",
+            }
+        },
         base_url="https://x",
         generated_at="t",
     )
@@ -172,6 +205,7 @@ def test_build_api_returns_every_endpoint() -> None:
         "agencies.json",
         "leaderboard.json",
         "by-state.json",
+        "by-location.json",
         "stats.json",
         "coverage.json",
     }

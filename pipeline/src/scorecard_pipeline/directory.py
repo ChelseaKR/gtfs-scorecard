@@ -99,6 +99,75 @@ def _state_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
+_COUNTRY_NAMES = {"US": "United States", "CA": "Canada"}
+
+
+def _rollup_row(
+    members: list[dict[str, Any]],
+    *,
+    code_key: str,
+    code: str | None,
+    name_key: str,
+    name: str,
+) -> dict[str, Any]:
+    scores = [float(member["score"]) for member in members if member.get("score") is not None]
+    return {
+        code_key: code,
+        name_key: name,
+        "agencies": len(members),
+        "average_score": round(sum(scores) / len(scores), 1) if scores else None,
+        "grade_distribution": _grade_distribution(members),
+        "expired": sum(
+            1 for member in members if member.get("expiry_status") in ("lapsed", "stale")
+        ),
+    }
+
+
+def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Portable country rows with nested first-level subdivision rows."""
+    by_country: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        by_country.setdefault(str(record.get("country") or ""), []).append(record)
+
+    countries: list[dict[str, Any]] = []
+    for country_code, members in by_country.items():
+        country = _rollup_row(
+            members,
+            code_key="country_code",
+            code=country_code or None,
+            name_key="country_name",
+            name=_COUNTRY_NAMES.get(country_code, "Unlocated"),
+        )
+        by_subdivision: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for member in members:
+            code = str(member.get("subdivision_code") or "")
+            name = str(member.get("subdivision_name") or "")
+            by_subdivision.setdefault((code, name), []).append(member)
+        subdivisions = [
+            _rollup_row(
+                subdivision_members,
+                code_key="subdivision_code",
+                code=code or None,
+                name_key="subdivision_name",
+                name=name or "Unlocated",
+            )
+            for (code, name), subdivision_members in by_subdivision.items()
+        ]
+        subdivisions.sort(
+            key=lambda row: (
+                -row["agencies"],
+                row["subdivision_name"],
+                row["subdivision_code"] or "",
+            )
+        )
+        country["subdivisions"] = subdivisions
+        countries.append(country)
+    countries.sort(
+        key=lambda row: (-row["agencies"], row["country_name"], row["country_code"] or "")
+    )
+    return countries
+
+
 def build_directory(records: list[dict[str, Any]], generated_at: str) -> dict[str, Any]:
     """Assemble directory.json from per-agency records.
 
@@ -147,6 +216,7 @@ def build_directory(records: list[dict[str, Any]], generated_at: str) -> dict[st
         "expiring_soon": expiring_soon,
         "expired": {"lapsed": lapsed, "stale": stale, "total": lapsed + stale},
         "states": _state_rollup(records),
+        "countries": _country_rollup(records),
         "size_tiers": [
             {
                 "key": key,

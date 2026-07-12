@@ -266,7 +266,8 @@ a single request rather than fetching each `latest.json`.
 }
 ```
 
-`catalog.csv` carries the key columns (including `mdb_id` and
+`catalog.csv` carries the key columns (including `mdb_id`, `country`,
+`subdivision_code`, `subdivision_name`, and
 `validator_version`). Use `mdb_id` to join a row to the Mobility Database rather
 than matching on the scorecard's own slug or on the feed URL.
 
@@ -320,6 +321,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/agencies.json` | Every agency's latest check in one list (id, name, date, grade, score, the four category scores, days to expiry). `realtime` is null when not published. |
 | `api/v1/leaderboard.json` | `top` and `bottom` by score, and `most_improved` / `most_declined` by the change since each agency's previous check. |
 | `api/v1/by-state.json` | Per-state agency count, median score, and grade distribution. Agencies without a known state group under `Unlocated`. |
+| `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivision counts, median scores, and grade distributions. Null codes collect rows whose curated location is unknown. `by-state.json` remains unchanged for existing US consumers. |
 | `api/v1/stats.json` | National count, average and median score, grade distribution, and the share of feeds not expired. |
 | `api/v1/equity.json` | Per-state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades, with the high-need states that carry many low-grade feeds. Refreshed weekly from Census ACS. |
 | `api/v1/ids.json` | Identity crosswalk: every agency's scorecard slug joined to its Mobility Database id, NTD id, and feed URL, so grades join to either registry (or FTA data) without fuzzy matching. |

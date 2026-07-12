@@ -43,6 +43,7 @@ from .google_gate import from_artifact as google_from_artifact
 from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalogs
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
+from .location import resolve_published_location
 from .metrics import expiry_status, operating_signal
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
@@ -4831,6 +4832,9 @@ def _write_catalog(write: Callable[..., None], catalog: list[dict[str, Any]]) ->
         "feed_url",
         "top_fix",
         "scorecard_url",
+        "country",
+        "subdivision_code",
+        "subdivision_name",
     ]
     writer = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
@@ -7174,6 +7178,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     states = _states_by_agency()
     from .config import AGENCIES
 
+    # CLI renders have the registry loaded already. Direct library callers use
+    # the same manifest-aware reader without mutating the process-global map.
+    registry_by_id = dict(AGENCIES)
+    if not registry_by_id:
+        from .agencies import read_agencies
+
+        registry_by_id = {agency.id: agency for agency in read_agencies()}
+
     # Pass 1: read each agency once to build the catalog records the directory
     # needs (grade, score, state, size). Percentiles are cross-agency, so the
     # per-agency pages can't be rendered until every score is in.
@@ -7197,54 +7209,63 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         feed = artifact.get("feed", {})
         fixes = artifact.get("top_fixes", [])
         days = fresh.get("days_until_expiry")
-        agency_cfg = AGENCIES.get(agency_id)
+        agency_cfg = registry_by_id.get(agency_id)
+        artifact_agency = artifact.setdefault("agency", {})
+        location = resolve_published_location(
+            registry_country=agency_cfg.country if agency_cfg else "",
+            registry_subdivision_code=agency_cfg.subdivision_code if agency_cfg else "",
+            registry_subdivision_name=agency_cfg.subdivision_name if agency_cfg else "",
+            artifact_country=str(artifact_agency.get("country") or ""),
+            artifact_subdivision_code=str(artifact_agency.get("subdivision_code") or ""),
+            artifact_subdivision_name=str(artifact_agency.get("subdivision_name") or ""),
+            legacy_state=states.get(agency_id, ""),
+        )
         # Artifacts don't persist state; inject it so the NTD portfolio's
         # per-state breakdown works at publish time.
-        artifact.setdefault("agency", {})["state"] = states.get(agency_id, "")
+        artifact_agency["state"] = states.get(agency_id, "")
         ntd_artifacts.append(artifact)
         problem_findings.append(agency_findings(artifact))
-        catalog.append(
-            {
-                "id": agency_id,
-                "name": artifact["agency"]["name"],
-                "grade": overall["grade"],
-                "score": overall["score"],
-                "state": states.get(agency_id, ""),
-                # ISO country code so consumers and the app can place non-US
-                # agencies (Canada) instead of bucketing them as unlocated.
-                "country": artifact.get("agency", {}).get("country", "US"),
-                "stops": comp.get("stops"),
-                "snapshot_date": artifact["snapshot_date"],
-                "days_until_expiry": days,
-                "expiry_status": expiry_status(days),
-                # Readiness for the FTA NTD GTFS requirement (published/valid/
-                # current), so a state program can filter its portfolio by who is
-                # ready to certify without opening each scorecard. NTD is a
-                # US-federal concept, so this is null for non-US feeds (ADR 0026):
-                # the directory filter and national rollup never count them.
-                "ntd_ready": (
-                    ntd_assess(artifact).status
-                    if artifact["agency"].get("country", "US") == "US"
-                    else None
-                ),
-                # Whether the feed clears Google/Apple Maps' four-week coverage bar.
-                "google_gate": google_from_artifact(artifact, dt.date.today()).status,
-                "feed_url": feed.get("static_url"),
-                "top_fix": fixes[0]["fix"] if fixes else None,
-                "scorecard_url": f"{BASE_URL}/agency/{agency_id}/",
-                # Identity: the Mobility Database id joins this row to the
-                # canonical registry so a consumer never has to fuzzy-match a slug.
-                "mdb_id": agency_cfg.mdb_id if agency_cfg else "",
-                # Provenance: which validator and rubric produced this grade, when
-                # it was generated, and the hash of the exact feed bytes scored, so
-                # the grade is reproducible and citeable without opening the
-                # per-agency artifact.
-                "validator_version": artifact.get("validator_version"),
-                "rubric_version": artifact.get("rubric_version"),
-                "retrieved_at": artifact.get("generated_at"),
-                "feed_sha256": feed.get("sha256"),
-            }
-        )
+        catalog_record = {
+            "id": agency_id,
+            "name": artifact["agency"]["name"],
+            "grade": overall["grade"],
+            "score": overall["score"],
+            "state": states.get(agency_id, ""),
+            # ISO country code so consumers and the app can place non-US
+            # agencies (Canada) instead of bucketing them as unlocated.
+            "country": location.country_code,
+            "stops": comp.get("stops"),
+            "snapshot_date": artifact["snapshot_date"],
+            "days_until_expiry": days,
+            "expiry_status": expiry_status(days),
+            # Readiness for the FTA NTD GTFS requirement (published/valid/
+            # current), so a state program can filter its portfolio by who is
+            # ready to certify without opening each scorecard. NTD is a
+            # US-federal concept, so this is null for non-US feeds (ADR 0026):
+            # the directory filter and national rollup never count them.
+            "ntd_ready": (ntd_assess(artifact).status if location.country_code == "US" else None),
+            # Whether the feed clears Google/Apple Maps' four-week coverage bar.
+            "google_gate": google_from_artifact(artifact, dt.date.today()).status,
+            "feed_url": feed.get("static_url"),
+            "top_fix": fixes[0]["fix"] if fixes else None,
+            "scorecard_url": f"{BASE_URL}/agency/{agency_id}/",
+            # Identity: the Mobility Database id joins this row to the
+            # canonical registry so a consumer never has to fuzzy-match a slug.
+            "mdb_id": agency_cfg.mdb_id if agency_cfg else "",
+            # Provenance: which validator and rubric produced this grade, when
+            # it was generated, and the hash of the exact feed bytes scored, so
+            # the grade is reproducible and citeable without opening the
+            # per-agency artifact.
+            "validator_version": artifact.get("validator_version"),
+            "rubric_version": artifact.get("rubric_version"),
+            "retrieved_at": artifact.get("generated_at"),
+            "feed_sha256": feed.get("sha256"),
+        }
+        if location.subdivision_code:
+            catalog_record["subdivision_code"] = location.subdivision_code
+        if location.subdivision_name:
+            catalog_record["subdivision_name"] = location.subdivision_name
+        catalog.append(catalog_record)
 
     # The directory dataset the national view reads: per-agency size tier and
     # percentile, plus the national and by-state summary. Built before the flat
@@ -7712,14 +7733,22 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # module-global registry.
     coverage_agencies = list(AGENCIES.values())
     if not coverage_agencies:
-        from .agencies import read_agencies
+        coverage_agencies = list(registry_by_id.values())
 
-        coverage_agencies = read_agencies()
+    locations = {
+        str(record["id"]): {
+            "country": str(record.get("country") or ""),
+            "subdivision_code": str(record.get("subdivision_code") or ""),
+            "subdivision_name": str(record.get("subdivision_name") or ""),
+        }
+        for record in catalog
+    }
 
     api = build_api(
         index,
         agencies=coverage_agencies,
         states=states,
+        locations=locations,
         base_url=BASE_URL,
         generated_at=dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
     )

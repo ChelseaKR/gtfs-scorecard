@@ -99,6 +99,76 @@
             }
           }
         },
+        "countries": {
+          "type": "array",
+          "description": "Portable country rollups with nested ISO 3166-2 subdivisions. The legacy states array is unchanged.",
+          "items": {
+            "type": "object",
+            "required": [
+              "country_code",
+              "country_name",
+              "agencies",
+              "subdivisions"
+            ],
+            "properties": {
+              "country_code": {
+                "type": ["string", "null"],
+                "enum": ["US", "CA", null]
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "agencies": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "average_score": {
+                "type": ["number", "null"]
+              },
+              "grade_distribution": {
+                "type": "object"
+              },
+              "expired": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "subdivisions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "subdivision_code",
+                    "subdivision_name",
+                    "agencies"
+                  ],
+                  "properties": {
+                    "subdivision_code": {
+                      "type": ["string", "null"],
+                      "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
+                    },
+                    "subdivision_name": {
+                      "type": "string"
+                    },
+                    "agencies": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "average_score": {
+                      "type": ["number", "null"]
+                    },
+                    "grade_distribution": {
+                      "type": "object"
+                    },
+                    "expired": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "size_tiers": {
           "type": "array",
           "items": {

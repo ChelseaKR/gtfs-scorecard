@@ -1,0 +1,60 @@
+{
+  "countries": [
+    {
+      "count": 1,
+      "country_code": "CA",
+      "country_name": "Canada",
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 1,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": 72.3,
+      "subdivisions": [
+        {
+          "count": 1,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": 72.3,
+          "subdivision_code": "CA-ON",
+          "subdivision_name": "Ontario"
+        }
+      ]
+    },
+    {
+      "count": 2,
+      "country_code": "US",
+      "country_name": "United States",
+      "grade_distribution": {
+        "A": 0,
+        "B": 2,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": 81.7,
+      "subdivisions": [
+        {
+          "count": 2,
+          "grade_distribution": {
+            "A": 0,
+            "B": 2,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": 81.7,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    }
+  ]
+}

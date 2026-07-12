@@ -139,6 +139,50 @@ class NormalizedLocation:
         return self.country_code
 
 
+def resolve_published_location(
+    *,
+    registry_country: str = "",
+    registry_subdivision_code: str = "",
+    registry_subdivision_name: str = "",
+    artifact_country: str = "",
+    artifact_subdivision_code: str = "",
+    artifact_subdivision_name: str = "",
+    legacy_state: str = "",
+) -> NormalizedLocation:
+    """Resolve an output location without guessing from names or feed content.
+
+    The curated registry is authoritative, a persisted artifact is the fallback
+    for retained scorecards no longer in the registry, and the old US ``state``
+    field is the final compatibility source. Empty subdivision fields at a
+    higher-precedence source do not hide valid lower-precedence fields, but a
+    subdivision is only accepted when it belongs to the selected country.
+    """
+    registry_code = normalize_country_code(registry_country)
+    artifact_code = normalize_country_code(artifact_country)
+    # Historical artifacts predate the country field and are US records by
+    # contract. This default must also cover retained pages that no longer have
+    # a registry entry or state lookup; otherwise a render would turn them into
+    # an invalid empty-country row.
+    country = registry_code or artifact_code or "US"
+
+    candidates = (
+        (registry_code, registry_subdivision_code, registry_subdivision_name),
+        (artifact_code, artifact_subdivision_code, artifact_subdivision_name),
+    )
+    for source_country, subdivision_code, subdivision_name in candidates:
+        if source_country != country or not (subdivision_code.strip() or subdivision_name.strip()):
+            continue
+        location = normalize_location(country, subdivision_code, subdivision_name)
+        if location.subdivision_code or location.subdivision_name:
+            return location
+
+    if country == "US" and legacy_state.strip():
+        code, name = normalize_subdivision(country, legacy_state)
+        if code:
+            return NormalizedLocation(country, code, name)
+    return NormalizedLocation(country, "", "")
+
+
 def normalize_country_code(country_code: str) -> str:
     """Return a supported canonical ISO 3166-1 alpha-2 code, or ``""``."""
     normalized = country_code.strip().upper()

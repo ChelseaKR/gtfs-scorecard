@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/by-location.schema.json",
+  "title": "GTFS Scorecard country and subdivision rollups",
+  "description": "Additive API v1 location rollups. Null codes collect scored rows whose curated location is unknown.",
+  "type": "object",
+  "required": ["countries"],
+  "properties": {
+    "countries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/country"
+      }
+    }
+  },
+  "$defs": {
+    "gradeDistribution": {
+      "type": "object",
+      "required": ["A", "B", "C", "D", "F"],
+      "properties": {
+        "A": {"type": "integer", "minimum": 0},
+        "B": {"type": "integer", "minimum": 0},
+        "C": {"type": "integer", "minimum": 0},
+        "D": {"type": "integer", "minimum": 0},
+        "F": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["count", "median_score", "grade_distribution"],
+      "properties": {
+        "count": {"type": "integer", "minimum": 0},
+        "median_score": {"type": ["number", "null"]},
+        "grade_distribution": {"$ref": "#/$defs/gradeDistribution"}
+      }
+    },
+    "subdivision": {
+      "allOf": [
+        {"$ref": "#/$defs/summary"},
+        {
+          "type": "object",
+          "required": ["subdivision_code", "subdivision_name"],
+          "properties": {
+            "subdivision_code": {
+              "type": ["string", "null"],
+              "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
+            },
+            "subdivision_name": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "country": {
+      "allOf": [
+        {"$ref": "#/$defs/summary"},
+        {
+          "type": "object",
+          "required": ["country_code", "country_name", "subdivisions"],
+          "properties": {
+            "country_code": {
+              "type": ["string", "null"],
+              "enum": ["US", "CA", null]
+            },
+            "country_name": {"type": "string"},
+            "subdivisions": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/subdivision"}
+            }
+          }
+        }
+      ]
+    }
+  }
+}
