@@ -2,7 +2,8 @@
 # allowlist for known false positives. Everything listed here is PUBLIC
 # third-party data, not a credential owned by this repo:
 #
-#   * agencies.yaml — the agency registry. GTFS/GTFS-RT feed URLs sourced from
+#   * agencies.yaml and registry/ — the agency registry (the intake file and
+#     its per-state shards, FIX-12). GTFS/GTFS-RT feed URLs sourced from
 #     the Mobility Database frequently embed an access key in the URL itself
 #     (e.g. `?key=...` / `?apiKey=...`). Those keys are published by the
 #     transit agencies as part of their public feed URL and are already
@@ -27,6 +28,7 @@ useDefault = true
 description = "Public GTFS registry feed-URL keys and generated artifacts that echo them"
 paths = [
     '''^agencies\.yaml$''',
+    '''^registry/''',
     '''^pipeline/tests/fixtures/''',
     '''^data/''',
     '''^web/''',
