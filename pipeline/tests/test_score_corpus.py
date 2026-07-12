@@ -183,9 +183,10 @@ def _corpus() -> dict[str, Scorecard]:
     return cards
 
 
-# The frozen expectations: (overall score rounded as published, letter grade).
-# These are literals on purpose — do not compute them from the rubric constants,
-# or the canary would drift along with the very change it exists to catch.
+# Frozen published fields. These are literals on purpose: adding artifact
+# metadata must not move an overall/category score, grade, or top-fix ordering.
+# Do not compute them from rubric constants, or the canary would drift with the
+# change it exists to catch.
 EXPECTED: dict[str, tuple[float, str]] = {
     "clean-long-runway": (100.0, "A"),
     "unitrans-trimmed": (86.7, "B"),
@@ -199,18 +200,62 @@ EXPECTED: dict[str, tuple[float, str]] = {
     "realtime-degraded": (70.8, "C"),
 }
 
+EXPECTED_CATEGORY_SCORES: dict[str, dict[str, float]] = {
+    "clean-long-runway": {"correctness": 100.0, "freshness": 100.0},
+    "unitrans-trimmed": {"freshness": 86.7},
+    "few-warnings": {"correctness": 90.0, "freshness": 75.0},
+    "errors-near-expiry": {"correctness": 46.0, "freshness": 16.7},
+    "expired-fixed": {"correctness": 100.0, "freshness": 0.0},
+    "lapsed-seasonal": {"correctness": 100.0, "freshness": 50.0},
+    "no-expiry-date": {"correctness": 96.0, "freshness": 0.0},
+    "missing-feed-info-dates": {"correctness": 100.0, "freshness": 85.0},
+    "realtime-healthy": {"correctness": 100.0, "freshness": 100.0, "realtime": 100.0},
+    "realtime-degraded": {"correctness": 80.0, "freshness": 66.7, "realtime": 58.7},
+}
+
+EXPECTED_TOP_FIX_CODES: dict[str, list[str]] = {
+    "clean-long-runway": [],
+    "unitrans-trimmed": [],
+    "few-warnings": ["unused_stop", "missing_trip_headsign"],
+    "errors-near-expiry": [
+        "scorecard_feed_expiring_soon",
+        "missing_required_file",
+        "stop_without_location",
+    ],
+    "expired-fixed": ["scorecard_feed_expired"],
+    "lapsed-seasonal": ["scorecard_intermittent_calendar_ended"],
+    "no-expiry-date": ["scorecard_no_expiry_date", "missing_agency_phone"],
+    "missing-feed-info-dates": ["scorecard_missing_feed_info_dates"],
+    "realtime-healthy": [],
+    "realtime-degraded": [
+        "unusable_trip",
+        "scorecard_rt_vehicle_positions_unreachable",
+        "scorecard_rt_trip_coverage",
+    ],
+}
+
 
 @pytest.mark.parametrize("name", sorted(EXPECTED))
 def test_corpus_feed_scores_exactly_as_frozen(name: str) -> None:
     card = _corpus()[name]
+    published = card.to_json()
     expected_score, expected_grade = EXPECTED[name]
-    assert round(card.overall_score, 1) == expected_score
-    assert card.grade == expected_grade
+    assert published["overall"]["score"] == expected_score
+    assert published["overall"]["grade"] == expected_grade
+    measured_category_scores = {
+        category: payload["score"]
+        for category, payload in published["categories"].items()
+        if payload["status"] == "measured"
+    }
+    assert measured_category_scores == EXPECTED_CATEGORY_SCORES[name]
+    assert [fix["code"] for fix in published["top_fixes"]] == EXPECTED_TOP_FIX_CODES[name]
 
 
 def test_corpus_and_expectations_cover_the_full_grade_ladder() -> None:
     cards = _corpus()
     assert sorted(cards) == sorted(EXPECTED)
+    assert sorted(cards) == sorted(EXPECTED_CATEGORY_SCORES)
+    assert sorted(cards) == sorted(EXPECTED_TOP_FIX_CODES)
     assert {grade for _, grade in EXPECTED.values()} == {"A", "B", "C", "D", "F"}
     # The most urgent corpus entry surfaces the operational fix first.
     assert cards["expired-fixed"].top_fixes[0].code == "scorecard_feed_expired"

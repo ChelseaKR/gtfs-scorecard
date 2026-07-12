@@ -7,6 +7,13 @@ sync with this page; every metric's docstring links back here.
 
 ## Sources the rubric maps to
 
+This is a project-authored scoring profile, identified in artifacts as
+`gtfs-scorecard-1.1`. Its weights, deductions, thresholds, grade bands, and fix
+ranking are GTFS Scorecard choices. California guidance informed those choices
+and is the normative quality bar for California agencies; it is not worldwide
+authority. A score outside California is a feed-quality assessment under this
+published profile, not a local compliance determination.
+
 1. **California Transit Data Guidelines v4.0** (Caltrans, December 2024) —
    the normative quality bar for California agencies.
    https://dot.ca.gov/cal-itp/california-transit-data-guidelines-v4_0
@@ -283,6 +290,12 @@ The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.1`
 and the dated `METHODOLOGY_CHANGELOG` in `score.py` records what each version
 changed, so a trend reader can tell a feed change apart from a methodology
 change.
+
+Every artifact also carries a `scoring_profile` block with the stable profile
+identifier `gtfs-scorecard-1.1`, the rubric version, and this provenance boundary.
+The profile metadata is additive: it does not recalculate, rename, or move the
+overall score, category scores, grade, or top fixes. Jurisdiction overlays are
+not implemented by this contract.
 
 Last verified: 2026-07-06 (guidelines v4.0, validator v8.0.1, rubric v1.1) ·
 Recheck cadence: before each phase and before the rubric is cited publicly.

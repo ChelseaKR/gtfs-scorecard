@@ -3,6 +3,9 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.8: additive scoring_profile metadata on every per-agency artifact. The
+# profile identifies the project-authored scoring contract independently from
+# the artifact schema and states its provenance and limits explicitly.
 # 1.7: additive state_percentile on per-state rollup payloads (None on "all"
 # and named-cohort rollups, which are not peers of a 50-state comparison), so a
 # program page can say how its average score compares to other states'
@@ -20,7 +23,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.7"
+SCHEMA_VERSION = "1.8"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)
@@ -34,3 +37,13 @@ DATA_ATTRIBUTION = (
 # Bump when the rubric (weights, deductions, grade bands, or what is measured)
 # changes, so a trend can tell a feed change apart from a methodology change.
 RUBRIC_VERSION = "1.1"
+
+# Stable identity for the scoring contract. This is deliberately distinct from
+# SCHEMA_VERSION: adding an API field must not imply a methodology change.
+SCORING_PROFILE_ID = f"gtfs-scorecard-{RUBRIC_VERSION}"
+SCORING_PROFILE_PROVENANCE = (
+    "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, "
+    "and fix ranking, informed by the California Transit Data Guidelines and the "
+    "MobilityData gtfs-validator. It is not a worldwide standard or a compliance "
+    "determination."
+)

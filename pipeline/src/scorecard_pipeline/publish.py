@@ -19,7 +19,12 @@ from typing import Any
 
 import jsonschema
 
-from . import RUBRIC_VERSION, SCHEMA_VERSION
+from . import (
+    RUBRIC_VERSION,
+    SCHEMA_VERSION,
+    SCORING_PROFILE_ID,
+    SCORING_PROFILE_PROVENANCE,
+)
 from .badge import render_badge, render_mark
 from .config import Agency, artifacts_dir, repo_root
 from .effort_calibration import (
@@ -190,6 +195,11 @@ def build_artifact(
         # so a snapshot is citable and a trend can separate a feed change from a
         # rubric or validator change.
         "rubric_version": RUBRIC_VERSION,
+        "scoring_profile": {
+            "id": SCORING_PROFILE_ID,
+            "rubric_version": RUBRIC_VERSION,
+            "provenance": SCORING_PROFILE_PROVENANCE,
+        },
         "validator_version": validator_version,
         "agency": agency_block,
         "generated_at": generated_at.isoformat(timespec="seconds"),
