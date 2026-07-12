@@ -118,6 +118,160 @@ def test_load_agencies_populates_registry(tmp_path: Path) -> None:
     assert set(AGENCIES) == {"demo"}
 
 
+def test_default_loader_uses_legacy_file_when_manifest_is_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "agencies.yaml").write_text(yaml.safe_dump(VALID))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    load_agencies()
+
+    assert list(AGENCIES) == ["demo"]
+
+
+def _write_registry_shard(root: Path, relative: str, agencies: list[dict[str, object]]) -> None:
+    shard = root / relative
+    shard.parent.mkdir(parents=True, exist_ok=True)
+    shard.write_text(yaml.safe_dump({"agencies": agencies}))
+
+
+def test_manifest_loads_shards_in_listed_order_and_allows_cross_shard_aliases(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    _write_registry_shard(root, "registry/CA/on.yaml", [{**VALID_ENTRY, "id": "second"}])
+    _write_registry_shard(
+        root,
+        "registry/US/ca.yaml",
+        [{**VALID_ENTRY, "id": "first", "alias_of": "second"}],
+    )
+    (root / "registry/index.yaml").write_text(
+        yaml.safe_dump({"shards": ["registry/US/ca.yaml", "registry/CA/on.yaml"]})
+    )
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    load_agencies()
+
+    assert list(AGENCIES) == ["first", "second"]
+    assert AGENCIES["first"].alias_of == "second"
+
+
+def test_manifest_rejects_duplicate_ids_across_shards_and_names_second_shard(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    _write_registry_shard(root, "registry/a.yaml", [VALID_ENTRY])
+    _write_registry_shard(root, "registry/b.yaml", [VALID_ENTRY])
+    (root / "registry/index.yaml").write_text(
+        yaml.safe_dump({"shards": ["registry/a.yaml", "registry/b.yaml"]})
+    )
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    with pytest.raises(AgencyConfigError, match=r"registry/b\.yaml.*duplicate id"):
+        load_agencies()
+
+
+def test_manifest_failure_preserves_previously_loaded_registry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    valid_path = tmp_path / "valid.yaml"
+    valid_path.write_text(yaml.safe_dump(VALID))
+    load_agencies(valid_path)
+    root = tmp_path / "repo"
+    broken = dict(VALID_ENTRY)
+    broken["name"] = ""
+    _write_registry_shard(root, "registry/broken.yaml", [broken])
+    (root / "registry/index.yaml").write_text(yaml.safe_dump({"shards": ["registry/broken.yaml"]}))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    with pytest.raises(AgencyConfigError, match=r"registry/broken\.yaml.*name is required"):
+        load_agencies()
+
+    assert set(AGENCIES) == {"demo"}
+
+
+def test_manifest_alias_chain_missing_target_names_owning_shard(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    _write_registry_shard(
+        root,
+        "registry/a.yaml",
+        [{**VALID_ENTRY, "id": "first", "alias_of": "second"}],
+    )
+    _write_registry_shard(
+        root,
+        "registry/b.yaml",
+        [{**VALID_ENTRY, "id": "second", "alias_of": "missing"}],
+    )
+    (root / "registry/index.yaml").write_text(
+        yaml.safe_dump({"shards": ["registry/a.yaml", "registry/b.yaml"]})
+    )
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    with pytest.raises(AgencyConfigError, match=r"registry/b\.yaml.*unknown id 'missing'"):
+        load_agencies()
+
+
+def test_default_loader_rejects_ambiguous_and_partial_migrations(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    registry = root / "registry"
+    registry.mkdir(parents=True)
+    (root / "agencies.yaml").write_text(yaml.safe_dump(VALID))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    with pytest.raises(AgencyConfigError, match="partial agency registry migration"):
+        load_agencies()
+
+    (registry / "index.yaml").write_text(yaml.safe_dump({"shards": ["registry/a.yaml"]}))
+    with pytest.raises(AgencyConfigError, match="ambiguous agency registry"):
+        load_agencies()
+
+
+@pytest.mark.parametrize(
+    ("manifest", "message"),
+    [
+        ({"shards": []}, "lists no registry shards"),
+        ({"shards": ["../outside.yaml"]}, "stay within the repository"),
+        ({"shards": ["agencies.yaml"]}, "stay within the registry directory"),
+        ({"shards": ["registry/missing.yaml"]}, "shard not found"),
+        ({"shards": ["registry/a.yaml", "registry/a.yaml"]}, "duplicate path"),
+        ({"shards": [7]}, "path must be a non-empty string"),
+    ],
+)
+def test_manifest_rejects_partial_or_unsafe_lists(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    manifest: object,
+    message: str,
+) -> None:
+    root = tmp_path / "repo"
+    (root / "registry").mkdir(parents=True)
+    _write_registry_shard(root, "registry/a.yaml", [VALID_ENTRY])
+    (root / "registry/index.yaml").write_text(yaml.safe_dump(manifest))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    with pytest.raises(AgencyConfigError, match=message):
+        load_agencies()
+
+
+def test_manifest_rejects_an_unlisted_shard(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    _write_registry_shard(root, "registry/listed.yaml", [VALID_ENTRY])
+    _write_registry_shard(root, "registry/unlisted.yml", [{**VALID_ENTRY, "id": "other"}])
+    (root / "registry/index.yaml").write_text(yaml.safe_dump({"shards": ["registry/listed.yaml"]}))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+
+    with pytest.raises(AgencyConfigError, match=r"unlisted registry shard.*unlisted\.yml"):
+        load_agencies()
+
+
 @pytest.mark.parametrize(
     ("broken", "hint"),
     [
