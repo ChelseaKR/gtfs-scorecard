@@ -199,11 +199,20 @@ worldwide directory.
 The workflow serializes with the daily collect and hourly refresh writer jobs.
 Their shared concurrency group uses the 100-run FIFO queue, so a new hourly
 refresh cannot replace a waiting activation or daily collect. The activation
-hydrates every current agency score and fix receipt, the dated file behind each
-current score, all current aggregate namespaces, and each selected agency's
-complete retained directory. It captures the authoritative `index.json` bytes
-and ETag in one request, checks the ETag again before the first write, and uses
-the same ETag as an `If-Match` condition on the final index commit. An unexpected
+captures the authoritative `index.json` bytes and ETag in one request, then uses
+that compact manifest to fetch every registered `latest.json`, its indexed
+current dated object, and optional fix receipt by exact key with bounded
+concurrency. This avoids recursively listing the lifecycle-managed dated
+archive. When a current dated object has expired, and only on a not-found
+response, the hydrator copies the byte-identical latest payload to the local
+dated path without recreating the remote object. A retained dated object must
+match latest exactly. The selected agencies' complete retained directories and
+the small `rollups/`, `changes/`, and `run/` namespaces are still hydrated in
+full. Downloaded objects retain their S3 `LastModified` time so the bounded
+publish sync skips retained files that were not changed locally.
+
+Before publication, the workflow checks the captured ETag again and uses the
+same ETag as an `If-Match` condition on the final index commit. An unexpected
 change aborts the commit and the operator can re-run against the new state.
 
 Publication is additive and path-bounded: only selected agency directories,

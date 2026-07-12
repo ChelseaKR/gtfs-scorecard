@@ -58,15 +58,14 @@ def test_targeted_dispatch_is_required_bounded_and_registry_validated() -> None:
 def test_targeted_hydration_and_etag_guard_cover_authoritative_inputs() -> None:
     text = (WORKFLOWS / "targeted-score.yml").read_text()
 
-    assert "aws s3api get-object" in text
     assert "rm -rf data/artifacts" in text
-    assert '--include "*/latest.json" --include "*/fixlog.json"' in text
-    assert text.count("--exact-timestamps") == 4
-    assert "current_dated+=(--include" in text
-    assert "current dated snapshot expired" in text
+    assert "python -m scorecard_pipeline.cli activation-hydrate" in text
+    assert '--targets-file "$RUNNER_TEMP/targets.txt"' in text
+    assert '--index-before-out "$RUNNER_TEMP/index.before.json"' in text
+    assert '--etag-out "$RUNNER_TEMP/index.etag"' in text
+    assert "current_dated" not in text
+    assert 'aws s3 sync "$artifact_uri" data/artifacts' not in text
     assert 'cp "$RUNNER_TEMP/index.before.json" ../data/artifacts/index.json' in text
-    assert "for namespace in rollups changes run" in text
-    assert 'aws s3 sync "${artifact_uri}/${id}" "data/artifacts/${id}"' in text
     assert text.count("aws s3api head-object") == 1
     assert 'if [ "$current_etag" != "$expected_etag" ]' in text
     assert '--if-match "$expected_etag"' in text
@@ -94,4 +93,4 @@ def test_boto3_workflow_commands_use_the_temporary_python_environment() -> None:
     combined = "\n".join((WORKFLOWS / name).read_text() for name in names)
 
     assert "uv run --with boto3 scorecard" not in combined
-    assert combined.count("uv run --with boto3 python -m scorecard_pipeline.cli") == 4
+    assert combined.count("uv run --with boto3 python -m scorecard_pipeline.cli") == 5

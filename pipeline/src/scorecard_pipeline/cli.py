@@ -9,6 +9,7 @@ scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
 scorecard shards --count 4                        # CI fan-out plan (JSON)
 scorecard activation-targets --ids "unitrans yolobus"  # validate manual publish scope
+scorecard activation-hydrate --bucket name --targets-file ids.txt  # exact current S3 corpus
 scorecard run-summary build --shard 0 --outcomes o.ndjson --started <iso> --out s.json
 scorecard run-summary merge --out data/artifacts/run/latest.json s0.json s1.json ...
 scorecard alerts [--out digest.md]                # expiry/regression digest
@@ -1706,6 +1707,37 @@ def _cmd_activation_targets(args: argparse.Namespace, parser: argparse.ArgumentP
     return 0
 
 
+def _cmd_activation_hydrate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Hydrate the authoritative current corpus for a bounded activation."""
+    from .activation import ActivationHydrationError, hydrate_activation_corpus
+    from .config import artifacts_dir
+
+    try:
+        targets = args.targets_file.read_text(encoding="utf-8").splitlines()
+        result = hydrate_activation_corpus(
+            bucket=args.bucket,
+            targets=targets,
+            known_ids=AGENCIES,
+            artifacts_root=artifacts_dir(),
+            index_before=args.index_before_out,
+            etag_out=args.etag_out,
+            liveness_out=repo_root() / "data" / "liveness.json",
+            workers=args.workers,
+        )
+    except (ActivationHydrationError, OSError) as exc:
+        parser.error(str(exc))
+    log.info(
+        "Hydrated %d current agencies and %d S3 objects (%d optional misses, "
+        "%d selected-directory objects, %d unregistered index entries skipped).",
+        result.agencies,
+        result.objects,
+        result.optional_misses,
+        result.selected_objects,
+        result.skipped_unregistered,
+    )
+    return 0
+
+
 def _cmd_run_summary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .run_summary import build_shard_summary, merge_run_summaries, read_outcomes
 
@@ -2346,6 +2378,35 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="write one validated agency id per line instead of stdout",
     )
+    activation_hydrate = sub.add_parser(
+        "activation-hydrate",
+        help="hydrate the exact authoritative current corpus for targeted activation",
+    )
+    activation_hydrate.add_argument("--bucket", required=True, help="authoritative S3 bucket")
+    activation_hydrate.add_argument(
+        "--targets-file",
+        required=True,
+        type=Path,
+        help="validated file with one selected registry id per line",
+    )
+    activation_hydrate.add_argument(
+        "--index-before-out",
+        required=True,
+        type=Path,
+        help="preserve the exact captured index bytes here for merge and comparison",
+    )
+    activation_hydrate.add_argument(
+        "--etag-out",
+        required=True,
+        type=Path,
+        help="write the captured index ETag here for optimistic publication guards",
+    )
+    activation_hydrate.add_argument(
+        "--workers",
+        type=int,
+        default=16,
+        help="bounded concurrent exact S3 reads (default 16; maximum 32)",
+    )
 
     run_summary = sub.add_parser(
         "run-summary",
@@ -2628,6 +2689,7 @@ def main(argv: list[str] | None = None) -> int:
         "ntd-ridership": _cmd_ntd_ridership,
         "shards": _cmd_shards,
         "activation-targets": _cmd_activation_targets,
+        "activation-hydrate": _cmd_activation_hydrate,
         "run-summary": _cmd_run_summary,
         "alerts": _cmd_alerts,
         "notify": _cmd_notify,
