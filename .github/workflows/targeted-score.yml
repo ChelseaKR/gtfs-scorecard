@@ -66,84 +66,28 @@ jobs:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
         run: |
           set -euo pipefail
-          artifact_uri="s3://${ARTIFACTS_BUCKET}/data/artifacts"
 
           # Checkout contains a deliberately small committed snapshot whose
-          # file mtimes are newer than S3. Start clean so `aws s3 sync` cannot
-          # mistake a same-sized stale checkout file for authoritative state.
+          # contents are not authoritative. Start clean before exact S3 reads.
           rm -rf data/artifacts
           mkdir -p data/artifacts
           rm -f data/liveness.json
 
-          # index.json is the durable compact history. Preserve its exact bytes
-          # for a conditional publish and its ETag for the optimistic guard.
-          aws s3api get-object \
+          # index.json is the commit manifest. One Python process captures its
+          # exact bytes and ETag from the same GET, then concurrently exact-GETs
+          # every registered latest.json, its indexed current dated object, and
+          # optional fixlog.json. A dated-object 404 falls back locally to the
+          # byte-identical latest payload without recreating the expired S3 key.
+          # Source mtimes are preserved so later bounded syncs skip unchanged
+          # selected and aggregate objects.
+          # Only the <=25 selected directories and small rollups/changes/run
+          # prefixes are listed in full.
+          cd pipeline
+          uv run --with boto3 python -m scorecard_pipeline.cli activation-hydrate \
             --bucket "$ARTIFACTS_BUCKET" \
-            --key data/artifacts/index.json \
-            --query ETag --output text \
-            data/artifacts/index.json > "$RUNNER_TEMP/index.etag"
-          cp data/artifacts/index.json "$RUNNER_TEMP/index.before.json"
-
-          # The complete current corpus needed by reindex/render-site starts
-          # with every current score and fix receipt. Older trend points stay
-          # in the compact index instead of downloading the lifecycle-managed
-          # archive.
-          aws s3 sync "$artifact_uri" data/artifacts \
-            --exclude "*" \
-            --include "*/latest.json" --include "*/fixlog.json" \
-            --exact-timestamps --only-show-errors
-
-          # reindex treats dated files as the source of truth for latest.json.
-          # Hydrate the dated object referenced by every current score in one
-          # filtered S3 sync; using only today's date would drop a feed whose
-          # last good snapshot is older. The argument array is bounded by the
-          # curated registry and avoids one AWS process per agency.
-          current_dated=(--exclude "*")
-          for latest in data/artifacts/*/latest.json; do
-            id=$(basename "$(dirname "$latest")")
-            case "$id" in rollups|changes|run) continue ;; esac
-            snapshot_date=$(jq -er '.snapshot_date' "$latest")
-            current_dated+=(--include "${id}/${snapshot_date}.json")
-          done
-          aws s3 sync "$artifact_uri" data/artifacts "${current_dated[@]}" \
-            --exact-timestamps --only-show-errors
-          for latest in data/artifacts/*/latest.json; do
-            id=$(basename "$(dirname "$latest")")
-            case "$id" in rollups|changes|run) continue ;; esac
-            # A selected feed will produce a new dated snapshot below. Do not
-            # recreate one of its lifecycle-expired historical objects merely
-            # to support the intermediate local rebuild.
-            if grep -Fxq "$id" "$RUNNER_TEMP/targets.txt"; then
-              continue
-            fi
-            snapshot_date=$(jq -er '.snapshot_date' "$latest")
-            dated="data/artifacts/${id}/${snapshot_date}.json"
-            if [ ! -f "$dated" ]; then
-              # A lifecycle-expired dated object can outlive a feed outage.
-              # latest.json is the same published payload, so reconstruct the
-              # local reindex input without recreating the expired S3 object.
-              cp "$latest" "$dated"
-              echo "::warning title=current dated snapshot expired::reconstructed ${id}/${snapshot_date}.json locally from authoritative latest.json"
-            fi
-          done
-
-          # These aggregate namespaces are small and stateful; hydrate them in
-          # full. run/* is input to the rendered status page but is never
-          # published by this workflow, preserving the daily run's evidence.
-          for namespace in rollups changes run; do
-            aws s3 sync "${artifact_uri}/${namespace}" "data/artifacts/${namespace}" \
-              --exact-timestamps --only-show-errors
-          done
-          aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/liveness.json" \
-            data/liveness.json --only-show-errors || true
-
-          # Selected agency directories are fully hydrated so fix receipts,
-          # corrected feeds, structure, geometry, and all retained history are
-          # additive and cannot be lost when their bounded directories sync.
-          while IFS= read -r id; do
-            aws s3 sync "${artifact_uri}/${id}" "data/artifacts/${id}" \
-              --exact-timestamps --only-show-errors
-          done < "$RUNNER_TEMP/targets.txt"
+            --targets-file "$RUNNER_TEMP/targets.txt" \
+            --index-before-out "$RUNNER_TEMP/index.before.json" \
+            --etag-out "$RUNNER_TEMP/index.etag"
 
       - name: Score selected agencies sequentially
         working-directory: pipeline
