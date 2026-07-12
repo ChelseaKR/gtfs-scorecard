@@ -61,11 +61,23 @@ RULES: list[tuple[str, str]] = [
 
 
 def registry_count() -> int:
-    data = yaml.safe_load((REPO_ROOT / "agencies.yaml").read_text())
-    agencies = data["agencies"]
-    if not isinstance(agencies, list):
-        raise TypeError("agencies.yaml 'agencies' must be a list of entries")
-    return len(agencies)
+    """Entries across the whole registry: the intake file plus every shard.
+
+    Mirrors agencies.registry_paths (FIX-12) without importing the package,
+    so the check stays runnable before `uv sync`.
+    """
+    paths = [REPO_ROOT / "agencies.yaml"]
+    shard_root = REPO_ROOT / "registry"
+    if shard_root.is_dir():
+        paths.extend(sorted(shard_root.rglob("*.yaml")))
+    count = 0
+    for path in paths:
+        data = yaml.safe_load(path.read_text())
+        agencies = data["agencies"]
+        if not isinstance(agencies, list):
+            raise TypeError(f"{path.name} 'agencies' must be a list of entries")
+        count += len(agencies)
+    return count
 
 
 def main() -> int:

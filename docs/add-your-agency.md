@@ -30,7 +30,9 @@ cache.
 
 ## Steps
 
-1. Fork this repository and open `agencies.yaml`.
+1. Fork this repository and open `agencies.yaml` (the intake file; curated
+   entries later move to a small per-state file under `registry/`, so your
+   pull request only ever touches this one file).
 2. Copy an existing block and fill in your values:
 
    ```yaml

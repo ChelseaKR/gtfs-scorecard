@@ -58,7 +58,7 @@ jobs:
       - name: Keep the refreshed report only when a feed moved
         id: changes
         run: |
-          if git diff --quiet -- agencies.yaml; then
+          if git diff --quiet -- agencies.yaml registry/; then
             echo "moved=false" >> "$GITHUB_OUTPUT"
             git checkout -- docs/feed-discovery.md
           else
@@ -80,4 +80,5 @@ jobs:
           labels: data, automated
           add-paths: |
             agencies.yaml
+            registry/
             docs/feed-discovery.md

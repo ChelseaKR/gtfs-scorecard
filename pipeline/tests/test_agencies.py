@@ -8,7 +8,7 @@ import pytest
 import yaml
 
 from scorecard_pipeline.agencies import AgencyConfigError, load_agencies, parse_agencies
-from scorecard_pipeline.config import AGENCIES
+from scorecard_pipeline.config import AGENCIES, Agency
 
 REPO_YAML = Path(__file__).resolve().parents[2] / "agencies.yaml"
 
@@ -36,8 +36,23 @@ def test_valid_entry_parses() -> None:
     assert agency.license_note == "CC-BY"
 
 
+def _repo_registry() -> list[Agency]:
+    """Every entry across the real repo registry: intake file plus shards
+    (FIX-12), parsed the way the loader merges them."""
+    from scorecard_pipeline.agencies import registry_paths
+
+    agencies = []
+    for path in registry_paths(REPO_YAML.parent):
+        agencies.extend(
+            parse_agencies(
+                yaml.safe_load(path.read_text()), validate_aliases=False, allow_empty=True
+            )
+        )
+    return agencies
+
+
 def test_repo_registry_is_valid_and_lists_pilots() -> None:
-    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+    agencies = _repo_registry()
     ids = {a.id for a in agencies}
     assert {"unitrans", "yolobus"} <= ids
     yolobus = next(a for a in agencies if a.id == "yolobus")
@@ -73,7 +88,7 @@ def test_country_rejects_non_iso_code() -> None:
 
 
 def test_repo_registry_includes_canada_pilot() -> None:
-    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+    agencies = _repo_registry()
     by_id = {a.id: a for a in agencies}
     assert {"whitehorse-transit", "barrie-transit", "london-transit-commission"} <= set(by_id)
     assert all(by_id[i].country == "CA" for i in ("whitehorse-transit", "barrie-transit"))
@@ -237,3 +252,73 @@ def test_ntd_note_parses_and_defaults_empty() -> None:
     a, b = parse_agencies(raw)
     assert a.ntd_note.startswith("Holds an FTA")
     assert b.ntd_note == ""
+
+
+# ---- the sharded registry (FIX-12): agencies.yaml + registry/<country>/<state> ----
+
+
+def _write(root: Path, rel: str, entries: list[dict[str, object]]) -> None:
+    path = root / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(yaml.safe_dump({"agencies": entries}))
+
+
+def test_registry_shards_merge_with_the_intake_file(isolated_repo_root: Path) -> None:
+    _write(isolated_repo_root, "agencies.yaml", [dict(VALID_ENTRY)])
+    _write(
+        isolated_repo_root,
+        "registry/us/california.yaml",
+        [{**VALID_ENTRY, "id": "davis", "state": "California"}],
+    )
+    _write(
+        isolated_repo_root,
+        "registry/ca/ontario.yaml",
+        [{**VALID_ENTRY, "id": "barrie", "country": "CA", "state": "Ontario"}],
+    )
+    load_agencies()
+    assert set(AGENCIES) == {"demo", "davis", "barrie"}
+    assert AGENCIES["davis"].state == "California"
+
+
+def test_duplicate_id_across_files_names_both_sources(isolated_repo_root: Path) -> None:
+    _write(isolated_repo_root, "agencies.yaml", [dict(VALID_ENTRY)])
+    _write(isolated_repo_root, "registry/us/iowa.yaml", [dict(VALID_ENTRY)])
+    with pytest.raises(AgencyConfigError) as excinfo:
+        load_agencies()
+    assert "agencies.yaml" in str(excinfo.value)
+    assert "registry/us/iowa.yaml" in str(excinfo.value)
+
+
+def test_a_malformed_shard_is_named_in_the_error(isolated_repo_root: Path) -> None:
+    _write(isolated_repo_root, "agencies.yaml", [dict(VALID_ENTRY)])
+    _write(isolated_repo_root, "registry/us/ohio.yaml", [{**VALID_ENTRY, "id": "Bad Slug!"}])
+    with pytest.raises(AgencyConfigError) as excinfo:
+        load_agencies()
+    assert "registry/us/ohio.yaml" in str(excinfo.value)
+    assert "lowercase slug" in str(excinfo.value)
+
+
+def test_an_alias_may_point_into_another_shard(isolated_repo_root: Path) -> None:
+    _write(isolated_repo_root, "agencies.yaml", [{**VALID_ENTRY, "alias_of": "davis"}])
+    _write(
+        isolated_repo_root,
+        "registry/us/california.yaml",
+        [{**VALID_ENTRY, "id": "davis", "state": "California"}],
+    )
+    load_agencies()
+    assert AGENCIES["demo"].alias_of == "davis"
+
+
+def test_an_empty_intake_file_is_fine_when_shards_carry_the_registry(
+    isolated_repo_root: Path,
+) -> None:
+    _write(isolated_repo_root, "agencies.yaml", [])
+    _write(isolated_repo_root, "registry/us/iowa.yaml", [dict(VALID_ENTRY)])
+    load_agencies()
+    assert set(AGENCIES) == {"demo"}
+
+
+def test_an_entirely_empty_registry_still_fails(isolated_repo_root: Path) -> None:
+    _write(isolated_repo_root, "agencies.yaml", [])
+    with pytest.raises(AgencyConfigError, match="lists no agencies"):
+        load_agencies()

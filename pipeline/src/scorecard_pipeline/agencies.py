@@ -39,8 +39,16 @@ def _require_url(entry_label: str, field: str, value: object) -> str:
     return str(value)
 
 
-def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
-    """Validate parsed YAML into Agency records."""
+def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+    raw: object, *, validate_aliases: bool = True, allow_empty: bool = False
+) -> list[Agency]:
+    """Validate parsed YAML into Agency records.
+
+    ``validate_aliases=False`` defers the alias referential checks to the
+    caller: the multi-file loader validates them over the merged registry,
+    since an alias may point at an entry in another shard. ``allow_empty``
+    lets a single registry file be empty when others supply the entries.
+    """
     if not isinstance(raw, dict) or not isinstance(raw.get("agencies"), list):
         raise AgencyConfigError("agencies.yaml must contain a top-level 'agencies:' list")
 
@@ -163,8 +171,15 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
                 fare_free=fare_free,
             )
         )
-    if not agencies:
+    if not agencies and not allow_empty:
         raise AgencyConfigError("agencies.yaml lists no agencies")
+    if validate_aliases:
+        _validate_aliases(agencies)
+    return agencies
+
+
+def _validate_aliases(agencies: list[Agency]) -> None:
+    """Alias references must resolve and never cycle, across the whole set."""
     by_id = {agency.id: agency for agency in agencies}
     for agency in agencies:
         if agency.alias_of and agency.alias_of not in by_id:
@@ -176,14 +191,81 @@ def parse_agencies(raw: object) -> list[Agency]:  # noqa: C901 - tracked, see do
                 _fail(f"agency '{agency.id}'", "alias_of contains a cycle")
             seen_aliases.add(target)
             target = by_id[target].alias_of
-    return agencies
+
+
+# Curated per-state shards live here (FIX-12): registry/<country>/<state>.yaml.
+# agencies.yaml stays the front door for newcomers and the submission flow.
+REGISTRY_DIR_NAME = "registry"
+
+
+def registry_paths(root: Path) -> list[Path]:
+    """Every file the registry is loaded from, the intake file first."""
+    paths = [root / "agencies.yaml"]
+    shard_root = root / REGISTRY_DIR_NAME
+    if shard_root.is_dir():
+        paths.extend(sorted(p for p in shard_root.rglob("*.yaml") if p.is_file()))
+    return [p for p in paths if p.is_file()]
 
 
 def load_agencies(path: Path | None = None) -> None:
-    """Read agencies.yaml and populate the registry. Idempotent."""
-    config_path = path or repo_root() / "agencies.yaml"
-    if not config_path.exists():
-        raise AgencyConfigError(f"no agency registry found at {config_path}")
+    """Read the registry and populate AGENCIES. Idempotent.
+
+    With an explicit ``path`` (tests, forks pointing at one file) only that
+    file is read, exactly as before the FIX-12 split. Without one,
+    agencies.yaml and every shard under registry/ are merged: duplicate ids
+    are rejected across files with both sources named, and alias references
+    are validated over the merged set, since an alias may point into another
+    shard.
+    """
+    if path is not None:
+        if not path.exists():
+            raise AgencyConfigError(f"no agency registry found at {path}")
+        AGENCIES.clear()
+        for agency in parse_agencies(yaml.safe_load(path.read_text())):
+            register(agency)
+        return
+
+    merged = _load_merged_registry(repo_root())
     AGENCIES.clear()
-    for agency in parse_agencies(yaml.safe_load(config_path.read_text())):
+    for agency in merged:
         register(agency)
+
+
+def _parse_registry_file(file_path: Path, rel: str) -> list[Agency]:
+    try:
+        return parse_agencies(
+            yaml.safe_load(file_path.read_text()),
+            validate_aliases=False,
+            allow_empty=True,
+        )
+    except AgencyConfigError as exc:
+        # parse_agencies speaks generically of agencies.yaml; name the
+        # actual shard so the failing file is one click away in review.
+        message = str(exc)
+        generic = "agencies.yaml, "
+        if rel != "agencies.yaml" and message.startswith(generic):
+            raise AgencyConfigError(f"{rel}, {message[len(generic) :]}") from None
+        raise
+
+
+def _load_merged_registry(root: Path) -> list[Agency]:
+    paths = registry_paths(root)
+    if not paths:
+        raise AgencyConfigError(f"no agency registry found at {root / 'agencies.yaml'}")
+    merged: list[Agency] = []
+    source_of: dict[str, str] = {}
+    for file_path in paths:
+        rel = file_path.relative_to(root).as_posix()
+        parsed = _parse_registry_file(file_path, rel)
+        for agency in parsed:
+            if agency.id in source_of:
+                raise AgencyConfigError(
+                    f"duplicate id '{agency.id}': declared in {source_of[agency.id]} "
+                    f"and again in {rel}"
+                )
+            source_of[agency.id] = rel
+        merged.extend(parsed)
+    if not merged:
+        raise AgencyConfigError("the registry lists no agencies")
+    _validate_aliases(merged)
+    return merged

@@ -571,10 +571,19 @@ def _cmd_backfill_state(args: argparse.Namespace, parser: argparse.ArgumentParse
         log.info("No agencies need a state backfill (all set, or unresolvable from the catalog).")
         return 0
     if args.apply:
-        registry_path = repo_root() / "agencies.yaml"
-        updated, changed = apply_state_backfill(registry_path.read_text(), resolved)
-        registry_path.write_text(updated)
-        log.info("Set state on %d agencies in agencies.yaml; re-score to persist it.", len(changed))
+        # The registry may be sharded (FIX-12); the textual editor leaves
+        # entries it does not find alone, so running it per file is safe.
+        from .agencies import registry_paths
+
+        changed: list[str] = []
+        for registry_path in registry_paths(repo_root()):
+            updated, changed_here = apply_state_backfill(registry_path.read_text(), resolved)
+            if changed_here:
+                registry_path.write_text(updated)
+                changed.extend(changed_here)
+        log.info(
+            "Set state on %d agencies across the registry; re-score to persist it.", len(changed)
+        )
     else:
         for agency_id, state in sorted(resolved.items()):
             print(f"{agency_id}\t{state}")
@@ -633,10 +642,17 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     log.info("%d checked: %d replaced, %d missing.", len(registry), replaced, missing)
 
     if args.apply:
-        registry_path = repo_root() / "agencies.yaml"
-        updated, changed = apply_replacements(registry_path.read_text(), matches)
+        # Per registry file (FIX-12): the textual editor only rewrites the
+        # entries present in each file, so shards it does not touch are safe.
+        from .agencies import registry_paths
+
+        changed = []
+        for registry_path in registry_paths(repo_root()):
+            updated, changed_here = apply_replacements(registry_path.read_text(), matches)
+            if changed_here:
+                registry_path.write_text(updated)
+                changed.extend(changed_here)
         if changed:
-            registry_path.write_text(updated)
             log.info(
                 "Updated static_gtfs_url for %d agency(ies): %s", len(changed), ", ".join(changed)
             )
@@ -988,6 +1004,7 @@ def _cmd_ntd(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
 
 def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .agencies import registry_paths
     from .config import repo_root
     from .ntd_crosswalk import (
         agencies_with_ntd_id,
@@ -999,9 +1016,11 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
         match_agencies_by_name,
     )
 
-    registry_path = repo_root() / "agencies.yaml"
-    text = registry_path.read_text()
-    have = agencies_with_ntd_id(text)
+    registry_files = registry_paths(repo_root())
+    texts = {p: p.read_text() for p in registry_files}
+    have: set[str] = set()
+    for file_text in texts.values():
+        have |= agencies_with_ntd_id(file_text)
 
     log.info("Fetching the Transitland Atlas crosswalk...")
     docs = fetch_atlas()
@@ -1043,11 +1062,15 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
         print(f"{p.agency_id}\t{p.ntd_id}")
 
     if args.apply:
-        new_text, inserted = apply_to_yaml(text, proposals)
-        registry_path.write_text(new_text)
-        log.info("Wrote %d new ntd_id values into agencies.yaml.", inserted)
+        inserted = 0
+        for registry_path, file_text in texts.items():
+            new_text, inserted_here = apply_to_yaml(file_text, proposals)
+            if inserted_here:
+                registry_path.write_text(new_text)
+                inserted += inserted_here
+        log.info("Wrote %d new ntd_id values into the registry.", inserted)
     else:
-        log.info("Dry run; pass --apply to write these into agencies.yaml.")
+        log.info("Dry run; pass --apply to write these into the registry.")
     return 0
 
 

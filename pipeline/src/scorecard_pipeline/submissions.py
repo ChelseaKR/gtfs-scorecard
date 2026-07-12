@@ -66,11 +66,17 @@ def form_to_entry(form: dict[str, str]) -> dict[str, object]:
     return entry
 
 
-def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
+def build_submission(
+    form: dict[str, str], existing_yaml: str, known_ids: set[str] | None = None
+) -> Submission:
     """Validate a submission and produce the new agencies.yaml plus PR metadata.
 
     Raises AgencyConfigError (with a plain-language message) if the entry is
-    invalid or duplicates an agency already in the registry.
+    invalid or duplicates an agency already in the registry. ``existing_yaml``
+    is the intake file the new entry is appended to; after the FIX-12 split
+    most tracked agencies live in registry/ shards instead, so callers pass
+    the full tracked id set as ``known_ids`` to keep the duplicate check
+    honest across the whole registry.
     """
     entry = form_to_entry(form)
     if not entry["name"]:
@@ -78,6 +84,7 @@ def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
 
     existing = yaml.safe_load(existing_yaml) or {}
     existing_ids = {a.get("id") for a in existing.get("agencies", []) if isinstance(a, dict)}
+    existing_ids |= known_ids or set()
 
     # Reuse the registry's own validator so the form enforces the same rules.
     parse_agencies({"agencies": [entry]})

@@ -37,6 +37,10 @@ from scorecard_pipeline.submissions import build_submission
 
 API = "https://api.github.com"
 AGENCIES_PATH = "agencies.yaml"
+# The whole tracked registry's ids, published by the daily run. agencies.yaml
+# is only the intake file after the FIX-12 split, so the duplicate check
+# consults this list too; best-effort, since a human still reviews every PR.
+IDS_URL = "https://gtfsscorecard.org/api/v1/ids.json"
 
 
 def _gh(method: str, path: str, token: str, payload: dict[str, Any] | None = None) -> Any:
@@ -62,6 +66,23 @@ def _response(status: int, body: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _tracked_ids() -> set[str]:
+    """Ids across the whole sharded registry, from the published API list.
+
+    Empty on any failure: the check then falls back to the intake file alone,
+    and the human review of the resulting PR stays the backstop."""
+    url = os.environ.get("IDS_URL", IDS_URL)
+    req = urllib.request.Request(url, headers={"User-Agent": "gtfs-scorecard-submit"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310 - fixed CDN URL
+            data = json.loads(resp.read().decode())
+    except (urllib.error.URLError, ValueError, TimeoutError):
+        return set()
+    return {
+        str(a["id"]) for a in data.get("agencies", []) if isinstance(a, dict) and a.get("id")
+    }
+
+
 def _open_pull_request(form: dict[str, str]) -> str:
     token = os.environ["GITHUB_TOKEN"]
     repo = os.environ["GITHUB_REPO"]
@@ -72,7 +93,7 @@ def _open_pull_request(form: dict[str, str]) -> str:
         raise RuntimeError("agencies.yaml is too large to read inline from the API")
     existing_yaml = base64.b64decode(current["content"]).decode()
 
-    submission = build_submission(form, existing_yaml)
+    submission = build_submission(form, existing_yaml, known_ids=_tracked_ids())
 
     head = _gh("GET", f"/repos/{repo}/git/ref/heads/{base}", token)
     _gh(
