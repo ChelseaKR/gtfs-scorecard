@@ -21,6 +21,7 @@ import datetime as dt
 import html as html_lib
 import io
 import json
+import math
 import re
 import sys
 from collections.abc import Callable
@@ -1607,6 +1608,151 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     )
 
 
+def _rider_impact_section(artifact: dict[str, Any]) -> str:
+    """Summarize rider-visible data already present in an artifact.
+
+    This is deliberately a closed, presentation-only disclosure after the
+    agency fix list. It does not add a rider score or infer service quality from
+    feed quality. Unknown and older artifact shapes stay neutral rather than
+    being treated as a gap.
+    """
+
+    schedule = _rider_schedule_text(_artifact_category(artifact, "freshness"))
+    completeness = _artifact_category(artifact, "completeness")
+    accessibility = _rider_accessibility_text(completeness)
+    fare = _rider_fare_text(completeness)
+    live = _rider_live_text(_artifact_category(artifact, "realtime"))
+    rows = (
+        f"<dt>Schedule visibility</dt><dd>{schedule}</dd>"
+        f"<dt>Published accessibility data</dt><dd>{accessibility}</dd>"
+        f"<dt>Fare information</dt><dd>{fare}</dd>"
+        f"<dt>Realtime information</dt><dd>{live}</dd>"
+    )
+    return (
+        '<details class="rider-impact" id="rider-impact">'
+        "<summary>Rider view: what this feed publishes</summary>"
+        '<p class="rider-impact-intro">A quick read of rider-facing information in this feed.</p>'
+        f"<dl>{rows}</dl>"
+        '<p class="rider-impact-boundary"><strong>Important:</strong> This does not rate service '
+        "reliability. Riders should confirm current service alerts, fares, and accessibility "
+        "accommodations with the transit operator before traveling.</p></details>"
+    )
+
+
+def _artifact_category(artifact: dict[str, Any], name: str) -> dict[str, Any]:
+    categories = artifact.get("categories", {})
+    category = categories.get(name, {}) if isinstance(categories, dict) else {}
+    return category if isinstance(category, dict) else {}
+
+
+def _measured_details(category: dict[str, Any]) -> dict[str, Any]:
+    details = category.get("details", {})
+    return details if category.get("status") == "measured" and isinstance(details, dict) else {}
+
+
+def _rider_schedule_text(freshness: dict[str, Any]) -> str:
+    fresh_details = freshness.get("details", {})
+    fresh_details = fresh_details if isinstance(fresh_details, dict) else {}
+    days = (
+        _numeric_percent(fresh_details.get("days_until_expiry"))
+        if freshness.get("status") == "measured"
+        else None
+    )
+    if days is None:
+        return "Schedule visibility is not known from this scorecard."
+    if days > 0:
+        return f"The feed's last published service date is in {_plain_number(days)} days."
+    if days == 0:
+        return "The feed's last published service date is today."
+    return f"The feed's last published service date was {_plain_number(abs(days))} days ago."
+
+
+def _rider_accessibility_text(completeness: dict[str, Any]) -> str:
+    comp_details = _measured_details(completeness)
+    access = comp_details.get("accessibility", {})
+    access = access if isinstance(access, dict) else {}
+    stops = _numeric_percent(
+        access.get("stops_stated_pct", comp_details.get("wheelchair_boarding_pct"))
+    )
+    trips = _numeric_percent(
+        access.get("trips_stated_pct", comp_details.get("wheelchair_accessible_pct"))
+    )
+    if stops is not None and trips is not None:
+        text = (
+            f"Accessibility information is stated for {_plain_number(stops)}% of stops and "
+            f"{_plain_number(trips)}% of trips."
+        )
+    elif stops is not None:
+        text = (
+            f"Accessibility information is stated for {_plain_number(stops)}% of stops; "
+            "trip coverage is not known."
+        )
+    elif trips is not None:
+        text = (
+            f"Accessibility information is stated for {_plain_number(trips)}% of trips; "
+            "stop coverage is not known."
+        )
+    else:
+        text = "Published accessibility-data coverage is not known from this scorecard."
+    return text + (
+        " This measures published data, not whether stops or vehicles are physically usable."
+    )
+
+
+def _rider_fare_text(completeness: dict[str, Any]) -> str:
+    comp_details = _measured_details(completeness)
+    fare_free = comp_details.get("fare_free")
+    has_fares = comp_details.get("has_fares")
+    fares = comp_details.get("fares", {})
+    fares = fares if isinstance(fares, dict) else {}
+    if fare_free is True:
+        return "The feed marks this service as fare-free."
+    if has_fares is True:
+        model = fares.get("model")
+        model_label = (
+            {"legacy": "GTFS Fares v1", "v2": "GTFS Fares v2"}.get(model)
+            if isinstance(model, str)
+            else None
+        )
+        if model_label is None and isinstance(model, str) and model:
+            model_label = model
+        return (
+            f"Fare information is published using {esc(model_label)}."
+            if model_label
+            else "Fare information is published in the feed."
+        )
+    if has_fares is False and fare_free is False:
+        return "No fare information is published in the feed."
+    return "Fare-information availability is not known from this scorecard."
+
+
+def _rider_live_text(realtime: dict[str, Any]) -> str:
+    rt_details = realtime.get("details", {})
+    rt_details = rt_details if isinstance(rt_details, dict) else {}
+    coverage = (
+        _numeric_percent(rt_details.get("coverage_pct"))
+        if realtime.get("status") == "measured"
+        else None
+    )
+    reachable = _numeric_percent(rt_details.get("kinds_reachable"))
+    if coverage is not None:
+        return (
+            f"Live-arrival data covered {_plain_number(coverage)}% of scheduled trips "
+            "in the sampled window."
+        )
+    if realtime.get("status") == "measured" and reachable is not None and reachable > 0:
+        return "One or more realtime feeds were reachable; live-arrival coverage is not known."
+    if realtime.get("status") == "measured" and reachable == 0:
+        return "No realtime feed was reachable during sampling."
+    return "Realtime-feed availability and live-arrival coverage are not known from this scorecard."
+
+
+def _plain_number(value: float) -> str:
+    """A stable, compact number for static/interactive disclosure parity."""
+    rounded = round(value, 1)
+    return str(int(rounded)) if rounded.is_integer() else f"{rounded:.1f}"
+
+
 def _load_effort_bands() -> dict[str, str]:
     """Code -> empirical effort band, from the corpus calibration file.
 
@@ -1831,6 +1977,7 @@ def _render_agency(
       {fixes_html}
       {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
+    {_rider_impact_section(artifact)}
     {_vendor_block}
     {_outreach_block}
     {_route_rule()}
@@ -2902,7 +3049,7 @@ def _numeric_percent(value: Any) -> float | None:
     """
     if isinstance(value, bool):
         return None
-    if isinstance(value, int | float):
+    if isinstance(value, int | float) and math.isfinite(value):
         return float(value)
     return None
 

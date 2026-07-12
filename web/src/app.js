@@ -937,6 +937,7 @@ function renderScorecard(artifact, history, dirRecord) {
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       ${fixes}
     </section>
+    ${riderImpactSection(artifact)}
 
     ${routeRule()}
     <section aria-labelledby="cats-h" class="reveal">
@@ -977,6 +978,86 @@ function renderScorecard(artifact, history, dirRecord) {
     </section>`;
 
   setupFindings(findings);
+}
+
+/** A closed, presentation-only rider summary derived from existing artifact fields.
+ *  Unknown values stay neutral and this never becomes a service-quality score.
+ *  @param {any} artifact @returns {string} */
+function riderImpactSection(artifact) {
+  const categories = artifact?.categories || {};
+  const freshness = categories.freshness || {};
+  const freshDetails = freshness.details || {};
+  const days = freshness.status === "measured" ? numericValue(freshDetails.days_until_expiry) : null;
+  let schedule;
+  if (days === null) schedule = "Schedule visibility is not known from this scorecard.";
+  else if (days > 0) schedule = `The feed's last published service date is in ${plainNumber(days)} days.`;
+  else if (days === 0) schedule = "The feed's last published service date is today.";
+  else schedule = `The feed's last published service date was ${plainNumber(Math.abs(days))} days ago.`;
+
+  const completeness = categories.completeness || {};
+  const compDetails = completeness.status === "measured" ? completeness.details || {} : {};
+  const access = compDetails.accessibility || {};
+  const stops = numericValue(access.stops_stated_pct ?? compDetails.wheelchair_boarding_pct);
+  const trips = numericValue(access.trips_stated_pct ?? compDetails.wheelchair_accessible_pct);
+  let accessibility;
+  if (stops !== null && trips !== null)
+    accessibility = `Accessibility information is stated for ${plainNumber(stops)}% of stops and ${plainNumber(trips)}% of trips.`;
+  else if (stops !== null)
+    accessibility = `Accessibility information is stated for ${plainNumber(stops)}% of stops; trip coverage is not known.`;
+  else if (trips !== null)
+    accessibility = `Accessibility information is stated for ${plainNumber(trips)}% of trips; stop coverage is not known.`;
+  else accessibility = "Published accessibility-data coverage is not known from this scorecard.";
+  accessibility += " This measures published data, not whether stops or vehicles are physically usable.";
+
+  let fare;
+  if (compDetails.fare_free === true) fare = "The feed marks this service as fare-free.";
+  else if (compDetails.has_fares === true) {
+    const model = compDetails.fares?.model;
+    const modelLabel = { legacy: "GTFS Fares v1", v2: "GTFS Fares v2" }[model] || model;
+    fare = modelLabel
+      ? `Fare information is published using ${esc(String(modelLabel))}.`
+      : "Fare information is published in the feed.";
+  } else if (compDetails.has_fares === false && compDetails.fare_free === false)
+    fare = "No fare information is published in the feed.";
+  else fare = "Fare-information availability is not known from this scorecard.";
+
+  const realtime = categories.realtime || {};
+  const rtDetails = realtime.details || {};
+  const coverage = realtime.status === "measured" ? numericValue(rtDetails.coverage_pct) : null;
+  const reachable = numericValue(rtDetails.kinds_reachable);
+  let live;
+  if (coverage !== null)
+    live = `Live-arrival data covered ${plainNumber(coverage)}% of scheduled trips in the sampled window.`;
+  else if (realtime.status === "measured" && reachable !== null && reachable > 0)
+    live = "One or more realtime feeds were reachable; live-arrival coverage is not known.";
+  else if (realtime.status === "measured" && reachable === 0)
+    live = "No realtime feed was reachable during sampling.";
+  else live = "Realtime-feed availability and live-arrival coverage are not known from this scorecard.";
+
+  return `<details class="rider-impact" id="rider-impact">
+    <summary>Rider view: what this feed publishes</summary>
+    <p class="rider-impact-intro">A quick read of rider-facing information in this feed.</p>
+    <dl>
+      <dt>Schedule visibility</dt><dd>${schedule}</dd>
+      <dt>Published accessibility data</dt><dd>${accessibility}</dd>
+      <dt>Fare information</dt><dd>${fare}</dd>
+      <dt>Realtime information</dt><dd>${live}</dd>
+    </dl>
+    <p class="rider-impact-boundary"><strong>Important:</strong> This does not rate service
+      reliability. Riders should confirm current service alerts, fares, and accessibility
+      accommodations with the transit operator before traveling.</p>
+  </details>`;
+}
+
+/** @param {unknown} value @returns {number|null} */
+function numericValue(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+/** @param {number} value @returns {string} */
+function plainNumber(value) {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
 }
 
 /** Split-flap grade reel that lands on the agency's grade. @param {string} grade */

@@ -2266,6 +2266,20 @@ main p,
 .fixloop-step:last-child { margin-bottom: 0; }
 .fixloop-close { font-size: 0.9rem; line-height: 1.45; margin-top: 0.85rem; max-width: var(--measure); }
 
+/* Optional rider read: closed by default so the grade-to-fixes workflow stays
+   primary. Native details/summary supplies keyboard and screen-reader behavior. */
+.rider-impact {
+  max-width: var(--measure); margin: 1.25rem 0 0; padding: 0.15rem 0.85rem 0.85rem;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-deep);
+}
+.rider-impact > summary { cursor: pointer; padding: 0.65rem 0; font-weight: 700; }
+.rider-impact > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.rider-impact-intro { margin: 0 0 0.65rem; color: var(--ink-soft); }
+.rider-impact dl { margin: 0; }
+.rider-impact dt { margin-top: 0.55rem; font-weight: 700; }
+.rider-impact dd { margin: 0.1rem 0 0; }
+.rider-impact-boundary { margin: 0.9rem 0 0; padding-top: 0.7rem; border-top: 1px solid var(--line); }
+
 /* ===================================================================
    Call-prep brief: a calm one-pager a liaison can print or screen-share.
    Black-on-white, one page, no site chrome (see the print block below).
