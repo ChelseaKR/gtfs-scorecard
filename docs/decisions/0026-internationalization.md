@@ -152,6 +152,16 @@ is open and small-area; most other countries would start from population-only
 geometry. The Global South GTFS landscape stayed unanswered in that pass and is
 being researched separately.
 
+## Update (2026-07): portable directory navigation
+
+The interactive directory now reads the additive country and subdivision
+rollups described here. It exposes country-scoped subdivision controls and
+portable `?country=CA&subdivision=CA-ON` links while retaining the US state
+choropleth. Existing `?state=California` bookmarks are interpreted as US
+subdivisions and are rewritten only after the visitor changes a control. A
+directory document without the new fields continues to use the former state
+controls, which keeps partial and cached deployments usable.
+
 ## Related
 
 ADR 0015 (equity, state-level first), 0016 (NTD id alignment), 0025

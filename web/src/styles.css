@@ -756,9 +756,20 @@ main:focus { outline: none; }
 .movement-band .movement-down { background: var(--grade-f); }
 .movement-note { margin: 0.45rem 0 0; color: var(--ink-soft); font-size: 0.78rem; }
 
-/* browse by state */
+/* browse by location */
 .state-browse { margin: 0 0 1.4rem; }
 .state-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.country-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.location-groups { display: grid; gap: 1rem; }
+.location-group {
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.location-group h3 { margin: 0 0 0.6rem; font-size: 1rem; }
+.location-group[hidden] { display: none; }
+.map-beyond-country { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
 .state-chip {
   font: inherit;
   font-size: 0.9rem;

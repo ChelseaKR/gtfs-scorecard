@@ -162,6 +162,12 @@ function esc(text) {
   return div.innerHTML;
 }
 
+/** Encode untrusted text for a quoted HTML attribute. `esc` deliberately
+ *  targets element text and therefore leaves quotes alone. @param {string} text */
+function escAttr(text) {
+  return esc(text).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+}
+
 /** @param {string} grade @returns {string} */
 function gradeClass(grade) {
   return `grade-${grade.toLowerCase()}`;
@@ -199,6 +205,7 @@ async function directoryRecord(id) {
 }
 
 const RESULTS_PAGE = 80; // cards rendered per "show more" step
+const UNLOCATED_SUBDIVISION = "UNLOCATED";
 
 /** Plain-language peer context for one directory card from its size-peer
  *  percentile. Reads the normalized card record (pct, tier).
@@ -246,7 +253,7 @@ function expiredQuintile(share) {
  *  summary rows. States with no tracked agencies render faint and inert.
  *  @param {{viewBox: string, states: Record<string,string>}} mapData
  *  @param {Record<string, any>} byState @returns {string} */
-function buildMapSvg(mapData, byState) {
+function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations = false) {
   const paths = Object.entries(mapData.states)
     .map(([name, d]) => {
       const row = byState[name];
@@ -257,8 +264,14 @@ function buildMapSvg(mapData, byState) {
       const q = expiredQuintile(row.expired / row.agencies);
       const noun = row.agencies === 1 ? "agency" : "agencies";
       const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
-      return `<path d="${d}" class="us-state q${q}" data-state="${esc(name)}"
-        tabindex="0" role="button" aria-label="${esc(label)} — filter to this state"><title>${esc(label)}</title></path>`;
+      const subdivision = subdivisionCodes[name] || "";
+      if (portableLocations && !subdivision) {
+        return `<path d="${d}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
+      }
+      return `<path d="${d}" class="us-state q${q}" data-country="US" data-state="${escAttr(name)}"
+        data-subdivision="${escAttr(subdivision)}" data-subdivision-name="${escAttr(name)}"
+        tabindex="0" role="button" aria-pressed="false"
+        aria-label="${escAttr(label)} — filter to this state"><title>${esc(label)}</title></path>`;
     })
     .join("");
   const legend = [
@@ -277,21 +290,85 @@ function buildMapSvg(mapData, byState) {
     <p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
 }
 
-/** Places the US choropleth cannot draw (Canada), rendered beside the map as
- *  working filter chips so a non-US agency is visible where eyes actually go,
- *  not only in the browse grid further down.
- *  @param {any[]} states */
-function beyondUsMapHtml(states) {
-  const beyond = (states || []).filter((r) => r.state === "Canada");
+/** Countries and subdivisions the US choropleth cannot draw. These are real
+ *  location controls, not a Canada-only exception, so additional countries
+ *  become discoverable without another frontend change. @param {any[]} countries */
+function beyondUsMapHtml(countries) {
+  const beyond = (countries || []).filter((r) => r.country_code !== "US");
   if (!beyond.length) return "";
   const chips = beyond
     .map(
-      (r) =>
-        `<button type="button" class="state-chip" data-state="${esc(r.state)}" aria-pressed="false">
-        ${esc(r.state)} <span class="state-n">${r.agencies}</span></button>`
+      (country) => {
+        const code = country.country_code || "";
+        const subdivisions = (country.subdivisions || [])
+          .map(
+            (row) => `<button type="button" class="state-chip location-subdivision"
+              data-country="${escAttr(code)}" data-subdivision="${escAttr(row.subdivision_code || UNLOCATED_SUBDIVISION)}"
+              data-subdivision-name="${escAttr(row.subdivision_name)}"
+              aria-pressed="false">${esc(row.subdivision_name)}
+              <span class="state-n">${row.agencies}</span></button>`
+          )
+          .join(" ");
+        return `<span class="map-beyond-country"><button type="button" class="state-chip location-country"
+          data-country="${escAttr(code)}" aria-pressed="false">${esc(country.country_name)}
+          <span class="state-n">${country.agencies}</span></button> ${subdivisions}</span>`;
+      }
     )
     .join(" ");
   return `<p class="map-beyond">Not on this US map: ${chips}</p>`;
+}
+
+/** Portable country and subdivision controls when the directory exposes the
+ *  location contract. Older directory documents retain their state controls.
+ *  @param {any[]} countries @param {any[]} states @returns {string} */
+function locationControlsHtml(countries, states) {
+  if (!(countries || []).length) {
+    const rows = (states || []).filter((row) => row.state !== "Unlocated");
+    const unlocated = (states || []).find((row) => row.state === "Unlocated");
+    const chips = rows
+      .map(
+        (row) => `<button type="button" class="state-chip legacy-location"
+          data-state="${escAttr(row.state)}" aria-pressed="false">${esc(row.state)}
+          <span class="state-n">${row.agencies}</span></button>`
+      )
+      .join("");
+    const unknown = unlocated
+      ? `<button type="button" class="state-chip state-chip-muted legacy-location"
+          data-state="Unlocated" aria-pressed="false">Unlocated
+          <span class="state-n">${unlocated.agencies}</span></button>`
+      : "";
+    return `<div class="state-grid" role="group" aria-label="Filter agencies by state">
+      ${chips}${unknown}</div>`;
+  }
+
+  const countryChips = countries
+    .map(
+      (country) => `<button type="button" class="state-chip location-country"
+        data-country="${escAttr(country.country_code || "")}" aria-pressed="false">
+        ${esc(country.country_name)} <span class="state-n">${country.agencies}</span></button>`
+    )
+    .join("");
+  const groups = countries
+    .map((country) => {
+      const code = country.country_code || "";
+      const chips = (country.subdivisions || [])
+        .map(
+          (row) => `<button type="button" class="state-chip location-subdivision"
+            data-country="${escAttr(code)}" data-subdivision="${escAttr(row.subdivision_code || UNLOCATED_SUBDIVISION)}"
+            data-subdivision-name="${escAttr(row.subdivision_name)}"
+            aria-pressed="false">${esc(row.subdivision_name)}
+            <span class="state-n">${row.agencies}</span></button>`
+        )
+        .join("");
+      return `<section class="location-group" data-location-group="${escAttr(code)}"
+        aria-labelledby="location-${escAttr(code || "unknown")}">
+        <h3 id="location-${escAttr(code || "unknown")}">${esc(country.country_name)}</h3>
+        <div class="state-grid" role="group" aria-label="Filter by ${escAttr(country.country_name)} subdivision">
+          ${chips}</div></section>`;
+    })
+    .join("");
+  return `<div class="country-grid" role="group" aria-label="Filter agencies by country">
+      ${countryChips}</div><div class="location-groups">${groups}</div>`;
 }
 
 /** @param {any} directory */
@@ -299,6 +376,10 @@ function renderOverview(directory) {
   document.title = "GTFS Scorecard — transit data quality, agency by agency";
   const s = directory.summary;
   const cohort = getCohort();
+  const countries = Array.isArray(s.countries) ? s.countries : [];
+  const countryNames = Object.fromEntries(
+    countries.map((country) => [country.country_code || "", country.country_name])
+  );
   // Normalize each agency into a flat record the filter/sort/cards reuse.
   const agencies = directory.agencies
     .map((a) => ({
@@ -306,12 +387,16 @@ function renderOverview(directory) {
       name: a.name,
       grade: String(a.grade),
       score: Number(a.score),
-      state: a.state || (a.country === "CA" ? "Canada" : ""),
+      state: a.state || "",
+      country: a.country || "",
+      countryName: countryNames[a.country || ""] || (a.country === "US" ? "United States" : a.country === "CA" ? "Canada" : ""),
+      subdivision: a.subdivision_code || UNLOCATED_SUBDIVISION,
+      subdivisionName: a.subdivision_name || a.state || "",
       tier: a.size_tier || "unknown",
       expiry: a.expiry_status || "unknown",
       pct: a.peer_percentile,
       date: a.snapshot_date,
-      search: `${a.name} ${a.id} ${a.state || ""} ${a.country === "CA" ? "canada" : ""}`.toLowerCase(),
+      search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
     .sort((x, y) => compareText(x.name, y.name));
 
@@ -319,35 +404,19 @@ function renderOverview(directory) {
   const expired = s.expired || { total: 0 };
   const stat = (num, lab) => `<div class="stat"><span class="stat-num">${num}</span><span class="stat-lab">${lab}</span></div>`;
 
-  // Browse-by-state grid, biggest first. Each state is a toggle that filters the
-  // results below; "Unlocated" is shown last so it never crowds out real places.
-  const stateRows = (s.states || []).filter((r) => r.state !== "Unlocated");
-  const unlocated = (s.states || []).find((r) => r.state === "Unlocated");
-  const stateChips = stateRows
-    .map(
-      (r) =>
-        `<button type="button" class="state-chip" data-state="${esc(r.state)}" aria-pressed="false">
-        ${esc(r.state)} <span class="state-n">${r.agencies}</span></button>`
-    )
-    .join("");
-  const unlocatedChip = unlocated
-    ? `<button type="button" class="state-chip state-chip-muted" data-state="Unlocated" aria-pressed="false">
-        Unlocated <span class="state-n">${unlocated.agencies}</span></button>`
-    : "";
-
   const facet = (key, label) =>
     `<button type="button" class="facet-chip" data-facet="${key}" aria-pressed="${key === "all"}">${label}</button>`;
 
   main.innerHTML = `
-    <h1 class="page-title reveal">How is the country's transit data doing?</h1>
+    <h1 class="page-title reveal">How is transit data doing?</h1>
     <p class="page-lede reveal">Every published
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed we track, read
-    daily and graded in plain language. Find your agency, or browse a state to see the ones that
+    daily and graded in plain language. Find your agency, or browse a location to see the ones that
     need a call. The same directory exists as
     <a href="/agencies/">plain linkable pages</a>; this view adds live search and filters.</p>
 
     <section class="overview-summary reveal" aria-labelledby="ov-h">
-      <h2 class="visually-hidden" id="ov-h">National summary</h2>
+      <h2 class="visually-hidden" id="ov-h">Directory summary</h2>
       <div class="summary-stats">
         ${stat(formatNumber(total), "agencies tracked")}
         ${stat(s.median_score == null ? "—" : s.median_score, "median score")}
@@ -358,7 +427,7 @@ function renderOverview(directory) {
     </section>
 
     <div class="picker-controls reveal">
-      <label for="agency-search" class="visually-hidden">Search agencies by name or state</label>
+      <label for="agency-search" class="visually-hidden">Search agencies by name, country, or subdivision</label>
       <input id="agency-search" class="agency-search" type="search" autocomplete="off"
         enterkeyhint="search" aria-controls="agency-list"
         placeholder="Find your agency among ${formatNumber(total)}…">
@@ -378,18 +447,16 @@ function renderOverview(directory) {
       ${facet("lapsed", "Recently lapsed")}${facet("stale", "Long expired")}
     </div>
 
-    <section class="state-browse reveal" aria-labelledby="states-h">
-      <h2 class="section-title" id="states-h">Browse by state</h2>
+    <section class="state-browse reveal" aria-labelledby="locations-h">
+      <h2 class="section-title" id="locations-h">Browse by location</h2>
       <div class="us-map" id="us-map" hidden></div>
-      <div class="state-grid" role="group" aria-label="Filter agencies by state">
-        ${stateChips}${unlocatedChip}
-      </div>
+      ${locationControlsHtml(countries, s.states || [])}
     </section>
 
     <p class="agency-count" role="status" aria-live="polite"></p>
     <ul class="agency-list" id="agency-list"></ul>
     <p class="results-hint" id="results-hint">Search by name, pick a grade or size, or choose a
-      state above to list agencies.</p>
+      location above to list agencies.</p>
     <p class="no-match" hidden>No agencies match.
       <button type="button" class="linklike" id="clear-search">Clear filters</button></p>
     <div class="show-more-wrap" hidden><button type="button" class="show-more" id="show-more">Show more</button></div>
@@ -404,8 +471,8 @@ function renderOverview(directory) {
   setupOverview(agencies, total, s);
 }
 
-/** Wire the directory: search, grade/size/expiry facet, state selection (chips
- *  and the choropleth), and sort, composed together. The list renders only when
+/** Wire the directory: search, grade/size/expiry facet, portable location
+ *  selection (controls and the US choropleth), and sort, composed together. The list renders only when
  *  a filter is active, and in pages, so the national set never paints ~1,200
  *  cards at once.
  *  @param {Array<any>} agencies @param {number} total @param {any} summary */
@@ -420,21 +487,72 @@ function setupOverview(agencies, total, summary) {
   const moreWrap = /** @type {HTMLElement} */ (main.querySelector(".show-more-wrap"));
   const moreBtn = /** @type {HTMLElement} */ (main.querySelector("#show-more"));
   const facetBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".facet-chip")));
-  const stateBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".state-chip")));
+  const countryBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".location-country")));
+  const subdivisionBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".location-subdivision")));
+  const legacyStateBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".legacy-location")));
+  const locationGroups = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".location-group")));
   const myLink = /** @type {HTMLElement} */ (main.querySelector("#my-agencies"));
 
-  // Deep-linkable filters: restore the view (state, facet, search, sort) from the
-  // URL so a filtered list can be shared or bookmarked, and write it back as the
-  // filters change. Mirrors the #/cohort route, which already carries its ids.
+  // Deep-linkable filters: prefer portable country/subdivision keys while still
+  // accepting the former ?state= links. An old bookmark is left byte-for-byte
+  // alone until the visitor changes a control, when it is canonicalized.
   const defaultSort = sortSel.value;
   const urlQi = location.hash.indexOf("?");
   const urlParams = new URLSearchParams(urlQi >= 0 ? location.hash.slice(urlQi + 1) : "");
   const facetValues = new Set(facetBtns.map((b) => b.dataset.facet));
   const wantFacet = urlParams.get("facet");
   let facet = facetValues.has(wantFacet) ? wantFacet : "all";
-  const stateValues = new Set(stateBtns.map((b) => b.dataset.state));
-  const wantState = urlParams.get("state");
-  let state = stateValues.has(wantState) ? wantState : "all";
+  const portableLocations = countryBtns.length > 0;
+  const countryValues = new Set(countryBtns.map((button) => button.dataset.country || ""));
+  const subdivisions = subdivisionBtns.map((button) => ({
+    code: button.dataset.subdivision || "",
+    country: button.dataset.country || "",
+  }));
+  const legacyStateValues = new Set(legacyStateBtns.map((button) => button.dataset.state));
+  const locationFilter = { country: "all", subdivision: "all", legacyState: "all" };
+  const wantCountry = urlParams.get("country")?.toUpperCase() || null;
+  const wantSubdivision = urlParams.get("subdivision")?.toUpperCase() || null;
+  const subdivisionLocation =
+    wantSubdivision === null
+      ? null
+      : subdivisions.find(
+          (row) =>
+            row.code === wantSubdivision &&
+            (wantSubdivision !== UNLOCATED_SUBDIVISION || row.country === wantCountry)
+        );
+  // A globally unique ISO 3166-2 subdivision is the strongest location key and
+  // determines its parent. Otherwise retain a valid country and discard an
+  // inconsistent child. Only then consult the legacy state parameter.
+  if (portableLocations && subdivisionLocation) {
+    locationFilter.country = subdivisionLocation.country;
+    locationFilter.subdivision = wantSubdivision || "all";
+  } else if (portableLocations && wantCountry !== null && countryValues.has(wantCountry)) {
+    locationFilter.country = wantCountry;
+  } else if (portableLocations && urlParams.has("state")) {
+    const oldState = urlParams.get("state") || "";
+    const usMatch = subdivisionBtns.find(
+      (button) =>
+        button.dataset.country === "US" &&
+        button.dataset.subdivisionName === oldState
+    );
+    if (usMatch) {
+      locationFilter.country = "US";
+      locationFilter.subdivision = usMatch.dataset.subdivision || "all";
+    } else if (oldState === "Canada" && countryValues.has("CA")) {
+      locationFilter.country = "CA";
+    } else if (
+      oldState === "Unlocated" &&
+      subdivisions.some(
+        (row) => row.country === "US" && row.code === UNLOCATED_SUBDIVISION
+      )
+    ) {
+      locationFilter.country = "US";
+      locationFilter.subdivision = UNLOCATED_SUBDIVISION;
+    }
+  } else if (!portableLocations) {
+    const wantState = urlParams.get("state");
+    locationFilter.legacyState = legacyStateValues.has(wantState) ? wantState : "all";
+  }
   let shown = 0; // how many of the current matches are painted
   let matches = /** @type {any[]} */ ([]);
   const qParam = urlParams.get("q");
@@ -447,9 +565,16 @@ function setupOverview(agencies, total, summary) {
 
   // Reflect the live filter state in the URL without reloading the route:
   // replaceState never fires hashchange, so route() is not re-run.
+  let userInteracted = false;
   function syncUrl() {
+    if (!userInteracted) return;
     const p = new URLSearchParams();
-    if (state !== "all") p.set("state", state);
+    if (portableLocations) {
+      if (locationFilter.country !== "all") p.set("country", locationFilter.country);
+      if (locationFilter.subdivision !== "all") p.set("subdivision", locationFilter.subdivision);
+    } else if (locationFilter.legacyState !== "all") {
+      p.set("state", locationFilter.legacyState);
+    }
     if (facet !== "all") p.set("facet", facet);
     const q = input.value.trim();
     if (q) p.set("q", q);
@@ -478,7 +603,8 @@ function setupOverview(agencies, total, summary) {
     const cohort = getCohort();
     const followed = cohort.has(a.id);
     const note = peerNote(a);
-    const where = a.state ? ` · ${esc(a.state)}` : "";
+    const place = a.subdivisionName || a.countryName || a.state;
+    const where = place ? ` · ${esc(place)}` : "";
     return `<li class="agency-card">
       <span class="grade-chip ${gradeClass(a.grade)}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
       <div>
@@ -507,7 +633,12 @@ function setupOverview(agencies, total, summary) {
   function apply() {
     syncUrl();
     const tokens = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const active = tokens.length || facet !== "all" || state !== "all";
+    const active =
+      tokens.length ||
+      facet !== "all" ||
+      locationFilter.country !== "all" ||
+      locationFilter.subdivision !== "all" ||
+      locationFilter.legacyState !== "all";
     hint.hidden = active;
     list.innerHTML = "";
     shown = 0;
@@ -523,7 +654,11 @@ function setupOverview(agencies, total, summary) {
         (a) =>
           tokens.every((t) => a.search.includes(t)) &&
           matchesFacet(a) &&
-          (state === "all" || a.state === state)
+          (locationFilter.country === "all" || a.country === locationFilter.country) &&
+          (locationFilter.subdivision === "all" || a.subdivision === locationFilter.subdivision) &&
+          (locationFilter.legacyState === "all" ||
+            a.state === locationFilter.legacyState ||
+            (locationFilter.legacyState === "Canada" && a.country === "CA"))
       )
     );
     const noun = matches.length === 1 ? "agency" : "agencies";
@@ -532,36 +667,111 @@ function setupOverview(agencies, total, summary) {
     paintMore();
   }
 
-  input.addEventListener("input", apply);
-  sortSel.addEventListener("change", apply);
+  input.addEventListener("input", () => {
+    userInteracted = true;
+    apply();
+  });
+  sortSel.addEventListener("change", () => {
+    userInteracted = true;
+    apply();
+  });
   moreBtn.addEventListener("click", paintMore);
   for (const btn of facetBtns) {
     btn.addEventListener("click", () => {
+      userInteracted = true;
       facet = btn.dataset.facet || "all";
       for (const b of facetBtns) b.setAttribute("aria-pressed", String(b === btn));
       apply();
     });
   }
-  // State can be picked from a chip or the choropleth; keep both in sync.
+  // Location can be picked from a chip or the choropleth; keep duplicates and
+  // native button pressed states in sync. Group visibility follows country.
   let mapPaths = /** @type {HTMLElement[]} */ ([]);
-  function syncStateUI() {
-    for (const b of stateBtns) b.setAttribute("aria-pressed", String(b.dataset.state === state));
-    for (const p of mapPaths) p.classList.toggle("selected", p.dataset.state === state);
+  function syncLocationUI() {
+    for (const button of countryBtns) {
+      button.setAttribute("aria-pressed", String(button.dataset.country === locationFilter.country));
+    }
+    for (const button of subdivisionBtns) {
+      button.setAttribute(
+        "aria-pressed",
+        String(
+          locationFilter.subdivision !== "all" &&
+            button.dataset.subdivision === locationFilter.subdivision &&
+            button.dataset.country === locationFilter.country
+        )
+      );
+    }
+    for (const button of legacyStateBtns) {
+      button.setAttribute("aria-pressed", String(button.dataset.state === locationFilter.legacyState));
+    }
+    for (const group of locationGroups) {
+      group.hidden =
+        locationFilter.country !== "all" && group.dataset.locationGroup !== locationFilter.country;
+    }
+    for (const path of mapPaths) {
+      const selected = portableLocations
+        ? locationFilter.subdivision !== "all" &&
+          path.dataset.country === locationFilter.country &&
+          path.dataset.subdivision === locationFilter.subdivision
+        : path.dataset.state === locationFilter.legacyState;
+      path.classList.toggle("selected", selected);
+      path.setAttribute(
+        "aria-pressed",
+        String(selected)
+      );
+    }
   }
-  function selectState(name) {
-    state = state === name ? "all" : name; // pick again to clear
-    syncStateUI();
+  function selectCountry(code) {
+    userInteracted = true;
+    if (locationFilter.country === code && locationFilter.subdivision === "all") {
+      locationFilter.country = "all";
+    } else {
+      locationFilter.country = code;
+    }
+    locationFilter.subdivision = "all";
+    syncLocationUI();
     apply();
   }
-  for (const btn of stateBtns) {
-    btn.addEventListener("click", () => selectState(btn.dataset.state || "all"));
+  function selectSubdivision(code, parentCountry) {
+    userInteracted = true;
+    if (
+      locationFilter.subdivision === code &&
+      locationFilter.country === parentCountry
+    ) {
+      locationFilter.subdivision = "all";
+    } else {
+      locationFilter.country = parentCountry;
+      locationFilter.subdivision = code;
+    }
+    syncLocationUI();
+    apply();
+  }
+  function selectLegacyState(name) {
+    userInteracted = true;
+    locationFilter.legacyState = locationFilter.legacyState === name ? "all" : name;
+    syncLocationUI();
+    apply();
+  }
+  for (const button of countryBtns) {
+    button.addEventListener("click", () => selectCountry(button.dataset.country || ""));
+  }
+  for (const button of subdivisionBtns) {
+    button.addEventListener("click", () =>
+      selectSubdivision(button.dataset.subdivision || "", button.dataset.country || "")
+    );
+  }
+  for (const button of legacyStateBtns) {
+    button.addEventListener("click", () => selectLegacyState(button.dataset.state || "all"));
   }
   clear.addEventListener("click", () => {
+    userInteracted = true;
     input.value = "";
     facet = "all";
-    state = "all";
+    locationFilter.country = "all";
+    locationFilter.subdivision = "all";
+    locationFilter.legacyState = "all";
     for (const b of facetBtns) b.setAttribute("aria-pressed", String(b.dataset.facet === "all"));
-    syncStateUI();
+    syncLocationUI();
     apply();
     input.focus();
   });
@@ -583,25 +793,50 @@ function setupOverview(agencies, total, summary) {
     }
     const byState = {};
     for (const r of summary.states || []) byState[r.state] = r;
-    host.innerHTML = buildMapSvg(mapData, byState) + beyondUsMapHtml(summary.states);
+    const countries = Array.isArray(summary.countries) ? summary.countries : [];
+    const us = countries.find((row) => row.country_code === "US");
+    const subdivisionCodes = Object.fromEntries(
+      (us?.subdivisions || []).map((row) => [row.subdivision_name, row.subdivision_code || ""])
+    );
+    host.innerHTML =
+      buildMapSvg(mapData, byState, subdivisionCodes, portableLocations) +
+      (portableLocations ? beyondUsMapHtml(countries) : "");
     host.hidden = false;
-    // The beyond-US chips arrive after the initial chip wiring, so wire them
-    // here and fold them into stateBtns so aria-pressed stays in sync.
-    for (const chip of Array.from(host.querySelectorAll(".state-chip"))) {
-      chip.addEventListener("click", () => selectState(chip.dataset.state || "all"));
-      stateBtns.push(/** @type {HTMLElement} */ (chip));
+    // The beyond-US controls arrive after initial wiring. Add them to the same
+    // arrays so their pressed state mirrors the main location controls.
+    for (const button of Array.from(host.querySelectorAll(".location-country"))) {
+      button.addEventListener("click", () => selectCountry(button.dataset.country || ""));
+      countryBtns.push(/** @type {HTMLElement} */ (button));
     }
-    mapPaths = /** @type {HTMLElement[]} */ (Array.from(host.querySelectorAll("path[data-state]")));
+    for (const button of Array.from(host.querySelectorAll(".location-subdivision"))) {
+      button.addEventListener("click", () =>
+        selectSubdivision(button.dataset.subdivision || "", button.dataset.country || "")
+      );
+      subdivisionBtns.push(/** @type {HTMLElement} */ (button));
+    }
+    mapPaths = /** @type {HTMLElement[]} */ (
+      Array.from(host.querySelectorAll(portableLocations ? "path[data-subdivision]" : "path[data-state]"))
+    );
     for (const p of mapPaths) {
-      p.addEventListener("click", () => selectState(p.dataset.state || "all"));
+      p.addEventListener("click", () => {
+        if (portableLocations) {
+          selectSubdivision(p.dataset.subdivision || "", p.dataset.country || "US");
+        } else {
+          selectLegacyState(p.dataset.state || "all");
+        }
+      });
       p.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          selectState(p.dataset.state || "all");
+          if (portableLocations) {
+            selectSubdivision(p.dataset.subdivision || "", p.dataset.country || "US");
+          } else {
+            selectLegacyState(p.dataset.state || "all");
+          }
         }
       });
     }
-    syncStateUI();
+    syncLocationUI();
   })();
 
   // Follow / unfollow agencies into the personal cohort.
@@ -615,7 +850,7 @@ function setupOverview(agencies, total, summary) {
     if (myLink) myLink.textContent = `My agencies${set.size ? ` (${set.size})` : ""}`;
   });
 
-  syncStateUI();
+  syncLocationUI();
   apply();
 }
 
