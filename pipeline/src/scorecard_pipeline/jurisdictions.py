@@ -10,10 +10,13 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from importlib.resources import files
+from importlib.resources import (  # nosemgrep: python.lang.compatibility.python37.python37-compatibility-importlib2  # noqa: E501
+    files,
+)
 from pathlib import Path
 from typing import NoReturn
 
+# The suppressed import rule targets Python 3.6; this package requires 3.12.
 _COUNTRY_CODE = re.compile(r"^[A-Z]{2}$")
 _SUBDIVISION_CODE = re.compile(r"^[A-Z]{2}-[A-Z0-9]{1,3}$")
 _PACKAGED_REGISTRY = "data/iso3166.json"
