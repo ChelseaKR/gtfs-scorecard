@@ -13,6 +13,7 @@ verify:
 	cd pipeline && uv run python scripts/check_contrast.py
 	cd pipeline && uv run python scripts/check_readability.py
 	cd pipeline && uv run python scripts/check_versions.py
+	cd pipeline && uv run python scripts/check_doc_stats.py
 	$(MAKE) no-todos
 
 # CQ-34: keep the repo's current zero-bare-TODO state a merge-blocking gate

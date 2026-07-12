@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/rollup.schema.json",
+  "title": "GTFS Scorecard program rollup",
+  "description": "One program's cohort view: member scorecards worst-first with attention flags, common fixes counted across the cohort, and expiry / shapes-readiness summaries. Additive within a major schema_version: fields added after 1.0 (shapes_readiness, state_percentile, members' shapes_status and annual_trips) stay optional so older published documents still conform. Top level is closed (additionalProperties: false) so a new block cannot reach production without a schema update, the same enforcement point as artifact.schema.json.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "rollup",
+    "generated_at",
+    "agency_count",
+    "average_score",
+    "grade_distribution",
+    "needs_attention",
+    "expired",
+    "members",
+    "common_fixes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "rollup": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "agency_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "average_score": {
+      "type": ["number", "null"]
+    },
+    "grade_distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "A": { "type": "integer", "minimum": 0 },
+        "B": { "type": "integer", "minimum": 0 },
+        "C": { "type": "integer", "minimum": 0 },
+        "D": { "type": "integer", "minimum": 0 },
+        "F": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "needs_attention": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expired": {
+      "type": "object",
+      "required": ["lapsed", "stale", "total"],
+      "additionalProperties": false,
+      "properties": {
+        "lapsed": { "type": "integer", "minimum": 0 },
+        "stale": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "shapes_readiness": {
+      "type": "object",
+      "required": ["ready", "at_risk", "not_ready", "not_measured", "total"],
+      "additionalProperties": false,
+      "properties": {
+        "ready": { "type": "integer", "minimum": 0 },
+        "at_risk": { "type": "integer", "minimum": 0 },
+        "not_ready": { "type": "integer", "minimum": 0 },
+        "not_measured": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "score",
+          "grade",
+          "snapshot_date",
+          "needs_attention",
+          "attention_reason",
+          "days_until_expiry",
+          "expiry_status",
+          "top_fix"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "score": { "type": "number" },
+          "grade": { "enum": ["A", "B", "C", "D", "F"] },
+          "snapshot_date": { "type": "string" },
+          "needs_attention": { "type": "boolean" },
+          "attention_reason": { "type": ["string", "null"] },
+          "days_until_expiry": { "type": ["integer", "null"] },
+          "expiry_status": {
+            "enum": ["current", "expiring_soon", "lapsed", "stale", "unknown"]
+          },
+          "top_fix": { "type": ["string", "null"] },
+          "shapes_status": {
+            "enum": ["ready", "at_risk", "not_ready", null]
+          },
+          "annual_trips": { "type": ["integer", "null"] }
+        }
+      }
+    },
+    "common_fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "fix", "agencies"],
+        "additionalProperties": false,
+        "properties": {
+          "code": { "type": "string" },
+          "fix": { "type": "string" },
+          "agencies": { "type": "integer", "minimum": 2 }
+        }
+      }
+    },
+    "state_percentile": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 100
+    }
+  }
+}
