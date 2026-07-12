@@ -103,6 +103,7 @@ jobs:
               aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}" \
                 "$GITHUB_WORKSPACE/data/artifacts/${id}" \
                 --exclude "*" --include "latest.json" --include "fixlog.json" \
+                --include "structure.json" \
                 --include "${today}.json" --include "${yesterday}.json" \
                 --only-show-errors
             fi

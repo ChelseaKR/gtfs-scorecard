@@ -269,6 +269,21 @@
       "type": "object",
       "description": "Zero-deduction routing usability checks (single-stop trips, orphan stops)."
     },
+    "export_diff": {
+      "type": "object",
+      "description": "What changed in the feed content since the previous export (EXP-18); present only on the run that first scored a changed export with structural differences.",
+      "required": ["from_sha256", "to_sha256", "changes"],
+      "additionalProperties": false,
+      "properties": {
+        "from_sha256": { "type": ["string", "null"] },
+        "to_sha256": { "type": "string" },
+        "changes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
     "ntd_id_alignment": {
       "type": "object",
       "description": "GTFS agency_id vs NTD ID alignment; US agencies only (ADR 0026)."

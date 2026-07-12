@@ -323,3 +323,21 @@ def test_published_rollup_index_conforms_to_its_schema(relative: str) -> None:
     if not path.exists():
         pytest.skip(f"{relative} not in this checkout")
     _validator("rollup-index.schema.json").validate(_load(path))
+
+
+def test_artifact_with_an_export_diff_block_conforms() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["export_diff"] = {
+        "from_sha256": "a" * 64,
+        "to_sha256": "b" * 64,
+        "changes": ["Route 5 is no longer in the export."],
+    }
+    validate_artifact(artifact)
+
+
+def test_export_diff_with_no_changes_is_rejected() -> None:
+    # The block exists only to say what changed; an empty one is a bug.
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["export_diff"] = {"from_sha256": None, "to_sha256": "b" * 64, "changes": []}
+    with pytest.raises(ValidationError, match="non-empty"):
+        validate_artifact(artifact)

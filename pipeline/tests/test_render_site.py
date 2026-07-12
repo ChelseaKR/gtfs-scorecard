@@ -2965,3 +2965,27 @@ def test_render_status_combines_commitment_and_evidence_sections() -> None:
     assert 'href="/api/v1/status.json"' in html
     assert 'href="/api/v1/run-status.json"' in html
     assert html.count("<h1") == 1
+
+
+def test_feeddiff_section_shows_the_export_diff_block_first() -> None:
+    from scorecard_pipeline.render_site import _feeddiff_section
+
+    prev = _diff_artifact(date="2026-06-11", grade="B", score=82.0)
+    cur = _diff_artifact(date="2026-06-12", grade="B", score=82.0, sha256="bbb")
+    cur["export_diff"] = {
+        "from_sha256": "aaa",
+        "to_sha256": "bbb",
+        "changes": ["Route 5 (E Street Express) is no longer in the export."],
+    }
+    html = _feeddiff_section(prev, cur, "acme")
+    assert "What changed inside the export" in html
+    assert "Route 5 (E Street Express) is no longer in the export." in html
+    assert "this is a heads-up" in html
+
+
+def test_feeddiff_section_omits_the_export_block_when_absent() -> None:
+    from scorecard_pipeline.render_site import _feeddiff_section
+
+    prev = _diff_artifact(date="2026-06-11", grade="B", score=82.0)
+    cur = _diff_artifact(date="2026-06-12", grade="C", score=74.0, sha256="bbb")
+    assert "What changed inside the export" not in _feeddiff_section(prev, cur, "acme")

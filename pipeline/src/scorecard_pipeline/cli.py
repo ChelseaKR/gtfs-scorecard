@@ -197,6 +197,18 @@ def run_agency(  # noqa: C901
         # cleanly and the artifact stays free of a dead map reference.
         geometry_path.unlink(missing_ok=True)
         artifact["route_map"] = dict(geometry.summary)
+    # The export diff (EXP-18): what changed in the feed itself since the last
+    # export, diffed from the compact structure fingerprint remembered beside
+    # the artifact. Best-effort by design; a diff must never block a score.
+    from .exportdiff import export_diff
+
+    try:
+        diff_block = export_diff(agency.id, str(fetched.path), fetched.sha256)
+        if diff_block is not None:
+            artifact["export_diff"] = diff_block
+    except Exception as exc:
+        log.warning("%s: export diff failed: %s", agency.id, exc)
+
     # Routing-flavored usability checks (single-stop trips, orphan stops): a
     # zero-deduction block so the grade is unchanged, attached for the page.
     from .routability import assess_routability
