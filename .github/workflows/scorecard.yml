@@ -183,7 +183,8 @@ jobs:
             data/artifacts/index.json --only-show-errors
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --exclude "*" --include "*/fixlog.json" \
-            --include "rollups/*.state.json" --only-show-errors
+            --include "rollups/*.state.json" \
+            --include "coverage-baseline.json" --only-show-errors
       - name: Fetch NTD annual ridership (rider-trips weighting, ADR 0021)
         working-directory: pipeline
         run: |
@@ -239,6 +240,21 @@ jobs:
             echo ""
             cat ../data/artifacts/rollups/digest.md 2>/dev/null || echo "_Digest build failed this run; see the step log._"
           } >> "$GITHUB_STEP_SUMMARY"
+      # FIX-08's weekly advisory: coverage normally only rises as curation
+      # adds entries, so a drop means new high-volume codes are reaching
+      # readers with generic fallback text. Advisory by design — it warns,
+      # it never blocks the run.
+      - name: Weekly plain-language coverage check
+        working-directory: pipeline
+        run: |
+          if [ "$(date -u +%u)" != "1" ]; then
+            echo "Not Monday (UTC); the coverage baseline advances on Mondays."
+            exit 0
+          fi
+          uv run scorecard coverage-check --save | tee coverage-check.log || true
+          if grep -q '^COVERAGE DROP' coverage-check.log; then
+            echo "::warning title=Plain-language coverage dropped::$(cat coverage-check.log)"
+          fi
       # Mirror to the CloudFront-backed bucket once infra/artifacts is applied.
       # Gated on the ARTIFACTS_BUCKET repo variable, so the pilot and forks
       # (which set no variable) skip it entirely and keep serving from Pages.

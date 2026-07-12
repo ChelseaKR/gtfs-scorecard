@@ -186,3 +186,115 @@ def test_gate_exits_nonzero_with_diagnostics(
     out = capsys.readouterr().out
     assert "bad_code.what" in out
     assert "FAILURES" in out
+
+
+# ---- weekly coverage-drop advisory (FIX-08) ---------------------------------
+
+
+def _coverage(instance_weighted: float) -> dict[str, Any]:
+    return {
+        "distinct_code_coverage": 50.0,
+        "instance_weighted_coverage": instance_weighted,
+        "curated_codes": 1,
+        "total_codes": 2,
+        "uncurated_queue": [],
+    }
+
+
+def test_regression_is_silent_with_no_baseline() -> None:
+    from scorecard_pipeline.findings_national import coverage_regression
+
+    assert coverage_regression(None, _coverage(33.3)) is None
+
+
+def test_regression_is_silent_when_coverage_holds_or_rises() -> None:
+    from scorecard_pipeline.findings_national import coverage_regression
+
+    baseline = {"instance_weighted_coverage": 33.3, "as_of": "2026-07-06"}
+    assert coverage_regression(baseline, _coverage(33.3)) is None
+    assert coverage_regression(baseline, _coverage(40.0)) is None
+
+
+def test_regression_names_both_numbers_and_the_baseline_date() -> None:
+    from scorecard_pipeline.findings_national import coverage_regression
+
+    message = coverage_regression(
+        {"instance_weighted_coverage": 40.0, "as_of": "2026-07-06"}, _coverage(33.3)
+    )
+    assert message is not None
+    assert message.startswith("COVERAGE DROP")
+    assert "33.3%" in message and "40.0%" in message and "2026-07-06" in message
+
+
+def _write_latest(agency_id: str, *findings: tuple[str, int]) -> None:
+    from scorecard_pipeline.config import artifacts_dir
+
+    agency_dir = artifacts_dir() / agency_id
+    agency_dir.mkdir(parents=True, exist_ok=True)
+    (agency_dir / "latest.json").write_text(
+        __import__("json").dumps(
+            {"agency": {"id": agency_id, "name": agency_id}, **_artifact(*findings)}
+        )
+    )
+
+
+def _write_registry() -> None:
+    from scorecard_pipeline.config import repo_root
+
+    repo_root().mkdir(parents=True, exist_ok=True)
+    (repo_root() / "agencies.yaml").write_text(
+        "agencies:\n"
+        "  - id: a-one\n"
+        "    name: A One\n"
+        "    static_gtfs_url: https://example.org/gtfs.zip\n"
+    )
+
+
+def test_coverage_check_saves_a_baseline_and_warns_on_a_drop(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """End to end through the CLI: an all-curated corpus saves a 100% baseline,
+    then an uncurated flood in the next run trips the advisory (exit stays 0 —
+    the check warns, it never blocks)."""
+    import json
+
+    from scorecard_pipeline.cli import main
+    from scorecard_pipeline.config import artifacts_dir
+
+    _write_registry()
+    _write_latest("a-one", (CURATED, 5))
+    assert main(["coverage-check", "--save", "--date", "2026-07-06"]) == 0
+    out = capsys.readouterr().out
+    assert out.startswith("OK")
+    baseline = json.loads((artifacts_dir() / "coverage-baseline.json").read_text())
+    assert baseline == {
+        "as_of": "2026-07-06",
+        "distinct_code_coverage": 100.0,
+        "instance_weighted_coverage": 100.0,
+    }
+
+    _write_latest("b-two", ("made_up_notice", 50))
+    assert main(["coverage-check", "--date", "2026-07-13"]) == 0
+    out = capsys.readouterr().out
+    assert out.startswith("COVERAGE DROP")
+    assert "2026-07-06" in out
+    # Preview mode did not consume the baseline.
+    assert json.loads((artifacts_dir() / "coverage-baseline.json").read_text()) == baseline
+
+
+def test_coverage_check_skips_reserved_dirs_and_unreadable_artifacts(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline.cli import main
+    from scorecard_pipeline.config import artifacts_dir
+
+    _write_registry()
+    _write_latest("a-one", (CURATED, 2))
+    (artifacts_dir() / "rollups").mkdir(parents=True, exist_ok=True)
+    (artifacts_dir() / "rollups" / "latest.json").write_text("{}")
+    broken = artifacts_dir() / "b-two"
+    broken.mkdir(parents=True, exist_ok=True)
+    (broken / "latest.json").write_text("{not json")
+    assert main(["coverage-check"]) == 0
+    out = capsys.readouterr().out
+    assert "1 scored agencies" in out

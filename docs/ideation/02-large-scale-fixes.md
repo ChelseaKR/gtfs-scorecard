@@ -15,8 +15,11 @@ Effort tiers: S ≈ days, M ≈ 1–2 weeks, L ≈ a month, XL ≈ a quarter.
 `origin_error`), recorded by `fetch.py` in a `provenance.json` sidecar next to
 each snapshot and threaded through `publish.py:build_artifact`; documented in
 `docs/api.md`. Kept within schema 1.4 (additive fields per the versioning
-rule). Still open from the pitch: the quiet agency-page/catalog render line,
-the `/fetcher/` identity page, and the honest-UA-first experiment.
+rule). The agency-page render line shipped with the confidence read (EXP-01),
+and the `/fetcher/` identity page shipped 2026-07-12 (UA policy, cadence,
+retry and mirror behavior, contact route, linked from the about page and the
+API docs). Still open from the pitch: the honest-UA-first experiment, which
+must be measured against fetch success, never assumed.
 
 **Pitch.** Every artifact should say which bytes were graded and how they were
 obtained: origin or MobilityData mirror, which User-Agent, after how many
@@ -298,9 +301,13 @@ and the top of the queue, noting uncurated codes fall back to generic text.
 `scripts/check_readability.py` gates every curated `what`/`why`/`fix` string
 (avg sentence length <= 22 words, Flesch-style floor >= 50) in `make verify`
 and CI, after the contrast check; seven existing strings were rewritten to
-clear the bar. Still open from the pitch: the mass curation itself (the
-queue's entries becoming `notices.py` entries and fix pages) and the weekly
-advisory check on coverage drops.
+clear the bar. The weekly advisory check shipped 2026-07-12:
+`scorecard coverage-check` compares instance-weighted coverage against a
+saved baseline (advanced Mondays in the daily workflow, persisted through
+S3) and raises a workflow warning on any drop, never a failure. First
+measured value: 33.3% instance-weighted, 44 of 118 codes. Still open from
+the pitch: the mass curation itself (the queue's entries becoming
+`notices.py` entries and fix pages), which is sustained editorial work.
 
 **Pitch.** Turn "grow the translation table" from an intention into a managed
 metric: instance-weighted coverage, a frequency-ranked curation queue, and a
