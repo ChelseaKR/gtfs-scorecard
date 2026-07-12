@@ -21,6 +21,10 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    concurrency:
+      group: artifacts-publish
+      cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       id-token: write # publish refreshed artifacts through AWS OIDC

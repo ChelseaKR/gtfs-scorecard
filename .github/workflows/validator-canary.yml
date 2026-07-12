@@ -65,7 +65,7 @@ jobs:
           SAMPLE_SIZE: ${{ inputs.sample_size }}
           SEED: ${{ inputs.seed }}
         run: |
-          uv run --with boto3 scorecard canary \
+          uv run --with boto3 python -m scorecard_pipeline.cli canary \
             --candidate-version "$CANDIDATE_VERSION" \
             --sample-size "$SAMPLE_SIZE" \
             --seed "$SEED" \

@@ -3161,7 +3161,9 @@ def test_fixlog_page_frames_receipts_as_the_end_of_the_loop() -> None:
     ]
     html = _render_fixlog_page(art, receipts)
     assert "end of the guided fix loop" in html
-    assert "linkable proof for a board packet or NTD" in html
+    assert "linkable proof for a board packet or" in html
+    assert "regulatory filing" in html
+    assert "NTD narrative" not in html
     assert 'href="/agency/demo/"' in html
 
 
