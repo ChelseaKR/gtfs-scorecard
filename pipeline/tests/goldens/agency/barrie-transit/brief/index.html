@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Barrie Transit (Ontario) call-prep brief — GTFS Scorecard</title>
-  <meta name="description" content="Call-prep brief for Barrie Transit (Ontario): grade C, top fixes, NTD readiness, and key feed facts on one page.">
+  <meta name="description" content="Call-prep brief for Barrie Transit (Ontario): grade C, top fixes, guidance, and key feed facts on one page.">
   <link rel="canonical" href="https://gtfsscorecard.org/agency/barrie-transit/brief/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Barrie Transit (Ontario) call-prep brief — GTFS Scorecard">
-  <meta property="og:description" content="Call-prep brief for Barrie Transit (Ontario): grade C, top fixes, NTD readiness, and key feed facts on one page.">
+  <meta property="og:description" content="Call-prep brief for Barrie Transit (Ontario): grade C, top fixes, guidance, and key feed facts on one page.">
   <meta property="og:url" content="https://gtfsscorecard.org/agency/barrie-transit/brief/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -51,7 +51,7 @@
       <p class="brief-grade">Grade C &middot; 72.3 / 100</p>
       <p class="brief-trend">Unchanged since 2026-07-01.</p>
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
-        confirm the feed is current and the NTD details line up. Each fix is framed as a next step,
+        confirm the feed is current and the rider information is complete. Each fix is framed as a next step,
         not a failure.</p>
     </header>
     <section aria-labelledby="brief-changed-h">
@@ -63,11 +63,7 @@
       <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">566 of 566 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">2295 of 2295 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Effort: Often one default setting in your export.</p></li><li class="brief-fix"><p class="brief-fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p class="brief-fix-why">The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="brief-fix-eta">Effort: A small file for most flat-fare systems.</p></li></ol>
     </section>
     
-    <section aria-labelledby="brief-ntd-h">
-      <h2 id="brief-ntd-h">NTD GTFS readiness: unknown</h2>
-      
-      
-    </section>
+
     
     <section aria-labelledby="brief-facts-h">
       <h2 id="brief-facts-h">Key facts</h2>

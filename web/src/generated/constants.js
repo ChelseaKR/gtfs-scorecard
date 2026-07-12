@@ -324,3 +324,102 @@ export const RULE_LINKS = {
     "url": "https://gtfs-validator.mobilitydata.org/rules.html#unused_shape-rule"
   }
 };
+
+export const UNIVERSAL_GUIDANCE = {
+  "category_notes": {
+    "completeness": "GTFS Best Practices for rider-facing fields. MobilityData grading covers stop names and headsigns.",
+    "correctness": "GTFS Schedule best practices, checked by the MobilityData validator. MobilityData grading covers stop locations, route names, and colors. Google Transit requires a feed to pass validation for publication.",
+    "freshness": "GTFS Schedule best practices call for a dataset that stays current. An expired calendar can remove service from Google Transit and other rider trip planners.",
+    "realtime": "GTFS-Realtime best practices: a stable URL, high uptime, and frequent updates."
+  },
+  "name": "GTFS and rider-information guidance",
+  "note": "The scorecard is a data-quality lens, not a compliance determination. Its universal references describe good GTFS and useful rider information.",
+  "references": [
+    {
+      "name": "GTFS Schedule Best Practices",
+      "url": "https://gtfs.org/schedule/best-practices/"
+    },
+    {
+      "name": "GTFS-Realtime Best Practices",
+      "url": "https://gtfs.org/realtime/best-practices/"
+    },
+    {
+      "name": "MobilityData grading scheme",
+      "url": "https://github.com/MobilityData/gtfs-grading-scheme"
+    },
+    {
+      "name": "Google Transit publication guidance",
+      "url": "https://support.google.com/transitpartners/answer/1111481"
+    }
+  ],
+  "scope": "all"
+};
+
+export const US_NTD_GUIDANCE = {
+  "category_notes": {
+    "correctness": "FTA NTD readiness also checks that the published feed is valid.",
+    "freshness": "FTA NTD readiness also checks that the published feed is current."
+  },
+  "kind": "requirement",
+  "name": "FTA National Transit Database GTFS requirement",
+  "note": "For US NTD reporters with qualifying service, the federal requirement calls for a public, valid, current GTFS feed and annual certification.",
+  "scope": "US",
+  "url": "https://www.transit.dot.gov/ntd"
+};
+
+export const JURISDICTION_GUIDANCE = {
+  "US-CA": {
+    "kind": "guideline",
+    "name": "California Transit Data Guidelines",
+    "note": "Caltrans' published quality guidelines and compliance checklist; this rubric is anchored to them.",
+    "scope": "US-CA",
+    "url": "https://dot.ca.gov/cal-itp/california-transit-data-guidelines"
+  }
+};
+
+export const SUPPORT_RESOURCES = {
+  "US-CO": {
+    "kind": "support",
+    "name": "CDOT Digital Transit Mobility",
+    "note": "Colorado's program coordinating GTFS data across transit providers.",
+    "scope": "US-CO",
+    "url": "https://www.codot.gov/programs/innovativemobility/mobility-technology/digital-transit-mobility"
+  },
+  "US-MI": {
+    "kind": "support",
+    "name": "Michigan Public Transit Open Data Program",
+    "note": "MDOT's program helping agencies produce and maintain GTFS and GTFS-Flex.",
+    "scope": "US-MI",
+    "url": "https://miruralmobility.org/"
+  },
+  "US-MN": {
+    "kind": "support",
+    "name": "MnDOT Transit",
+    "note": "Minnesota's statewide transit program and data resources.",
+    "scope": "US-MN",
+    "url": "https://www.dot.state.mn.us/transit/"
+  },
+  "US-OR": {
+    "kind": "support",
+    "name": "Oregon ODOT Public Transportation",
+    "note": "ODOT's Public Transportation Division, which supports statewide GTFS.",
+    "scope": "US-OR",
+    "url": "https://www.oregon.gov/odot/rptd/pages/index.aspx"
+  },
+  "US-WA": {
+    "kind": "support",
+    "name": "WSDOT Transportation Data",
+    "note": "WSDOT builds and publishes GTFS for Washington transit agencies.",
+    "scope": "US-WA",
+    "url": "https://wsdot.wa.gov/about/transportation-data"
+  }
+};
+
+export const US_STATE_SUBDIVISION_CODES = {
+  "California": "US-CA",
+  "Colorado": "US-CO",
+  "Michigan": "US-MI",
+  "Minnesota": "US-MN",
+  "Oregon": "US-OR",
+  "Washington": "US-WA"
+};

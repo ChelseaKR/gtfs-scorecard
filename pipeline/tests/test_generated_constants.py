@@ -55,6 +55,11 @@ def test_render_is_marked_generated_and_every_export_is_json() -> None:
         "VALIDATOR_RULES_PAGE",
         "AUTHORITY_LABELS",
         "RULE_LINKS",
+        "UNIVERSAL_GUIDANCE",
+        "US_NTD_GUIDANCE",
+        "JURISDICTION_GUIDANCE",
+        "SUPPORT_RESOURCES",
+        "US_STATE_SUBDIVISION_CODES",
     ):
         assert expected in names, f"missing export {expected}"
     for _name, payload in exports:

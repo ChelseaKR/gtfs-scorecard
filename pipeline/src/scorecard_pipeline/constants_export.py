@@ -25,6 +25,13 @@ from pathlib import Path
 from typing import Any
 
 from .config import repo_root
+from .jurisdiction_guidance import (
+    JURISDICTION_GUIDANCE,
+    SUPPORT_RESOURCES,
+    UNIVERSAL_GUIDANCE,
+    US_NTD_GUIDANCE,
+    US_STATE_SUBDIVISION_CODES,
+)
 from .metrics import STALE_FEED_DAYS
 from .rule_links import AUTHORITY_LABELS, RULE_LINKS, VALIDATOR_RULES_PAGE
 from .score import GRADE_BANDS
@@ -82,6 +89,11 @@ def _exports() -> dict[str, Any]:
             }
             for code, link in RULE_LINKS.items()
         },
+        "UNIVERSAL_GUIDANCE": UNIVERSAL_GUIDANCE,
+        "US_NTD_GUIDANCE": US_NTD_GUIDANCE,
+        "JURISDICTION_GUIDANCE": JURISDICTION_GUIDANCE,
+        "SUPPORT_RESOURCES": SUPPORT_RESOURCES,
+        "US_STATE_SUBDIVISION_CODES": US_STATE_SUBDIVISION_CODES,
     }
 
 

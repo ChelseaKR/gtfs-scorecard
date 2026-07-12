@@ -330,19 +330,21 @@ def test_rollup_percentile_context_empty_when_absent_or_none() -> None:
     assert _rollup_percentile_context({}) == ""
 
 
-def test_standards_section_is_us_only() -> None:
+def test_standards_section_gives_canada_only_universal_guidance() -> None:
     art = {
         "agency": {"country": "CA"},
         "categories": {"correctness": {"status": "measured", "score": 90}},
     }
-    # The US-standards lens (FTA NTD, US state guidelines) is omitted for a non-US
-    # agency until Tier 2 localizes it (ADR 0026); no US-federal framing leaks in.
-    assert _standards_section(art, "") == ""
+    html = _standards_section(art, "Ontario", "CA-ON")
+    assert "GTFS Schedule Best Practices" in html
+    assert "MobilityData grading scheme" in html
+    assert "National Transit Database" not in html
+    assert "California Transit Data Guidelines" not in html
 
 
 def test_standards_section_is_state_aware() -> None:
     art = {"categories": {"correctness": {"status": "measured", "score": 90}}}
-    # The universal standards show for everyone.
+    # US agencies receive the universal references plus the US NTD overlay.
     for state in ("California", "Texas", "Minnesota", ""):
         html = _standards_section(art, state)
         assert "National Transit Database" in html
@@ -354,10 +356,9 @@ def test_standards_section_is_state_aware() -> None:
     # A program state is framed as a support program, not a guideline.
     mn = _standards_section(art, "Minnesota")
     assert "MnDOT Transit" in mn
-    assert "transit-data program" in mn
+    assert "support resource" in mn
     assert "published guideline" not in mn
-    # A program state is told plainly which bars its score does map to (C2).
-    assert "no quality rubric of its own" in mn
+    assert "not a scoring authority" in mn
     # A state with no entry shows neither, only the universal standards.
     tx = _standards_section(art, "Texas")
     assert "California Transit Data Guidelines" not in tx
@@ -366,6 +367,14 @@ def test_standards_section_is_state_aware() -> None:
     assert "Minimum GTFS Guidelines checklist" in ca
     assert "Minimum GTFS Guidelines checklist" not in mn
     assert "Minimum GTFS Guidelines checklist" not in tx
+
+
+def test_subdivision_code_selects_guidance_without_state_name() -> None:
+    art = {"agency": {"country": "US"}, "categories": {}}
+    ca = _standards_section(art, subdivision_code="US-CA")
+    assert "California Transit Data Guidelines" in ca
+    mn = _standards_section(art, subdivision_code="US-MN")
+    assert "MnDOT Transit" in mn
 
 
 def test_numeric_percent_excludes_bool() -> None:
@@ -1477,6 +1486,27 @@ def test_brief_carries_outreach_standards_and_portfolio_link() -> None:
     no_rollup = _render_brief(lapsed, dir_record={"state": "California"}, program_ids=set())
     assert 'href="/program/california/"' not in no_rollup
     assert '<meta name="robots" content="noindex,follow">' in html
+
+
+def test_canadian_brief_omits_us_ntd_language() -> None:
+    from scorecard_pipeline.render_site import _render_brief
+
+    artifact = {
+        "agency": {"id": "barrie", "name": "Barrie Transit", "country": "CA"},
+        "overall": {"grade": "B", "score": 84.0},
+        "snapshot_date": "2026-07-01",
+        "feed": {"static_url": "https://example.ca/gtfs.zip"},
+        "categories": {"freshness": {"status": "measured", "details": {}}},
+        "top_fixes": [],
+    }
+    html = _render_brief(
+        artifact,
+        dir_record={"state": "Ontario", "subdivision_code": "CA-ON"},
+    )
+    assert 'id="brief-ntd-h"' not in html
+    assert "NTD details line up" not in html
+    assert "rider information is complete" in html
+    assert "guidance, and key feed facts" in html
 
 
 def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:

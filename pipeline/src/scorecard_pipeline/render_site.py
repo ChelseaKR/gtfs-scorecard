@@ -42,6 +42,7 @@ from .fixlog import load_fixlog
 from .google_gate import from_artifact as google_from_artifact
 from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalogs
 from .instance import ORG_NAME
+from .jurisdiction_guidance import guidance_for
 from .metrics import expiry_status, operating_signal
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
@@ -1858,7 +1859,7 @@ def _render_agency(
     {_rt_accuracy_section(artifact)}
     {_google_gate_line(artifact, now)}
     {_route_rule()}
-    {_standards_section(artifact, (dir_record or {}).get("state", ""))}
+    {_standards_section(artifact, (dir_record or {}).get("state", ""), (dir_record or {}).get("subdivision_code", ""))}
     {_route_rule()}
     {_embed_block}
     {_citation_block}
@@ -2079,21 +2080,28 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 "see where this agency sits among the state's feeds before the call.</p>"
             )
 
-    # The state guideline or program the score answers to, one line, so the
-    # liaison can cite the right authority without leaving the brief.
+    # The jurisdiction guideline or support resource, when one exists. It is
+    # selected by ISO subdivision code, with state-name fallback for old
+    # directory records.
     standards_html = ""
-    state_std = STATE_STANDARDS.get(str(where or ""))
-    if state_std:
-        if state_std.get("kind") == "guideline":
+    country = str(artifact.get("agency", {}).get("country", "US"))
+    guidance = guidance_for(
+        country,
+        str((dir_record or {}).get("subdivision_code") or ""),
+        str(where or ""),
+    )
+    local_guidance = guidance["jurisdiction"] or guidance["support"]
+    if local_guidance:
+        if local_guidance.get("kind") == "guideline":
             std_lead = f"The published guideline in {esc(str(where))} is "
         else:
-            std_lead = "The state transit-data program is "
+            std_lead = "A local transit-data support resource is "
         standards_html = (
             '<section aria-labelledby="brief-std-h">'
             '<h2 id="brief-std-h">The bar this score answers to</h2>'
             f'<p class="brief-standards">{std_lead}'
-            f'<a href="{esc(state_std["url"])}">{esc(state_std["name"])}</a>. '
-            f"{esc(state_std['note'])}</p></section>"
+            f'<a href="{esc(local_guidance["url"])}">{esc(local_guidance["name"])}</a>. '
+            f"{esc(local_guidance['note'])}</p></section>"
         )
 
     # The ready-to-send outreach note, on the brief itself, so an expired feed's
@@ -2114,6 +2122,18 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     )
 
     cleared = _cleared_findings(prev_artifact, artifact)
+    ntd_section = ""
+    if country.upper() == "US":
+        ntd_section = f"""    <section aria-labelledby="brief-ntd-h">
+      <h2 id="brief-ntd-h">NTD GTFS readiness: {esc(ntd_label)}</h2>
+      {ntd_html}
+      {align_html}
+    </section>"""
+    call_prompt = (
+        "confirm the feed is current and the NTD details line up"
+        if country.upper() == "US"
+        else "confirm the feed is current and the rider information is complete"
+    )
     body = f"""    <div class="brief">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
@@ -2122,7 +2142,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
       <p class="brief-trend">{_brief_trend_line(history)}</p>
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
-        confirm the feed is current and the NTD details line up. Each fix is framed as a next step,
+        {call_prompt}. Each fix is framed as a next step,
         not a failure.</p>
     </header>
     <section aria-labelledby="brief-changed-h">
@@ -2134,11 +2154,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       {fixes_html}
     </section>
     {outreach_html}
-    <section aria-labelledby="brief-ntd-h">
-      <h2 id="brief-ntd-h">NTD GTFS readiness: {esc(ntd_label)}</h2>
-      {ntd_html}
-      {align_html}
-    </section>
+{ntd_section}
     {standards_html}
     <section aria-labelledby="brief-facts-h">
       <h2 id="brief-facts-h">Key facts</h2>
@@ -2149,9 +2165,10 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       Not an official compliance determination. Rubric v{esc(str(artifact.get("rubric_version", "—")))},
       validator {esc(str(artifact.get("validator_version", "—")))}.</p>
     </div>"""
+    scope_detail = "NTD readiness" if country.upper() == "US" else "guidance"
     desc = (
-        f"Call-prep brief for {agency_name}: grade {overall['grade']}, top fixes, NTD "
-        "readiness, and key feed facts on one page."
+        f"Call-prep brief for {agency_name}: grade {overall['grade']}, top fixes, "
+        f"{scope_detail}, and key feed facts on one page."
     )
     title = f"{agency_name} call-prep brief — GTFS Scorecard"
     return _page(
@@ -2347,66 +2364,6 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
     )
     title = f"{agency_name} fix log — GTFS Scorecard"
     return _page(title=title, description=desc, canonical=canonical, body=body)
-
-
-# Per-category mapping to the standards a feed answers to, including the
-# de-facto Google Transit gate (docs/crosswalk.md). Shown next to this agency's
-# own category score so a reader sees where it stands against each, framed as a
-# lens, never as a pass/fail compliance verdict.
-_STANDARDS_MAP = {
-    "correctness": "GTFS Schedule best practices, checked by the MobilityData "
-    "validator. MobilityData grading: stop locations, route names and colors. "
-    "Google Transit: a feed must pass validation to stay in Maps.",
-    "freshness": "The FTA National Transit Database expectation of a valid, current "
-    "feed. Google Transit: an expired calendar drops the agency from Maps.",
-    "completeness": "GTFS Best Practices for rider-facing fields. MobilityData "
-    "grading: stop names and headsigns.",
-    "realtime": "GTFS-Realtime best practices: a stable URL, high uptime, and frequent updates.",
-}
-
-# A state's own GTFS guideline or program, shown to agencies in that state.
-# `kind` keeps the framing honest: "guideline" is a published quality rubric the
-# score maps to (California is the only one); "program" is a state transit-data
-# program shown as a support resource, not a rubric. Adding a state is one block.
-STATE_STANDARDS: dict[str, dict[str, str]] = {
-    "California": {
-        "name": "California Transit Data Guidelines",
-        "url": "https://dot.ca.gov/cal-itp/california-transit-data-guidelines",
-        "kind": "guideline",
-        "note": "Caltrans' published quality guidelines and compliance checklist; "
-        "this rubric is anchored to them.",
-    },
-    "Colorado": {
-        "name": "CDOT Digital Transit Mobility",
-        "url": "https://www.codot.gov/programs/innovativemobility/mobility-technology/digital-transit-mobility",
-        "kind": "program",
-        "note": "Colorado's program coordinating GTFS data across transit providers.",
-    },
-    "Michigan": {
-        "name": "Michigan Public Transit Open Data Program",
-        "url": "https://miruralmobility.org/",
-        "kind": "program",
-        "note": "MDOT's program helping agencies produce and maintain GTFS and GTFS-Flex.",
-    },
-    "Minnesota": {
-        "name": "MnDOT Transit",
-        "url": "https://www.dot.state.mn.us/transit/",
-        "kind": "program",
-        "note": "Minnesota's statewide transit program and data resources.",
-    },
-    "Oregon": {
-        "name": "Oregon ODOT Public Transportation",
-        "url": "https://www.oregon.gov/odot/rptd/pages/index.aspx",
-        "kind": "program",
-        "note": "ODOT's Public Transportation Division, which supports statewide GTFS.",
-    },
-    "Washington": {
-        "name": "WSDOT Transportation Data",
-        "url": "https://wsdot.wa.gov/about/transportation-data",
-        "kind": "program",
-        "note": "WSDOT builds and publishes GTFS for Washington transit agencies.",
-    },
-}
 
 
 def _recommendations_section(artifact: dict[str, Any]) -> str:
@@ -3164,23 +3121,20 @@ def _california_guideline_html(artifact: dict[str, Any]) -> str:
     )
 
 
-def _standards_section(artifact: dict[str, Any], state: str = "") -> str:
+def _standards_section(
+    artifact: dict[str, Any], state: str = "", subdivision_code: str = ""
+) -> str:
     """How this agency's category scores line up with the standards it relates to.
 
-    Universal references (every US agency): the FTA National Transit Database GTFS
-    requirement, the MobilityData grading scheme, and the de-facto Google Transit
-    gate. If the agency's state has its own published guideline (STATE_STANDARDS),
-    it is shown too. A lens, not a compliance determination.
-
-    US-only: the references here (the FTA National Transit Database requirement,
-    US state guidelines) do not apply to a non-US agency, so the whole section is
-    omitted for one until Tier 2 localizes the standards lens (ADR 0026).
+    Universal GTFS references are shown globally. US agencies also receive the
+    FTA NTD overlay; California receives its guideline, while selected state
+    programs are labelled as support resources rather than scoring authorities.
     """
-    if artifact.get("agency", {}).get("country", "US") != "US":
-        return ""
+    country = str(artifact.get("agency", {}).get("country", "US"))
+    guidance = guidance_for(country, subdivision_code, state)
+    universal = guidance["universal"]
+    national = guidance["national"]
     cw = "/crosswalk/"
-    ntd = "https://www.transit.dot.gov/ntd"
-    md = "https://github.com/MobilityData/gtfs-grading-scheme"
     rows = []
     for key in CATEGORY_ORDER:
         cat = artifact.get("categories", {}).get(key, {})
@@ -3188,40 +3142,46 @@ def _standards_section(artifact: dict[str, Any], state: str = "") -> str:
             score = f"{round(float(cat.get('score', 0)))} / 100"
         else:
             score = "Not yet published"
+        note = str(universal["category_notes"][key])
+        if national and key in national.get("category_notes", {}):
+            note += f" {national['category_notes'][key]}"
         rows.append(
             f"<dt>{esc(CATEGORY_LABELS[key])} "
             f'<span class="std-score">{esc(score)}</span></dt>'
-            f"<dd>{esc(_STANDARDS_MAP[key])}</dd>"
+            f"<dd>{esc(note)}</dd>"
         )
-    state_std = STATE_STANDARDS.get(state)
+    state_std = guidance["jurisdiction"] or guidance["support"]
     state_html = ""
     if state_std:
         if state_std.get("kind") == "guideline":
-            lead = f"In {esc(state)}, the published guideline is "
+            lead = (
+                f"In {esc(state)}, the published guideline is "
+                if state
+                else "The published guideline for this jurisdiction is "
+            )
         else:
-            lead = "Your state runs a transit-data program that can help: "
+            lead = "A local transit-data support resource is "
         state_html = (
             f'<p class="page-lede">{lead}'
             f'<a href="{esc(state_std["url"])}">{esc(state_std["name"])}</a>. '
             f"{esc(state_std['note'])}"
         )
         if state_std.get("kind") != "guideline":
-            state_html += (
-                " Your state publishes no quality rubric of its own, so the closest "
-                "published bars a program can hold this feed to are the federal and "
-                "industry ones below; the score maps to those."
-            )
+            state_html += " This resource supports agencies; it is not a scoring authority."
         state_html += "</p>"
         if state_std.get("kind") == "guideline":
             state_html += _california_guideline_html(artifact)
+    refs = list(universal["references"])
+    if national:
+        refs.append(national)
+    ref_links = ", ".join(
+        f'<a href="{esc(str(ref["url"]))}">{esc(str(ref["name"]))}</a>' for ref in refs
+    )
     return (
         '<section aria-labelledby="standards-h" class="feed-details">'
         '<h2 class="section-title" id="standards-h">How this agency maps to the standards</h2>'
-        '<p class="page-lede">A data-quality lens, not a compliance determination. Each category '
-        "shows this feed's score and the standards it relates to: the "
-        f'<a href="{ntd}"><abbr title="Federal Transit Administration">FTA</abbr> National Transit '
-        "Database</a> GTFS requirement, the "
-        f'<a href="{md}">MobilityData grading scheme</a>, and the Google Transit gate. '
+        f'<p class="page-lede">{esc(str(universal["note"]))} Useful references here are '
+        f"{ref_links}. "
         f'Read the full <a href="{cw}">standards crosswalk</a>.</p>'
         f"{state_html}"
         f'<dl class="standards-list">{"".join(rows)}</dl></section>'
