@@ -93,7 +93,40 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "directory.schema.json",
         "rollup.schema.json",
         "rollup-index.schema.json",
+        "coverage.schema.json",
     } <= names
+
+
+def test_coverage_api_conforms_to_its_schema() -> None:
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.dataset import build_quality_dataset
+    from scorecard_pipeline.publicapi import coverage_endpoint
+
+    index = {
+        "agencies": {
+            "demo": {
+                "history": [{"score": 80.0}],
+            }
+        }
+    }
+    payload = coverage_endpoint(
+        index,
+        build_quality_dataset(index),
+        [Agency("demo", "Demo", "https://example.org/feed.zip")],
+    )
+    _validator("coverage.schema.json").validate(payload)
+
+
+@pytest.mark.parametrize(
+    "relative",
+    [
+        "web/api/v1/coverage.json",
+        "pipeline/tests/goldens/api/v1/coverage.json",
+        "pipeline/tests/fixtures/golden_site/web/api/v1/coverage.json",
+    ],
+)
+def test_published_coverage_conforms_to_its_schema(relative: str) -> None:
+    _validator("coverage.schema.json").validate(_load(REPO_ROOT / relative))
 
 
 # ---------------------------------------------------------------------------

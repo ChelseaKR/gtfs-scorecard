@@ -7746,8 +7746,19 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # server (ADR 0013). Per-agency detail stays the published artifact.
     from .publicapi import build_api, leaderboard
 
+    # The CLI populates AGENCIES before rendering. Direct library callers (the
+    # golden renderer and downstream instance builders) may not, so load the
+    # same registry file locally for coverage counts without mutating the
+    # module-global registry.
+    coverage_agencies = list(AGENCIES.values())
+    if not coverage_agencies:
+        from .agencies import read_agencies
+
+        coverage_agencies = read_agencies()
+
     api = build_api(
         index,
+        agencies=coverage_agencies,
         states=states,
         base_url=BASE_URL,
         generated_at=dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),

@@ -351,8 +351,8 @@ def _load_manifest(root: Path, manifest_path: Path) -> list[Agency]:
     return parse_agencies({"agencies": entries}, source=str(manifest_path), entry_sources=sources)
 
 
-def load_agencies(path: Path | None = None) -> None:
-    """Populate the registry atomically from a legacy file or shard manifest.
+def read_agencies(path: Path | None = None) -> list[Agency]:
+    """Read a legacy registry or shard manifest without changing global state.
 
     Passing a file preserves the original explicit-file API. The default mode
     selects exactly one repository layout: ``agencies.yaml``, or
@@ -382,6 +382,13 @@ def load_agencies(path: Path | None = None) -> None:
             agencies = parse_agencies(_read_yaml(legacy_path), source=str(legacy_path))
         else:
             raise AgencyConfigError(f"no agency registry found at {legacy_path} or {manifest_path}")
+
+    return agencies
+
+
+def load_agencies(path: Path | None = None) -> None:
+    """Populate the global registry atomically from the selected layout."""
+    agencies = read_agencies(path)
 
     replacement = {agency.id: agency for agency in agencies}
     AGENCIES.clear()

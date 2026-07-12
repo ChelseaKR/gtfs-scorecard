@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/coverage.schema.json",
+  "title": "GTFS Scorecard coverage denominators",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "configured_feed_records",
+    "active_canonical_feed_records",
+    "distinct_organization_keys",
+    "provisional_organization_keys",
+    "published_scorecard_pages",
+    "scored_latest_rows",
+    "definitions"
+  ],
+  "properties": {
+    "configured_feed_records": { "type": "integer", "minimum": 0 },
+    "active_canonical_feed_records": { "type": "integer", "minimum": 0 },
+    "distinct_organization_keys": { "type": "integer", "minimum": 0 },
+    "provisional_organization_keys": { "type": "integer", "minimum": 0 },
+    "published_scorecard_pages": { "type": "integer", "minimum": 0 },
+    "scored_latest_rows": { "type": "integer", "minimum": 0 },
+    "definitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configured_feed_records",
+        "active_canonical_feed_records",
+        "distinct_organization_keys",
+        "provisional_organization_keys",
+        "published_scorecard_pages",
+        "scored_latest_rows"
+      ],
+      "properties": {
+        "configured_feed_records": { "type": "string", "minLength": 1 },
+        "active_canonical_feed_records": { "type": "string", "minLength": 1 },
+        "distinct_organization_keys": { "type": "string", "minLength": 1 },
+        "provisional_organization_keys": { "type": "string", "minLength": 1 },
+        "published_scorecard_pages": { "type": "string", "minLength": 1 },
+        "scored_latest_rows": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

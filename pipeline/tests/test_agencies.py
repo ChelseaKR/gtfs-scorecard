@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 import yaml
 
-from scorecard_pipeline.agencies import AgencyConfigError, load_agencies, parse_agencies
+from scorecard_pipeline.agencies import (
+    AgencyConfigError,
+    load_agencies,
+    parse_agencies,
+    read_agencies,
+)
 from scorecard_pipeline.config import AGENCIES
 
 REPO_YAML = Path(__file__).resolve().parents[2] / "agencies.yaml"
@@ -131,6 +136,21 @@ def test_default_loader_uses_legacy_file_when_manifest_is_absent(
     assert list(AGENCIES) == ["demo"]
 
 
+def test_read_agencies_uses_legacy_file_without_mutating_registry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "agencies.yaml").write_text(yaml.safe_dump(VALID))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+    AGENCIES["existing"] = object()  # type: ignore[assignment]
+
+    agencies = read_agencies()
+
+    assert [agency.id for agency in agencies] == ["demo"]
+    assert list(AGENCIES) == ["existing"]
+
+
 def _write_registry_shard(root: Path, relative: str, agencies: list[dict[str, object]]) -> None:
     shard = root / relative
     shard.parent.mkdir(parents=True, exist_ok=True)
@@ -156,6 +176,21 @@ def test_manifest_loads_shards_in_listed_order_and_allows_cross_shard_aliases(
 
     assert list(AGENCIES) == ["first", "second"]
     assert AGENCIES["first"].alias_of == "second"
+
+
+def test_read_agencies_uses_manifest_without_mutating_registry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    _write_registry_shard(root, "registry/only.yaml", [VALID_ENTRY])
+    (root / "registry/index.yaml").write_text(yaml.safe_dump({"shards": ["registry/only.yaml"]}))
+    monkeypatch.setenv("SCORECARD_ROOT", str(root))
+    AGENCIES["existing"] = object()  # type: ignore[assignment]
+
+    agencies = read_agencies()
+
+    assert [agency.id for agency in agencies] == ["demo"]
+    assert list(AGENCIES) == ["existing"]
 
 
 def test_manifest_rejects_duplicate_ids_across_shards_and_names_second_shard(

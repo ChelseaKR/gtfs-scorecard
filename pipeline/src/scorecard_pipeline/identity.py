@@ -41,11 +41,15 @@ def build_identity_ledger(agencies: Iterable[Agency]) -> dict[str, object]:
     canonical = [agency for agency in active if agency.is_canonical_feed]
     aliases = [agency for agency in records if agency.alias_of]
     organizations = {agency.organization_key for agency in canonical}
+    provisional_organization_keys = [agency for agency in canonical if not agency.organization_id]
     return {
         "configured_feed_records": len(records),
         "active_feed_records": len(active),
         "canonical_feed_records": len(canonical),
+        "active_canonical_feed_records": len(canonical),
         "distinct_organizations": len(organizations),
+        "distinct_organization_keys": len(organizations),
+        "provisional_organization_keys": len(provisional_organization_keys),
         "alias_records": len(aliases),
         "official_sources": sum(agency.is_official is True for agency in records),
         "official_status_unknown": sum(agency.is_official is None for agency in records),

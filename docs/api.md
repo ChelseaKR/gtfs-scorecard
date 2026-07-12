@@ -27,7 +27,8 @@ domain. Every path below is relative to that base.
 | `catalog.json` | Flat list of every agency with grade, feed URL, freshness, identity, and provenance, in one request. |
 | `catalog.csv` | The same catalog as CSV. |
 | `scoring.json` | Machine-readable methodology: category weights, grade bands, and the correctness severity deductions. |
-| `/schemas/artifact.schema.json`, `/schemas/catalog.schema.json`, `/schemas/directory.schema.json` | JSON Schemas (Draft 2020-12) for validating the per-agency artifact, the catalog, and the directory in CI. |
+| `/api/v1/coverage.json` | Separately named registry, organization-key, published-page, and scored-row counts. |
+| `/schemas/artifact.schema.json`, `/schemas/catalog.schema.json`, `/schemas/directory.schema.json`, `/schemas/coverage.schema.json` | JSON Schemas (Draft 2020-12) for validating the per-agency artifact, catalog, directory, and coverage counts in CI. |
 
 ## License and attribution
 
@@ -45,6 +46,17 @@ curated set. An agency that publishes no GTFS, or that appears in no catalog, is
 not scored and simply does not appear. Absence therefore means "not covered,"
 never "failing." Do not infer a national denominator from the row count; it is
 the covered set, not the universe of US agencies.
+
+`/api/v1/coverage.json` makes the service's internal denominators explicit.
+`configured_feed_records` and `active_canonical_feed_records` describe the
+curated registry. `distinct_organization_keys` includes feed-ID fallbacks;
+`provisional_organization_keys` says how many of those fallbacks still need
+curation. `published_scorecard_pages` counts entries retained in the artifact
+index, while `scored_latest_rows` counts latest rows with a numeric score.
+These values can differ because removing a feed from the registry does not
+erase its published history. The older `/api/v1/stats.json` `agency_count`
+field remains unchanged for API v1 consumers and means rows in that endpoint's
+published score dataset.
 
 ## Versioning
 

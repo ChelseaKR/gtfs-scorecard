@@ -3,7 +3,7 @@
 > Root instruction file for the `gtfs-scorecard` repo. Read fully before writing code.
 
 > **Status (2026-07):** the four build phases below have shipped, and the pilot
-> grew into a live service: ~1,140 agencies tracked across the US and Canada,
+> grew into a live service: ~1,450 published scorecards across the US and Canada,
 > scored daily at gtfsscorecard.org, with a versioned read API, a GitHub
 > Marketplace action, and an MCP server. This file remains the product spec
 > (framing, rubric, quality bar — those hold). For what exists now, read

@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
+from scorecard_pipeline.config import Agency
 from scorecard_pipeline.dataset import build_quality_dataset
 from scorecard_pipeline.publicapi import (
     agencies_endpoint,
     api_index,
     build_api,
     by_state,
+    coverage_endpoint,
     leaderboard,
     stats_endpoint,
 )
@@ -119,17 +121,51 @@ def test_stats_has_median_and_grade_distribution() -> None:
     assert st["grade_distribution"]["F"] == 1
 
 
+def test_coverage_keeps_registry_and_publication_counts_separate() -> None:
+    idx = _index()
+    idx["agencies"]["unscored"] = {"name": "Not scored", "history": []}
+    agencies = [
+        Agency("alpha", "Alpha", "https://example.org/alpha.zip"),
+        Agency(
+            "bravo",
+            "Bravo",
+            "https://example.org/bravo.zip",
+            organization_id="shared-operator",
+        ),
+        Agency(
+            "old",
+            "Old",
+            "https://example.org/old.zip",
+            feed_status="deprecated",
+            alias_of="alpha",
+        ),
+    ]
+
+    coverage = coverage_endpoint(idx, build_quality_dataset(idx), agencies)
+    assert coverage["configured_feed_records"] == 3
+    assert coverage["active_canonical_feed_records"] == 2
+    assert coverage["distinct_organization_keys"] == 2
+    assert coverage["provisional_organization_keys"] == 1
+    assert coverage["published_scorecard_pages"] == 4
+    assert coverage["scored_latest_rows"] == 3
+
+
 def test_api_index_lists_endpoints_and_license() -> None:
     idx = api_index("https://example.org", "2026-06-21T00:00:00+00:00")
     assert idx["version"] == "v1"
     assert idx["endpoints"]["agencies"].endswith("/api/v1/agencies.json")
+    assert idx["endpoints"]["coverage"].endswith("/api/v1/coverage.json")
     assert "{agency_id}" in idx["endpoints"]["agency_detail"]
     assert idx["license"]
 
 
 def test_build_api_returns_every_endpoint() -> None:
     api = build_api(
-        _index(), states={"alpha": "California"}, base_url="https://x", generated_at="t"
+        _index(),
+        agencies=[Agency("alpha", "Alpha", "https://example.org/a.zip")],
+        states={"alpha": "California"},
+        base_url="https://x",
+        generated_at="t",
     )
     assert set(api) == {
         "index.json",
@@ -137,4 +173,5 @@ def test_build_api_returns_every_endpoint() -> None:
         "leaderboard.json",
         "by-state.json",
         "stats.json",
+        "coverage.json",
     }
