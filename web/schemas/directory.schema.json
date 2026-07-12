@@ -138,6 +138,13 @@
           "state": {
             "type": "string"
           },
+          "subdivision_code": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
+          },
+          "subdivision_name": {
+            "type": "string"
+          },
           "grade": {
             "type": "string",
             "enum": [

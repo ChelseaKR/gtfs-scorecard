@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 
 from .config import Agency
 from .lint import is_feed_descriptor
+from .location import normalize_location
 from .net import safe_get
 
 # https://mobilitydatabase.org — the catalog is published as a single CSV.
@@ -81,6 +82,7 @@ class CatalogFeed:
     data_type: str  # "gtfs" (schedule) or "gtfs-rt"
     entity_type: str  # realtime only: tu / vp / sa
     country: str
+    subdivision_code: str  # ISO 3166-2 code, when the catalog provides one
     subdivision: str  # state or province
     municipality: str
     provider: str
@@ -103,6 +105,9 @@ class ProposedAgency:
     name: str
     static_gtfs_url: str
     mdb_id: str = ""
+    country: str = ""
+    subdivision_code: str = ""
+    subdivision_name: str = ""
     rt_urls: dict[str, str] = field(default_factory=dict)
     rt_note: str = ""
     license_note: str = ""
@@ -158,6 +163,9 @@ def parse_catalog(csv_text: str) -> list[CatalogFeed]:
                 data_type=normalized_type,
                 entity_type=_cell(row, "entity_type").lower(),
                 country=_cell(row, "location.country_code", "country_code").upper(),
+                subdivision_code=_cell(
+                    row, "location.subdivision_code", "subdivision_code"
+                ).upper(),
                 subdivision=_cell(row, "location.subdivision_name", "subdivision_name"),
                 municipality=_cell(row, "location.municipality", "municipality"),
                 provider=_cell(row, "provider", "operator", "name"),
@@ -282,12 +290,27 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
         # sometimes a feed descriptor ("Flex", "Bus", "Do not use - deprecated").
         # In that case the provider is the real agency name (lint.py).
         name = feed.provider if is_feed_descriptor(feed.name) else (feed.name or feed.provider)
+        location = normalize_location(
+            feed.country,
+            subdivision_code=feed.subdivision_code,
+            subdivision_name=feed.subdivision,
+        )
         proposals.append(
             ProposedAgency(
                 id=agency_id,
                 name=name,
                 static_gtfs_url=feed.direct_download,
                 mdb_id=feed.mdb_id,
+                # Preserve the catalog country even when this deployment does
+                # not support rendering it yet. The registry will then reject
+                # it with the deliberate country-support message instead of a
+                # rendered proposal silently falling back to US.
+                country=location.country_code or feed.country.strip().upper(),
+                subdivision_code=location.subdivision_code,
+                # Keep catalog context even when it is not a recognized ISO
+                # subdivision. An unknown name is useful to a curator; it must
+                # not be promoted to a guessed code.
+                subdivision_name=location.subdivision_name or feed.subdivision,
                 rt_urls=rt_urls,
                 rt_note=rt_note,
                 license_note=_license_note(feed),
@@ -318,6 +341,16 @@ def _scalar(value: str) -> str:
     return f'"{escaped}"'
 
 
+def _render_location(proposal: ProposedAgency) -> list[str]:
+    """Registry location lines, omitting the default US country."""
+    fields = (
+        ("country", proposal.country if proposal.country != "US" else ""),
+        ("subdivision_code", proposal.subdivision_code),
+        ("subdivision_name", proposal.subdivision_name),
+    )
+    return [f"    {key}: {_scalar(value)}" for key, value in fields if value]
+
+
 def render_yaml(proposals: list[ProposedAgency]) -> str:
     """Render proposals as agencies.yaml blocks, ready to review and merge.
 
@@ -330,6 +363,7 @@ def render_yaml(proposals: list[ProposedAgency]) -> str:
         lines.append(f"  - id: {p.id}")
         lines.append(f"    name: {_scalar(p.name)}")
         lines.append(f"    static_gtfs_url: {_scalar(p.static_gtfs_url)}")
+        lines.extend(_render_location(p))
         if p.mdb_id:
             lines.append(f"    mdb_id: {_scalar(p.mdb_id)}")
         lines.append(f"    feed_status: {_scalar(p.feed_status)}")

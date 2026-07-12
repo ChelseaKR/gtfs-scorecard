@@ -67,6 +67,35 @@ def test_country_defaults_to_us_and_normalizes() -> None:
     assert agency.country == "CA"  # normalized to an uppercase ISO code
 
 
+def test_iso_subdivision_parses_and_legacy_us_state_derives_it() -> None:
+    (canadian,) = parse_agencies(
+        entry(country="ca", subdivision_code="ca-on", subdivision_name="Ontario")
+    )
+    assert canadian.subdivision_code == "CA-ON"
+    assert canadian.subdivision_name == "Ontario"
+    assert canadian.state == ""
+
+    (legacy_us,) = parse_agencies(entry(state="California"))
+    assert legacy_us.subdivision_code == "US-CA"
+    assert legacy_us.subdivision_name == "California"
+    assert legacy_us.state == "California"
+
+
+def test_subdivision_must_match_country_and_legacy_state() -> None:
+    with pytest.raises(AgencyConfigError, match="country prefix"):
+        parse_agencies(entry(country="CA", subdivision_code="US-CA"))
+    with pytest.raises(AgencyConfigError, match="state conflicts"):
+        parse_agencies(
+            entry(
+                state="California",
+                subdivision_code="US-NY",
+                subdivision_name="New York",
+            )
+        )
+    with pytest.raises(AgencyConfigError, match="state is a deprecated US-only field"):
+        parse_agencies(entry(country="CA", state="Ontario"))
+
+
 def test_country_rejects_non_iso_code() -> None:
     with pytest.raises(AgencyConfigError, match="country must be one of"):
         parse_agencies(entry(country="Canada"))

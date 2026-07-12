@@ -91,6 +91,9 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.7` adds portable agency location fields: ISO 3166-1 `country`, ISO 3166-2
+  `subdivision_code`, and practitioner-facing `subdivision_name`. The legacy
+  `state` field remains available for existing US consumers. Additive.
 - `1.7` adds `state_percentile` to per-state rollup payloads (`null` on the
   "all" rollup and named cohorts, which are not peers of a 50-state
   comparison), so a program page can say how its average compares to other
@@ -118,7 +121,9 @@ Changelog:
   "schema_version": "1.7",
   "rubric_version": "1.1",
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
-  "agency": { "id": "yolobus", "name": "Yolobus (...)",
+  "agency": { "id": "barrie-transit", "name": "Barrie Transit (Ontario)",
+              "country": "CA", "subdivision_code": "CA-ON",
+              "subdivision_name": "Ontario",
               "operating_note": "optional curator-verified status; absent if unset" },
   "generated_at": "2026-06-12T13:25:01+00:00",   // when this grade was produced (retrieved_at in the catalog)
   "snapshot_date": "2026-06-12",
@@ -153,6 +158,11 @@ Changelog:
                    "effort": "...", "severity": "WARNING", "count": 0 } ]
 }
 ```
+
+In a scorecard's `agency` block, an omitted `country` means the legacy `US`
+default. The portable subdivision fields are optional when the primary
+subdivision is not known. US artifacts may also carry `state` as a compatibility
+alias; non-US artifacts do not use it.
 
 A category is either `"status": "measured"` (has `score`, `summary`,
 `findings`, `details`) or not measured (`"status": "not_yet_measured"` with a
@@ -214,7 +224,9 @@ a single request rather than fetching each `latest.json`.
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "agencies": [
-    { "id": "yolobus", "name": "Yolobus (...)", "state": "California", "grade": "B", "score": 84.1,
+    { "id": "yolobus", "name": "Yolobus (...)", "country": "US",
+      "subdivision_code": "US-CA", "subdivision_name": "California",
+      "state": "California", "grade": "B", "score": 84.1,
       "size_tier": "small", "national_percentile": 72, "peer_percentile": 80,
       "snapshot_date": "2026-06-12", "days_until_expiry": 120, "expiry_status": "current",
       "ntd_ready": "ready", "google_gate": "pass", "stops": 312,
@@ -243,9 +255,17 @@ consuming directly rather than re-deriving:
   ahead), `at_risk` (under four weeks), `fail` (expired).
 - `stops` (integer or null): boardable stop count read from the feed's
   stops.txt, a rough size signal alongside `size_tier`.
-- `country` (string): ISO 3166-1 alpha-2 code, `US` or `CA`. Canadian
-  agencies carry no US state; group them by this field instead of treating
-  an empty state as unlocated.
+- `country` (string): ISO 3166-1 alpha-2 country code. It defaults to `US` for
+  registry entries that predate the international location fields.
+- `subdivision_code` (string or null): ISO 3166-2 code for the agency's state,
+  province, or territory, such as `US-CA` or `CA-ON`.
+- `subdivision_name` (string or null): practitioner-facing subdivision name,
+  such as `California` or `Ontario`. Use it for display; use
+  `subdivision_code` for joins and grouping.
+- `state` (string or null): legacy US display field retained for compatibility.
+  Existing US consumers may keep reading it. New consumers should use
+  `subdivision_code` and `subdivision_name`; do not treat a null `state` on a
+  non-US agency as unlocated.
 
 ## Directory (`directory.json`)
 

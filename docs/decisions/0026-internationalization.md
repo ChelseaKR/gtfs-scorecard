@@ -71,9 +71,11 @@ Smallest viable pilot, buildable as one PR:
   and NTD-id alignment (both keyed to the FTA five-digit NTD ID) render only for
   US agencies; a Canadian feed shows the GTFS-quality core (correctness,
   freshness, completeness, realtime) without a hollow NTD box.
-- **Subdivision:** the US-state subdivision mapping returns empty for a Canadian
-  province, so a pilot agency lands in the existing "Unlocated" bucket. Extending
-  province handling is a later refinement, not a blocker.
+- **Subdivision:** carry ISO 3166-2 `subdivision_code` and a
+  practitioner-facing `subdivision_name` alongside `country`. The Canada pilots
+  use `CA-YT` / Yukon and `CA-ON` / Ontario. Keep the published `state` field for
+  existing US consumers, but make the portable subdivision fields the contract
+  for new grouping and display work.
 - **National rollups:** the ACS-equity, adoption, and accessibility national
   rollups stay US-framed for now; non-US agencies are simply outside them until
   Tier 2 localizes the context data.
@@ -104,6 +106,14 @@ The no-build frontend now routes dates, counts, and agency-name collation throug
 browser contract covering a right-to-left locale. English remains the declared
 default; this removes the earlier `en-US` formatting assumption without claiming
 that the full practitioner interface has been translated.
+
+The registry and published API now use an additive location contract:
+`country` is an ISO 3166-1 alpha-2 code, `subdivision_code` is an ISO 3166-2
+code, and `subdivision_name` is the local practitioner-facing display name.
+`country` continues to default to `US`, and the legacy `state` field remains
+available for current US consumers. This preserves existing integrations while
+letting new directory and rollup work group provinces, territories, states, and
+other first-level subdivisions without country-specific field names.
 
 ## Open questions
 

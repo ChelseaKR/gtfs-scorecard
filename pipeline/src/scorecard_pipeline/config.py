@@ -63,11 +63,15 @@ class Agency:
     # GTFS-readiness and NTD-id-alignment views, which have no meaning
     # outside the US. See ADR 0026 (internationalization).
     country: str = "US"
-    # US state (or territory) the agency operates in, for the directory's
-    # browse-by-place and the national map. Optional: curated agencies can set
-    # it directly; for the Mobility Database cohort it is filled at build time
-    # from the catalog's subdivision via mdb_id. Empty means unlocated. Non-US
-    # agencies have no US state and fall in the "unlocated" bucket for now.
+    # Primary catalog jurisdiction, expressed without overloading a US "state"
+    # field. The code is ISO 3166-2 (for example US-CA or CA-ON); the name is
+    # display text from the curated registry or Mobility Database. A feed may
+    # cross boundaries, so these fields locate its primary catalog record and
+    # do not claim to describe its complete service area.
+    subdivision_code: str = ""
+    subdivision_name: str = ""
+    # Deprecated US-only compatibility alias used by API v1, program rollups,
+    # and the current US map. New code should prefer subdivision_code/name.
     state: str = ""
     # Service shape, so Freshness scores an intermittent feed fairly. "fixed"
     # (the default) is normal year-round service. "seasonal" or "demand_response"
