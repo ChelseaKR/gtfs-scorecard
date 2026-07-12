@@ -34,3 +34,39 @@
     if (isOpen() && e.target instanceof Node && !header.contains(e.target)) close();
   });
 })();
+
+/* Offline support (ideation EXP-20). nav.js is the one script every page
+ * loads, so the service worker registers here, and the honesty half lives
+ * here too: whenever the network is gone, a visible note says the page is a
+ * saved copy, so cached data never masquerades as current. The note is a
+ * polite live region, announced to screen readers without stealing focus. */
+(function () {
+  "use strict";
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js").catch(function () {
+      /* An uninstallable worker (old browser, private mode) just means no
+         offline copies; the page itself works unchanged. */
+    });
+  }
+
+  var note = null;
+  function showOfflineNote() {
+    if (note) return;
+    note = document.createElement("div");
+    note.className = "offline-note";
+    note.setAttribute("role", "status");
+    note.textContent =
+      "You are offline. This is a saved copy of the page; " +
+      "dates shown were current when it was saved.";
+    document.body.insertBefore(note, document.body.firstChild);
+  }
+  function hideOfflineNote() {
+    if (!note) return;
+    note.remove();
+    note = null;
+  }
+
+  window.addEventListener("offline", showOfflineNote);
+  window.addEventListener("online", hideOfflineNote);
+  if (navigator.onLine === false) showOfflineNote();
+})();
