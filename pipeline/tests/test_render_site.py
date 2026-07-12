@@ -27,6 +27,7 @@ from scorecard_pipeline.render_site import (
     _render_equity_page,
     _render_map_page,
     _render_spanish_rider_page,
+    _rider_impact_section,
     _rollup_percentile_context,
     _route_map_section,
     _rt_accuracy_section,
@@ -386,6 +387,96 @@ def test_numeric_percent_excludes_bool() -> None:
     # key this reads must not be treated as a percentage.
     assert _numeric_percent(True) is None
     assert _numeric_percent(False) is None
+    assert _numeric_percent(float("inf")) is None
+    assert _numeric_percent(float("nan")) is None
+
+
+def test_rider_impact_disclosure_uses_measured_fields_without_rating_service() -> None:
+    artifact = {
+        "categories": {
+            "freshness": {"status": "measured", "details": {"days_until_expiry": 67}},
+            "completeness": {
+                "status": "measured",
+                "details": {
+                    "accessibility": {"stops_stated_pct": 99.5, "trips_stated_pct": 42},
+                    "has_fares": True,
+                    "fare_free": False,
+                    "fares": {"model": "v2"},
+                },
+            },
+            "realtime": {
+                "status": "measured",
+                "details": {"coverage_pct": 77.8, "kinds_reachable": 3},
+            },
+        }
+    }
+
+    html = _rider_impact_section(artifact)
+    assert html.startswith('<details class="rider-impact" id="rider-impact">')
+    assert " open" not in html  # preserve grade -> fixes as the primary workflow
+    assert "last published service date is in 67 days" in html
+    assert "99.5% of stops" in html and "42% of trips" in html
+    assert "published data, not whether stops or vehicles are physically usable" in html
+    assert "GTFS Fares v2" in html
+    assert "covered 77.8% of scheduled trips" in html
+    assert "does not rate service reliability" in html
+    assert "confirm current service alerts, fares, and accessibility accommodations" in html
+
+
+def test_rider_impact_disclosure_keeps_unknowns_neutral_and_escapes_model() -> None:
+    unknown = _rider_impact_section({"categories": {}})
+    assert "Schedule visibility is not known" in unknown
+    assert "Published accessibility-data coverage is not known" in unknown
+    assert "Fare-information availability is not known" in unknown
+    assert "Realtime-feed availability and live-arrival coverage are not known" in unknown
+
+    malicious = _rider_impact_section(
+        {
+            "categories": {
+                "completeness": {
+                    "status": "measured",
+                    "details": {
+                        "has_fares": True,
+                        "fare_free": False,
+                        "fares": {"model": '"><script>alert(1)</script>'},
+                    },
+                }
+            }
+        }
+    )
+    assert "<script>" not in malicious
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in malicious
+
+
+def test_rider_impact_does_not_overstate_schedule_or_realtime_evidence() -> None:
+    reachable = _rider_impact_section(
+        {
+            "categories": {
+                "freshness": {"status": "measured", "details": {"days_until_expiry": 30}},
+                "realtime": {
+                    "status": "measured",
+                    "details": {"coverage_pct": None, "kinds_reachable": 1},
+                },
+            }
+        }
+    )
+    assert "last published service date is in 30 days" in reachable
+    assert "covers the next" not in reachable
+    assert "One or more realtime feeds were reachable" in reachable
+    assert "Live-arrival feeds were reachable" not in reachable
+
+    unreachable = _rider_impact_section(
+        {
+            "categories": {
+                "realtime": {
+                    "status": "measured",
+                    "details": {"coverage_pct": None, "kinds_reachable": 0},
+                }
+            }
+        }
+    )
+    assert "No realtime feed was reachable" in unreachable
+    assert "No live-arrival feed" not in unreachable
 
 
 def test_california_checklist_reads_measured_fields() -> None:
@@ -2597,6 +2688,7 @@ def test_agency_page_carries_the_confidence_line() -> None:
     assert 'itemtype="https://schema.org/BreadcrumbList"' in html
     assert '"license":"https://creativecommons.org/licenses/by/4.0/"' in html
     assert '"isBasedOn":"https://ex.org/g.zip"' in html
+    assert html.index('id="fixes-h"') < html.index('id="rider-impact"') < html.index('id="cats-h"')
 
 
 def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
