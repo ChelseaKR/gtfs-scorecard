@@ -1,0 +1,69 @@
+# Maine (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  # ---- National cohort: US feeds from the Mobility Database (ADR 0005) ----
+  # Bulk-loaded via `scorecard sync --country US`, deduplicated by feed URL
+  # against the curated entries above. Each carries its mdb_id, so discovery
+  # and the hosted-mirror fallback work. Licenses are unverified where the
+  # catalog stated none (see each license_note). Listing/removal on request:
+  # docs/listing-policy.md.
+  - id: casco-bay-lines
+    state: Maine
+    name: Casco Bay Lines
+    static_gtfs_url: http://smttracker.com/downloads/gtfs/cascobaylines-portland-me-usa.zip
+    mdb_id: 1
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lakes-region-explorer
+    state: Maine
+    name: Lakes Region Explorer
+    static_gtfs_url: http://trilliumtransit.com/transit_feeds/rtp-me-us/rtp-me-us.zip
+    mdb_id: 452
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-portland
+    state: Maine
+    name: South Portland
+    static_gtfs_url: http://smttracker.com/downloads/gtfs/south-portland-me-us.zip
+    mdb_id: 453
+    license_note: "License: http://smttracker.com/developer-terms-of-use/"
+
+  - id: greater-portland-metro-bus
+    state: Maine
+    name: Greater Portland Metro Bus
+    static_gtfs_url: http://smttracker.com/downloads/gtfs/greater-portland-me.zip
+    mdb_id: 454
+    license_note: "License: http://smttracker.com/developer-terms-of-use/"
+
+  - id: biddeford-saco-old-orchard-beach-transit
+    state: Maine
+    name: Biddeford Saco Old Orchard Beach Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bsoob-me-us/bsoob-me-us.zip
+    mdb_id: 2300
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-portland-2641
+    state: Maine
+    name: South Portland
+    static_gtfs_url: https://gtfs.remix.com/South_Portland_Bus_ME_US.zip
+    mdb_id: 2641
+    rt_urls:
+      trip_updates: https://api.goswift.ly/real-time/south-portland-transit/gtfs-rt-trip-updates
+      service_alerts: https://api.goswift.ly/real-time/south-portland-transit/gtfs-rt-alerts/v2
+    license_note: "License: https://www.gpmetro.org/about-us/projects-initiatives/developers/"
+
+  - id: greater-portland-metro-bus-2642
+    state: Maine
+    name: Greater Portland Metro Bus
+    static_gtfs_url: https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip
+    mdb_id: 2642
+    rt_urls:
+      trip_updates: https://gtfsrt.gptd.cadavl.com/ProfilGtfsRt2_0RSProducer-GPTD/TripUpdate.pbb
+      vehicle_positions: https://gtfsrt.gptd.cadavl.com/ProfilGtfsRt2_0RSProducer-GPTD/VehiclePosition.pb
+      service_alerts: https://gtfsrt.gptd.cadavl.com/ProfilGtfsRt2_0RSProducer-GPTD/Alert.pb
+    license_note: "License: https://www.gpmetro.org/about-us/projects-initiatives/developers/"

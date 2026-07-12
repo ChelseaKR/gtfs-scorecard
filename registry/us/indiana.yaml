@@ -1,0 +1,88 @@
+# Indiana (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: bloomington-transit
+    state: Indiana
+    name: Bloomington Transit
+    static_gtfs_url: https://data.bloomington.in.gov/dataset/5aca3228-b81b-4572-a45c-b05a30053949/resource/16145a82-0959-4922-93ae-14dcee02950c/download/googletransitfeed.zip
+    mdb_id: 363
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: terre-haute-transit-utility
+    state: Indiana
+    name: Terre Haute Transit Utility
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/terrehautetransit-in-us/terrehautetransit-in-us.zip
+    mdb_id: 387
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citybus-of-greater-lafayette-indiana-citybus
+    state: Indiana
+    name: CityBus of Greater Lafayette Indiana (CityBus)
+    static_gtfs_url: https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip
+    mdb_id: 391
+    license_note: "License: https://gocitybus.com/terms-for-use"
+
+  - id: interurban-trolley
+    state: Indiana
+    name: Interurban Trolley
+    static_gtfs_url: http://macog.com/google/google_transit.zip
+    mdb_id: 571
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-shore-line
+    state: Indiana
+    name: South Shore Line
+    static_gtfs_url: http://www.mysouthshoreline.com/google/google_transit.zip
+    mdb_id: 585
+    rt_urls:
+      trip_updates: https://passio3.com/transpo/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/transpo/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/transpo/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valparaiso-transit
+    state: Indiana
+    name: Valparaiso Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/valpotransit-chi-us/valpotransit-chi-us.zip
+    mdb_id: 620
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: muncie-indiana-transit-system-mits
+    state: Indiana
+    name: Muncie Indiana Transit System (MITS)
+    static_gtfs_url: http://www.mitsbus.org/wp-content/uploads/2016/11/GTFS.zip
+    mdb_id: 719
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citilink
+    state: Indiana
+    name: Citilink
+    static_gtfs_url: https://transitfeeds.com/p/fort-wayne-citilink/378/latest/download
+    mdb_id: 1140
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: indygo
+    state: Indiana
+    name: IndyGo
+    static_gtfs_url: https://transitfeeds.com/p/indygo/210/latest/download
+    mdb_id: 1237
+    license_note: "License: http://www.indygo.net/about-indygo/indygo-developer-content-area/indygo-gtfs-terms-of-use/"
+
+  - id: bloomington-transit-2066
+    state: Indiana
+    name: Bloomington Transit
+    static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/bloomingtontransit.etaspot.net/gtfs.zip
+    mdb_id: 2066
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citilink-2266
+    state: Indiana
+    name: Citilink
+    static_gtfs_url: https://gtfs.remix.com/citilink_fortwayne_in_us.zip
+    mdb_id: 2266
+    license_note: No stated data license in the Mobility Database; verify before publishing.

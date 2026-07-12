@@ -1,0 +1,81 @@
+# Minnesota (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: metro-transit
+    state: Minnesota
+    ntd_id: "50027"
+    name: Metro Transit
+    static_gtfs_url: https://svc.metrotransit.org/mtgtfs/gtfs.zip
+    mdb_id: 205
+    rt_urls:
+      trip_updates: https://svc.metrotransit.org/mtgtfs/tripupdates.pb
+      vehicle_positions: https://svc.metrotransit.org/mtgtfs/vehiclepositions.pb
+      service_alerts: https://svc.metrotransit.org/mtgtfs/alerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: minnesota-valley-transit-authority-mvta
+    state: Minnesota
+    name: Minnesota Valley Transit Authority (MVTA)
+    static_gtfs_url: http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx
+    mdb_id: 206
+    rt_urls:
+      vehicle_positions: https://srv.mvta.com/infoPoint/GTFS-realtime.ashx?Type=VehiclePosition
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: duluth-transit
+    state: Minnesota
+    name: Duluth Transit
+    static_gtfs_url: https://duluthtransit.com/gtf/google_transit.zip
+    mdb_id: 301
+    rt_urls:
+      trip_updates: https://duluthtransit.com/gtfsrt/TripUpdate/TripUpdates.pb
+      vehicle_positions: https://duluthtransit.com/gtfsrt/Vehicle/VehiclePositions.pb
+      service_alerts: https://duluthtransit.com/gtfsrt/Alert/Alerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rochester-city-lines
+    state: Minnesota
+    name: Rochester City Lines
+    static_gtfs_url: https://transitfeeds.com/p/rochester-city-lines/774/latest/download
+    mdb_id: 1279
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-winona-mn-winona-transit-service
+    state: Minnesota
+    name: City of Winona MN - Winona Transit Service
+    static_gtfs_url: https://www.cityofwinona.com/DocumentCenter/View/4850/WinonaMN-TXT-GTFS-Feed
+    mdb_id: 2032
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: brown-county-heartland-express
+    state: Minnesota
+    name: Brown County Heartland Express Flex
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/browncounty-mn-us/browncounty-mn-us--flex-v2.zip
+    mdb_id: 2037
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-otter-express
+    state: Minnesota
+    name: The Otter Express Flex
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/otterexpress-mn-us/otterexpress-mn-us--flex-v2.zip
+    mdb_id: 2038
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: brown-county-heartland-express-2296
+    state: Minnesota
+    name: Fixed route + flex
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/browncounty-mn-us/browncounty-mn-us.zip
+    mdb_id: 2296
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: central-community-transit
+    state: Minnesota
+    name: Central Community Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cctbus-mn-us/cctbus-mn-us.zip
+    mdb_id: 2301
+    license_note: No stated data license in the Mobility Database; verify before publishing.

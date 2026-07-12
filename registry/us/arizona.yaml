@@ -1,0 +1,176 @@
+# Arizona (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: yuma-county-intergovernmental-public-transportation-authority-ycipta
+    state: Arizona
+    name: Yuma County Intergovernmental Public Transportation Authority (YCIPTA)
+    static_gtfs_url: http://www.ycipta.org/gtfs/google_transit.zip
+    mdb_id: 17
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bullhead-area-transit-system
+    state: Arizona
+    name: Bullhead Area Transit System
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bullheadareatransit-az-us/bullheadareatransit-az-us.zip
+    mdb_id: 109
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: suntran
+    state: Arizona
+    name: SunTran
+    static_gtfs_url: https://www.suntran.com/wp-content/uploads/2021/08/SunTranGTFS.zip
+    mdb_id: 144
+    license_note: "License: https://www.suntran.com/developers_terms.php"
+
+  - id: city-of-sierra-vista
+    state: Arizona
+    name: City of Sierra Vista
+    static_gtfs_url: http://demopro.nationalrtap.org/admin/GTFSzipFiles/3746/google_transit.zip
+    mdb_id: 145
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cat-tran-shuttle
+    state: Arizona
+    name: Cat Tran Shuttle
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cattran-az-us/cattran-az-us.zip
+    mdb_id: 146
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-metro-vm
+    state: Arizona
+    name: Valley Metro (VM)
+    static_gtfs_url: https://phoenixopendata.com/dataset/3eae9a4a-98b9-40c8-8df7-8c00c1756235/resource/28ccc0a5-49c8-495c-b91f-193de5ce2cb7/download/googletransit.zip
+    mdb_id: 147
+    rt_urls:
+      trip_updates: https://app.mecatran.com/utw/ws/gtfsfeed/realtime/valleymetro?apiKey=4f22263f69671d7f49726c3011333e527368211f
+      vehicle_positions: https://app.mecatran.com/utw/ws/gtfsfeed/vehicles/valleymetro?apiKey=4f22263f69671d7f49726c3011333e527368211f
+      service_alerts: https://app.mecatran.com/utw/ws/gtfsfeed/alerts/valleymetro?apiKey=4f22263f69671d7f49726c3011333e527368211f
+    license_note: "License: http://www.opendefinition.org/licenses/odc-by"
+
+  - id: groome-transportation-arizona-shuttle
+    state: Arizona
+    name: Groome Transportation - Arizona Shuttle
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/arizonashuttle-az-us/arizonashuttle-az-us.zip
+    mdb_id: 156
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cottonwood-area-transit-cat
+    state: Arizona
+    name: Cottonwood Area Transit (CAT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cottonwood-az-us/cottonwood-az-us.zip
+    mdb_id: 158
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: verde-lynx
+    state: Arizona
+    name: Verde Lynx
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/verdelynx-az-us/verdelynx-az-us.zip
+    mdb_id: 159
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: benson-area-transit
+    state: Arizona
+    name: Benson Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/benson-az-us/benson-az-us.zip
+    mdb_id: 229
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: roadrunner
+    state: Arizona
+    name: RoadRunner
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/naipta-az-us/naipta-az-us.zip
+    mdb_id: 644
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-line-1148
+    state: Arizona
+    name: Mountain Line
+    static_gtfs_url: https://transitfeeds.com/p/mountain-line/243/latest/download
+    mdb_id: 1148
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: grand-canyon-national-park
+    state: Arizona
+    name: South Rim Shuttle
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/grca/south-rim-shuttle-service.zip
+    mdb_id: 1905
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-line-transit
+    state: Arizona
+    name: Mountain Line Transit
+    static_gtfs_url: http://mountainline.syncromatics.com/gtfs
+    mdb_id: 1979
+    rt_urls:
+      trip_updates: https://mountainline.syncromatics.com/gtfs-rt/tripupdates
+      vehicle_positions: https://mountainline.syncromatics.com/gtfs-rt/vehiclepositions
+      service_alerts: https://mountainline.syncromatics.com/gtfs-rt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cat-tran-shuttle-2206
+    state: Arizona
+    name: Cat Tran Shuttle
+    static_gtfs_url: https://api.transloc.com/gtfs/arizona.zip
+    mdb_id: 2206
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: suntran-2354
+    state: Arizona
+    name: SunTran
+    static_gtfs_url: https://www.suntran.com/wp-content/uploads/2024/07/SunTranGTFS.zip
+    mdb_id: 2354
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kingman-area-regional-transit
+    state: Arizona
+    name: Kingman Area Regional Transit
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5565/KART_AZ_GTFS.zip
+    mdb_id: 2855
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-coolidge
+    state: Arizona
+    name: Cotton Express and Central Arizona Regional Transit
+    static_gtfs_url: https://coolidgeaz.govoffice2.com/vertical/Sites/%7BAE188E70-DD7F-47BE-99EF-B58B70641DF9%7D/uploads/coolidge_gtfs.zip
+    mdb_id: 2856
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bisbee-bus
+    state: Arizona
+    name: Bisbee Bus
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11816/Bisbee_AZ_GTFS.zip
+    mdb_id: 2857
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sedona-shuttle
+    state: Arizona
+    name: Sedona Shuttle
+    static_gtfs_url: https://sedonashuttle.com/gtfs/Sedona_Shuttle_Transit_Feed.zip
+    mdb_id: 2858
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: copper-mountain-transit
+    state: Arizona
+    name: Copper Mountain Transit
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11492/CMT_gtfs.zip
+    mdb_id: 2860
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-show-low
+    state: Arizona
+    name: City of Show Low
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/showlow_gtfs.zip
+    mdb_id: 2863
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-douglas
+    state: Arizona
+    name: City of Douglas
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13058/douglas_az_gtfs.zip
+    mdb_id: 2864
+    license_note: No stated data license in the Mobility Database; verify before publishing.

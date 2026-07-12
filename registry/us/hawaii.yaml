@@ -1,0 +1,29 @@
+# Hawaii (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: thebus
+    state: Hawaii
+    name: TheBus
+    static_gtfs_url: http://webapps.thebus.org/transitdata/Production/google_transit.zip
+    mdb_id: 10
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hawai-i-mass-transit-agency-hele-on-bus
+    state: Hawaii
+    name: Hawai'i Mass Transit Agency (Hele-On Bus)
+    static_gtfs_url: http://www.heleonbus.org/transit-info-and-statistics/MTA_FEED4.zip
+    mdb_id: 557
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: thebus-2350
+    state: Hawaii
+    name: TheBus
+    static_gtfs_url: https://www.thebus.org/transitdata/production/google_transit.zip
+    mdb_id: 2350
+    license_note: No stated data license in the Mobility Database; verify before publishing.

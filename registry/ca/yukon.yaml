@@ -1,0 +1,20 @@
+# Yukon (CA) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  # Canada pilot: the first non-US agencies (ADR 0026, internationalize by layer,
+  # GTFS-first). country: CA marks them so the US-only NTD certification-readiness
+  # surfaces are skipped; the GTFS-quality rubric is unchanged. Discovered in the
+  # Mobility Database (scorecard sync --country CA). Whitehorse is a small northern
+  # system, close to the scorecard's small-agency audience. Verify licenses.
+  - id: whitehorse-transit
+    state: Yukon
+    name: Whitehorse Transit (Yukon)
+    country: CA
+    mdb_id: 689
+    static_gtfs_url: https://data.whitehorse.ca/Google_transit_Feed_Docs.zip
+    license_note: No stated data license in the Mobility Database; verify before relying on.

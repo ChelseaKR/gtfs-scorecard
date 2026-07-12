@@ -1,0 +1,132 @@
+# Illinois (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: metro-rock-island-county-metropolitan-mass-transit-district
+    state: Illinois
+    name: Metro Rock Island County Metropolitan Mass Transit District
+    static_gtfs_url: http://www.gogreenmetro.com/latest/google_transit.zip
+    mdb_id: 201
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: chicago-water-taxi
+    state: Illinois
+    name: Chicago Water Taxi
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/chicagowatertaxi-il-us/chicagowatertaxi-il-us.zip
+    mdb_id: 306
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dekalb-public-transit
+    state: Illinois
+    name: DeKalb Public Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip
+    mdb_id: 308
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: springfield-mass-transit-district-smtd
+    state: Illinois
+    name: Springfield Mass Transit District (SMTD)
+    static_gtfs_url: http://data.smtd.org/gtfs/smtd_gtfs_feed.zip
+    mdb_id: 385
+    rt_urls:
+      trip_updates: http://ride.smtd.org/gtfsrt/trips
+      vehicle_positions: http://ride.smtd.org/gtfsrt/vehicles
+      service_alerts: http://ride.smtd.org/gtfsrt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greater-peoria-mass-transit-citylink
+    state: Illinois
+    name: Greater Peoria Mass Transit (CityLink)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ridecitylink-il-us/ridecitylink-il-us.zip
+    mdb_id: 386
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: champaign-urbana-mass-transit-district-mtd
+    state: Illinois
+    name: Champaign Urbana Mass Transit District (MTD)
+    static_gtfs_url: http://developer.cumtd.com/gtfs/google_transit.zip
+    mdb_id: 388
+    license_note: "License: https://developer.cumtd.com/terms-of-use/"
+
+  - id: chicago-transit-authority-cta
+    state: Illinois
+    name: Chicago Transit Authority (CTA)
+    static_gtfs_url: http://www.transitchicago.com/downloads/sch_data/google_transit.zip
+    mdb_id: 389
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pace-bus
+    state: Illinois
+    name: Pace Bus
+    static_gtfs_url: https://public.pacebus.com/gtfs/gtfs.zip
+    mdb_id: 390
+    license_note: "License: http://www.pacebus.com/sub/about/data_services.asp"
+
+  - id: metra
+    state: Illinois
+    ntd_id: "50118"
+    name: Metra
+    static_gtfs_url: https://transitfeeds.com/p/metra/169/latest/download
+    mdb_id: 1187
+    license_note: "License: https://metrarail.com/developers"
+
+  - id: connect-transit-1238
+    state: Illinois
+    name: Connect Transit
+    static_gtfs_url: https://transitfeeds.com/p/connect-transit/668/latest/download
+    mdb_id: 1238
+    license_note: "License: https://www.connect-transit.com/routes/general_transit_feed_specification.asp"
+
+  - id: rockford-mass-transit-district
+    state: Illinois
+    name: Rockford Mass Transit District
+    static_gtfs_url: https://dfef8f.p3cdn2.secureserver.net/wp-content/uploads/2023/08/RMTD_GTFS_AUGUST_2023.zip
+    mdb_id: 2019
+    license_note: "License: https://rmtd.org/gtfs/"
+
+  - id: greater-peoria-mass-transit-citylink-2208
+    state: Illinois
+    name: Greater Peoria Mass Transit (CityLink)
+    static_gtfs_url: https://clk.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2208
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connect-transit-2267
+    state: Illinois
+    name: Connect Transit
+    static_gtfs_url: https://rideconnecttransit.com/gtfs
+    mdb_id: 2267
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shawnee-mass-transit-district
+    state: Illinois
+    name: Shawnee Mass Transit District
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11557/S1.zip
+    mdb_id: 2332
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pace-bus-2347
+    state: Illinois
+    name: Pace Bus
+    static_gtfs_url: https://www.pacebus.com/gtfsdownload
+    mdb_id: 2347
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: danville-mass-transit
+    state: Illinois
+    name: Danville Mass Transit
+    static_gtfs_url: https://www.ridedmt.org/home/showpublisheddocument/1979/638106764822070000
+    mdb_id: 2363
+    license_note: "License: https://www.ridedmt.org/schedules-fares/gtfs-feed"
+
+  - id: metra-2854
+    state: Illinois
+    ntd_id: "50118"
+    name: Metra
+    static_gtfs_url: https://schedules.metrarail.com/gtfs/schedule.zip
+    mdb_id: 2854
+    license_note: "License: https://metra.com/gtfs-realtime-api-key-request-license-agreement"

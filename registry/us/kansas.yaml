@@ -1,0 +1,49 @@
+# Kansas (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: wichita-transit
+    state: Kansas
+    name: Wichita Transit
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit.zip?raw=true
+    mdb_id: 185
+    license_note: "License: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit-license.pdf"
+
+  - id: ku-on-wheels-lawrence-transit-system
+    state: Kansas
+    name: KU on Wheels & Lawrence Transit System
+    static_gtfs_url: https://assets.lawrenceks.org/assets/gis/google-transit/google_transit.zip
+    mdb_id: 188
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-jo
+    state: Kansas
+    name: The JO
+    static_gtfs_url: https://transitfeeds.com/p/the-jo/632/latest/download
+    mdb_id: 1160
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: 81-connection-citygo-kanconnect
+    state: Kansas
+    name: 81 Connection, CityGo, KanConnect
+    static_gtfs_url: https://salinacitygo.com/wp-content/uploads/2022/11/export-2022-11-30T10-18-07.zip
+    mdb_id: 1867
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ku-on-wheels-lawrence-transit-system-2063
+    state: Kansas
+    name: KU on Wheels & Lawrence Transit System
+    static_gtfs_url: https://passio3.com/lawrencetransit/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2063
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: johnson-county-transit
+    state: Kansas
+    name: Johnson County Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/johnsoncounty-ks-us/johnsoncounty-ks-us.zip
+    mdb_id: 2303
+    license_note: No stated data license in the Mobility Database; verify before publishing.

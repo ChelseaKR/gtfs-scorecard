@@ -1,0 +1,1493 @@
+# California (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: unitrans
+    state: California
+    name: Unitrans (ASUCD / City of Davis)
+    static_gtfs_url: https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip
+    ntd_id: "90142"
+    license_note: No stated data license (UC Regents copyright); see docs/feeds.md.
+    # GTFS-RT exists via UmoIQ but requires an API key; see docs/feeds.md.
+    rt_note: >-
+      Unitrans runs live bus tracking, but its data feed needs an access key
+      we don't have yet. Nothing here counts against the grade.
+
+  - id: yolobus
+    state: California
+    name: Yolobus (Yolo County Transportation District)
+    static_gtfs_url: https://avl.yctd.org/RealTime/google_transit.zip
+    ntd_id: "90090"
+    license_note: No stated data license; see docs/feeds.md.
+    rt_urls:
+      trip_updates: https://avl.yctd.org/RealTime/GTFS_TripUpdates.pb
+      vehicle_positions: https://avl.yctd.org/RealTime/GTFS_VehiclePositions.pb
+      service_alerts: https://avl.yctd.org/RealTime/GTFS_ServiceAlerts.pb
+
+  # Sacramento-region small and rural agencies, drafted from the Mobility
+  # Database (scorecard sync) and curated from agencies.california.proposed.yaml.
+  # They give the program rollup views a real worst-first cohort beyond the two
+  # pilots. License terms were unstated in the catalog; verify before relying on.
+  - id: fast-transit
+    state: California
+    ntd_id: "90092"
+    name: Fairfield and Suisun Transit (FAST)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip
+    mdb_id: 76
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: yuba-sutter-transit
+    state: California
+    name: Yuba-Sutter Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/yubasutter-ca-us/yubasutter-ca-us.zip
+    mdb_id: 79
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: placer-county-transit
+    state: California
+    name: Placer County Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/placercounty-ca-us/placercounty-ca-us.zip
+    mdb_id: 77
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: rio-vista-delta-breeze
+    state: California
+    ntd_id: "91014"
+    name: Rio Vista Delta Breeze
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip
+    mdb_id: 81
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: lake-transit
+    state: California
+    name: Lake Transit Authority (LTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/laketransit-ca-us/laketransit-ca-us.zip
+    mdb_id: 68
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+    rt_note: >-
+      Lake Transit publishes realtime, but the feed needs an access key we don't
+      have yet. Nothing here counts against the grade.
+  # California backlog cohort, curated from agencies.california.proposed.yaml
+  # (Mobility Database draft; large operators and duplicate feeds excluded,
+  # dead feeds dropped). Licenses were unstated in the catalog; verify before
+  # relying on.
+
+  - id: alhambra-community-transit
+    state: California
+    name: Alhambra Community Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/alhambra-ca-us/alhambra-ca-us.zip
+    mdb_id: 211
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: amador-transit
+    state: California
+    name: Amador Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/amador-ca-us/amador-ca-us.zip
+    mdb_id: 92
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: arcadia-transit
+    state: California
+    name: Arcadia Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/arcadia-ca-us/arcadia-ca-us.zip
+    mdb_id: 215
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: arvin-transit
+    state: California
+    name: Arvin Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip
+    mdb_id: 216
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: auburn-transit
+    state: California
+    name: Auburn Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/auburntransit-ca-us/auburntransit-ca-us.zip
+    mdb_id: 217
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: avalon-transit
+    state: California
+    name: Avalon Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/avalon-ca-us/avalon-ca-us.zip
+    mdb_id: 12
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: baldwin-park-transit
+    state: California
+    name: Baldwin Park Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/baldwinpark-ca-us/baldwinpark-ca-us.zip
+    mdb_id: 219
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: beaumont-transit
+    state: California
+    name: Beaumont Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip
+    mdb_id: 106
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: blossom-express
+    state: California
+    name: Blossom Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/blossomexpress-ca-us/blossomexpress-ca-us.zip
+    mdb_id: 236
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: calabasas-transit-system
+    state: California
+    name: Calabasas Transit System
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/calabasas-ca-us/calabasas-ca-us.zip
+    mdb_id: 296
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: calaveras-transit
+    state: California
+    name: Calaveras Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/calaveras-ca-us/calaveras-ca-us.zip
+    mdb_id: 93
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: camarillo-area-transit
+    state: California
+    ntd_id: "90163"
+    name: Camarillo Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip
+    mdb_id: 297
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: carson-circuit
+    state: California
+    name: Carson Circuit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/carson-ca-us/carson-ca-us.zip
+    mdb_id: 298
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: catalina-flyer
+    state: California
+    name: Catalina Flyer
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/catalinaflyer-ca-us/catalinaflyer-ca-us.zip
+    mdb_id: 300
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-coach
+    state: California
+    name: City Coach
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip
+    mdb_id: 599
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-banning-transit
+    state: California
+    name: City of Banning Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/banning-ca-us/banning-ca-us.zip
+    mdb_id: 220
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-bell-la-campana
+    state: California
+    name: City of Bell (La Campana)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lacampana-ca-us/lacampana-ca-us.zip
+    mdb_id: 562
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-madera
+    state: California
+    name: City of Madera
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofmadera-ca-us/cityofmadera-ca-us.zip
+    mdb_id: 91
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-tracy-tracer
+    state: California
+    name: City of Tracy (TRACER)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
+    mdb_id: 877
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clovis-transit
+    state: California
+    name: Clovis Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/clovistransit-ca-us/clovistransit-ca-us.zip
+    mdb_id: 89
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: corona-cruiser
+    state: California
+    name: Corona Cruiser
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip
+    mdb_id: 104
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cudahy-area-rapid-transit
+    state: California
+    name: Cudahy Area Rapid Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cudahy-ca-us/cudahy-ca-us.zip
+    mdb_id: 318
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: duarte-transit
+    state: California
+    name: Duarte Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/duartetransit-ca-us/duartetransit-ca-us.zip
+    mdb_id: 105
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: eastern-sierra-transit
+    state: California
+    name: Eastern Sierra Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/easternsierra-ca-us/easternsierra-ca-us.zip
+    mdb_id: 25
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: el-monte-transit
+    state: California
+    name: El Monte Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/elmonte-ca-us/elmonte-ca-us.zip
+    mdb_id: 103
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: el-segundo-transportation
+    state: California
+    name: El Segundo Transportation
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/elsegundo-ca-us/elsegundo-ca-us.zip
+    mdb_id: 458
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: emery-go-round
+    state: California
+    name: Emery Go-Round
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/emerygoround-ca-us/emerygoround-ca-us.zip
+    mdb_id: 63
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: etrans
+    state: California
+    name: eTrans
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/escalon-ca-us/escalon-ca-us.zip
+    mdb_id: 65
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: glenn-transit-service
+    state: California
+    name: Glenn Transit Service
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/glenn-ca-us/glenn-ca-us.zip
+    mdb_id: 835
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: go-west-shuttle
+    state: California
+    name: Go West Shuttle
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/westcovina-ca-us/westcovina-ca-us.zip
+    mdb_id: 623
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gtrans
+    state: California
+    name: GTrans
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gtrans-ca-us/gtrans-ca-us.zip
+    mdb_id: 616
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: guadalupe-flyer
+    state: California
+    name: Guadalupe Flyer
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/guadalupeflyer-ca-us/guadalupeflyer-ca-us.zip
+    mdb_id: 617
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: humboldt-transit-authority
+    state: California
+    name: Humboldt Transit Authority
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/humboldtcounty-ca-us/humboldtcounty-ca-us.zip
+    mdb_id: 19
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kern-transit
+    state: California
+    name: Kern Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kerncounty-ca-us/kerncounty-ca-us.zip
+    mdb_id: 47
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kings-area-rural-transit
+    state: California
+    name: Kings Area Rural Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kcapta-ca-us/kcapta-ca-us.zip
+    mdb_id: 42
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: la-puente-link
+    state: California
+    name: La Puente LINK
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lapuente-ca-us/lapuente-ca-us.zip
+    mdb_id: 563
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: laguna-beach-transit-lbt
+    state: California
+    name: Laguna Beach Transit (LBT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip
+    mdb_id: 16
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lassen-rural-bus-lrb
+    state: California
+    name: Lassen Rural Bus (LRB)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip
+    mdb_id: 118
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lawndale-beat
+    state: California
+    name: Lawndale Beat
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityoflawndale-ca-us/cityoflawndale-ca-us.zip
+    mdb_id: 36
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: los-angeles-county-department-of-public-works-the-link-and-shuttles
+    state: California
+    name: Los Angeles County Department of Public Works (the LINK and shuttles)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dpwlacounty-ca-us/dpwlacounty-ca-us.zip
+    mdb_id: 28
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: madera-county-transit
+    state: California
+    name: Madera County Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/maderactc-ca-us/maderactc-ca-us.zip
+    mdb_id: 572
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/maderactc-ca-us/service_alerts.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mendocino-transit-authority
+    state: California
+    name: Mendocino Transit Authority
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip
+    mdb_id: 69
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: merced-county-transit-the-bus
+    state: California
+    name: Merced County Transit (The Bus)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mercedthebus-ca-us/mercedthebus-ca-us.zip
+    mdb_id: 86
+    rt_urls:
+      vehicle_positions: https://thebuslive.com/gtfs-rt/vehiclepositions
+      service_alerts: https://thebuslive.com/gtfs-rt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: montebello-bus-lines
+    state: California
+    name: Montebello Bus Lines
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/montebello-ca-us/montebello-ca-us.zip
+    mdb_id: 577
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: moorpark-city-transit
+    state: California
+    ntd_id: "90227"
+    name: Moorpark City Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip
+    mdb_id: 578
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: morongo-basin-transit-authority
+    state: California
+    name: Morongo Basin Transit Authority
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip
+    mdb_id: 579
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-transit
+    state: California
+    name: Mountain Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bigbear-ca-us/bigbear-ca-us.zip
+    mdb_id: 107
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: needles-area-transit
+    state: California
+    name: Needles Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip
+    mdb_id: 583
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: nevada-county-connects-gold-country-stage
+    state: California
+    name: Nevada County Connects (Gold Country Stage)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/goldcountrystage-ca-us/goldcountrystage-ca-us.zip
+    mdb_id: 84
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: http://creativecommons.org/licenses/by/4.0/"
+
+  - id: norwalk-transit-system-nts
+    state: California
+    name: Norwalk Transit System (NTS)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/nts-ca-us/nts-ca-us.zip
+    mdb_id: 102
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: palos-verdes-peninsula-transit-authority-pvpta
+    state: California
+    name: Palos Verdes Peninsula Transit Authority (PVPTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip
+    mdb_id: 35
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: petaluma-transit
+    state: California
+    ntd_id: "90213"
+    name: Petaluma Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip
+    mdb_id: 72
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: plumas-transit
+    state: California
+    name: Plumas Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/plumas-ca-us/plumas-ca-us.zip
+    mdb_id: 119
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: porterville-transit
+    state: California
+    name: Porterville Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/porterville-ca-us/porterville-ca-us.zip
+    mdb_id: 48
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: redding-area-bus-authority-raba
+    state: California
+    name: Redding Area Bus Authority (RABA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/redding-ca-us/redding-ca-us.zip
+    mdb_id: 114
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: redwood-coast-transit-rct
+    state: California
+    name: Redwood Coast Transit (RCT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip
+    mdb_id: 20
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ridgerunner
+    state: California
+    name: Ridgerunner
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofridgecrest-ca-us/cityofridgecrest-ca-us.zip
+    mdb_id: 311
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sage-stage
+    state: California
+    name: Sage Stage
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sagestage-ca-us/sagestage-ca-us.zip
+    mdb_id: 113
+    license_note: "License: http://sagestage.com/gtfs-data/"
+
+  - id: san-benito-county-express-sbce
+    state: California
+    name: San Benito County Express (SBCE)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanbenitocounty-ca-us/sanbenitocounty-ca-us.zip
+    mdb_id: 58
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-juan-capistrano-free-weekend-trolley
+    state: California
+    name: San Juan Capistrano Free Weekend Trolley
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanjuancapistrano-ca-us/sanjuancapistrano-ca-us.zip
+    mdb_id: 596
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-leandro-links
+    state: California
+    name: San Leandro Links
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanleandro-ca-us/sanleandro-ca-us.zip
+    mdb_id: 810
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-maria-area-transit
+    state: California
+    name: Santa Maria Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/smat-ca-us/smat-ca-us.zip
+    mdb_id: 26
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-ynez-valley-transit
+    state: California
+    name: Santa Ynez Valley Transit
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/syvt_google_transit.zip
+    mdb_id: 813
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sierra-madre-gateway-coach
+    state: California
+    name: Sierra Madre Gateway Coach
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sierramadre-ca-us/sierramadre-ca-us.zip
+    mdb_id: 829
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: simi-valley-transit
+    state: California
+    ntd_id: "90050"
+    name: Simi Valley Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip
+    mdb_id: 40
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: siskiyou-county
+    state: California
+    name: Siskiyou County
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip
+    mdb_id: 117
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sonoma-county-airport-express
+    state: California
+    name: Sonoma County Airport Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/airportexpressinc-ca-us/airportexpressinc-ca-us.zip
+    mdb_id: 66
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sonoma-county-transit-sct
+    state: California
+    ntd_id: "90089"
+    name: Sonoma County Transit (SCT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip
+    mdb_id: 70
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sonoma-marin-area-rail-transit-smart
+    state: California
+    ntd_id: "90299"
+    name: Sonoma-Marin Area Rail Transit (SMART)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip
+    mdb_id: 815
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-county-transit-link
+    state: California
+    name: South County Transit Link
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/southcountytransitlink-ca-us/southcountytransitlink-ca-us.zip
+    mdb_id: 817
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: spirit-bus
+    state: California
+    name: Spirit Bus
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/montereypark-ca-us/montereypark-ca-us.zip
+    mdb_id: 39
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stanislaus-regional-transit-start
+    state: California
+    name: Stanislaus Regional Transit (StaRT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/stanislaus-ca-us/stanislaus-ca-us.zip
+    mdb_id: 87
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: taft-area-transit
+    state: California
+    name: Taft Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip
+    mdb_id: 821
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tahoe-area-regional-transit-tart-north-lake-tahoe-express
+    state: California
+    name: Placer County
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/laketahoe-ca-us/laketahoe-ca-us.zip
+    mdb_id: 94
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tehama-rural-area-express-trax-susanville-indian-rancheria-public-transportation-program
+    state: California
+    name: Tehama Rural Area Express (TRAX), Susanville Indian Rancheria Public Transportation Program
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tehama-ca-us/tehama-ca-us.zip
+    mdb_id: 116
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: thousand-oaks-transit
+    state: California
+    ntd_id: "90165"
+    name: Thousand Oaks Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip
+    mdb_id: 33
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/thousandoaks-ca-us/service_alerts.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: trinity-transit
+    state: California
+    name: Trinity Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/weaverville-ca-us/weaverville-ca-us.zip
+    mdb_id: 115
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: turlock-transit
+    state: California
+    name: Turlock Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/turlock-ca-us/turlock-ca-us.zip
+    mdb_id: 619
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: university-of-california-berkeley-shuttle-bear-transit
+    state: California
+    name: University of California Berkeley Shuttle (Bear Transit)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/beartransit-ca-us/beartransit-ca-us.zip
+    mdb_id: 226
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ventura-county-transportation-commission
+    state: California
+    ntd_id: "90164"
+    name: Ventura County Transportation Commission
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vctc-ca-us/vctc-ca-us.zip
+    mdb_id: 31
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: westcat
+    state: California
+    ntd_id: "90159"
+    name: WestCAT
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip
+    mdb_id: 78
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yosemite-area-regional-transportation-system-yarts
+    state: California
+    name: Yosemite Area Regional Transportation System (YARTS)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/yosemite-ca-us/yosemite-ca-us.zip
+    mdb_id: 88
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-diego-international-airport-metropolitan-transit-system-mts
+    state: California
+    ntd_id: "90026"
+    name: San Diego International Airport, Metropolitan Transit System (MTS)
+    static_gtfs_url: https://www.sdmts.com/google_transit_files/google_transit.zip
+    mdb_id: 13
+    license_note: "License: https://www.sdmts.com/business-center-developers/terms-and-conditions"
+
+  - id: north-county-transit-district-nctd
+    state: California
+    name: North County Transit District (NCTD)
+    static_gtfs_url: http://www.gonctd.com/google_transit.zip
+    mdb_id: 14
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: orange-county-transportation-authority-octa
+    state: California
+    ntd_id: "90036"
+    name: Orange County Transportation Authority (OCTA)
+    static_gtfs_url: https://www.octa.net/current/google_transit.zip
+    mdb_id: 15
+    rt_urls:
+      trip_updates: https://api.octa.net/GTFSRealTime/protoBuf/tripupdates.aspx
+      vehicle_positions: http://api.octa.net/GTFSRealTime/protoBuf/VehiclePositions.aspx
+      service_alerts: http://api.octa.net/GTFSRealTime/protoBuf/servicealerts.aspx
+    license_note: "License: http://www.octa.net/News-and-Resources/Open-Data/Overview/"
+
+  - id: palo-verde-valley-transit-agency
+    state: California
+    name: Palo Verde Valley Transit Agency
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/paloverde_valley-ca-us/paloverde_valley-ca-us.zip
+    mdb_id: 18
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: airport-valet-express
+    state: California
+    name: Airport Valet Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/airportvaletexpress-ca-us/airportvaletexpress-ca-us.zip
+    mdb_id: 27
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: los-angeles-county-metropolitan-transportation-authority-la-metro
+    state: California
+    ntd_id: "90154"
+    name: Los Angeles County Metropolitan Transportation Authority (LA Metro) Bus
+    static_gtfs_url: https://gitlab.com/LACMTA/gtfs_bus/raw/master/gtfs_bus.zip
+    mdb_id: 29
+    license_note: "License: http://developer.metro.net/the-basics/policies/terms-and-conditions/"
+
+  - id: los-angeles-county-metropolitan-transportation-authority-la-metro-30
+    state: California
+    ntd_id: "90154"
+    name: Los Angeles County Metropolitan Transportation Authority (LA Metro) Rail
+    static_gtfs_url: https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip
+    mdb_id: 30
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://developer.metro.net/terms-conditions/"
+
+  - id: gold-coast-transit-south-coast-area-transit
+    state: California
+    ntd_id: "90035"
+    name: Gold Coast Transit, South Coast Area Transit
+    static_gtfs_url: http://www.goldcoasttransit.org/images/GTFS/GTFS.zip
+    mdb_id: 32
+    license_note: "License: http://www.goldcoasttransit.org/2-uncategorised/250-gtfs-data-download"
+
+  - id: torrance-transit
+    state: California
+    name: Torrance Transit
+    static_gtfs_url: https://transit.torranceca.gov/home/showdocument?id=16673
+    mdb_id: 34
+    license_note: "License: https://transit.torranceca.gov/home/showdocument?id=6052"
+
+  - id: big-blue-bus
+    state: California
+    ntd_id: "90008"
+    name: Big Blue Bus
+    static_gtfs_url: http://gtfs.bigbluebus.com/current.zip
+    mdb_id: 37
+    rt_urls:
+      trip_updates: http://gtfs.bigbluebus.com/tripupdates.bin
+      vehicle_positions: http://gtfs.bigbluebus.com/vehiclepositions.bin
+      service_alerts: http://gtfs.bigbluebus.com/alerts.bin
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: morro-bay-transit
+    state: California
+    name: Morro Bay Transit
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/morrobay_google_transit.zip
+    mdb_id: 45
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-mateo-county-transit-district-samtrans
+    state: California
+    ntd_id: "90009"
+    name: San Mateo County Transit District (samTrans)
+    static_gtfs_url: http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip
+    mdb_id: 49
+    license_note: "License: http://www.samtrans.com/Developer.html"
+
+  - id: san-francisco-municipal-transportation-agency-sfmta-muni
+    state: California
+    ntd_id: "90015"
+    name: San Francisco Municipal Transportation Agency (SFMTA - Muni)
+    static_gtfs_url: https://gtfs.sfmta.com/transitdata/google_transit.zip
+    mdb_id: 50
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: http://www.sfmta.com/about-sfmta/reports/gtfs-transit-data"
+
+  - id: mission-bay-transportation-management-association-tma
+    state: California
+    name: Mission Bay Transportation Management Association (TMA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/missionbaytma-ca-us/missionbaytma-ca-us.zip
+    mdb_id: 51
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tideline-water-taxi
+    state: California
+    name: Tideline Water Taxi
+    static_gtfs_url: http://trilliumtransit.com/transit_feeds/tidelinewatertaxi-ca-us/tidelinewatertaxi-ca-us.zip
+    mdb_id: 52
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bay-area-rapid-transit-bart
+    state: California
+    ntd_id: "90003"
+    name: Bay Area Rapid Transit (BART)
+    static_gtfs_url: http://www.bart.gov/dev/schedules/google_transit.zip
+    mdb_id: 53
+    rt_urls:
+      trip_updates: http://api.bart.gov/gtfsrt/tripupdate.aspx
+      service_alerts: http://api.bart.gov/gtfsrt/alerts.aspx
+    license_note: "License: http://www.bart.gov/schedules/developers/developer-license-agreement"
+
+  - id: caltrain
+    state: California
+    name: Caltrain
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip
+    mdb_id: 54
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: monterey-salinas-transit-mst
+    state: California
+    ntd_id: "90062"
+    name: Monterey-Salinas Transit (MST)
+    static_gtfs_url: https://www.mst.org/google/google_transit.zip
+    mdb_id: 56
+    rt_urls:
+      trip_updates: http://206.128.158.191/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: http://206.128.158.191/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: http://206.128.158.191/TMGTFSRealTimeWebService/Alert/Alerts.pb
+    license_note: "License: https://mst.org/about-mst/developer-resources/"
+
+  - id: santa-clara-valley-transportation-authority-vta
+    state: California
+    ntd_id: "90013"
+    name: Santa Clara Valley Transportation Authority (VTA)
+    static_gtfs_url: https://gtfs.vta.org/gtfs_vta.zip
+    mdb_id: 57
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stanford-marguerite-shuttle-sms
+    state: California
+    name: Stanford Marguerite Shuttle (SMS)
+    static_gtfs_url: https://transportation-forms.stanford.edu/google/google_transit.zip
+    mdb_id: 59
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-view-transportation-management-association-mvgo
+    state: California
+    name: Mountain View Transportation Management Association (MVgo)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainview-ca-us/mountainview-ca-us.zip
+    mdb_id: 60
+    rt_urls:
+      trip_updates: https://ridemvgo.org/gtfs-rt/tripupdates
+      vehicle_positions: https://ridemvgo.org/gtfs-rt/vehiclepositions
+      service_alerts: https://ridemvgo.org/gtfs-rt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: commute-org-san-mateo-county-shuttles
+    state: California
+    name: Commute.org San Mateo County Shuttles
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/commute-ca-us/commute-ca-us.zip
+    mdb_id: 61
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-francisco-bay-area-water-emergency-transportation-authority-weta
+    state: California
+    name: San Francisco Bay Area Water Emergency Transportation Authority (WETA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sfbayferry-ca-us/sfbayferry-ca-us.zip
+    mdb_id: 62
+    license_note: "License: http://assets.511.org/pdf/nextgen/developers/511_Data_Agreement_Final.pdf"
+
+  - id: livermore-amador-valley-transit-authority
+    state: California
+    ntd_id: "90144"
+    name: Livermore Amador Valley Transit Authority
+    static_gtfs_url: http://webwatch.lavta.org/TMGTFSRealTimeWebService/GTFS-Static/google_transit.zip
+    mdb_id: 64
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: golden-gate-transit
+    state: California
+    ntd_id: "90016"
+    name: Golden Gate Transit
+    static_gtfs_url: https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip
+    mdb_id: 67
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-rosa-citybus
+    state: California
+    ntd_id: "90017"
+    name: Santa Rosa CityBus
+    static_gtfs_url: https://srcity.org/DocumentCenter/View/21635/google_transit
+    mdb_id: 73
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: fresno-area-express-fax
+    state: California
+    name: Fresno Area Express (FAX)
+    static_gtfs_url: http://gis4u.fresno.gov/downloads/fax_gtfs.zip
+    mdb_id: 90
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: omnitrans
+    state: California
+    name: OmniTrans
+    static_gtfs_url: http://www.omnitrans.org/google/google_transit.zip
+    mdb_id: 97
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: riverside-transit-agency
+    state: California
+    name: Riverside Transit Agency
+    static_gtfs_url: http://www.riversidetransit.com/google_transit.zip
+    mdb_id: 98
+    rt_urls:
+      trip_updates: https://rtabus.com/gtfsrt/trips
+      vehicle_positions: https://rtabus.com/gtfsrt/vehicles
+      service_alerts: https://rtabus.com/gtfsrt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: victor-valley-transit-authority-vvta
+    state: California
+    name: Victor Valley Transit Authority (VVTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/victorville-ca-us/victorville-ca-us.zip
+    mdb_id: 99
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: anaheim-resort-transportation-art
+    state: California
+    name: Anaheim Resort Transportation (ART)
+    static_gtfs_url: https://art.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+    mdb_id: 100
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: foothill-transit
+    state: California
+    name: Foothill Transit
+    static_gtfs_url: https://foothilltransit.rideralerts.com/myStop/GTFS-Zip.ashx
+    mdb_id: 101
+    rt_urls:
+      trip_updates: https://foothill_3rdparty.rideralerts.com/myStop/GTFS-Realtime.ashx?&Type=TripUpdate
+      vehicle_positions: https://foothill_3rdparty.rideralerts.com/myStop/GTFS-Realtime.ashx?&Type=VehiclePosition&serverid=0
+      service_alerts: https://foothill_3rdparty.rideralerts.com/myStop/GTFS-Realtime.ashx?&Type=Alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: regional-transportation-commission-of-southern-nevada-rtc
+    state: California
+    name: Regional Transportation Commission of Southern Nevada (RTC)
+    static_gtfs_url: http://rtcws.rtcsnv.com/g/google_transit.zip
+    mdb_id: 110
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://www.rtcsnv.com/ways-to-travel/transit-services/for-developers/"
+
+  - id: antelope-valley-transit-authority-avta
+    state: California
+    name: Antelope Valley Transit Authority (AVTA)
+    static_gtfs_url: https://www.avta.com/userfiles/files/google_transit.zip
+    mdb_id: 214
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bellflower-bus
+    state: California
+    name: Bellflower Bus
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellflower-ca-us/bellflower-ca-us.zip
+    mdb_id: 227
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bell-gardens-trolley
+    state: California
+    name: Bell Gardens Trolley
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellgardens-ca-us/bellgardens-ca-us.zip
+    mdb_id: 228
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: downeylink
+    state: California
+    name: DowneyLINK
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/downey-ca-us/downey-ca-us.zip
+    mdb_id: 383
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: huntington-park-express
+    state: California
+    name: Huntington Park Express
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/huntingtonpark-ca-us/huntingtonpark-ca-us.zip
+    mdb_id: 558
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lynwood-trolley-breeze
+    state: California
+    name: Lynwood Trolley / Breeze
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lynwood-ca-us/lynwood-ca-us.zip
+    mdb_id: 570
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet
+    state: California
+    name: Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue & Gold Fleet
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bayareaferries-ca-us/bayareaferries-ca-us.zip
+    mdb_id: 595
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: get-around-town-express
+    state: California
+    name: Get Around Town Express
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/getaroundtownexpress-ca-us/getaroundtownexpress-ca-us.zip
+    mdb_id: 606
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: glendora-transportation-division
+    state: California
+    name: Glendora Transportation Division
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/glendora-ca-us/glendora-ca-us.zip
+    mdb_id: 609
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: west-berkeley-shuttle
+    state: California
+    name: West Berkeley Shuttle
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/westberkeleyshuttle-ca-us/westberkeleyshuttle-ca-us.zip
+    mdb_id: 622
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: playa-vista-shuttle
+    state: California
+    name: Playa Vista Shuttle
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/playavistashuttle-ca-us/playavistashuttle-ca-us.zip
+    mdb_id: 799
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: beach-cities-transit
+    state: California
+    name: Beach Cities Transit
+    static_gtfs_url: https://www.redondo.org/civicax/filebank/blobdload.aspx?BlobID=33555
+    mdb_id: 803
+    rt_urls:
+      trip_updates: https://redondobeachbct.com/gtfs-rt/tripupdates
+      vehicle_positions: https://redondobeachbct.com/gtfs-rt/vehiclepositions
+      service_alerts: https://redondobeachbct.com/gtfs-rt/alerts
+    license_note: "License: https://www.redondo.org/depts/recreation/transit/trip_planner/gtfs_data.asp"
+
+  - id: rosemead-explorer
+    state: California
+    name: Rosemead Explorer
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/rosemead-ca-us/rosemead-ca-us.zip
+    mdb_id: 806
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-joaquin-regional-transit-district-rtd
+    state: California
+    name: San Joaquin Regional Transit District (RTD)
+    static_gtfs_url: http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip
+    mdb_id: 886
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: http://sanjoaquinrtd.com/preview/terms-of-use/"
+
+  - id: city-of-lompoc-transit-colt
+    state: California
+    name: City of Lompoc Transit (COLT)
+    static_gtfs_url: https://www.cityoflompoc.com/home/showdocument?id=29896
+    mdb_id: 919
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: altamont-corridor-express
+    state: California
+    ntd_id: "90182"
+    name: Altamont Corridor Express
+    static_gtfs_url: https://transitfeeds.com/p/altamont-corridor-express/823/latest/download
+    mdb_id: 1133
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: blue-gold-fleet
+    state: California
+    name: Blue & Gold Fleet
+    static_gtfs_url: https://transitfeeds.com/p/blue-gold-fleet/824/latest/download
+    mdb_id: 1178
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: long-beach-transit-lbt
+    state: California
+    name: Long Beach Transit (LBT)
+    static_gtfs_url: https://drive.google.com/uc?export=download&id=1869EVa1z6m_iD6QmvRXyTHtYiaSUBROl
+    mdb_id: 1198
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-cruz-metro-scmtd
+    state: California
+    name: Santa Cruz Metro (SCMTD)
+    static_gtfs_url: http://scmtd.com/google_transit/google_transit.zip
+    mdb_id: 1211
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: county-connection-cccta
+    state: California
+    ntd_id: "90078"
+    name: County Connection (CCCTA)
+    static_gtfs_url: https://transitfeeds.com/p/county-connection/222/latest/download
+    mdb_id: 1243
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: alameda-contra-costa-transit-district-ac-transit
+    state: California
+    ntd_id: "90014"
+    name: Alameda-Contra Costa Transit District (AC Transit)
+    static_gtfs_url: https://transitfeeds.com/p/ac-transit/1269/latest/download
+    mdb_id: 1244
+    license_note: "License: https://www.actransit.org/data-terms-and-conditions/"
+
+  - id: city-of-glendale
+    state: California
+    name: City of Glendale
+    static_gtfs_url: https://transitfeeds.com/p/city-of-glendale/628/latest/download
+    mdb_id: 1245
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: glendale-beeline
+    state: California
+    name: Glendale Beeline
+    static_gtfs_url: https://transitfeeds.com/p/glendale-beeline/917/latest/download
+    mdb_id: 1280
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sacramento-regional-transit-sacrt
+    state: California
+    ntd_id: "90019"
+    name: Sacramento Regional Transit (SacRT)
+    static_gtfs_url: https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip
+    mdb_id: 1296
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tri-delta-transit
+    state: California
+    ntd_id: "90162"
+    name: Tri Delta Transit
+    static_gtfs_url: https://transitfeeds.com/p/tri-delta-transit/1148/latest/download
+    mdb_id: 1323
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-wasco
+    state: California
+    name: City of Wasco
+    static_gtfs_url: https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
+    mdb_id: 1788
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ucsc-transportation-and-parking-services
+    state: California
+    name: UCSC Transportation and Parking Services
+    static_gtfs_url: https://pinpointavl.com/TAPS-GTFS.zip
+    mdb_id: 1842
+    license_note: "License: https://github.com/PinpointAVL/TAPS-GTFS/blob/main/LICENSE"
+
+  - id: clean-air-express
+    state: California
+    name: Clean Air Express
+    static_gtfs_url: https://gtfs.calitp.org/production/CleanAirExpressFaresv2.zip
+    mdb_id: 1872
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: redding-area-bus-authority-raba-1972
+    state: California
+    name: Redding Area Bus Authority (RABA)
+    static_gtfs_url: https://hosted-gtfs-feeds.s3.amazonaws.com/RABA/gtfs.zip
+    mdb_id: 1972
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-view-transportation-management-association-mvgo-2025
+    state: California
+    name: Mountain View Transportation Management Association (MVgo)
+    static_gtfs_url: https://mvgo.org/data/gtfs.zip
+    mdb_id: 2025
+    rt_urls:
+      trip_updates: https://mtma.tripshot.com/v1/gtfs/realtime/feed/mvgo?types=TripUpdate
+      vehicle_positions: https://mtma.tripshot.com/v1/gtfs/realtime/feed/mvgo?types=VehiclePosition
+      service_alerts: https://mtma.tripshot.com/v1/gtfs/realtime/feed/mvgo?types=Alert
+    license_note: "License: https://mvgo.org/developers/"
+
+  - id: morro-bay-transit-2059
+    state: California
+    name: Morro Bay Transit
+    static_gtfs_url: https://www.morrobayca.gov/DocumentCenter/View/19231/Morro-Bay-GTFS-Data-Updated-20240510
+    mdb_id: 2059
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: elk-grove-transit
+    state: California
+    name: Elk Grove Transit
+    static_gtfs_url: https://elkgrovetransit.com/gtfs
+    mdb_id: 2136
+    license_note: "License: https://www.sacrt.com/gtfs/"
+
+  - id: sacramento-regional-transit-sacrt-2137
+    state: California
+    ntd_id: "90019"
+    name: Sacramento Regional Transit (SacRT)
+    static_gtfs_url: https://www.sacrt.com/wp-content/uploads/google_transit.zip
+    mdb_id: 2137
+    license_note: "License: https://www.sacrt.com/gtfs/"
+
+  - id: montebello-bus-lines-2201
+    state: California
+    name: Montebello Bus Lines
+    static_gtfs_url: https://mbl.rideralerts.com/infopoint/gtfs-zip.ashx
+    mdb_id: 2201
+    rt_urls:
+      trip_updates: https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: spirit-bus-2202
+    state: California
+    name: Spirit Bus
+    static_gtfs_url: https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2202
+    rt_urls:
+      trip_updates: https://passio3.com/montereyp/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/montereyp/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/montereyp/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kings-area-rural-transit-2204
+    state: California
+    name: Kings Area Rural Transit
+    static_gtfs_url: http://kart.connexionz.net/rtt/public/utility/gtfs.aspx
+    mdb_id: 2204
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: glenn-transit-service-2207
+    state: California
+    name: Glenn Transit Service
+    static_gtfs_url: https://cdn.hibuwebsites.com/af26dd3d53e046cf8ce6ac6dc92e7b14/files/uploaded/glenn-transit-service-google-transit-2024-01-19.zip
+    mdb_id: 2207
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: el-segundo-transportation-2210
+    state: California
+    name: El Segundo Transportation
+    static_gtfs_url: https://github.com/LACMTA/los-angeles-regional-gtfs/raw/main/elsegundo-ca-us/elsegundo-ca-us.zip
+    mdb_id: 2210
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: emery-go-round-2224
+    state: California
+    name: Emery Go-Round
+    static_gtfs_url: https://emerygoround.com/data/emerygoround-ca-us.zip
+    mdb_id: 2224
+    rt_urls:
+      trip_updates: https://emerygoround.tripshot.com/v1/gtfs/realtime/feed/egr?types=TripUpdate
+      vehicle_positions: https://emerygoround.tripshot.com/v1/gtfs/realtime/feed/egr?types=VehiclePosition
+      service_alerts: https://emerygoround.tripshot.com/v1/gtfs/realtime/feed/egr?types=Alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: norwalk-transit-system-nts-2242
+    state: California
+    name: Norwalk Transit System (NTS)
+    static_gtfs_url: https://mystop.norwalktransit.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2242
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: arcadia-transit-2243
+    state: California
+    name: Arcadia Transit
+    static_gtfs_url: https://passio3.com/ArcadiaCity/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2243
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cudahy-area-rapid-transit-2248
+    state: California
+    name: Cudahy Area Rapid Transit
+    static_gtfs_url: https://www.cityofcudahy.com/DocumentCenter/View/2041
+    mdb_id: 2248
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-bell-la-campana-2249
+    state: California
+    name: City of Bell (La Campana)
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lacampana-ca-us/lacampana-ca-us.zip
+    mdb_id: 2249
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: la-puente-link-2250
+    state: California
+    name: La Puente LINK
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lapuente-ca-us/lapuente-ca-us.zip
+    mdb_id: 2250
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sierra-madre-gateway-coach-2251
+    state: California
+    name: Sierra Madre Gateway Coach
+    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/sierramadre-ca-us/sierramadre-ca-us.zip
+    mdb_id: 2251
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gtrans-2270
+    state: California
+    name: GTrans
+    static_gtfs_url: https://ridegtrans.com/gtfs.zip
+    mdb_id: 2270
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-maria-area-transit-2272
+    state: California
+    name: Santa Maria Area Transit
+    static_gtfs_url: https://smrt.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+    mdb_id: 2272
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stanislaus-regional-transit-start-2273
+    state: California
+    name: Stanislaus Regional Transit (StaRT)
+    static_gtfs_url: https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2273
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: auburn-transit-2275
+    state: California
+    name: Auburn Transit
+    static_gtfs_url: https://www.auburn.ca.gov/DocumentCenter/View/3431
+    mdb_id: 2275
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dana-point-trolley
+    state: California
+    name: Dana Point Trolley
+    static_gtfs_url: https://dptrolley.com/Secure/Admin/Reports/GTFSDownload.aspx
+    mdb_id: 2361
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-clemente-trolley
+    state: California
+    name: San Clemente Trolley
+    static_gtfs_url: https://sctrolley.com/Secure/Admin/Reports/GTFSDownload.aspx
+    mdb_id: 2362
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yosemite-area-regional-transportation-system-yarts-2394
+    state: California
+    name: Yosemite Area Regional Transportation System (YARTS)
+    static_gtfs_url: https://www.planeteria.com/gtfs/yosemite-ca-us/yosemite-ca-us-gtfs.zip
+    mdb_id: 2394
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-cruz-metro-scmtd-2425
+    state: California
+    name: Santa Cruz Metro (SCMTD)
+    static_gtfs_url: https://developer.scmetro.org/gtfs.zip
+    mdb_id: 2425
+    rt_urls:
+      trip_updates: https://rt.scmetro.org/gtfsrt/trips
+      vehicle_positions: https://rt.scmetro.org/gtfsrt/vehicles
+      service_alerts: https://rt.scmetro.org/gtfsrt/alerts
+    license_note: "License: https://developer.scmetro.org/"
+
+  - id: samtrans
+    state: California
+    ntd_id: "90009"
+    name: SamTrans
+    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=SM
+    mdb_id: 2708
+    license_note: "License: https://511.org/about/terms"
+
+  - id: trinity-transit-2709
+    state: California
+    name: Trinity Transit
+    static_gtfs_url: https://gtfs.remix.com/trinity_county_ca.zip
+    mdb_id: 2709
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: redding-area-bus-authority-2853
+    state: California
+    name: Redding Area Bus Authority Flex
+    static_gtfs_url: https://rabagtfs.z5.web.core.windows.net/rabagtfs_flex.zip
+    mdb_id: 2853
+    license_note: "License: https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1"
+
+  - id: keep-tahoe-blue
+    state: California
+    name: Emerald Bay Shuttle
+    static_gtfs_url: https://keeptahoeblue.sharepoint.com/sites/LeaguetoSaveLakeTahoe-CommunityEngagement/_layouts/15/guestaccess.aspx?share=EdcHnLwMfdJLscvyGDDa8FwB_bLXkpj9XIuG5GFiKdlKJw&e=1yNB6c&download=1
+    mdb_id: 2876
+    license_note: "License: https://keeptahoeblue.sharepoint.com/sites/LeaguetoSaveLakeTahoe-CommunityEngagement/_layouts/15/guestaccess.aspx?share=EdcHnLwMfdJLscvyGDDa8FwB_bLXkpj9XIuG5GFiKdlKJw&e=1yNB6c&download=1"
+
+  - id: mountain-view-transportation-management-association-mvgo-2880
+    state: California
+    name: Mountain View Transportation Management Association (MVgo)
+    static_gtfs_url: https://gtfs.mvgo.org/gtfs.zip
+    mdb_id: 2880
+    license_note: "License: https://mvgo.org/developers/"
+
+  - id: clovis-transit-2894
+    state: California
+    name: Clovis Transit
+    static_gtfs_url: https://passio3.com/clovis/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2894
+    rt_urls:
+      trip_updates: https://passio3.com/clovis/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/clovis/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/clovis/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: marin-transit-2937
+    state: California
+    ntd_id: "90234"
+    name: Marin Transit
+    static_gtfs_url: https://marintransit.gov/data/google_transit.zip
+    mdb_id: 2937
+    rt_urls:
+      trip_updates: https://marintransit.net/gtfs-rt/tripupdates
+      vehicle_positions: https://marintransit.net/gtfs-rt/vehiclepositions
+      service_alerts: https://marintransit.net/gtfs-rt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: redding-area-bus-authority-3031
+    state: California
+    name: Redding Area Bus Authority
+    static_gtfs_url: https://gtfs.remix.com/redding_area_bus_authority.zip
+    mdb_id: 3031
+    license_note: "License: https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1"
+
+  - id: humboldt-transit-authority-3032
+    state: California
+    name: Humboldt Transit Authority
+    static_gtfs_url: https://hta.optibus.co/public_api/v1/feeds/gtfs
+    mdb_id: 3032
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: north-county-transit-district-nctd-3093
+    state: California
+    name: North County Transit District (NCTD)
+    static_gtfs_url: https://lfportal.nctd.org/staticGTFS/google_transit.zip
+    mdb_id: 3093
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: glenn-transit-service-3094
+    state: California
+    name: Glenn Transit Service
+    static_gtfs_url: https://cdn.hibuwebsites.com/af26dd3d53e046cf8ce6ac6dc92e7b14/files/uploaded/glenn-county-transit-service-google-transit-2026-01.zip
+    mdb_id: 3094
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ventura-county-transportation-commission-3096
+    state: California
+    ntd_id: "90164"
+    name: Ventura County Transportation Commission
+    static_gtfs_url: https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip
+    mdb_id: 3096
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-tracy-tracer-3099
+    state: California
+    name: City of Tracy (TRACER)
+    static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/gtfs.zip
+    mdb_id: 3099
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: merced-county-transit-the-bus-3117
+    state: California
+    name: Merced County Transit (The Bus)
+    static_gtfs_url: https://thebuslive.com/gtfs
+    mdb_id: 3117
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: san-francisco-bay-area-water-emergency-transportation-authority-weta-3143
+    state: California
+    name: San Francisco Bay Area Water Emergency Transportation Authority (WETA)
+    static_gtfs_url: https://gtfs.sanfranciscobayferry.com/gtfs.zip
+    mdb_id: 3143
+    license_note: "License: https://opendatacommons.org/licenses/by/summary/"
+
+  - id: golden-gate-national-recreation-area-alcatraz-island
+    state: California
+    name: Alcatraz Cruises Ferry
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/alca/alcatraz-cruises-ferry.zip
+    mdb_id: 3208
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: catalina-express
+    state: California
+    name: Catalina Express
+    static_gtfs_url: https://gitlab.com/LACMTA/gtfs_lax/-/archive/master/gtfs_lax-master.zip?path=catalina_express
+    mdb_id: 299
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yolo-county-transportation-district-yolobus
+    state: California
+    name: Yolo County Transportation District (Yolobus)
+    static_gtfs_url: http://www.yolobus.com/GTFS/google_transit.zip
+    mdb_id: 1295
+    license_note: No stated data license in the Mobility Database; verify before publishing.

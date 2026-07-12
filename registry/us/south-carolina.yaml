@@ -1,0 +1,44 @@
+# South Carolina (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: charleston-area-regional-transportation-authority-carta
+    state: South Carolina
+    name: Charleston Area Regional Transportation Authority (CARTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/carta-sc-us/carta-sc-us.zip
+    mdb_id: 352
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/carta-sc-us/service_alerts.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clemson-area-transit-cat
+    state: South Carolina
+    name: Clemson Area Transit (CAT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip
+    mdb_id: 798
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-comet
+    state: South Carolina
+    name: The Comet
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thecomet-sc-us/thecomet-sc-us.zip
+    mdb_id: 1197
+    license_note: "License: http://data.trilliumtransit.com/gtfs/thecomet-sc-us/thecomet-sc-us.zip"
+
+  - id: greenville-transit-authority-greenlink
+    state: South Carolina
+    name: Greenville Transit Authority (Greenlink)
+    static_gtfs_url: https://greenlink.cadavl.com:5053/GTA/GTFS/GTFS_GTA.zip
+    mdb_id: 1923
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-comet-2209
+    state: South Carolina
+    name: The Comet
+    static_gtfs_url: https://comet.mapstrat.com/current/google_transit.zip
+    mdb_id: 2209
+    license_note: No stated data license in the Mobility Database; verify before publishing.

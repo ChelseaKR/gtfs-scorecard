@@ -1,0 +1,51 @@
+# New Jersey (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: patco-speedline
+    state: New Jersey
+    name: PATCO Speedline
+    static_gtfs_url: http://www.ridepatco.org/developers/PortAuthorityTransitCorporation.zip
+    mdb_id: 505
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: new-jersey-transit-nj-transit
+    state: New Jersey
+    ntd_id: "20080"
+    name: New Jersey Transit (NJ Transit) Bus
+    static_gtfs_url: https://www.njtransit.com/bus_data.zip
+    mdb_id: 508
+    license_note: "License: https://www.njtransit.com/developer-tools"
+
+  - id: new-jersey-transit-nj-transit-509
+    state: New Jersey
+    ntd_id: "20080"
+    name: New Jersey Transit (NJ Transit) Rail
+    static_gtfs_url: https://www.njtransit.com/rail_data.zip
+    mdb_id: 509
+    license_note: "License: https://www.njtransit.com/developer-tools"
+
+  - id: port-authority-trans-hudson-path
+    state: New Jersey
+    name: Port Authority Trans-Hudson (PATH)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip
+    mdb_id: 517
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: patco-speedline-3035
+    state: New Jersey
+    name: PATCO Speedline
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip
+    mdb_id: 3035
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: boxcar
+    state: New Jersey
+    name: Boxcar Commuter Bus
+    static_gtfs_url: https://boxcar-gtfs.vercel.app/api/gtfs
+    mdb_id: 3105
+    license_note: No stated data license in the Mobility Database; verify before publishing.

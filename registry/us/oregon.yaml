@@ -1,0 +1,589 @@
+# Oregon (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: coos-county-area-transit-ccat
+    state: Oregon
+    name: Coos County Area Transit (CCAT)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/cooscounty-or-us/cooscounty-or-us.zip
+    mdb_id: 21
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: curry-public-transit
+    state: Oregon
+    name: Curry Public Transit
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/currypublictransit-or-us/currypublictransit-brookings-or-us.zip
+    mdb_id: 22
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lincoln-county-transit-lct
+    state: Oregon
+    name: Lincoln County Transit (LCT)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/lincolncounty-or-us/lincolncounty-or-us.zip
+    mdb_id: 23
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rhody-express
+    state: Oregon
+    name: Rhody Express
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/rhodyexpress-or-us/rhodyexpress-or-us.zip
+    mdb_id: 24
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: people-mover
+    state: Oregon
+    name: People Mover
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/peoplemover-or-us/peoplemover-or-us.zip
+    mdb_id: 112
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: josephine-county-transit-jct
+    state: Oregon
+    name: Josephine County Transit (JCT)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/josephinecounty-or-us/josephinecounty-or-us.zip
+    mdb_id: 121
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rogue-valley-transportation-district-rvtd
+    state: Oregon
+    name: Rogue Valley Transportation District (RVTD)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/rvtd-or-us/rvtd-or-us.zip
+    mdb_id: 122
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: utrans
+    state: Oregon
+    name: UTrans
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/umpquatransit-or-us/umpquatransit-or-us.zip
+    mdb_id: 123
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: klamath-shuttle-crater-lake-trolley
+    state: Oregon
+    name: Klamath Shuttle - Crater Lake Trolley
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/craterlaketrolley-or-us/craterlaketrolley-or-us.zip
+    mdb_id: 124
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: basin-transit-service-bts
+    state: Oregon
+    name: Basin Transit Service (BTS)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip
+    mdb_id: 125
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: benton-area-transportation
+    state: Oregon
+    name: Benton Area Transportation
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/benton-or-us/benton-or-us.zip
+    mdb_id: 126
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/benton-or-us/service_alerts.proto
+    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
+
+  - id: caravan-airport-transportation
+    state: Oregon
+    name: Caravan Airport Transportation
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/caravan-or-us/caravan-or-us.zip
+    mdb_id: 127
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cherriots
+    state: Oregon
+    name: Cherriots
+    static_gtfs_url: https://www.cherriots.org/media/doc/gtfs.zip
+    mdb_id: 128
+    license_note: "License: https://www.cherriots.org/datalicense/"
+
+  - id: city-2-city-shuttle
+    state: Oregon
+    name: City 2 City Shuttle
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/citytocityshuttle-or-us/citytocityshuttle-or-us.zip
+    mdb_id: 129
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: diamond-express
+    state: Oregon
+    name: Diamond Express
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/diamondexpress-or-us/diamondexpress-or-us.zip
+    mdb_id: 130
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lane-transit-district-ltd
+    state: Oregon
+    ntd_id: "00007"
+    name: Lane Transit District (LTD)
+    static_gtfs_url: https://www.ltd.org/files/library/ltdgtfs.zip
+    mdb_id: 131
+    rt_urls:
+      trip_updates: http://feed.ltd.org/gtfs-realtime/tripupdate
+      vehicle_positions: https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip
+      service_alerts: http://feed.ltd.org/gtfs-realtime/alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: oregon-express-shuttle
+    state: Oregon
+    name: Oregon Express Shuttle
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/oregonexpressshuttle-or-us/oregonexpressshuttle-or-us.zip
+    mdb_id: 132
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pacific-crest-bus-lines
+    state: Oregon
+    name: Pacific Crest Bus Lines
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/pacificcrest-or-us/pacificcrest-or-us.zip
+    mdb_id: 133
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-lane-wheels
+    state: Oregon
+    name: South Lane Wheels
+    static_gtfs_url: https://oregon-gtfs-trilliumtransit.com/gtfs_data/southlanewheels-or-us/southlanewheels-or-us.zip
+    mdb_id: 134
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: linx-transit-linn-benton-loop-albany-transit-system
+    state: Oregon
+    name: LINX Transit, Linn-Benton Loop, Albany Transit System
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/albanytransit-or-us/albanytransit-or-us.zip
+    mdb_id: 135
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-corvallis
+    state: Oregon
+    name: City of Corvallis
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/corvallis-or-us/corvallis-or-us.zip
+    mdb_id: 136
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
+
+  - id: linn-shuttle
+    state: Oregon
+    name: Linn Shuttle
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/linnshuttle-or-us/linnshuttle-or-us.zip
+    mdb_id: 137
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
+
+  - id: cascades-east-transit-cet
+    state: Oregon
+    name: Cascades East Transit (CET)
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/cascadeseast-or-us/cascadeseast-or-us.zip
+    mdb_id: 138
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: central-oregon-breeze
+    state: Oregon
+    name: Central Oregon Breeze
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/cobreeze-or-us/cobreeze-or-us.zip
+    mdb_id: 139
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: eugene-to-bend
+    state: Oregon
+    name: Eugene to BEND
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/eugenetobend-or-us/eugenetobend-or-us.zip
+    mdb_id: 140
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: malheur-council-on-aging-community-services
+    state: Oregon
+    name: Malheur Council on Aging & Community Services
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/mcacs-or-us/mcacs-or-us.zip
+    mdb_id: 141
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sunset-empire-transportation-district-setd-tillamook-county-transportation-district-columbia-county-rider
+    state: Oregon
+    name: Sunset Empire Transportation District (SETD), Tillamook County Transportation District, Columbia County Rider
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/tillamookcounty-or-us/tillamookcounty-or-us.zip
+    mdb_id: 246
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: trimet-portland-streetcar
+    state: Oregon
+    name: TriMet, Portland Streetcar
+    static_gtfs_url: http://developer.trimet.org/schedule/gtfs.zip
+    mdb_id: 247
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-metro-area-regional-transit-smart
+    state: Oregon
+    name: South Metro Area Regional Transit (SMART)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/wilsonville-or-us/wilsonville-or-us.zip
+    mdb_id: 248
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wahkiakum-on-the-move
+    state: Oregon
+    name: Wahkiakum on the Move
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/wotm-wa-us/wotm-wa-us.zip
+    mdb_id: 249
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yamhill-county-transit-area
+    state: Oregon
+    name: Yamhill County Transit Area
+    static_gtfs_url: http://ycta.connexionz.net/rtt/public/resource/gtfs.zip
+    mdb_id: 250
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: woodburn-transit-service-wts
+    state: Oregon
+    name: Woodburn Transit Service (WTS)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/woodburn-or-us/woodburn-or-us.zip
+    mdb_id: 251
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: canby-area-transit-cat
+    state: Oregon
+    name: Canby Area Transit (CAT)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip
+    mdb_id: 252
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ride-connection
+    state: Oregon
+    name: Ride Connection
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/rideconnection-or-us/rideconnection-or-us.zip
+    mdb_id: 253
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-park-shuttle
+    state: Oregon
+    name: Washington Park Shuttle
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/washingtonparkshuttle-or-us/washingtonparkshuttle-or-us.zip
+    mdb_id: 254
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/washingtonparkshuttle-or-us/service_alerts.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: swan-island-evening-shuttle
+    state: Oregon
+    name: Swan Island Evening Shuttle
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/swanisland-or-us/swanisland-or-us.zip
+    mdb_id: 255
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: blue-star-bus
+    state: Oregon
+    name: Blue Star Bus
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/bluestar-or-us/bluestar-or-us.zip
+    mdb_id: 256
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clackamas-community-college-ccc-xpress
+    state: Oregon
+    name: Clackamas Community College (CCC) Xpress
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/cccxpress-or-us/cccxpress-or-us.zip
+    mdb_id: 257
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: columbia-area-transit-cat
+    state: Oregon
+    name: Columbia Area Transit (CAT)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/hoodriver-or-us/hoodriver-or-us.zip
+    mdb_id: 260
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sandy-area-metro-sam
+    state: Oregon
+    ntd_id: "00363"
+    name: Sandy Area Metro (SAM)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip
+    mdb_id: 261
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kayak-transit-ctuir
+    state: Oregon
+    name: Kayak Transit (CTUIR)
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/ctuir-or-us/ctuir-or-us.zip
+    mdb_id: 272
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-milton-freewater-public-transportation
+    state: Oregon
+    name: City of Milton-Freewater Public Transportation
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/milton-freewater-or-us/milton-freewater-or-us.zip
+    mdb_id: 274
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wallowa-community-connection-wcc-northeast-oregon-public-transit
+    state: Oregon
+    name: Wallowa Community Connection (WCC), Northeast Oregon Public Transit
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/northeast-or-us/northeast-or-us.zip
+    mdb_id: 289
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clackco-connects-clackamas-county
+    state: Oregon
+    name: ClackCo Connects (Clackamas County)
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/clackamascounty-or-us/clackamascounty-or-us.zip
+    mdb_id: 312
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: klamath-shuttle
+    state: Oregon
+    name: Klamath Shuttle
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/klamathshuttle-or-us/klamathshuttle-or-us.zip
+    mdb_id: 560
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: let-er-bus
+    state: Oregon
+    name: Let'er Bus
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/pendleton-or-us/pendleton-or-us.zip
+    mdb_id: 590
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: canby-ferry
+    state: Oregon
+    name: Canby Ferry
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbyferry-or-us/canbyferry-or-us.zip
+    mdb_id: 605
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: eastern-point
+    state: Oregon
+    name: Eastern Point
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/easternpoint-or-us/easternpoint-or-us.zip
+    mdb_id: 632
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-retriever-busline
+    state: Oregon
+    name: Valley Retriever Busline
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/valleyretriever-or-us/valleyretriever-or-us.zip
+    mdb_id: 633
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: eugene-to-coos-bay
+    state: Oregon
+    name: Eugene to Coos Bay
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/eugenetocoosbay-or-us/eugenetocoosbay-or-us.zip
+    mdb_id: 634
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hut-airport-shuttle
+    state: Oregon
+    name: HUT Airport Shuttle
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/hut-or-us/hut-or-us.zip
+    mdb_id: 635
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: high-desert-point
+    state: Oregon
+    name: High Desert Point
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/highdesertpoint-or-us/highdesertpoint-or-us.zip
+    mdb_id: 636
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: southwest-point
+    state: Oregon
+    name: SouthWest POINT
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/southwestpoint-or-us/southwestpoint-or-us.zip
+    mdb_id: 637
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: northwest-point
+    state: Oregon
+    name: NorthWest POINT
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/northwestpoint-or-us/northwestpoint-or-us.zip
+    mdb_id: 638
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cascade-point
+    state: Oregon
+    name: Cascade POINT
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/cascadespoint-or-us/cascadespoint-or-us.zip
+    mdb_id: 639
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: oregon-department-of-transportation
+    state: Oregon
+    name: Oregon Department of Transportation
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/point-or-us/point-or-us.zip
+    mdb_id: 800
+    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
+
+  - id: water-avenue-shuttle
+    state: Oregon
+    name: Water Avenue Shuttle
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/ceic-or-us/ceic-or-us.zip
+    mdb_id: 831
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wheatland-ferry
+    state: Oregon
+    name: Wheatland Ferry
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/wheatlandferry-or-us/wheatlandferry-or-us.zip
+    mdb_id: 833
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: buena-vista-ferry
+    state: Oregon
+    name: Buena Vista Ferry
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/buenavistaferry-or-us/buenavistaferry-or-us.zip
+    mdb_id: 834
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: philomath-connection
+    state: Oregon
+    name: Philomath Connection
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/philomathconnection-or-us/philomathconnection-or-us.zip
+    mdb_id: 878
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-clackamas-transportation-district
+    state: Oregon
+    name: South Clackamas Transportation District
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/sctd-or-us/sctd-or-us.zip
+    mdb_id: 883
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: harney-county
+    state: Oregon
+    name: Harney County
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/harneycounty-or-us/harneycounty-or-us.zip
+    mdb_id: 931
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: link-lane
+    state: Oregon
+    name: Link Lane
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/lcog-or-us/lcog-or-us.zip
+    mdb_id: 932
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mt-bachelor
+    state: Oregon
+    name: Mt. Bachelor
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/mtbachelor-or-us/mtbachelor-or-us.zip
+    mdb_id: 933
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: astoria-riverfront-trolley
+    state: Oregon
+    name: Astoria Riverfront Trolley
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/astoria-or-us/astoria-or-us.zip
+    mdb_id: 1254
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shuttle-oregon
+    state: Oregon
+    name: Shuttle Oregon
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/shuttleoregon-or-us/shuttleoregon-or-us.zip
+    mdb_id: 1284
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: quail-trail-public-transit
+    state: Oregon
+    name: Quail Trail Public Transit
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/quailtrail-or-us/quailtrail-or-us.zip
+    mdb_id: 1327
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-milton-freewater-public-transportation-2189
+    state: Oregon
+    name: City of Milton-Freewater Public Transportation
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/ctuir-or-us/ctuir-or-us.zip
+    mdb_id: 2189
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: philomath-connection-2205
+    state: Oregon
+    name: Philomath Connection
+    static_gtfs_url: http://www.corvallistransit.com/rtt/public/resource/gtfs_PC.zip
+    mdb_id: 2205
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-corvallis-2283
+    state: Oregon
+    name: City of Corvallis
+    static_gtfs_url: http://www.corvallistransit.com/rtt/public/resource/gtfs.zip
+    mdb_id: 2283
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: morrow-county-public-transit
+    state: Oregon
+    name: Morrow County Public Transit
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/morrowcounty-or-us/morrowcounty-or-us.zip
+    mdb_id: 2418
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: burns-paiute-tribal-transit
+    state: Oregon
+    name: Burns Paiute Tribal Transit
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/burnspaiute-or-us/burnspaiute-or-us.zip
+    mdb_id: 2621
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-metro-area-regional-transit-smart-2706
+    state: Oregon
+    name: South Metro Area Regional Transit (SMART)
+    static_gtfs_url: https://mysmartbus.com/gtfs
+    mdb_id: 2706
+    rt_urls:
+      trip_updates: https://mysmartbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://mysmartbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://mysmartbus.com/gtfs-rt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sandy-area-metro-sam-2739
+    state: Oregon
+    name: Sandy Area Metro (SAM) Realtime Static
+    static_gtfs_url: https://passio3.com/sandyor/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2739
+    rt_urls:
+      trip_updates: https://passio3.com/sandyor/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/sandyor/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/sandyor/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clackco-connects-clackamas-county-2740
+    state: Oregon
+    name: ClackCo Connects (Clackamas County) Realtime Static
+    static_gtfs_url: https://passio3.com/clackamas/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2740
+    rt_urls:
+      trip_updates: https://passio3.com/clackamas/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/clackamas/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/clackamas/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clackco-connects-clackamas-county-2741
+    state: Oregon
+    ntd_id: "00363"
+    name: ClackCo Connects (Clackamas County) Flex
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/clackamascounty-or-us/clackamascounty-or-us--flex-v2.zip
+    mdb_id: 2741
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rogue-valley-transportation-district-rvtd-3103
+    state: Oregon
+    name: Rogue Valley Transportation District (RVTD)
+    static_gtfs_url: https://rvtd.org/wp-content/uploads/2026/05/rvtd-or-us.zip
+    mdb_id: 3103
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: benton-area-transportation-3109
+    state: Oregon
+    name: Benton Area Transportation - Flex V2
+    static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/benton-or-us/benton-or-us--flex-v2.zip
+    mdb_id: 3109
+    license_note: "License: https://oregon-gtfs.trilliumtransit.com"
+
+  - id: rogue-valley-transportation-district-rvtd-3219
+    state: Oregon
+    name: Rogue Valley Transportation District (RVTD)
+    static_gtfs_url: https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip
+    mdb_id: 3219
+    license_note: No stated data license in the Mobility Database; verify before publishing.

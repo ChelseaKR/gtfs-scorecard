@@ -1,0 +1,52 @@
+# Alaska (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: anchorage-people-mover
+    state: Alaska
+    name: Anchorage People Mover
+    static_gtfs_url: http://gtfs.muni.org/People_Mover.gtfs.zip
+    mdb_id: 225
+    rt_urls:
+      vehicle_positions: http://gtfs-rt.codeforanchorage.org/people_mover.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-area-commuter-system
+    state: Alaska
+    name: Metropolitan Area Commuter System
+    static_gtfs_url: https://www.fnsb.gov/DocumentCenter/View/690/General-Transit-Feed-Specification-ZIP
+    mdb_id: 232
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: inter-island-ferry
+    state: Alaska
+    name: Inter-Island Ferry
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/interisland-ak-us/interisland-ak-us.zip
+    mdb_id: 243
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ketchikan-gateway-borough
+    state: Alaska
+    name: The Bus
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kgb-ak-us/kgb-ak-us.zip
+    mdb_id: 244
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-transit
+    state: Alaska
+    name: Capital Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityandboroughofjuneau-ak-us/cityandboroughofjuneau-ak-us.zip
+    mdb_id: 294
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ride-sitka
+    state: Alaska
+    name: RIDE Sitka
+    static_gtfs_url: https://transitfeeds.com/p/ride-sitka/713/latest/download
+    mdb_id: 1293
+    license_note: No stated data license in the Mobility Database; verify before publishing.

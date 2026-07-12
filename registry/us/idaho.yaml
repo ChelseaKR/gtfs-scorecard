@@ -1,0 +1,32 @@
+# Idaho (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: valley-regional-transit
+    state: Idaho
+    name: Valley Regional Transit
+    static_gtfs_url: https://www.valleyregionaltransit.org/GTFS/vrt_transit1.zip
+    mdb_id: 142
+    rt_urls:
+      trip_updates: https://s3.amazonaws.com/etatransit.gtfs/valleyregionaltransit.etaspot.net/trip_updates.pb
+      vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/valleyregionaltransit.etaspot.net/position_updates.pb
+      service_alerts: https://s3.amazonaws.com/etatransit.gtfs/valleyregionaltransit.etaspot.net/alerts.pb
+    license_note: "License: https://www.valleyregionaltransit.org/about-us/resources/"
+
+  - id: mountain-rides-transportation-authority-mrta
+    state: Idaho
+    name: Mountain Rides Transportation Authority (MRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainrides-id-us/mountainrides-id-us.zip
+    mdb_id: 143
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pocatello-regional-transit
+    state: Idaho
+    name: Pocatello Regional Transit
+    static_gtfs_url: https://pocatellotransit.com/gtfs/pocatello-regional-transit-gtfs.zip?v=current
+    mdb_id: 171
+    license_note: No stated data license in the Mobility Database; verify before publishing.

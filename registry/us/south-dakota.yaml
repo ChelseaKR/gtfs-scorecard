@@ -1,0 +1,14 @@
+# South Dakota (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: sioux-area-metro-sam
+    state: South Dakota
+    name: Sioux Area Metro (SAM)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip
+    mdb_id: 192
+    license_note: No stated data license in the Mobility Database; verify before publishing.

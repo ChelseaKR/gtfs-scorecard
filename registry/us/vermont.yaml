@@ -1,0 +1,126 @@
+# Vermont (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: the-current
+    state: Vermont
+    name: The Current
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/crtransit-vt-us/crtransit-vt-us.zip
+    mdb_id: 428
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: marble-valley-regional-transit-district-mvrtd
+    state: Vermont
+    name: Marble Valley Regional Transit District (MVRTD)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thebus-vt-us/thebus-vt-us.zip
+    mdb_id: 430
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: moover
+    state: Vermont
+    name: MOOver
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dvtamoover-vt-us/dvtamoover-vt-us.zip
+    mdb_id: 434
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rural-community-transportation-rct
+    state: Vermont
+    name: Rural Community Transportation (RCT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us.zip
+    mdb_id: 448
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stagecoach-transportation-services-sts
+    state: Vermont
+    name: Stagecoach Transportation Services (STS)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/stagecoach-vt-us/stagecoach-vt-us.zip
+    mdb_id: 449
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: vermont-translines
+    state: Vermont
+    name: Vermont Translines
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vttranslines-vt-us/vttranslines-vt-us.zip
+    mdb_id: 450
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: green-mountain-community-network-gmcn
+    state: Vermont
+    name: Green Mountain Community Network (GMCN)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/greenmtncn-vt-us/greenmtncn-vt-us.zip
+    mdb_id: 539
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: addison-county-transit-actr
+    state: Vermont
+    name: Addison County Transit (ACTR)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/addisoncounty-vt-us/addisoncounty-vt-us.zip
+    mdb_id: 543
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lake-champlain-ferries
+    state: Vermont
+    name: Lake Champlain Ferries
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lctferries-vt-us/lctferries-vt-us.zip
+    mdb_id: 547
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: chittenden-county-transportation-authority-ccta
+    state: Vermont
+    name: Chittenden County Transportation Authority (CCTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ccta-vt-us/ccta-vt-us.zip
+    mdb_id: 629
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: advance-transit
+    state: Vermont
+    name: Advance Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/advancetransit-vt-us/advancetransit-vt-us.zip
+    mdb_id: 631
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tri-valley-transit
+    state: Vermont
+    name: Tri-Valley Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip
+    mdb_id: 852
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rockingham-moover
+    state: Vermont
+    name: Rockingham MOOver
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us.zip
+    mdb_id: 2194
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: marble-valley-regional-transit-district-mvrtd-2831
+    state: Vermont
+    name: Marble Valley Regional Transit District (MVRTD) Flex
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thebus-vt-us/thebus-vt-us--flex-v2.zip
+    mdb_id: 2831
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rural-community-transportation-rct-2882
+    state: Vermont
+    name: Rural Community Transportation (RCT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us--flex-v2.zip
+    mdb_id: 2882
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: vtrans
+    state: Vermont
+    name: Springfield MicroMoo
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us--flex-v2.zip
+    mdb_id: 2884
+    license_note: No stated data license in the Mobility Database; verify before publishing.

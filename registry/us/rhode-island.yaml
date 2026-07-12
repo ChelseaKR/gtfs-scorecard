@@ -1,0 +1,33 @@
+# Rhode Island (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: vineyard-fast-ferry
+    state: Rhode Island
+    name: Vineyard Fast Ferry
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vineyardfastferry-ri-us/vineyardfastferry-ri-us.zip
+    mdb_id: 419
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: block-island-ferry
+    state: Rhode Island
+    name: Block Island Ferry
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/blockislandferry-ri-us/blockislandferry-ri-us.zip
+    mdb_id: 554
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rhode-island-public-transit-authority
+    state: Rhode Island
+    ntd_id: "10001"
+    name: Rhode Island Public Transit Authority
+    static_gtfs_url: https://ripta.com/RIPTA-GTFS.zip
+    mdb_id: 624
+    rt_urls:
+      trip_updates: http://realtime.ripta.com:81/api/tripupdates?format=gtfs.proto
+      vehicle_positions: http://realtime.ripta.com:81/api/vehiclepositions?format=gtfs.proto
+      service_alerts: http://realtime.ripta.com:81/api/servicealerts?format=gtfs.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.

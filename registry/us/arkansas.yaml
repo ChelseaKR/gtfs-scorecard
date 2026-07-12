@@ -1,0 +1,28 @@
+# Arkansas (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: jonesboro-economical-transportation-jet
+    state: Arkansas
+    name: Jonesboro Economical Transportation (JET)
+    static_gtfs_url: http://www.jonesboro.org/DocumentCenter/View/2432
+    mdb_id: 186
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rock-region-metro
+    state: Arkansas
+    name: Rock Region Metro
+    static_gtfs_url: https://transitfeeds.com/p/central-arkansas-transit-authority/334/latest/download
+    mdb_id: 1190
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rock-region-metro-2264
+    state: Arkansas
+    name: Rock Region Metro
+    static_gtfs_url: https://rrmetro.org/gtfs.zip
+    mdb_id: 2264
+    license_note: No stated data license in the Mobility Database; verify before publishing.

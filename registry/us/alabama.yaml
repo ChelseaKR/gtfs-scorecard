@@ -1,0 +1,70 @@
+# Alabama (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: montgomery-transit
+    state: Alabama
+    name: Montgomery Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip
+    mdb_id: 338
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: birmingham-jefferson-county-transit-authority
+    state: Alabama
+    name: Birmingham Jefferson County Transit Authority
+    static_gtfs_url: https://maxtransit.org/wp-content/uploads/2020/12/BJCTA-Working-GTFS-File.zip
+    mdb_id: 339
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: huntsville-shuttle
+    state: Alabama
+    name: Huntsville Shuttle
+    static_gtfs_url: http://maps.hsvcity.com/GoogleTransit/google_transit.zip
+    mdb_id: 353
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: birmingham-jefferson-county-transit-authority-max
+    state: Alabama
+    name: Birmingham Jefferson County Transit Authority (MAX)
+    static_gtfs_url: https://transitfeeds.com/p/birmingham-jefferson-county-transit-authority/683/latest/download
+    mdb_id: 1248
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-trailways
+    state: Alabama
+    name: Capital Trailways
+    static_gtfs_url: https://transitfeeds.com/p/capital-trailways/819/latest/download
+    mdb_id: 1308
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: huntsville-shuttle-2081
+    state: Alabama
+    name: Huntsville Shuttle
+    static_gtfs_url: https://maps.huntsvilleal.gov/googletransit/google_transit.zip
+    mdb_id: 2081
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: areawide-community-transportation-system
+    state: Alabama
+    name: Areawide Community Transportation System
+    static_gtfs_url: https://www.earpdc.org/wp-content/uploads/static/ACTS_GTFS_Current.zip
+    mdb_id: 2211
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: birmingham-jefferson-county-transit-authority-max-2263
+    state: Alabama
+    name: Birmingham Jefferson County Transit Authority (MAX)
+    static_gtfs_url: https://maxtransit.org/wp-content/uploads/2024/09/google_transit_Working.zip
+    mdb_id: 2263
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-gadsen
+    state: Alabama
+    name: COG Trolley Routes
+    static_gtfs_url: https://coggis.cityofgadsden.com/Public/Transportion/COG_trips.zip
+    mdb_id: 2419
+    license_note: No stated data license in the Mobility Database; verify before publishing.

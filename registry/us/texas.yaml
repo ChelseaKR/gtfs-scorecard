@@ -1,0 +1,132 @@
+# Texas (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: sun-metro
+    state: Texas
+    name: Sun Metro
+    static_gtfs_url: http://transit.sunmetro.net/google_transit/google_transit.zip
+    mdb_id: 148
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-metro
+    state: Texas
+    ntd_id: "60048"
+    name: Capital Metro
+    static_gtfs_url: https://data.texas.gov/download/r4v4-vz24/application/zip
+    mdb_id: 150
+    rt_urls:
+      trip_updates: https://data.texas.gov/download/rmk2-acnw/application%2Foctet-stream
+      vehicle_positions: https://data.texas.gov/download/eiei-9rpf/application%2Foctet-stream
+      service_alerts: https://data.texas.gov/download/9zu9-jwr2/text%2Fplain
+    license_note: "License: https://www.capmetro.org/metrolabs/"
+
+  - id: denton-county-transportation-authority-dcta
+    state: Texas
+    name: Denton County Transportation Authority (DCTA)
+    static_gtfs_url: http://trilliumtransit.com/transit_feeds/dentoncounty-tx-us/dentoncounty-tx-us.zip
+    mdb_id: 151
+    rt_urls:
+      trip_updates: http://api.transitime.org/api/v1/key/dca04420/agency/dcta/command/gtfs-rt/tripUpdates?format=bin
+      vehicle_positions: http://api.transitime.org/api/v1/key/dca04420/agency/dcta/command/gtfs-rt/vehiclePositions?format=bin
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dallas-area-rapid-transit-dart
+    state: Texas
+    name: Dallas Area Rapid Transit (DART)
+    static_gtfs_url: http://www.dart.org/transitdata/latest/google_transit.zip
+    mdb_id: 152
+    license_note: "License: https://www.dart.org/transitdata/legalnotices.asp"
+
+  - id: star-transit
+    state: Texas
+    name: STAR Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/startransit-tx-us/startransit-tx-us.zip
+    mdb_id: 153
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: amarillo-city-transit
+    state: Texas
+    name: Amarillo City Transit
+    static_gtfs_url: https://code.amarillo.gov/gtfs/gtfs.zip
+    mdb_id: 213
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: corpus-christi-regional-transportation-authority
+    state: Texas
+    name: Corpus Christi Regional Transportation Authority
+    static_gtfs_url: https://www.ccrta.org/gtfs/ccrta-gtfs.zip
+    mdb_id: 315
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citibus
+    state: Texas
+    name: Citibus
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip
+    mdb_id: 569
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connect-transit
+    state: Texas
+    name: Connect Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gulfcoastcenter-tx-us/gulfcoastcenter-tx-us.zip
+    mdb_id: 625
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: fort-worth-transit-authority
+    state: Texas
+    name: Fort Worth Transit Authority
+    static_gtfs_url: http://sched.ridetm.org/gtfs/fwtatransitdata.zip
+    mdb_id: 885
+    license_note: "License: https://ridetrinitymetro.org/gtfs-data/"
+
+  - id: via-metropolitan-transit-via
+    state: Texas
+    ntd_id: "60011"
+    name: VIA Metropolitan Transit (VIA)
+    static_gtfs_url: https://transitfeeds.com/p/via-metropolitan-transit/62/latest/download
+    mdb_id: 1242
+    license_note: "License: https://www.viainfo.net/developers-resources/"
+
+  - id: metro-houston-2060
+    state: Texas
+    name: METRO Houston
+    static_gtfs_url: https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip
+    mdb_id: 2060
+    license_note: "License: https://www.ridemetro.org/about/news-media/digital-assets"
+
+  - id: via-metropolitan-transit-via-2348
+    state: Texas
+    ntd_id: "60011"
+    name: VIA Metropolitan Transit (VIA)
+    static_gtfs_url: https://www.viainfo.net/BusService/google_transit.zip
+    mdb_id: 2348
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ez-rider
+    state: Texas
+    name: EZ Rider
+    static_gtfs_url: https://nebula.wsimg.com/40f314b8788fcc32949e0fe528a3c625?AccessKeyId=9E919CD400BCF69A0E80
+    mdb_id: 2634
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: el-paso-transportation-authority
+    state: Texas
+    name: El Paso Transportation Authority
+    static_gtfs_url: https://data.peaktransit.com/staticgtfs/193/gtfs.zip
+    mdb_id: 3202
+    rt_urls:
+      trip_updates: https://data.peaktransit.com/gtfsrt/193/TripUpdate.pb
+      vehicle_positions: https://data.peaktransit.com/gtfsrt/193/VehiclePosition.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dallas-host-committee
+    state: Texas
+    name: Dallas Host Committee
+    static_gtfs_url: https://d2igk3wxwksqfb.cloudfront.net/dallashostcommitteedata.zip
+    mdb_id: 3218
+    license_note: No stated data license in the Mobility Database; verify before publishing.

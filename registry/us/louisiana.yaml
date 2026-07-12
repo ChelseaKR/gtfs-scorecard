@@ -1,0 +1,32 @@
+# Louisiana (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: capital-area-transit-system-cats
+    state: Louisiana
+    name: Capital Area Transit System (CATS)
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/f-baton~rouge~cats.zip
+    mdb_id: 222
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shreveport-and-bossier-city
+    state: Louisiana
+    name: Shreveport and Bossier City
+    static_gtfs_url: http://sportranbus.com/gtfs
+    mdb_id: 1060
+    rt_urls:
+      trip_updates: https://sportranbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://sportranbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://sportranbus.com/gtfs-rt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-area-transit-system-cats-2065
+    state: Louisiana
+    name: Capital Area Transit System (CATS)
+    static_gtfs_url: https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2065
+    license_note: No stated data license in the Mobility Database; verify before publishing.

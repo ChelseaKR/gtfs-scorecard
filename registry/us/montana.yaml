@@ -1,0 +1,49 @@
+# Montana (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: butte-regional-transit-b-line
+    state: Montana
+    name: Butte Regional Transit (B-Line)
+    static_gtfs_url: https://d16k74nzx9emoe.cloudfront.net/c4326823-2c12-4f59-82f1-3fc4d987e12b/google_transit.zip
+    mdb_id: 241
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: butte-silver-bow
+    state: Montana
+    name: Butte-Silver Bow
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/butte-mt-us/butte-mt-us.zip
+    mdb_id: 291
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-line
+    state: Montana
+    name: Mountain Line
+    static_gtfs_url: http://www.mountainline.com/files/MUTD_GTFS.zip
+    mdb_id: 292
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: university-of-montana-udash
+    state: Montana
+    name: University of Montana (UDASH)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/udash-mt-us/udash-mt-us.zip
+    mdb_id: 293
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: streamline
+    state: Montana
+    name: Streamline
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip
+    mdb_id: 295
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-transit-310
+    state: Montana
+    name: Capital Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofhelena-mt-us/cityofhelena-mt-us.zip
+    mdb_id: 310
+    license_note: No stated data license in the Mobility Database; verify before publishing.

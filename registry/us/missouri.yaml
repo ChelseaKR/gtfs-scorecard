@@ -1,0 +1,47 @@
+# Missouri (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: kansas-city-area-transportation-authority-kcata
+    state: Missouri
+    name: Kansas City Area Transportation Authority (KCATA)
+    static_gtfs_url: http://www.kc-metro.com/gtf/google_transit.zip
+    mdb_id: 187
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jeffco-express
+    state: Missouri
+    name: JeffCo Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/jeffersoncounty-mo-us/jeffersoncounty-mo-us.zip
+    mdb_id: 189
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-st-louis
+    state: Missouri
+    name: Metro St. Louis
+    static_gtfs_url: http://metrostlouis.org/Transit/google_transit.zip
+    mdb_id: 190
+    rt_urls:
+      trip_updates: http://www.metrostlouis.org/RealTimeData/StlRealTimeTrips.pb
+      vehicle_positions: https://www.metrostlouis.org/RealTimeData/StlRealTimeVehicles.pb
+      service_alerts: https://www.metrostlouis.org/RealTimeData/StlRealTimeAlerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: madison-county-transit-1145
+    state: Missouri
+    name: Madison County Transit
+    static_gtfs_url: https://transitfeeds.com/p/madison-county-transit/1146/latest/download
+    mdb_id: 1145
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-st-louis-2035
+    state: Missouri
+    name: Loop Trolley
+    static_gtfs_url: https://files.looptrolley.com/google_transit.zip
+    mdb_id: 2035
+    license_note: "License: https://www.looptrolley.com/resources"

@@ -1,0 +1,128 @@
+# Wisconsin (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: eau-claire-transit
+    state: Wisconsin
+    name: Eau Claire Transit
+    static_gtfs_url: http://www-ecbus-org.site.atfni.com/build_data_feed.phtml
+    mdb_id: 208
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: beloit-transit
+    state: Wisconsin
+    name: Beloit Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/beloittransit-wi-us/beloittransit-wi-us.zip
+    mdb_id: 392
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: janesville-transit-system
+    state: Wisconsin
+    name: Janesville Transit System
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip
+    mdb_id: 393
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-transit-city-of-madison
+    state: Wisconsin
+    ntd_id: "50005"
+    name: Metro Transit - City of Madison
+    static_gtfs_url: http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip
+    mdb_id: 394
+    rt_urls:
+      trip_updates: https://metromap.cityofmadison.com/gtfsrt/trips
+      vehicle_positions: https://metromap.cityofmadison.com/gtfsrt/vehicles
+      service_alerts: https://metromap.cityofmadison.com/gtfsrt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ryde-racine
+    state: Wisconsin
+    name: Ryde Racine
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/racine-wi-us/racine-wi-us.zip
+    mdb_id: 395
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: waukesha-metro-transit
+    state: Wisconsin
+    name: Waukesha Metro Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/waukeshacounty-wi-us/waukeshacounty-wi-us.zip
+    mdb_id: 396
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: go-transit
+    state: Wisconsin
+    name: GO Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/oshkosh-wi-us/oshkosh-wi-us.zip
+    mdb_id: 397
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-transit-wi
+    state: Wisconsin
+    name: Valley Transit (WI)
+    static_gtfs_url: http://gis.appleton.org/DataDownload/google_transit.zip
+    mdb_id: 398
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shoreline-metro
+    state: Wisconsin
+    name: Shoreline Metro
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip
+    mdb_id: 399
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-ride
+    state: Wisconsin
+    name: Metro Ride
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip
+    mdb_id: 830
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: green-bay-metro
+    state: Wisconsin
+    name: Green Bay Metro
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/green-bay-wi-us.zip
+    mdb_id: 917
+    license_note: "License: https://greenbaywi.gov/496/Transit-Data-Developer"
+
+  - id: milwaukee-county-transit-system-mcts
+    state: Wisconsin
+    name: Milwaukee County Transit System (MCTS)
+    static_gtfs_url: https://transitfeeds.com/p/milwaukee-county-transit-system/182/latest/download
+    mdb_id: 1318
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-transit-wi-2069
+    state: Wisconsin
+    name: Valley Transit (WI)
+    static_gtfs_url: https://ridemyvalleytransit.com/gtfs
+    mdb_id: 2069
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: milwaukee-county-transit-system-mcts-2127
+    state: Wisconsin
+    name: Milwaukee County Transit System (MCTS)
+    static_gtfs_url: https://kamino.mcts.org/gtfs/google_transit.zip
+    mdb_id: 2127
+    rt_urls:
+      trip_updates: https://realtime.ridemcts.com/gtfsrt/trips
+      vehicle_positions: https://realtime.ridemcts.com/gtfsrt/vehicles
+      service_alerts: https://realtime.ridemcts.com/gtfsrt/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: janesville-transit-system-2239
+    state: Wisconsin
+    name: Janesville Transit System
+    static_gtfs_url: https://gtfs.remix.com/Janesville_Transit.zip
+    mdb_id: 2239
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ryde-racine-2246
+    state: Wisconsin
+    name: Ryde Racine
+    static_gtfs_url: https://racine.connexionz.net/rtt/public/utility/gtfs.aspx
+    mdb_id: 2246
+    license_note: No stated data license in the Mobility Database; verify before publishing.

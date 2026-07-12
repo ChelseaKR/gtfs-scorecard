@@ -1,0 +1,140 @@
+# Michigan (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: bay-area-transportation-authority
+    state: Michigan
+    name: Bay Area Transportation Authority
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5109/BATA_GTFS.zip
+    mdb_id: 223
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: indian-trails-detroit-ann-arbor-express
+    state: Michigan
+    name: Indian Trails, Detroit Ann Arbor Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/indiantrails-mi-us/indiantrails-mi-us.zip
+    mdb_id: 384
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-rapid
+    state: Michigan
+    name: The Rapid
+    static_gtfs_url: http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx
+    mdb_id: 400
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kalamazoo-metro-transit
+    state: Michigan
+    name: Kalamazoo Metro Transit
+    static_gtfs_url: https://www.kmetro.com/sites/default/files/public/gtfs.zip
+    mdb_id: 401
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-area-transportation-authority-cata
+    state: Michigan
+    ntd_id: "50036"
+    name: Capital Area Transportation Authority (CATA)
+    static_gtfs_url: http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base
+    mdb_id: 402
+    rt_urls:
+      trip_updates: http://developers.cata.org/gtfsrt/tripupdate/tripupdates.pb
+      vehicle_positions: http://developers.cata.org/gtfsrt/vehicle/vehiclepositions.pb
+      service_alerts: http://developers.cata.org/gtfsrt/alert/alerts.pb
+    license_note: "License: https://www.cata.org/Portals/0/CATAGTFSLicenseAgreement20150323.pdf"
+
+  - id: michigan-flyer
+    state: Michigan
+    name: Michigan Flyer
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/michiganflyer-mi-us/michiganflyer-mi-us.zip
+    mdb_id: 413
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: suburban-mobility-authority-for-regional-transit-smart
+    state: Michigan
+    name: Suburban Mobility Authority for Regional Transit (SMART)
+    static_gtfs_url: https://apps1.smartbus.org/gtfs/smart_gtfs.zip
+    mdb_id: 414
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ann-arbor-area-transportation-authority-theride
+    state: Michigan
+    name: Ann Arbor Area Transportation Authority (TheRide)
+    static_gtfs_url: https://www.theride.org/sites/default/files/google/google_transit.zip
+    mdb_id: 415
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: university-of-michigan-transit-services
+    state: Michigan
+    name: University of Michigan Transit Services
+    static_gtfs_url: http://ltp.umich.edu/gtfs/google_transit.zip
+    mdb_id: 416
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: detroit-people-mover
+    state: Michigan
+    name: Detroit People Mover
+    static_gtfs_url: https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/PeopleMoverGTFS.zip
+    mdb_id: 417
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: detroit-department-of-transportation-ddot
+    state: Michigan
+    name: Detroit Department of Transportation (DDOT)
+    static_gtfs_url: https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip
+    mdb_id: 464
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: qline-detroit
+    state: Michigan
+    name: Qline Detroit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/qline-mi-us/qline-mi-us.zip
+    mdb_id: 802
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mass-transportation-authority-flint
+    state: Michigan
+    name: Mass Transportation Authority Flint
+    static_gtfs_url: https://www.mtaflint.org/wp-content/media/stops.zip
+    mdb_id: 926
+    license_note: "License: https://www.mtaflint.org/terms-of-use.html"
+
+  - id: kalamazoo-metro-transit-2070
+    state: Michigan
+    name: Kalamazoo Metro Transit
+    static_gtfs_url: https://www.kmetro.com/wp-content/uploads/gtfs.zip
+    mdb_id: 2070
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: university-of-michigan-transit-services-2072
+    state: Michigan
+    name: University of Michigan Transit Services
+    static_gtfs_url: https://webapps.fo.umich.edu/transit_uploads/google_transit.zip
+    mdb_id: 2072
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bay-area-transportation-authority-2254
+    state: Michigan
+    name: Bay Area Transportation Authority
+    static_gtfs_url: https://batabustracker.com/gtfs
+    mdb_id: 2254
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: detroit-people-mover-2281
+    state: Michigan
+    name: Detroit People Mover
+    static_gtfs_url: https://hosted-gtfs-feeds.s3.amazonaws.com/DPM/gtfs.zip
+    mdb_id: 2281
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mass-transportation-authority-flint-2287
+    state: Michigan
+    name: Mass Transportation Authority Flint
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip
+    mdb_id: 2287
+    license_note: No stated data license in the Mobility Database; verify before publishing.

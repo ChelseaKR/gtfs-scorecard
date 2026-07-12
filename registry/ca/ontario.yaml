@@ -1,0 +1,23 @@
+# Ontario (CA) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: barrie-transit
+    state: Ontario
+    name: Barrie Transit (Ontario)
+    country: CA
+    mdb_id: 3
+    static_gtfs_url: http://www.myridebarrie.ca/gtfs/Google_transit.zip
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: london-transit-commission
+    state: Ontario
+    name: London Transit Commission (Ontario)
+    country: CA
+    mdb_id: 2
+    static_gtfs_url: http://www.londontransit.ca/gtfsfeed/google_transit.zip
+    license_note: No stated data license in the Mobility Database; verify before relying on.

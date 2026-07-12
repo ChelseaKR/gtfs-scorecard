@@ -1,0 +1,28 @@
+# North Dakota (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: cities-area-transit
+    state: North Dakota
+    name: Cities Area Transit
+    static_gtfs_url: https://transitfeeds.com/p/cities-area-transit/834/latest/download
+    mdb_id: 1247
+    license_note: "License: http://www.grandforksgov.com/government/city-departments/cities-area-transit/data"
+
+  - id: matbus
+    state: North Dakota
+    name: MATBUS
+    static_gtfs_url: https://transitfeeds.com/p/matbus/833/latest/download
+    mdb_id: 1285
+    license_note: "License: http://www.matbus.com/GTFSFeed.htm"
+
+  - id: cities-area-transit-2199
+    state: North Dakota
+    name: Cities Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofgrandforks-nd-us/cityofgrandforks-nd-us.zip
+    mdb_id: 2199
+    license_note: No stated data license in the Mobility Database; verify before publishing.

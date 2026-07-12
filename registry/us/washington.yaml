@@ -1,0 +1,588 @@
+# Washington (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: pacific-transit
+    state: Washington
+    name: Pacific Transit
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/pacific_google_transit.zip
+    mdb_id: 242
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-state-department-of-transportation-wsdot-apple-line
+    state: Washington
+    name: Washington State Department of Transportation (WSDOT Apple Line)
+    static_gtfs_url: https://business.wsdot.wa.gov/Transit/csv_files/InterCityBus/WSDOT_GTFS_Intercity.zip
+    mdb_id: 245
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: c-tran
+    state: Washington
+    name: Clark County Public Transportation Benefit Area
+    static_gtfs_url: https://www.c-tran.com/images/Google/GoogleTransitUpload.zip
+    mdb_id: 258
+    rt_urls:
+      trip_updates: http://gtfs-rt.c-tran.org/gtfsrealtime/TripUpdates
+      vehicle_positions: http://gtfs-rt.c-tran.org/gtfsrealtime/VehiclePostions
+    license_note: "License: https://c-tran.com/about-c-tran/business/c-tran-gtfs-data"
+
+  - id: rivercities-transit-rct
+    state: Washington
+    name: RiverCities Transit (RCT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/rivercitiestransit-wa-us/rivercitiestransit-wa-us.zip
+    mdb_id: 259
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: skamania-county-transit
+    state: Washington
+    name: Skamania County Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/skamaniacounty-wa-us/skamaniacounty-wa-us.zip
+    mdb_id: 262
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: grays-harbor-transit
+    state: Washington
+    name: Grays Harbor Transit
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/graysharbor_google_transit.zip
+    mdb_id: 263
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mason-transit-authority
+    state: Washington
+    name: Mason Transit Authority
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mason-wa-us/mason-wa-us.zip
+    mdb_id: 264
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pierce-transit
+    state: Washington
+    name: Pierce Transit
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/3_gtfs.zip
+    mdb_id: 265
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: intercity-transit
+    state: Washington
+    name: Intercity Transit
+    static_gtfs_url: https://its.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 266
+    rt_urls:
+      trip_updates: https://its.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://its.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://its.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sound-transit-metro-transit-city-of-seattle-king-county-metro
+    state: Washington
+    name: Sound Transit, Metro Transit, City of Seattle - King County Metro
+    static_gtfs_url: http://metro.kingcounty.gov/GTFS/google_transit.zip
+    mdb_id: 267
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sound-transit
+    state: Washington
+    name: Sound Transit
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/40_gtfs.zip
+    mdb_id: 268
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: microsoft-shuttles
+    state: Washington
+    name: Microsoft Shuttles
+    static_gtfs_url: https://github.com/cookieguru/microsoft-gtfs/releases/download/20150518150359/gtfs_20150518150359.zip
+    mdb_id: 269
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: seattle-children-s-hospital-shuttle
+    state: Washington
+    name: Seattle Children's Hospital Shuttle
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/98_gtfs.zip
+    mdb_id: 270
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: people-for-people-community-connector
+    state: Washington
+    name: People for People (Community Connector)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pfp-wa-us/pfp-wa-us.zip
+    mdb_id: 271
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ben-franklin-transit
+    state: Washington
+    name: Ben Franklin Transit
+    static_gtfs_url: https://www.bft.org/gtfs/google_transit.zip
+    mdb_id: 273
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: link-transit
+    state: Washington
+    ntd_id: "40252"
+    name: Link Transit
+    static_gtfs_url: https://link.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 275
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yakima-transit
+    state: Washington
+    name: Yakima Transit
+    static_gtfs_url: https://yakimatransit.org/gtfs/yakima_gtfs.zip
+    mdb_id: 276
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: union-gap
+    state: Washington
+    name: Union Gap
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/uniongap-wa-us/uniongap-wa-us.zip
+    mdb_id: 277
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: selah-transit
+    state: Washington
+    name: Selah Transit
+    static_gtfs_url: http://trilliumtransit.com/transit_feeds/selah-wa-us/selah-wa-us.zip
+    mdb_id: 278
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clallam-transit-system
+    state: Washington
+    name: Clallam Transit System
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/clallam_google_transit.zip
+    mdb_id: 279
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: island-transit
+    state: Washington
+    name: Island Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/islandtransit-wa-us/islandtransit-wa-us.zip
+    mdb_id: 280
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: puget-sound-express
+    state: Washington
+    name: Puget Sound Express
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/pse_google_transit.zip
+    mdb_id: 281
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-victoria-clipper
+    state: Washington
+    name: The Victoria Clipper
+    static_gtfs_url: https://addtransit.com/gtfsfile/42017/TheVictoriaClipper.zip
+    mdb_id: 282
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-state-ferries
+    state: Washington
+    name: Washington State Ferries
+    static_gtfs_url: https://business.wsdot.wa.gov/Transit/csv_files/wsf/google_transit.zip
+    mdb_id: 283
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: whatcom-transportation-authority
+    state: Washington
+    name: Whatcom Transportation Authority
+    static_gtfs_url: https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip
+    mdb_id: 284
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jamestown-s-klallam
+    state: Washington
+    name: Jamestown S'klallam
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/sevencedars_google_transit.zip
+    mdb_id: 285
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: black-ball-ferry-line
+    state: Washington
+    name: Black Ball Ferry Line
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/blackball_google_transit.zip
+    mdb_id: 286
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: community-transit-ct
+    state: Washington
+    name: Community Transit (CT)
+    static_gtfs_url: https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip
+    mdb_id: 287
+    rt_urls:
+      trip_updates: http://s3.amazonaws.com/commtrans-realtime-prod/tripupdates.pb
+      vehicle_positions: http://s3.amazonaws.com/commtrans-realtime-prod/vehiclepositions.pb
+      service_alerts: http://s3.amazonaws.com/commtrans-realtime-prod/alerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: everett-transit
+    state: Washington
+    name: Everett Transit
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/97_gtfs.zip
+    mdb_id: 288
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: spokane-transit-authority-sta
+    state: Washington
+    name: Spokane Transit Authority (STA)
+    static_gtfs_url: https://www.spokanetransit.com/gtfs
+    mdb_id: 290
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-ellensburg-public-transit-central-transit
+    state: Washington
+    name: City of Ellensburg Public Transit (Central Transit)
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/centraltransit_google_transit.zip
+    mdb_id: 303
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: l-e-w-i-s-mountain-highway-transit
+    state: Washington
+    name: L.E.W.I.S. Mountain Highway Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lmht-morton-us/lmht-morton-us.zip
+    mdb_id: 567
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lower-columbia-cap-community-action-program
+    state: Washington
+    name: Lower Columbia CAP (Community Action Program)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lowercolumbiacap-wa-us/lowercolumbiacap-wa-us.zip
+    mdb_id: 568
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: makah-public-transit
+    state: Washington
+    name: Makah Public Transit
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/makah_google_transit.zip
+    mdb_id: 574
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mount-adams-transportation-service
+    state: Washington
+    name: Mount Adams Transportation Service
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountadams-wa-us/mountadams-wa-us.zip
+    mdb_id: 580
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wahkiakum-ferry
+    state: Washington
+    name: Wahkiakum Ferry
+    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/wahkiakumferry-or-us/wahkiakumferry-or-us.zip
+    mdb_id: 604
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: snoqualmie-valley-transportation
+    state: Washington
+    name: Snoqualmie Valley Transportation
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip
+    mdb_id: 816
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ruraltransit
+    state: Washington
+    name: ruralTRANSIT
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thurston-wa-us/thurston-wa-us.zip
+    mdb_id: 822
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jefferson-transit-authority
+    state: Washington
+    name: Jefferson Transit Authority
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/jefferson_google_transit.zip
+    mdb_id: 838
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: squaxin-island-transit
+    state: Washington
+    name: Squaxin Island Transit
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/squaxintribe_google_transit.zip
+    mdb_id: 846
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-transit-intercity-transit-city-of-seattle-community-transit-pierce-transit-sound-transit-washington-state-ferries-seattlecentermonorail-everett-transit-seattle-children-s-hospital
+    state: Washington
+    name: Puget Sound Consolidated GTFS
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/gtfs_puget_sound_consolidated.zip
+    mdb_id: 1080
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kitsap-transit
+    state: Washington
+    name: Kitsap Transit
+    static_gtfs_url: http://pride.kitsaptransit.com/gtfs/google_transit.zip
+    mdb_id: 1304
+    rt_urls:
+      trip_updates: https://kttracker.com/gtfsrt/trips?debug
+      vehicle_positions: https://kttracker.com/gtfsrt/vehicles?debug
+      service_alerts: https://cdn.simplifytransit.com/kitsap-transit/alerts/service-alerts.pb
+    license_note: "License: http://www.kitsaptransit.com/privacy-policy#developer"
+
+  - id: king-county-metro
+    state: Washington
+    name: King County Metro
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/1_gtfs.zip
+    mdb_id: 1330
+    rt_urls:
+      trip_updates: https://s3.amazonaws.com/kcm-alerts-realtime-prod/tripupdates.pb
+      vehicle_positions: https://s3.amazonaws.com/kcm-alerts-realtime-prod/vehiclepositions.pb
+      service_alerts: https://s3.amazonaws.com/kcm-alerts-realtime-prod/alerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-state-ferries-1331
+    state: Washington
+    name: Washington State Ferries
+    static_gtfs_url: https://gtfs.sound.obaweb.org/prod/95_gtfs.zip
+    mdb_id: 1331
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ben-franklin-transit-2024
+    state: Washington
+    name: Ben Franklin Transit
+    static_gtfs_url: http://realtime.bft.org/Static/google_transit.zip
+    mdb_id: 2024
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ben-franklin-transit-2122
+    state: Washington
+    name: Ben Franklin Transit
+    static_gtfs_url: https://myride.bft.org/Static/google_transit.zip
+    mdb_id: 2122
+    rt_urls:
+      trip_updates: https://myride.bft.org/Realtime/GTFS_TripUpdates.pb
+      vehicle_positions: https://myride.bft.org/Realtime/GTFS_VehiclePositions.pb
+      service_alerts: https://myride.bft.org/Realtime/GTFS_ServiceAlerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wahkiakum-ferry-2193
+    state: Washington
+    name: Wahkiakum Ferry
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/wahkiakumferry-wa-us/wahkiakumferry-wa-us.zip
+    mdb_id: 2193
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: makah-public-transit-2196
+    state: Washington
+    name: Makah Public Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/makah-wa-us/makah-wa-us.zip
+    mdb_id: 2196
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: squaxin-island-transit-2197
+    state: Washington
+    name: Squaxin Island Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/squaxinisland-wa-us/squaxinisland-wa-us.zip
+    mdb_id: 2197
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lewiston-transit-system-and-asotin-county-public-transportation-benefit-area-ptba
+    state: Washington
+    name: Lewiston Transit System and Asotin County Public Transportation Benefit Area (PTBA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/asotincounty-wa-us/asotincounty-wa-us.zip
+    mdb_id: 2298
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: colville-confederated-tribes-transit
+    state: Washington
+    name: Colville Confederated Tribes Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ccttransit-wa-us/ccttransit-wa-us.zip
+    mdb_id: 2302
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: elwha-transit
+    state: Washington
+    name: Elwha Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/elwhatransit-wa-us/elwhatransit-wa-us.zip
+    mdb_id: 2307
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: grant-transit-authority
+    state: Washington
+    name: Grant Transit Authority
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/granttransit-wa-us/granttransit-wa-us.zip
+    mdb_id: 2309
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: guemes-island-ferry
+    state: Washington
+    name: Guemes Island Ferry
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/guemesislandferry-wa-us/guemesislandferry-wa-us.zip
+    mdb_id: 2310
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: homage-d-arling-direct
+    state: Washington
+    name: "Homage: DʼArling Direct"
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/homage-wa-us/homage-wa-us.zip
+    mdb_id: 2311
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kalispel-tribal-transit-kaltran
+    state: Washington
+    name: Kalispel Tribal Transit (KalTran)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kaltran-wa-us/kaltran-wa-us.zip
+    mdb_id: 2314
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lady-of-the-lake
+    state: Washington
+    name: Lady of the Lake
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lakechelan-wa-us/lakechelan-wa-us.zip
+    mdb_id: 2318
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lummi-island-ferry
+    state: Washington
+    name: Lummi Island Ferry
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lummiislandferry-wa-us/lummiislandferry-wa-us.zip
+    mdb_id: 2319
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lummi-transit
+    state: Washington
+    name: Lummi Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lummitransit-wa-us/lummitransit-wa-us.zip
+    mdb_id: 2320
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-moccasin-express
+    state: Washington
+    name: The Moccasin Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/moccasinexpress-wa-us/moccasinexpress-wa-us.zip
+    mdb_id: 2325
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: muckleshoot-tribal-transit
+    state: Washington
+    name: Muckleshoot Tribal Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/muckleshoot-wa-us/muckleshoot-wa-us.zip
+    mdb_id: 2326
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: nisqually-transit
+    state: Washington
+    name: Nisqually Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/nisqually-wa-us/nisqually-wa-us.zip
+    mdb_id: 2327
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pahto-public-passage
+    state: Washington
+    name: Pahto Public Passage
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pahtopublicpassage-wa-us/pahtopublicpassage-wa-us.zip
+    mdb_id: 2331
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-ellensburg-public-transit-central-transit-2456
+    state: Washington
+    name: City of Ellensburg Public Transit (Central Transit)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ellensburg-wa-us/ellensburg-wa-us.zip
+    mdb_id: 2456
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: everett-transit-3038
+    state: Washington
+    name: Everett Transit
+    static_gtfs_url: https://everett.prod.mapstrat.com/current/google_transit.zip
+    mdb_id: 3038
+    rt_urls:
+      trip_updates: https://everett.mapstrat.com/current/gtfrealtime_TripUpdates.bin
+      vehicle_positions: https://everett.mapstrat.com/current/gtfrealtime_VehiclePositions.bin
+      service_alerts: https://everett.mapstrat.com/current/gtfrealtime_ServiceAlerts.bin
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pacific-transit-3112
+    state: Washington
+    name: Pacific Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pacifictransit-wa-us/pacifictransit-wa-us.zip
+    mdb_id: 3112
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: catholic-community-services
+    state: Washington
+    name: Catholic Community Services
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/catholiccommunity-wa-us/catholiccommunity-wa-us-king--flex-v2.zip
+    mdb_id: 2158
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: catholic-community-services-2159
+    state: Washington
+    name: Catholic Community Services
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/catholiccommunity-wa-us/catholiccommunity-wa-us-northwest--flex-v2.zip
+    mdb_id: 2159
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: catholic-community-services-2160
+    state: Washington
+    name: Catholic Community Services
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/catholiccommunity-wa-us/catholiccommunity-wa-us-southwest--flex-v2.zip
+    mdb_id: 2160
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: coast-transportation
+    state: Washington
+    name: COAST Transportation
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/coasttransportation-wa-us/coasttransportation-wa-us--flex-v2.zip
+    mdb_id: 2162
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: community-in-motion
+    state: Washington
+    name: Community in Motion
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/communityinmotion-wa-us/communityinmotion-wa-us--flex-v2.zip
+    mdb_id: 2163
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: eastside-friends-of-seniors
+    state: Washington
+    name: Eastside Friends of Seniors
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/eastside-wa-us/eastside-wa-us--flex-v2.zip
+    mdb_id: 2166
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hopelink-transportation
+    state: Washington
+    name: Hopelink Transportation
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/hopelink-wa-us/hopelink-wa-us--flex-v2.zip
+    mdb_id: 2167
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: columbia-county-public-transportation
+    state: Washington
+    name: Columbia County Public Transportation
+    static_gtfs_url: http://data.trilliumtransit.com/gtfs/columbiacounty-wa-us/columbiacounty-wa-us--flex-v2.zip
+    mdb_id: 2168
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: paratransit-services
+    state: Washington
+    name: Paratransit Services
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/paratransitservices-wa-us/paratransitservices-wa-us--flex-v2.zip
+    mdb_id: 2176
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: puget-sound-educational-service-district
+    state: Washington
+    name: Puget Sound Educational Service District
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/psesd-wa-us/psesd-wa-us--flex-v2.zip
+    mdb_id: 2177
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sound-generations-hyde-shuttle
+    state: Washington
+    name: do not use - deprecfated
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/soundgenerations-wa-us/soundgenerations-wa-us-hyde--flex-v2.zip
+    mdb_id: 2183
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: intercity-transit-2289
+    state: Washington
+    name: Intercity Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/intercitytransit-wa-us/intercitytransit-wa-us--flex-v2.zip
+    mdb_id: 2289
+    license_note: No stated data license in the Mobility Database; verify before publishing.

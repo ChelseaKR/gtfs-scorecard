@@ -1,0 +1,28 @@
+# Mississippi (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: jtran
+    state: Mississippi
+    name: JTRAN
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/jatran-ms-us/jatran-ms-us.zip
+    mdb_id: 155
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-jackson-jtran
+    state: Mississippi
+    name: City of Jackson (JTRAN)
+    static_gtfs_url: https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2652
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gulf-islands-national-seashore-3210
+    state: Mississippi
+    name: Ship Island Excursions
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/guis/guis-ferry-service-ms.zip
+    mdb_id: 3210
+    license_note: No stated data license in the Mobility Database; verify before publishing.

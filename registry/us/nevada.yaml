@@ -1,0 +1,50 @@
+# Nevada (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: jump-around-carson
+    state: Nevada
+    name: Jump Around Carson
+    static_gtfs_url: http://r.peaktransit.com/res/76/google_transit.zip
+    mdb_id: 95
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: regional-transportation-commission-rtc
+    state: Nevada
+    name: Regional Transportation Commission (RTC)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/rtc-nv-us/rtc-nv-us.zip
+    mdb_id: 120
+    license_note: "License: https://www.rtcwashoe.com/terms-of-use/"
+
+  - id: city-of-las-vegas
+    state: Nevada
+    name: City of Las Vegas
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lasvegasloop-nv-us/lasvegasloop-nv-us.zip
+    mdb_id: 565
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tahoe-transportation-district
+    state: Nevada
+    name: Tahoe Transportation District
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tahoe-ca-us/tahoe-ca-us.zip
+    mdb_id: 897
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: north-lake-tahoe-express
+    state: Nevada
+    name: 24 hour advance reservations required
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/nlte-nv-us/nlte-nv-us.zip
+    mdb_id: 2328
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: regional-transportation-commission-of-southern-nevada-rtc-2351
+    state: Nevada
+    name: Regional Transportation Commission of Southern Nevada (RTC)
+    static_gtfs_url: https://developer.rtcsnv.com/transitData/google_transit.zip
+    mdb_id: 2351
+    license_note: No stated data license in the Mobility Database; verify before publishing.

@@ -1,0 +1,304 @@
+# Massachusetts (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: greater-attleboro-taunton-regional-transit-authority-gatra
+    state: Massachusetts
+    name: Greater Attleboro Taunton Regional Transit Authority (GATRA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gatra-ma-us/gatra-ma-us.zip
+    mdb_id: 418
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: martha-s-vineyard-transit-authority
+    state: Massachusetts
+    name: Martha's Vineyard Transit Authority
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/marthasvineyard-ma-us/marthasvineyard-ma-us.zip
+    mdb_id: 420
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: southeastern-regional-transit-authority-srta
+    state: Massachusetts
+    name: Southeastern Regional Transit Authority (SRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/srta-ma-us/srta-ma-us.zip
+    mdb_id: 421
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: brockton-area-transit-authority-bat
+    state: Massachusetts
+    name: Brockton Area Transit Authority (BAT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/brockton-ma-us/brockton-ma-us.zip
+    mdb_id: 422
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cuttyhunk-ferry-company
+    state: Massachusetts
+    name: Cuttyhunk Ferry Company
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cuttyhunkferryco-ma-us/cuttyhunkferryco-ma-us.zip
+    mdb_id: 423
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: patriots-party-boats
+    state: Massachusetts
+    name: Patriots Party Boats
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/patriotpartyboats-ma-us/patriotpartyboats-ma-us.zip
+    mdb_id: 424
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: freedom-cruise-line
+    state: Massachusetts
+    name: Freedom Cruise Line
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/freedomcruiseline-ma-us/freedomcruiseline-ma-us.zip
+    mdb_id: 425
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: nantucket-regional-transit-authority-wave
+    state: Massachusetts
+    name: Nantucket Regional Transit Authority (WAVE)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/nantucket-ma-us/nantucket-ma-us.zip
+    mdb_id: 426
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hy-line-cruises
+    state: Massachusetts
+    name: Hy-Line Cruises
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/hylinecruises-ma-us/hylinecruises-ma-us.zip
+    mdb_id: 427
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: franklin-regional-transit-authority-frta
+    state: Massachusetts
+    name: Franklin Regional Transit Authority (FRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/frta-ma-us/frta-ma-us.zip
+    mdb_id: 429
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: massachusetts-area-express-max
+    state: Massachusetts
+    name: Massachusetts Area Express (MAX)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/truenorthtransit-ma-us/truenorthtransit-ma-us.zip
+    mdb_id: 431
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: worcester-regional-transit-authority-wrta
+    state: Massachusetts
+    name: Worcester Regional Transit Authority (WRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip
+    mdb_id: 432
+    license_note: "License: https://www.massdot.state.ma.us/Portals/0/docs/developers/develop_license_agree.pdf"
+
+  - id: montachusett-regional-transit-authority-mart
+    state: Massachusetts
+    name: Montachusett Regional Transit Authority (MART)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/montachusett-ma-us/montachusett-ma-us.zip
+    mdb_id: 433
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bay-state-cruise-company
+    state: Massachusetts
+    name: Bay State Cruise Company
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/baystatecruisecompany-ma-us/baystatecruisecompany-ma-us.zip
+    mdb_id: 435
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: coach-company
+    state: Massachusetts
+    name: Coach Company
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/coachcompany-ma-us/coachcompany-ma-us.zip
+    mdb_id: 436
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: massachusetts-bay-transportation-authority-mbta
+    state: Massachusetts
+    ntd_id: "10003"
+    name: Massachusetts Bay Transportation Authority (MBTA)
+    static_gtfs_url: https://cdn.mbta.com/MBTA_GTFS.zip
+    mdb_id: 437
+    rt_urls:
+      trip_updates: https://cdn.mbta.com/realtime/TripUpdates.pb
+      vehicle_positions: https://cdn.mbta.com/realtime/VehiclePositions.pb
+      service_alerts: https://cdn.mbta.com/realtime/Alerts.pb
+    license_note: "License: https://www.mass.gov/files/documents/2017/10/27/develop_license_agree_0.pdf"
+
+  - id: limoliner
+    state: Massachusetts
+    name: LimoLiner
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/limoliner-ma-us/limoliner-ma-us.zip
+    mdb_id: 438
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metrowest-regional-transit-authority-mwrta
+    state: Massachusetts
+    name: MetroWest Regional Transit Authority (MWRTA)
+    static_gtfs_url: http://vc.mwrta.com/gtfs/google_transit.zip
+    mdb_id: 439
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: 128-business-council
+    state: Massachusetts
+    name: 128 Business Council
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/route128corridor-ma-us/route128corridor-ma-us.zip
+    mdb_id: 440
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: massport
+    state: Massachusetts
+    name: Massport
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/massport-ma-us/massport-ma-us.zip
+    mdb_id: 441
+    license_note: "License: http://www.massport.com/media/1651/massportdatalicenseagreement.pdf"
+
+  - id: middlesex-3-tma
+    state: Massachusetts
+    name: Middlesex 3 TMA
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/middlesex-ma-us/middlesex-ma-us.zip
+    mdb_id: 442
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yankee-line
+    state: Massachusetts
+    name: Yankee Line
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/yankeeline-ma-us/yankeeline-ma-us.zip
+    mdb_id: 443
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lowell-regional-transit-authority-lrta
+    state: Massachusetts
+    name: Lowell Regional Transit Authority (LRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lowell-ma-us/lowell-ma-us.zip
+    mdb_id: 444
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: merrimack-valley-regional-transit-authority-mvrta
+    state: Massachusetts
+    name: Merrimack Valley Regional Transit Authority (MVRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/merrimackvalley-ma-us/merrimackvalley-ma-us.zip
+    mdb_id: 445
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: boston-harbor-islands-ferries
+    state: Massachusetts
+    name: Boston Harbor Islands Ferries
+    static_gtfs_url: http://nationalparkservice.github.io/nps-gtfs/boha/ferries/gtfs.zip
+    mdb_id: 446
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cape-ann-transportation-authority-cata
+    state: Massachusetts
+    name: Cape Ann Transportation Authority (CATA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip
+    mdb_id: 447
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: peter-pan
+    state: Massachusetts
+    name: Peter Pan
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/peterpan-ma-us/peterpan-ma-us.zip
+    mdb_id: 496
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: berkshire-regional-transit-authority-brta
+    state: Massachusetts
+    name: Berkshire Regional Transit Authority (BRTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/berkshire-ma-us/berkshire-ma-us.zip
+    mdb_id: 537
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: seastreak-ferry
+    state: Massachusetts
+    name: Seastreak Ferry
+    static_gtfs_url: http://seastreak.com/api/transit/google_transit.zip
+    mdb_id: 549
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dattco-motorcoach
+    state: Massachusetts
+    name: DATTCO Motorcoach
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dattco-ma-us/dattco-ma-us.zip
+    mdb_id: 555
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: plymouth-brockton-street-railway-co
+    state: Massachusetts
+    name: Plymouth & Brockton Street Railway Co
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/plymouthbrockton-ma-us/plymouthbrockton-ma-us.zip
+    mdb_id: 556
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bloom-tours
+    state: Massachusetts
+    name: Bloom Tours
+    static_gtfs_url: https://www.mass.gov/doc/bloom-tours-zip-file-6242015/download
+    mdb_id: 592
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: logan-express
+    state: Massachusetts
+    name: Logan Express
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/loganexpress-ma-us/loganexpress-ma-us.zip
+    mdb_id: 601
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cape-cod-regional-transportation-authority-cape-cod-rta
+    state: Massachusetts
+    name: Cape Cod Regional Transportation Authority (Cape Cod RTA)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/capecod-ma-us/capecod-ma-us.zip
+    mdb_id: 645
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pioneer-valley-transit-authority-pvta
+    state: Massachusetts
+    name: Pioneer Valley Transit Authority (PVTA)
+    static_gtfs_url: https://transitfeeds.com/p/massdot/104/latest/download
+    mdb_id: 1234
+    license_note: "License: https://www.mass.gov/doc/developers-license-agreement-11132009/download"
+
+  - id: massachusetts-ferry-service
+    state: Massachusetts
+    name: Massachusetts Ferry Service
+    static_gtfs_url: https://transitfeeds.com/p/massdot/109/latest/download
+    mdb_id: 1309
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: boston-harbor-islands-ferries-2073
+    state: Massachusetts
+    name: Boston Harbor Islands Ferries
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/boha/thompson-island-ferry.zip
+    mdb_id: 2073
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bloom-bus
+    state: Massachusetts
+    name: Bloom Bus
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bloombus-ma-us/bloombus-ma-us.zip
+    mdb_id: 2192
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: blue-apple-bus-company
+    state: Massachusetts
+    name: Blue Apple Bus Company
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/blueapplebus-ma-us/blueapplebus-ma-us.zip
+    mdb_id: 2299
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pioneer-valley-transit-authority-pvta-2416
+    state: Massachusetts
+    name: Pioneer Valley Transit Authority (PVTA)
+    static_gtfs_url: https://www.pvta.com/g_trans/google_transit.zip
+    mdb_id: 2416
+    rt_urls:
+      trip_updates: https://api.goswift.ly/real-time/pioneer-valley-pvta/gtfs-rt-trip-updates
+      vehicle_positions: https://api.goswift.ly/real-time/pioneer-valley-pvta/gtfs-rt-vehicle-positions
+      service_alerts: https://api.goswift.ly/real-time/pioneer-valley-pvta/gtfs-rt-alerts/v2
+    license_note: "License: https://www.mass.gov/doc/developers-license-agreement-11132009/download"
+
+  - id: cape-cod-regional-transit-authority
+    state: Massachusetts
+    name: Cape Cod Regional Transit Authority Flex
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/capecod-ma-us/capecod-ma-us--flex-v2.zip
+    mdb_id: 2446
+    license_note: No stated data license in the Mobility Database; verify before publishing.

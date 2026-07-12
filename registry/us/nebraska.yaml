@@ -1,0 +1,42 @@
+# Nebraska (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: omaha-metro
+    state: Nebraska
+    name: Omaha Metro
+    static_gtfs_url: https://s3.amazonaws.com/omaha-metro/TrapezeExport/google_transit.zip
+    mdb_id: 587
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: startran
+    state: Nebraska
+    name: StarTran
+    static_gtfs_url: https://transitfeeds.com/p/startran/781/latest/download
+    mdb_id: 1188
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: omaha-metro-2261
+    state: Nebraska
+    name: Omaha Metro
+    static_gtfs_url: https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip
+    mdb_id: 2261
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: startran-2269
+    state: Nebraska
+    name: StarTran
+    static_gtfs_url: https://startran.connexionz.net/rtt/public/resource/gtfs.zip
+    mdb_id: 2269
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kimball-county-transit-service
+    state: Nebraska
+    name: Kimball County Transit Service
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kimballcountytransit-ne-us/kimballcountytransit-ne-us.zip
+    mdb_id: 2316
+    license_note: No stated data license in the Mobility Database; verify before publishing.

@@ -1,0 +1,90 @@
+# Connecticut (US) agencies — one curated shard of the registry (FIX-12).
+#
+# The field reference lives at the top of agencies.yaml, and
+# docs/add-your-agency.md explains how to add an agency (new entries land in
+# agencies.yaml first; a curator moves them here once located). Every shard
+# is merged with agencies.yaml at load time, and ids must be unique across
+# all of them.
+agencies:
+  - id: norwalk-transit-district
+    state: Connecticut
+    name: Norwalk Transit District
+    static_gtfs_url: https://www.norwalktransit.com/s/GTFS_Data.zip
+    mdb_id: 529
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greater-bridgeport-transit
+    state: Connecticut
+    name: Greater Bridgeport Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip
+    mdb_id: 530
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shore-line-east
+    state: Connecticut
+    name: Shore Line East
+    static_gtfs_url: http://www.shorelineeast.com/google_transit.zip
+    mdb_id: 550
+    license_note: "License: http://www.cttransit.com/about/developers/gtfsdata/"
+
+  - id: middletown-area-transit-mat
+    state: Connecticut
+    name: Middletown Area Transit (MAT)
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ninetown-connecticut-us/ninetown-connecticut-us.zip
+    mdb_id: 551
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: southeast-area-transit-district
+    state: Connecticut
+    name: Southeast Area Transit District
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/seatbus-ct-us/seatbus-ct-us.zip
+    mdb_id: 552
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connecticut-transit
+    state: Connecticut
+    ntd_id: "10048"
+    name: Connecticut Transit
+    static_gtfs_url: https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip
+    mdb_id: 553
+    rt_urls:
+      trip_updates: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/Alert/Alerts.pb
+    license_note: "License: https://www.cttransit.com/about/developers/terms-of-use"
+
+  - id: middletown-area-transit
+    state: Connecticut
+    name: Middletown Area Transit
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/middletown-ct-us/middletown-ct-us.zip
+    mdb_id: 576
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connecticut-transit-597
+    state: Connecticut
+    name: Hartford Line - Rail
+    static_gtfs_url: http://www.hartfordline.com/files/gtfs/gtfs.zip
+    mdb_id: 597
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lower-hudson-valley-transit
+    state: Connecticut
+    name: Lower Hudson Valley Transit
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip
+    mdb_id: 915
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: southeast-area-transit-district-2240
+    state: Connecticut
+    name: Southeast Area Transit District
+    static_gtfs_url: https://gtfs.remix.com/seat_preston_ct_us.zip
+    mdb_id: 2240
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connecticut-transit-2840
+    state: Connecticut
+    ntd_id: "10048"
+    name: Hartford Line - Rail
+    static_gtfs_url: https://ctrides.com/hlgtfs.zip
+    mdb_id: 2840
+    license_note: "License: https://www.cttransit.com/about/developers/terms-of-use"
