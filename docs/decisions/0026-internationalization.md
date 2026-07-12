@@ -96,6 +96,15 @@ and tests.
 - Europe (NeTEx) and a true cross-country equity overlay remain open, and each is
   its own decision; this ADR does not commit to either.
 
+## Implementation update (2026-07-12)
+
+The no-build frontend now routes dates, counts, and agency-name collation through
+`web/src/locale.js`, using the page's BCP 47 `lang` value and the browser's
+`Intl` implementation. The same module sets the root writing direction, with a
+browser contract covering a right-to-left locale. English remains the declared
+default; this removes the earlier `en-US` formatting assumption without claiming
+that the full practitioner interface has been translated.
+
 ## Open questions
 
 - What cross-country demographic/equity dataset (Eurostat grids, the EU GHSL,
