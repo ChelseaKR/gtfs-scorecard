@@ -103,6 +103,7 @@ jobs:
               aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}" \
                 "$GITHUB_WORKSPACE/data/artifacts/${id}" \
                 --exclude "*" --include "latest.json" --include "fixlog.json" \
+                --include "structure.json" \
                 --include "${today}.json" --include "${yesterday}.json" \
                 --only-show-errors
             fi
@@ -182,7 +183,9 @@ jobs:
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
             data/artifacts/index.json --only-show-errors
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-            --exclude "*" --include "*/fixlog.json" --only-show-errors
+            --exclude "*" --include "*/fixlog.json" \
+            --include "rollups/*.state.json" \
+            --include "coverage-baseline.json" --only-show-errors
       - name: Fetch NTD annual ridership (rider-trips weighting, ADR 0021)
         working-directory: pipeline
         run: |
@@ -219,6 +222,40 @@ jobs:
             echo ""
             uv run scorecard vendor-report --format markdown || true
           } >> "$GITHUB_STEP_SUMMARY"
+      # EXP-12: the week-over-week cohort digest for liaisons, on the Monday
+      # run only. --save advances each rollup's baseline snapshot (persisted
+      # via the S3 sync below and re-hydrated above), so running it daily
+      # would shrink every "week" to a day. Delivery is the published
+      # digest.md plus the run summary; email stays behind its consent gate.
+      - name: Weekly portfolio digest
+        working-directory: pipeline
+        run: |
+          if [ "$(date -u +%u)" != "1" ]; then
+            echo "Not Monday (UTC); the weekly portfolio digest advances on Mondays."
+            exit 0
+          fi
+          uv run scorecard portfolio-digest --save \
+            --out ../data/artifacts/rollups/digest.md || true
+          {
+            echo "## Weekly portfolio digest"
+            echo ""
+            cat ../data/artifacts/rollups/digest.md 2>/dev/null || echo "_Digest build failed this run; see the step log._"
+          } >> "$GITHUB_STEP_SUMMARY"
+      # FIX-08's weekly advisory: coverage normally only rises as curation
+      # adds entries, so a drop means new high-volume codes are reaching
+      # readers with generic fallback text. Advisory by design — it warns,
+      # it never blocks the run.
+      - name: Weekly plain-language coverage check
+        working-directory: pipeline
+        run: |
+          if [ "$(date -u +%u)" != "1" ]; then
+            echo "Not Monday (UTC); the coverage baseline advances on Mondays."
+            exit 0
+          fi
+          uv run scorecard coverage-check --save | tee coverage-check.log || true
+          if grep -q '^COVERAGE DROP' coverage-check.log; then
+            echo "::warning title=Plain-language coverage dropped::$(cat coverage-check.log)"
+          fi
       # Mirror to the CloudFront-backed bucket once infra/artifacts is applied.
       # Gated on the ARTIFACTS_BUCKET repo variable, so the pilot and forks
       # (which set no variable) skip it entirely and keep serving from Pages.
@@ -279,5 +316,10 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/pages.yml
+    with:
+      # Data refresh: performance budgets warn instead of blocking, so a
+      # Lighthouse variance cannot stale the pages (FIX-14). Accessibility
+      # still blocks.
+      perf_gate: advisory
     secrets:
       PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}

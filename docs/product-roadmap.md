@@ -40,7 +40,7 @@ Every item below is checked against these.
 
 ## Where the product is today
 
-About 1,450 US and Canadian agencies scored daily (piloted with Unitrans and
+About 1,140 US and Canadian agencies scored daily (piloted with Unitrans and
 Yolobus, first cohort drawn from California); per-agency scorecards with a
 grade, top-three fixes, a full findings list, and a named "fixed since last
 check" diff; companion pages per agency for a board packet, call prep, and the

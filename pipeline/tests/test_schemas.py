@@ -87,7 +87,13 @@ def test_every_published_schema_is_valid_draft_2020_12(schema_path: Path) -> Non
 
 def test_a_schema_exists_for_every_published_document_type() -> None:
     names = {p.name for p in SCHEMA_PATHS}
-    assert {"artifact.schema.json", "catalog.schema.json", "directory.schema.json"} <= names
+    assert {
+        "artifact.schema.json",
+        "catalog.schema.json",
+        "directory.schema.json",
+        "rollup.schema.json",
+        "rollup-index.schema.json",
+    } <= names
 
 
 # ---------------------------------------------------------------------------
@@ -241,3 +247,97 @@ def test_published_directory_conforms_to_its_schema(relative: str) -> None:
     if not path.exists():
         pytest.skip(f"{relative} not in this checkout")
     _validator("directory.schema.json").validate(_load(path))
+
+
+# ---------------------------------------------------------------------------
+# The program rollup contract (rollup.schema.json, rollup-index.schema.json)
+
+
+def test_build_rollup_output_conforms_to_the_rollup_schema() -> None:
+    """publish_rollups() attaches state_percentile after build_rollup() runs
+    (it needs every state's average first), the same after-the-build pattern
+    as the artifact's NTD block, so the direct test attaches it too."""
+    from scorecard_pipeline.rollups import Rollup, build_rollup
+
+    for agency_id, score, grade, days in [("a-one", 55.0, "D", 12), ("b-two", 91.0, "A", None)]:
+        agency_dir = artifacts_dir() / agency_id
+        agency_dir.mkdir(parents=True, exist_ok=True)
+        (agency_dir / "latest.json").write_text(
+            json.dumps(
+                {
+                    "agency": {"id": agency_id, "name": agency_id.title()},
+                    "snapshot_date": "2026-06-11",
+                    "overall": {"score": score, "grade": grade},
+                    "categories": {"freshness": {"details": {"days_until_expiry": days}}},
+                    "top_fixes": [{"code": "scorecard_feed_expired", "fix": "Re-export."}],
+                }
+            )
+        )
+    payload = build_rollup(
+        Rollup(id="demo", name="Demo cohort", member_ids=("a-one", "b-two")),
+        GENERATED_AT,
+        attention={"a-one": "Service data expires in 12 days"},
+    )
+    payload["state_percentile"] = None
+    _validator("rollup.schema.json").validate(payload)
+
+
+def _published_rollups() -> list[Path]:
+    root = REPO_ROOT / "data" / "artifacts" / "rollups"
+    if not root.exists():
+        return []
+    return [p for p in sorted(root.glob("*.json")) if p.name != "index.json"]
+
+
+def test_every_published_rollup_conforms() -> None:
+    paths = _published_rollups()
+    if not paths:
+        pytest.skip("no published rollups in this checkout")
+    validator = _validator("rollup.schema.json")
+    bad: dict[str, str] = {}
+    for path in paths:
+        error = next(iter(validator.iter_errors(_load(path))), None)
+        if error is not None:
+            bad[path.name] = f"{error.json_path}: {error.message}"
+    assert not bad, f"{len(bad)} published rollups violate the schema: {bad}"
+
+
+def test_golden_site_rollups_conform() -> None:
+    root = REPO_ROOT / "pipeline" / "tests" / "fixtures" / "golden_site" / "data" / "artifacts"
+    validator = _validator("rollup.schema.json")
+    paths = [p for p in sorted((root / "rollups").glob("*.json")) if p.name != "index.json"]
+    assert paths, "golden_site fixture has no rollups"
+    for path in paths:
+        validator.validate(_load(path))
+
+
+@pytest.mark.parametrize(
+    "relative",
+    [
+        "data/artifacts/rollups/index.json",
+        "pipeline/tests/fixtures/golden_site/data/artifacts/rollups/index.json",
+    ],
+)
+def test_published_rollup_index_conforms_to_its_schema(relative: str) -> None:
+    path = REPO_ROOT / relative
+    if not path.exists():
+        pytest.skip(f"{relative} not in this checkout")
+    _validator("rollup-index.schema.json").validate(_load(path))
+
+
+def test_artifact_with_an_export_diff_block_conforms() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["export_diff"] = {
+        "from_sha256": "a" * 64,
+        "to_sha256": "b" * 64,
+        "changes": ["Route 5 is no longer in the export."],
+    }
+    validate_artifact(artifact)
+
+
+def test_export_diff_with_no_changes_is_rejected() -> None:
+    # The block exists only to say what changed; an empty one is a bug.
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["export_diff"] = {"from_sha256": None, "to_sha256": "b" * 64, "changes": []}
+    with pytest.raises(ValidationError, match="non-empty"):
+        validate_artifact(artifact)

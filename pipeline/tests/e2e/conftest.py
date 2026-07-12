@@ -84,6 +84,19 @@ def app_url(base_url: str) -> str:
     return f"{base_url}/app/"
 
 
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args: dict[str, Any]) -> dict[str, Any]:
+    """Block service workers in the default test contexts.
+
+    web/sw.js (EXP-20 offline support) registers on every page via nav.js, and
+    Chromium requests handled by a service worker bypass Playwright's
+    page.route interception — which test_failure.py's 404 stubs depend on.
+    test_offline.py exercises the worker itself from a context it creates with
+    service workers allowed.
+    """
+    return {**browser_context_args, "service_workers": "block"}
+
+
 @pytest.fixture(autouse=True)
 def _block_external_requests(page: Page) -> None:
     """Abort any request that would leave 127.0.0.1: hermetic and deterministic."""

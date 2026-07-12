@@ -574,6 +574,20 @@ def _feeddiff_section(
         )
 
     blocks = []
+    # The export diff (EXP-18): what changed in the feed file itself, from the
+    # structure fingerprint the pipeline remembers between runs. Shown first
+    # because a content change is usually the cause of the finding changes
+    # below it. Descriptive only; change is normal and carries no judgment.
+    export = cur_artifact.get("export_diff")
+    if export and export.get("changes"):
+        items = "".join(f"<li>{esc(change)}</li>" for change in export["changes"])
+        blocks.append(
+            '<h3 class="trend-sub">What changed inside the export</h3>'
+            f'<ul class="cleared-list">{items}</ul>'
+            '<p class="fineprint">Read from the feed file itself, compared with the '
+            "previous export. A service change is normal; this is a heads-up so "
+            "nothing disappears silently.</p>"
+        )
     if diff.new:
         noun = "finding" if len(diff.new) == 1 else "findings"
         blocks.append(
@@ -7104,6 +7118,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/",
         f"{BASE_URL}/about/",
         f"{BASE_URL}/support/",
+        f"{BASE_URL}/fetcher/",
         f"{BASE_URL}/data/",
         f"{BASE_URL}/concept/",
         f"{BASE_URL}/submit.html",

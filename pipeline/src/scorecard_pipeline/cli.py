@@ -12,6 +12,7 @@ scorecard run-summary build --shard 0 --outcomes o.ndjson --started <iso> --out 
 scorecard run-summary merge --out data/artifacts/run/latest.json s0.json s1.json ...
 scorecard alerts [--out digest.md]                # expiry/regression digest
 scorecard portfolio-digest [--rollup id] [--out]  # weekly cohort digest for liaisons
+scorecard coverage-check [--save]                 # weekly plain-language coverage advisory
 scorecard rollups                                 # portfolio rollup artifacts
 scorecard campaign --rollup id --kind calendar-renewal  # bounded support worklist
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
@@ -196,6 +197,18 @@ def run_agency(  # noqa: C901
         # cleanly and the artifact stays free of a dead map reference.
         geometry_path.unlink(missing_ok=True)
         artifact["route_map"] = dict(geometry.summary)
+    # The export diff (EXP-18): what changed in the feed itself since the last
+    # export, diffed from the compact structure fingerprint remembered beside
+    # the artifact. Best-effort by design; a diff must never block a score.
+    from .exportdiff import export_diff
+
+    try:
+        diff_block = export_diff(agency.id, str(fetched.path), fetched.sha256)
+        if diff_block is not None:
+            artifact["export_diff"] = diff_block
+    except Exception as exc:
+        log.warning("%s: export diff failed: %s", agency.id, exc)
+
     # Routing-flavored usability checks (single-stop trips, orphan stops): a
     # zero-deduction block so the grade is unchanged, attached for the page.
     from .routability import assess_routability
@@ -1767,6 +1780,76 @@ def _cmd_portfolio_digest(args: argparse.Namespace, parser: argparse.ArgumentPar
     return 0
 
 
+def _cmd_coverage_check(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """FIX-08's weekly advisory: warn when plain-language coverage drops.
+
+    Computes instance-weighted coverage over every latest.json the same way
+    the /problems/ render does, compares it to the saved baseline, and prints
+    either an OK line or a COVERAGE DROP advisory (always exit 0 — the check
+    warns, it never blocks a run). --save advances the baseline, the same
+    preview-vs-persist split as portfolio-digest.
+    """
+    from .config import artifacts_dir
+    from .findings_national import (
+        agency_findings,
+        coverage_regression,
+        national_problems,
+        plain_language_coverage,
+    )
+    from .publish import RESERVED_ARTIFACT_DIRS
+
+    root = artifacts_dir()
+    per_agency: list[list[dict[str, Any]]] = []
+    scored = 0
+    if root.exists():
+        for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+            if agency_dir.name in RESERVED_ARTIFACT_DIRS:
+                continue
+            latest = agency_dir / "latest.json"
+            if not latest.exists():
+                continue
+            try:
+                artifact = json.loads(latest.read_text())
+            except (OSError, ValueError):
+                # One unreadable artifact must not abort the advisory; the
+                # render loop makes the same call.
+                continue
+            scored += 1
+            per_agency.append(agency_findings(artifact))
+    current = plain_language_coverage(national_problems(per_agency, total_agencies=scored))
+
+    baseline_path = root / "coverage-baseline.json"
+    previous: dict[str, Any] | None = None
+    if baseline_path.exists():
+        previous = json.loads(baseline_path.read_text())
+
+    message = coverage_regression(previous, current)
+    if message:
+        print(message)
+    else:
+        print(
+            f"OK  instance-weighted plain-language coverage "
+            f"{current['instance_weighted_coverage']}% "
+            f"({current['curated_codes']}/{current['total_codes']} codes curated, "
+            f"{scored} scored agencies)"
+        )
+    if args.save:
+        baseline_path.parent.mkdir(parents=True, exist_ok=True)
+        baseline_path.write_text(
+            json.dumps(
+                {
+                    "as_of": args.date.isoformat(),
+                    "distinct_code_coverage": current["distinct_code_coverage"],
+                    "instance_weighted_coverage": current["instance_weighted_coverage"],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
+        )
+    return 0
+
+
 def _cmd_rollups(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .rollups import publish_rollups
 
@@ -2236,6 +2319,19 @@ def main(argv: list[str] | None = None) -> int:
         "so a re-run never silently consumes a week's movement)",
     )
 
+    coverage = sub.add_parser(
+        "coverage-check",
+        help="weekly advisory: warn if plain-language coverage dropped (FIX-08)",
+    )
+    coverage.add_argument(
+        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+    )
+    coverage.add_argument(
+        "--save",
+        action="store_true",
+        help="persist this run's coverage as the new baseline (default: preview only)",
+    )
+
     sub.add_parser("rollups", help="publish portfolio rollup artifacts")
     campaign = sub.add_parser(
         "campaign", help="build a bounded, fix-themed support campaign for a rollup"
@@ -2432,6 +2528,7 @@ def main(argv: list[str] | None = None) -> int:
         "alerts": _cmd_alerts,
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
+        "coverage-check": _cmd_coverage_check,
         "rollups": _cmd_rollups,
         "campaign": _cmd_campaign,
         "reindex": _cmd_reindex,

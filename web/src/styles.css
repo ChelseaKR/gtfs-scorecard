@@ -2351,3 +2351,9 @@ main p,
 .cmp-num { font-size: 0.8rem; color: var(--ink-soft); }
 .cmp-na { color: var(--ink-soft); font-style: italic; }
 .cmp-fixes { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; display: grid; gap: 0.3rem; }
+
+/* Offline note (EXP-20): shown by nav.js whenever the network is gone, so a
+   service-worker copy never masquerades as current. Standard ink-on-card
+   text pair, so it inherits the checked AAA contrast. */
+.offline-note { background: var(--card); color: var(--ink); border-bottom: 2px solid var(--line);
+  padding: 0.65rem 1rem; text-align: center; font-size: 0.95rem; font-weight: 600; }

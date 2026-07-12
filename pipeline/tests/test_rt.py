@@ -461,3 +461,170 @@ def test_reachable_feed_without_timestamp_notes_it_without_penalty() -> None:
     assert note.severity == "INFO"
     assert note.deduction == 0.0
     assert result.details["rt_freshness"] is None
+
+
+# ---- service-alert content observations (EXP-19, reported not scored) -------
+
+
+def _alert(
+    header: str = "Detour on Route 5",
+    description: str = "Use the F St stop.",
+    cause: bool = True,
+    effect: bool = True,
+    entity: bool = True,
+    end: int | None = NOW + 3600,
+) -> rt.AlertObs:
+    return rt.AlertObs(
+        has_header_text=bool(header),
+        has_description=bool(description),
+        has_cause=cause,
+        has_effect=effect,
+        has_informed_entity=entity,
+        period_end=end,
+    )
+
+
+def alerts_sample(alerts: tuple[rt.AlertObs, ...], fetched_at: int = NOW) -> RtSample:
+    return RtSample(
+        kind="service_alerts",
+        fetched_at=fetched_at,
+        ok=True,
+        header_timestamp=fetched_at - 5,
+        entity_count=len(alerts),
+        alerts=alerts,
+    )
+
+
+class TestParseAlerts:
+    def _message(self) -> gtfs_realtime_pb2.FeedMessage:
+        msg = gtfs_realtime_pb2.FeedMessage()
+        msg.header.gtfs_realtime_version = "2.0"
+        msg.header.timestamp = NOW
+        return msg
+
+    def test_full_alert_observes_every_field(self) -> None:
+        msg = self._message()
+        alert = msg.entity.add(id="a1").alert
+        alert.header_text.translation.add(text="Detour on Route 5")
+        alert.description_text.translation.add(text="Use the F St stop instead.")
+        alert.cause = gtfs_realtime_pb2.Alert.CONSTRUCTION
+        alert.effect = gtfs_realtime_pb2.Alert.DETOUR
+        alert.informed_entity.add(route_id="5")
+        period = alert.active_period.add()
+        period.start = NOW - 3600
+        period.end = NOW + 3600
+
+        (obs,) = rt.parse_alerts(msg)
+        assert obs == rt.AlertObs(
+            has_header_text=True,
+            has_description=True,
+            has_cause=True,
+            has_effect=True,
+            has_informed_entity=True,
+            period_end=NOW + 3600,
+        )
+
+    def test_bare_alert_observes_every_gap(self) -> None:
+        msg = self._message()
+        msg.entity.add(id="a1").alert.SetInParent()
+
+        (obs,) = rt.parse_alerts(msg)
+        assert obs == rt.AlertObs(
+            has_header_text=False,
+            has_description=False,
+            has_cause=False,
+            has_effect=False,
+            has_informed_entity=False,
+            period_end=None,
+        )
+
+    def test_blank_translation_text_does_not_count(self) -> None:
+        msg = self._message()
+        alert = msg.entity.add(id="a1").alert
+        alert.header_text.translation.add(text="   ")
+        (obs,) = rt.parse_alerts(msg)
+        assert obs.has_header_text is False
+
+    def test_any_open_ended_period_means_no_end_date(self) -> None:
+        msg = self._message()
+        alert = msg.entity.add(id="a1").alert
+        alert.active_period.add().end = NOW
+        alert.active_period.add().start = NOW  # second phase, no end
+        (obs,) = rt.parse_alerts(msg)
+        assert obs.period_end is None
+
+    def test_non_alert_entities_are_ignored(self) -> None:
+        msg = self._message()
+        msg.entity.add(id="t1").trip_update.trip.trip_id = "T1"
+        assert rt.parse_alerts(msg) == ()
+
+
+class TestAlertsContent:
+    def test_no_successful_sample_reports_nothing(self) -> None:
+        window = RtWindow(samples=[sample("service_alerts", ok=False)])
+        assert rt.alerts_content(window) is None
+
+    def test_newest_snapshot_speaks_for_the_window(self) -> None:
+        old = alerts_sample((_alert(), _alert()), fetched_at=NOW - 60)
+        new = alerts_sample((_alert(),), fetched_at=NOW)
+        summary = rt.alerts_content(RtWindow(samples=[old, new]))
+        assert summary is not None and summary["alerts"] == 1
+
+    def test_counts_each_content_dimension(self) -> None:
+        alerts = (
+            _alert(),
+            _alert(header="", description="", cause=False, effect=False, entity=False),
+            _alert(end=NOW - rt.ALERT_STALE_SECONDS - 1),
+        )
+        summary = rt.alerts_content(RtWindow(samples=[alerts_sample(alerts)]))
+        assert summary == {
+            "alerts": 3,
+            "with_header_text": 2,
+            "with_description": 2,
+            "with_cause_and_effect": 2,
+            "with_informed_entity": 2,
+            "ended_over_30_days_ago": 1,
+        }
+
+    def test_recently_ended_and_open_ended_alerts_are_not_stale(self) -> None:
+        alerts = (_alert(end=NOW - 86400), _alert(end=None))
+        summary = rt.alerts_content(RtWindow(samples=[alerts_sample(alerts)]))
+        assert summary is not None and summary["ended_over_30_days_ago"] == 0
+
+
+class TestAlertsInScoring:
+    def _window(self, alerts: tuple[rt.AlertObs, ...]) -> RtWindow:
+        return RtWindow(
+            samples=[
+                sample("trip_updates", trip_ids=frozenset({"T1", "T2"})),
+                sample("vehicle_positions"),
+                alerts_sample(alerts),
+            ]
+        )
+
+    def test_observations_land_in_details_with_zero_deductions(self) -> None:
+        alerts = (_alert(end=NOW - rt.ALERT_STALE_SECONDS - 1), _alert(header=""))
+        result = realtime(self._window(alerts), {"T1", "T2"})
+        assert result.details["alerts_content"] == {
+            "alerts": 2,
+            "with_header_text": 1,
+            "with_description": 2,
+            "with_cause_and_effect": 2,
+            "with_informed_entity": 2,
+            "ended_over_30_days_ago": 1,
+        }
+        codes = {f.code: f for f in result.findings}
+        assert codes["scorecard_rt_alerts_ended"].count == 1
+        assert codes["scorecard_rt_alerts_ended"].deduction == 0.0
+        assert codes["scorecard_rt_alerts_missing_text"].count == 1
+        assert codes["scorecard_rt_alerts_missing_text"].deduction == 0.0
+
+    def test_alert_content_never_moves_the_score(self) -> None:
+        bad_alerts = (_alert(header="", end=NOW - rt.ALERT_STALE_SECONDS - 1),) * 5
+        clean = realtime(self._window(()), {"T1", "T2"})
+        messy = realtime(self._window(bad_alerts), {"T1", "T2"})
+        assert messy.score == clean.score == 100.0
+
+    def test_healthy_alerts_add_no_findings(self) -> None:
+        result = realtime(self._window((_alert(),)), {"T1", "T2"})
+        assert result.findings == []

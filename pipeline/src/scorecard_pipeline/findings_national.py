@@ -167,3 +167,28 @@ def plain_language_coverage(rollup: dict[str, Any]) -> dict[str, Any]:
         "total_codes": len(by_code),
         "uncurated_queue": queue,
     }
+
+
+def coverage_regression(previous: dict[str, Any] | None, current: dict[str, Any]) -> str | None:
+    """Advisory message when instance-weighted coverage fell below the baseline.
+
+    The FIX-08 governance loop's weekly check: coverage normally only rises
+    (curation adds entries), so a fall means new high-volume notice codes are
+    reaching readers with generic fallback text, and the curation queue is
+    where the next editorial effort should go. Pure over the saved baseline
+    and a fresh ``plain_language_coverage`` result; persisting the baseline is
+    the caller's decision, the same split the portfolio digest uses. Returns
+    None when there is no baseline yet or nothing regressed.
+    """
+    if not previous:
+        return None
+    prev = float(previous.get("instance_weighted_coverage", 0.0))
+    cur = float(current["instance_weighted_coverage"])
+    if cur >= prev:
+        return None
+    return (
+        f"COVERAGE DROP: instance-weighted plain-language coverage fell to {cur}% "
+        f"from {prev}% (baseline saved {previous.get('as_of', 'on an unknown date')}). "
+        "New high-volume notice codes are reaching readers with generic fallback "
+        "text; the curation queue on /problems/ shows which to translate next."
+    )

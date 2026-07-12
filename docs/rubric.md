@@ -224,6 +224,19 @@ operations at least as much as data quality, so it carries no points; it
 becomes a finding only when p90 exceeds 30 minutes, which usually means
 predictions are keyed to the wrong trips.
 
+Service-alert content is also observed from each window's newest alerts
+snapshot: how many published alerts carry plain header text, a description,
+a stated cause and effect, and route or stop scoping, and how many ended
+more than 30 days before the sample and are still being served. Alerts are
+the one realtime payload riders read verbatim, so these observations are
+published in the category details, and an ended-weeks-ago alert or a
+textless alert appears as a fix with no point deduction. The checks are
+mechanical (presence and dates, never style). Content carries no points
+today; if a weight is ever proposed it enters through the governed
+shadow-scoring path below, announced before it takes effect, like any
+other rubric change. An agency publishing no alerts feed, or an empty one
+(no current disruptions), is a normal state and is never penalized.
+
 Agencies whose realtime exists but is key-gated show a neutral note in
 place of a score until access is arranged.
 

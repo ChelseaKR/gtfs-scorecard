@@ -31,7 +31,7 @@ predictive freshness, and registry themes) has shipped and moved to
 | Vendor view of stale feeds | `vendors.py`, expiry aggregated by serving host |
 
 The competitive sequence from [ADR 0005](decisions/0005-competitive-positioning.md)
-also played out: fetching was hardened, coverage went national (about 1,450
+also played out: fetching was hardened, coverage went national (about 1,140
 agencies scored daily across the US and Canada), the crosswalk became an
 on-site page, and the vendor view exists as an operator surface.
 
@@ -56,5 +56,5 @@ Pick the top unstarted item from the do-first quadrant in
 for something specific. Keep each feature shippable on its own: a finished pull
 request that renders, passes `make verify`, and updates the relevant doc.
 
-Last verified: 2026-07-06 · Recheck cadence: when an item ships or monthly,
+Last verified: 2026-07-12 · Recheck cadence: when an item ships or monthly,
 whichever is first.

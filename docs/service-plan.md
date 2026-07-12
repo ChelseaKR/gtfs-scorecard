@@ -95,9 +95,12 @@ across a portfolio ("one export setting fixes these five agencies"). This is the
 feature that puts the supporter audience in the tool daily, and they are the
 distribution channel to agencies.
 
-**Built so far:** the weekly portfolio digest for liaisons, the call-prep brief
-at `/agency/<id>/brief/`, and shared-fix detection on every program page.
-Private notes and saved custom cohorts remain open.
+**Built so far:** the weekly portfolio digest for liaisons (scheduled in the
+daily workflow, Mondays), the call-prep brief at `/agency/<id>/brief/`,
+shared-fix detection on every program page, and the client-side supporter
+workspace: saved cohorts and per-agency private notes, kept in the browser's
+own storage so nothing personal ever reaches the pipeline. Custom
+MPO-boundary cohorts remain open (RR:E10).
 
 ### Stage 4 — Close the loop on fixes
 

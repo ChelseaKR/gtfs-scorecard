@@ -15,8 +15,11 @@ Effort tiers: S ≈ days, M ≈ 1–2 weeks, L ≈ a month, XL ≈ a quarter.
 `origin_error`), recorded by `fetch.py` in a `provenance.json` sidecar next to
 each snapshot and threaded through `publish.py:build_artifact`; documented in
 `docs/api.md`. Kept within schema 1.4 (additive fields per the versioning
-rule). Still open from the pitch: the quiet agency-page/catalog render line,
-the `/fetcher/` identity page, and the honest-UA-first experiment.
+rule). The agency-page render line shipped with the confidence read (EXP-01),
+and the `/fetcher/` identity page shipped 2026-07-12 (UA policy, cadence,
+retry and mirror behavior, contact route, linked from the about page and the
+API docs). Still open from the pitch: the honest-UA-first experiment, which
+must be measured against fetch success, never assumed.
 
 **Pitch.** Every artifact should say which bytes were graded and how they were
 obtained: origin or MobilityData mirror, which User-Agent, after how many
@@ -298,9 +301,13 @@ and the top of the queue, noting uncurated codes fall back to generic text.
 `scripts/check_readability.py` gates every curated `what`/`why`/`fix` string
 (avg sentence length <= 22 words, Flesch-style floor >= 50) in `make verify`
 and CI, after the contrast check; seven existing strings were rewritten to
-clear the bar. Still open from the pitch: the mass curation itself (the
-queue's entries becoming `notices.py` entries and fix pages) and the weekly
-advisory check on coverage drops.
+clear the bar. The weekly advisory check shipped 2026-07-12:
+`scorecard coverage-check` compares instance-weighted coverage against a
+saved baseline (advanced Mondays in the daily workflow, persisted through
+S3) and raises a workflow warning on any drop, never a failure. First
+measured value: 33.3% instance-weighted, 44 of 118 codes. Still open from
+the pitch: the mass curation itself (the queue's entries becoming
+`notices.py` entries and fix pages), which is sustained editorial work.
 
 **Pitch.** Turn "grow the translation table" from an intention into a managed
 metric: instance-weighted coverage, a frequency-ranked curation queue, and a
@@ -381,8 +388,11 @@ daily collect run cannot publish a shape change without a schema update.
 against the published schemas and checks each schema itself. The first
 validation run surfaced the predicted payoff: `ntd_ready` is null for non-US
 agencies (ADR 0026) but the catalog/directory schemas said non-nullable string;
-both schemas were corrected. Follow-up (not done here): `rollup.schema.json`,
-and wiring schema-version bumps to a required schema diff in PRs.
+both schemas were corrected. Follow-up closed 2026-07-12: `rollup.schema.json`
+and `rollup-index.schema.json` now cover the program rollups and their index,
+validated in `tests/test_schemas.py` against a direct `build_rollup()` call,
+every published rollup, and the golden-site fixtures. Still open: wiring
+schema-version bumps to a required schema diff in PRs.
 
 **Pitch.** A JSON Schema for the per-agency artifact — the primary public
 contract — validated in CI against everything the pipeline publishes.
@@ -415,6 +425,11 @@ published document type.
 
 ## FIX-11 — Operational transparency: a public pipeline-health surface
 
+**Status: Done (verified 2026-07-12).** `run_summary.py` builds a per-shard
+outcome record inside `run_agency`, the collect job merges shards into
+`data/artifacts/run/latest.json`, and `/status/` renders the commitment,
+the historical refresh record, and today's shard outcomes publicly.
+
 **Pitch.** Publish what the pipeline itself did each day — shard outcomes,
 fetch failures, mirror fallbacks, validator cache hits — as a status page and
 artifact.
@@ -446,6 +461,18 @@ like:** any consumer can answer "how fresh is this dataset right now?" from
 ---
 
 ## FIX-12 — Registry at scale: shard and schema-gate `agencies.yaml`
+
+**Status: schema gate done, split still open (verified 2026-07-12).** The
+gate half this item sequences first already exists: `agencies.parse_agencies`
+fails the load on a malformed id, a non-URL, an unknown field, an unknown
+`rt_urls` kind, a bad `ntd_id` or `service_type`, or a duplicate id, and
+`scorecard lint` reports descriptor names, duplicate `mdb_id`/feed URLs,
+non-HTTPS URLs, and missing `mdb_id`s. The descriptor-name backlog cleared
+with the registry dedupe, so CI now runs `lint --strict` and blocks any
+regression. What remains is the mechanical per-state split
+(`registry/<country>/<state>.yaml` with merged loading and writer updates),
+which this item itself says should land as one dedicated mechanical PR, not
+inside an unrelated one.
 
 **Pitch.** Split the 447 KB single-file registry into per-state files with a
 validated schema, so curation scales past one careful maintainer.
@@ -491,6 +518,16 @@ directories. Execution (the actual `pages.yml` change and dropping
 `follow-ups.md` steps 1–3 (the S3 cutover itself) ship, per the sequencing
 this item always called for — that part remains a maintainer-scheduled
 migration, not done here.
+
+**Update (2026-07-12):** the gate cleared and most of the execution landed
+with the cutover. `follow-ups.md` records the S3 source of truth complete as
+of 2026-07-10, automation no longer writes to `main` (#63), and `pages.yml`
+renders and assembles the site in CI from S3-hydrated artifacts. The
+committed `data/artifacts/**` snapshot now serves as the fork fallback when
+no bucket is configured, and the committed `web/agency/**` copies are frozen
+at the cutover date. Whether to prune those committed copies (and reclaim the
+git history size named below) stays a maintainer decision per ADR 0030's
+no-rewrite rule.
 
 **Pitch.** Decide, once and deliberately, what to do about the data already in
 git — 521 MB of `.git`, 382 MB of committed artifacts, 1,449 prerendered pages,

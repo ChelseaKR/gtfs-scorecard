@@ -34,6 +34,8 @@ extends an existing item, the existing ID is named and the delta is stated.
 | [`02-large-scale-fixes.md`](02-large-scale-fixes.md) | FIX-01…FIX-13: deep structural fixes (correctness, provenance, architecture, testing, operability) |
 | [`03-expansions.md`](03-expansions.md) | EXP-01…EXP-17 across three horizons: deepen the core, adjacent capabilities, transformative bets |
 | [`04-impact-and-sequencing.md`](04-impact-and-sequencing.md) | Impact × effort matrix, dependencies, a Now/Next/Later sequence beyond the existing roadmaps, and the human/legal/SME/real-data gates |
+| [`05-sweep-2026-07-10.md`](05-sweep-2026-07-10.md) | Dated sweep: mobile performance evidence, eight candidates considered, four implemented |
+| [`06-sweep-2026-07-12.md`](06-sweep-2026-07-12.md) | Demo-readiness check against live CI and pipeline evidence, plus FIX-14…15 and EXP-18…21 |
 
 ## What this folder is not
 
