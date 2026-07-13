@@ -824,10 +824,12 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 
 
 def _peer_context(record: dict[str, Any] | None) -> str:
-    """Where this agency stands against the covered set and its size peers, the
+    """Where this agency stands against the worldwide covered set and size peers, the
     server-rendered twin of the app's peer line, so crawlers and no-JS visitors
     see the same context. Empty when the directory record or its percentiles are
-    missing."""
+    missing. These are deliberately not described as country percentiles: early
+    country cohorts can be tiny, while both stored percentiles use the complete
+    tracked set (with the peer value additionally grouped by size)."""
     if not record:
         return ""
     nat = record.get("national_percentile")
@@ -836,6 +838,7 @@ def _peer_context(record: dict[str, Any] | None) -> str:
     peer = record.get("peer_percentile")
     tier_key = record.get("size_tier")
     tier = TIER_LABELS.get(str(tier_key), str(tier_key))
+    non_us = str(record.get("country") or "US").upper() != "US"
     nat_position = max(0.0, min(100.0, float(nat)))
     peer_part = (
         f" and {peer}% of {esc(tier)} agencies"
@@ -865,10 +868,8 @@ def _peer_context(record: dict[str, Any] | None) -> str:
         f'{"".join(rows)}<div class="percentile-scale" aria-hidden="true">'
         "<span>0</span><span>Ahead of more agencies</span><span>100</span></div></div>"
     )
-    return (
-        f'<p class="peer-context">Ahead of {nat}% of all tracked agencies{peer_part}.{where}</p>'
-        f"{strip}"
-    )
+    scope = " Comparisons use agencies currently tracked worldwide." if non_us else ""
+    return f'<p class="peer-context">Ahead of {nat}% of all tracked agencies{peer_part}.{where}{scope}</p>{strip}'
 
 
 def _ago(now: dt.datetime, then: dt.datetime) -> str:
@@ -1828,6 +1829,14 @@ def _render_agency(
         "country", "US"
     )
     location_label = _location_label(location_record) if dir_record else ""
+    # The portable directory is authoritative for location. Enrich a local copy
+    # so every country-gated body helper behaves correctly for older artifacts
+    # that predate the additive agency.country field, without mutating callers.
+    effective_country = str(location_record.get("country") or "US").upper()
+    artifact = {
+        **artifact,
+        "agency": {**artifact.get("agency", {}), "country": effective_country},
+    }
     title_qualifier = f" ({location_label})" if location_label else ""
     title_suffix = f"{title_qualifier} GTFS quality report"
     max_name = max(18, 60 - len(title_suffix))
@@ -2088,6 +2097,7 @@ def _render_agency(
         body=body,
         jsonld=jsonld,
         head_extra=atom,
+        country_code=str(location_record.get("country") or "US"),
     )
 
 
@@ -2261,7 +2271,9 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # selected by ISO subdivision code, with state-name fallback for old
     # directory records.
     standards_html = ""
-    country = str(artifact.get("agency", {}).get("country", "US"))
+    country = str(
+        (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
+    )
     guidance = guidance_for(
         country,
         str((dir_record or {}).get("subdivision_code") or ""),
@@ -2354,6 +2366,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         canonical=canonical,
         body=body,
         robots="noindex,follow",
+        country_code=country,
     )
 
 
@@ -2373,6 +2386,9 @@ def _render_board_page(
     agency_name = artifact["agency"]["name"]
     overall = artifact["overall"]
     canonical = f"{BASE_URL}/agency/{agency_id}/board/"
+    country = str(
+        (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
+    )
 
     # Progress first. Boards respond to movement, and a cleared finding is the
     # concrete, dated proof that staff time spent on the feed paid off.
@@ -2421,15 +2437,17 @@ def _render_board_page(
         peer = dir_record.get("peer_percentile")
         tier_key = dir_record.get("size_tier")
         tier = TIER_LABELS.get(str(tier_key), str(tier_key))
+        non_us = str(dir_record.get("country") or country).upper() != "US"
         peer_part = (
             f", and ahead of {peer}% of covered {esc(tier)} agencies"
             if peer is not None and tier_key not in (None, "unknown")
             else ""
         )
+        scope = " Comparisons use agencies currently tracked worldwide." if non_us else ""
         standing_html = (
             '<section aria-labelledby="board-standing-h">'
             '<h2 id="board-standing-h">Where this agency stands</h2>'
-            f"<p>Ahead of {nat}% of all tracked agencies{peer_part}.</p>"
+            f"<p>Ahead of {nat}% of all tracked agencies{peer_part}.{scope}</p>"
             "</section>"
         )
 
@@ -2480,6 +2498,7 @@ def _render_board_page(
         canonical=canonical,
         body=body,
         robots="noindex,follow",
+        country_code=country,
     )
 
 
@@ -2488,7 +2507,11 @@ def _receipt_anchor(receipt: dict[str, str]) -> str:
     return f"r-{receipt.get('cleared', '')}-{receipt.get('code', '')}"
 
 
-def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]) -> str:
+def _render_fixlog_page(
+    artifact: dict[str, Any],
+    receipts: list[dict[str, str]],
+    dir_record: dict[str, Any] | None = None,
+) -> str:
     """The durable fix log (/agency/<id>/fixes/): every finding this feed has
     cleared, dated, newest first, each entry with its own link. The agency page's
     "resolved since last check" line is gone the next day; this is the citable
@@ -2540,7 +2563,16 @@ def _render_fixlog_page(artifact: dict[str, Any], receipts: list[dict[str, str]]
         f"{'fix' if len(receipts) == 1 else 'fixes'} verified on {agency_name}'s GTFS feed."
     )
     title = f"{agency_name} fix log — GTFS Scorecard"
-    return _page(title=title, description=desc, canonical=canonical, body=body)
+    country = str(
+        (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
+    )
+    return _page(
+        title=title,
+        description=desc,
+        canonical=canonical,
+        body=body,
+        country_code=country,
+    )
 
 
 def _recommendations_section(artifact: dict[str, Any]) -> str:
@@ -7854,7 +7886,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if receipts:
             write(
                 f"agency/{agency_id}/fixes/index.html",
-                _render_fixlog_page(artifact, receipts),
+                _render_fixlog_page(artifact, receipts, by_id[agency_id]),
                 f"{BASE_URL}/agency/{agency_id}/fixes/",
             )
         # This feed's own Atom history (grade moves, expiry crossings, score
