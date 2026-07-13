@@ -512,3 +512,26 @@ def test_hosted_mirror_url_resolves_by_exact_normalized_current_url(
     )
 
     assert url is not None and url.endswith("us-ca-yolo.zip?alt=media")
+
+
+@pytest.mark.parametrize(
+    "current_url",
+    [
+        "javascript://www.yolobus.com/GTFS/google_transit.zip",
+        "ftp://www.yolobus.com/GTFS/google_transit.zip",
+        "//www.yolobus.com/GTFS/google_transit.zip",
+        "https:///GTFS/google_transit.zip",
+        "https://user@www.yolobus.com/GTFS/google_transit.zip",
+        "http://www.yolobus.com:443/GTFS/google_transit.zip",
+        "https://www.yolobus.com:80/GTFS/google_transit.zip",
+    ],
+)
+def test_hosted_mirror_url_rejects_unsafe_or_port_ambiguous_current_urls(
+    monkeypatch: pytest.MonkeyPatch, current_url: str
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = parse_catalog(MIRROR_CATALOG)
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    assert m.hosted_mirror_url("yolobus", "Yolobus", current_url) is None

@@ -19,7 +19,28 @@ def _agency(agency_id: str, url: str, **kwargs: object) -> Agency:
 
 def test_normalized_feed_url_ignores_scheme_and_default_port() -> None:
     assert normalized_feed_url("http://Example.org:80/feed.zip") == "example.org/feed.zip"
-    assert normalized_feed_url("https://example.org/feed.zip/") == "example.org/feed.zip"
+    assert normalized_feed_url("https://example.org:443/feed.zip/") == "example.org/feed.zip"
+
+
+def test_normalized_feed_url_preserves_scheme_mismatched_ports() -> None:
+    assert normalized_feed_url("http://example.org:443/feed.zip") == "example.org:443/feed.zip"
+    assert normalized_feed_url("https://example.org:80/feed.zip") == "example.org:80/feed.zip"
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "javascript:alert(1)",
+        "ftp://example.org/feed.zip",
+        "example.org/feed.zip",
+        "https:///feed.zip",
+        "https://user@example.org/feed.zip",
+        "https://user:secret@example.org/feed.zip",
+        "https://@example.org/feed.zip",
+    ],
+)
+def test_normalized_feed_url_rejects_non_http_hostless_and_userinfo_urls(url: str) -> None:
+    assert normalized_feed_url(url) == ""
 
 
 def test_normalized_feed_url_skips_invalid_external_catalog_ports() -> None:

@@ -22,6 +22,7 @@ def normalized_feed_url(url: str) -> str:
         # input is advisory, so both parse-time and port-time failures become
         # an unusable key instead of aborting the whole sync.
         parsed = urlsplit(url.strip())
+        scheme = parsed.scheme.lower()
         host = (parsed.hostname or "").lower()
         parsed_port = parsed.port
     except ValueError:
@@ -29,7 +30,17 @@ def normalized_feed_url(url: str) -> str:
         # must not crash the whole identity-ledger build or be collapsed into
         # a valid endpoint; an empty key makes duplicate grouping skip this row.
         return ""
-    port = f":{parsed_port}" if parsed_port and parsed_port not in (80, 443) else ""
+    if scheme not in {"http", "https"} or not host:
+        return ""
+    # Credentials have no place in a public feed identity. Besides leaking into
+    # catalog data, accepting them would let a userinfo URL collapse onto the
+    # same mirror key as the credential-free endpoint.
+    if parsed.username is not None or parsed.password is not None:
+        return ""
+    default_port = (scheme == "http" and parsed_port == 80) or (
+        scheme == "https" and parsed_port == 443
+    )
+    port = "" if parsed_port is None or default_port else f":{parsed_port}"
     path = parsed.path.rstrip("/") or "/"
     query = f"?{parsed.query}" if parsed.query else ""
     return f"{host}{port}{path}{query}"
