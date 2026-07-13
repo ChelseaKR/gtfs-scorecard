@@ -124,6 +124,68 @@ agencies:
     static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Dublin_Bus.zip
     license_note: CC BY 4.0; published by Ireland's National Transport Authority.
 
+  # Four-region worldwide cohort: official, openly licensed feeds selected to
+  # exercise local-language names, additional ISO subdivisions, combined and
+  # single-kind realtime, and a multi-operator schedule. Sources and reuse
+  # terms were verified 2026-07-12 and are recorded in docs/feeds.md.
+  - id: lbus-bernay
+    name: Réseau urbain l'Bus (Bernay)
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    mdb_id: "tdg-83775"
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9ffc26b2-d293-4ec5-9cf6-4690d542f019
+    license_note: >-
+      Licence Ouverte 2.0; published by Intercom Bernay Terres de Normandie
+      through France's National Access Point.
+    # The publisher exposes one combined GTFS-Realtime stream for all kinds.
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+
+  - id: basmy-kangar
+    name: BAS.MY Kangar
+    country: MY
+    subdivision_code: MY-09
+    subdivision_name: Perlis
+    mdb_id: "mdb-3157"
+    is_official: true
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/mybas-kangar
+    license_note: >-
+      CC BY 4.0; published through Malaysia's official data.gov.my open-data
+      platform.
+    rt_urls:
+      vehicle_positions: https://api.data.gov.my/gtfs-realtime/vehicle-position/mybas-kangar
+
+  - id: orbus-otago
+    name: Orbus (Otago Regional Council)
+    country: NZ
+    subdivision_code: NZ-OTA
+    subdivision_name: Otago
+    mdb_id: "mdb-983"
+    is_official: true
+    static_gtfs_url: https://www.orc.govt.nz/transit/google_transit.zip
+    license_note: CC BY 4.0; published by Otago Regional Council.
+    rt_note: >-
+      Orbus provides live tracking in its rider tools, but no keyless public
+      GTFS-Realtime endpoint was verified. Nothing here counts against the grade.
+
+  # The official catalog's primary location is Montevideo. This multi-operator
+  # feed also serves neighboring departments; the subdivision is not a claim
+  # that its complete service area ends at the department boundary.
+  - id: mtop-uruguay-metropolitan
+    name: Servicios metropolitanos de ómnibus (MTOP Uruguay)
+    country: UY
+    subdivision_code: UY-MO
+    subdivision_name: Montevideo
+    is_official: true
+    static_gtfs_url: https://catalogodatos.gub.uy/dataset/1d50ccf7-121d-48a7-951e-28a02858d24e/resource/9f44b654-751a-42a4-a481-af91b7c9a2e4/download
+    license_note: >-
+      Licencia de Datos Abiertos de Uruguay; published by the Ministerio de
+      Transporte y Obras Públicas, Dirección Nacional de Transporte.
+
   # Sacramento-region small and rural agencies, drafted from the Mobility
   # Database (scorecard sync) and curated from agencies.california.proposed.yaml.
   # They give the program rollup views a real worst-first cohort beyond the two
