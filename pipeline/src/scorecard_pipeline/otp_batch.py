@@ -43,18 +43,21 @@ def select_best_worst(
 
     Ranks by the same latest-check score the published rankings use, breaking
     ties by agency id so the selection is deterministic between runs. Feeds
-    without a score yet, or without a known fetch URL, are skipped: the batch
-    can only test what it can download. When fewer than 2*count feeds qualify,
-    the best cohort fills first and the worst takes the remainder, so a feed is
-    never queued twice. Best feeds come first (highest score first), then worst
-    (lowest score first).
+    without a score yet, without a known fetch URL, or without a current service
+    window are skipped: the batch can only route service that OTP can build for
+    today. When fewer than 2*count feeds qualify, the best cohort fills first
+    and the worst takes the remainder, so a feed is never queued twice. Best
+    feeds come first (highest score first), then worst (lowest score first).
     """
     rows = build_quality_dataset(index)["rows"]
     ranked = sorted(
         (
             (float(row["score"]), str(row["id"]))
             for row in rows
-            if row.get("score") is not None and row["id"] in feed_urls
+            if row.get("score") is not None
+            and row["id"] in feed_urls
+            and row.get("days_until_expiry") is not None
+            and float(row["days_until_expiry"]) > 0
         ),
         key=lambda item: (-item[0], item[1]),
     )

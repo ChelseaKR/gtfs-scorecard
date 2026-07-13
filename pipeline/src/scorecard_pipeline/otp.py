@@ -114,13 +114,54 @@ def assess_routing(results: list[PlanResult]) -> RoutingQA:
 
 
 def fetch_plan(
-    base: str, origin: Point, destination: Point, *, date: str, time: str, timeout: int = 30
+    base: str,
+    origin: Point,
+    destination: Point,
+    *,
+    date: str,
+    time: str,
+    timeout: int = 30,
+    allow_loopback: bool = False,
 ) -> PlanResult:
-    """Query a live OTP instance for one pair. Thin; the parsing is tested."""
+    """Query a live OTP instance for one pair. Thin; the parsing is tested.
+
+    Public OTP endpoints use the shared SSRF-guarded fetcher. The containerized
+    CI harness may explicitly allow a literal loopback endpoint; redirects stay
+    disabled and no hostname other than ``localhost`` is accepted on that path.
+    """
     import json
 
-    from .net import safe_get
-
     url = plan_url(base, origin, destination, date=date, time=time)
-    body = safe_get(url, timeout=timeout)
+    if allow_loopback:
+        body = _loopback_get(url, timeout=timeout)
+    else:
+        from .net import safe_get
+
+        body = safe_get(url, timeout=timeout)
     return parse_plan(json.loads(body.decode("utf-8")))
+
+
+def _loopback_get(url: str, *, timeout: int) -> bytes:
+    """Fetch one explicitly trusted local OTP response without redirects."""
+    import ipaddress
+
+    import requests
+
+    parts = urllib.parse.urlsplit(url)
+    host = parts.hostname
+    try:
+        is_literal_loopback = bool(host and ipaddress.ip_address(host).is_loopback)
+    except ValueError:
+        is_literal_loopback = False
+    if parts.scheme not in {"http", "https"} or not (host == "localhost" or is_literal_loopback):
+        raise ValueError("allow_loopback requires a localhost or loopback-IP OTP base URL")
+    response = requests.get(url, timeout=timeout, allow_redirects=False)
+    try:
+        response.raise_for_status()
+        if response.is_redirect or response.is_permanent_redirect:
+            raise ValueError("local OTP endpoint must not redirect")
+        if len(response.content) > 1024 * 1024:
+            raise ValueError("local OTP response exceeded 1 MiB")
+        return response.content
+    finally:
+        response.close()
