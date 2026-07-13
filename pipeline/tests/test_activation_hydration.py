@@ -5,14 +5,19 @@ from __future__ import annotations
 import datetime as dt
 import io
 import json
+import tempfile
 import threading
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from scorecard_pipeline.activation import (
+    S3_OBJECT_RETRY_BASE_SECONDS,
     ActivationHydrationError,
+    HydrationResult,
+    _download_one,
     hydrate_activation_corpus,
 )
 
@@ -33,7 +38,31 @@ class FakePaginator:
         assert Bucket == self.client.bucket
         self.client.listed.append(Prefix)
         keys = sorted(key for key in self.client.objects if key.startswith(Prefix))
-        return [{"Contents": [{"Key": key} for key in keys]}]
+        page_size = self.client.page_size or max(1, len(keys))
+        return [
+            {"Contents": [{"Key": key} for key in keys[offset : offset + page_size]]}
+            for offset in range(0, max(1, len(keys)), page_size)
+        ]
+
+
+class TrackingBody:
+    """StreamingBody stand-in that can fail after returning partial content."""
+
+    def __init__(self, data: bytes, *, fail_on_read: int | None = None) -> None:
+        self._stream = io.BytesIO(data)
+        self.fail_on_read = fail_on_read
+        self.read_calls = 0
+        self.close_calls = 0
+
+    def read(self, size: int = -1) -> bytes:
+        self.read_calls += 1
+        if self.read_calls == self.fail_on_read:
+            raise TimeoutError("transient streaming timeout")
+        return self._stream.read(size)
+
+    def close(self) -> None:
+        self.close_calls += 1
+        self._stream.close()
 
 
 class FakeS3:
@@ -41,11 +70,18 @@ class FakeS3:
         self,
         objects: dict[str, bytes],
         *,
-        failures: dict[str, str] | None = None,
+        failures: dict[str, str | list[str]] | None = None,
+        body_sequences: dict[str, list[object]] | None = None,
+        page_size: int | None = None,
     ) -> None:
         self.bucket = "artifacts"
         self.objects = objects
-        self.failures = failures or {}
+        self.failures = {
+            key: list(value) if isinstance(value, list) else value
+            for key, value in (failures or {}).items()
+        }
+        self.body_sequences = {key: list(bodies) for key, bodies in (body_sequences or {}).items()}
+        self.page_size = page_size
         self.requested: list[str] = []
         self.listed: list[str] = []
         self._lock = threading.Lock()
@@ -55,12 +91,16 @@ class FakeS3:
         key = str(kwargs["Key"])
         with self._lock:
             self.requested.append(key)
-        if key in self.failures:
-            raise FakeS3Error(self.failures[key])
+            bodies = self.body_sequences.get(key)
+            body = bodies.pop(0) if bodies else None
+            failure = self.failures.get(key)
+            failure_code = failure.pop(0) if isinstance(failure, list) and failure else failure
+        if isinstance(failure_code, str):
+            raise FakeS3Error(failure_code)
         if key not in self.objects:
             raise FakeS3Error("NoSuchKey")
         response: dict[str, Any] = {
-            "Body": io.BytesIO(self.objects[key]),
+            "Body": body or io.BytesIO(self.objects[key]),
             "LastModified": LAST_MODIFIED,
         }
         if key == "data/artifacts/index.json":
@@ -140,7 +180,16 @@ def _objects() -> dict[str, bytes]:
     }
 
 
-def _hydrate(tmp_path: Path, client: FakeS3, **kwargs: object):  # type: ignore[no-untyped-def]
+def _no_sleep(_delay: float) -> None:
+    pass
+
+
+def _hydrate(
+    tmp_path: Path,
+    client: FakeS3,
+    *,
+    sleeper: Callable[[float], None] = _no_sleep,
+) -> HydrationResult:
     return hydrate_activation_corpus(
         bucket="artifacts",
         targets=["agency-two"],
@@ -151,7 +200,7 @@ def _hydrate(tmp_path: Path, client: FakeS3, **kwargs: object):  # type: ignore[
         liveness_out=tmp_path / "liveness.json",
         workers=4,
         client=client,
-        **kwargs,
+        sleeper=sleeper,
     )
 
 
@@ -191,6 +240,122 @@ def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(tmp_path: Path)
     assert result.skipped_unregistered == 1
 
 
+def test_paginator_consumes_every_page_for_selected_and_aggregate_prefixes(
+    tmp_path: Path,
+) -> None:
+    client = FakeS3(_objects(), page_size=1)
+
+    result = _hydrate(tmp_path, client)
+
+    root = tmp_path / "artifacts"
+    assert result.selected_objects == 4
+    assert (root / "agency-two/corrected.zip").read_bytes() == b"PK\x03\x04selected-history"
+    assert (root / "agency-two/geometry.geojson").exists()
+    assert (root / "rollups/index.json").exists()
+    assert (root / "changes/latest.json").exists()
+    assert (root / "run/latest.json").exists()
+
+
+def test_transient_stream_failure_retries_the_whole_object_and_closes_each_body(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    key = "data/artifacts/agency-one/latest.json"
+    payload = _objects()[key]
+    failed = TrackingBody(payload, fail_on_read=2)
+    succeeded = TrackingBody(payload)
+    client = FakeS3(_objects(), body_sequences={key: [failed, succeeded]})
+    delays: list[float] = []
+    temporary_names: list[str] = []
+    named_temporary_file = tempfile.NamedTemporaryFile
+
+    def recording_named_temporary_file(*args: Any, **kwargs: Any) -> Any:
+        output = named_temporary_file(*args, **kwargs)
+        temporary_names.append(output.name)
+        return output
+
+    monkeypatch.setattr(
+        "scorecard_pipeline.activation.tempfile.NamedTemporaryFile",
+        recording_named_temporary_file,
+    )
+
+    destination = tmp_path / "agency-one/latest.json"
+    assert _download_one(
+        client,
+        "artifacts",
+        key,
+        destination,
+        optional=False,
+        sleeper=delays.append,
+    )
+
+    assert destination.read_bytes() == payload
+    assert client.requested.count(key) == 2
+    assert failed.close_calls == 1
+    assert succeeded.close_calls == 1
+    assert delays == [S3_OBJECT_RETRY_BASE_SECONDS]
+    assert len(temporary_names) == 2
+    assert len(set(temporary_names)) == 2
+    assert not list(destination.parent.glob(f".{destination.name}.*.tmp"))
+
+
+def test_transient_get_object_error_retries_from_the_start(tmp_path: Path) -> None:
+    key = "data/artifacts/agency-one/latest.json"
+    client = FakeS3(_objects(), failures={key: ["SlowDown"]})
+    delays: list[float] = []
+
+    assert _download_one(
+        client,
+        "artifacts",
+        key,
+        tmp_path / "latest.json",
+        optional=False,
+        sleeper=delays.append,
+    )
+
+    assert client.requested.count(key) == 2
+    assert delays == [S3_OBJECT_RETRY_BASE_SECONDS]
+
+
+def test_transient_index_stream_failure_retries_same_get_capture_and_closes_bodies(
+    tmp_path: Path,
+) -> None:
+    key = "data/artifacts/index.json"
+    payload = _objects()[key]
+    failed = TrackingBody(payload, fail_on_read=2)
+    succeeded = TrackingBody(payload)
+    client = FakeS3(_objects(), body_sequences={key: [failed, succeeded]})
+    delays: list[float] = []
+
+    _hydrate(tmp_path, client, sleeper=delays.append)
+
+    assert (tmp_path / "index.before.json").read_bytes() == payload
+    assert (tmp_path / "index.etag").read_text() == '"index-etag"\n'
+    assert client.requested.count(key) == 2
+    assert failed.close_calls == 1
+    assert succeeded.close_calls == 1
+    assert delays == [S3_OBJECT_RETRY_BASE_SECONDS]
+
+
+def test_transient_stream_failure_exhaustion_aborts_without_partial_destination(
+    tmp_path: Path,
+) -> None:
+    key = "data/artifacts/agency-two/corrected.zip"
+    bodies = [TrackingBody(_objects()[key], fail_on_read=2) for _ in range(3)]
+    body_sequences: dict[str, list[object]] = {key: list(bodies)}
+    client = FakeS3(_objects(), body_sequences=body_sequences)
+    delays: list[float] = []
+
+    with pytest.raises(ActivationHydrationError, match=r"after 3 attempts"):
+        _hydrate(tmp_path, client, sleeper=delays.append)
+
+    destination = tmp_path / "artifacts/agency-two/corrected.zip"
+    assert not destination.exists()
+    assert client.requested.count(key) == 3
+    assert [body.close_calls for body in bodies] == [1, 1, 1]
+    assert delays == [S3_OBJECT_RETRY_BASE_SECONDS, S3_OBJECT_RETRY_BASE_SECONDS * 2]
+    assert not list(destination.parent.glob(f".{destination.name}.*.tmp"))
+
+
 def test_missing_required_latest_aborts(tmp_path: Path) -> None:
     objects = _objects()
     del objects["data/artifacts/agency-one/latest.json"]
@@ -205,8 +370,66 @@ def test_non_missing_optional_error_aborts(tmp_path: Path) -> None:
         failures={"data/artifacts/agency-one/fixlog.json": "AccessDenied"},
     )
 
+    delays: list[float] = []
     with pytest.raises(ActivationHydrationError, match="AccessDenied"):
-        _hydrate(tmp_path, client)
+        _hydrate(tmp_path, client, sleeper=delays.append)
+
+    assert client.requested.count("data/artifacts/agency-one/fixlog.json") == 1
+    assert delays == []
+
+
+def test_local_destination_failure_does_not_retry_remote_object(tmp_path: Path) -> None:
+    key = "data/artifacts/agency-one/latest.json"
+    body = TrackingBody(_objects()[key])
+    client = FakeS3(_objects(), body_sequences={key: [body]})
+    blocked_parent = tmp_path / "not-a-directory"
+    blocked_parent.write_text("file")
+    delays: list[float] = []
+
+    with pytest.raises(ActivationHydrationError, match="could not write"):
+        _download_one(
+            client,
+            "artifacts",
+            key,
+            blocked_parent / "latest.json",
+            optional=False,
+            sleeper=delays.append,
+        )
+
+    assert client.requested.count(key) == 1
+    assert body.close_calls == 1
+    assert delays == []
+
+
+def test_body_validation_failure_does_not_retry(tmp_path: Path) -> None:
+    key = "data/artifacts/agency-one/latest.json"
+
+    class NonByteBody:
+        close_calls = 0
+
+        def read(self, _size: int) -> str:
+            return "not bytes"
+
+        def close(self) -> None:
+            self.close_calls += 1
+
+    body = NonByteBody()
+    client = FakeS3(_objects(), body_sequences={key: [body]})
+    delays: list[float] = []
+
+    with pytest.raises(ActivationHydrationError, match="non-byte content"):
+        _download_one(
+            client,
+            "artifacts",
+            key,
+            tmp_path / "latest.json",
+            optional=False,
+            sleeper=delays.append,
+        )
+
+    assert client.requested.count(key) == 1
+    assert body.close_calls == 1
+    assert delays == []
 
 
 def test_latest_must_match_captured_index_date(tmp_path: Path) -> None:
