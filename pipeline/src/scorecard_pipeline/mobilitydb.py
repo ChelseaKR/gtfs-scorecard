@@ -254,6 +254,11 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
         if not _matches(feed, country, subdivision, provider_filter):
             continue
         url_key = _feed_url_key(feed.direct_download)
+        # A malformed catalog URL has no safe identity key. Do not emit an
+        # unusable proposal or add the empty sentinel to the dedup set, where
+        # it would make later malformed rows look like the same endpoint.
+        if not url_key:
+            continue
         if (feed.mdb_id and feed.mdb_id in proposed_sources) or url_key in proposed_urls:
             continue
         if feed.mdb_id:
@@ -413,19 +418,27 @@ def hosted_mirror_url(
     """MobilityData's hosted mirror (``urls.latest``) for an agency, if any.
 
     The mirror lives on Google Cloud Storage, reachable even when the agency's
-    own server firewalls datacenter IPs or sits behind a bot filter. The agency
-    is matched to its catalog row the same way discovery matches it (pinned
-    mdb_id first, then URL, then name), and the row's hosted copy is returned.
+    own server firewalls datacenter IPs or sits behind a bot filter. Because
+    these bytes are scored and published as the agency's feed, the match is
+    deliberately stricter than discovery: only a pinned exact ``mdb_id`` or an
+    exact normalized current download URL may select a mirror. Names are never
+    an identity boundary.
     """
     try:
         feeds = load_catalog()
     except Exception:
         return None
-    ids = {agency_id: mdb_id} if mdb_id else None
-    (match,) = find_replacements(feeds, [(agency_id, agency_name, current_url)], ids)
-    for feed in match.candidates:
-        if feed.hosted_url:
-            return feed.hosted_url
+    schedule = [feed for feed in feeds if feed.data_type == "gtfs" and feed.hosted_url]
+    if mdb_id:
+        for feed in schedule:
+            if feed.mdb_id == mdb_id:
+                return feed.hosted_url
+
+    current_key = _feed_url_key(current_url)
+    if current_key:
+        for feed in schedule:
+            if _feed_url_key(feed.direct_download) == current_key:
+                return feed.hosted_url
     return None
 
 

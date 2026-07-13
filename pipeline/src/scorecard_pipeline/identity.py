@@ -16,14 +16,18 @@ from .config import Agency
 
 def normalized_feed_url(url: str) -> str:
     """Scheme-insensitive endpoint key for HTTP/HTTPS alias detection."""
-    parsed = urlsplit(url.strip())
-    host = (parsed.hostname or "").lower()
     try:
+        # ``urlsplit`` itself rejects malformed IPv6 brackets and netloc
+        # characters whose NFKC form would change URL delimiters.  Catalog
+        # input is advisory, so both parse-time and port-time failures become
+        # an unusable key instead of aborting the whole sync.
+        parsed = urlsplit(url.strip())
+        host = (parsed.hostname or "").lower()
         parsed_port = parsed.port
     except ValueError:
-        # External catalog rows are advisory input. An invalid port must not
-        # crash the whole identity-ledger build or be collapsed into a valid
-        # endpoint; an empty key makes duplicate grouping skip this row.
+        # External catalog rows are advisory input. A malformed netloc or port
+        # must not crash the whole identity-ledger build or be collapsed into
+        # a valid endpoint; an empty key makes duplicate grouping skip this row.
         return ""
     port = f":{parsed_port}" if parsed_port and parsed_port not in (80, 443) else ""
     path = parsed.path.rstrip("/") or "/"

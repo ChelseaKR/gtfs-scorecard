@@ -59,6 +59,20 @@ function ruleRefLink(code) {
 
 const main = /** @type {HTMLElement} */ (document.getElementById("main"));
 
+/** Artifact severities cross a public JSON boundary. Keep both the label and
+ *  CSS token on a closed allowlist; an unknown value is informational rather
+ *  than becoming markup. @param {unknown} value */
+function findingSeverity(value) {
+  switch (String(value || "").toUpperCase()) {
+    case "ERROR":
+      return { key: "ERROR", className: "sev-error", label: SEVERITY_LABELS.ERROR };
+    case "WARNING":
+      return { key: "WARNING", className: "sev-warning", label: SEVERITY_LABELS.WARNING };
+    default:
+      return { key: "INFO", className: "sev-info", label: SEVERITY_LABELS.INFO };
+  }
+}
+
 /* A "cohort" is a personal list of agencies a liaison follows, kept in this
  * browser and shareable by URL (#/cohort?ids=a,b,c). No account, no backend. */
 const COHORT_KEY = "scorecard-cohort";
@@ -1713,7 +1727,9 @@ function collectFindings(artifact) {
   for (const key of CATEGORY_ORDER) {
     const cat = artifact.categories[key];
     if (cat?.status === "measured") {
-      for (const f of cat.findings) all.push({ ...f, category: key });
+      for (const f of cat.findings) {
+        all.push({ ...f, severity: findingSeverity(f.severity).key, category: key });
+      }
     }
   }
   const rank = { ERROR: 0, WARNING: 1, INFO: 2 };
@@ -1757,9 +1773,11 @@ function setupFindings(findings) {
       visible.length === 1 ? "Showing 1 finding." : `Showing ${visible.length} findings.`;
     list.innerHTML = visible
       .map(
-        (f) => `<li class="finding">
+        (f) => {
+          const severity = findingSeverity(f.severity);
+          return `<li class="finding">
           <div class="finding-head">
-            <span class="sev sev-${String(f.severity || "info").toLowerCase()}">${SEVERITY_LABELS[f.severity] || esc(f.severity || "Info")}</span>
+            <span class="sev ${severity.className}">${esc(severity.label)}</span>
             <span class="count">${f.count === 1 ? "1 instance" : `${f.count} instances`}</span>
           </div>
           <p class="what">${esc(f.what)}</p>
@@ -1768,7 +1786,8 @@ function setupFindings(findings) {
           <p class="code">Validator rule: ${esc(f.code)} ·
             <a class="fix-guide" href="${escAttr(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
                target="_blank" rel="noopener">Read the fix guide<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on GitHub)</span></a>${ruleRefLink(f.code)}</p>
-        </li>`
+        </li>`;
+        }
       )
       .join("");
     if (!visible.length) {

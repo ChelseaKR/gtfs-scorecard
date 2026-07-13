@@ -41,6 +41,18 @@ def test_rejects_invalid_ports_as_unsafe_urls(url: str) -> None:
         validate_public_url(url)
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://[::1/feed.zip",
+        "https://example.org\uff0f@evil.example/feed.zip",
+    ],
+)
+def test_rejects_malformed_netlocs_as_unsafe_urls(url: str) -> None:
+    with pytest.raises(UnsafeURLError, match="malformed"):
+        validate_public_url(url)
+
+
 import socket  # noqa: E402
 import time  # noqa: E402
 

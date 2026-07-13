@@ -146,6 +146,28 @@ def test_agency_route_renders_scorecard(page: Page, app_url: str) -> None:
     _assert_not_stuck_loading(page)
 
 
+def test_agency_route_allowlists_hostile_artifact_severity(page: Page, app_url: str) -> None:
+    artifact = json.loads((ARTIFACTS / AGENCY_ID / "latest.json").read_text())
+    hostile = 'ERROR" onmouseover="window.__pwned=1'
+    finding = artifact["categories"]["correctness"]["findings"][0]
+    finding["severity"] = hostile
+    finding["code"] = "hostile-severity-test"
+    page.route(
+        f"**/data/artifacts/{AGENCY_ID}/latest.json",
+        lambda route: route.fulfill(json=artifact),
+    )
+
+    page.goto(f"{app_url}#/agency/{AGENCY_ID}")
+
+    row = page.locator(".findings .finding").filter(has_text="hostile-severity-test")
+    badge = row.locator(".sev")
+    expect(badge).to_have_class("sev sev-info")
+    expect(badge).to_have_text("Info")
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert hostile not in row.inner_html()
+    assert page.evaluate("() => window.__pwned") is None
+
+
 def test_agency_route_scopes_us_policy_footer_to_us_agencies(page: Page, app_url: str) -> None:
     ntd_link = page.locator('.site-footer a[href="/ntd/"]')
     legacy_ca = json.loads((ARTIFACTS / "barrie-transit" / "latest.json").read_text())

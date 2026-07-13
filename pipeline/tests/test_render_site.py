@@ -575,6 +575,23 @@ def test_distant_service_horizon_uses_review_copy_instead_of_huge_day_claim() ->
         assert "26,834" not in html
 
 
+def test_agency_page_allowlists_hostile_artifact_severity() -> None:
+    from scorecard_pipeline.render_site import _render_agency
+
+    path = Path(__file__).resolve().parents[2] / "data" / "artifacts" / "abq-ride" / "latest.json"
+    artifact = json.loads(path.read_text())
+    hostile = 'ERROR" onmouseover="window.__pwned=1'
+    finding = artifact["categories"]["correctness"]["findings"][0]
+    finding["severity"] = hostile
+    finding["code"] = "hostile-severity-test"
+
+    html = _render_agency(artifact)
+
+    assert '<span class="sev sev-info">Info</span>' in html
+    assert hostile not in html
+    assert 'onmouseover="window.__pwned=1' not in html
+
+
 def test_catalog_derives_status_from_legacy_latest_artifact(
     isolated_repo_root: Path,
 ) -> None:

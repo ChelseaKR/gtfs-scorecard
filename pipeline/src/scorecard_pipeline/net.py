@@ -45,7 +45,12 @@ class UnsafeURLError(ValueError):
 def validate_public_url(url: str) -> None:
     """Raise UnsafeURLError unless the URL is http(s) and every resolved
     address for its host is publicly routable."""
-    parts = urlsplit(url)
+    try:
+        # Invalid IPv6 brackets and NFKC-sensitive netloc delimiters raise
+        # during parsing, before ``hostname`` or ``port`` can be inspected.
+        parts = urlsplit(url)
+    except ValueError as exc:
+        raise UnsafeURLError(f"URL is malformed: {url!r}") from exc
     if parts.scheme not in ("http", "https"):
         raise UnsafeURLError(f"only http(s) URLs are allowed, got {parts.scheme or 'no'} scheme")
     host = parts.hostname

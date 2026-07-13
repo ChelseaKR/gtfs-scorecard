@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.identity import build_identity_ledger, normalized_feed_url
 
@@ -23,6 +25,17 @@ def test_normalized_feed_url_ignores_scheme_and_default_port() -> None:
 def test_normalized_feed_url_skips_invalid_external_catalog_ports() -> None:
     assert normalized_feed_url("https://example.org:not-a-port/feed.zip") == ""
     assert normalized_feed_url("https://example.org:99999/feed.zip") == ""
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://[::1/feed.zip",
+        "https://example.org\uff0f@evil.example/feed.zip",
+    ],
+)
+def test_normalized_feed_url_skips_malformed_external_catalog_netlocs(url: str) -> None:
+    assert normalized_feed_url(url) == ""
 
 
 def test_identity_ledger_keeps_denominators_separate() -> None:
