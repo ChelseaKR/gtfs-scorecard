@@ -179,6 +179,49 @@ def test_repo_registry_includes_canada_pilot() -> None:
     assert by_id["unitrans"].country == "US"  # US pilots keep the default
 
 
+def test_repo_registry_includes_four_region_worldwide_cohort() -> None:
+    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+    by_id = {agency.id: agency for agency in agencies}
+    cohort = {
+        "lbus-bernay": ("FR", "FR-NOR", "Normandie"),
+        "basmy-kangar": ("MY", "MY-09", "Perlis"),
+        "orbus-otago": ("NZ", "NZ-OTA", "Otago"),
+        "mtop-uruguay-metropolitan": ("UY", "UY-MO", "Montevideo"),
+    }
+
+    assert cohort.keys() <= by_id.keys()
+    for agency_id, location in cohort.items():
+        agency = by_id[agency_id]
+        assert (agency.country, agency.subdivision_code, agency.subdivision_name) == location
+        assert agency.is_official is True
+        assert agency.ntd_id == ""
+        assert agency.ntd_note == ""
+
+
+def test_worldwide_cohort_preserves_public_names_and_realtime_semantics() -> None:
+    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+    by_id = {agency.id: agency for agency in agencies}
+
+    bernay = by_id["lbus-bernay"]
+    assert bernay.name == "Réseau urbain l'Bus (Bernay)"
+    assert set(bernay.rt_urls) == {"trip_updates", "vehicle_positions", "service_alerts"}
+    assert len(set(bernay.rt_urls.values())) == 1  # publisher's combined stream
+
+    kangar = by_id["basmy-kangar"]
+    assert kangar.name == "BAS.MY Kangar"
+    assert set(kangar.rt_urls) == {"vehicle_positions"}
+
+    otago = by_id["orbus-otago"]
+    assert otago.name == "Orbus (Otago Regional Council)"
+    assert otago.rt_urls == {}
+    assert "no keyless public GTFS-Realtime endpoint" in otago.rt_note
+    assert "Nothing here counts against the grade" in otago.rt_note
+
+    uruguay = by_id["mtop-uruguay-metropolitan"]
+    assert uruguay.name == "Servicios metropolitanos de ómnibus (MTOP Uruguay)"
+    assert uruguay.rt_urls == {}
+
+
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:
     path = tmp_path / "agencies.yaml"
     path.write_text(yaml.safe_dump(VALID))

@@ -47,6 +47,86 @@ feed for a small rural operator, close to the scorecard's primary audience.
 | License | [National Transport Authority GTFS is CC BY 4.0](https://data.gov.ie/en_GB/dataset/nta-gtfs). |
 | Update cadence | The catalog metadata is daily; operator files are replaced when timetables change. |
 
+## Four-region worldwide cohort
+
+These four feeds extend the canary set across Europe, Southeast Asia,
+Oceania, and South America. Each comes from an official publisher under an
+explicit open-data license. Their public names stay in the language used by
+the operator; the scorecard does not replace those names with English ones.
+
+### Réseau urbain l'Bus, Bernay (France)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://www.data.gouv.fr/api/1/datasets/r/9ffc26b2-d293-4ec5-9cf6-4690d542f019` |
+| Location | France (`FR`), Normandie (`FR-NOR`) |
+| Status | Verified after a redirect to the immutable ZIP; 1 route, 74 stops, and 14 trips at verification time |
+| GTFS-Realtime | One combined, keyless stream for TripUpdates, VehiclePositions, and ServiceAlerts: `https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f` |
+| License and source | [Licence Ouverte 2.0 through France's National Access Point](https://transport.data.gouv.fr/datasets/reseau-transport-urbain-de-bernay), published by Intercom Bernay Terres de Normandie |
+| Update cadence | No fixed schedule is stated. The verified timetable covers service through 2026-12-31; the scorecard checks the canonical resource no more than daily. |
+
+The realtime catalog declares all three GTFS-Realtime entity kinds at the
+same URL. An off-hours verification sample contained alerts, so an empty
+trip or vehicle sample is not treated as proof that those entity kinds have
+stopped publishing.
+
+### BAS.MY Kangar (Malaysia)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://api.data.gov.my/gtfs-static/mybas-kangar` |
+| Location | Malaysia (`MY`), Perlis (`MY-09`) |
+| Status | Verified after redirects to the current ZIP; 9 routes, 455 stops, and 344 trips at verification time |
+| GTFS-Realtime | Keyless VehiclePositions: `https://api.data.gov.my/gtfs-realtime/vehicle-position/mybas-kangar` |
+| License | [CC BY 4.0 applies to data on Malaysia's official open-data portal](https://data.gov.my/odin-self-assessment). |
+| Operator source | [BAS.MY Kangar](https://bas.my/basmykangar.php) |
+| Update cadence | No fixed schedule is stated. The stable API URL resolves to the current published object; the scorecard checks it no more than daily. The verified calendar covers service through 2026-12-31. |
+
+The official operator describes the network as serving Perlis, so `MY-09`
+is the primary subdivision. Some routes extend into Kedah. This is more
+specific than the Mobility Database's current “Kedah” label and does not
+imply that every stop lies within Perlis.
+
+### Orbus, Otago (New Zealand)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://www.orc.govt.nz/transit/google_transit.zip` |
+| Location | New Zealand (`NZ`), Otago (`NZ-OTA`) |
+| Status | Verified after a redirect to the current dated ZIP; 80 routes, 908 stops, and 2,577 trips at verification time |
+| Realtime status | [Orbus offers live bus tracking](https://www.orc.govt.nz/orbus/travel-with-us/using-the-bus/track-your-bus-in-real-time/), but no keyless public GTFS-Realtime endpoint was verified. The scorecard states this neutrally and does not deduct points. |
+| License and source | [CC BY 4.0 under Otago Regional Council's GTFS terms](https://www.orc.govt.nz/privacy-and-tscs/) |
+| Update cadence | No fixed release schedule is stated. The canonical URL redirects to the current dated release; the verified base calendar runs through 2027-12-31 and added service in `calendar_dates.txt` runs through 2028-01-27. |
+
+### Servicios metropolitanos de ómnibus (Uruguay)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://catalogodatos.gub.uy/dataset/1d50ccf7-121d-48a7-951e-28a02858d24e/resource/9f44b654-751a-42a4-a481-af91b7c9a2e4/download` |
+| Primary location | Uruguay (`UY`), Montevideo (`UY-MO`) |
+| Status | Verified as a direct ZIP; 8 operators, 371 routes, 7,190 stops, and 7,549 trips at verification time |
+| Realtime status | No public GTFS-Realtime endpoint was found. |
+| License | Licencia de Datos Abiertos de Uruguay |
+| Official sources | [MTOP dataset](https://catalogodatos.gub.uy/es/dataset/ministerio-de-transporte-y-obras-publicas-horarios-de-omnibus-en-lineas-interdepartamentales) and [GTFS resource record](https://catalogodatos.gub.uy/dataset/ministerio-de-transporte-y-obras-publicas-horarios-de-omnibus-en-lineas-interdepartamentales/resource/9f44b654-751a-42a4-a481-af91b7c9a2e4) |
+| Update cadence | The official catalog states a semiannual update frequency. The filename-independent resource URL is the catalog's current download; the verified calendar covers service through 2026-12-25. |
+
+This is a multi-operator metropolitan and interdepartmental feed. Montevideo
+is its primary catalog location, not a boundary around its complete service
+area. It is scored last and in isolation during activation because its
+roughly 795,000 stop times make it the largest and most structurally varied
+member of this cohort.
+
+### Africa licensing hold
+
+Lagos remains outside the registry. Its ferry GTFS is current and the
+[project identifies LASWA as a data partner](https://lagosferries.com/), but
+the downloadable file has no explicit reuse license. The partnership and
+consent gate in [ADR 0028](decisions/0028-global-south-pilot.md) requires us
+to resolve that before publishing derived artifacts. We did not find a
+current, official, explicitly licensed African substitute in this review;
+expired licensed feeds and current feeds without clear reuse terms were not
+added.
+
 Hong Kong is the next technical canary because it has no ISO 3166-2 subdivision
 and publishes frequency-based schedules. It remains out of production until the
 freshness behavior for those schedules is reviewed. Community or informal feeds
