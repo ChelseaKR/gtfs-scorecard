@@ -44,9 +44,11 @@ Every item below is checked against these.
 
 ## Where the product is today
 
-About 1,450 scorecards have numeric latest scores, still concentrated in the
-United States and Canada, with official first canaries in Japan, Australia, and
-Ireland (piloted with Unitrans and Yolobus); per-agency scorecards with a
+About 1,449 scorecards have numeric latest scores in the repository artifact
+index; the bounded live directory currently publishes more than 1,100. Coverage
+is still concentrated in the United States and Canada, with official first
+canaries in Japan, Australia, Ireland, France, Malaysia, New Zealand, and Uruguay
+(piloted with Unitrans and Yolobus); per-agency scorecards with a
 grade, top-three fixes, a full findings list, and a named "fixed since last
 check" diff; companion pages per agency for a board packet, call prep, and the
 fix log; an "over time" trend with a per-category "what changed" summary;

@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified reference;
-the full registry has ~1,140 feed records, still mostly in the United States and
+the full registry has ~1,149 feed records, still mostly in the United States and
 Canada, and lives in `agencies.yaml`, with the
 discovery process documented in `docs/feed-discovery.md`. Every URL below was
 verified with a live request on the date stamped at the bottom of this page.

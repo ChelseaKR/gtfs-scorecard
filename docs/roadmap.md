@@ -52,8 +52,10 @@ below is checked against them.
 ## Year 1 — from two feeds to a region (target: 50 to 200 agencies)
 
 > Status (2026-07): the registry passed this target ahead of plan and now
-> tracks ~1,140 configured feeds in the current worldwide coverage, still mostly
-> in the US and Canada (~1,450 scored latest rows with published pages). The Year
+> tracks ~1,149 configured feeds in the current worldwide coverage, still mostly
+> in the US and Canada (~1,449 scored latest rows with published pages in the
+> repository artifact index). The bounded live directory currently publishes
+> more than 1,100 scorecards. The Year
 > 1 work below is done; what remains is the storage/serving
 > move (see `docs/follow-ups.md`).
 
