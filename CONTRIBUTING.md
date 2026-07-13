@@ -6,7 +6,7 @@ Thanks for helping improve the GTFS Scorecard.
 
 The most common contribution is adding an agency or correcting a feed URL. That
 path is documented end to end in [docs/add-your-agency.md](docs/add-your-agency.md):
-add an entry to `agencies.yaml` and open a pull request. You can also use the
+add an entry to `registry/intake.yaml` and open a pull request. You can also use the
 self-serve form at [gtfsscorecard.org](https://gtfsscorecard.org/submit.html).
 
 ## Develop on the pipeline

@@ -21,12 +21,12 @@ predictive freshness, and registry themes) has shipped and moved to
 | Resilient feed fetching | `net.py` (browser UA, backoff on 403/429), `fetch.py` Mobility Database mirror fallback, neutral "unreachable" state in `metrics.py` |
 | Recurring stale-feed report per program | `rollups.py` `expired` block, rendered on every `/program/<id>/` page |
 | `discover` on a schedule, replacements as PRs | `.github/workflows/discover.yml` (weekly) |
-| "Still operating?" signal | `operating_note` in `agencies.yaml`, rendered on scorecard and directory |
+| "Still operating?" signal | `operating_note` in the registry, rendered on scorecard and directory |
 | Liaison-ready outreach copy | outreach note block in `render_site.py` |
 | Expiry forecasting and lead-time alerts | tiered 60/30/14/7-day digest in `alerts.py` |
 | Expiry status in the API and badges | `expiry_status` in `docs/api.md`, status segment in `badge.py` |
 | Findings cleared between runs | "fixed since last check" diff in `render_site.py` |
-| Pin Mobility Database ids | `mdb_id` in `agencies.yaml`, exact-match discover |
+| Pin Mobility Database ids | `mdb_id` in the registry, exact-match discover |
 | Realtime freshness | lapsed-header framing in `rt.py` |
 | Vendor view of stale feeds | `vendors.py`, expiry aggregated by serving host |
 

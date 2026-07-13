@@ -21,7 +21,7 @@ The default product is worldwide and coverage-bounded.
 
 1. The runtime ships the full assigned ISO 3166-1 and ISO 3166-2 vocabulary.
    This vocabulary validates location; it does not activate or imply coverage.
-   `agencies.yaml` remains the sole source of published coverage.
+   the manifest-backed registry remains the sole source of published coverage.
 2. Country is the primary discovery scope. Subdivision is optional and nested
    below its country. Maps begin with responsive world bounds; a U.S. state
    choropleth appears only after the United States is selected.

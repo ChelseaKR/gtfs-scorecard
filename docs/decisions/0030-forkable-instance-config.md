@@ -11,7 +11,8 @@ config and a deploy, without a code change, converting the single-maintainer
 sustainability risk `docs/roadmap.md`'s Year 3 white-label plan names into a
 distributed one.
 
-The registry half of that is already done: `agencies.yaml` (Phase 4) lets any
+The registry half of that is already done: the manifest-backed `registry/`
+(Phase 4) lets any
 agency be added with a YAML block, and `docs/deploy.md` already documents
 fork-specific infrastructure variables (`ARTIFACTS_CDN` vs. the maintainer's
 default CDN, for example). What was still hardcoded was the site's public
@@ -46,7 +47,7 @@ Extract *identity*, not the rubric, in this pass:
   re-exports `BASE_URL` so `render_site.py`'s existing import keeps working).
 - `instance.example.yaml` is the fork's copy-and-edit template.
 - `docs/fork-quickstart.md` is the "run your own" guide EXP-15's Shape section
-  asks for: fork, edit `agencies.yaml` and `instance.yaml`, deploy via the
+  asks for: fork, edit `registry/` and `instance.yaml`, deploy via the
   existing `docs/deploy.md` runbook, with an explicit section on what stays
   shared (the rubric) and why.
 

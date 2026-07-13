@@ -1,5 +1,5 @@
 # Self-serve submission: a Lambda behind an HTTP API Gateway that opens a PR
-# adding an agency to agencies.yaml (docs/roadmap.md, Year 1). The web form
+# adding an agency to registry/intake.yaml (docs/roadmap.md, Year 1). The web form
 # POSTs here.
 #
 # Uses API Gateway (not a Lambda function URL) because this account blocks public

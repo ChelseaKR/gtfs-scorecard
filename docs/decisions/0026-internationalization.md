@@ -63,7 +63,7 @@ Smallest viable pilot, buildable as one PR:
 
 - **Discover:** `scorecard sync --country CA` already filters the Mobility
   Database by `location.country_code`; add a handful of Canadian feeds to
-  `agencies.yaml`. The catalog `mdb_id` follows moved URLs.
+  the agency registry. The catalog `mdb_id` follows moved URLs.
 - **Make the model country-aware:** add a `country` field to the agency registry
   and the `Agency` model, defaulting to `US` so every current entry is unchanged,
   and carry it into the published artifact's `agency` block.

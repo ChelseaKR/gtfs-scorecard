@@ -187,7 +187,7 @@ Actions; this is the inventory an operator should know exists:
 
 Use **Actions → Targeted agency activation → Run workflow** when a reviewed
 agency is already present on the default branch but should be scored and made
-visible before the next daily run. Enter one to 25 exact `agencies.yaml` ids;
+visible before the next daily run. Enter one to 25 exact registry ids;
 commas, spaces, and newlines are accepted. The dispatch rejects an empty list,
 unknown or malformed ids, normalized duplicates, and more than 25 targets.
 

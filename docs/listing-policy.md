@@ -28,7 +28,7 @@ We will act on these quickly and without argument:
 
 - **Correct a name, URL, or detail** that is wrong: use the
   [correction and claim form](https://gtfsscorecard.org/claim/), open a pull
-  request against [`agencies.yaml`](../agencies.yaml), or email the address in
+  request against the [`registry`](../registry/README.md), or email the address in
   the repository. A correction only needs a public source that supports it.
 - **Request removal**: an agency that does not want to be listed can ask to be
   removed, by the same channels. We honor removal requests; the entry is deleted
@@ -60,11 +60,12 @@ directory, separate from the recently lapsed ones. Two cases hide in that group,
 and we tell them apart by hand rather than by the grade:
 
 - **The agency still runs and the export lapsed.** A curator can record this with
-  an `operating_note` in [`agencies.yaml`](../agencies.yaml) after confirming the
+  an `operating_note` in the relevant [registry shard](../registry/README.md)
+  after confirming the
   service still operates. The scorecard and directory then show the verified note,
   so the feed reads as recoverable rather than defunct.
 - **The service genuinely ended.** When an agency has stopped operating, the entry
-  is retired: it is removed from `agencies.yaml` and excluded from future runs, the
+  is retired: it is removed from the registry and excluded from future runs, the
   same as any removal request. We do not leave a permanent failing grade on an
   agency that no longer exists.
 

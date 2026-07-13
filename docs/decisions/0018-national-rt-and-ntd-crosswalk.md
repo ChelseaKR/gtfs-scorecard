@@ -42,7 +42,7 @@ feed to its five-digit NTD ID.
   **dropped, not guessed**, so we never stamp one agency with the NTD ID of a feed
   it shares. We populate an `ntd_id` only on an unambiguous, exact URL match.
 - `scorecard ntd-crosswalk [--apply]` runs it. `--apply` inserts one `ntd_id` line
-  per matched agency into `agencies.yaml` as a text edit (not a YAML round-trip),
+  per matched agency into its registry shard as a text edit (not a YAML round-trip),
   so the 345 KB hand-maintained file keeps its formatting and the diff is one
   added line per agency. Curated values are never overwritten.
 

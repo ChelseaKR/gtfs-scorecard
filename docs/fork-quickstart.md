@@ -41,8 +41,12 @@ Fork `ChelseaKR/gtfs-scorecard` on GitHub, then clone your fork.
 
 ### 2. Set your agency registry
 
-Replace the contents of [`agencies.yaml`](../agencies.yaml) with your own
-agencies. Each entry is documented in
+Replace the contents of [`registry/intake.yaml`](../registry/intake.yaml) with
+your own agencies. For a clean fork, also remove the existing country
+subdirectories and reduce [`registry/index.yaml`](../registry/index.yaml) to
+list only `registry/intake.yaml`; the loader deliberately rejects unlisted
+shards. As your registry grows, add your own country/subdivision shards back to
+the explicit manifest. Each entry is documented in
 [docs/add-your-agency.md](add-your-agency.md); `scorecard sync --country <cc>
 --state <state>` can propose entries for a whole state or country from the
 Mobility Database catalog instead of hand-entering each one:
@@ -74,8 +78,8 @@ maintainer's defaults, though for a real fork you will want at least
 - The MCP server's default data source (`docs/mcp.md`) and the CLI's
   offline-preview link rewriting.
 
-Commit `instance.yaml`. It is meant to be checked into your fork (like
-`agencies.yaml`), not kept as a local override.
+Commit `instance.yaml`. It is meant to be checked into your fork (like the
+`registry/` directory), not kept as a local override.
 
 **What this does not yet rebrand.** Page `<title>` tags, on-page prose (the
 board one-pager's footer line, the press and procurement pages), and the

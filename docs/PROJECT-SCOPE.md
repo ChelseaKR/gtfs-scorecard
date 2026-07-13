@@ -24,7 +24,7 @@ GTFS Scorecard measures public transit feed quality and publishes daily scorecar
 
 ## How It Is Put Together
 
-- agencies.yaml defines tracked feeds.
+- `registry/index.yaml` defines the manifest of tracked feed shards.
 - data/artifacts/ stores historical score outputs.
 - docs/ explains scoring, onboarding, methodology, and standards.
 - scripts and package files drive scoring and site generation.

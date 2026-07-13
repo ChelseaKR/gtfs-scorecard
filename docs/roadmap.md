@@ -65,11 +65,11 @@ already cites give those agencies a reason to care about the grade.
 
 ### Onboarding without hand-editing YAML
 
-Today an agency is added by editing `agencies.yaml` and opening a pull request.
+Today an agency is added through `registry/intake.yaml` and a pull request.
 That is the right primitive and it stays, but two things get added on top:
 
 - **A Mobility Database sync.** A pipeline command that reads the Mobility
-  Database API, filters to a region or a list, and proposes `agencies.yaml`
+  Database API, filters to a region or a list, and proposes registry
   entries with feed URLs, license notes, and realtime endpoints pre-filled. A
   human still reviews and merges, so the registry stays curated, but the
   typing goes away. This is how a region's worth of feeds gets added in an
@@ -117,7 +117,7 @@ first thing that makes someone open the tool a second time.
 ### Year 1 infrastructure summary
 
 ```
-Mobility DB sync (CLI)  ->  agencies.yaml (curated, in git)
+Mobility DB sync (CLI)  ->  registry/intake.yaml (curated, in git)
 Self-serve form         ->  serverless fn  ->  GitHub PR
 GitHub Actions (cron, sharded matrix)
     fetch -> validate -> score -> publish
@@ -265,7 +265,8 @@ system is static artifacts plus a stateless pipeline, a white-label instance is
 a configuration and a deploy, not a fork.
 
 The branding and agency-list half of that is live today: `instance.yaml` and
-`agencies.yaml` (EXP-15, `docs/decisions/0030-forkable-instance-config.md`,
+the manifest-backed `registry/` (EXP-15,
+`docs/decisions/0030-forkable-instance-config.md`,
 [docs/fork-quickstart.md](fork-quickstart.md)). Left for the rest of this
 item: making the rubric itself pluggable per region (RR:E11) rather than
 shared, and an operator-facing self-management layer if demand for
@@ -359,7 +360,7 @@ The first concrete steps, in order, that move toward Year 1 without waiting on
 any of the larger architecture:
 
 1. Write the Mobility Database sync command and use it to draft a California
-   small-and-rural cohort into `agencies.yaml` for review.
+   small-and-rural cohort into the registry for review.
 2. Move published artifacts from git to S3 behind CloudFront, keeping the JSON
    contract identical, and point the existing site at the new URLs.
 3. Shard the GitHub Actions run into a parallel matrix so the cohort scores

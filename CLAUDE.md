@@ -121,8 +121,8 @@ software export settings").
 
 ## Build plan
 
-> All four phases are done, including Phase 4's `agencies.yaml`
-> generalization. The phases stay here as the record of the intended shape;
+> All four phases are done, including Phase 4's manifest-backed agency
+> registry. The phases stay here as the record of the intended shape;
 > current work is tracked in the roadmap docs named at the top.
 
 ### Phase 1 — Pipeline to first artifact (week 1)
@@ -149,7 +149,8 @@ software export settings").
   taxonomy.
 
 ### Phase 4 — Generalize (post-coffee)
-- `agencies.yaml` config so any feed URL can be added; document "add your agency in 10 minutes."
+- Manifest-backed registry config so any feed URL can be added; document "add
+  your agency in 10 minutes."
 - Optional: a third pilot agency (e.g., an MST-sized system) added live during a demo — keep
   this in the back pocket, do not pre-build.
 
