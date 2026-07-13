@@ -1357,23 +1357,24 @@ def _cmd_feedapi(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
 
 def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .gtfs import read_tables
-    from .otp import assess_routing, fetch_plan, sample_od_pairs
+    from .otp import assess_routing, fetch_plan, sample_scheduled_stop_pairs
+    from .rt import _active_service_ids
 
-    rows = read_tables(args.feed, ["stops.txt"]).get("stops.txt", [])
-    points: list[tuple[float, float]] = []
-    for row in rows:
-        try:
-            lon, lat = float(row.get("stop_lon", "")), float(row.get("stop_lat", ""))
-        except ValueError:
-            continue
-        if -180 <= lon <= 180 and -90 <= lat <= 90 and not (lon == 0 and lat == 0):
-            points.append((lon, lat))
-    pairs = sample_od_pairs(points, args.pairs)
+    tables = read_tables(
+        args.feed, ["calendar.txt", "calendar_dates.txt", "trips.txt", "stop_times.txt"]
+    )
+    service_date = dt.date.fromisoformat(args.date)
+    pairs = sample_scheduled_stop_pairs(
+        tables["trips.txt"],
+        tables["stop_times.txt"],
+        _active_service_ids(tables, service_date),
+        count=args.pairs,
+    )
     if not pairs:
-        log.error("Not enough located stops to sample an origin/destination pair.")
+        log.error("No active trips with distinct endpoint stops to sample on %s.", args.date)
         return 1
     results = []
-    for origin, destination in pairs:
+    for origin, destination, departure_time in pairs:
         try:
             results.append(
                 fetch_plan(
@@ -1381,7 +1382,7 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
                     origin,
                     destination,
                     date=args.date,
-                    time=args.time,
+                    time=departure_time,
                     allow_loopback=args.allow_loopback,
                 )
             )

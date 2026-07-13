@@ -11,6 +11,7 @@ from scorecard_pipeline.otp import (
     parse_plan,
     plan_url,
     sample_od_pairs,
+    sample_scheduled_stop_pairs,
 )
 
 
@@ -36,6 +37,39 @@ def test_plan_url_uses_lat_lon_order_and_anchors_time() -> None:
     assert "fromPlace=38.5%2C-121.7" in url  # lat,lon
     assert "toPlace=38.7%2C-121.5" in url
     assert "date=2026-06-21" in url and "time=08%3A00" in url
+
+
+def test_plan_url_accepts_namespaced_stop_ids() -> None:
+    url = plan_url(
+        "http://otp:8080", "qa:origin", "qa:destination", date="2026-07-13", time="09:15"
+    )
+    assert "fromPlace=qa%3Aorigin" in url
+    assert "toPlace=qa%3Adestination" in url
+
+
+def test_sample_scheduled_stop_pairs_uses_active_trip_endpoints() -> None:
+    trips = [
+        {"trip_id": "inactive", "service_id": "weekend"},
+        {"trip_id": "active", "service_id": "weekday"},
+    ]
+    stop_times = [
+        {"trip_id": "active", "stop_id": "last", "stop_sequence": "2", "arrival_time": "09:30:00"},
+        {
+            "trip_id": "active",
+            "stop_id": "first",
+            "stop_sequence": "1",
+            "departure_time": "09:00:00",
+        },
+        {
+            "trip_id": "inactive",
+            "stop_id": "ignored",
+            "stop_sequence": "1",
+            "departure_time": "08:00:00",
+        },
+    ]
+    assert sample_scheduled_stop_pairs(trips, stop_times, {"weekday"}) == [
+        ("qa:first", "qa:last", "09:00")
+    ]
 
 
 def test_parse_plan_finds_itineraries() -> None:

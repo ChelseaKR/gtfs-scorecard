@@ -72,6 +72,8 @@ jobs:
         run: |
           mkdir -p otp-work
           if curl -fsSL --retry 3 "$FEED_URL" -o otp-work/feed.gtfs.zip; then
+            jq -n '{transitFeeds: [{type: "gtfs", source: "feed.gtfs.zip", feedId: "qa"}]}' \
+              > otp-work/build-config.json
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
