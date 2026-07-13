@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Open data — GTFS Scorecard</title>
   <meta name="description"
-        content="Download the open national GTFS data-quality dataset and the NTD GTFS-readiness portfolio. One row per feed record, refreshed daily, free to use and cite.">
+        content="Download the worldwide GTFS data-quality dataset and the separate United States NTD readiness portfolio. One row per covered feed record, refreshed daily, free to use and cite.">
   <link rel="canonical" href="https://gtfsscorecard.org/data/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Open data — GTFS Scorecard">
-  <meta property="og:description" content="Download the open national GTFS data-quality dataset and the NTD readiness portfolio.">
+  <meta property="og:description" content="Download the worldwide GTFS data-quality dataset and the separate United States NTD readiness portfolio.">
   <meta property="og:url" content="https://gtfsscorecard.org/data/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard open data","description":"Daily GTFS data-quality reports for transit feed records in the United States and Canada.","url":"https://gtfsscorecard.org/data/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"dataset":[{"@type":"Dataset","name":"GTFS Scorecard agency feed-quality dataset","url":"https://gtfsscorecard.org/dataset.json","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/dataset.json"},{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://gtfsscorecard.org/dataset.csv"}]}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard open data","description":"Daily GTFS data-quality reports for the public transit feed records this site currently covers worldwide.","url":"https://gtfsscorecard.org/data/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"dataset":[{"@type":"Dataset","name":"GTFS Scorecard agency feed-quality dataset","url":"https://gtfsscorecard.org/dataset.json","license":"https://creativecommons.org/licenses/by/4.0/","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/dataset.json"},{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://gtfsscorecard.org/dataset.csv"}]}]}</script>
   <script src="/analytics.js" defer></script>
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
@@ -39,7 +39,7 @@
     <h1 class="page-title">The open dataset</h1>
     <p class="page-lede">Every feed record's latest grade and measured category scores in one file, refreshed
     daily, free to download and cite. The same scores behind the agency pages, published flat so a
-    researcher or a state program can analyze the whole country at once.</p>
+    researcher or transit program can analyze every feed this site currently covers at once.</p>
 
     <section aria-labelledby="get-h">
       <h2 class="section-title" id="get-h">Get the data</h2>
@@ -49,21 +49,22 @@
       <p>
         <a class="btn btn-primary" href="/dataset.csv">Download CSV</a>
         <a class="btn btn-ghost" href="/dataset.json">Download JSON</a>
-        <a class="btn btn-ghost" href="/ntd.json">NTD portfolio (JSON)</a>
+        <a class="btn btn-ghost" href="/ntd.json">United States NTD portfolio (JSON)</a>
         <a class="btn btn-ghost" href="/api/v1/accessibility.json">Accessibility coverage (JSON)</a>
       </p>
       <p id="dataset-summary" class="page-lede"></p>
-      <p>Browse the same data as pages: <a href="/ntd/">NTD readiness</a>,
+      <p>Browse the same data as pages: <a href="/ntd/">United States NTD readiness</a>,
       <a href="/access/">accessibility data coverage</a>, and a
       <a href="/procurement/">procurement clause</a> agencies can put in a vendor contract.
       The full endpoint list is at <a href="/api/v1/index.json">api/v1/index.json</a>.</p>
     </section>
 
     <section aria-labelledby="ntd-h">
-      <h2 class="section-title" id="ntd-h">NTD GTFS readiness, by state</h2>
-      <p>Since Report Year 2023, every National Transit Database reporter with fixed-route or
+      <h2 class="section-title" id="ntd-h">United States NTD readiness, by state</h2>
+      <p>This separate view covers United States agencies. Since Report Year 2023, every
+      National Transit Database reporter with fixed-route or
       deviated-fixed-route service has to publish a valid, current GTFS feed and certify it each
-      year. This is how many of the tracked agencies look ready, nationally and per state.
+      year. This is how many tracked U.S. agencies look ready, nationally and per state.
       Readiness mirrors three pillars (published, valid, current); it is a heads-up, not an
       official determination.</p>
       <p id="ntd-headline" class="page-lede"></p>
@@ -74,8 +75,8 @@
         </thead>
         <tbody id="ntd-rows"></tbody>
       </table>
-      <p id="ntd-fallback">Download <a href="/ntd.json">ntd.json</a> for the full national and
-      per-state breakdown.</p>
+      <p id="ntd-fallback">Download <a href="/ntd.json">ntd.json</a> for the full United States
+      national and per-state breakdown.</p>
     </section>
 
     <section aria-labelledby="use-h">
@@ -88,6 +89,9 @@
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/crosswalk.md">docs/crosswalk.md</a>,
       and the machine-readable weights are at
       <a href="/data/artifacts/scoring.json">scoring.json</a>.</p>
+      <p>The CC BY 4.0 license covers this scorecard's reports and derived dataset. It does not
+      relicense or redistribute the underlying GTFS files. Each feed keeps its publisher's own
+      terms, recorded in its scorecard artifact.</p>
       <p>This is a data-quality lens, not an official compliance determination. The grade is
       computed on top of the canonical
       <a href="https://gtfs-validator.mobilitydata.org/">MobilityData GTFS validator</a>.</p>
@@ -151,7 +155,7 @@
         const avg = total ? (scored / total).toFixed(1) : "—";
         const pctCurrent = rows.length ? Math.round((current / rows.length) * 100) : 0;
         document.getElementById("dataset-summary").textContent =
-          `${rows.length.toLocaleString()} agencies in the current file. ` +
+          `${rows.length.toLocaleString()} feed records in the current file. ` +
           `Average score ${avg} out of 100, and ${pctCurrent}% have a calendar that has not expired.`;
       })
       .catch(() => {});

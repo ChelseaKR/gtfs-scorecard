@@ -19,10 +19,11 @@ manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains ~1,140 curated feed records,
+District). Beyond the pilots, the registry contains ~1,149 curated feed records,
 mostly in the United States and Canada, plus official first canaries in Japan,
-Australia, and Ireland (~1,450 published scorecard pages). Scores are refreshed
-daily. A feed record
+Australia, Ireland, France, Malaysia, New Zealand, and Uruguay. The repository
+retains the generated corpus (~1,449 published scorecard pages); the bounded live
+directory currently exposes more than 1,100. Scores are refreshed daily. A feed record
 is not always a distinct transit agency: regional
 feeds, modal variants, and retired aliases are counted separately while the
 identity registry is reconciled.

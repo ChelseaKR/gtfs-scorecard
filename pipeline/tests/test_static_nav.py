@@ -62,4 +62,13 @@ def test_open_data_page_publishes_data_catalog_jsonld() -> None:
     data = json.loads(match.group(1))
     assert data["@type"] == "DataCatalog"
     assert data["license"] == "https://creativecommons.org/licenses/by/4.0/"
+    assert "worldwide" in data["description"]
+    assert "United States and Canada" not in data["description"]
+    assert data["dataset"][0]["license"] == data["license"]
     assert data["dataset"][0]["distribution"][0]["contentUrl"].endswith("dataset.json")
+
+    assert "United States NTD readiness" in html
+    assert "analyze the whole country" not in html
+    assert "does not\n      relicense or redistribute the underlying GTFS files" in html
+    assert "feed records in the current file" in html
+    assert "agencies in the current file" not in html
