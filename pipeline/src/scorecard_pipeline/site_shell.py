@@ -158,7 +158,12 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
 
 # The one shared footer, single-sourced here so the generated pages and the
 # hand-authored static pages can never drift apart (same mechanism as the nav).
-FOOTER_HTML = """<footer class="site-footer">
+_US_TOOLS_FOOTER_SECTION = """      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
+"""
+
+FOOTER_HTML = f"""<footer class="site-footer">
     <div class="wrap">
       <p>An open-source data quality tool for small and rural transit agencies.</p>
       <p><strong>Agencies:</strong>
@@ -170,9 +175,7 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="/problems/">Common problems</a> ·
       <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
+{_US_TOOLS_FOOTER_SECTION.rstrip()}
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
       <a href="/fix/">GTFS errors &amp; fixes</a> ·
@@ -195,6 +198,11 @@ FOOTER_HTML = """<footer class="site-footer">
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
     </div>
   </footer>"""
+
+# Agency pages outside the United States keep all shared global navigation but
+# do not foreground a policy tool that cannot apply to them. General pages keep
+# the labelled U.S. section discoverable, and U.S. agency pages remain unchanged.
+FOOTER_HTML_WITHOUT_US_TOOLS = FOOTER_HTML.replace(_US_TOOLS_FOOTER_SECTION.rstrip() + "\n", "")
 
 FOOTER_HTML_ES = """<footer class="site-footer">
     <div class="wrap">
@@ -273,13 +281,16 @@ def _page(
     robots: str | None = None,
     wide: bool = False,
     lang: str = "en",
+    country_code: str | None = None,
 ) -> str:
     """Wrap body in the full HTML document with SEO head tags. CSS and the
     interactive app are linked by absolute path from the site root. ``head_extra``
     injects page-specific head markup (e.g. a map library's stylesheet).
     ``wide`` widens the main column for pages whose value is tabular: prose
     keeps its own measure, tables get the screen (WCAG 1.4.8 line-length
-    limits apply to prose, not data tables)."""
+    limits apply to prose, not data tables). On an agency-scoped page,
+    ``country_code`` removes the labelled United States policy-tool links when
+    they cannot apply; shared global links and all U.S. pages stay unchanged."""
     ld = (
         f'\n  <script type="application/ld+json">{json.dumps(jsonld, separators=(",", ":"))}</script>'
         if jsonld
@@ -291,7 +302,12 @@ def _page(
     nav = _nav_html(canonical, lang)
     main_class = "wrap wrap-wide" if wide else "wrap"
     skip_label = "Saltar al contenido principal" if lang == "es" else "Skip to main content"
-    footer = FOOTER_HTML_ES if lang == "es" else FOOTER_HTML
+    if lang == "es":
+        footer = FOOTER_HTML_ES
+    elif country_code and country_code.strip().upper() != "US":
+        footer = FOOTER_HTML_WITHOUT_US_TOOLS
+    else:
+        footer = FOOTER_HTML
     return f"""<!doctype html>
 <html lang="{esc(lang)}">
 <head>

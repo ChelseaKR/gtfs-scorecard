@@ -8,6 +8,15 @@ def test_spa_ntd_and_guidance_are_country_aware() -> None:
     assert 'artifact.agency?.country || "US"' in app
     assert '!== "US") return ""' in app
     assert "standardsSection(artifact, dirRecord)" in app
+    assert (
+        'showUsPolicyToolsForCountry(dirRecord?.country || artifact.agency?.country || "US")' in app
+    )
+    assert "document.querySelector('.site-footer a[href=\"/ntd/\"]')" in app
+    assert 'dirRecord?.country || artifact.agency?.country || "US"' in app
+    assert (
+        "artifact = { ...artifact, agency: { ...artifact.agency, country: effectiveCountry } };"
+        in app
+    )
 
 
 def test_spa_has_no_hand_maintained_state_guidance_table() -> None:

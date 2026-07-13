@@ -1156,6 +1156,10 @@ async function renderCohort(index, urlIds) {
 
 /** @param {any} artifact @param {any} history @param {any} [dirRecord] */
 function renderScorecard(artifact, history, dirRecord) {
+  // The directory carries the portable location contract. Enrich old artifacts
+  // locally so every country-gated section uses the same effective country.
+  const effectiveCountry = String(dirRecord?.country || artifact.agency?.country || "US").toUpperCase();
+  artifact = { ...artifact, agency: { ...artifact.agency, country: effectiveCountry } };
   const name = artifact.agency.name;
   document.title = `${name} — GTFS Scorecard`;
   const overall = artifact.overall;
@@ -1346,14 +1350,17 @@ function boardTrend(history) {
   return `unchanged since ${formatDate(prev.date)}`;
 }
 
-/** Where this agency stands against the national set and its size peers.
+/** Where this agency stands against the worldwide tracked set and its size peers.
  *  Empty when the directory record or its percentiles are unavailable.
+ *  These are not country percentiles: early country cohorts can be tiny, while
+ *  both values use the complete tracked set (grouped by size for the peer row).
  *  @param {any} [dirRecord] */
 function peerContext(dirRecord) {
   if (!dirRecord) return "";
   const nat = dirRecord.national_percentile;
   const peer = dirRecord.peer_percentile;
   const tier = TIER_LABELS[dirRecord.size_tier] || dirRecord.size_tier;
+  const nonUs = String(dirRecord.country || "US").toUpperCase() !== "US";
   if (nat == null) return "";
   const peerPart =
     peer != null && tier && dirRecord.size_tier !== "unknown"
@@ -1375,7 +1382,8 @@ function peerContext(dirRecord) {
   if (peer != null && tier && dirRecord.size_tier !== "unknown") {
     rows.push(percentileRow(`${tier} peers`, peer));
   }
-  return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}</p>
+  const scope = nonUs ? " Comparisons use agencies currently tracked worldwide." : "";
+  return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}${scope}</p>
     <div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">
       ${rows.join("")}
       <div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div>
@@ -1920,6 +1928,18 @@ function renderNotFound(agencyId) {
   </div>`;
 }
 
+/** Keep U.S.-only policy navigation available on global routes and U.S. agency
+ *  scorecards, but remove it from the accessibility tree on other countries'
+ *  scorecards. The crawlable page shell applies the same country rule.
+ *  @param {string} [country] */
+function showUsPolicyToolsForCountry(country = "US") {
+  const ntdLink = document.querySelector('.site-footer a[href="/ntd/"]');
+  const section = ntdLink?.closest("p");
+  if (section instanceof HTMLElement) {
+    section.hidden = String(country).toUpperCase() !== "US";
+  }
+}
+
 /** Two agencies side by side as an accessible comparison table, shareable via
  *  #/compare?a=<id>&b=<id>. No new dependency: a data table, not a map, so it
  *  works with a keyboard and a screen reader out of the box. When either id is
@@ -2031,6 +2051,9 @@ async function renderCompare(aId, bId) {
 
 async function route() {
   const hash = location.hash || "#/";
+  // Every non-agency route is global. Reset first so navigating away from a
+  // non-U.S. scorecard never leaves its country-specific footer state behind.
+  showUsPolicyToolsForCountry();
   main.innerHTML = `<p class="loading" role="status">Loading…</p>`;
   try {
     if (hash === "#/programs") {
@@ -2066,6 +2089,7 @@ async function route() {
       if (index.agencies[match[1]]) {
         const artifact = await fetchJson(`${match[1]}/latest.json`);
         const dirRecord = await directoryRecord(match[1]);
+        showUsPolicyToolsForCountry(dirRecord?.country || artifact.agency?.country || "US");
         renderScorecard(artifact, index.agencies[match[1]].history, dirRecord);
       } else {
         renderNotFound(match[1]);

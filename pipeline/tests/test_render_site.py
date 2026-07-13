@@ -1016,6 +1016,33 @@ def test_fixlog_page_entries_are_dated_and_linkable() -> None:
     assert "the 2026-07-01 check verified it gone" in html
 
 
+def test_non_us_fixlog_prefers_current_directory_country_over_a_stale_artifact() -> None:
+    from scorecard_pipeline.render_site import _render_fixlog_page
+
+    artifact = {
+        "agency": {
+            "id": "legacy-ca",
+            "name": "Legacy Canadian Transit",
+            "country": "US",
+        }
+    }
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "The old calendar was replaced.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+
+    html = _render_fixlog_page(artifact, receipts, dir_record={"country": "CA"})
+
+    assert "United States tools" not in html
+    assert 'href="/ntd/"' not in html
+    assert 'href="/equity/"' not in html
+    assert 'href="/agencies/"' in html and 'href="/check/"' in html
+
+
 def test_outreach_note_names_hosted_tool() -> None:
     art = _artifact(
         {
@@ -1599,7 +1626,9 @@ def test_canadian_brief_omits_us_ntd_language() -> None:
     from scorecard_pipeline.render_site import _render_brief
 
     artifact = {
-        "agency": {"id": "barrie", "name": "Barrie Transit", "country": "CA"},
+        # The directory remains a safe fallback for older artifacts that did
+        # not yet carry the additive country field.
+        "agency": {"id": "barrie", "name": "Barrie Transit"},
         "overall": {"grade": "B", "score": 84.0},
         "snapshot_date": "2026-07-01",
         "feed": {"static_url": "https://example.ca/gtfs.zip"},
@@ -1619,6 +1648,8 @@ def test_canadian_brief_omits_us_ntd_language() -> None:
     assert "rider information is complete" in html
     assert "guidance, and key feed facts" in html
     assert "<dt>Location</dt><dd>Ontario, Canada</dd>" in html
+    assert "United States tools" not in html
+    assert 'href="/ntd/"' not in html
 
 
 def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
@@ -2565,6 +2596,26 @@ def test_footer_is_single_sourced_in_page_shell() -> None:
     assert 'href="/pulse/"' in FOOTER_HTML and 'href="/app/"' in FOOTER_HTML
 
 
+def test_page_shell_hides_us_policy_tools_only_for_non_us_agency_context() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    common: dict[str, Any] = {
+        "title": "t",
+        "description": "d",
+        "canonical": "https://gtfsscorecard.org/agency/demo/",
+        "body": "<p>x</p>",
+    }
+    global_html = _page(**common, country_code="JP")
+    us_html = _page(**common, country_code="us")
+
+    assert "United States tools" not in global_html
+    assert 'href="/ntd/"' not in global_html
+    assert 'href="/equity/"' not in global_html
+    assert 'href="/agencies/"' in global_html and 'href="/check/"' in global_html
+    assert "United States tools" in us_html
+    assert 'href="/ntd/"' in us_html and 'href="/equity/"' in us_html
+
+
 def test_pulse_page_combines_rankings_changes_and_trend() -> None:
     from scorecard_pipeline.render_site import _render_pulse_page
 
@@ -2942,7 +2993,6 @@ def test_non_us_agency_title_and_peer_context_include_country() -> None:
     from scorecard_pipeline.render_site import _peer_context, _render_agency
 
     artifact = _board_artifact()
-    artifact["agency"]["country"] = "GB"
     record = {
         "country": "GB",
         "subdivision_code": "GB-ENG",
@@ -2956,6 +3006,44 @@ def test_non_us_agency_title_and_peer_context_include_country() -> None:
 
     assert "(England, United Kingdom) GTFS quality report" in title
     assert "Operates in <bdi>England, United Kingdom</bdi>." in _peer_context(record)
+    assert "Comparisons use agencies currently tracked worldwide." in html
+    assert "United States tools" not in html
+    assert 'href="/ntd/"' not in html
+    assert "NTD GTFS readiness" not in html
+    assert "FTA National Transit Database GTFS requirement" not in html
+
+
+def test_old_canadian_artifact_uses_directory_country_for_country_body_sections() -> None:
+    from scorecard_pipeline.render_site import _render_agency
+
+    artifact = _board_artifact()
+    artifact["canada_equity"] = {"need_tier": "high"}
+
+    html = _render_agency(
+        artifact,
+        dir_record={
+            "country": "CA",
+            "subdivision_code": "CA-ON",
+            "subdivision_name": "Ontario",
+        },
+    )
+
+    assert "Who this service reaches" in html
+    assert "within-Canada measure" in html
+    assert "NTD GTFS readiness" not in html
+    assert "FTA National Transit Database GTFS requirement" not in html
+    assert "United States tools" not in html
+
+
+def test_us_agency_keeps_us_policy_tools_in_footer() -> None:
+    from scorecard_pipeline.render_site import _render_agency
+
+    artifact = _board_artifact()
+    artifact["agency"]["country"] = "US"
+    html = _render_agency(artifact, dir_record={"country": "US", "state": "California"})
+
+    assert "United States tools" in html
+    assert 'href="/ntd/"' in html and 'href="/equity/"' in html
 
 
 def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:

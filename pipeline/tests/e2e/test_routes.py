@@ -146,6 +146,26 @@ def test_agency_route_renders_scorecard(page: Page, app_url: str) -> None:
     _assert_not_stuck_loading(page)
 
 
+def test_agency_route_scopes_us_policy_footer_to_us_agencies(page: Page, app_url: str) -> None:
+    ntd_link = page.locator('.site-footer a[href="/ntd/"]')
+    legacy_ca = json.loads((ARTIFACTS / "barrie-transit" / "latest.json").read_text())
+    legacy_ca["agency"].pop("country", None)
+    page.route(
+        "**/data/artifacts/barrie-transit/latest.json",
+        lambda route: route.fulfill(json=legacy_ca),
+    )
+
+    page.goto(f"{app_url}#/agency/barrie-transit")
+    expect(page.locator("h1.board-title")).to_have_text("Barrie Transit (Ontario)")
+    expect(ntd_link).to_be_hidden()
+    expect(page.locator("#ntd-h")).to_have_count(0)
+    expect(page.get_by_text("FTA National Transit Database GTFS requirement")).to_have_count(0)
+
+    page.goto(f"{app_url}#/agency/{AGENCY_ID}")
+    expect(page.locator("h1.board-title")).to_have_text(_agency_name(AGENCY_ID))
+    expect(ntd_link).to_be_visible()
+
+
 def test_programs_route_lists_rollups(page: Page, app_url: str) -> None:
     page.goto(f"{app_url}#/programs")
     expect(page.locator("#main h1.page-title")).to_have_text("Program rollups.")
