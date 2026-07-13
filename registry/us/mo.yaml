@@ -1,0 +1,49 @@
+# Missouri (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: kansas-city-area-transportation-authority-kcata
+    name: Kansas City Area Transportation Authority (KCATA)
+    subdivision_code: US-MO
+    subdivision_name: Missouri
+    static_gtfs_url: http://www.kc-metro.com/gtf/google_transit.zip
+    mdb_id: 187
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jeffco-express
+    name: JeffCo Express
+    subdivision_code: US-MO
+    subdivision_name: Missouri
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/jeffersoncounty-mo-us/jeffersoncounty-mo-us.zip
+    mdb_id: 189
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-st-louis
+    name: Metro St. Louis
+    subdivision_code: US-MO
+    subdivision_name: Missouri
+    static_gtfs_url: http://metrostlouis.org/Transit/google_transit.zip
+    mdb_id: 190
+    rt_urls:
+      trip_updates: http://www.metrostlouis.org/RealTimeData/StlRealTimeTrips.pb
+      vehicle_positions: https://www.metrostlouis.org/RealTimeData/StlRealTimeVehicles.pb
+      service_alerts: https://www.metrostlouis.org/RealTimeData/StlRealTimeAlerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: madison-county-transit-1145
+    name: Madison County Transit
+    subdivision_code: US-MO
+    subdivision_name: Missouri
+    static_gtfs_url: https://transitfeeds.com/p/madison-county-transit/1146/latest/download
+    mdb_id: 1145
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metro-st-louis-2035
+    name: Loop Trolley
+    subdivision_code: US-MO
+    subdivision_name: Missouri
+    static_gtfs_url: https://files.looptrolley.com/google_transit.zip
+    mdb_id: 2035
+    license_note: "License: https://www.looptrolley.com/resources"

@@ -1,0 +1,29 @@
+# New Hampshire (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: advance-transit-at
+    name: Advance Transit (AT)
+    subdivision_code: US-NH
+    subdivision_name: New Hampshire
+    static_gtfs_url: http://whereismybus.advancetransit.com/GTFS/feed.zip
+    mdb_id: 451
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dartmouth-college
+    name: Dartmouth College
+    subdivision_code: US-NH
+    subdivision_name: New Hampshire
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dartmouth-vt-us/dartmouth-vt-us.zip
+    mdb_id: 1958
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: concord-area-transit
+    name: Concord Area Transit Flex
+    subdivision_code: US-NH
+    subdivision_name: New Hampshire
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/concordareatransit-nh-us/concordareatransit-nh-us--flex-v2.zip
+    mdb_id: 2164
+    license_note: No stated data license in the Mobility Database; verify before publishing.

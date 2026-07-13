@@ -1,0 +1,18 @@
+# Perlis (MY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: basmy-kangar
+    name: BAS.MY Kangar
+    country: MY
+    subdivision_code: MY-09
+    subdivision_name: Perlis
+    mdb_id: "mdb-3157"
+    is_official: true
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/mybas-kangar
+    license_note: >-
+      CC BY 4.0; published through Malaysia's official data.gov.my open-data
+      platform.
+    rt_urls:
+      vehicle_positions: https://api.data.gov.my/gtfs-realtime/vehicle-position/mybas-kangar

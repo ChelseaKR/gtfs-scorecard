@@ -347,6 +347,32 @@ def _load_manifest(root: Path, manifest_path: Path) -> list[Agency]:
     return parse_agencies({"agencies": entries}, source=str(manifest_path), entry_sources=sources)
 
 
+def registry_paths(root: Path | None = None) -> list[Path]:
+    """Return every writable registry data file in manifest order.
+
+    This is the writer-side companion to :func:`read_agencies`: textual editors
+    must update the selected legacy file or each explicit shard, never discover
+    arbitrary YAML files on their own and drift from the validated manifest.
+    """
+    selected_root = (root or repo_root()).resolve()
+    legacy_path = selected_root / "agencies.yaml"
+    registry_dir = selected_root / "registry"
+    manifest_path = registry_dir / "index.yaml"
+    if manifest_path.exists() and legacy_path.exists():
+        raise AgencyConfigError(
+            f"ambiguous agency registry: both {legacy_path} and {manifest_path} exist"
+        )
+    if registry_dir.exists() and not manifest_path.is_file():
+        raise AgencyConfigError(
+            f"partial agency registry migration: {registry_dir} exists without index.yaml"
+        )
+    if manifest_path.is_file():
+        return _manifest_shards(selected_root, manifest_path)
+    if legacy_path.is_file():
+        return [legacy_path]
+    raise AgencyConfigError(f"no agency registry found at {legacy_path} or {manifest_path}")
+
+
 def read_agencies(path: Path | None = None) -> list[Agency]:
     """Read a legacy registry or shard manifest without changing global state.
 
@@ -360,24 +386,13 @@ def read_agencies(path: Path | None = None) -> list[Agency]:
             raise AgencyConfigError(f"no agency registry found at {path}")
         agencies = parse_agencies(_read_yaml(path), source=str(path))
     else:
-        root = repo_root()
+        root = repo_root().resolve()
         legacy_path = root / "agencies.yaml"
-        registry_dir = root / "registry"
-        manifest_path = registry_dir / "index.yaml"
-        if manifest_path.exists() and legacy_path.exists():
-            raise AgencyConfigError(
-                f"ambiguous agency registry: both {legacy_path} and {manifest_path} exist"
-            )
-        if registry_dir.exists() and not manifest_path.is_file():
-            raise AgencyConfigError(
-                f"partial agency registry migration: {registry_dir} exists without index.yaml"
-            )
-        if manifest_path.is_file():
-            agencies = _load_manifest(root, manifest_path)
-        elif legacy_path.is_file():
+        selected_paths = registry_paths(root)
+        if selected_paths == [legacy_path]:
             agencies = parse_agencies(_read_yaml(legacy_path), source=str(legacy_path))
         else:
-            raise AgencyConfigError(f"no agency registry found at {legacy_path} or {manifest_path}")
+            agencies = _load_manifest(root, root / "registry" / "index.yaml")
 
     return agencies
 

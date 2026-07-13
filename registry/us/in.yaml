@@ -1,0 +1,96 @@
+# Indiana (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bloomington-transit
+    name: Bloomington Transit
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://data.bloomington.in.gov/dataset/5aca3228-b81b-4572-a45c-b05a30053949/resource/16145a82-0959-4922-93ae-14dcee02950c/download/googletransitfeed.zip
+    mdb_id: 363
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: terre-haute-transit-utility
+    name: Terre Haute Transit Utility
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/terrehautetransit-in-us/terrehautetransit-in-us.zip
+    mdb_id: 387
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citybus-of-greater-lafayette-indiana-citybus
+    name: CityBus of Greater Lafayette Indiana (CityBus)
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip
+    mdb_id: 391
+    license_note: "License: https://gocitybus.com/terms-for-use"
+
+  - id: interurban-trolley
+    name: Interurban Trolley
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: http://macog.com/google/google_transit.zip
+    mdb_id: 571
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-shore-line
+    name: South Shore Line
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: http://www.mysouthshoreline.com/google/google_transit.zip
+    mdb_id: 585
+    rt_urls:
+      trip_updates: https://passio3.com/transpo/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/transpo/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/transpo/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valparaiso-transit
+    name: Valparaiso Transit
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/valpotransit-chi-us/valpotransit-chi-us.zip
+    mdb_id: 620
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: muncie-indiana-transit-system-mits
+    name: Muncie Indiana Transit System (MITS)
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: http://www.mitsbus.org/wp-content/uploads/2016/11/GTFS.zip
+    mdb_id: 719
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citilink
+    name: Citilink
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://transitfeeds.com/p/fort-wayne-citilink/378/latest/download
+    mdb_id: 1140
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: indygo
+    name: IndyGo
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://transitfeeds.com/p/indygo/210/latest/download
+    mdb_id: 1237
+    license_note: "License: http://www.indygo.net/about-indygo/indygo-developer-content-area/indygo-gtfs-terms-of-use/"
+
+  - id: bloomington-transit-2066
+    name: Bloomington Transit
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/bloomingtontransit.etaspot.net/gtfs.zip
+    mdb_id: 2066
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citilink-2266
+    name: Citilink
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    static_gtfs_url: https://gtfs.remix.com/citilink_fortwayne_in_us.zip
+    mdb_id: 2266
+    license_note: No stated data license in the Mobility Database; verify before publishing.

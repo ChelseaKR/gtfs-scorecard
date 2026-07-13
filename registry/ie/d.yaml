@@ -1,0 +1,12 @@
+# Dublin (IE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: dublin-bus
+    name: Dublin Bus (Transport for Ireland)
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Dublin_Bus.zip
+    license_note: CC BY 4.0; published by Ireland's National Transport Authority.

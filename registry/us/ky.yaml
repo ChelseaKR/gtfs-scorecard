@@ -1,0 +1,72 @@
+# Kentucky (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: blue-grass-community-action-partnership
+    name: Bluegrass Ultra-Transit Service
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bgcap-ky-us/bgcap-ky-us.zip
+    mdb_id: 362
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: transit-authority-of-river-city-tarc
+    name: Transit Authority of River City (TARC)
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: http://googletransit.ridetarc.org/feed/google_transit.zip
+    mdb_id: 364
+    rt_urls:
+      trip_updates: http://gtfsrealtime.ridetarc.org/realtime/TripUpdate/TripUpdates.pb
+      vehicle_positions: http://gtfsrealtime.ridetarc.org/realtime/Vehicle/VehiclePositions.pb
+      service_alerts: http://gtfsrealtime.ridetarc.org/realtime/Alert/Alerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lextran
+    name: Lextran
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: https://lextran.com/wp-content/uploads/2021/05/GTFS.zip
+    mdb_id: 365
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: transit-authority-of-northern-kentucky-tank
+    name: Transit Authority of Northern Kentucky (TANK)
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: https://www.tankbus.org/Portals/tankbus/gtfs/tank-google-transit.zip
+    mdb_id: 367
+    rt_urls:
+      trip_updates: http://66.42.202.74:89/api/tripupdates
+      vehicle_positions: http://66.42.202.74:89/api/vehiclepositions
+      service_alerts: http://66.42.202.74:89/api/servicealerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lextran-2067
+    name: Lextran
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2067
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: transit-authority-of-northern-kentucky-tank-2068
+    name: Transit Authority of Northern Kentucky (TANK)
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx
+    mdb_id: 2068
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: transit-authority-of-river-city-tarc-2662
+    name: Transit Authority of River City (TARC) Fixed Route
+    subdivision_code: US-KY
+    subdivision_name: Kentucky
+    static_gtfs_url: https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2662
+    rt_urls:
+      trip_updates: https://tarc.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://tarc.rideralerts.com/InfoPoint/GTFS-realtime.ashx?Type=VehiclePosition
+      service_alerts: https://tarc.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.

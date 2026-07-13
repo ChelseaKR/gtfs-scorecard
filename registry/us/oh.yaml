@@ -1,0 +1,171 @@
+# Ohio (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: athens-public-transit
+    name: Athens Public Transit
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://transitfeeds.com/p/athens-public-transit/298/latest/download
+    mdb_id: 4
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: allen-county-regional-transit-authority
+    name: Allen County Regional Transit Authority
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/acrta-oh-us/acrta-oh-us.zip
+    mdb_id: 210
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: butler-county-regional-transit-authority
+    ntd_id: "30141"
+    name: Butler County Regional Transit Authority
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://www.butlercountyrta.com/wp-content/uploads/2019/11/Bcrta-GTFS-1.zip
+    mdb_id: 240
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cincinnati-metro
+    ntd_id: "50012"
+    name: Cincinnati Metro
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://www.go-metro.com/uploads/GTFS/google_transit_info.zip
+    mdb_id: 307
+    rt_urls:
+      trip_updates: https://tmgtfsprd.sorttrpcloud.com/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb
+      vehicle_positions: https://tmgtfsprd.sorttrpcloud.com/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb
+      service_alerts: https://tmgtfsprd.sorttrpcloud.com/TMGTFSRealTimeWebService/alert/alerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greater-dayton-regional-transit-authority-greater-dayton-rta
+    name: Greater Dayton Regional Transit Authority (Greater Dayton RTA)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: http://proc.greaterdaytonrta.org/gtfs/google_transit.zip
+    mdb_id: 403
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: central-ohio-transit-authority-cota
+    ntd_id: "50016"
+    name: Central Ohio Transit Authority (COTA)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: http://www.cota.com/data/cota.gtfs.zip
+    mdb_id: 404
+    rt_urls:
+      trip_updates: http://realtime.cota.com/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: http://realtime.cota.com/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: http://realtime.cota.com/TMGTFSRealTimeWebService/Alert/Alerts.pb
+    license_note: "License: http://www.cota.com/data"
+
+  - id: national-park-service
+    name: Cuyahoga Valley Scenic Railroad
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: http://nationalparkservice.github.io/nps-gtfs/cuva/scenic-rail/gtfs.zip
+    mdb_id: 405
+    license_note: "License: https://creativecommons.org/publicdomain/zero/1.0/"
+
+  - id: greater-cleveland-regional-transit-authority
+    name: Greater Cleveland Regional Transit Authority
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: http://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip
+    mdb_id: 406
+    rt_urls:
+      trip_updates: http://gtfs.gcrta.org/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: http://gtfs.gcrta.org/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: http://gtfs.gcrta.org/TMGTFSRealTimeWebService/Alert/Alerts.pb
+    license_note: "License: http://www.riderta.com/developers"
+
+  - id: laketran
+    name: Laketran
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip
+    mdb_id: 410
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: akron-metro-regional-transit-authority-metro
+    name: Akron Metro Regional Transit Authority (METRO)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://www.akronmetro.org/Data/Sites/2/gtfs-data/akronmetrogtfs.zip
+    mdb_id: 411
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stark-area-regional-transit-authority-sarta
+    name: Stark Area Regional Transit Authority (SARTA)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/stark-area-regional-transit-authority.zip
+    mdb_id: 818
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: portage-area-regional-transportation-authority-parta
+    name: Portage Area Regional Transportation Authority (PARTA)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://592f5f98-5029-425f-ac4d-0774faecf068.filesusr.com/archives/f64377_81ed397719364abbb0aa6a97a1dbf1c9.zip?dn=12_17google_transit.zip
+    mdb_id: 908
+    license_note: "License: https://www.partaonline.org/gtfs"
+
+  - id: western-reserve-transit-authority
+    name: Western Reserve Transit Authority
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/western-reserve-transit-authority.zip
+    mdb_id: 922
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: athens-public-transit-1973
+    name: Athens Public Transit
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip
+    mdb_id: 1973
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stark-area-regional-transit-authority-sarta-2001
+    name: Stark Area Regional Transit Authority (SARTA)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip
+    mdb_id: 2001
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: akron-metro-regional-transit-authority-metro-2071
+    name: Akron Metro Regional Transit Authority (METRO)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip
+    mdb_id: 2071
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: froggy-transportation
+    name: Froggy Transportation
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11830/T.zip
+    mdb_id: 2216
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: portage-area-regional-transportation-authority-parta-2256
+    name: Portage Area Regional Transportation Authority (PARTA)
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://passio3.com/parta/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2256
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: steel-valley-regional-transit-authority
+    name: Steel Valley Regional Transit Authority
+    subdivision_code: US-OH
+    subdivision_name: Ohio
+    static_gtfs_url: https://svrta.com/wp-content/uploads/2025/12/svrta-steubenville-oh-us-2.zip
+    mdb_id: 3113
+    license_note: "License: https://svrta.com/website-disclaimer/"

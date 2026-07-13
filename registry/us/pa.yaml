@@ -1,0 +1,136 @@
+# Pennsylvania (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: berks-area-regional-transportation-authority-barta
+    name: Berks Area Regional Transportation Authority (BARTA)
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/barta.zip
+    mdb_id: 221
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: port-authority-of-allegheny-county
+    name: Port Authority of Allegheny County
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://www.portauthority.org/developerresources/GTFS.zip
+    mdb_id: 409
+    rt_urls:
+      trip_updates: https://truetime.portauthority.org/gtfsrt-bus/trips
+      vehicle_positions: https://truetime.portauthority.org/gtfsrt-bus/vehicles
+      service_alerts: https://truetime.portauthority.org/gtfsrt-bus/alerts
+    license_note: "License: https://www.portauthority.org/business-center/developer-resources/developer-license-agreement/"
+
+  - id: erie-metropolitan-transit-authority
+    name: Erie Metropolitan Transit Authority
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip
+    mdb_id: 412
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rabbit-transit
+    name: Rabbit Transit
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: http://www.rabbittransit.org/infopoint/gtfs/google_transit.zip
+    mdb_id: 499
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: southeastern-pennsylvania-transportation-authority-septa
+    name: Southeastern Pennsylvania Transportation Authority (SEPTA) Bus
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://www3.septa.org/developer/google_bus.zip
+    mdb_id: 502
+    rt_urls:
+      trip_updates: https://www3.septa.org/gtfsrt/septa-pa-us/Trip/rtTripUpdates.pb
+      vehicle_positions: https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb
+      service_alerts: https://www3.septa.org/gtfsrt/septa-pa-us/Service/rtServiceAlerts.pb
+    license_note: "License: https://www3.septa.org/developer/"
+
+  - id: southeastern-pennsylvania-transportation-authority-septa-503
+    name: Southeastern Pennsylvania Transportation Authority (SEPTA) Rail
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://www3.septa.org/developer/google_rail.zip
+    mdb_id: 503
+    rt_urls:
+      trip_updates: https://www3.septa.org/gtfsrt/septarail-pa-us/Trip/rtTripUpdates.pb
+      vehicle_positions: https://www3.septa.org/gtfsrt/septarail-pa-us/Vehicle/rtVehiclePosition.pb
+      service_alerts: https://www3.septa.org/gtfsrt/septarail-pa-us/Service/rtServiceAlerts.pb
+    license_note: "License: https://www3.septa.org/developer/"
+
+  - id: lehigh-and-northampton-transportation-authority-lanta
+    name: Lehigh and Northampton Transportation Authority (LANTA)
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://github.com/LANTA-Transportation-Authority/GTFS-data/raw/master/lanta_gtfs_feed.zip
+    mdb_id: 506
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: monroe-county-transportation-authority-mcta
+    name: Monroe County Transportation Authority (MCTA)
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://www.gomcta.com/google_transit.zip
+    mdb_id: 523
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: red-rose-transit-authority-rrta
+    name: Red Rose Transit Authority (RRTA)
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/rrta.zip
+    mdb_id: 807
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: centre-county-transit-authority-cata
+    name: CATABUS
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://transitfeeds.com/p/catabus/536/latest/download
+    mdb_id: 1236
+    license_note: "License: https://catabus.com/developer-tools/"
+
+  - id: beaver-county-transit-authority
+    name: Beaver County Transit Authority
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://transitfeeds.com/p/beaver-county-transit-authority/1154/latest/download
+    mdb_id: 1312
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: red-rose-transit-authority-rrta-2000
+    name: Red Rose Transit Authority (RRTA)
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx
+    mdb_id: 2000
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: berks-area-regional-transportation-authority-barta-2064
+    name: Berks Area Regional Transportation Authority (BARTA)
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://busfinder.bartabus.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2064
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: beaver-county-transit-authority-2262
+    name: Beaver County Transit Authority
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://bcta.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2262
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: phlash
+    name: Philly PHLASH
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    static_gtfs_url: https://github.com/PhlashGTFS/GTFS/releases/latest/download/PHLASH_GTFS.zip
+    mdb_id: 2877
+    license_note: No stated data license in the Mobility Database; verify before publishing.

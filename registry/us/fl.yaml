@@ -1,0 +1,368 @@
+# Florida (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: lakeland-area-mass-transit
+    name: Lakeland Area Mass Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=313A0
+    mdb_id: 321
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: key-west-transit
+    name: Key West Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/keywest-fl-us/keywest-fl-us.zip
+    mdb_id: 322
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: collier-area-transit-cat
+    name: Collier Area Transit (CAT)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=396A0
+    mdb_id: 323
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: leetran
+    name: LeeTran
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://www.leegov.com/leetran/Documents/GTFS.zip
+    mdb_id: 324
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hillsborough-area-regional-transit-hart
+    name: Hillsborough Area Regional Transit (HART)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://www.gohart.org/google/google_transit.zip
+    mdb_id: 325
+    rt_urls:
+      trip_updates: http://api.tampa.onebusaway.org:8088/trip-updates
+      vehicle_positions: http://api.tampa.onebusaway.org:8088/vehicle-positions
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pinellas-suncoast-transit-authority-psta
+    name: Pinellas Suncoast Transit Authority (PSTA)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://www.psta.net/latest/Google_transit.zip
+    mdb_id: 326
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sarasota-county-area-transit
+    name: Sarasota County Area Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=457A0
+    mdb_id: 327
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: manatee-county-area-transit
+    name: Manatee County Area Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=342A0
+    mdb_id: 328
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: usf-bull-runner
+    name: USF Bull Runner
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://github.com/CUTR-at-USF/bullrunner-gtfs-realtime-generator/raw/master/bullrunner-gtfs.zip
+    mdb_id: 329
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: broward-county-transit
+    name: Broward County Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://www.broward.org/bct/documents/google_transit.zip
+    mdb_id: 330
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: miami-dade-transit
+    name: Miami-Dade Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://www.miamidade.gov/transit/googletransit/current/google_transit.zip
+    mdb_id: 331
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: palm-tran
+    name: Palm Tran
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://www.palmtran.org/feed/google_transit.zip
+    mdb_id: 332
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: south-florida-regional-transportation-authority-tri-rail
+    name: South Florida Regional Transportation Authority (Tri-Rail)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://www.tri-rail.com/GTDF/Current/google_transit.zip
+    mdb_id: 333
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: escambia-county-area-transit-ecat
+    name: Escambia County Area Transit (ECAT)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ecat-fl-us/ecat-fl-us.zip
+    mdb_id: 335
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: emerald-coast-rider-ecr
+    name: Emerald Coast Rider (ECR)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/okaloosacountytransit-fl-us/okaloosacountytransit-fl-us.zip
+    mdb_id: 336
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bay-town-trolley
+    name: Bay Town Trolley
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/baytowntrolley-fl-us/baytowntrolley-fl-us.zip
+    mdb_id: 337
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pasco-county-public-transportation
+    name: Pasco County Public Transportation
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pascocountypublictransit-fl-us/pascocountypublictransit-fl-us.zip
+    mdb_id: 340
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hernando-county-transit-thebus
+    name: Hernando County Transit (TheBus)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thehernandoexpress-fl-us/thehernandoexpress-fl-us.zip
+    mdb_id: 341
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lakexpress
+    name: LakeXpress
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=450A0
+    mdb_id: 342
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: suntran-343
+    name: SunTran
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/suntran-fl-us/suntran-fl-us.zip
+    mdb_id: 343
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: starmetro
+    name: StarMetro
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/starmetro-fl-us/starmetro-fl-us.zip
+    mdb_id: 344
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gainesville-regional-transit-system
+    name: Gainesville Regional Transit System
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=468A0
+    mdb_id: 345
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jacksonville-transportation-authority-jta
+    name: Jacksonville Transportation Authority (JTA)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://schedules.jtafla.com/schedulesgtfs/download
+    mdb_id: 346
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: central-florida-regional-transit-authority-lynx
+    name: Central Florida Regional Transit Authority (LYNX)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://gtfsrt.golynx.com/gtfsrt/google_transit.zip
+    mdb_id: 347
+    rt_urls:
+      trip_updates: http://gtfsrt.golynx.com/gtfsrt/GTFS_TripUpdates.pb
+      vehicle_positions: http://gtfsrt.golynx.com/gtfsrt/GTFS_VehiclePositions.pb
+      service_alerts: http://gtfsrt.golynx.com/gtfsrt/GTFS_ServiceAlerts.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sarasota-county-area-transit-scat
+    name: Sarasota County Area Transit (SCAT)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip
+    mdb_id: 348
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: votran
+    name: Votran
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=425A0
+    mdb_id: 349
+    rt_urls:
+      trip_updates: http://realtimevotran.availtec.com/infopoint/GTFS-Realtime.ashx?&Type=TripUpdate
+      vehicle_positions: http://realtimevotran.availtec.com/infopoint/GTFS-Realtime.ashx?&Type=VehiclePosition
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sunshine-bus-company
+    name: Sunshine Bus Company
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sunshinebuscompany-fl-us/sunshinebuscompany-fl-us.zip
+    mdb_id: 350
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gowal
+    name: GoWal
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gowal-fl-us/gowal-fl-us.zip
+    mdb_id: 610
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: florida-department-of-transportation-sunrail
+    name: Florida Department of Transportation (SunRail)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://corporate.sunrail.com/gtfs/google_transit.zip
+    mdb_id: 626
+    license_note: "License: https://corporate.sunrail.com/about-sunrail/gtfs-data-download/"
+
+  - id: citrus-county-transit
+    name: Citrus County Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=152A0
+    mdb_id: 630
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lake-county-connection
+    name: Lake County Connection
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://www.ftis.org/PostFileDownload.aspx?id=160A0
+    mdb_id: 876
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: brightline-trains-llc
+    name: Brightline Trains LLC
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://feed.gobrightline.com/bl_gtfs.zip
+    mdb_id: 1126
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: i-ride-trolley-i-ride
+    name: I-RIDE Trolley (I-RIDE)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://buswhere.com/iridetrolley/gtfs/schedule
+    mdb_id: 1143
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sanford-trolley
+    name: Sanford Trolley
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://transitfeeds.com/p/sanford-trolley/947/latest/download
+    mdb_id: 1157
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lake-county-connection-2255
+    name: Lake County Connection
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://www.ridelakexpress.com/gtfs/gtfs.zip
+    mdb_id: 2255
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citrus-county-transit-2257
+    name: Citrus County Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://www.citrusbocc.com/document_center/Department/Community%20Services/Support%20Services/Transit/GTFS%20Text%20Files/GTFS%2011-18-24.zip
+    mdb_id: 2257
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: manatee-county-area-transit-2258
+    name: Manatee County Area Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://realtimemcat.availtec.com/InfoPoint/GTFS-Zip.ashx
+    mdb_id: 2258
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: collier-area-transit-cat-2259
+    name: Collier Area Transit (CAT)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://cat.cadavl.com:4431/CAT/GTFS/GTFS_CAT.zip
+    mdb_id: 2259
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: breeze-transit
+    name: Breeze Transit
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://breezerider.tripsparkhost.com/gtfs/2024Winter%20R02/google_transit.zip
+    mdb_id: 2260
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-miami-beach
+    name: City of Miami Beach
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/miamibeach-fl-us/miamibeach-fl-us.zip
+    mdb_id: 2322
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-miami-gardens
+    name: City of Miami Gardens
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/miamigardens-fl-us/miamigardens-fl-us.zip
+    mdb_id: 2323
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gainesville-regional-transit-system-2412
+    name: Gainesville Regional Transit System
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: http://go-rts.com/wp-content/uploads/2025/01/RTSGTFS_Spring2025.zip
+    mdb_id: 2412
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dry-tortugas-national-park
+    name: DRTO Ferry Service
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/drto/drto-ferry-service.zip
+    mdb_id: 3207
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gulf-islands-national-seashore
+    name: Pensacola Bay City Ferry
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/guis/guis-ferry-service-fl.zip
+    mdb_id: 3209
+    license_note: No stated data license in the Mobility Database; verify before publishing.

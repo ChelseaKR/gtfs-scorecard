@@ -1,0 +1,28 @@
+# Mississippi (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: jtran
+    name: JTRAN
+    subdivision_code: US-MS
+    subdivision_name: Mississippi
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/jatran-ms-us/jatran-ms-us.zip
+    mdb_id: 155
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-jackson-jtran
+    name: City of Jackson (JTRAN)
+    subdivision_code: US-MS
+    subdivision_name: Mississippi
+    static_gtfs_url: https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2652
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gulf-islands-national-seashore-3210
+    name: Ship Island Excursions
+    subdivision_code: US-MS
+    subdivision_name: Mississippi
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/guis/guis-ferry-service-ms.zip
+    mdb_id: 3210
+    license_note: No stated data license in the Mobility Database; verify before publishing.

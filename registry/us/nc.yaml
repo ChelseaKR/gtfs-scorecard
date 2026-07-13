@@ -1,0 +1,205 @@
+# North Carolina (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: concord-kannapolis-area-transit-rider-transit
+    name: Concord Kannapolis Area Transit (Rider Transit)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ckrider-nc-us/ckrider-nc-us.zip
+    mdb_id: 372
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: piedmont-authority-for-regional-transportation-part
+    name: Piedmont Authority for Regional Transportation (PART)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5137/gtfs.zip
+    mdb_id: 373
+    license_note: "License: https://creativecommons.org/licenses/by/4.0/"
+
+  - id: gotriangle
+    ntd_id: "40108"
+    name: GoTriangle
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tta-regionalbus-nc-us/tta-regionalbus-nc-us.zip
+    mdb_id: 374
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gocary
+    ntd_id: "40143"
+    name: GoCary
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cary-transit-nc-us/cary-transit-nc-us.zip
+    mdb_id: 375
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: chapel-hill-transit-cht
+    ntd_id: "40051"
+    name: Chapel Hill Transit (CHT)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/chapel-hill-transit-nc-us/chapel-hill-transit-nc-us.zip
+    mdb_id: 376
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: godurham
+    name: GoDurham
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/durham-area-transit-authority-nc-us/durham-area-transit-authority-nc-us.zip
+    mdb_id: 377
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: duke-university
+    name: Duke University
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip
+    mdb_id: 378
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-area-transit-goraleigh
+    name: Capital Area Transit (GoRaleigh)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/capital-area-transit-nc-us/capital-area-transit-nc-us.zip
+    mdb_id: 471
+    license_note: "License: https://goraleigh.org/developer-terms-and-conditions"
+
+  - id: tar-river-transit
+    name: Tar River Transit
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip
+    mdb_id: 472
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greensboro-transit-authority-gta
+    name: Greensboro Transit Authority (GTA)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://app.mecatran.com/urb/ws/feed/c2l0ZT1ncmVlbnNib3JvO2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT00ZDQ3MDYyMjNiNjI3ZjFmMTU1YzFiNGIxNTY0Mzg0ZDFjNzYyOTQy
+    mdb_id: 615
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: charlotte-area-transit-system-cats
+    name: Charlotte Area Transit System (CATS)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://transitfeeds.com/p/charlotte-area-transit-system/1252/latest/download
+    mdb_id: 640
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: asheville-rides-transit
+    name: Asheville Rides Transit
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/asheville-nc-us/asheville-nc-us.zip
+    mdb_id: 903
+    rt_urls:
+      service_alerts: http://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/asheville-nc-us/service_alerts.proto
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wave-transit
+    name: Wave Transit
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://www.wavetransit.com/gtransit/google_transit.zip
+    mdb_id: 1110
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: north-carolina-state-university-ncsu
+    name: North Carolina State University (NCSU)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ncsu-wolfline-nc-us/ncsu-wolfline-nc-us.zip
+    mdb_id: 1289
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wave-transit-1862
+    name: UNCW Seahawk Shuttle
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://drive.google.com/u/0/uc?id=1w_7Ma9B9-aA-iBTWz3gxwGlORXPjppQ-&export=download
+    mdb_id: 1862
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: link-transit-1971
+    ntd_id: "40252"
+    name: Link Transit
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://mylinktransit.org/gtfs
+    mdb_id: 1971
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-area-transit-goraleigh-1983
+    name: Capital Area Transit (GoRaleigh)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://goraleigh.org/sites/default/files/gtfsexport.zip
+    mdb_id: 1983
+    license_note: "License: https://goraleigh.org/developer-terms-and-conditions"
+
+  - id: wave-transit-2026
+    name: UNCW Seahawk Shuttle
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://www.wavetransit.com/gtransit/google_transit_uncw.zip
+    mdb_id: 2026
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-area-transit-goraleigh-2074
+    ntd_id: "40007"
+    name: Capital Area Transit (GoRaleigh)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://goraleigh.org/gr_gtfs
+    mdb_id: 2074
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: concord-kannapolis-area-transit-rider-transit-2244
+    name: Concord Kannapolis Area Transit (Rider Transit)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://passio3.com/concordKat/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2244
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: north-carolina-state-university-ncsu-2245
+    name: North Carolina State University (NCSU)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2245
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: charlotte-area-transit-system-cats-2265
+    name: Charlotte Area Transit System (CATS)
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://gtfsrealtime.ridetransit.org/GTFSStatic/GTFS.zip
+    mdb_id: 2265
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gocary-2277
+    ntd_id: "40143"
+    name: GoCary
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://www.gocary.org/_GTFS
+    mdb_id: 2277
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cape-lookout-national-seashore
+    name: CALO Ferry Service
+    subdivision_code: US-NC
+    subdivision_name: North Carolina
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/calo/calo-ferry-service.zip
+    mdb_id: 3205
+    license_note: No stated data license in the Mobility Database; verify before publishing.

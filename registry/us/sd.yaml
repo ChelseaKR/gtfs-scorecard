@@ -1,0 +1,12 @@
+# South Dakota (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: sioux-area-metro-sam
+    name: Sioux Area Metro (SAM)
+    subdivision_code: US-SD
+    subdivision_name: South Dakota
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip
+    mdb_id: 192
+    license_note: No stated data license in the Mobility Database; verify before publishing.

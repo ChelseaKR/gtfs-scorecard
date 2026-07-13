@@ -1,0 +1,18 @@
+# Yukon (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  # Canada pilot: the first non-US agencies (ADR 0026, internationalize by layer,
+  # GTFS-first). country: CA marks them so the US-only NTD certification-readiness
+  # surfaces are skipped; the GTFS-quality rubric is unchanged. Discovered in the
+  # Mobility Database (scorecard sync --country CA). Whitehorse is a small northern
+  # system, close to the scorecard's small-agency audience. Verify licenses.
+  - id: whitehorse-transit
+    name: Whitehorse Transit (Yukon)
+    country: CA
+    subdivision_code: CA-YT
+    subdivision_name: Yukon
+    mdb_id: 689
+    static_gtfs_url: https://data.whitehorse.ca/Google_transit_Feed_Docs.zip
+    license_note: No stated data license in the Mobility Database; verify before relying on.

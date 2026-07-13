@@ -1,0 +1,54 @@
+# New Jersey (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: patco-speedline
+    name: PATCO Speedline
+    subdivision_code: US-NJ
+    subdivision_name: New Jersey
+    static_gtfs_url: http://www.ridepatco.org/developers/PortAuthorityTransitCorporation.zip
+    mdb_id: 505
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: new-jersey-transit-nj-transit
+    ntd_id: "20080"
+    name: New Jersey Transit (NJ Transit) Bus
+    subdivision_code: US-NJ
+    subdivision_name: New Jersey
+    static_gtfs_url: https://www.njtransit.com/bus_data.zip
+    mdb_id: 508
+    license_note: "License: https://www.njtransit.com/developer-tools"
+
+  - id: new-jersey-transit-nj-transit-509
+    ntd_id: "20080"
+    name: New Jersey Transit (NJ Transit) Rail
+    subdivision_code: US-NJ
+    subdivision_name: New Jersey
+    static_gtfs_url: https://www.njtransit.com/rail_data.zip
+    mdb_id: 509
+    license_note: "License: https://www.njtransit.com/developer-tools"
+
+  - id: port-authority-trans-hudson-path
+    name: Port Authority Trans-Hudson (PATH)
+    subdivision_code: US-NJ
+    subdivision_name: New Jersey
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip
+    mdb_id: 517
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: patco-speedline-3035
+    name: PATCO Speedline
+    subdivision_code: US-NJ
+    subdivision_name: New Jersey
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip
+    mdb_id: 3035
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: boxcar
+    name: Boxcar Commuter Bus
+    subdivision_code: US-NJ
+    subdivision_name: New Jersey
+    static_gtfs_url: https://boxcar-gtfs.vercel.app/api/gtfs
+    mdb_id: 3105
+    license_note: No stated data license in the Mobility Database; verify before publishing.

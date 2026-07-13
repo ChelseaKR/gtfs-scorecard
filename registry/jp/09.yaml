@@ -1,0 +1,16 @@
+# Tochigi (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  # First worldwide canaries: official open feeds on three continents. These
+  # exercise the shared GTFS rubric, Unicode names, and country-first browsing;
+  # U.S.-specific NTD and equity modules do not apply. Sources and reuse terms
+  # were verified 2026-07-12 and are recorded in docs/feeds.md.
+  - id: nasu-town-community-bus
+    name: Nasu Town Community Bus (那須町町民バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nasutown/feeds/nasutown/files/feed.zip?rid=current
+    license_note: CC BY 4.0; published as open data by Nasu Town.

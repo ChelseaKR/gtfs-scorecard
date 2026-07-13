@@ -1,0 +1,89 @@
+# Tennessee (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: chattanooga-area-regional-transportation-authority-carta
+    name: Chattanooga Area Regional Transportation Authority (CARTA)
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://www.gocarta.org/wp-content/uploads/2021/08/GTFS.zip
+    mdb_id: 359
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: nashville-mta-wego-public-transit
+    name: Nashville MTA WeGo Public Transit
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://www.wegotransit.com/googleexport/google_transit.zip
+    mdb_id: 360
+    rt_urls:
+      trip_updates: http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb
+      vehicle_positions: http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb
+      service_alerts: http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/alert/alerts.pb
+    license_note: "License: https://www.wegotransit.com/contact-us/data-request-submission/"
+
+  - id: franklin-transit-authority
+    name: Franklin Transit Authority
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tma-tn-us/tma-tn-us.zip
+    mdb_id: 361
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: memphis-area-transit-authority
+    name: Memphis Area Transit Authority
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://www.matatransit.com/assets/2/6/Memphis_TN_transitfeed2.zip
+    mdb_id: 602
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: knoxville-area-transit-kat
+    name: Knoxville Area Transit (KAT)
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: http://www.knoxvilletn.gov/UserFiles/Servers/Server_109478/File/KAT/gtfs-kat.zip
+    mdb_id: 1121
+    license_note: "License: http://www.knoxvilletn.gov/government/opendata/knoxville_area_transit_kat_gtfs_feed"
+
+  - id: chattanooga-area-regional-transportation-authority-carta-2082
+    name: Chattanooga Area Regional Transportation Authority (CARTA)
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://www.gocarta.org/wp-content/uploads/2024/01/GTFS.zip
+    mdb_id: 2082
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jackson-transit-authority
+    name: Jackson Transit Authority
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/jackson-tn-us/jackson-tn-us.zip
+    mdb_id: 2313
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: memphis-area-transit-authority-2352
+    name: Memphis Area Transit Authority
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: http://mata.cadavl.com:5053/MATA/GTFS/GTFS_MATA.zip
+    mdb_id: 2352
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: muletown-trolley
+    name: Muletown Trolley
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip
+    mdb_id: 2420
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: county-connection-cccta-2421
+    ntd_id: "90078"
+    name: County Connection (CCCTA)
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    static_gtfs_url: https://countyconnection.com/GTFS/google_transit.zip
+    mdb_id: 2421
+    license_note: No stated data license in the Mobility Database; verify before publishing.

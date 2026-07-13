@@ -1,7 +1,7 @@
 """Agency registry and pipeline paths.
 
-Phase 1 hardcodes the two pilot agencies. Phase 4 replaces this with an
-agencies.yaml so any feed URL can be added without a code change.
+Phase 1 hardcoded the two pilot agencies. Phase 4 replaced that with a
+manifest-backed registry so any feed URL can be added without a code change.
 Feed URLs and licenses are documented in docs/feeds.md.
 """
 

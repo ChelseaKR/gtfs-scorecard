@@ -1,0 +1,12 @@
+# West Virginia (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: mountain-line-transit-authority
+    name: Mountain Line Transit Authority
+    subdivision_code: US-WV
+    subdivision_name: West Virginia
+    static_gtfs_url: http://site.busride.org/google/google_transit.zip
+    mdb_id: 407
+    license_note: No stated data license in the Mobility Database; verify before publishing.

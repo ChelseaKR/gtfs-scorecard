@@ -1,0 +1,49 @@
+# District of Columbia (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: dc-circulator
+    name: Service Discontinued
+    subdivision_code: US-DC
+    subdivision_name: District of Columbia
+    static_gtfs_url: https://extranet.ddot.dc.gov/ddot_data/gtfs/dc-circulator.zip
+    mdb_id: 486
+    license_note: "License: https://octo.dc.gov/page/district-columbia-data-policy"
+
+  - id: dc-streetcar
+    name: DC Streetcar
+    subdivision_code: US-DC
+    subdivision_name: District of Columbia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dcstreetcar-dc-us/dcstreetcar-dc-us.zip
+    mdb_id: 487
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-metropolitan-area-transit-authority-wmata
+    ntd_id: "30030"
+    name: Washington Metropolitan Area Transit Authority (WMATA) Bus
+    subdivision_code: US-DC
+    subdivision_name: District of Columbia
+    static_gtfs_url: https://api.wmata.com/gtfs/bus-gtfs-static.zip
+    mdb_id: 1846
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://developer.wmata.com/license"
+
+  - id: washington-metropolitan-area-transit-authority-wmata-1847
+    ntd_id: "30030"
+    name: Washington Metropolitan Area Transit Authority (WMATA) Rail
+    subdivision_code: US-DC
+    subdivision_name: District of Columbia
+    static_gtfs_url: https://api.wmata.com/gtfs/rail-gtfs-static.zip
+    mdb_id: 1847
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://developer.wmata.com/license"
+
+  - id: dc-streetcar-2223
+    name: DC Streetcar
+    subdivision_code: US-DC
+    subdivision_name: District of Columbia
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/dcstreetcar_gtfs.zip
+    mdb_id: 2223
+    license_note: No stated data license in the Mobility Database; verify before publishing.

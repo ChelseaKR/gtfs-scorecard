@@ -585,7 +585,7 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         log.info("Wrote %d proposed agencies to %s", len(proposals), args.out)
     else:
         print(block, end="")
-    log.info("%d proposed; review and merge into agencies.yaml.", len(proposals))
+    log.info("%d proposed; review and merge into the registry intake shard.", len(proposals))
     return 0
 
 
@@ -628,10 +628,17 @@ def _cmd_backfill_state(args: argparse.Namespace, parser: argparse.ArgumentParse
         log.info("No agencies need a state backfill (all set, or unresolvable from the catalog).")
         return 0
     if args.apply:
-        registry_path = repo_root() / "agencies.yaml"
-        updated, changed = apply_state_backfill(registry_path.read_text(), resolved)
-        registry_path.write_text(updated)
-        log.info("Set state on %d agencies in agencies.yaml; re-score to persist it.", len(changed))
+        from .agencies import registry_paths
+
+        changed: list[str] = []
+        for registry_path in registry_paths(repo_root()):
+            updated, changed_here = apply_state_backfill(registry_path.read_text(), resolved)
+            if changed_here:
+                registry_path.write_text(updated)
+                changed.extend(changed_here)
+        log.info(
+            "Set state on %d agencies across the registry; re-score to persist it.", len(changed)
+        )
     else:
         for agency_id, state in sorted(resolved.items()):
             print(f"{agency_id}\t{state}")
@@ -690,10 +697,15 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     log.info("%d checked: %d replaced, %d missing.", len(registry), replaced, missing)
 
     if args.apply:
-        registry_path = repo_root() / "agencies.yaml"
-        updated, changed = apply_replacements(registry_path.read_text(), matches)
+        from .agencies import registry_paths
+
+        changed: list[str] = []
+        for registry_path in registry_paths(repo_root()):
+            updated, changed_here = apply_replacements(registry_path.read_text(), matches)
+            if changed_here:
+                registry_path.write_text(updated)
+                changed.extend(changed_here)
         if changed:
-            registry_path.write_text(updated)
             log.info(
                 "Updated static_gtfs_url for %d agency(ies): %s", len(changed), ", ".join(changed)
             )
@@ -824,7 +836,7 @@ def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser)
 
 def _cmd_prune(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Report (and optionally delete) artifact directories whose agency left the
-    registry. Removing an agency from agencies.yaml never cleaned up its
+    registry. Removing an agency from the registry never cleaned up its
     published pages and dated artifacts, so a bookmarked scorecard for a
     retired agency stayed live indefinitely and orphans accumulated with churn
     (review finding). Report-only by default: deletion is a curator decision
@@ -850,7 +862,7 @@ def _cmd_prune(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
         return 0
     for name in orphans:
         print(f"orphan\t{name}")
-    print(f"{len(orphans)} artifact directories have no agencies.yaml entry.")
+    print(f"{len(orphans)} artifact directories have no registry entry.")
     if args.delete:
         import shutil
 
@@ -1045,6 +1057,7 @@ def _cmd_ntd(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
 
 def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .agencies import registry_paths
     from .config import repo_root
     from .ntd_crosswalk import (
         agencies_with_ntd_id,
@@ -1056,9 +1069,11 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
         match_agencies_by_name,
     )
 
-    registry_path = repo_root() / "agencies.yaml"
-    text = registry_path.read_text()
-    have = agencies_with_ntd_id(text)
+    registry_files = registry_paths(repo_root())
+    texts = {path: path.read_text() for path in registry_files}
+    have: set[str] = set()
+    for text in texts.values():
+        have |= agencies_with_ntd_id(text)
 
     log.info("Fetching the Transitland Atlas crosswalk...")
     docs = fetch_atlas()
@@ -1100,11 +1115,15 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
         print(f"{p.agency_id}\t{p.ntd_id}")
 
     if args.apply:
-        new_text, inserted = apply_to_yaml(text, proposals)
-        registry_path.write_text(new_text)
-        log.info("Wrote %d new ntd_id values into agencies.yaml.", inserted)
+        inserted = 0
+        for registry_path, text in texts.items():
+            new_text, inserted_here = apply_to_yaml(text, proposals)
+            if inserted_here:
+                registry_path.write_text(new_text)
+                inserted += inserted_here
+        log.info("Wrote %d new ntd_id values into the registry.", inserted)
     else:
-        log.info("Dry run; pass --apply to write these into agencies.yaml.")
+        log.info("Dry run; pass --apply to write these into the registry.")
     return 0
 
 
@@ -2221,7 +2240,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
-    sync = sub.add_parser("sync", help="propose agencies.yaml entries from the Mobility Database")
+    sync = sub.add_parser("sync", help="propose registry entries from the Mobility Database")
     sync.add_argument("--catalog", help="catalog CSV path or URL (default: Mobility Database)")
     sync.add_argument("--country", help="ISO country code filter, e.g. US")
     sync.add_argument("--state", help="state/subdivision filter, e.g. California")
@@ -2242,7 +2261,7 @@ def main(argv: list[str] | None = None) -> int:
     discover.add_argument(
         "--apply",
         action="store_true",
-        help="rewrite static_gtfs_url in agencies.yaml for agencies whose feed moved",
+        help="rewrite static_gtfs_url in registry shards for agencies whose feed moved",
     )
 
     prune = sub.add_parser(
@@ -2345,7 +2364,7 @@ def main(argv: list[str] | None = None) -> int:
         "ntd-crosswalk", help="populate agency NTD IDs from the Transitland Atlas (by feed URL)"
     )
     crosswalk.add_argument(
-        "--apply", action="store_true", help="write matched ntd_id values into agencies.yaml"
+        "--apply", action="store_true", help="write matched ntd_id values into registry shards"
     )
 
     ridership = sub.add_parser(
@@ -2536,7 +2555,7 @@ def main(argv: list[str] | None = None) -> int:
         "backfill-state", help="fill missing agency state from the Mobility Database catalog"
     )
     backfill.add_argument("--catalog", help="catalog CSV path or URL (default: Mobility Database)")
-    backfill.add_argument("--apply", action="store_true", help="write state into agencies.yaml")
+    backfill.add_argument("--apply", action="store_true", help="write state into registry shards")
 
     lint = sub.add_parser("lint", help="check the agency registry for hygiene issues")
     lint.add_argument(

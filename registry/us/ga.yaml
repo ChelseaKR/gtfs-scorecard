@@ -1,0 +1,139 @@
+# Georgia (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: chatham-area-transit-cat
+    name: Chatham Area Transit (CAT)
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://www.catchacat.org/wp-content/uploads/2019/07/cat_gtfs_06-07-2021.zip
+    mdb_id: 351
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cobb-community-transit-cct
+    name: Cobb Community Transit (CCT)
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/1ce8e370a12c41b5854d8baa21f8451c/data
+    mdb_id: 354
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: georgia-tech-trolley-stinger-shuttles
+    name: Georgia Tech Trolley & Stinger Shuttles
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: http://documents.atlantaregional.com/transitdata/gtfs_GT.zip
+    mdb_id: 355
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: atlanta-streetcar
+    name: Atlanta Streetcar
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: http://documents.atlantaregional.com/transitdata/gtfs_ASC.zip
+    mdb_id: 356
+    license_note: "License: http://atlantaregional.com/File%20Library/Transportation/Transit/Developers-Agreement-for-Web.pdf"
+
+  - id: atlantic-regional-commission
+    name: Atlantic Station Shuttle (FREE RIDE)
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: http://documents.atlantaregional.com/transitdata/gtfs_Atlantic.zip
+    mdb_id: 357
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cherokee-area-transportation-system-cats
+    name: Cherokee Area Transportation System (CATS)
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: http://documents.atlantaregional.com/transitdata/gtfs_CATS.zip
+    mdb_id: 358
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-atlanta-rapid-transit-authority-marta
+    name: Metropolitan Atlanta Rapid Transit Authority (MARTA)
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://www.itsmarta.com/google_transit_feed/google_transit.zip
+    mdb_id: 368
+    rt_urls:
+      trip_updates: https://gtfs-rt.itsmarta.com/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb
+      vehicle_positions: https://gtfs-rt.itsmarta.com/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gwinnett-county-transit
+    name: Gwinnett County Transit
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gwinnettcountytransit-ga-us/gwinnettcountytransit-ga-us.zip
+    mdb_id: 369
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: emory-university-cliff-shuttles
+    name: Emory University Cliff Shuttles
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: http://documents.atlantaregional.com/transitdata/gtfs_CCTMA.zip
+    mdb_id: 370
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: buc-shuttle
+    name: Buc Shuttle
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: http://documents.atlantaregional.com/transitdata/gtfs_Buc.zip
+    mdb_id: 371
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: xpress
+    name: Xpress
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://gamobility.info/GTFS/Google_Transit.zip
+    mdb_id: 1118
+    license_note: "License: http://atlantaregional.com/File%20Library/Transportation/Transit/Developers-Agreement-for-Web.pdf"
+
+  - id: chatham-area-transit-cat-2080
+    name: Chatham Area Transit (CAT)
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://catchacat.org/wp-content/uploads/GTFS.zip
+    mdb_id: 2080
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: albany-transit-system
+    name: Albany Transit System
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11834/ats_albany_ga_us(2).zip
+    mdb_id: 2146
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gwinnett-county-transit-2241
+    name: Gwinnett County Transit
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://realtimegwinnett.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2241
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: xpress-2355
+    name: Xpress
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://gamobility.info/wp-content/uploads/2024/07/Google_Transit.zip
+    mdb_id: 2355
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cobblinc
+    name: CobbLinc
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    static_gtfs_url: https://cobb.rideralerts.com/InfoPoint/GTFS-Zip.ashx
+    mdb_id: 3193
+    rt_urls:
+      trip_updates: https://cobb.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate&Debug=True
+      vehicle_positions: https://cobb.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition&Debug=True
+      service_alerts: https://cobb.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert&Debug=True
+    license_note: No stated data license in the Mobility Database; verify before publishing.

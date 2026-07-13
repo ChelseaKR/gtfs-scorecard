@@ -2,9 +2,9 @@
 
 The roadmap's Year 1 onboarding path (docs/roadmap.md): an agency or a liaison
 submits a feed URL through a short web form, and instead of asking them to learn
-YAML, a small serverless function opens a pull request that adds the
-agencies.yaml block. A human still reviews and merges, so nothing reaches the
-live scorecard unvetted.
+YAML, a small serverless function opens a pull request that adds an entry to
+``registry/intake.yaml``. A human still reviews and merges, so nothing reaches
+the live scorecard unvetted.
 
 This module is the pure core of that function: it validates the form with the
 same rules the registry loader uses (so a bad submission is rejected with one
@@ -33,7 +33,7 @@ class Submission:
 
     agency_id: str
     branch: str
-    file_content: str  # the full new agencies.yaml
+    file_content: str  # the full new registry/intake.yaml
     commit_message: str
     pr_title: str
     pr_body: str
@@ -45,7 +45,7 @@ def _clean(form: dict[str, str], key: str) -> str:
 
 
 def form_to_entry(form: dict[str, str]) -> dict[str, object]:
-    """Build an agencies.yaml entry mapping from submitted form fields.
+    """Build a registry entry mapping from submitted form fields.
 
     The id is derived from the agency name so submitters never supply a slug.
     Realtime URLs are optional and only included when given.
@@ -83,11 +83,15 @@ def form_to_entry(form: dict[str, str]) -> dict[str, object]:
     return entry
 
 
-def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
-    """Validate a submission and produce the new agencies.yaml plus PR metadata.
+def build_submission(
+    form: dict[str, str], existing_yaml: str, known_ids: set[str] | None = None
+) -> Submission:
+    """Validate a submission and produce the new intake shard plus PR metadata.
 
     Raises AgencyConfigError (with a plain-language message) if the entry is
-    invalid or duplicates an agency already in the registry.
+    invalid or duplicates an agency already in the registry. ``existing_yaml``
+    is the intake shard the new entry is appended to; ``known_ids`` covers
+    entries already curated into another manifest-listed shard.
     """
     entry = form_to_entry(form)
     if not entry["name"]:
@@ -95,6 +99,7 @@ def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
 
     existing = yaml.safe_load(existing_yaml) or {}
     existing_ids = {a.get("id") for a in existing.get("agencies", []) if isinstance(a, dict)}
+    existing_ids |= known_ids or set()
 
     # Reuse the registry's own validator so the form enforces the same rules.
     parse_agencies({"agencies": [entry]})
@@ -134,7 +139,7 @@ def build_submission(form: dict[str, str], existing_yaml: str) -> Submission:
         commit_message=f"feat(agency): add {entry['name']} via self-serve form",
         pr_title=f"Add {entry['name']} to the scorecard",
         pr_body=(
-            f"Adds **{entry['name']}** (`{agency_id}`) to `agencies.yaml`.\n\n"
+            f"Adds **{entry['name']}** (`{agency_id}`) to `registry/intake.yaml`.\n\n"
             f"- Static GTFS: {entry['static_gtfs_url']}\n"
             f"- Location: {location}\n"
             f"- Realtime: {'yes' if proposal.rt_urls else 'none submitted'}\n\n"

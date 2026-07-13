@@ -1,10 +1,10 @@
-"""Propose agencies.yaml entries from the Mobility Database catalog.
+"""Propose agency-registry entries from the Mobility Database catalog.
 
 The roadmap's first Year 1 step (docs/roadmap.md): get a region's worth of
 feeds into the registry without hand-editing YAML for each one. This reads the
 Mobility Database catalog CSV (mobilitydatabase.org), filters to a country,
 state, or list of providers, pairs each GTFS Schedule feed with any realtime
-feeds that reference it, and emits agencies.yaml blocks.
+feeds that reference it, and emits reviewable registry blocks.
 
 A human still reviews and merges the output, so the registry stays curated.
 The point is to remove the typing, not the judgement: key-gated realtime feeds
@@ -98,7 +98,7 @@ class CatalogFeed:
 
 @dataclass
 class ProposedAgency:
-    """A candidate agencies.yaml block built from one schedule feed plus any
+    """A candidate registry block built from one schedule feed plus any
     realtime feeds that reference it."""
 
     id: str
@@ -351,11 +351,11 @@ def _render_location(proposal: ProposedAgency) -> list[str]:
 
 
 def render_yaml(proposals: list[ProposedAgency]) -> str:
-    """Render proposals as agencies.yaml blocks, ready to review and merge.
+    """Render proposals as registry blocks, ready to review and merge.
 
     Hand-rolled rather than yaml.dump so the output matches the registry's
     existing hand-written style (block order, comment-free, two-space indent)
-    and stays diff-friendly when pasted into agencies.yaml.
+    and stays diff-friendly when pasted into the intake shard.
     """
     lines: list[str] = []
     for p in proposals:
@@ -525,7 +525,7 @@ def find_replacements(
     agency as ``tracked`` (URL still in the catalog), ``replaced`` (catalog
     lists a different URL for what looks like the same agency), or ``missing``
     (no catalog match), and carries the candidate catalog feeds so a human can
-    confirm the canonical endpoint before editing agencies.yaml. This proposes;
+    confirm the canonical endpoint before editing the registry. This proposes;
     it never rewrites the registry.
     """
     pinned = mdb_ids or {}
@@ -589,7 +589,7 @@ def replacement_url(match: FeedMatch) -> str | None:
 
 
 def apply_replacements(yaml_text: str, matches: list[FeedMatch]) -> tuple[str, list[str]]:
-    """Rewrite the static_gtfs_url of each ``replaced`` agency in agencies.yaml.
+    """Rewrite the static URL of each ``replaced`` agency in one registry shard.
 
     A targeted line replacement, not a YAML round-trip, so the registry's
     comments and hand-written formatting survive untouched. Each agency's
@@ -635,7 +635,7 @@ def resolve_states(agencies: Iterable[Agency], catalog: list[CatalogFeed]) -> di
 
 
 def apply_state_backfill(yaml_text: str, resolved: dict[str, str]) -> tuple[str, list[str]]:
-    """Insert a ``state:`` line into each resolved agency's block in agencies.yaml.
+    """Insert a ``state:`` line into each resolved agency block in one shard.
 
     Targeted line insertion (not a YAML round-trip) so comments and formatting
     survive, mirroring apply_replacements. The line is added right after the
@@ -685,7 +685,7 @@ def render_replacements_md(matches: list[FeedMatch], *, today: str) -> str:
         "",
     ]
     if replaced:
-        out += ["## Likely replaced — verify and update agencies.yaml", ""]
+        out += ["## Likely replaced — verify and update the registry", ""]
         for m in replaced:
             out.append(f"### {m.agency_name} (`{m.agency_id}`)")
             out.append(f"- Tracked URL (not in catalog): {m.current_url}")

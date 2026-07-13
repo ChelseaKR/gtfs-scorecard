@@ -1,6 +1,6 @@
 """Guarded HTTP fetching for untrusted feed URLs.
 
-Feed and realtime URLs come from agencies.yaml, which Phase 4 lets outside
+Feed and realtime URLs come from the agency registry, which Phase 4 lets outside
 parties propose through the self-serve form. Fetching them with a bare
 ``requests.get`` is an SSRF and resource-exhaustion sink: a URL can point at
 cloud metadata (169.254.169.254), an internal host, or an endpoint that streams

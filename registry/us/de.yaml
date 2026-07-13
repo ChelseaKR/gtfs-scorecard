@@ -1,0 +1,12 @@
+# Delaware (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: delaware-transit-corporation-dart-first-state
+    name: Delaware Transit Corporation (DART First State)
+    subdivision_code: US-DE
+    subdivision_name: Delaware
+    static_gtfs_url: http://dartfirststate.com/RiderInfo/Routes/gtfs_data/dartfirststate_de_us.zip
+    mdb_id: 1235
+    license_note: No stated data license in the Mobility Database; verify before publishing.

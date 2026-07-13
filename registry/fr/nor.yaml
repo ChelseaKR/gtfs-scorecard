@@ -1,0 +1,25 @@
+# Normandie (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  # Four-region worldwide cohort: official, openly licensed feeds selected to
+  # exercise local-language names, additional ISO subdivisions, combined and
+  # single-kind realtime, and a multi-operator schedule. Sources and reuse
+  # terms were verified 2026-07-12 and are recorded in docs/feeds.md.
+  - id: lbus-bernay
+    name: Réseau urbain l'Bus (Bernay)
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    mdb_id: "tdg-83775"
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9ffc26b2-d293-4ec5-9cf6-4690d542f019
+    license_note: >-
+      Licence Ouverte 2.0; published by Intercom Bernay Terres de Normandie
+      through France's National Access Point.
+    # The publisher exposes one combined GTFS-Realtime stream for all kinds.
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f

@@ -1,0 +1,139 @@
+# Vermont (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: the-current
+    name: The Current
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/crtransit-vt-us/crtransit-vt-us.zip
+    mdb_id: 428
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: marble-valley-regional-transit-district-mvrtd
+    name: Marble Valley Regional Transit District (MVRTD)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thebus-vt-us/thebus-vt-us.zip
+    mdb_id: 430
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: moover
+    name: MOOver
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dvtamoover-vt-us/dvtamoover-vt-us.zip
+    mdb_id: 434
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rural-community-transportation-rct
+    name: Rural Community Transportation (RCT)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us.zip
+    mdb_id: 448
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: stagecoach-transportation-services-sts
+    name: Stagecoach Transportation Services (STS)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/stagecoach-vt-us/stagecoach-vt-us.zip
+    mdb_id: 449
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: vermont-translines
+    name: Vermont Translines
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vttranslines-vt-us/vttranslines-vt-us.zip
+    mdb_id: 450
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: green-mountain-community-network-gmcn
+    name: Green Mountain Community Network (GMCN)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/greenmtncn-vt-us/greenmtncn-vt-us.zip
+    mdb_id: 539
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: addison-county-transit-actr
+    name: Addison County Transit (ACTR)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/addisoncounty-vt-us/addisoncounty-vt-us.zip
+    mdb_id: 543
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lake-champlain-ferries
+    name: Lake Champlain Ferries
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lctferries-vt-us/lctferries-vt-us.zip
+    mdb_id: 547
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: chittenden-county-transportation-authority-ccta
+    name: Chittenden County Transportation Authority (CCTA)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ccta-vt-us/ccta-vt-us.zip
+    mdb_id: 629
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: advance-transit
+    name: Advance Transit
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/advancetransit-vt-us/advancetransit-vt-us.zip
+    mdb_id: 631
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tri-valley-transit
+    name: Tri-Valley Transit
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip
+    mdb_id: 852
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rockingham-moover
+    name: Rockingham MOOver
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us.zip
+    mdb_id: 2194
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: marble-valley-regional-transit-district-mvrtd-2831
+    name: Marble Valley Regional Transit District (MVRTD) Flex
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/thebus-vt-us/thebus-vt-us--flex-v2.zip
+    mdb_id: 2831
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rural-community-transportation-rct-2882
+    name: Rural Community Transportation (RCT)
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us--flex-v2.zip
+    mdb_id: 2882
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: vtrans
+    name: Springfield MicroMoo
+    subdivision_code: US-VT
+    subdivision_name: Vermont
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us--flex-v2.zip
+    mdb_id: 2884
+    license_note: No stated data license in the Mobility Database; verify before publishing.

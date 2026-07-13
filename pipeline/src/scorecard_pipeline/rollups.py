@@ -94,7 +94,7 @@ def _load_latest(agency_id: str) -> dict[str, Any] | None:
 def _catalog_states() -> dict[str, str]:
     """Agency-id to state from the published catalog.json fallback.
 
-    Artifacts don't yet carry state (that persists once agencies.yaml has state
+    Artifacts don't yet carry state (that persists once the registry has state
     fields populated). Until then, read from catalog.json which render-site
     already derives via the Mobility Database. Returns {} when the file is absent."""
     path = repo_root() / "web" / "catalog.json"
@@ -107,7 +107,7 @@ def _catalog_states() -> dict[str, str]:
 
 def _agency_ids_in_state(state: str) -> list[str]:
     """Available agencies whose state matches, checked against each agency's
-    artifact first (once agencies.yaml has state fields) then catalog.json."""
+    artifact first (once registry entries have state fields) then catalog.json."""
     want = state.strip().upper()
     fallback = {k: v.upper() for k, v in _catalog_states().items()}
     ids = []

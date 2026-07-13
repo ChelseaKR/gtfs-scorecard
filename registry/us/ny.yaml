@@ -1,0 +1,709 @@
+# New York (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: st-lawrence-county-public-transit
+    name: St Lawrence County Public Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/St_Lawrence_County_Public_Transit.zip
+    mdb_id: 5
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: academy-bus
+    name: Academy Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Academy_Express_-_Staten_Island.zip
+    mdb_id: 209
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: birnie-bus
+    name: Birnie Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Birnie_Bus.zip
+    mdb_id: 233
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: broome-county-transit-b-c-transit
+    name: Broome County Transit (B.C. Transit)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS_012222.zip
+    mdb_id: 239
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: corning-erwin-area-transit-system-ceats
+    name: Corning Erwin Area Transit System (CEATS)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Corning_Erwin_Area_Transit_System_CEATS.zip
+    mdb_id: 302
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: chautauqua-area-regional-transit-system-carts
+    name: Chautauqua Area Regional Transit System (CARTS)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/CARTS_Chautauqua_Area_Regional_Transit_System_-_City_Routes.zip
+    mdb_id: 304
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: c-tran-305
+    name: C TRAN
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_Tran.zip
+    mdb_id: 305
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dutchess-county
+    name: Dutchess County
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip
+    mdb_id: 457
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: niagara-frontier-transportation-authority-nfta
+    name: Niagara Frontier Transportation Authority (NFTA)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://www.nfta.com/metro/__googletransit/google_transit.zip
+    mdb_id: 465
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-transit-authority-mta
+    name: Long Island Rail Road
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/lirr/google_transit.zip
+    mdb_id: 507
+    rt_urls:
+      service_alerts: https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Flirr-alerts
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: metropolitan-transit-authority-mta-510
+    name: NYC Bus Company
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/busco/google_transit.zip
+    mdb_id: 510
+    rt_urls:
+      service_alerts: https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fbus-alerts
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: metropolitan-transit-authority-mta-511
+    name: NYC Subway Supplemented
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/files/google_transit_supplemented.zip
+    mdb_id: 511
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-transit-authority-mta-512
+    name: Brooklyn Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/nyct/bus/google_transit_brooklyn.zip
+    mdb_id: 512
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: metropolitan-transit-authority-mta-513
+    name: Manhattan Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/nyct/bus/google_transit_manhattan.zip
+    mdb_id: 513
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: metropolitan-transit-authority-mta-514
+    name: Staten Island Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/nyct/bus/google_transit_staten_island.zip
+    mdb_id: 514
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: nyc-ferry
+    name: NYC Ferry
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://nycferry.connexionz.net/rtt/public/utility/gtfs.aspx
+    mdb_id: 515
+    rt_urls:
+      trip_updates: http://nycferry.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      service_alerts: http://nycferry.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
+    license_note: "License: https://www.ferry.nyc/developer-tools/"
+
+  - id: metropolitan-transit-authority-mta-516
+    name: NYC Subway
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/nyct/subway/google_transit.zip
+    mdb_id: 516
+    rt_urls:
+      service_alerts: https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fsubway-alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: staten-island-ferry
+    name: Staten Island Ferry
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://www.nyc.gov/html/dot/downloads/misc/siferry-gtfs.zip
+    mdb_id: 518
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: downtown-alliance
+    name: Downtown Alliance
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/downtown_nyc_google_transit.zip
+    mdb_id: 519
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-transit-authority-mta-520
+    name: Queens Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/nyct/bus/google_transit_queens.zip
+    mdb_id: 520
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: nassau-inter-county-express-nice-bus
+    name: Nassau Inter-County Express (NICE Bus)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://www.nicebus.com/NICE/media/nicebus-gtfs/NICE_GTFS.zip
+    mdb_id: 521
+    rt_urls:
+      service_alerts: http://nicebus.com/downloads/gtfs/NYC_NICE.proto
+    license_note: "License: http://www.nicebus.com/NiceBus/media/NiceBus-Images/131030_Legal-Agreements.pdf"
+
+  - id: jfk-airtrain
+    name: JFK Airtrain
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Airtrain_JFK.zip
+    mdb_id: 522
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: metro-north-railroad
+    name: Metro-North Railroad
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/mnr/google_transit.zip
+    mdb_id: 524
+    rt_urls:
+      trip_updates: https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/mnr%2Fgtfs-mnr
+      service_alerts: https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fmnr-alerts
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: ny-waterway
+    name: NY Waterway
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/data.bytemark.co/nywaterway/nywaterway.zip
+    mdb_id: 525
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ulster-county-area-transit
+    name: Ulster County Area Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/UCAT_Ulster_County_Area_Transit.zip
+    mdb_id: 526
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: westchester-county-bee-line-system-wcdot
+    name: Westchester County Bee-Line System (WCDOT)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip
+    mdb_id: 527
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-transit-authority-mta-528
+    name: Bronx Bus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://web.mta.info/developers/data/nyct/bus/google_transit_bronx.zip
+    mdb_id: 528
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: access-allegany
+    name: Access Allegany
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Access_Allegany.zip
+    mdb_id: 531
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: hornell-area-transit
+    name: Hornell Area Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Hornell_Area_Transit.zip
+    mdb_id: 532
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rochester-genesee-regional-transportation-authority-rgrta
+    name: Rochester-Genesee Regional Transportation Authority (RGRTA)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://scheduledata.rgrta.com/google_transit.zip
+    mdb_id: 533
+    rt_urls:
+      vehicle_positions: https://api.rgrta.com/rtgvehicles?key=00e2dbf6b15742febb37d0a1d7d3acd5
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: centro
+    name: Centro
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://www.centro.org/CentroGTFS/CentroGTFS.zip
+    mdb_id: 534
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: tompkins-consolidated-area-transit-inc
+    ntd_id: "20145"
+    name: Tompkins Consolidated Area Transit Inc
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip
+    mdb_id: 535
+    rt_urls:
+      trip_updates: https://realtimetcatbus.availtec.com/InfoPoint/GTFS-Realtime.ashx?&Type=TripUpdate
+      vehicle_positions: https://realtimetcatbus.availtec.com/InfoPoint/GTFS-Realtime.ashx?&Type=VehiclePosition&serverid=0
+      service_alerts: https://realtimetcatbus.availtec.com/InfoPoint/GTFS-Realtime.ashx?&Type=Alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: chenango-first-transit
+    name: Chenango First Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Chenango_First_Transit.zip
+    mdb_id: 536
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: capital-district-transportation-authority-cdta
+    name: Capital District Transportation Authority (CDTA)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: http://www.cdta.org/schedules/google_transit.zip
+    mdb_id: 538
+    rt_urls:
+      trip_updates: http://gtfs.cdta.org:8080/gtfsrealtime/TripUpdates
+      vehicle_positions: http://gtfs.cdta.org:8080/gtfsrealtime/VehiclePositions
+      service_alerts: https://www.cdta.org/gtfsrealtime/ServiceAlerts
+    license_note: "License: https://www.cdta.org/developer-license-agreement/169"
+
+  - id: gloversville-transit-services
+    name: Gloversville Transit Services
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Gloversville_Transit_Services.zip
+    mdb_id: 540
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-mechanicville-public-transit
+    name: City of Mechanicville Public Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/City_of_Mechanicville_Public_Transit.zip
+    mdb_id: 541
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greater-glens-falls-transit
+    name: Greater Glens Falls Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Greater_Glens_Falls_Transit_System.zip
+    mdb_id: 542
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clinton-county-public-transit-ccpt
+    name: Clinton County Public Transit (CCPT)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Clinton_County_Public_Transit.zip
+    mdb_id: 544
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: franklin-county-public-transportation
+    name: Franklin County Public Transportation
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Franklin_County_Public_Transportation.zip
+    mdb_id: 545
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: north-country-express-transit
+    name: North Country Express Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/North_Country_Express.zip
+    mdb_id: 546
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: suffolk-county-transit
+    name: Suffolk County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://www.suffolkcountyny.gov/Portals/0/formsdocs/publicworks/Zip/google_transit.zip
+    mdb_id: 548
+    rt_urls:
+      trip_updates: http://gtfsrealtime.suffolkcountyny.gov:8080/gtfsrealtime/TripUpdates
+      vehicle_positions: http://gtfsrealtime.suffolkcountyny.gov:8080/gtfsrealtime/VehiclePositions
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lewis-county-public-transportation
+    name: Lewis County Public Transportation
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Lewis_County.zip
+    mdb_id: 566
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: madison-county-transit
+    name: Madison County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Madison_Transit_Services.zip
+    mdb_id: 573
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: newburgh-beacon-shuttle-leprechaun-lines
+    name: Newburgh Beacon Shuttle (Leprechaun Lines)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Newburgh_Beacon_Shuttle.zip
+    mdb_id: 584
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: olean-area-transit-system
+    name: Olean Area Transit System
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Olean_Area_Transit_System.zip
+    mdb_id: 586
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: herkimer-oneida-counties-transportation-study-hocts
+    name: Herkimer-Oneida Counties Transportation Study (HOCTS)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Oneida_County_Rural_Transit.zip
+    mdb_id: 588
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: otsego-express-public-transportation
+    name: Otsego Express Public Transportation
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Otsego_Express_Public_Transit.zip
+    mdb_id: 589
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greene-county-transit
+    name: Greene County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Greene_County_Transit.zip
+    mdb_id: 613
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: rensselaer-county-yankee-trails
+    name: Rensselaer County (Yankee Trails)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Rensselaer_County_Yankee_Trails.zip
+    mdb_id: 804
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: regional-transit-service-seneca-rts-seneca
+    name: Regional Transit Service Seneca (RTS Seneca)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/RTS-Seneca.zip
+    mdb_id: 808
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: regional-transit-service
+    name: Regional Transit Service
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/RTS-Wyoming.zip
+    mdb_id: 809
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: schuyler-county-transit
+    name: Schuyler County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Schuyler_County_Public_Transit.zip
+    mdb_id: 814
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: adirondack-trailways-adp
+    name: Adirondack Trailways ADP
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Trailways-ADP.zip
+    mdb_id: 823
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: adirondack-trailways-nyp
+    name: Adirondack Trailways NYP
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Trailways-NYP.zip
+    mdb_id: 824
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: new-york-trailways
+    name: New York Trailways
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Trailways-NYT.zip
+    mdb_id: 825
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: adirondack-trailways-pine-hill-trailways
+    name: Adirondack Trailways Pine Hill Trailways
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Trailways-PHK.zip
+    mdb_id: 826
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: steuben-area-rides
+    name: Steuben Area Rides
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Steuben_Area_Rides.zip
+    mdb_id: 850
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: steuben-county-transit
+    name: Steuben County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Steuben_County_Transit.zip
+    mdb_id: 851
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: village-of-cooperstown-trolly-system
+    name: Village of Cooperstown Trolly System
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Village_of_Cooperstown_Trolley_System.zip
+    mdb_id: 870
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: watertown-citibus
+    name: Watertown Citibus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Watertown_Citibus.zip
+    mdb_id: 871
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: yates-transit-service
+    name: Yates Transit Service
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Yates_Transit_Service.zip
+    mdb_id: 875
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cortland-county-public-transportation
+    name: Cortland County Public Transportation
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Cortland_Transit.zip
+    mdb_id: 899
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: huntington-area-rapid-transit-hart
+    name: Huntington Area Rapid Transit (HART)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/HART_Huntington_Area_Rapid_Transit.zip
+    mdb_id: 905
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: leprechaun-lines
+    name: Leprechaun Lines
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Leprechaun_Connection.zip
+    mdb_id: 910
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clarkstown-minitrans
+    name: Clarkstown MiniTrans
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Clarkstown_Mini_Trans.zip
+    mdb_id: 911
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: city-of-long-beach-transportation
+    name: City of Long Beach Transportation
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/City_of_Long_Beach.zip
+    mdb_id: 916
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: transit-orange-newburgh-local-transit
+    name: Transit Orange / Newburgh Local Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Newburgh_Bus.zip
+    mdb_id: 924
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: sullivan-county-transit
+    name: Sullivan County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Sullivan_County.zip
+    mdb_id: 927
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: part-putnam-area-rapid-transit
+    name: PART Putnam Area Rapid Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip
+    mdb_id: 928
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: roosevelt-island-operating-corporation-tramway-rioc-tramway
+    name: Roosevelt Island Operating Corporation Tramway (RIOC Tramway)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7707/gtfs.zip
+    mdb_id: 1109
+    license_note: "License: https://github.com/laidig/rioc-gtfs/blob/master/README.md"
+
+  - id: broome-county-transit-b-c-transit-2079
+    name: Broome County Transit (B.C. Transit)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip
+    mdb_id: 2079
+    license_note: "License: https://www.gobroomecounty.com/transit/gtfs"
+
+  - id: hudson-link
+    name: Hudson Link
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/hudsonlink-ny-us/hudsonlink-ny-us.zip
+    mdb_id: 2312
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: kiryas-joel-area-transit
+    name: Kiryas Joel Area Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kiryasjoel-ny-us/kiryasjoel-ny-us.zip
+    mdb_id: 2317
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: middletown-area-transit-2324
+    name: Middletown Area Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/middletown-ny-us/middletown-ny-us.zip
+    mdb_id: 2324
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: westchester-county-bee-line-system-wcdot-2353
+    name: Westchester County Bee-Line System (WCDOT)
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://planning.westchestergov.com/images/stories/zip/GTFS.zip
+    mdb_id: 2353
+    license_note: "License: https://planning.westchestergov.com/transportation-planning/gfts-developers-transit-api/transit-api-service-terms-of-service"
+
+  - id: st-lawrence-county-public-transit-2611
+    name: St Lawrence County Public Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://passio3.com/stlawrence/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2611
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: gloversville-transit-system
+    name: Gloversville Transit System
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Gloversville_Transit_System.zip
+    mdb_id: 2650
+    license_note: "License: https://www.ride-gts.com/"
+
+  - id: boston-harbor-islands-ferry
+    name: Boston Harbor Islands Ferry
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/boha/boston-harbor-islands-ferry.zip
+    mdb_id: 2679
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: watertown-citibus-2881
+    name: Watertown Citibus
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2881
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mta
+    ntd_id: "20078"
+    name: Metro-North Railroad
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://rrgtfsfeeds.s3.amazonaws.com/gtfsmnr.zip
+    mdb_id: 3110
+    license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
+
+  - id: rochester-transit-service
+    name: Livingston County
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://scheduledata.rgrta.com/Regionals/Livingston.zip
+    mdb_id: 3114
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: suffolk-county-transit-3115
+    name: Suffolk County Transit
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://tracksctbus.org/gtfs
+    mdb_id: 3115
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: columbia-county-public-transportation-3116
+    name: Columbia County Public Transportation
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://github.com/columbia-county-ny-transit/gtfs-generator/raw/refs/heads/main/columbia_county_gtfs.zip
+    mdb_id: 3116
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ny-waterway-3192
+    name: NY Waterway
+    subdivision_code: US-NY
+    subdivision_name: New York
+    static_gtfs_url: https://nywaterway.connexionz.net/rtt/public/resource/gtfs.zip
+    mdb_id: 3192
+    rt_urls:
+      trip_updates: https://nywaterway.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate2
+      vehicle_positions: https://nywaterway.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: https://nywaterway.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
+    license_note: No stated data license in the Mobility Database; verify before publishing.

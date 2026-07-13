@@ -1,7 +1,7 @@
 """Serverless handler for the self-serve agency submission form.
 
 The roadmap's Year 1 onboarding path (docs/roadmap.md). A web form POSTs a
-feed; this opens a pull request that adds the agencies.yaml block, for a human
+feed; this opens a pull request that adds a registry intake entry, for a human
 to review and merge. All validation and block rendering live in the tested
 pipeline core (scorecard_pipeline.submissions); this file only does the GitHub
 API conversation, so the deployable surface stays small.
@@ -36,7 +36,8 @@ from scorecard_pipeline.agencies import AgencyConfigError
 from scorecard_pipeline.submissions import build_submission
 
 API = "https://api.github.com"
-AGENCIES_PATH = "agencies.yaml"
+INTAKE_PATH = "registry/intake.yaml"
+IDS_URL = "https://gtfsscorecard.org/api/v1/ids.json"
 
 
 def _gh(method: str, path: str, token: str, payload: dict[str, Any] | None = None) -> Any:
@@ -62,17 +63,41 @@ def _response(status: int, body: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _tracked_ids() -> set[str]:
+    """Return published ids across the whole registry, best-effort.
+
+    The intake shard alone cannot detect a duplicate already moved into a
+    curated shard. The public identity endpoint supplies that complete set;
+    human review remains the backstop if the read is unavailable or malformed.
+    """
+    req = urllib.request.Request(IDS_URL, headers={"User-Agent": "gtfs-scorecard-submit"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310 - fixed project URL
+            payload = json.loads(resp.read().decode())
+    except (OSError, UnicodeDecodeError, ValueError):
+        return set()
+    if not isinstance(payload, dict) or not isinstance(payload.get("agencies"), list):
+        return set()
+    return {
+        agency_id
+        for agency in payload["agencies"]
+        if isinstance(agency, dict)
+        and isinstance((agency_id := agency.get("id")), str)
+        and agency_id
+    }
+
+
 def _open_pull_request(form: dict[str, str]) -> str:
     token = os.environ["GITHUB_TOKEN"]
     repo = os.environ["GITHUB_REPO"]
     base = os.environ.get("BASE_BRANCH", "main")
 
-    current = _gh("GET", f"/repos/{repo}/contents/{AGENCIES_PATH}?ref={base}", token)
+    current = _gh("GET", f"/repos/{repo}/contents/{INTAKE_PATH}?ref={base}", token)
     if "content" not in current:
-        raise RuntimeError("agencies.yaml is too large to read inline from the API")
+        raise RuntimeError("registry intake is too large to read inline from the API")
     existing_yaml = base64.b64decode(current["content"]).decode()
 
-    submission = build_submission(form, existing_yaml)
+    submission = build_submission(form, existing_yaml, known_ids=_tracked_ids())
 
     head = _gh("GET", f"/repos/{repo}/git/ref/heads/{base}", token)
     _gh(
@@ -83,7 +108,7 @@ def _open_pull_request(form: dict[str, str]) -> str:
     )
     _gh(
         "PUT",
-        f"/repos/{repo}/contents/{AGENCIES_PATH}",
+        f"/repos/{repo}/contents/{INTAKE_PATH}",
         token,
         {
             "message": submission.commit_message,

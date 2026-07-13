@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scorecard_pipeline.cli import _try_gate
 
@@ -165,3 +166,115 @@ def test_run_summary_merge_skips_missing_shard_files(
     merged = json.loads(merged_path.read_text())
     assert merged["shard_count"] == 0
     assert merged["agency_count"] == 0
+
+
+def _write_manifest_registry(root: Path) -> tuple[Path, Path]:
+    first = root / "registry/a.yaml"
+    second = root / "registry/b.yaml"
+    first.parent.mkdir(parents=True)
+    first.write_text(
+        yaml.safe_dump(
+            {
+                "agencies": [
+                    {
+                        "id": "first",
+                        "name": "First Transit",
+                        "static_gtfs_url": "https://old.example/first.zip",
+                        "mdb_id": "100",
+                    }
+                ]
+            },
+            sort_keys=False,
+        )
+    )
+    second.write_text(
+        yaml.safe_dump(
+            {
+                "agencies": [
+                    {
+                        "id": "second",
+                        "name": "Second Transit",
+                        "static_gtfs_url": "https://second.example/gtfs.zip",
+                        "state": "Oregon",
+                    }
+                ]
+            },
+            sort_keys=False,
+        )
+    )
+    (root / "registry/index.yaml").write_text("shards:\n  - registry/a.yaml\n  - registry/b.yaml\n")
+    return first, second
+
+
+def test_backfill_state_applies_only_to_the_manifest_shard_with_a_match(
+    tmp_path: Path, isolated_repo_root: Path
+) -> None:
+    from scorecard_pipeline.cli import main
+
+    first, second = _write_manifest_registry(isolated_repo_root)
+    untouched = second.read_bytes()
+    catalog = tmp_path / "catalog.csv"
+    catalog.write_text(
+        "mdb_source_id,data_type,location.country_code,location.subdivision_name,"
+        "provider,name,urls.direct_download\n"
+        "100,gtfs,US,California,First Transit,First Transit,"
+        "https://new.example/first.zip\n"
+    )
+
+    assert main(["backfill-state", "--catalog", str(catalog), "--apply"]) == 0
+
+    assert "state: California" in first.read_text()
+    assert second.read_bytes() == untouched
+
+
+def test_discover_applies_a_replacement_only_to_the_owning_manifest_shard(
+    tmp_path: Path, isolated_repo_root: Path
+) -> None:
+    from scorecard_pipeline.cli import main
+
+    first, second = _write_manifest_registry(isolated_repo_root)
+    untouched = second.read_bytes()
+    catalog = tmp_path / "catalog.csv"
+    catalog.write_text(
+        "mdb_source_id,data_type,location.country_code,location.subdivision_name,"
+        "provider,name,urls.direct_download\n"
+        "100,gtfs,US,California,First Transit,First Transit,"
+        "https://new.example/first.zip\n"
+    )
+
+    assert main(["discover", "--catalog", str(catalog), "--apply"]) == 0
+
+    assert "static_gtfs_url: https://new.example/first.zip" in first.read_text()
+    assert second.read_bytes() == untouched
+
+
+def test_ntd_crosswalk_applies_only_to_the_owning_manifest_shard(
+    isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from scorecard_pipeline import ntd_crosswalk
+    from scorecard_pipeline.cli import main
+
+    first, second = _write_manifest_registry(isolated_repo_root)
+    untouched = second.read_bytes()
+    atlas = {
+        "feeds": [
+            {
+                "id": "f-first",
+                "urls": {"static_current": "https://old.example/first.zip"},
+            }
+        ],
+        "operators": [
+            {
+                "name": "First Transit",
+                "onestop_id": "o-9q-first",
+                "tags": {"us_ntd_id": "90001"},
+                "associated_feeds": [{"feed_onestop_id": "f-first"}],
+            }
+        ],
+    }
+    monkeypatch.setattr(ntd_crosswalk, "fetch_atlas", lambda: [atlas])
+
+    assert main(["ntd-crosswalk", "--apply"]) == 0
+
+    assert 'ntd_id: "90001"' in first.read_text()
+    assert second.read_bytes() == untouched

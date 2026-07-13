@@ -58,6 +58,22 @@ class FakeTable:
         self.deleted = True
 
 
+class FakeUrlResponse:
+    """Context-managed byte response for urllib-backed handler tests."""
+
+    def __init__(self, payload: object) -> None:
+        self.body = json.dumps(payload).encode()
+
+    def __enter__(self) -> FakeUrlResponse:
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return self.body
+
+
 # --- alerts: validate_subscribe ---
 
 
@@ -167,6 +183,83 @@ def test_submit_accepts_correct_secret_and_routes_to_pr(monkeypatch: pytest.Monk
     resp = submit.handler(event, None)
     assert resp["statusCode"] == 200
     assert "pull/1" in resp["body"]
+
+
+def test_submit_tracked_ids_reads_only_valid_published_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    payload = {
+        "agencies": [
+            {"id": "unitrans"},
+            {"id": ""},
+            {"id": 7},
+            "not-an-entry",
+            {"id": "yolobus"},
+        ]
+    }
+    monkeypatch.setattr(
+        submit.urllib.request, "urlopen", lambda *_args, **_kwargs: FakeUrlResponse(payload)
+    )
+
+    assert submit._tracked_ids() == {"unitrans", "yolobus"}
+
+
+def test_submit_tracked_ids_fails_closed_to_intake_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unavailable(*_args: object, **_kwargs: object) -> None:
+        raise OSError("offline")
+
+    monkeypatch.setattr(submit.urllib.request, "urlopen", unavailable)
+
+    assert submit._tracked_ids() == set()
+
+
+def test_submit_pull_request_updates_only_the_intake_shard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("GITHUB_TOKEN", "test-token")
+    monkeypatch.setenv("GITHUB_REPO", "owner/repo")
+    intake = (
+        "agencies:\n"
+        "  - id: existing\n"
+        "    name: Existing\n"
+        "    static_gtfs_url: https://example.org/existing.zip\n"
+    )
+    calls: list[tuple[str, str, dict[str, Any] | None]] = []
+
+    def fake_gh(
+        method: str,
+        path: str,
+        token: str,
+        payload: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        assert token == "test-token"
+        calls.append((method, path, payload))
+        if method == "GET" and "/contents/" in path:
+            return {
+                "content": submit.base64.b64encode(intake.encode()).decode(),
+                "sha": "intake-sha",
+            }
+        if method == "GET":
+            return {"object": {"sha": "head-sha"}}
+        if path.endswith("/pulls"):
+            return {"html_url": "https://github.com/owner/repo/pull/1"}
+        return {}
+
+    monkeypatch.setattr(submit, "_gh", fake_gh)
+    monkeypatch.setattr(submit, "_tracked_ids", lambda: {"curated-elsewhere"})
+
+    url = submit._open_pull_request(
+        {"name": "New Transit", "static_gtfs_url": "https://example.org/new.zip"}
+    )
+
+    assert url.endswith("/pull/1")
+    content_calls = [call for call in calls if "/contents/" in call[1]]
+    assert [call[:2] for call in content_calls] == [
+        ("GET", "/repos/owner/repo/contents/registry/intake.yaml?ref=main"),
+        ("PUT", "/repos/owner/repo/contents/registry/intake.yaml"),
+    ]
 
 
 # --- instant-score: validate_score_request ---
