@@ -51,7 +51,9 @@ function safeUrl(url) {
 
 /** @param {string} [grade] */
 function gradeClass(grade) {
-  return `grade-${String(grade || "f").toLowerCase()}`;
+  const normalized = String(grade || "F").toUpperCase();
+  const safe = ["A", "B", "C", "D", "F"].includes(normalized) ? normalized : "F";
+  return `grade-${safe.toLowerCase()}`;
 }
 
 if (!TRY_URL) {
