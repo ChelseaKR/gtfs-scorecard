@@ -29,9 +29,31 @@ function esc(text) {
   return div.innerHTML;
 }
 
+/** Encode untrusted text for a quoted HTML attribute. `esc` deliberately
+ *  leaves quote characters alone (safe in text content); a value that reaches
+ *  an attribute must also neutralize `"`/`'` or it can close the attribute
+ *  early and add its own (job data is user-submitted). @param {unknown} text */
+function escAttr(text) {
+  return esc(text).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+}
+
+/** Return the URL only if it is http(s); otherwise "#". Blocks javascript:/data:
+ *  URLs in the job response from becoming clickable XSS sinks.
+ *  @param {string} url @returns {string} */
+function safeUrl(url) {
+  try {
+    const u = new URL(url, location.href);
+    return u.protocol === "http:" || u.protocol === "https:" ? u.href : "#";
+  } catch {
+    return "#";
+  }
+}
+
 /** @param {string} [grade] */
 function gradeClass(grade) {
-  return `grade-${String(grade || "f").toLowerCase()}`;
+  const normalized = String(grade || "F").toUpperCase();
+  const safe = ["A", "B", "C", "D", "F"].includes(normalized) ? normalized : "F";
+  return `grade-${safe.toLowerCase()}`;
 }
 
 if (!TRY_URL) {
@@ -160,8 +182,8 @@ async function showResult(job, url, name, country) {
   if (!artifact) {
     result.innerHTML = `
       <h2 class="section-title" id="try-result-h" tabindex="-1">Overall grade: ${esc(job.grade || "—")}</h2>
-      <p><a href="${esc(job.result_url || "#")}">View the full result</a></p>
-      <p class="field"><a class="submit-button" href="${esc(trackUrl)}">Track this feed daily</a></p>`;
+      <p><a href="${escAttr(safeUrl(job.result_url || "#"))}">View the full result</a></p>
+      <p class="field"><a class="submit-button" href="${escAttr(trackUrl)}">Track this feed daily</a></p>`;
   } else {
     const cats = CATEGORY_ORDER.map((key) => {
       const cat = artifact.categories?.[key];
@@ -179,8 +201,8 @@ async function showResult(job, url, name, country) {
         (${esc(String(artifact.overall?.score ?? "—"))}/100)</h2>
       <dl>${cats}</dl>
       ${fixes ? `<h3>Top things to fix</h3><ol>${fixes}</ol>` : "<p>Nothing urgent turned up. This feed passed every check we translate into fixes.</p>"}
-      <p><a href="${esc(job.result_url || "#")}">View the full JSON result</a></p>
-      <p class="field"><a class="submit-button" href="${esc(trackUrl)}">Track this feed daily</a></p>`;
+      <p><a href="${escAttr(safeUrl(job.result_url || "#"))}">View the full JSON result</a></p>
+      <p class="field"><a class="submit-button" href="${escAttr(trackUrl)}">Track this feed daily</a></p>`;
   }
   result.hidden = false;
   /** @type {HTMLElement | null} */ (result.querySelector("#try-result-h"))?.focus();

@@ -114,6 +114,106 @@ def test_instant_score_carries_country_into_tracking_handoff(page: Page, base_ur
     expect(page.locator("#country")).to_have_value("CA")
 
 
+def test_instant_score_result_url_cannot_execute_a_script_url(page: Page, base_url: str) -> None:
+    page.route(
+        "**/src/config.js",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/javascript",
+            body='window.SCORECARD_TRY_URL = "/__instant";',
+        ),
+    )
+
+    def score(route: Route) -> None:
+        request = route.request
+        if request.method == "POST":
+            body = {"job_id": "abcdefgh", "status": "pending"}
+            route.fulfill(status=202, content_type="application/json", body=json.dumps(body))
+            return
+        # A misbehaving or compromised backend must not turn a result link into
+        # a clickable javascript: URL; try.js routes it through the same
+        # safeUrl() guard app.js uses for every dynamic href.
+        body = {
+            "job_id": "abcdefgh",
+            "status": "done",
+            "grade": "B",
+            "result_url": 'javascript:window.__pwned=1//"',
+        }
+        route.fulfill(status=200, content_type="application/json", body=json.dumps(body))
+
+    page.route(re.compile(r"/__instant(?:/.*)?$"), score)
+    page.goto(f"{base_url}/try.html")
+    page.locator("#try-url").fill("https://example.org/gtfs.zip")
+    page.locator("#try-country").fill("us")
+    page.get_by_role("button", name="Score this feed").click()
+
+    link = page.get_by_role("link", name="View the full result")
+    expect(link).to_be_visible(timeout=6_000)
+    href = link.get_attribute("href") or ""
+    assert not href.lower().startswith("javascript:")
+    assert page.evaluate("() => window.__pwned") is None
+
+
+def test_instant_score_artifact_grade_cannot_inject_attributes(page: Page, base_url: str) -> None:
+    page.route(
+        "**/src/config.js",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/javascript",
+            body='window.SCORECARD_TRY_URL = "/__instant";',
+        ),
+    )
+    hostile_grade = 'A" onmouseover="window.__pwned=1'
+
+    def score(route: Route) -> None:
+        if route.request.method == "POST":
+            route.fulfill(
+                status=202,
+                content_type="application/json",
+                body=json.dumps({"job_id": "abcdefgh", "status": "pending"}),
+            )
+            return
+        route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps(
+                {
+                    "job_id": "abcdefgh",
+                    "status": "done",
+                    "grade": "A",
+                    "result_url": "/__artifact",
+                }
+            ),
+        )
+
+    page.route(re.compile(r"/__instant(?:/.*)?$"), score)
+    page.route(
+        "**/__artifact",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps(
+                {
+                    "overall": {"grade": hostile_grade, "score": 91},
+                    "categories": {},
+                    "top_fixes": [],
+                }
+            ),
+        ),
+    )
+    page.goto(f"{base_url}/try.html")
+    page.locator("#try-url").fill("https://example.org/gtfs.zip")
+    page.locator("#try-country").fill("us")
+    page.get_by_role("button", name="Score this feed").click()
+
+    chip = page.locator(".grade-chip")
+    expect(chip).to_be_visible(timeout=6_000)
+    expect(chip).to_have_class("grade-chip grade-f")
+    expect(chip).to_contain_text(hostile_grade)
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert page.evaluate("() => window.__pwned") is None
+
+
 def test_mobile_theme_and_menu_keyboard_recovery(page: Page, app_url: str) -> None:
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(f"{app_url}#/")

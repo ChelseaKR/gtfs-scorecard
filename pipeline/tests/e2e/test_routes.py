@@ -146,6 +146,28 @@ def test_agency_route_renders_scorecard(page: Page, app_url: str) -> None:
     _assert_not_stuck_loading(page)
 
 
+def test_agency_route_allowlists_hostile_artifact_severity(page: Page, app_url: str) -> None:
+    artifact = json.loads((ARTIFACTS / AGENCY_ID / "latest.json").read_text())
+    hostile = 'ERROR" onmouseover="window.__pwned=1'
+    finding = artifact["categories"]["correctness"]["findings"][0]
+    finding["severity"] = hostile
+    finding["code"] = "hostile-severity-test"
+    page.route(
+        f"**/data/artifacts/{AGENCY_ID}/latest.json",
+        lambda route: route.fulfill(json=artifact),
+    )
+
+    page.goto(f"{app_url}#/agency/{AGENCY_ID}")
+
+    row = page.locator(".findings .finding").filter(has_text="hostile-severity-test")
+    badge = row.locator(".sev")
+    expect(badge).to_have_class("sev sev-info")
+    expect(badge).to_have_text("Info")
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert hostile not in row.inner_html()
+    assert page.evaluate("() => window.__pwned") is None
+
+
 def test_agency_route_scopes_us_policy_footer_to_us_agencies(page: Page, app_url: str) -> None:
     ntd_link = page.locator('.site-footer a[href="/ntd/"]')
     legacy_ca = json.loads((ARTIFACTS / "barrie-transit" / "latest.json").read_text())
@@ -272,6 +294,26 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
             "button", name='Quoted "country" onmouseover="window.__pwned=1" <test> 0'
         ).first
     ).to_be_visible()
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert page.evaluate("() => window.__pwned") is None
+
+
+def test_cohort_agency_name_cannot_inject_attributes(page: Page, app_url: str) -> None:
+    index = json.loads((ARTIFACTS / "index.json").read_text())
+    agency_id = next(iter(index["agencies"]))
+    hostile_name = 'Quoted " onmouseover="window.__pwned=1" <agency>'
+    index["agencies"][agency_id]["name"] = hostile_name
+    page.route(
+        "**/data/artifacts/index.json",
+        lambda route: route.fulfill(json=index),
+    )
+
+    page.goto(f"{app_url}#/cohort?ids={agency_id}")
+
+    expect(page.locator(".program-row h3 a")).to_have_text(hostile_name)
+    expect(page.locator(".cohort-remove")).to_have_attribute(
+        "aria-label", f"Remove {hostile_name} from my agencies"
+    )
     expect(page.locator("[onmouseover]")).to_have_count(0)
     assert page.evaluate("() => window.__pwned") is None
 

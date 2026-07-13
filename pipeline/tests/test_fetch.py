@@ -84,6 +84,37 @@ def test_reraises_when_no_mirror_exists(monkeypatch: pytest.MonkeyPatch) -> None
         fetchmod._download_with_mirror_fallback(AGENCY)
 
 
+def test_similar_language_provider_cannot_substitute_mirror_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb
+
+    uruguay = Agency(
+        id="mtop-uruguay-metropolitan",
+        name="Servicios metropolitanos de ómnibus (MTOP Uruguay)",
+        static_gtfs_url="https://catalogodatos.gub.uy/uruguay.zip",
+    )
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,urls.latest\n"
+        "santiago,gtfs,Servicios Metropolitanos,Santiago,"
+        "https://santiago.example.org/gtfs.zip,https://mirror.example.org/santiago.zip\n"
+    )
+    monkeypatch.setattr(mobilitydb, "load_catalog", lambda **_: mobilitydb.parse_catalog(catalog))
+    seen: list[str] = []
+
+    def fake_safe_get(url: str, **_: object) -> bytes:
+        seen.append(url)
+        if url == uruguay.static_gtfs_url:
+            raise requests.exceptions.SSLError("origin TLS failure")
+        return b"SANTIAGO BYTES MUST NEVER BE SCORED AS URUGUAY"
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
+
+    with pytest.raises(requests.exceptions.SSLError, match="origin TLS failure"):
+        fetchmod._download_with_mirror_fallback(uruguay)
+    assert seen == [uruguay.static_gtfs_url]
+
+
 def test_unsafe_url_is_never_mirrored(monkeypatch: pytest.MonkeyPatch) -> None:
     mirror_calls = {"n": 0}
 

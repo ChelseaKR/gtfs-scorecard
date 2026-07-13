@@ -126,6 +126,20 @@ def test_proposals_dedupe_source_ids_and_http_variants() -> None:
     assert proposals[0].is_official is True
 
 
+def test_proposals_skip_catalog_rows_without_a_safe_normalized_url_key() -> None:
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,status,is_official\n"
+        "bad-ipv6,gtfs,Bad IPv6,Bad IPv6,https://[::1/feed.zip,active,true\n"
+        "bad-nfkc,gtfs,Bad NFKC,Bad NFKC,"
+        "https://example.org\uff0f@evil.example/feed.zip,active,true\n"
+        "valid,gtfs,Valid Transit,Valid Transit,https://ex.org/valid.zip,active,true\n"
+    )
+
+    proposals = propose_agencies(parse_catalog(catalog))
+
+    assert [proposal.mdb_id for proposal in proposals] == ["valid"]
+
+
 def test_state_filter_and_rt_pairing() -> None:
     feeds = parse_catalog(CATALOG)
     proposals = propose_agencies(feeds, country="US", subdivision="California")
@@ -450,16 +464,74 @@ def test_parse_catalog_captures_hosted_mirror() -> None:
     assert feed.hosted_url.endswith("us-ca-yolo.zip?alt=media")
 
 
-def test_hosted_mirror_url_resolves_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_hosted_mirror_url_never_resolves_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
     from scorecard_pipeline import mobilitydb as m
 
     feeds = parse_catalog(MIRROR_CATALOG)
     monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
-    # Our registry URL (the AVL host) is nowhere in the catalog; only the name ties
-    # the agency to its row, and the row's hosted mirror is returned.
+    # Names are discovery hints, not a byte-level identity boundary. Even an
+    # exact provider name cannot select a different catalog URL as a mirror.
     url = m.hosted_mirror_url(
         "yolobus",
         "Yolobus (Yolo County Transportation District)",
         "https://avl.yctd.org/RealTime/google_transit.zip",
     )
+    assert url is None
+
+
+def test_hosted_mirror_url_resolves_by_exact_pinned_mdb_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = parse_catalog(MIRROR_CATALOG)
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    url = m.hosted_mirror_url(
+        "renamed-agency",
+        "A completely different public name",
+        "https://unreachable.example.org/feed.zip",
+        "1295",
+    )
+
     assert url is not None and url.endswith("us-ca-yolo.zip?alt=media")
+
+
+def test_hosted_mirror_url_resolves_by_exact_normalized_current_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = parse_catalog(MIRROR_CATALOG)
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    url = m.hosted_mirror_url(
+        "unrelated-slug",
+        "Unrelated name",
+        "https://www.yolobus.com/GTFS/google_transit.zip/",
+    )
+
+    assert url is not None and url.endswith("us-ca-yolo.zip?alt=media")
+
+
+@pytest.mark.parametrize(
+    "current_url",
+    [
+        "javascript://www.yolobus.com/GTFS/google_transit.zip",
+        "ftp://www.yolobus.com/GTFS/google_transit.zip",
+        "//www.yolobus.com/GTFS/google_transit.zip",
+        "https:///GTFS/google_transit.zip",
+        "https://user@www.yolobus.com/GTFS/google_transit.zip",
+        "http://www.yolobus.com:443/GTFS/google_transit.zip",
+        "https://www.yolobus.com:80/GTFS/google_transit.zip",
+    ],
+)
+def test_hosted_mirror_url_rejects_unsafe_or_port_ambiguous_current_urls(
+    monkeypatch: pytest.MonkeyPatch, current_url: str
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = parse_catalog(MIRROR_CATALOG)
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    assert m.hosted_mirror_url("yolobus", "Yolobus", current_url) is None

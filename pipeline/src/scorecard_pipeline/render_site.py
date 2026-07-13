@@ -93,6 +93,19 @@ from .tool_profiles import detect_tool
 
 FIX_CODES_WITH_PAGES: set[str] = set()  # filled in by render_fixes()
 
+
+def _finding_severity_badge(value: object) -> str:
+    """Render an artifact severity from fixed labels and CSS classes only."""
+    key = str(value or "").upper()
+    if key == "ERROR":
+        class_name, label = "sev-error", SEVERITY_LABELS["ERROR"]
+    elif key == "WARNING":
+        class_name, label = "sev-warning", SEVERITY_LABELS["WARNING"]
+    else:
+        class_name, label = "sev-info", SEVERITY_LABELS["INFO"]
+    return f'<span class="sev {class_name}">{esc(label)}</span>'
+
+
 # Non-validator RuleLink.kind -> the phrase naming that authority, for the
 # "Validator rule" line's visually-hidden context. A dict, not an if/elif
 # chain, so a kind added to rule_links.py without an entry here raises a
@@ -514,12 +527,11 @@ def _feeddiff_finding_cards(changes: list[Any]) -> str:
     regression reads exactly like the check it represents."""
     items = []
     for c in changes:
-        sev = SEVERITY_LABELS.get(c.severity, c.severity)
         count = c.curr_count or 0
         noun = "instance" if count == 1 else "instances"
         items.append(
             f'<li class="finding"><div class="finding-head">'
-            f'<span class="sev sev-{esc(str(c.severity).lower())}">{esc(sev)}</span>'
+            f"{_finding_severity_badge(c.severity)}"
             f'<span class="count">{count} {noun}</span></div>'
             f'<p class="what">{esc(c.what)}</p>'
             f'<p class="code">Validator rule: {esc(c.code)}{_fix_guide_link(str(c.code))}{_rule_ref_link(str(c.code))}</p></li>'
@@ -1971,7 +1983,7 @@ def _render_agency(
     findings_html = (
         "".join(
             f'<li class="finding"><div class="finding-head">'
-            f'<span class="sev sev-{str(f.get("severity", "INFO")).lower()}">{SEVERITY_LABELS.get(f.get("severity"), f.get("severity", "Info"))}</span>'
+            f"{_finding_severity_badge(f.get('severity'))}"
             f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
             f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
             f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
