@@ -24,6 +24,7 @@ def _history_point(
     completeness: float,
     realtime: float | None = None,
     days_until_expiry: int | None = None,
+    service_horizon_status: str = "within_review_threshold",
 ) -> dict[str, Any]:
     categories: dict[str, float] = {
         "correctness": correctness,
@@ -38,6 +39,7 @@ def _history_point(
         "score": score,
         "categories": categories,
         "days_until_expiry": days_until_expiry,
+        "service_horizon_status": service_horizon_status,
     }
 
 
@@ -90,7 +92,7 @@ def _sample_index() -> dict[str, Any]:
 
 def test_rows_use_latest_history_point_only() -> None:
     dataset = build_quality_dataset(_sample_index())
-    assert dataset["schema_version"] == "1.0"
+    assert dataset["schema_version"] == "1.1"
     assert dataset["generated_fields"] == list(COLUMNS)
     rows = dataset["rows"]
     # Sorted by id: unitrans before yolobus.
@@ -108,6 +110,7 @@ def test_rows_use_latest_history_point_only() -> None:
         "completeness": 80.0,
         "realtime": 82.0,
         "days_until_expiry": 120,
+        "service_horizon_status": "within_review_threshold",
     }
     # Unitrans publishes no realtime feed: realtime is None, not zero.
     assert rows[0]["realtime"] is None
@@ -158,6 +161,7 @@ def test_csv_round_trips_header_and_values() -> None:
     assert yolo["score"] == "85.0"
     assert yolo["realtime"] == "82.0"
     assert yolo["days_until_expiry"] == "120"
+    assert yolo["service_horizon_status"] == "within_review_threshold"
 
     # Missing realtime renders as an empty cell, not "None".
     unitrans = next(p for p in parsed if p["id"] == "unitrans")
@@ -236,3 +240,24 @@ def test_empty_index_yields_empty_rows_and_zeroed_summary() -> None:
         "grade_distribution": {"A": 0, "B": 0, "C": 0, "D": 0, "F": 0},
         "pct_current": 0.0,
     }
+
+
+def test_legacy_history_derives_distant_horizon_for_first_api_publish() -> None:
+    index = _sample_index()
+    latest = index["agencies"]["unitrans"]["history"][-1]
+    latest["date"] = "2026-07-13"
+    latest["days_until_expiry"] = 26_834
+    del latest["service_horizon_status"]
+    row = build_quality_dataset(index)["rows"][0]
+    assert row["days_until_expiry"] == 26_834
+    assert row["service_horizon_status"] == "unusually_distant"
+
+
+def test_legacy_history_without_date_or_expiry_stays_unknown() -> None:
+    index = _sample_index()
+    latest = index["agencies"]["unitrans"]["history"][-1]
+    latest["date"] = None
+    latest["days_until_expiry"] = None
+    del latest["service_horizon_status"]
+    row = build_quality_dataset(index)["rows"][0]
+    assert row["service_horizon_status"] == "unknown"

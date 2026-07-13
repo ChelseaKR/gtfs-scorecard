@@ -46,9 +46,15 @@ from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalog
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
 from .location import country_name, resolve_published_location
-from .metrics import expiry_status, operating_signal
+from .metrics import (
+    expiry_status,
+    operating_signal,
+    presented_freshness_summary,
+    resolve_service_horizon_status,
+)
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
+from .ntd import presented_readiness as presented_ntd_readiness
 from .pages_tools import (
     _render_check_page,
     _render_compare_page,
@@ -753,15 +759,14 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     idx = GRADE_RANK.get(g, 0)
 
     chips = []
-    days = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("days_until_expiry")
-    )
+    fresh_details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    days = fresh_details.get("days_until_expiry")
+    horizon_status = resolve_service_horizon_status(fresh_details, artifact.get("snapshot_date"))
     if isinstance(days, (int, float)) and not isinstance(days, bool):
         days = int(days)
-        if days <= 0:
+        if horizon_status == "unusually_distant":
+            chips.append('<span class="chip warn">Review service end date</span>')
+        elif days <= 0:
             chips.append('<span class="chip warn">Feed expired</span>')
         elif days < 30:
             chips.append(f'<span class="chip warn">Expires in {days} days</span>')
@@ -1619,7 +1624,9 @@ def _rider_impact_section(artifact: dict[str, Any]) -> str:
     being treated as a gap.
     """
 
-    schedule = _rider_schedule_text(_artifact_category(artifact, "freshness"))
+    schedule = _rider_schedule_text(
+        _artifact_category(artifact, "freshness"), artifact.get("snapshot_date")
+    )
     completeness = _artifact_category(artifact, "completeness")
     accessibility = _rider_accessibility_text(completeness)
     fare = _rider_fare_text(completeness)
@@ -1652,7 +1659,7 @@ def _measured_details(category: dict[str, Any]) -> dict[str, Any]:
     return details if category.get("status") == "measured" and isinstance(details, dict) else {}
 
 
-def _rider_schedule_text(freshness: dict[str, Any]) -> str:
+def _rider_schedule_text(freshness: dict[str, Any], snapshot_date: Any = None) -> str:
     fresh_details = freshness.get("details", {})
     fresh_details = fresh_details if isinstance(fresh_details, dict) else {}
     days = (
@@ -1662,6 +1669,13 @@ def _rider_schedule_text(freshness: dict[str, Any]) -> str:
     )
     if days is None:
         return "Schedule visibility is not known from this scorecard."
+    if resolve_service_horizon_status(fresh_details, snapshot_date) == "unusually_distant":
+        end = fresh_details.get("effective_expiry_date")
+        through = f" through {esc(str(end))}" if end else " to an unusually distant date"
+        return (
+            f"The feed states that service is published{through}. This may be intentional "
+            "or a placeholder; confirm current service with the transit operator."
+        )
     if days > 0:
         return f"The feed's last published service date is in {_plain_number(days)} days."
     if days == 0:
@@ -1908,8 +1922,13 @@ def _render_agency(
         cat = artifact["categories"].get(key, {})
         label = CATEGORY_LABELS[key]
         trk = f"{i + 1:02d}"
+        summary = (
+            presented_freshness_summary(cat, artifact.get("snapshot_date"))
+            if key == "freshness"
+            else str(cat.get("summary") or "")
+        )
         if cat.get("status") != "measured":
-            note = cat.get("summary") or "Not part of the grade yet."
+            note = summary or "Not part of the grade yet."
             cats_html += (
                 f'<div class="platform neutral">'
                 f'<span class="trk" aria-hidden="true">{trk}</span>'
@@ -1938,7 +1957,7 @@ def _render_agency(
             f'<div class="pbar" role="meter" aria-valuenow="{score}" aria-valuemin="0" '
             f'aria-valuemax="100" aria-label="{esc(label)} score">'
             f'<span style="width:{width}%;background:var(--grade-{band})"></span></div>'
-            f'<p class="pstat">{esc(cat["summary"])}</p>{substat}</div></div>'
+            f'<p class="pstat">{esc(summary)}</p>{substat}</div></div>'
         )
         measured_vars.append({"@type": "PropertyValue", "name": label, "value": score})
 
@@ -2196,7 +2215,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         fixes_html = "<p>Nothing urgent. This feed passed every check we translate into a fix.</p>"
 
     # NTD readiness verdict and pillars, precomputed at score time.
-    readiness = artifact.get("ntd_readiness") or {}
+    readiness = presented_ntd_readiness(artifact) or {}
     ntd_status = str(readiness.get("status", "unknown"))
     ntd_label = _NTD_LABELS.get(ntd_status, ntd_status)
     pillar_rows = "".join(
@@ -2232,9 +2251,18 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # when the artifact carries them.
     fresh = artifact.get("categories", {}).get("freshness", {}).get("details", {})
     days = fresh.get("days_until_expiry")
+    horizon_status = resolve_service_horizon_status(fresh, artifact.get("snapshot_date"))
     if isinstance(days, (int, float)) and not isinstance(days, bool):
         days = int(days)
-        expiry = "Feed has expired." if days <= 0 else f"{days} days of service data remain."
+        if horizon_status == "unusually_distant":
+            end = fresh.get("effective_expiry_date")
+            through = f" through {esc(str(end))}" if end else " unusually far ahead"
+            expiry = (
+                f"The feed states that service is published{through}. Confirm that this "
+                "end date is intentional before relying on it as a maintenance signal."
+            )
+        else:
+            expiry = "Feed has expired." if days <= 0 else f"{days} days of service data remain."
         if fresh.get("last_service_date"):
             expiry += f" Last service date {esc(str(fresh['last_service_date']))}."
     else:
@@ -5049,6 +5077,7 @@ def _write_catalog(write: Callable[..., None], catalog: list[dict[str, Any]]) ->
         "national_percentile",
         "snapshot_date",
         "days_until_expiry",
+        "service_horizon_status",
         "expiry_status",
         "mdb_id",
         "validator_version",
@@ -7661,6 +7690,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             "stops": comp.get("stops"),
             "snapshot_date": artifact["snapshot_date"],
             "days_until_expiry": days,
+            "service_horizon_status": resolve_service_horizon_status(
+                fresh, artifact.get("snapshot_date")
+            ),
             "expiry_status": expiry_status(days),
             # Readiness for the FTA NTD GTFS requirement (published/valid/
             # current), so a state program can filter its portfolio by who is

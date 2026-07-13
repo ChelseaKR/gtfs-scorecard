@@ -23,6 +23,7 @@ import {
   GRADE_RANK,
   SEVERITY_LABELS,
   JURISDICTION_GUIDANCE,
+  SERVICE_HORIZON_REVIEW_YEARS,
   SUPPORT_RESOURCES,
   TIER_LABELS,
   UNIVERSAL_GUIDANCE,
@@ -1164,7 +1165,9 @@ function renderScorecard(artifact, history, dirRecord) {
   document.title = `${name} — GTFS Scorecard`;
   const overall = artifact.overall;
 
-  const cats = CATEGORY_ORDER.map((key, i) => categoryCard(key, artifact.categories[key], i)).join("");
+  const cats = CATEGORY_ORDER.map((key, i) =>
+    categoryCard(key, artifact.categories[key], i, artifact),
+  ).join("");
   const fixes = topFixes(artifact.top_fixes);
   const findings = collectFindings(artifact);
   const recsHtml = recommendationsSection(artifact);
@@ -1239,8 +1242,14 @@ function riderImpactSection(artifact) {
   const freshness = categories.freshness || {};
   const freshDetails = freshness.details || {};
   const days = freshness.status === "measured" ? numericValue(freshDetails.days_until_expiry) : null;
+  const horizonStatus = effectiveServiceHorizonStatus(freshDetails, artifact?.snapshot_date);
   let schedule;
   if (days === null) schedule = "Schedule visibility is not known from this scorecard.";
+  else if (horizonStatus === "unusually_distant") {
+    const end = freshDetails.effective_expiry_date;
+    const through = end ? ` through ${esc(String(end))}` : " to an unusually distant date";
+    schedule = `The feed states that service is published${through}. This may be intentional or a placeholder; confirm current service with the transit operator.`;
+  }
   else if (days > 0) schedule = `The feed's last published service date is in ${plainNumber(days)} days.`;
   else if (days === 0) schedule = "The feed's last published service date is today.";
   else schedule = `The feed's last published service date was ${plainNumber(Math.abs(days))} days ago.`;
@@ -1305,6 +1314,94 @@ function numericValue(value) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+/** Parse a strict published YYYY-MM-DD value without using the browser's locale.
+ *  @param {unknown} value @returns {{year:number, month:number, day:number}|null} */
+function publishedDate(value) {
+  if (typeof value !== "string") return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+  const parts = { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
+  if (parts.year < 1) return null;
+  const date = new Date(0);
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCFullYear(parts.year, parts.month - 1, parts.day);
+  if (
+    !Number.isFinite(date.getTime()) ||
+    date.getUTCFullYear() !== parts.year ||
+    date.getUTCMonth() + 1 !== parts.month ||
+    date.getUTCDate() !== parts.day
+  )
+    return null;
+  return parts;
+}
+
+/** @param {{year:number, month:number, day:number}} value @param {number} days */
+function publishedDateAfterDays(value, days) {
+  if (!Number.isInteger(days)) return null;
+  const date = new Date(0);
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCFullYear(value.year, value.month - 1, value.day + days);
+  if (!Number.isFinite(date.getTime())) return null;
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+  };
+}
+
+/** @param {{year:number, month:number, day:number}} value @param {number} years */
+function publishedDateAfterYears(value, years) {
+  const year = value.year + years;
+  const leapDay = value.month === 2 && value.day === 29;
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  return { year, month: value.month, day: leapDay && !leapYear ? 28 : value.day };
+}
+
+/** @param {{year:number, month:number, day:number}} value */
+function publishedDateKey(value) {
+  return value.year * 10000 + value.month * 100 + value.day;
+}
+
+/** Resolve schema-1.10 status, deriving it for legacy artifacts deterministically.
+ *  @param {any} details @param {unknown} snapshotDate @returns {string} */
+function effectiveServiceHorizonStatus(details, snapshotDate) {
+  const explicit = details?.service_horizon_status;
+  if (
+    explicit === "within_review_threshold" ||
+    explicit === "unusually_distant" ||
+    explicit === "unknown"
+  )
+    return explicit;
+  const checked =
+    publishedDate(snapshotDate) || publishedDate(details?.snapshot_date) || publishedDate(details?.date);
+  if (!checked) return "unknown";
+  let expiry = publishedDate(details?.effective_expiry_date);
+  if (!expiry) {
+    const days = numericValue(details?.days_until_expiry);
+    if (days === null) return "unknown";
+    expiry = publishedDateAfterDays(checked, days);
+  }
+  if (!expiry) return "unknown";
+  const boundary = publishedDateAfterYears(checked, SERVICE_HORIZON_REVIEW_YEARS);
+  return publishedDateKey(expiry) > publishedDateKey(boundary)
+    ? "unusually_distant"
+    : "within_review_threshold";
+}
+
+/** Replace a legacy embedded countdown with the horizon trust advisory.
+ *  @param {any} category @param {unknown} snapshotDate @returns {string} */
+function presentedFreshnessSummary(category, snapshotDate) {
+  const summary = String(category?.summary || "");
+  const details = category?.details || {};
+  if (effectiveServiceHorizonStatus(details, snapshotDate) !== "unusually_distant")
+    return summary;
+  const end = publishedDate(details.effective_expiry_date)
+    ? String(details.effective_expiry_date).trim()
+    : null;
+  const through = end ? ` through ${end}` : " to an unusually distant date";
+  return `Service is published${through}. It may be intentional, but confirm the end date before treating the feed as maintained.`;
+}
+
 /** @param {number} value @returns {string} */
 function plainNumber(value) {
   const rounded = Math.round(value * 10) / 10;
@@ -1324,9 +1421,13 @@ function gradeReel(grade) {
 /** Status chips from the feed's freshness, completeness, and realtime. @param {any} artifact */
 function statusChips(artifact) {
   const chips = [];
-  const days = artifact.categories?.freshness?.details?.days_until_expiry;
+  const freshDetails = artifact.categories?.freshness?.details || {};
+  const days = freshDetails.days_until_expiry;
+  const horizonStatus = effectiveServiceHorizonStatus(freshDetails, artifact.snapshot_date);
   if (typeof days === "number") {
-    if (days <= 0) chips.push('<span class="chip warn">Feed expired</span>');
+    if (horizonStatus === "unusually_distant")
+      chips.push('<span class="chip warn">Review service end date</span>');
+    else if (days <= 0) chips.push('<span class="chip warn">Feed expired</span>');
     else if (days < 30) chips.push(`<span class="chip warn">Expires in ${days} days</span>`);
     else chips.push(`<span class="chip ok">Covers ${days} days</span>`);
   }
@@ -1538,12 +1639,15 @@ function gradeBand(score) {
   return (band ? band.grade : "F").toLowerCase();
 }
 
-/** One category as a departure-board "platform" row. @param {string} key @param {any} cat @param {number} index */
-function categoryCard(key, cat, index) {
+/** One category as a departure-board "platform" row.
+ *  @param {string} key @param {any} cat @param {number} index @param {any} artifact */
+function categoryCard(key, cat, index, artifact) {
   const label = CATEGORY_LABELS[/** @type {keyof CATEGORY_LABELS} */ (key)] ?? key;
   const trk = String(index + 1).padStart(2, "0");
+  const summary =
+    key === "freshness" ? presentedFreshnessSummary(cat, artifact?.snapshot_date) : String(cat?.summary || "");
   if (!cat || cat.status !== "measured") {
-    const note = cat?.summary ?? "Not part of the grade yet. Nothing here counts against you.";
+    const note = summary || "Not part of the grade yet. Nothing here counts against you.";
     return `<div class="platform neutral">
       <span class="trk" aria-hidden="true">${trk}</span>
       <div class="pmain">
@@ -1569,7 +1673,7 @@ function categoryCard(key, cat, index) {
            aria-valuemax="100" aria-label="${esc(label)} score">
         <span style="width:${w}%;background:var(--grade-${band})"></span>
       </div>
-      <p class="pstat">${esc(cat.summary)}</p>
+      <p class="pstat">${esc(summary)}</p>
     </div>
   </div>`;
 }
@@ -1736,7 +1840,16 @@ function ntdSection(artifact) {
       .map((p) => {
         const label = NTD_LABELS[p.status] || p.status;
         const name = NTD_PILLAR_NAMES[p.key] || p.key;
-        return `<dt>${esc(name)} <span class="ntd-status ntd-${esc(String(p.status))}">${esc(label)}</span></dt><dd>${esc(String(p.detail || ""))}</dd>`;
+        const distant =
+          p.key === "current" &&
+          effectiveServiceHorizonStatus(
+            artifact.categories?.freshness?.details || {},
+            artifact.snapshot_date,
+          ) === "unusually_distant";
+        const detail = distant
+          ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
+          : String(p.detail || "");
+        return `<dt>${esc(name)} <span class="ntd-status ntd-${esc(String(p.status))}">${esc(label)}</span></dt><dd>${esc(detail)}</dd>`;
       })
       .join("");
   }
@@ -1770,7 +1883,16 @@ function conformanceSection(artifact, agencyId, agencyName) {
       const name = CONFORMANCE_NAMES[c.key] || c.key;
       const status = c.met ? "ntd-ready" : "ntd-not_ready";
       const label = c.met ? "Met" : "Not yet";
-      return `<dt>${esc(name)} <span class="ntd-status ${status}">${label}</span></dt><dd>${esc(String(c.detail || ""))}</dd>`;
+      const distant =
+        c.key === "current" &&
+        effectiveServiceHorizonStatus(
+          artifact.categories?.freshness?.details || {},
+          artifact.snapshot_date,
+        ) === "unusually_distant";
+      const detail = distant
+        ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
+        : String(c.detail || "");
+      return `<dt>${esc(name)} <span class="ntd-status ${status}">${label}</span></dt><dd>${esc(detail)}</dd>`;
     })
     .join("");
   const headStatus = mark.awarded ? "ntd-ready" : "ntd-not_ready";

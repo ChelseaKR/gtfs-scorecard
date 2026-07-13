@@ -136,6 +136,19 @@ Scoring:
 - Missing `feed_info` validity dates: minus 15, because without stated dates
   no app (and no scorecard) can warn the agency before riders notice.
 
+An effective end date more than ten calendar years after the check is reported
+as unusually distant. Ten years is a conservative review threshold chosen to
+leave ordinary multi-year planning alone while surfacing sentinel-like dates
+such as 2100. GTFS does not set this maximum, so this sits outside category
+findings as a display and trust advisory. It does not change the freshness
+score, grade, top-three fixes, finding prevalence, finding diffs, or fix
+receipts. The scorecard keeps the exact end date and raw day count in the
+artifact and adds `service_horizon_status` so pages and API consumers can avoid
+presenting a very large countdown as evidence that the feed is actively
+maintained. Presentation and API builders derive the same status from dated
+legacy records whose explicit status is absent; records without usable date
+evidence remain unknown.
+
 ## Rider experience completeness (25%)
 
 What it measures: the fields riders feel directly, anchored to v4.0

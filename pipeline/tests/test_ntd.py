@@ -55,6 +55,16 @@ def test_clean_current_feed_is_ready() -> None:
     assert "D-10" in r.summary
 
 
+def test_legacy_distant_horizon_stays_ready_without_huge_countdown() -> None:
+    artifact = _artifact(errors=0, days=26_834)
+    artifact["snapshot_date"] = "2026-07-13"
+    result = assess(artifact)
+    current = next(p for p in result.pillars if p.key == "current")
+    assert current.status == READY
+    assert "unusually distant" in current.detail
+    assert "26834" not in current.detail
+
+
 def test_expired_feed_is_not_ready_on_currency() -> None:
     a = _artifact(days=-200)  # lapsed
     assert _status(a) == NOT_READY

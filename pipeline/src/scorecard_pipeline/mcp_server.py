@@ -34,6 +34,8 @@ from collections.abc import Callable
 from typing import Any
 
 from .instance import BASE_URL as DEFAULT_BASE_URL
+from .metrics import presented_freshness_summary, resolve_service_horizon_status
+from .ntd import presented_readiness as presented_ntd_readiness
 
 PROTOCOL_VERSION = "2025-06-18"
 SERVER_INFO = {"name": "gtfs-scorecard", "version": "1.0.0"}
@@ -143,6 +145,7 @@ def search_agencies(
             "subdivision_code": r.get("subdivision_code"),
             "subdivision_name": r.get("subdivision_name"),
             "days_until_expiry": r.get("days_until_expiry"),
+            "service_horizon_status": resolve_service_horizon_status(r),
             "expiry_status": r.get("expiry_status"),
             "national_percentile": r.get("national_percentile"),
             "peer_percentile": r.get("peer_percentile"),
@@ -162,11 +165,22 @@ def get_scorecard(fetch: Fetch, agency_id: str) -> dict[str, Any]:
     categories: dict[str, Any] = {}
     findings: list[dict[str, Any]] = []
     for key, cat in (art.get("categories") or {}).items():
-        categories[key] = {
+        category = {
             "status": cat.get("status"),
             "score": cat.get("score"),
-            "summary": cat.get("summary"),
+            "summary": (
+                presented_freshness_summary(cat, art.get("snapshot_date"))
+                if key == "freshness"
+                else cat.get("summary")
+            ),
         }
+        if key == "freshness":
+            details = cat.get("details") or {}
+            category["service_horizon_status"] = resolve_service_horizon_status(
+                details, art.get("snapshot_date")
+            )
+            category["effective_expiry_date"] = details.get("effective_expiry_date")
+        categories[key] = category
         if cat.get("status") != "measured":
             continue
         for f in cat.get("findings", []):
@@ -190,7 +204,7 @@ def get_scorecard(fetch: Fetch, agency_id: str) -> dict[str, Any]:
         "categories": categories,
         "top_fixes": art.get("top_fixes"),
         "findings": findings,
-        "ntd_readiness": art.get("ntd_readiness"),
+        "ntd_readiness": presented_ntd_readiness(art),
         "scorecard_url": f"{_base_url()}/agency/{agency_id}/",
         "note": (
             "A data-quality lens on the published GTFS, not an official compliance "

@@ -196,7 +196,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.9"
+    assert SCHEMA_VERSION == "1.10"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 

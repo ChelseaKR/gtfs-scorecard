@@ -21,10 +21,11 @@ agency's own D-10 certification.
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 from typing import Any
 
-from .metrics import expiry_status
+from .metrics import expiry_status, resolve_service_horizon_status
 
 READY = "ready"
 AT_RISK = "at_risk"
@@ -81,14 +82,20 @@ def _valid(artifact: dict[str, Any]) -> Pillar:
 
 
 def _current(artifact: dict[str, Any]) -> Pillar:
-    days = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("days_until_expiry")
-    )
+    details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    days = details.get("days_until_expiry")
     status = expiry_status(days)
     if status == "current":
+        if (
+            resolve_service_horizon_status(details, artifact.get("snapshot_date"))
+            == "unusually_distant"
+        ):
+            return Pillar(
+                "current",
+                READY,
+                "The published window is current, but its service end date is unusually "
+                "distant; confirm that date is intentional.",
+            )
         return Pillar("current", READY, f"Service data covers the next {days} days.")
     if status == "expiring_soon":
         return Pillar(
@@ -110,6 +117,26 @@ def assess(artifact: dict[str, Any]) -> NtdReadiness:
     pillars = [_published(artifact), _valid(artifact), _current(artifact)]
     status = max(pillars, key=lambda p: _RANK[p.status]).status
     return NtdReadiness(status, pillars, _summary(status, pillars))
+
+
+def presented_readiness(artifact: dict[str, Any]) -> dict[str, Any] | None:
+    """Copy stored readiness and suppress only a legacy sentinel countdown."""
+    stored = artifact.get("ntd_readiness")
+    if not isinstance(stored, dict):
+        return None
+    presented = copy.deepcopy(stored)
+    details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    if (
+        resolve_service_horizon_status(details, artifact.get("snapshot_date"))
+        == "unusually_distant"
+    ):
+        for pillar in presented.get("pillars", []):
+            if isinstance(pillar, dict) and pillar.get("key") == "current":
+                pillar["detail"] = (
+                    "The published window is current, but its service end date is unusually "
+                    "distant; confirm that date is intentional."
+                )
+    return presented
 
 
 def _summary(status: str, pillars: list[Pillar]) -> str:

@@ -108,6 +108,15 @@
             "null"
           ]
         },
+        "service_horizon_status": {
+          "type": "string",
+          "enum": [
+            "within_review_threshold",
+            "unusually_distant",
+            "unknown"
+          ],
+          "description": "Whether the effective service end date extends beyond the scorecard's conservative review threshold. Unusually distant is a display and trust advisory outside category findings, not a GTFS error or score deduction."
+        },
         "expiry_status": {
           "type": "string",
           "enum": [

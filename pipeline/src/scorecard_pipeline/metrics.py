@@ -7,6 +7,8 @@ with citations lives in docs/rubric.md and must stay in sync.
 from __future__ import annotations
 
 import datetime as dt
+import math
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -175,6 +177,114 @@ def correctness(report: ValidationReport) -> CategoryResult:
 # `scorecard render-constants`, so there is no hand-kept mirror to sync.
 STALE_FEED_DAYS = 365
 
+# A date more than ten calendar years beyond the check is far outside ordinary
+# schedule publishing, but GTFS does not forbid it. Treat it as a review signal,
+# not a validity error or a score deduction. Ten years deliberately leaves room
+# for legitimate multi-year planning while catching sentinel-like dates such as
+# 2100. Calendar years (rather than a fixed day count) keep leap years from
+# moving the boundary.
+SERVICE_HORIZON_REVIEW_YEARS = 10
+
+
+def _years_after(value: dt.date, years: int) -> dt.date:
+    """Return the same calendar date ``years`` later, clamping leap day."""
+    if value.year > dt.date.max.year - years:
+        return dt.date.max
+    try:
+        return value.replace(year=value.year + years)
+    except ValueError:
+        # The only valid date that cannot be replaced this way is February 29
+        # in a target year without a leap day.
+        return value.replace(year=value.year + years, day=28)
+
+
+def service_horizon_status(expiry: dt.date | None, today: dt.date) -> str:
+    """Classify an end date without turning a review threshold into a rule.
+
+    ``unusually_distant`` means strictly more than ten calendar years after the
+    check date. The boundary itself remains ``within_review_threshold``. An
+    unknown expiry stays ``unknown`` rather than being treated as normal.
+    """
+    if expiry is None:
+        return "unknown"
+    if expiry > _years_after(today, SERVICE_HORIZON_REVIEW_YEARS):
+        return "unusually_distant"
+    return "within_review_threshold"
+
+
+def _published_date(value: Any) -> dt.date | None:
+    """Read a published ISO date without making a wall-clock assumption."""
+    if isinstance(value, dt.datetime):
+        return value.date()
+    if isinstance(value, dt.date):
+        return value
+    if not isinstance(value, str):
+        return None
+    try:
+        return dt.date.fromisoformat(value.strip())
+    except ValueError:
+        return None
+
+
+def resolve_service_horizon_status(
+    values: Mapping[str, Any], snapshot_date: dt.date | str | None = None
+) -> str:
+    """Return the explicit horizon status or derive it for legacy records.
+
+    Artifacts and index/catalog rows published before schema 1.10 have no
+    ``service_horizon_status``. Derive the same strict calendar-year threshold
+    from their immutable snapshot plus either ``effective_expiry_date`` or
+    ``days_until_expiry`` so the first deploy does not expose a sentinel-like
+    countdown. Records with no usable dates stay ``unknown``.
+    """
+    explicit = values.get("service_horizon_status")
+    if explicit in ("within_review_threshold", "unusually_distant", "unknown"):
+        return str(explicit)
+
+    checked = _published_date(
+        snapshot_date if snapshot_date is not None else values.get("snapshot_date")
+    )
+    if checked is None:
+        checked = _published_date(values.get("date"))
+    if checked is None:
+        return "unknown"
+
+    expiry = _published_date(values.get("effective_expiry_date"))
+    if expiry is None:
+        days = values.get("days_until_expiry")
+        if isinstance(days, bool) or not isinstance(days, (int, float)):
+            return "unknown"
+        if isinstance(days, float) and (not days.is_integer() or not math.isfinite(days)):
+            return "unknown"
+        try:
+            expiry = checked + dt.timedelta(days=int(days))
+        except OverflowError:
+            return "unknown"
+    return service_horizon_status(expiry, checked)
+
+
+def presented_freshness_summary(
+    category: Mapping[str, Any], snapshot_date: dt.date | str | None = None
+) -> str:
+    """Return freshness summary copy that is safe for legacy artifacts.
+
+    Pre-1.10 artifacts embedded the raw countdown in ``summary``. Presentation
+    and assistant surfaces use this adapter so an old sentinel-like horizon is
+    disclosed as a trust advisory without rewriting immutable artifacts.
+    """
+    summary = str(category.get("summary") or "")
+    details = category.get("details")
+    if not isinstance(details, Mapping):
+        return summary
+    if resolve_service_horizon_status(details, snapshot_date) != "unusually_distant":
+        return summary
+    end = _published_date(details.get("effective_expiry_date"))
+    through = f" through {end.isoformat()}" if end else " to an unusually distant date"
+    return (
+        f"Service is published{through}. It may be intentional, but confirm the end date "
+        "before treating the feed as maintained."
+    )
+
 
 def expiry_status(days_until_expiry: int | None) -> str:
     """Bucket a feed by how its validity window relates to today.
@@ -272,6 +382,10 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
     intermittent = declared_intermittent or dates.seasonal_boundary
 
     expiry = dates.effective_expiry()
+    horizon_status = service_horizon_status(expiry, today)
+    details["effective_expiry_date"] = expiry.isoformat() if expiry else None
+    details["service_horizon_status"] = horizon_status
+    details["service_horizon_review_years"] = SERVICE_HORIZON_REVIEW_YEARS
     if expiry is None:
         details["days_until_expiry"] = None
         return CategoryResult(
@@ -403,6 +517,16 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
                 # is a governed methodology change (see METHODOLOGY_CHANGELOG).
                 deduction=round((1 - days_left / 60) * 60 + 20, 1),
             )
+        )
+    elif horizon_status == "unusually_distant":
+        # GTFS permits this date. Keep the existing full-credit score while
+        # making clear that a distant end date alone is not evidence that the
+        # feed is actively maintained. This is summary/detail metadata, not a
+        # category finding, so finding prevalence, diffs, and Top 3 stay stable.
+        summary = (
+            f"Service is published through {expiry.isoformat()}, an unusually distant "
+            "end date. It may be intentional, but confirm it before treating the feed "
+            "as maintained."
         )
     else:
         summary = f"Service data covers the next {days_left} days."

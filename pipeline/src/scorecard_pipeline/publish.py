@@ -34,7 +34,7 @@ from .effort_calibration import (
 )
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog, merge_receipts
-from .metrics import expiry_status
+from .metrics import expiry_status, resolve_service_horizon_status
 from .score import Scorecard
 from .site_shell import CATEGORY_LABELS
 
@@ -307,12 +307,8 @@ def _write_badge(agency_dir: Path, artifact: dict[str, Any]) -> None:
     """Write the embeddable grade badge next to the artifacts: an SVG plus a
     Shields.io endpoint JSON so consumers can style their own badge."""
     overall = artifact["overall"]
-    days = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("days_until_expiry")
-    )
+    fresh_details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    days = fresh_details.get("days_until_expiry")
     grade = str(overall["grade"])
     status = expiry_status(days)
     svg = render_badge(grade, float(overall["score"]), expiry_status=status)
@@ -380,18 +376,17 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     }
     # Carry days-until-expiry so the directory and app can split the expired
     # population (recently lapsed vs long dead) without fetching every artifact.
-    days = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("days_until_expiry")
-    )
+    fresh_details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    days = fresh_details.get("days_until_expiry")
     return {
         "date": artifact["snapshot_date"],
         "score": artifact["overall"]["score"],
         "grade": artifact["overall"]["grade"],
         "categories": categories,
         "days_until_expiry": days,
+        "service_horizon_status": resolve_service_horizon_status(
+            fresh_details, artifact.get("snapshot_date")
+        ),
     }
 
 

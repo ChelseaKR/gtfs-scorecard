@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import re
+import shutil
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -12,6 +15,7 @@ from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
     _accessibility_substat,
+    _board_hero,
     _california_guideline_checklist,
     _california_guideline_html,
     _canonical_state,
@@ -493,6 +497,112 @@ def test_rider_impact_does_not_overstate_schedule_or_realtime_evidence() -> None
     )
     assert "No realtime feed was reachable" in unreachable
     assert "No live-arrival feed" not in unreachable
+
+
+def test_distant_service_horizon_uses_review_copy_instead_of_huge_day_claim() -> None:
+    from scorecard_pipeline.render_site import _render_agency, _render_brief
+
+    freshness = {
+        "status": "measured",
+        "score": 100.0,
+        "summary": "Service data covers the next 26834 days.",
+        "findings": [],
+        "details": {
+            "days_until_expiry": 26_834,
+            "last_service_date": "2099-12-31",
+        },
+    }
+    artifact = {
+        "agency": {"id": "demo", "name": "Demo Transit", "country": "US"},
+        "overall": {"grade": "A", "score": 95.0},
+        "snapshot_date": "2026-07-13",
+        "feed": {"static_url": "https://example.org/gtfs.zip", "reachable": True},
+        "categories": {
+            "correctness": {
+                "status": "measured",
+                "score": 100.0,
+                "summary": "No validator errors.",
+                "findings": [],
+            },
+            "freshness": freshness,
+            "completeness": {
+                "status": "measured",
+                "score": 100.0,
+                "summary": "Rider fields are complete.",
+                "findings": [],
+                "details": {"accessibility": {"stops_stated_pct": 100, "trips_stated_pct": 100}},
+            },
+        },
+        "top_fixes": [],
+        "ntd_readiness": {
+            "status": "ready",
+            "summary": "Ready.",
+            "pillars": [
+                {
+                    "key": "current",
+                    "status": "ready",
+                    "detail": "Service data covers the next 26834 days.",
+                }
+            ],
+        },
+        "conformance": {
+            "awarded": True,
+            "summary": "Awarded.",
+            "criteria": [
+                {
+                    "key": "current",
+                    "met": True,
+                    "detail": "Service data covers the next 26834 days.",
+                }
+            ],
+        },
+    }
+
+    rider = _rider_impact_section(artifact)
+    assert "published to an unusually distant date" in rider
+    assert "may be intentional or a placeholder" in rider
+    assert "26,834" not in rider and "26834" not in rider
+
+    hero = _board_hero("Demo Transit", "demo", artifact, [])
+    assert "Review service end date" in hero
+    assert "Covers 26834 days" not in hero
+
+    # First deploy renders old artifacts without rewriting them. Every static
+    # presentation path must replace embedded and regenerated raw countdowns.
+    for html in (_render_agency(artifact), _render_brief(artifact)):
+        assert "Review service end date" in html or "unusually distant" in html
+        assert "26834" not in html
+        assert "26,834" not in html
+
+
+def test_catalog_derives_status_from_legacy_latest_artifact(
+    isolated_repo_root: Path,
+) -> None:
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    latest = isolated_repo_root / "data" / "artifacts" / "unitrans" / "latest.json"
+    artifact = json.loads(latest.read_text())
+    artifact["snapshot_date"] = "2026-07-13"
+    freshness = artifact["categories"]["freshness"]
+    freshness["summary"] = "Service data covers the next 26834 days."
+    freshness["details"]["days_until_expiry"] = 26_834
+    freshness["details"]["last_service_date"] = "2099-12-31"
+    freshness["details"].pop("service_horizon_status", None)
+    freshness["details"].pop("effective_expiry_date", None)
+    latest.write_text(json.dumps(artifact))
+
+    render_site(dt.datetime(2026, 7, 13, 12, tzinfo=dt.UTC))
+
+    catalog = json.loads((isolated_repo_root / "web" / "catalog.json").read_text())
+    row = next(row for row in catalog["agencies"] if row["id"] == "unitrans")
+    assert row["days_until_expiry"] == 26_834
+    assert row["service_horizon_status"] == "unusually_distant"
+    agency_html = (isolated_repo_root / "web" / "agency" / "unitrans" / "index.html").read_text()
+    assert "Review service end date" in agency_html
+    assert "26834" not in agency_html
+    assert "26,834" not in agency_html
 
 
 def test_california_checklist_reads_measured_fields() -> None:
