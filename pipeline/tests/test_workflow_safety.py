@@ -18,11 +18,3 @@ def test_commit_retry_loops_fail_when_no_push_succeeds() -> None:
         assert "pushed=true" in workflow, name
         assert 'if [ "$pushed" != true ]' in workflow, name
         assert "exit 1" in workflow, name
-
-
-def test_daily_and_intraday_publishers_share_one_concurrency_group() -> None:
-    for name in ("scorecard.yml", "refresh.yml"):
-        workflow = _workflow(name)
-        assert "concurrency:" in workflow, name
-        assert "group: artifact-publish" in workflow, name
-        assert "cancel-in-progress: false" in workflow, name

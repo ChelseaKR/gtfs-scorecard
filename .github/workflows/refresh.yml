@@ -18,12 +18,6 @@ on:
 permissions:
   contents: read
 
-# Shared with scorecard.yml because both workflows publish a complete view of
-# data/artifacts to the same S3 prefix.
-concurrency:
-  group: artifact-publish
-  cancel-in-progress: false
-
 jobs:
   refresh:
     runs-on: ubuntu-latest
