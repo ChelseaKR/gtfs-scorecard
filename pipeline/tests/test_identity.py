@@ -20,6 +20,11 @@ def test_normalized_feed_url_ignores_scheme_and_default_port() -> None:
     assert normalized_feed_url("https://example.org/feed.zip/") == "example.org/feed.zip"
 
 
+def test_normalized_feed_url_skips_invalid_external_catalog_ports() -> None:
+    assert normalized_feed_url("https://example.org:not-a-port/feed.zip") == ""
+    assert normalized_feed_url("https://example.org:99999/feed.zip") == ""
+
+
 def test_identity_ledger_keeps_denominators_separate() -> None:
     agencies = [
         _agency(

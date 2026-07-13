@@ -54,7 +54,7 @@ function ruleRefLink(code) {
   if (!code || String(code).startsWith("scorecard_")) return "";
   const url = `${VALIDATOR_RULES_PAGE}#${encodeURIComponent(code)}-rule`;
   return ` ·
-            <a class="rule-ref" href="${esc(url)}" target="_blank" rel="noopener">See the GTFS Validator rule<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on gtfs-validator.mobilitydata.org)</span></a>`;
+            <a class="rule-ref" href="${escAttr(url)}" target="_blank" rel="noopener">See the GTFS Validator rule<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on gtfs-validator.mobilitydata.org)</span></a>`;
 }
 
 const main = /** @type {HTMLElement} */ (document.getElementById("main"));
@@ -171,7 +171,8 @@ function escAttr(text) {
 
 /** @param {string} grade @returns {string} */
 function gradeClass(grade) {
-  return `grade-${grade.toLowerCase()}`;
+  const normalized = String(grade || "F").toUpperCase();
+  return `grade-${["A", "B", "C", "D", "F"].includes(normalized) ? normalized.toLowerCase() : "f"}`;
 }
 
 function routeRule() {
@@ -263,7 +264,7 @@ function gradeDistributionBar(dist, total, label = "Grade distribution across al
       </li>`;
     })
     .join("");
-  return `<ul class="grade-distribution" aria-label="${esc(label)}">${segs}</ul>`;
+  return `<ul class="grade-distribution" aria-label="${escAttr(label)}">${segs}</ul>`;
 }
 
 /** Five buckets of expired-feed share, for the choropleth's sequential fill.
@@ -294,9 +295,9 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
       const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
       const subdivision = subdivisionCodes[name] || "";
       if (portableLocations && !subdivision) {
-        return `<path d="${d}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
+        return `<path d="${escAttr(d)}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
       }
-      return `<path d="${d}" class="us-state q${q}" data-country="US" data-state="${escAttr(name)}"
+      return `<path d="${escAttr(d)}" class="us-state q${q}" data-country="US" data-state="${escAttr(name)}"
         data-subdivision="${escAttr(subdivision)}" data-subdivision-name="${escAttr(name)}"
         tabindex="0" role="button" aria-pressed="false"
         aria-label="${escAttr(label)} — filter to this state"><title>${esc(label)}</title></path>`;
@@ -591,13 +592,13 @@ function setupOverview(agencies, total, summary) {
     const note = peerNote(a);
     const place = placeLabel(a);
     return `<li class="agency-card">
-      <span class="grade-chip ${gradeClass(a.grade)}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
+      <span class="grade-chip ${escAttr(gradeClass(a.grade))}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
       <div>
-        <h2><a href="#/agency/${esc(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
+        <h2><a href="#/agency/${escAttr(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
         <p class="meta">Overall ${a.score} out of 100${place ? ` · <bdi>${esc(place)}</bdi>` : ""} · checked ${formatDate(a.date)}</p>
         ${note ? `<p class="peer-note">${esc(note)}</p>` : ""}
       </div>
-      <button type="button" class="follow" data-id="${esc(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
+      <button type="button" class="follow" data-id="${escAttr(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
     </li>`;
   }
 
@@ -881,7 +882,7 @@ function renderPrograms(index) {
       const avg = r.average_score == null ? "—" : `${r.average_score} avg`;
       return `<li class="agency-card reveal">
         <div>
-          <h2><a href="#/program/${esc(r.id)}">${esc(r.name)}</a></h2>
+          <h2><a href="#/program/${escAttr(r.id)}">${esc(r.name)}</a></h2>
           <p class="meta">${r.agency_count} agencies · ${avg} · ${attention}</p>
         </div>
       </li>`;
@@ -906,9 +907,9 @@ function renderProgram(rollup) {
         : "";
       const fix = m.top_fix ? `<p class="program-fix">Start with: ${esc(m.top_fix)}</p>` : "";
       return `<li class="program-row">
-        <span class="grade-chip ${gradeClass(m.grade)}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
+        <span class="grade-chip ${escAttr(gradeClass(m.grade))}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
         <div>
-          <h3><a href="#/agency/${esc(m.id)}">${esc(m.name)}</a>${flag}</h3>
+          <h3><a href="#/agency/${escAttr(m.id)}">${esc(m.name)}</a>${flag}</h3>
           <p class="meta">${m.score} out of 100 · checked ${formatDate(m.snapshot_date)}</p>
           ${fix}
         </div>
@@ -1065,20 +1066,20 @@ async function renderCohort(index, urlIds) {
         change = `<p class="cohort-change">Score ${m.scoreDelta > 0 ? "up" : "down"} ${Math.abs(m.scoreDelta)} since ${formatDate(m.prevDate)}</p>`;
       const note = notes[m.id] || "";
       return `<li class="program-row">
-        <span class="grade-chip ${gradeClass(m.grade)}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
+        <span class="grade-chip ${escAttr(gradeClass(m.grade))}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
         <div>
-          <h3><a href="#/agency/${esc(m.id)}">${esc(m.name)}</a>${flag}</h3>
+          <h3><a href="#/agency/${escAttr(m.id)}">${esc(m.name)}</a>${flag}</h3>
           <p class="meta">${m.score} out of 100 · checked ${formatDate(m.date)}</p>
           ${change}
           ${fix}
           <details class="cohort-note"${note ? " open" : ""}>
             <summary>Note${note ? " ✓" : ""}</summary>
-            <label class="visually-hidden" for="note-${esc(m.id)}">Private note for ${esc(m.name)}</label>
-            <textarea id="note-${esc(m.id)}" class="note-input" data-id="${esc(m.id)}"
+            <label class="visually-hidden" for="note-${escAttr(m.id)}">Private note for ${esc(m.name)}</label>
+            <textarea id="note-${escAttr(m.id)}" class="note-input" data-id="${escAttr(m.id)}"
               rows="2" placeholder="Call notes (saved in this browser only)">${esc(note)}</textarea>
           </details>
         </div>
-        <button type="button" class="cohort-remove" data-id="${esc(m.id)}" aria-label="Remove ${esc(m.name)} from my agencies">Remove</button>
+        <button type="button" class="cohort-remove" data-id="${escAttr(m.id)}" aria-label="Remove ${escAttr(m.name)} from my agencies">Remove</button>
       </li>`;
     })
     .join("");
@@ -1224,7 +1225,7 @@ function renderScorecard(artifact, history, dirRecord) {
     <section aria-labelledby="feed-h" class="feed-details">
       <h2 class="section-title" id="feed-h">About this data</h2>
       <dl>
-        <dt>Feed checked</dt><dd><a href="${esc(safeUrl(artifact.feed.static_url))}">${esc(artifact.feed.static_url)}</a></dd>
+        <dt>Feed checked</dt><dd><a href="${escAttr(safeUrl(artifact.feed.static_url))}">${esc(artifact.feed.static_url)}</a></dd>
         <dt>Snapshot</dt><dd>${esc(artifact.snapshot_date)}${artifact.feed?.sha256 ? ` (<abbr title="Secure Hash Algorithm, 256-bit">SHA-256</abbr> ${esc(artifact.feed.sha256.slice(0, 12))}…)` : ""}</dd>
         <dt>Validator</dt><dd>MobilityData gtfs-validator ${esc(String(artifact.validator_version ?? artifact.categories.correctness?.details?.validator_version ?? ""))}</dd>
         <dt>Rubric</dt><dd>version ${esc(String(artifact.rubric_version ?? "—"))}; <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">methodology and citations (docs/rubric.md)</a></dd>
@@ -1412,7 +1413,7 @@ function plainNumber(value) {
 function gradeReel(grade) {
   const g = String(grade || "F").toUpperCase().slice(0, 1);
   const idx = GRADE_RANK[g] ?? 0;
-  return `<div class="reel" role="img" aria-label="Overall grade ${esc(g)}"
+  return `<div class="reel" role="img" aria-label="Overall grade ${escAttr(g)}"
       style="--flap-end: calc(var(--reel-h) * -${idx})">
     <div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div>
   </div>`;
@@ -1548,7 +1549,7 @@ function scoreSparkline(history) {
     )
     .join("");
   return `<svg class="trend-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"
-      role="img" aria-label="Overall score across ${n} checks: ${esc(series)}">
+      role="img" aria-label="Overall score across ${n} checks: ${escAttr(series)}">
     <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2"
       stroke-linejoin="round" stroke-linecap="round"/>
     ${dots}
@@ -1670,7 +1671,7 @@ function categoryCard(key, cat, index, artifact) {
         <span class="pscore">${score}<span class="outof"> / 100</span></span>
       </div>
       <div class="pbar" role="meter" aria-valuenow="${score}" aria-valuemin="0"
-           aria-valuemax="100" aria-label="${esc(label)} score">
+           aria-valuemax="100" aria-label="${escAttr(label)} score">
         <span style="width:${w}%;background:var(--grade-${band})"></span>
       </div>
       <p class="pstat">${esc(summary)}</p>
@@ -1765,7 +1766,7 @@ function setupFindings(findings) {
           <p class="why">${esc(f.why)}</p>
           <p class="how"><strong>Fix:</strong> ${esc(f.fix)} <em>(${esc(f.effort)})</em></p>
           <p class="code">Validator rule: ${esc(f.code)} ·
-            <a class="fix-guide" href="${esc(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
+            <a class="fix-guide" href="${escAttr(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
                target="_blank" rel="noopener">Read the fix guide<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on GitHub)</span></a>${ruleRefLink(f.code)}</p>
         </li>`
       )
@@ -1834,7 +1835,7 @@ function ntdSection(artifact) {
   if (r) {
     const headStatus = String(r.status || "unknown");
     const overall = NTD_LABELS[headStatus] || headStatus;
-    head = `<abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="ntd-status ntd-${esc(headStatus)}">${esc(overall)}</span>`;
+    head = `<abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="ntd-status ntd-${escAttr(headStatus)}">${esc(overall)}</span>`;
     summary = String(r.summary || "");
     pillars = (r.pillars || [])
       .map((p) => {
@@ -1849,7 +1850,7 @@ function ntdSection(artifact) {
         const detail = distant
           ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
           : String(p.detail || "");
-        return `<dt>${esc(name)} <span class="ntd-status ntd-${esc(String(p.status))}">${esc(label)}</span></dt><dd>${esc(detail)}</dd>`;
+        return `<dt>${esc(name)} <span class="ntd-status ntd-${escAttr(String(p.status))}">${esc(label)}</span></dt><dd>${esc(detail)}</dd>`;
       })
       .join("");
   }
@@ -1898,7 +1899,7 @@ function conformanceSection(artifact, agencyId, agencyName) {
   const headStatus = mark.awarded ? "ntd-ready" : "ntd-not_ready";
   const headLabel = mark.awarded ? "Awarded" : "Not yet";
   const seal = mark.awarded
-    ? `<p><img src="${esc(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="GTFS conformance mark for ${esc(agencyName)}"></p>`
+    ? `<p><img src="${escAttr(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="GTFS conformance mark for ${escAttr(agencyName)}"></p>`
     : "";
   return `<section aria-labelledby="mark-h" class="feed-details reveal">
     <h2 class="section-title" id="mark-h">Conformance mark <span class="ntd-status ${headStatus}">${headLabel}</span></h2>
@@ -1959,7 +1960,7 @@ function autofixSection(artifact) {
     })
     .join("");
   const action = autofix.download_url
-    ? `<p class="autofix-action"><a class="download-btn" href="${esc(safeUrl(autofix.download_url))}" download>Download corrected feed</a></p>`
+    ? `<p class="autofix-action"><a class="download-btn" href="${escAttr(safeUrl(autofix.download_url))}" download>Download corrected feed</a></p>`
     : `<p class="autofix-cli">Run it yourself on your own copy of the feed: ` +
       `<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>`;
   return `<section aria-labelledby="autofix-h" class="reveal">
@@ -1995,10 +1996,10 @@ function standardsSection(artifact, dirRecord) {
     ? " This resource supports agencies; it is not a scoring authority."
     : "";
   const stateHtml = local
-    ? `<p class="page-lede">${lead}<a href="${esc(local.url)}">${esc(local.name)}</a>. ${esc(local.note)}${localBoundary}</p>`
+    ? `<p class="page-lede">${lead}<a href="${escAttr(local.url)}">${esc(local.name)}</a>. ${esc(local.note)}${localBoundary}</p>`
     : "";
   const refs = [...UNIVERSAL_GUIDANCE.references, ...(national ? [national] : [])]
-    .map((ref) => `<a href="${esc(ref.url)}">${esc(ref.name)}</a>`)
+    .map((ref) => `<a href="${escAttr(ref.url)}">${esc(ref.name)}</a>`)
     .join(", ");
   return `<section aria-labelledby="standards-h" class="feed-details reveal">
     <h2 class="section-title" id="standards-h">How this maps to the standards</h2>
@@ -2022,10 +2023,10 @@ function badgeSection(agencyId) {
     <h2 class="section-title" id="badge-h">Show your grade</h2>
     <p class="page-lede">Put the current grade on your own developer page. The badge
     updates automatically each day and links back to this scorecard.</p>
-    <p><img src="${esc(safeUrl(badgeUrl))}" alt="Current GTFS quality grade badge"></p>
+    <p><img src="${escAttr(safeUrl(badgeUrl))}" alt="Current GTFS quality grade badge"></p>
     <label class="badge-embed-label" for="badge-embed">Markdown to embed</label>
     <input id="badge-embed" class="badge-embed" type="text" readonly
-      value="${esc(markdown)}">
+      value="${escAttr(markdown)}">
   </section>`;
 }
 
@@ -2082,7 +2083,7 @@ async function renderCompare(aId, bId) {
         : agencies.find((agency) => agency.id !== firstId)?.id || "";
     const options = (selected) =>
       agencies
-        .map((a) => `<option value="${esc(a.id)}"${a.id === selected ? " selected" : ""}>${esc(a.name)}</option>`)
+        .map((a) => `<option value="${escAttr(a.id)}"${a.id === selected ? " selected" : ""}>${esc(a.name)}</option>`)
         .join("");
     main.innerHTML = `
       <a class="backlink" href="#/">&larr; All agencies</a>
@@ -2129,7 +2130,7 @@ async function renderCompare(aId, bId) {
 
   const gradeCell = (art) => {
     const o = art.overall || {};
-    return `<span class="grade-chip ${gradeClass(o.grade)}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>`;
+    return `<span class="grade-chip ${escAttr(gradeClass(o.grade))}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>`;
   };
   const catCell = (art, key) => {
     const c = (art.categories || {})[key];
@@ -2137,7 +2138,7 @@ async function renderCompare(aId, bId) {
     const s = Number(c.score);
     const w = Math.max(2, Math.min(100, s));
     const band = gradeBand(s);
-    return `<div class="pbar cmp-bar" role="meter" aria-valuenow="${s}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(CATEGORY_LABELS[key])} score for ${esc(art.agency.name)}"><span style="width:${w}%;background:var(--grade-${band})"></span></div><span class="cmp-num">${s} / 100</span>`;
+    return `<div class="pbar cmp-bar" role="meter" aria-valuenow="${s}" aria-valuemin="0" aria-valuemax="100" aria-label="${escAttr(`${CATEGORY_LABELS[key]} score for ${art.agency.name}`)}"><span style="width:${w}%;background:var(--grade-${band})"></span></div><span class="cmp-num">${s} / 100</span>`;
   };
   const fixesCell = (art) => {
     const fixes = (art.top_fixes || []).slice(0, 3);
@@ -2160,8 +2161,8 @@ async function renderCompare(aId, bId) {
       <caption class="visually-hidden">Data-quality comparison of ${esc(aName)} and ${esc(bName)}</caption>
       <thead><tr>
         <td></td>
-        <th scope="col"><a href="#/agency/${esc(aId)}">${esc(aName)}</a></th>
-        <th scope="col"><a href="#/agency/${esc(bId)}">${esc(bName)}</a></th>
+        <th scope="col"><a href="#/agency/${escAttr(aId)}">${esc(aName)}</a></th>
+        <th scope="col"><a href="#/agency/${escAttr(bId)}">${esc(bName)}</a></th>
       </tr></thead>
       <tbody>
         <tr><th scope="row">Overall grade</th><td>${gradeCell(aArt)}</td><td>${gradeCell(bArt)}</td></tr>

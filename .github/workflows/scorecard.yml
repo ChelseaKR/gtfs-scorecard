@@ -19,6 +19,13 @@ on:
 permissions:
   contents: read
 
+# The intraday refresh writes the same S3 artifact prefix. A shared group keeps
+# the two publishers from interleaving at the daily 13:23 UTC overlap (and when
+# either workflow is dispatched manually).
+concurrency:
+  group: artifact-publish
+  cancel-in-progress: false
+
 env:
   # National scale: ~1,166 agencies fan out across more shards to keep each
   # shard's wall-clock down (ADR 0005). Override per-run via workflow_dispatch.

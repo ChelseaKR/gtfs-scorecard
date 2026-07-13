@@ -51,7 +51,10 @@ def validate_public_url(url: str) -> None:
     host = parts.hostname
     if not host:
         raise UnsafeURLError(f"URL has no host: {url!r}")
-    port = parts.port or (443 if parts.scheme == "https" else 80)
+    try:
+        port = parts.port or (443 if parts.scheme == "https" else 80)
+    except ValueError as exc:
+        raise UnsafeURLError(f"URL has an invalid port: {url!r}") from exc
     try:
         infos = socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)
     except socket.gaierror as exc:

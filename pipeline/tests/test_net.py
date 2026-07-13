@@ -35,6 +35,12 @@ def test_rejects_missing_host() -> None:
         validate_public_url("http:///nohost")
 
 
+@pytest.mark.parametrize("url", ["https://example.org:abc/feed.zip", "https://example.org:99999/"])
+def test_rejects_invalid_ports_as_unsafe_urls(url: str) -> None:
+    with pytest.raises(UnsafeURLError, match="invalid port"):
+        validate_public_url(url)
+
+
 import socket  # noqa: E402
 import time  # noqa: E402
 

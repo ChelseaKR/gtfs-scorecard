@@ -53,10 +53,15 @@ jobs:
             echo "No observations recorded."
           else
             git commit -m "chore(rt): high-cadence archive session"
+            pushed=false
             for _attempt in 1 2 3 4 5; do
-              if git push origin HEAD:main; then break; fi
+              if git push origin HEAD:main; then pushed=true; break; fi
               git fetch origin main
               git rebase origin/main || { git rebase --abort; exit 1; }
               sleep 3
             done
+            if [ "$pushed" != true ]; then
+              echo "::error::Could not push archived observations after 5 attempts."
+              exit 1
+            fi
           fi

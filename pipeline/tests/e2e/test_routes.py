@@ -276,6 +276,26 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     assert page.evaluate("() => window.__pwned") is None
 
 
+def test_cohort_agency_name_cannot_inject_attributes(page: Page, app_url: str) -> None:
+    index = json.loads((ARTIFACTS / "index.json").read_text())
+    agency_id = next(iter(index["agencies"]))
+    hostile_name = 'Quoted " onmouseover="window.__pwned=1" <agency>'
+    index["agencies"][agency_id]["name"] = hostile_name
+    page.route(
+        "**/data/artifacts/index.json",
+        lambda route: route.fulfill(json=index),
+    )
+
+    page.goto(f"{app_url}#/cohort?ids={agency_id}")
+
+    expect(page.locator(".program-row h3 a")).to_have_text(hostile_name)
+    expect(page.locator(".cohort-remove")).to_have_attribute(
+        "aria-label", f"Remove {hostile_name} from my agencies"
+    )
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert page.evaluate("() => window.__pwned") is None
+
+
 def test_arbitrary_country_deep_link_filters_searches_and_canonicalizes(
     page: Page, app_url: str
 ) -> None:

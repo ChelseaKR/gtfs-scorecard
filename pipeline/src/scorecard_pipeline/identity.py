@@ -18,7 +18,14 @@ def normalized_feed_url(url: str) -> str:
     """Scheme-insensitive endpoint key for HTTP/HTTPS alias detection."""
     parsed = urlsplit(url.strip())
     host = (parsed.hostname or "").lower()
-    port = f":{parsed.port}" if parsed.port and parsed.port not in (80, 443) else ""
+    try:
+        parsed_port = parsed.port
+    except ValueError:
+        # External catalog rows are advisory input. An invalid port must not
+        # crash the whole identity-ledger build or be collapsed into a valid
+        # endpoint; an empty key makes duplicate grouping skip this row.
+        return ""
+    port = f":{parsed_port}" if parsed_port and parsed_port not in (80, 443) else ""
     path = parsed.path.rstrip("/") or "/"
     query = f"?{parsed.query}" if parsed.query else ""
     return f"{host}{port}{path}{query}"
