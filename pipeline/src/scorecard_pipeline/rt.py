@@ -1,11 +1,11 @@
 """Realtime quality: sample GTFS-Realtime feeds and score them.
 
-Measures what a sampling window can honestly support: all three feeds
-reachable and parseable, header freshness, the share of currently-scheduled
-trips present in TripUpdates (a Caltrans v4.0 "100% of trips represented"
-check, sampled), and vehicle position plausibility against route shapes.
-Schedule-vs-RT drift is computed in rt_drift.py from the same window and
-reported alongside; the category summary says exactly what was sampled.
+Measures what a sampling window can honestly support: every configured feed
+kind reachable and parseable, header freshness, TripUpdates coverage when that
+feed kind is published, and VehiclePositions plausibility when that feed kind
+is published. Schedule-vs-RT drift is computed in rt_drift.py from the same
+window and reported alongside; the category summary says exactly what was
+sampled.
 
 Polling etiquette (docs/feeds.md): one request per endpoint per sample,
 samples at least 30 seconds apart, bounded windows only.
@@ -18,7 +18,8 @@ import logging
 import math
 import time
 import zoneinfo
-from dataclasses import dataclass, field
+from collections.abc import Collection
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -400,24 +401,40 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     scheduled: set[str] | None,
     drift: DriftStats | None = None,
     plausibility: PlausibilityStats | None = None,
+    configured_kinds: Collection[str] | None = None,
 ) -> CategoryResult:
     """Score a sampled realtime window.
 
     Rationale (rubric.md "Realtime quality"): four weighted components —
-    reachability of all three feeds (25), header freshness (25, full credit
-    at <=60s lag, zero at 10 minutes), sampled trip coverage (35, Caltrans
-    v4.0 expects 100% of operating trips in TripUpdates), and vehicle
-    position plausibility (15, on/near the published route shape).
-    Components the window can't measure (no trips scheduled, no vehicles
-    seen) drop out and the rest renormalize to 100. Drift vs schedule is
-    reported in the details and summary; it only becomes a finding when
-    predictions disagree with the schedule beyond plausibility.
+    reachability of the feed kinds the agency configured (25), header freshness
+    (25, full credit at <=60s lag, zero at 10 minutes), sampled trip coverage
+    when TripUpdates is configured (35, Caltrans v4.0 expects 100% of operating
+    trips in TripUpdates), and vehicle position plausibility when
+    VehiclePositions is configured (15, on/near the published route shape).
+    Unconfigured feed kinds and components the window can't measure drop out;
+    the rest renormalize to 100. Drift vs schedule is reported in the details
+    and summary; it only becomes a finding when predictions disagree with the
+    schedule beyond plausibility.
+
+    ``configured_kinds`` is the authoritative agency configuration. Callers
+    predating this argument fall back to the known feed kinds present in the
+    window. An entirely empty legacy window retains the former fail-closed
+    three-feed interpretation; the collect path never calls this function for
+    an agency with no realtime configuration.
     """
     findings: list[Finding] = []
 
-    kinds_ok = sum(1 for kind in RT_KINDS if window.kind_ok(kind))
-    reachable_fraction = kinds_ok / len(RT_KINDS)
-    for kind in RT_KINDS:
+    if configured_kinds is None:
+        observed_kinds = {sample.kind for sample in window.samples if sample.kind in RT_KINDS}
+        assessed_kinds = tuple(kind for kind in RT_KINDS if kind in observed_kinds) or RT_KINDS
+    else:
+        assessed_kinds = tuple(kind for kind in RT_KINDS if kind in configured_kinds)
+        if not assessed_kinds:
+            raise ValueError("realtime requires at least one configured GTFS-Realtime feed kind")
+
+    kinds_ok = sum(1 for kind in assessed_kinds if window.kind_ok(kind))
+    reachable_fraction = kinds_ok / len(assessed_kinds)
+    for kind in assessed_kinds:
         if not window.kind_ok(kind):
             label = kind.replace("_", " ")
             findings.append(
@@ -431,11 +448,14 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     fix=f"Check the {label} endpoint with your AVL vendor; it "
                     "should return a fresh GTFS-Realtime protobuf on every request.",
                     effort="Usually a vendor support ticket.",
-                    deduction=round(WEIGHT_REACHABLE / len(RT_KINDS), 1),
+                    deduction=WEIGHT_REACHABLE / len(assessed_kinds),
                 )
             )
 
-    lags = [window.worst_lag(k) for k in ("trip_updates", "vehicle_positions")]
+    freshness_kinds = tuple(
+        kind for kind in ("trip_updates", "vehicle_positions") if kind in assessed_kinds
+    )
+    lags = [window.worst_lag(kind) for kind in freshness_kinds]
     known_lags = [lag for lag in lags if lag is not None]
     worst: int | None
     fresh_fraction: float | None
@@ -465,7 +485,7 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     fix="Ask your AVL vendor why the feed stopped advancing; the "
                     "GTFS-Realtime header timestamp should move forward on every publish.",
                     effort="A vendor support ticket; treat it as a feed outage.",
-                    deduction=round((1 - fresh_fraction) * WEIGHT_FRESH, 1),
+                    deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
                 )
             )
         elif fresh_fraction < 1.0:
@@ -480,7 +500,7 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     fix="Ask your AVL vendor to publish updates at least every 20 "
                     "seconds (the Caltrans guideline).",
                     effort="A vendor configuration question.",
-                    deduction=round((1 - fresh_fraction) * WEIGHT_FRESH, 1),
+                    deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
                 )
             )
     else:
@@ -490,7 +510,7 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         # marked stale. Note it as a fix instead.
         worst = None
         fresh_fraction = None
-        if reachable_fraction > 0:
+        if any(window.kind_ok(kind) for kind in freshness_kinds):
             findings.append(
                 Finding(
                     code="scorecard_rt_no_timestamp",
@@ -519,6 +539,8 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 
     details: dict[str, object] = {
         "samples": len(window.samples),
+        "configured_kinds": list(assessed_kinds),
+        "kinds_configured": len(assessed_kinds),
         "kinds_reachable": kinds_ok,
         "worst_lag_seconds": worst,
         "rt_freshness": rt_freshness,
@@ -527,7 +549,7 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # Service-alert content (EXP-19): observed and reported, not scored. Any
     # weight for it enters through the governed shadow-scoring path (FIX-06),
     # never a quiet commit, so every finding below carries deduction=0.0.
-    alert_summary = alerts_content(window)
+    alert_summary = alerts_content(window) if "service_alerts" in assessed_kinds else None
     if alert_summary is not None:
         details["alerts_content"] = alert_summary
         stale_count = alert_summary["ended_over_30_days_ago"]
@@ -567,7 +589,9 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 
     # Weighted components; None fraction means "not measurable this window".
     coverage_fraction: float | None = None
-    if scheduled:
+    trip_updates_configured = "trip_updates" in assessed_kinds
+    trip_updates_sampled = any(sample.ok for sample in window.for_kind("trip_updates"))
+    if trip_updates_configured and scheduled and trip_updates_sampled:
         seen = window.seen_trip_ids()
         coverage_fraction = len(scheduled & seen) / len(scheduled)
         details["scheduled_trips_in_window"] = len(scheduled)
@@ -587,15 +611,17 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     fix="Check with your AVL vendor that every vehicle assignment "
                     "flows into TripUpdates, including school-day and tripper runs.",
                     effort="A vendor data-mapping question.",
-                    deduction=round((1 - coverage_fraction) * WEIGHT_COVERAGE, 1),
+                    deduction=(1 - coverage_fraction) * WEIGHT_COVERAGE,
                 )
             )
+    elif trip_updates_configured:
+        details["scheduled_trips_in_window"] = len(scheduled or ())
+        details["coverage_pct"] = None
     else:
-        details["scheduled_trips_in_window"] = 0
         details["coverage_pct"] = None
 
     plausible_fraction: float | None = None
-    if plausibility is not None:
+    if "vehicle_positions" in assessed_kinds and plausibility is not None:
         plausible_fraction = plausibility.plausible_share
         details["vehicles_checked"] = plausibility.vehicles_checked
         details["vehicles_on_route_pct"] = round(plausibility.plausible_share * 100, 1)
@@ -616,11 +642,11 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     fix="Ask your AVL vendor to check vehicle-to-trip assignments "
                     "for the flagged trips.",
                     effort="A vendor support ticket with the trip ids attached.",
-                    deduction=round((1 - plausibility.plausible_share) * WEIGHT_PLAUSIBLE, 1),
+                    deduction=(1 - plausibility.plausible_share) * WEIGHT_PLAUSIBLE,
                 )
             )
 
-    if drift is not None:
+    if "trip_updates" in assessed_kinds and drift is not None:
         details["drift"] = {
             "observations": drift.observations,
             "median_seconds": drift.median_seconds,
@@ -651,19 +677,38 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         (WEIGHT_PLAUSIBLE, plausible_fraction),
     ]
     measurable = [(w, f) for w, f in components if f is not None]
-    score = sum(w * f for w, f in measurable) / sum(w for w, _ in measurable) * 100.0
+    measurable_weight = sum(w for w, _ in measurable)
+    score = sum(w * f for w, f in measurable) / measurable_weight * 100.0
 
-    bits = [f"Sampled {len(window.samples)} times: {kinds_ok} of 3 feeds healthy"]
+    # Finding points drive both the public "+N points" copy and top-fix
+    # priority, so they must use the same denominator as the category score.
+    # Keep informational findings at exactly zero; only scored shortfalls are
+    # expanded when unmeasurable components drop out.
+    deduction_scale = 100.0 / measurable_weight
+    findings = [
+        replace(finding, deduction=finding.deduction * deduction_scale)
+        if finding.deduction > 0
+        else finding
+        for finding in findings
+    ]
+
+    feed_word = "feed" if len(assessed_kinds) == 1 else "feeds"
+    bits = [
+        f"Sampled {len(window.samples)} times: {kinds_ok} of "
+        f"{len(assessed_kinds)} configured {feed_word} healthy"
+    ]
     if coverage_fraction is not None:
         bits.append(f"{details['coverage_pct']}% of scheduled trips had live predictions")
-    else:
+    elif trip_updates_configured and not scheduled:
         bits[0] = (
             f"Sampled {len(window.samples)} times outside service hours: "
-            f"{kinds_ok} of 3 feeds healthy"
+            f"{kinds_ok} of {len(assessed_kinds)} configured {feed_word} healthy"
         )
     if plausible_fraction is not None:
         bits.append(f"{details['vehicles_on_route_pct']}% of vehicles on their route")
-    if drift is not None:
+    elif "vehicle_positions" in assessed_kinds:
+        bits.append("vehicle position plausibility was not measurable")
+    if "trip_updates" in assessed_kinds and drift is not None:
         bits.append(
             f"predictions ran a median of {abs(drift.median_seconds)}s "
             f"{'behind' if drift.median_seconds >= 0 else 'ahead of'} schedule"
