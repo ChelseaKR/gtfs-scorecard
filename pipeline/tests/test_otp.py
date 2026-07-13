@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import pytest
+
 from scorecard_pipeline.otp import (
     PlanResult,
     assess_routing,
+    fetch_plan,
     parse_plan,
     plan_url,
     sample_od_pairs,
@@ -67,3 +70,39 @@ def test_assess_routing_all_pass() -> None:
     qa = assess_routing([PlanResult(routable=True, itinerary_count=1)])
     assert qa.all_routable is True
     assert qa.failures == []
+
+
+def test_fetch_plan_allows_only_explicit_loopback(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        content = b'{"plan":{"itineraries":[{}]}}'
+        is_redirect = False
+        is_permanent_redirect = False
+
+        def raise_for_status(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    monkeypatch.setattr("requests.get", lambda *_args, **_kwargs: Response())
+    result = fetch_plan(
+        "http://127.0.0.1:8080",
+        (-121.7, 38.5),
+        (-121.5, 38.7),
+        date="2026-07-13",
+        time="08:00",
+        allow_loopback=True,
+    )
+    assert result.routable is True
+
+
+def test_fetch_plan_loopback_opt_in_rejects_public_host() -> None:
+    with pytest.raises(ValueError, match="requires a localhost"):
+        fetch_plan(
+            "https://example.com",
+            (-121.7, 38.5),
+            (-121.5, 38.7),
+            date="2026-07-13",
+            time="08:00",
+            allow_loopback=True,
+        )

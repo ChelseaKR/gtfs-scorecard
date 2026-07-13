@@ -1376,7 +1376,14 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     for origin, destination in pairs:
         try:
             results.append(
-                fetch_plan(args.base, origin, destination, date=args.date, time=args.time)
+                fetch_plan(
+                    args.base,
+                    origin,
+                    destination,
+                    date=args.date,
+                    time=args.time,
+                    allow_loopback=args.allow_loopback,
+                )
             )
         except Exception as exc:
             log.warning("OTP plan request failed: %s", exc)
@@ -2233,6 +2240,11 @@ def main(argv: list[str] | None = None) -> int:
         "--feed", required=True, help="GTFS zip to sample origin/destination stops from"
     )
     otp.add_argument("--pairs", type=int, default=3, help="how many O/D pairs to test")
+    otp.add_argument(
+        "--allow-loopback",
+        action="store_true",
+        help="allow the OTP base to be localhost (only for a trusted local QA server)",
+    )
     otp.add_argument(
         "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
     )

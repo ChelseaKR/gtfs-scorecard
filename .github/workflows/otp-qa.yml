@@ -104,7 +104,8 @@ jobs:
         env:
           PAIRS: ${{ github.event.inputs.pairs || '5' }}
         run: |
-          uv run scorecard otp --base http://localhost:8080 --feed ../otp-work/feed.gtfs.zip --pairs "$PAIRS"
+          uv run scorecard otp --base http://127.0.0.1:8080 --allow-loopback \
+            --feed ../otp-work/feed.gtfs.zip --pairs "$PAIRS"
       - name: OTP logs on failure
         if: failure()
         run: docker logs otp || true
