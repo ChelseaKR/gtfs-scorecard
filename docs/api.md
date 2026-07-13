@@ -60,7 +60,7 @@ published score dataset.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.10`). The rule for
+Every artifact carries a `schema_version` (currently `1.11`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -103,6 +103,19 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.11` adds `configured_kinds` and `kinds_configured` to Realtime category
+  details. Together with `kinds_reachable`, they state the exact denominator
+  behind capability-aware reachability scoring for partial GTFS-Realtime
+  publishers. Additive.
+- `1.10` adds `effective_expiry_date`, `service_horizon_review_years`, and
+  `service_horizon_status` to freshness details; the status is also copied to
+  index history, catalog rows, and the open dataset/API. An unusually distant
+  service end date is a display and trust advisory, not a GTFS error, finding,
+  or score deduction. Readers derive the same status for legacy rows when the
+  field is absent but snapshot date and expiry evidence are present, so an
+  existing artifact is safe on the first deployment.
+  The downloadable dataset shape is `1.1` with the added status column.
+  Additive.
 - `1.9` broadens portable country fields from the initial US/Canada values to
   every assigned ISO 3166-1 alpha-2 country. Published schemas validate the
   stable alpha-2 shape; the generated global ISO vocabulary remains the
@@ -117,15 +130,6 @@ Changelog:
   `subdivision_code`, and practitioner-facing `subdivision_name`. The legacy
   `state` field remains available for existing US consumers. The initial
   published values were `US` and `CA`. Additive.
-- `1.10` adds `effective_expiry_date`, `service_horizon_review_years`, and
-  `service_horizon_status` to freshness details; the status is also copied to
-  index history, catalog rows, and the open dataset/API. An unusually distant
-  service end date is a display and trust advisory, not a GTFS error, finding,
-  or score deduction. Readers derive the same status for legacy rows when the
-  field is absent but snapshot date and expiry evidence are present, so an
-  existing artifact is safe on the first deployment.
-  The downloadable dataset shape is `1.1` with the added status column.
-  Additive.
 - `1.7` adds `state_percentile` to per-state rollup payloads (`null` on the
   "all" rollup and named cohorts, which are not peers of a 50-state
   comparison), so a program page can say how its average compares to other
@@ -150,11 +154,11 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.10",
-  "rubric_version": "1.1",
+  "schema_version": "1.11",
+  "rubric_version": "1.2",
   "scoring_profile": {
-    "id": "gtfs-scorecard-1.1",
-    "rubric_version": "1.1",
+    "id": "gtfs-scorecard-1.2",
+    "rubric_version": "1.2",
     "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination."
   },
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
@@ -281,8 +285,8 @@ a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.10",
-  "rubric_version": "1.1",
+  "schema_version": "1.11",
+  "rubric_version": "1.2",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "agencies": [
@@ -293,7 +297,7 @@ a single request rather than fetching each `latest.json`.
       "snapshot_date": "2026-06-12", "days_until_expiry": 120,
       "service_horizon_status": "within_review_threshold", "expiry_status": "current",
       "ntd_ready": "ready", "google_gate": "pass", "stops": 312,
-      "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.1",
+      "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.2",
       "retrieved_at": "2026-06-12T13:25:01+00:00", "feed_sha256": "...",
       "feed_url": "...", "top_fix": "...", "scorecard_url": "https://..." }
   ]
@@ -427,7 +431,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.10",
+  "schema_version": "1.11",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "count": 2,
@@ -443,7 +447,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.10",
+  "schema_version": "1.11",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

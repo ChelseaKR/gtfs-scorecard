@@ -8,7 +8,7 @@ sync with this page; every metric's docstring links back here.
 ## Sources the rubric maps to
 
 This is a project-authored scoring profile, identified in artifacts as
-`gtfs-scorecard-1.1`. Its weights, deductions, thresholds, grade bands, and fix
+`gtfs-scorecard-1.2`. Its weights, deductions, thresholds, grade bands, and fix
 ranking are GTFS Scorecard choices. California guidance informed those choices
 and is the normative quality bar for California agencies; it is not worldwide
 authority. A score outside California is a feed-quality assessment under this
@@ -224,14 +224,22 @@ raw protobufs.
 
 | Component | Points | How scored |
 |---|---|---|
-| Reachability | 25 | each of TripUpdates / VehiclePositions / ServiceAlerts reachable and parseable on every sample |
+| Reachability | 25 | each GTFS-Realtime feed kind configured for the agency is reachable and parseable on every sample; feed kinds the agency does not publish are neutral |
 | Freshness | 25 | worst header-timestamp lag across samples; full credit at 60s or less (v4.0 asks for a 20s publish frequency; 60s allows fetch latency), zero at 10 minutes |
-| Trip coverage | 35 | share of trips scheduled during the sampling window (agency-local time, including after-midnight service) that appear in TripUpdates; v4.0 expects 100% |
-| Position plausibility | 15 | share of sampled vehicle positions within 250 m of their assigned trip's published route shape |
+| Trip coverage | 35 | when TripUpdates is configured, the share of trips scheduled during the sampling window (agency-local time, including after-midnight service) that appear in it; v4.0 expects 100% |
+| Position plausibility | 15 | when VehiclePositions is configured, the share of sampled vehicle positions within 250 m of their assigned trip's published route shape |
 
-Components a window can't measure (no trips scheduled, no vehicles seen,
-no shapes in the feed) drop out and the rest renormalize to 100; the
-summary says so.
+Feed kinds an agency does not publish are not treated as outages. Their dependent
+components drop out too: a VehiclePositions-only publisher is measured on that
+feed's reachability, freshness, and position plausibility, without TripUpdates
+coverage deductions. Components a configured feed cannot measure in a window
+(no trips scheduled, no vehicles seen, no shapes in the feed) also drop out and
+the rest renormalize to 100; the summary says so. The point value shown for
+each scored finding uses that same measurable denominator, so it matches the
+finding's category-score impact and ranks top fixes consistently. Informational
+findings remain worth zero points. If no sample from a configured endpoint
+succeeds, dependent measures such as trip coverage are unmeasurable rather than
+creating a second deduction for the same outage.
 
 Schedule-vs-RT drift is also computed from each window: every sampled
 TripUpdates prediction is compared with the static schedule (direct delay
@@ -298,17 +306,23 @@ that changed band, and the notice-code drivers, plus a ready-to-paste
 same commit keeps every historical grade discontinuity attributable: a trend
 reader can always tell a feed change apart from a methodology change.
 
-The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.1`
+Rubric 1.2's capability-aware Realtime correction has a checked
+[fixed-corpus impact report](rubric-impact-1.2.md): a replay over 31 published
+partial-feed artifacts projected 15 letter-band changes, with no downward
+changes. The report records the formula, transition table, affected agencies,
+and the limits of replaying rounded details instead of resampling live feeds.
+
+The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.2`
 (`pipeline/src/scorecard_pipeline/__init__.py`), stamped on every artifact,
 and the dated `METHODOLOGY_CHANGELOG` in `score.py` records what each version
 changed, so a trend reader can tell a feed change apart from a methodology
 change.
 
 Every artifact also carries a `scoring_profile` block with the stable profile
-identifier `gtfs-scorecard-1.1`, the rubric version, and this provenance boundary.
+identifier `gtfs-scorecard-1.2`, the rubric version, and this provenance boundary.
 The profile metadata is additive: it does not recalculate, rename, or move the
 overall score, category scores, grade, or top fixes. Jurisdiction overlays are
 not implemented by this contract.
 
-Last verified: 2026-07-06 (guidelines v4.0, validator v8.0.1, rubric v1.1) ·
+Last verified: 2026-07-13 (guidelines v4.0, validator v8.0.1, rubric v1.2) ·
 Recheck cadence: before each phase and before the rubric is cited publicly.

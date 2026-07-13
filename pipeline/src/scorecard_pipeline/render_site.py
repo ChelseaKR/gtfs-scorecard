@@ -1901,7 +1901,8 @@ def _render_agency(
             cls = " sev-warning" if sev == "WARNING" else " sev-info" if sev == "INFO" else ""
             pts = f.get("points")
             worth = (
-                f'<span class="aworth">worth about +{round(float(pts))} points</span>'
+                f'<span class="aworth">worth about +{round(float(pts))} '
+                "points in its category</span>"
                 if isinstance(pts, (int, float)) and pts >= 1
                 else ""
             )

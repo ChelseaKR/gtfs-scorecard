@@ -183,11 +183,11 @@ RULE_LINKS: dict[str, RuleLink] = {
     "scorecard_flex_no_booking_rules": RuleLink(
         kind=REFERENCE, url=f"{SCHEDULE_REFERENCE_PAGE}#booking_rulestxt"
     ),
-    # Realtime quality (rt.py): reachability of each of the three GTFS-Realtime
-    # feed types, and how much of the schedule TripUpdates actually covers. The
-    # canonical validator scores GTFS Schedule only, so these have no validator
-    # notice or Best Practice to alias; the message spec itself is the honest
-    # authority for each feed type.
+    # Realtime quality (rt.py): reachability of each configured GTFS-Realtime
+    # feed type, and, when configured, how much of the schedule TripUpdates
+    # actually covers. The canonical validator scores GTFS Schedule only, so
+    # these have no validator notice or Best Practice to alias; the message spec
+    # itself is the honest authority for each feed type.
     "scorecard_rt_trip_updates_unreachable": RuleLink(
         kind=REALTIME_REFERENCE, url=f"{REALTIME_REFERENCE_PAGE}#message-tripupdate"
     ),

@@ -1706,7 +1706,7 @@ function topFixes(fixes) {
       const rank = String(i + 1).padStart(2, "0");
       const worth =
         typeof f.points === "number" && f.points >= 1
-          ? `<span class="aworth">worth about +${Math.round(f.points)} points</span>`
+          ? `<span class="aworth">worth about +${Math.round(f.points)} points in its category</span>`
           : "";
       const owner = f.owner ? `<span class="aowner">${esc(f.owner)}</span>` : "";
       return `<div class="alert">

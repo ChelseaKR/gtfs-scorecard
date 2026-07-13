@@ -46,7 +46,7 @@ from .config import AGENCIES, Agency, raw_dir, repo_root
 from .constants_export import GRADE_RANK
 from .fetch import fetch_static
 from .gtfs import read_feed_dates
-from .metrics import correctness, freshness
+from .metrics import CategoryResult, correctness, freshness
 from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
@@ -92,6 +92,42 @@ class RunOutcome:
     path: str
     mirrored: bool
     cache_hit: bool
+
+
+def _realtime_category(
+    agency: Agency,
+    static_path: Path,
+    date: dt.date,
+    *,
+    rt_samples: int,
+    rt_interval: int,
+) -> CategoryResult:
+    """Sample and score only the realtime capabilities an agency publishes.
+
+    TripUpdates analysis reads schedule tables and VehiclePositions analysis
+    reads shapes. Avoiding those paths when the corresponding feed kind is not
+    configured keeps a partial realtime feed from paying irrelevant CPU and
+    memory costs or failing on data that its score does not use.
+    """
+    window = capture_window(agency, date, samples=rt_samples, interval_seconds=rt_interval)
+    has_trip_updates = "trip_updates" in agency.rt_urls
+    has_vehicle_positions = "vehicle_positions" in agency.rt_urls
+    scheduled = (
+        scheduled_trip_ids_at(str(static_path), dt.datetime.now(dt.UTC))
+        if has_trip_updates
+        else None
+    )
+    drift = compute_drift(window.samples, str(static_path)) if has_trip_updates else None
+    plausibility = (
+        vehicle_plausibility(window.samples, str(static_path)) if has_vehicle_positions else None
+    )
+    return realtime(
+        window,
+        scheduled or None,
+        drift=drift,
+        plausibility=plausibility,
+        configured_kinds=agency.rt_urls,
+    )
 
 
 def run_agency(  # noqa: C901
@@ -168,14 +204,13 @@ def run_agency(  # noqa: C901
         completeness(str(fetched.path), fare_free=agency.fare_free),
     ]
     if agency.rt_urls and not skip_rt:
-        window = capture_window(agency, date, samples=rt_samples, interval_seconds=rt_interval)
-        scheduled = scheduled_trip_ids_at(str(fetched.path), dt.datetime.now(dt.UTC))
         cats.append(
-            realtime(
-                window,
-                scheduled or None,
-                drift=compute_drift(window.samples, str(fetched.path)),
-                plausibility=vehicle_plausibility(window.samples, str(fetched.path)),
+            _realtime_category(
+                agency,
+                fetched.path,
+                date,
+                rt_samples=rt_samples,
+                rt_interval=rt_interval,
             )
         )
     scorecard = build_scorecard(cats)

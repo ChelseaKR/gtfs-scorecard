@@ -137,9 +137,12 @@ present, human-readable stop names, headsigns, and valid agency contact details.
 
 ### Realtime quality (20%)
 
-What it measures: the GTFS-Realtime feed reachable and fresh, the share of
-scheduled trips represented in TripUpdates, and plausible vehicle positions. Shown
-neutrally as "Not yet published" when an agency has no realtime feed.
+What it measures: each configured GTFS-Realtime feed reachable, header freshness
+for configured TripUpdates and VehiclePositions feeds, the share of scheduled
+trips represented when TripUpdates is configured, and plausible vehicle
+positions when VehiclePositions is configured. Unpublished feed kinds are
+neutral. Shown neutrally as "Not yet published" when an agency has no realtime
+feed.
 
 - **California Guidelines:** the GTFS Realtime Features — standard formats at a
   stable URL, with high uptime and update frequency.

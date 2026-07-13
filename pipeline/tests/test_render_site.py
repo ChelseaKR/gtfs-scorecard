@@ -3173,6 +3173,17 @@ def test_us_agency_keeps_us_policy_tools_in_footer() -> None:
     assert 'href="/ntd/"' in html and 'href="/equity/"' in html
 
 
+def test_agency_fix_points_name_the_category_scale() -> None:
+    from scorecard_pipeline.render_site import _render_agency
+
+    artifact = _board_artifact()
+    artifact["top_fixes"][0]["points"] = 17.4
+
+    html = _render_agency(artifact)
+
+    assert '<span class="aworth">worth about +17 points in its category</span>' in html
+
+
 def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:
     from scorecard_pipeline.render_site import _sitemap
 

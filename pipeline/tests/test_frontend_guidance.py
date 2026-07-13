@@ -26,3 +26,8 @@ def test_spa_has_no_hand_maintained_state_guidance_table() -> None:
     assert "SUPPORT_RESOURCES" in app
     assert 'const CW = "/crosswalk/"' in app
     assert "blob/main/docs/crosswalk.md" not in app
+
+
+def test_spa_fix_points_name_the_category_scale() -> None:
+    app = (ROOT / "web" / "src" / "app.js").read_text()
+    assert "worth about +${Math.round(f.points)} points in its category</span>" in app
