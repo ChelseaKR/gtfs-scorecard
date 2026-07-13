@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import ssl
+from importlib.resources import files
+
 import pytest
 
 from scorecard_pipeline.net import UnsafeURLError, validate_public_url
@@ -206,10 +210,19 @@ class _FakeSession:
     def __init__(self, responses: list[_FakeResp]) -> None:
         self._responses = responses
         self.urls: list[str] = []
+        self.mounted: dict[str, object] = {}
+        self.verify = False
+        self.closed = False
+
+    def mount(self, prefix: str, adapter: object) -> None:
+        self.mounted[prefix] = adapter
 
     def get(self, url: str, **_kw: object) -> _FakeResp:
         self.urls.append(url)
         return self._responses.pop(0)
+
+    def close(self) -> None:
+        self.closed = True
 
 
 def _use_session(monkeypatch: pytest.MonkeyPatch, responses: list[_FakeResp]) -> _FakeSession:
@@ -219,9 +232,14 @@ def _use_session(monkeypatch: pytest.MonkeyPatch, responses: list[_FakeResp]) ->
 
 
 def test_fetch_once_returns_body_under_cap(monkeypatch: pytest.MonkeyPatch) -> None:
-    _use_session(monkeypatch, [_FakeResp(headers={"content-length": "6"}, chunks=(b"ZIPDAT",))])
+    session = _use_session(
+        monkeypatch, [_FakeResp(headers={"content-length": "6"}, chunks=(b"ZIPDAT",))]
+    )
     body = net._fetch_once(PUBLIC, headers=None, timeout=1, max_bytes=1000, max_redirects=5)
     assert body == b"ZIPDAT"
+    assert session.verify is True
+    assert isinstance(session.mounted["https://"], net._SystemTrustHTTPSAdapter)
+    assert session.closed
 
 
 def test_fetch_once_revalidates_a_redirect_to_an_internal_host(
@@ -265,3 +283,57 @@ def test_fetch_once_caps_redirect_chain_length(monkeypatch: pytest.MonkeyPatch) 
     _use_session(monkeypatch, forever)
     with pytest.raises(net.UnsafeURLError):
         net._fetch_once(PUBLIC, headers=None, timeout=1, max_bytes=1000, max_redirects=3)
+
+
+def test_root_yr_bridge_matches_pinned_official_fingerprint() -> None:
+    pem = (
+        files("scorecard_pipeline").joinpath("certs/root-yr-by-x1.pem").read_text(encoding="ascii")
+    )
+    der = ssl.PEM_cert_to_DER_cert(pem)
+    assert hashlib.sha256(der).hexdigest() == net._ROOT_YR_BY_X1_SHA256
+    assert net._validated_root_yr_bridge(pem) == pem
+
+
+def test_root_yr_bridge_fails_closed_if_packaged_certificate_changes() -> None:
+    pem = (
+        files("scorecard_pipeline").joinpath("certs/root-yr-by-x1.pem").read_text(encoding="ascii")
+    )
+    changed = pem.replace("MIIF9", "NIIF9", 1)
+    with pytest.raises(RuntimeError, match="fingerprint"):
+        net._validated_root_yr_bridge(changed)
+    with pytest.raises(RuntimeError, match="valid PEM"):
+        net._validated_root_yr_bridge("not a certificate")
+
+
+def test_system_tls_context_is_scoped_and_requires_full_verification() -> None:
+    original_ssl_context = ssl.SSLContext
+    context = net._system_tls_context()
+
+    assert ssl.SSLContext is original_ssl_context  # no process-wide truststore injection
+    assert context.check_hostname
+    assert context.verify_mode == ssl.CERT_REQUIRED
+    assert not context.verify_flags & ssl.VERIFY_X509_PARTIAL_CHAIN
+
+
+def test_https_adapter_uses_system_context_without_changing_http() -> None:
+    session = net._new_http_session()
+    try:
+        https_adapter = session.get_adapter("https://example.org/feed.zip")
+        http_adapter = session.get_adapter("http://example.org/feed.zip")
+
+        assert isinstance(https_adapter, net._SystemTrustHTTPSAdapter)
+        assert https_adapter.poolmanager.connection_pool_kw["ssl_context"] is (
+            https_adapter.ssl_context
+        )
+        assert type(http_adapter) is requests.adapters.HTTPAdapter
+        assert session.verify is True
+    finally:
+        session.close()
+
+
+def test_https_adapter_keeps_system_context_through_https_proxy() -> None:
+    adapter = net._SystemTrustHTTPSAdapter(net._system_tls_context())
+    manager = adapter.proxy_manager_for("https://proxy.example.org:8443")
+
+    assert manager.connection_pool_kw["ssl_context"] is adapter.ssl_context
+    assert manager.proxy_config.ssl_context is adapter.ssl_context

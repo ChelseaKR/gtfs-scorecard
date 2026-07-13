@@ -27,6 +27,13 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Fixed
+
+- Feed downloads now use the operating system CA store with strict hostname
+  and certificate checks. A fingerprint-verified Let's Encrypt bridge repairs
+  incomplete early Root YR chains without trusting certificates supplied by a
+  feed server.
+
 ## [1.1.0] - 2026-07-11
 
 Cut from current `main` to re-anchor releases to reachable history:

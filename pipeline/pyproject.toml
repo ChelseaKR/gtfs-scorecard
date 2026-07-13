@@ -10,6 +10,9 @@ license = "Apache-2.0"
 requires-python = ">=3.12"
 dependencies = [
     "requests>=2.32",
+    # Use the platform CA store for feed TLS so root rotations reach the
+    # pipeline through normal OS trust updates without weakening verification.
+    "truststore>=0.10.4",
     "gtfs-realtime-bindings>=1.0",
     "pyyaml>=6.0",
     # Machine-enforces the per-agency data contract: publish() validates every

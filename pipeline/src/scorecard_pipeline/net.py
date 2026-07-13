@@ -21,12 +21,20 @@ an accepted limitation rather than a reason to pin sockets to resolved IPs.
 
 from __future__ import annotations
 
+import binascii
+import hashlib
+import hmac
 import ipaddress
 import socket
+import ssl
 import time
+from importlib.resources import files
+from typing import Any
 from urllib.parse import urljoin, urlsplit
 
 import requests
+import truststore
+from requests.adapters import HTTPAdapter
 
 # Ceiling for any single feed or jar download. Real GTFS feeds are well under
 # this; the cap exists to stop a hostile or misconfigured endpoint.
@@ -36,10 +44,81 @@ MAX_DOWNLOAD_BYTES = 512 * 1024 * 1024
 # second request through. SSRF and oversize rejections are never retried.
 RETRIABLE_STATUS = frozenset({403, 408, 425, 429, 500, 502, 503, 504})
 
+# Some early-generation Let's Encrypt Root YR deployments omit the official
+# cross-certificate needed to reach the already-trusted ISRG Root X1. Keep the
+# bridge's provenance independent of any feed server and fail closed if the
+# packaged certificate changes. Source:
+# https://letsencrypt.org/certs/gen-y/root-yr-by-x1.pem
+_ROOT_YR_BY_X1_RESOURCE = "certs/root-yr-by-x1.pem"
+_ROOT_YR_BY_X1_SHA256 = "072639d0b140d5bffae16ad9c3f6cc6086040621f51ee61a6d46a8915c07cf76"
+
 
 class UnsafeURLError(ValueError):
     """A URL was rejected before or during fetching (bad scheme, private host,
     oversized response, or too many redirects)."""
+
+
+def _validated_root_yr_bridge(pem: str) -> str:
+    """Return the official Root YR cross-certificate after checking its DER hash."""
+    try:
+        der = ssl.PEM_cert_to_DER_cert(pem)
+    except (binascii.Error, ValueError) as exc:
+        raise RuntimeError("bundled Root YR bridge is not valid PEM") from exc
+    actual = hashlib.sha256(der).hexdigest()
+    if not hmac.compare_digest(actual, _ROOT_YR_BY_X1_SHA256):
+        raise RuntimeError("bundled Root YR bridge fingerprint does not match Let's Encrypt")
+    return pem
+
+
+def _system_tls_context() -> ssl.SSLContext:
+    """Build a scoped client context from OS trust plus one verified CA bridge.
+
+    ``VERIFY_X509_PARTIAL_CHAIN`` stays disabled so the cross-certificate is an
+    intermediate, not a trust anchor: a chain must still reach a root trusted by
+    the operating system (ISRG Root X1 for the bundled bridge).
+    """
+    context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = True
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.verify_flags = ssl.VerifyFlags(context.verify_flags & ~ssl.VERIFY_X509_PARTIAL_CHAIN)
+    bridge = (
+        files("scorecard_pipeline").joinpath(_ROOT_YR_BY_X1_RESOURCE).read_text(encoding="ascii")
+    )
+    context.load_verify_locations(cadata=_validated_root_yr_bridge(bridge))
+    return context
+
+
+class _SystemTrustHTTPSAdapter(HTTPAdapter):
+    """Requests adapter that applies the scoped system-trust context to HTTPS."""
+
+    def __init__(self, context: ssl.SSLContext) -> None:
+        self.ssl_context = context
+        super().__init__()
+
+    def init_poolmanager(
+        self,
+        connections: int,
+        maxsize: int,
+        block: bool = False,
+        **pool_kwargs: Any,
+    ) -> None:
+        pool_kwargs["ssl_context"] = self.ssl_context
+        super().init_poolmanager(connections, maxsize, block=block, **pool_kwargs)
+
+    def proxy_manager_for(self, proxy: str, **proxy_kwargs: Any) -> Any:
+        # HTTPS destinations must use the same trust policy through a proxy.
+        proxy_kwargs["ssl_context"] = self.ssl_context
+        if urlsplit(proxy).scheme.lower() == "https":
+            proxy_kwargs["proxy_ssl_context"] = self.ssl_context
+        return super().proxy_manager_for(proxy, **proxy_kwargs)
+
+
+def _new_http_session() -> requests.Session:
+    """Create an isolated session whose HTTPS requests use system trust."""
+    session = requests.Session()
+    session.mount("https://", _SystemTrustHTTPSAdapter(_system_tls_context()))
+    session.verify = True
+    return session
 
 
 def validate_public_url(url: str) -> None:
@@ -133,30 +212,33 @@ def _fetch_once(
     max_redirects: int,
 ) -> bytes:
     """A single fetch attempt with SSRF, redirect, and size guards."""
-    session = requests.Session()
-    current = url
-    for _ in range(max_redirects + 1):
-        validate_public_url(current)
-        resp = session.get(
-            current, headers=headers, timeout=timeout, stream=True, allow_redirects=False
-        )
-        try:
-            if resp.is_redirect or resp.is_permanent_redirect:
-                location = resp.headers.get("location")
-                if not location:
-                    raise UnsafeURLError("redirect response had no Location header")
-                current = urljoin(current, location)
-                continue
-            resp.raise_for_status()
-            declared = resp.headers.get("content-length")
-            if declared and declared.isdigit() and int(declared) > max_bytes:
-                raise UnsafeURLError(f"response is {declared} bytes, over the {max_bytes} cap")
-            body = bytearray()
-            for chunk in resp.iter_content(chunk_size=1 << 20):
-                body += chunk
-                if len(body) > max_bytes:
-                    raise UnsafeURLError(f"response exceeded the {max_bytes}-byte cap")
-            return bytes(body)
-        finally:
-            resp.close()
-    raise UnsafeURLError(f"too many redirects (>{max_redirects}) starting at {url!r}")
+    session = _new_http_session()
+    try:
+        current = url
+        for _ in range(max_redirects + 1):
+            validate_public_url(current)
+            resp = session.get(
+                current, headers=headers, timeout=timeout, stream=True, allow_redirects=False
+            )
+            try:
+                if resp.is_redirect or resp.is_permanent_redirect:
+                    location = resp.headers.get("location")
+                    if not location:
+                        raise UnsafeURLError("redirect response had no Location header")
+                    current = urljoin(current, location)
+                    continue
+                resp.raise_for_status()
+                declared = resp.headers.get("content-length")
+                if declared and declared.isdigit() and int(declared) > max_bytes:
+                    raise UnsafeURLError(f"response is {declared} bytes, over the {max_bytes} cap")
+                body = bytearray()
+                for chunk in resp.iter_content(chunk_size=1 << 20):
+                    body += chunk
+                    if len(body) > max_bytes:
+                        raise UnsafeURLError(f"response exceeded the {max_bytes}-byte cap")
+                return bytes(body)
+            finally:
+                resp.close()
+        raise UnsafeURLError(f"too many redirects (>{max_redirects}) starting at {url!r}")
+    finally:
+        session.close()
