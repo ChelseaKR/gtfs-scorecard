@@ -1,10 +1,12 @@
 // GENERATED — do not edit; run `scorecard render-constants`.
 // Source of truth: pipeline/src/scorecard_pipeline/constants_export.py
-// (grade bands from score.py, STALE_FEED_DAYS from metrics.py, category and
-// severity labels from site_shell.py, rule links from rule_links.py).
+// (grade bands from score.py, freshness thresholds from metrics.py, category
+// and severity labels from site_shell.py, rule links from rule_links.py).
 // pipeline/tests/test_generated_constants.py fails CI when this file drifts.
 
 export const STALE_FEED_DAYS = 365;
+
+export const SERVICE_HORIZON_REVIEW_YEARS = 10;
 
 export const GRADE_BANDS = [
   {

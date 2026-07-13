@@ -109,6 +109,17 @@ def test_from_artifact_pass() -> None:
     assert gate.days_forward == 90
 
 
+def test_from_legacy_distant_artifact_keeps_pass_without_huge_countdown() -> None:
+    artifact = _artifact("2099-12-31")
+    artifact["snapshot_date"] = "2026-07-13"
+    artifact["categories"]["freshness"]["details"]["days_until_expiry"] = 26_834
+    gate = from_artifact(artifact, dt.date(2026, 7, 13))
+    assert gate.status == "pass"
+    assert gate.days_forward == 26_834
+    assert "unusually distant" in gate.detail
+    assert "26834" not in gate.detail
+
+
 def test_from_artifact_at_risk() -> None:
     iso = (TODAY + dt.timedelta(days=10)).isoformat()
     gate = from_artifact(_artifact(iso), TODAY)

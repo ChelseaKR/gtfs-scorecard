@@ -60,7 +60,7 @@ published score dataset.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.9`). The rule for
+Every artifact carries a `schema_version` (currently `1.10`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -117,6 +117,15 @@ Changelog:
   `subdivision_code`, and practitioner-facing `subdivision_name`. The legacy
   `state` field remains available for existing US consumers. The initial
   published values were `US` and `CA`. Additive.
+- `1.10` adds `effective_expiry_date`, `service_horizon_review_years`, and
+  `service_horizon_status` to freshness details; the status is also copied to
+  index history, catalog rows, and the open dataset/API. An unusually distant
+  service end date is a display and trust advisory, not a GTFS error, finding,
+  or score deduction. Readers derive the same status for legacy rows when the
+  field is absent but snapshot date and expiry evidence are present, so an
+  existing artifact is safe on the first deployment.
+  The downloadable dataset shape is `1.1` with the added status column.
+  Additive.
 - `1.7` adds `state_percentile` to per-state rollup payloads (`null` on the
   "all" rollup and named cohorts, which are not peers of a 50-state
   comparison), so a program page can say how its average compares to other
@@ -141,7 +150,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.9",
+  "schema_version": "1.10",
   "rubric_version": "1.1",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.1",
@@ -240,6 +249,19 @@ fields are surfaced for consumers:
 - `details.days_until_expiry` (integer, or `null` when the feed states no end
   date): days until the feed's service window closes. Negative means it already
   expired that many days ago. Also copied onto each `index.json` history point.
+- `details.effective_expiry_date` (ISO date, or `null`): the exact earlier date
+  used from `feed_info` and scheduled service.
+- `details.service_horizon_review_years` (integer): the documented ten-year
+  review threshold used for this artifact.
+- `details.service_horizon_status` (string, also copied onto index history,
+  catalog, and open-dataset rows): `within_review_threshold`,
+  `unusually_distant`, or `unknown`. Unusually distant means the effective end
+  date is strictly more than ten calendar years after the check. The exact
+  boundary stays within the threshold. This advisory is outside category
+  findings, Top 3 fixes, finding prevalence, and finding diffs; it changes no
+  score. For legacy artifacts and rows without this field, consumers can derive
+  it from the snapshot/date plus `effective_expiry_date` or
+  `days_until_expiry`. Missing date evidence remains `unknown`.
 - `expiry_status` (string): a stable bucket derived from `days_until_expiry`,
   published on `catalog.json` agencies and rollup members. One of:
 
@@ -259,7 +281,7 @@ a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.9",
+  "schema_version": "1.10",
   "rubric_version": "1.1",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -268,7 +290,8 @@ a single request rather than fetching each `latest.json`.
       "subdivision_code": "US-CA", "subdivision_name": "California",
       "state": "California", "grade": "B", "score": 84.1,
       "size_tier": "small", "national_percentile": 72, "peer_percentile": 80,
-      "snapshot_date": "2026-06-12", "days_until_expiry": 120, "expiry_status": "current",
+      "snapshot_date": "2026-06-12", "days_until_expiry": 120,
+      "service_horizon_status": "within_review_threshold", "expiry_status": "current",
       "ntd_ready": "ready", "google_gate": "pass", "stops": 312,
       "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.1",
       "retrieved_at": "2026-06-12T13:25:01+00:00", "feed_sha256": "...",
@@ -331,7 +354,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | Path | What it is |
 | --- | --- |
 | `api/v1/index.json` | The API's self-description: version, endpoint list, license, attribution. |
-| `api/v1/agencies.json` | Every agency's latest check in one list (id, name, date, grade, score, the four category scores, days to expiry). `realtime` is null when not published. |
+| `api/v1/agencies.json` | Every agency's latest check in one list (id, name, date, grade, score, the four category scores, days to expiry, and service-horizon review status). `realtime` is null when not published. |
 | `api/v1/leaderboard.json` | `top` and `bottom` by score, and `most_improved` / `most_declined` by the change since each agency's previous check. |
 | `api/v1/by-state.json` | Legacy U.S.-state agency count, median score, and grade distribution. U.S. agencies without a known state group under `Unlocated`. |
 | `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivision counts, median scores, and grade distributions. Null codes collect rows whose curated location is unknown. `by-state.json` remains unchanged for existing US consumers. |
@@ -404,7 +427,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.9",
+  "schema_version": "1.10",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "count": 2,
@@ -420,7 +443,7 @@ immutable dated copy.
 
 ```jsonc
 {
-  "schema_version": "1.9",
+  "schema_version": "1.10",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

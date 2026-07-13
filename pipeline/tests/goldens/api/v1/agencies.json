@@ -10,7 +10,8 @@
       "id": "barrie-transit",
       "name": "Barrie Transit (Ontario)",
       "realtime": null,
-      "score": 72.3
+      "score": 72.3,
+      "service_horizon_status": "within_review_threshold"
     },
     {
       "completeness": 60.0,
@@ -22,7 +23,8 @@
       "id": "unitrans",
       "name": "Unitrans (ASUCD / City of Davis)",
       "realtime": null,
-      "score": 80.8
+      "score": 80.8,
+      "service_horizon_status": "within_review_threshold"
     },
     {
       "completeness": 62.4,
@@ -34,7 +36,8 @@
       "id": "yolobus",
       "name": "Yolobus (Yolo County Transportation District)",
       "realtime": 92.2,
-      "score": 82.5
+      "score": 82.5,
+      "service_horizon_status": "within_review_threshold"
     }
   ],
   "count": 3,
@@ -48,6 +51,7 @@
     "freshness",
     "completeness",
     "realtime",
-    "days_until_expiry"
+    "days_until_expiry",
+    "service_horizon_status"
   ]
 }

@@ -3,6 +3,10 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.10: additive effective_expiry_date, service_horizon_review_years, and
+# service_horizon_status in freshness details; the status also rides on index
+# history, catalog rows, and the open dataset/API. It classifies end dates more
+# than ten calendar years beyond a check as an advisory outside rubric findings.
 # 1.9: country fields accept every assigned ISO 3166-1 alpha-2 jurisdiction;
 # schemas describe that portable shape while the generated ISO vocabulary is
 # the stricter write boundary. No score or rubric field changed.
@@ -26,7 +30,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.9"
+SCHEMA_VERSION = "1.10"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)

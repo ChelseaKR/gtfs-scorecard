@@ -43,6 +43,16 @@ def test_clean_feed_earns_the_mark() -> None:
     assert all(c.met for c in mark.criteria)
 
 
+def test_legacy_distant_horizon_keeps_mark_status_without_huge_countdown() -> None:
+    artifact = _artifact(days=26_834)
+    artifact["snapshot_date"] = "2026-07-13"
+    mark = assess(artifact)
+    current = next(c for c in mark.criteria if c.key == "current")
+    assert current.met is True
+    assert "unusually distant" in current.detail
+    assert "26834" not in current.detail
+
+
 def test_validator_error_blocks_the_mark() -> None:
     mark = assess(_artifact(errors=2))
     assert mark.awarded is False

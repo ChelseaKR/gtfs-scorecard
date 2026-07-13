@@ -6,12 +6,16 @@ import datetime as dt
 
 from scorecard_pipeline.gtfs import FeedDates
 from scorecard_pipeline.metrics import (
+    SERVICE_HORIZON_REVIEW_YEARS,
     STALE_FEED_DAYS,
     UNREACHABLE_STREAK_CHECKS,
+    CategoryResult,
     correctness,
     expiry_status,
     freshness,
     operating_signal,
+    resolve_service_horizon_status,
+    service_horizon_status,
 )
 from scorecard_pipeline.validate import NoticeGroup, ValidationReport
 
@@ -193,6 +197,133 @@ class TestFreshness:
         # effective_expiry picks the min of feed_info end and last service date
         assert result.details["days_until_expiry"] == 10
         assert result.score < 100.0
+
+    def test_normal_multi_year_horizon_is_unchanged(self) -> None:
+        expiry = TODAY.replace(year=TODAY.year + 5)
+        result = freshness(feed_dates(expiry), TODAY)
+        assert result.score == 100.0
+        assert result.summary == f"Service data covers the next {(expiry - TODAY).days} days."
+        assert result.details["service_horizon_status"] == "within_review_threshold"
+        assert result.findings == []
+
+    def test_exact_review_boundary_is_not_flagged(self) -> None:
+        expiry = TODAY.replace(year=TODAY.year + SERVICE_HORIZON_REVIEW_YEARS)
+        result = freshness(feed_dates(expiry), TODAY)
+        assert service_horizon_status(expiry, TODAY) == "within_review_threshold"
+        assert result.details["service_horizon_status"] == "within_review_threshold"
+        assert result.findings == []
+
+    def test_day_after_review_boundary_is_flagged_without_changing_score(self) -> None:
+        boundary = TODAY.replace(year=TODAY.year + SERVICE_HORIZON_REVIEW_YEARS)
+        expiry = boundary + dt.timedelta(days=1)
+        result = freshness(feed_dates(expiry), TODAY)
+        assert result.score == 100.0
+        assert result.details["service_horizon_status"] == "unusually_distant"
+        assert result.details["effective_expiry_date"] == expiry.isoformat()
+        assert result.details["days_until_expiry"] == (expiry - TODAY).days
+        assert result.findings == []
+        assert "unusually distant" in result.summary
+
+    def test_year_2100_horizon_is_an_advisory_not_a_finding(self) -> None:
+        from scorecard_pipeline.score import build_scorecard
+
+        result = freshness(feed_dates(dt.date(2100, 12, 31)), TODAY)
+        assert result.score == 100.0
+        assert result.findings == []
+        assert "may be intentional" in result.summary
+        assert build_scorecard([result]).top_fixes == []
+
+    def test_horizon_advisory_does_not_change_findings_top_fixes_or_rollups(self) -> None:
+        from scorecard_pipeline.feeddiff import diff_artifacts
+        from scorecard_pipeline.findings_national import agency_findings, national_problems
+        from scorecard_pipeline.fixlog import diff_receipts
+        from scorecard_pipeline.score import build_scorecard
+
+        normal = freshness(feed_dates(TODAY + dt.timedelta(days=90)), TODAY)
+        distant = freshness(feed_dates(dt.date(2100, 12, 31)), TODAY)
+        normal_card = build_scorecard([normal])
+        distant_card = build_scorecard([distant])
+        assert distant.score == normal.score
+        assert distant.to_json()["findings"] == normal.to_json()["findings"] == []
+        assert distant_card.top_fixes == normal_card.top_fixes == []
+
+        def artifact(result: CategoryResult, snapshot: str) -> dict[str, object]:
+            return {
+                "snapshot_date": snapshot,
+                "overall": {"grade": "A", "score": 100.0},
+                "feed": {"sha256": "same", "size_bytes": 1},
+                "categories": {"freshness": result.to_json()},
+            }
+
+        before = artifact(normal, "2026-06-10")
+        after = artifact(distant, "2026-06-11")
+        assert agency_findings(after) == []
+        assert (
+            national_problems([agency_findings(after)], total_agencies=1)["prevalence_by_code"]
+            == {}
+        )
+        finding_diff = diff_artifacts(before, after)
+        assert finding_diff.new == finding_diff.resolved == finding_diff.changed == []
+        assert diff_receipts(before, after) == []
+
+    def test_leap_day_boundary_uses_calendar_years(self) -> None:
+        leap_today = dt.date(2028, 2, 29)
+        boundary = dt.date(2038, 2, 28)
+        assert service_horizon_status(boundary, leap_today) == "within_review_threshold"
+        assert service_horizon_status(boundary + dt.timedelta(days=1), leap_today) == (
+            "unusually_distant"
+        )
+
+
+class TestResolveServiceHorizonStatus:
+    def test_derives_production_legacy_day_counts(self) -> None:
+        assert (
+            resolve_service_horizon_status({"date": "2026-07-10", "days_until_expiry": 26_837})
+            == "unusually_distant"
+        )
+        assert (
+            resolve_service_horizon_status(
+                {"snapshot_date": "2026-07-13", "days_until_expiry": 26_834}
+            )
+            == "unusually_distant"
+        )
+
+    def test_prefers_effective_expiry_and_uses_strict_calendar_boundary(self) -> None:
+        snapshot = dt.date(2026, 7, 13)
+        boundary = snapshot.replace(year=2036)
+        assert (
+            resolve_service_horizon_status(
+                {"effective_expiry_date": boundary.isoformat()}, snapshot
+            )
+            == "within_review_threshold"
+        )
+        assert (
+            resolve_service_horizon_status(
+                {"effective_expiry_date": (boundary + dt.timedelta(days=1)).isoformat()},
+                snapshot,
+            )
+            == "unusually_distant"
+        )
+
+    def test_explicit_status_is_authoritative(self) -> None:
+        values = {
+            "service_horizon_status": "unknown",
+            "days_until_expiry": 26_834,
+        }
+        assert resolve_service_horizon_status(values, "2026-07-13") == "unknown"
+
+    def test_bad_or_missing_legacy_inputs_stay_unknown(self) -> None:
+        snapshot = "2026-07-13"
+        for values, checked in (
+            ({}, None),
+            ({"days_until_expiry": 26_834}, None),
+            ({"date": "not-a-date", "days_until_expiry": 26_834}, None),
+            ({"days_until_expiry": True}, snapshot),
+            ({"days_until_expiry": 2.5}, snapshot),
+            ({"days_until_expiry": float("inf")}, snapshot),
+            ({"days_until_expiry": 10**20}, snapshot),
+        ):
+            assert resolve_service_horizon_status(values, checked) == "unknown"
 
 
 class TestExpiryStatus:

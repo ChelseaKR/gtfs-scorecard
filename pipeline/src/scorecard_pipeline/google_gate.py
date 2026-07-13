@@ -17,6 +17,8 @@ import datetime as dt
 from dataclasses import dataclass
 from typing import Any
 
+from .metrics import resolve_service_horizon_status
+
 # Google Transit asks for at least four weeks (28 days) of service ahead of the
 # publish date; feeds shorter than that risk being dropped from Google and Apple
 # Maps. See docs/rubric.md for the citation.
@@ -129,4 +131,20 @@ def from_artifact(artifact: dict[str, Any], today: dt.date) -> GoogleGate:
     else:
         last_service_date = None
 
-    return google_acceptance(last_service_date, today)
+    gate = google_acceptance(last_service_date, today)
+    details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    if (
+        gate.status == "pass"
+        and resolve_service_horizon_status(details, artifact.get("snapshot_date"))
+        == "unusually_distant"
+    ):
+        return GoogleGate(
+            status=gate.status,
+            days_forward=gate.days_forward,
+            detail=(
+                "This feed clears the four-week coverage window, but its service end date "
+                "is unusually distant. Confirm that date is intentional before treating it "
+                "as evidence of ongoing maintenance."
+            ),
+        )
+    return gate

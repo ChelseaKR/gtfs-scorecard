@@ -11,7 +11,8 @@ The functions here are pure over the index dict the rest of the pipeline already
 produces, so the artifact is reproducible and safe to re-run:
 
     {"agencies": {id: {"name", "history": [
-        {"date", "grade", "score", "categories": {...}, "days_until_expiry"}, ...
+        {"date", "grade", "score", "categories": {...}, "days_until_expiry",
+         "service_horizon_status"}, ...
     ]}}}
 
 Each history point carries category scores under "categories"; "realtime" is
@@ -26,6 +27,7 @@ import io
 from typing import Any
 
 from . import SCHEMA_VERSION
+from .metrics import resolve_service_horizon_status
 
 # The four rubric categories, flattened into their own columns. "realtime" is
 # optional: an agency with no realtime feed has no realtime score, reported as
@@ -42,6 +44,7 @@ COLUMNS: tuple[str, ...] = (
     "score",
     *_CATEGORY_KEYS,
     "days_until_expiry",
+    "service_horizon_status",
 )
 
 # The grades the rubric can assign, in order. Fixing the set means the
@@ -68,20 +71,21 @@ def _row_for_agency(agency_id: str, entry: dict[str, Any]) -> dict[str, Any] | N
         "grade": latest.get("grade"),
         "score": latest.get("score"),
         "days_until_expiry": latest.get("days_until_expiry"),
+        "service_horizon_status": resolve_service_horizon_status(latest),
     }
     for key in _CATEGORY_KEYS:
         row[key] = categories.get(key)
     return row
 
 
-def build_quality_dataset(index: dict[str, Any], *, schema_version: str = "1.0") -> dict[str, Any]:
+def build_quality_dataset(index: dict[str, Any], *, schema_version: str = "1.1") -> dict[str, Any]:
     """Build the flat open dataset from a published index.
 
     One row per agency, holding that agency's most recent check: overall grade
-    and score, the four category scores (realtime None when not published), and
-    days until the feed's service expires. Rows are sorted by agency id so the
-    artifact is deterministic and diffs cleanly between runs. Agencies with no
-    history are skipped.
+    and score, the four category scores (realtime None when not published), days
+    until the feed's service expires, and whether that horizon is unusually
+    distant. Rows are sorted by agency id so the artifact is deterministic and
+    diffs cleanly between runs. Agencies with no history are skipped.
 
     `schema_version` versions the dataset's own shape, independent of the
     pipeline's SCHEMA_VERSION, so a downstream citation can pin the table layout.

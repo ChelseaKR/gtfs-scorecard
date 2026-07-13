@@ -15,7 +15,7 @@ from scorecard_pipeline import (
 from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import USER_AGENT, FetchResult
 from scorecard_pipeline.metrics import CategoryResult
-from scorecard_pipeline.publish import build_artifact, publish
+from scorecard_pipeline.publish import _history_entry, build_artifact, publish
 from scorecard_pipeline.score import build_scorecard
 
 AGENCY = Agency(
@@ -70,6 +70,34 @@ def test_artifact_schema_essentials() -> None:
         "final_url": AGENCY.static_gtfs_url,
         "user_agent": USER_AGENT,
     }
+
+
+def test_history_entry_derives_legacy_horizon_status_for_public_api() -> None:
+    artifact = make_artifact(dt.date(2026, 7, 13))
+    artifact["categories"]["freshness"] = {
+        "name": "freshness",
+        "status": "measured",
+        "score": 100.0,
+        "summary": "Review the distant end date.",
+        "findings": [],
+        "details": {"days_until_expiry": 26_834},
+    }
+    entry = _history_entry(artifact)
+    assert entry["days_until_expiry"] == 26_834
+    assert entry["service_horizon_status"] == "unusually_distant"
+
+
+def test_history_entry_keeps_genuinely_unknown_legacy_horizon_unknown() -> None:
+    artifact = make_artifact(dt.date(2026, 7, 13))
+    artifact["categories"]["freshness"] = {
+        "name": "freshness",
+        "status": "measured",
+        "score": 0.0,
+        "summary": "No service end date could be found.",
+        "findings": [],
+        "details": {"days_until_expiry": None},
+    }
+    assert _history_entry(artifact)["service_horizon_status"] == "unknown"
 
 
 def test_fetch_provenance_block_carries_mirror_details() -> None:
