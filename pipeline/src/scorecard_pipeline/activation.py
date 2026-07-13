@@ -9,14 +9,15 @@ documented safety bound.
 from __future__ import annotations
 
 import datetime as dt
+import io
 import json
 import os
 import re
-import shutil
 import sys
 import tempfile
+import time
 import unicodedata
-from collections.abc import Collection
+from collections.abc import Callable, Collection
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -30,7 +31,44 @@ _ARTIFACT_PREFIX = "data/artifacts/"
 _HYDRATED_NAMESPACES = ("rollups", "changes", "run")
 DEFAULT_HYDRATION_WORKERS = 16
 MAX_HYDRATION_WORKERS = 32
+S3_CONNECT_TIMEOUT_SECONDS = 5
+S3_READ_TIMEOUT_SECONDS = 30
+S3_OBJECT_READ_ATTEMPTS = 3
+S3_OBJECT_RETRY_BASE_SECONDS = 0.25
+_STREAM_CHUNK_BYTES = 1024 * 1024
 _MISSING_CODES = frozenset({"404", "NoSuchKey", "NotFound"})
+_TRANSIENT_CODES = frozenset(
+    {
+        "408",
+        "429",
+        "500",
+        "502",
+        "503",
+        "504",
+        "InternalError",
+        "PriorRequestNotComplete",
+        "RequestTimeout",
+        "RequestTimeoutException",
+        "ServiceUnavailable",
+        "SlowDown",
+        "Throttling",
+        "ThrottlingException",
+    }
+)
+_TRANSIENT_EXCEPTION_NAMES = frozenset(
+    {
+        "ChecksumError",
+        "ConnectionClosedError",
+        "ConnectTimeoutError",
+        "EndpointConnectionError",
+        "HTTPClientError",
+        "IncompleteReadError",
+        "ProtocolError",
+        "ReadTimeoutError",
+        "ResponseStreamingError",
+        "SSLError",
+    }
+)
 
 
 class ActivationTargetError(ValueError):
@@ -41,12 +79,20 @@ class ActivationHydrationError(RuntimeError):
     """The authoritative activation corpus could not be hydrated safely."""
 
 
+class _RetryableObjectRead(RuntimeError):
+    """A remote object attempt failed before its full body was consumed."""
+
+
 class _S3Client(Protocol):
     """The small boto3 S3 surface the hydrator needs (and tests can fake)."""
 
     def get_object(self, **kwargs: object) -> dict[str, Any]: ...
 
     def get_paginator(self, operation_name: str) -> Any: ...
+
+
+class _BinaryWriter(Protocol):
+    def write(self, data: bytes) -> int: ...
 
 
 @dataclass(frozen=True)
@@ -105,7 +151,7 @@ def parse_activation_targets(
 
 
 def _s3_client(workers: int) -> _S3Client:  # pragma: no cover - thin boto3 wrapper
-    """Build a pooled S3 client with bounded standard retries."""
+    """Build a pooled S3 client with bounded standard retries and timeouts."""
     import boto3  # type: ignore[import-not-found]
     from botocore.config import Config  # type: ignore[import-not-found]
 
@@ -114,7 +160,9 @@ def _s3_client(workers: int) -> _S3Client:  # pragma: no cover - thin boto3 wrap
         boto3.client(
             "s3",
             config=Config(
+                connect_timeout=S3_CONNECT_TIMEOUT_SECONDS,
                 max_pool_connections=workers,
+                read_timeout=S3_READ_TIMEOUT_SECONDS,
                 retries={"mode": "standard", "total_max_attempts": 6},
             ),
         ),
@@ -127,6 +175,102 @@ def _error_code(exc: Exception) -> str:
         return ""
     error = response.get("Error", {})
     return str(error.get("Code", "")) if isinstance(error, dict) else ""
+
+
+def _http_status(exc: Exception) -> int | None:
+    response = getattr(exc, "response", {})
+    if not isinstance(response, dict):
+        return None
+    metadata = response.get("ResponseMetadata", {})
+    if not isinstance(metadata, dict):
+        return None
+    status = metadata.get("HTTPStatusCode")
+    return status if isinstance(status, int) else None
+
+
+def _is_transient_remote_error(exc: Exception) -> bool:
+    """Classify only remote GET/read failures that are safe to repeat in full."""
+    if _error_code(exc) in _TRANSIENT_CODES:
+        return True
+    status = _http_status(exc)
+    if status in {408, 429, 500, 502, 503, 504}:
+        return True
+    # This classifier is called only around client.get_object and body.read.
+    # OSError therefore represents socket/TLS transport failure, never a local
+    # destination error (local mkdir/write/replace/utime calls are kept outside
+    # the classified blocks below).
+    return isinstance(exc, (TimeoutError, ConnectionError, OSError)) or (
+        type(exc).__name__ in _TRANSIENT_EXCEPTION_NAMES
+    )
+
+
+def _retry_delay(completed_attempt: int) -> float:
+    """Return deterministic exponential backoff after a failed 1-based attempt."""
+    return S3_OBJECT_RETRY_BASE_SECONDS * (2.0 ** (completed_attempt - 1))
+
+
+def _get_object(
+    client: _S3Client,
+    bucket: str,
+    key: str,
+    *,
+    optional: bool,
+) -> dict[str, Any] | None:
+    """Issue one GET, distinguishing optional misses, transient, and permanent errors."""
+    try:
+        return client.get_object(Bucket=bucket, Key=key)
+    except Exception as exc:
+        if optional and _error_code(exc) in _MISSING_CODES:
+            return None
+        if _is_transient_remote_error(exc):
+            raise _RetryableObjectRead(str(exc)) from exc
+        raise ActivationHydrationError(f"could not read s3://{bucket}/{key}: {exc}") from exc
+
+
+def _stream_body(body: object, output: _BinaryWriter, bucket: str, key: str) -> None:
+    """Consume a remote body while keeping local write errors out of retry handling."""
+    read = getattr(body, "read", None)
+    if not callable(read):
+        raise ActivationHydrationError(f"s3://{bucket}/{key} Body is not readable")
+    while True:
+        try:
+            chunk = read(_STREAM_CHUNK_BYTES)
+        except Exception as exc:
+            if _is_transient_remote_error(exc):
+                raise _RetryableObjectRead(str(exc)) from exc
+            raise ActivationHydrationError(f"could not stream s3://{bucket}/{key}: {exc}") from exc
+        if chunk == b"":
+            return
+        if not isinstance(chunk, bytes):
+            raise ActivationHydrationError(f"s3://{bucket}/{key} Body returned non-byte content")
+        # Deliberately outside the remote exception classifier: a filesystem
+        # failure must abort, not trigger another S3 attempt.
+        output.write(chunk)
+
+
+def _close_body(body: object | None) -> None:
+    if body is None:
+        return
+    close = getattr(body, "close", None)
+    if callable(close):
+        close()
+
+
+def _retry_or_raise(
+    exc: _RetryableObjectRead,
+    *,
+    bucket: str,
+    key: str,
+    completed_attempt: int,
+    sleeper: Callable[[float], None],
+) -> None:
+    """Sleep before another whole-object attempt, or fail closed at the bound."""
+    cause = exc.__cause__ if isinstance(exc.__cause__, Exception) else exc
+    if completed_attempt >= S3_OBJECT_READ_ATTEMPTS:
+        raise ActivationHydrationError(
+            f"could not read s3://{bucket}/{key} after {S3_OBJECT_READ_ATTEMPTS} attempts: {cause}"
+        ) from cause
+    sleeper(_retry_delay(completed_attempt))
 
 
 def _atomic_write(path: Path, data: bytes) -> None:
@@ -203,46 +347,69 @@ def _download_one(
     destination: Path,
     *,
     optional: bool,
+    sleeper: Callable[[float], None],
 ) -> bool:
-    """Stream one exact object to an atomic local path; return false on an optional miss."""
-    try:
-        response = client.get_object(Bucket=bucket, Key=key)
-    except Exception as exc:
-        if optional and _error_code(exc) in _MISSING_CODES:
-            return False
-        raise ActivationHydrationError(f"could not read s3://{bucket}/{key}: {exc}") from exc
+    """Stream one exact object to an atomic local path; retry remote truncation in full."""
+    for completed_attempt in range(1, S3_OBJECT_READ_ATTEMPTS + 1):
+        body: object | None = None
+        temporary: Path | None = None
+        try:
+            response = _get_object(client, bucket, key, optional=optional)
+            if response is None:
+                return False
 
-    last_modified = response.get("LastModified")
-    if not isinstance(last_modified, dt.datetime):
-        raise ActivationHydrationError(f"s3://{bucket}/{key} omitted LastModified")
-    body = response.get("Body")
-    if body is None:
-        raise ActivationHydrationError(f"s3://{bucket}/{key} omitted Body")
+            body = response.get("Body")
+            if body is None:
+                raise ActivationHydrationError(f"s3://{bucket}/{key} omitted Body")
+            last_modified = response.get("LastModified")
+            if not isinstance(last_modified, dt.datetime):
+                raise ActivationHydrationError(f"s3://{bucket}/{key} omitted LastModified")
 
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="wb",
-            dir=destination.parent,
-            prefix=f".{destination.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as output:
-            temporary = Path(output.name)
-            shutil.copyfileobj(body, output, length=1024 * 1024)
-        temporary.replace(destination)
-        timestamp = last_modified.timestamp()
-        os.utime(destination, (timestamp, timestamp))
-    except Exception as exc:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-        raise ActivationHydrationError(f"could not write {destination} from {key}: {exc}") from exc
-    finally:
-        close = getattr(body, "close", None)
-        if callable(close):
-            close()
-    return True
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(
+                mode="wb",
+                dir=destination.parent,
+                prefix=f".{destination.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as output:
+                temporary = Path(output.name)
+                _stream_body(body, output, bucket, key)
+
+            # Set the source mtime on the unique temporary before its atomic
+            # replacement. A local utime failure therefore cannot leave a
+            # partially completed destination that looks authoritative.
+            timestamp = last_modified.timestamp()
+            os.utime(temporary, (timestamp, timestamp))
+            temporary.replace(destination)
+            temporary = None
+            return True
+        except _RetryableObjectRead as exc:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+                temporary = None
+            _close_body(body)
+            body = None
+            _retry_or_raise(
+                exc,
+                bucket=bucket,
+                key=key,
+                completed_attempt=completed_attempt,
+                sleeper=sleeper,
+            )
+        except ActivationHydrationError:
+            raise
+        except Exception as exc:
+            # Local path/create/write/flush/replace/utime failures never enter
+            # the remote classifier and therefore fail closed without retry.
+            raise ActivationHydrationError(
+                f"could not write {destination} from {key}: {exc}"
+            ) from exc
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+            _close_body(body)
+    raise AssertionError("unreachable bounded object read loop")
 
 
 def _read_index(
@@ -251,19 +418,47 @@ def _read_index(
     artifacts_root: Path,
     index_before: Path,
     etag_out: Path,
+    *,
+    sleeper: Callable[[float], None],
 ) -> dict[str, Any]:
     """Capture the compact index bytes and their ETag from the same GET response."""
     key = f"{_ARTIFACT_PREFIX}index.json"
-    try:
-        response = client.get_object(Bucket=bucket, Key=key)
-        body = response["Body"].read()
-        etag = str(response["ETag"])
-    except Exception as exc:
-        raise ActivationHydrationError(f"could not capture s3://{bucket}/{key}: {exc}") from exc
-    if not isinstance(body, bytes) or not etag:
+    response: dict[str, Any] | None = None
+    body_bytes: bytes | None = None
+    for completed_attempt in range(1, S3_OBJECT_READ_ATTEMPTS + 1):
+        body: object | None = None
+        try:
+            response = _get_object(client, bucket, key, optional=False)
+            if response is None:  # pragma: no cover - optional=False contract
+                raise AssertionError("required index GET returned an optional miss")
+            body = response.get("Body")
+            if body is None:
+                raise ActivationHydrationError(f"s3://{bucket}/{key} omitted Body")
+            output = io.BytesIO()
+            _stream_body(body, output, bucket, key)
+            body_bytes = output.getvalue()
+            break
+        except _RetryableObjectRead as exc:
+            _close_body(body)
+            body = None
+            _retry_or_raise(
+                exc,
+                bucket=bucket,
+                key=key,
+                completed_attempt=completed_attempt,
+                sleeper=sleeper,
+            )
+        finally:
+            _close_body(body)
+    if response is None or body_bytes is None:  # pragma: no cover - loop contract
+        raise AssertionError("bounded index read exited without a response")
+
+    etag_value = response.get("ETag")
+    etag = str(etag_value) if etag_value is not None else ""
+    if not etag:
         raise ActivationHydrationError("authoritative index response omitted bytes or ETag")
     try:
-        index = json.loads(body)
+        index = json.loads(body_bytes)
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise ActivationHydrationError(
             f"authoritative index.json is not valid JSON: {exc}"
@@ -271,8 +466,8 @@ def _read_index(
     if not isinstance(index, dict) or not isinstance(index.get("agencies"), dict):
         raise ActivationHydrationError("authoritative index.json has no agencies object")
 
-    _atomic_write(artifacts_root / "index.json", body)
-    _atomic_write(index_before, body)
+    _atomic_write(artifacts_root / "index.json", body_bytes)
+    _atomic_write(index_before, body_bytes)
     _atomic_write(etag_out, f"{etag}\n".encode())
     return index
 
@@ -394,6 +589,7 @@ def hydrate_activation_corpus(
     liveness_out: Path,
     workers: int = DEFAULT_HYDRATION_WORKERS,
     client: _S3Client | None = None,
+    sleeper: Callable[[float], None] = time.sleep,
 ) -> HydrationResult:
     """Hydrate the complete committed current corpus plus bounded mutable state.
 
@@ -417,7 +613,14 @@ def hydrate_activation_corpus(
         raise ActivationHydrationError(str(exc)) from exc
 
     s3 = client or _s3_client(workers)
-    index = _read_index(s3, bucket, artifacts_root, index_before, etag_out)
+    index = _read_index(
+        s3,
+        bucket,
+        artifacts_root,
+        index_before,
+        etag_out,
+        sleeper=sleeper,
+    )
     agency_ids = _registered_index_ids(index, known_ids)
     current_dates = _indexed_current_dates(index, agency_ids)
 
@@ -457,6 +660,7 @@ def hydrate_activation_corpus(
                 key,
                 destination,
                 optional=key in optional,
+                sleeper=sleeper,
             ): key
             for key, destination in destinations.items()
         }
@@ -468,6 +672,7 @@ def hydrate_activation_corpus(
                 liveness_key,
                 liveness_out,
                 optional=True,
+                sleeper=sleeper,
             )
         ] = liveness_key
         try:

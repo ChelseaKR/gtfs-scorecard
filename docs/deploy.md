@@ -211,6 +211,13 @@ the small `rollups/`, `changes/`, and `run/` namespaces are still hydrated in
 full. Downloaded objects retain their S3 `LastModified` time so the bounded
 publish sync skips retained files that were not changed locally.
 
+S3 connections use a five-second connect timeout and a 30-second per-read
+timeout. If a transient transport error interrupts a response body, hydration
+closes and discards that attempt, then retries the complete object up to three
+times with short deterministic backoff. Permanent S3 responses and local path,
+write, or artifact-validation errors fail immediately; re-run the activation
+after correcting those errors.
+
 Before publication, the workflow checks the captured ETag again and uses the
 same ETag as an `If-Match` condition on the final index commit. An unexpected
 change aborts the commit and the operator can re-run against the new state.
