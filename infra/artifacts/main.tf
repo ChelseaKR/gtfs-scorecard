@@ -127,6 +127,19 @@ resource "aws_cloudfront_response_headers_policy" "cors" {
   }
 }
 
+# The bucket also holds private pipeline inputs: content-addressed source feed
+# archives under feeds/, validator cache entries under cache/, and the raw run
+# ledger under data/artifacts/run/. A viewer-request allowlist runs before the
+# cache lookup, so even an object cached before this policy existed cannot be
+# served. The bucket policy below repeats the boundary at the origin.
+resource "aws_cloudfront_function" "public_artifacts_only" {
+  name    = "${var.project}-public-artifacts-only"
+  runtime = "cloudfront-js-1.0"
+  comment = "Allow only published scorecard artifacts; hide private pipeline inputs"
+  publish = true
+  code    = file("${path.module}/public-artifacts-only.js")
+}
+
 resource "aws_cloudfront_distribution" "artifacts" {
   enabled         = true
   comment         = "${var.project} artifacts"
@@ -146,6 +159,11 @@ resource "aws_cloudfront_distribution" "artifacts" {
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
     response_headers_policy_id = aws_cloudfront_response_headers_policy.cors.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.public_artifacts_only.arn
+    }
 
     # Artifacts refresh daily; a short TTL keeps the site current without a
     # per-deploy invalidation. CORS-friendly so an agency page can embed a
@@ -178,8 +196,34 @@ resource "aws_cloudfront_distribution" "artifacts" {
 # Allow only this distribution to read the bucket.
 data "aws_iam_policy_document" "artifacts" {
   statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.artifacts.arn}/*"]
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*",
+      "${aws_s3_bucket.artifacts.arn}/data/liveness.json",
+    ]
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.artifacts.arn]
+    }
+  }
+
+  # data/artifacts/run/ is nested under the otherwise-public artifact prefix,
+  # so deny it explicitly at the origin. feeds/ and cache/ are omitted from the
+  # allow statement above; include them here as defense in depth and to keep
+  # the intended boundary visible in a policy review.
+  statement {
+    effect  = "Deny"
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/run/*",
+      "${aws_s3_bucket.artifacts.arn}/feeds/*",
+      "${aws_s3_bucket.artifacts.arn}/cache/*",
+    ]
     principals {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]

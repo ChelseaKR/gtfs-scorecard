@@ -289,6 +289,30 @@ jobs:
           aws s3 sync data/artifacts/changes \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
             --delete --cache-control "max-age=300" --only-show-errors
+      - name: Verify the CDN cannot serve a raw feed archive
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_CDN: ${{ vars.ARTIFACTS_CDN || 'd14aimrgrbaz2a.cloudfront.net' }}
+        run: |
+          set -euo pipefail
+          artifact="$(find data/artifacts -mindepth 2 -maxdepth 2 -type f \
+            -name latest.json -print -quit)"
+          if [ -z "$artifact" ]; then
+            echo "No current artifact was available for the CDN privacy canary." >&2
+            exit 1
+          fi
+          sha="$(jq -r '.feed.sha256 // empty' "$artifact")"
+          if [ -z "$sha" ]; then
+            echo "No feed hash was available for the CDN privacy canary." >&2
+            exit 1
+          fi
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            --head --max-time 30 "https://${ARTIFACTS_CDN}/feeds/${sha}.zip")"
+          if [ "$status" != "403" ] && [ "$status" != "404" ]; then
+            echo "Private raw archive was reachable through the CDN (HTTP ${status})." >&2
+            exit 1
+          fi
+          echo "Raw archive stayed private (HTTP ${status})."
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
