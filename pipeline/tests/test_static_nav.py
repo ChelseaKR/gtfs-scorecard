@@ -48,6 +48,17 @@ def test_hand_authored_pages_do_not_block_on_remote_fonts() -> None:
         assert "fonts.gstatic.com" not in html, rel
 
 
+def test_local_fonts_do_not_swap_after_first_paint() -> None:
+    """Keep slow font loads from moving the landing page or app shell."""
+    for rel in ("index.html", "src/styles.css"):
+        source = (_REPO / "web" / rel).read_text()
+        faces = re.findall(r"@font-face\s*\{[^}]+\}", source, flags=re.DOTALL)
+        assert faces, f"{rel}: expected local font declarations"
+        assert all("font-display: optional;" in face for face in faces), (
+            f"{rel}: local fonts must keep first-paint metrics stable"
+        )
+
+
 def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
     html = (_REPO / "web" / "app" / "index.html").read_text()
 

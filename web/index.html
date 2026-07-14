@@ -37,21 +37,24 @@
     font-family: "Overpass";
     font-style: normal;
     font-weight: 400 900;
-    font-display: swap;
+    /* Avoid a late metric-changing swap on slower runners and devices. The
+       local font is used when it is ready for first paint; otherwise the
+       declared system fallback remains stable for this page load. */
+    font-display: optional;
     src: url("/fonts/overpass-latin.woff2") format("woff2");
   }
   @font-face {
     font-family: "Overpass Mono";
     font-style: normal;
     font-weight: 400 700;
-    font-display: swap;
+    font-display: optional;
     src: url("/fonts/overpass-mono-latin.woff2") format("woff2");
   }
   @font-face {
     font-family: "Public Sans";
     font-style: normal;
     font-weight: 400 700;
-    font-display: swap;
+    font-display: optional;
     src: url("/fonts/public-sans-latin.woff2") format("woff2");
   }
 
