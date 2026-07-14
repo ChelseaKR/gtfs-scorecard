@@ -28,7 +28,6 @@ def test_artifact_writers_share_one_job_level_lock() -> None:
         assert job["concurrency"] == {
             "group": "artifacts-publish",
             "cancel-in-progress": False,
-            "queue": "max",
         }
 
     # Scoring remains parallel; only jobs that can write the public artifact
