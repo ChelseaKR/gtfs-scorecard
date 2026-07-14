@@ -24,6 +24,7 @@ from __future__ import annotations
 import ipaddress
 import socket
 import time
+from dataclasses import dataclass
 from urllib.parse import urljoin, urlsplit
 
 import requests
@@ -40,6 +41,19 @@ RETRIABLE_STATUS = frozenset({403, 408, 425, 429, 500, 502, 503, 504})
 class UnsafeURLError(ValueError):
     """A URL was rejected before or during fetching (bad scheme, private host,
     oversized response, or too many redirects)."""
+
+
+@dataclass
+class FetchTrace:
+    """Metadata from the successful guarded fetch attempt.
+
+    Callers that need provenance may pass one instance to :func:`safe_get`.
+    It is populated only after the complete body is read successfully, so a
+    failed retry cannot be mistaken for the response that supplied the bytes.
+    """
+
+    final_url: str | None = None
+    redirect_chain: tuple[str, ...] = ()
 
 
 def validate_public_url(url: str) -> None:
@@ -100,13 +114,16 @@ def safe_get(
     max_redirects: int = 5,
     retries: int = 0,
     backoff: float = 2.0,
+    trace: FetchTrace | None = None,
 ) -> bytes:
     """Fetch a URL's body with SSRF and size guards, validating each redirect hop.
 
     Retries up to `retries` times on a transient or WAF-style failure (see
     RETRIABLE_STATUS), with exponential backoff, since a GTFS host behind a bot
-    filter often serves the second request. Returns the bytes; raises
-    UnsafeURLError or the last requests exception.
+    filter often serves the second request. When ``trace`` is supplied, it is
+    populated with the actual final URL and redirect chain from the successful
+    attempt. Returns the bytes; raises UnsafeURLError or the last requests
+    exception.
     """
     for attempt in range(retries + 1):
         try:
@@ -116,6 +133,7 @@ def safe_get(
                 timeout=timeout,
                 max_bytes=max_bytes,
                 max_redirects=max_redirects,
+                trace=trace,
             )
         except (requests.exceptions.RequestException, UnsafeURLError) as exc:
             if attempt >= retries or not _is_retriable(exc):
@@ -131,10 +149,12 @@ def _fetch_once(
     timeout: float | tuple[float, float],
     max_bytes: int,
     max_redirects: int,
+    trace: FetchTrace | None = None,
 ) -> bytes:
     """A single fetch attempt with SSRF, redirect, and size guards."""
     session = requests.Session()
     current = url
+    redirect_chain = [url]
     for _ in range(max_redirects + 1):
         validate_public_url(current)
         resp = session.get(
@@ -146,6 +166,7 @@ def _fetch_once(
                 if not location:
                     raise UnsafeURLError("redirect response had no Location header")
                 current = urljoin(current, location)
+                redirect_chain.append(current)
                 continue
             resp.raise_for_status()
             declared = resp.headers.get("content-length")
@@ -156,6 +177,9 @@ def _fetch_once(
                 body += chunk
                 if len(body) > max_bytes:
                     raise UnsafeURLError(f"response exceeded the {max_bytes}-byte cap")
+            if trace is not None:
+                trace.final_url = current
+                trace.redirect_chain = tuple(redirect_chain)
             return bytes(body)
         finally:
             resp.close()

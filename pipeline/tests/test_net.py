@@ -224,6 +224,31 @@ def test_fetch_once_returns_body_under_cap(monkeypatch: pytest.MonkeyPatch) -> N
     assert body == b"ZIPDAT"
 
 
+def test_fetch_once_records_the_actual_final_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    final = "https://93.184.216.34/releases/current.zip"
+    _use_session(
+        monkeypatch,
+        [
+            _FakeResp(redirect=True, location="/releases/current.zip"),
+            _FakeResp(chunks=(b"ZIPDATA",)),
+        ],
+    )
+    trace = net.FetchTrace()
+
+    body = net._fetch_once(
+        PUBLIC,
+        headers=None,
+        timeout=1,
+        max_bytes=1000,
+        max_redirects=5,
+        trace=trace,
+    )
+
+    assert body == b"ZIPDATA"
+    assert trace.final_url == final
+    assert trace.redirect_chain == (PUBLIC, final)
+
+
 def test_fetch_once_revalidates_a_redirect_to_an_internal_host(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
