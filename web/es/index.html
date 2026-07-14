@@ -15,10 +15,6 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <link rel="alternate" hreflang="en" href="https://gtfsscorecard.org/">
@@ -39,7 +35,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -47,7 +43,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido principal</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menú</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Principal"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencias</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Pulso nacional</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Temas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Herramientas</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>Cómo leer</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>Acerca de</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menú</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Principal"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencias</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Cobertura</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Temas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Herramientas</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>Cómo leer</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>Acerca de</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Migas de pan"><ol>
       <li><a href="/">GTFS Scorecard</a></li>

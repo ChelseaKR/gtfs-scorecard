@@ -73,8 +73,9 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "theme-toggle";
-    btn.setAttribute("aria-haspopup", "true");
+    btn.setAttribute("aria-haspopup", "menu");
     btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-controls", "theme-menu");
     btn.id = "theme-toggle-btn";
     btn.innerHTML =
       '<span aria-hidden="true">&#9681;</span> ' +
@@ -83,6 +84,7 @@
       "</span>";
 
     var menu = document.createElement("div");
+    menu.id = "theme-menu";
     menu.className = "theme-menu";
     menu.setAttribute("role", "menu");
     menu.setAttribute("aria-label", "Choose a colour theme");
@@ -94,6 +96,7 @@
       item.className = "theme-item";
       item.setAttribute("role", "menuitemradio");
       item.setAttribute("aria-checked", String(t.id === current));
+      item.tabIndex = -1;
       item.dataset.theme = t.id;
       item.textContent = t.label;
       menu.appendChild(item);
@@ -106,11 +109,16 @@
       menu.hidden = true;
       btn.setAttribute("aria-expanded", "false");
     }
-    function openMenu() {
+    /** @param {"selected" | "first" | "last"} [focusTarget] */
+    function openMenu(focusTarget) {
       menu.hidden = false;
       btn.setAttribute("aria-expanded", "true");
-      var first = menu.querySelector('[aria-checked="true"]') || menu.querySelector(".theme-item");
-      if (first instanceof HTMLElement) first.focus();
+      var items = Array.prototype.slice.call(menu.querySelectorAll(".theme-item"));
+      var target = null;
+      if (focusTarget === "first") target = items[0];
+      else if (focusTarget === "last") target = items[items.length - 1];
+      else target = menu.querySelector('[aria-checked="true"]') || items[0];
+      if (target instanceof HTMLElement) target.focus();
     }
 
     btn.addEventListener("click", function () {
@@ -135,12 +143,22 @@
       btn.focus();
     });
 
-    // Keyboard: Escape closes; arrows move between items; Enter/Space selects.
+    // Follow the ARIA menu-button pattern: arrows can open the menu, arrows
+    // wrap between choices, Home/End jump, and Escape returns focus to the
+    // trigger. Native button handling keeps Enter/Space selection intact.
     host.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !menu.hidden) {
         e.preventDefault();
+        // The mobile navigation also listens for Escape on document. Keep this
+        // Escape scoped to the theme menu so it cannot steal restored focus.
+        e.stopPropagation();
         closeMenu();
         btn.focus();
+        return;
+      }
+      if (menu.hidden && e.target === btn && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+        e.preventDefault();
+        openMenu(e.key === "ArrowUp" ? "last" : "first");
         return;
       }
       if (menu.hidden) return;
@@ -152,6 +170,14 @@
         if (next < 0) next = items.length - 1;
         if (next >= items.length) next = 0;
         if (items[next]) items[next].focus();
+      } else if (e.key === "Home" || e.key === "End") {
+        e.preventDefault();
+        var edge = e.key === "Home" ? items[0] : items[items.length - 1];
+        if (edge) edge.focus();
+      } else if (e.key === "Tab") {
+        // Let the browser advance normally, but do not leave a visually open
+        // menu behind once focus moves to the next control.
+        closeMenu();
       }
     });
 

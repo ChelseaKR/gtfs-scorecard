@@ -9,7 +9,7 @@
       "google_gate": "pass",
       "grade": "C",
       "id": "barrie-transit",
-      "mdb_id": "",
+      "mdb_id": "3",
       "name": "Barrie Transit (Ontario)",
       "national_percentile": 33,
       "ntd_ready": null,
@@ -18,10 +18,13 @@
       "rubric_version": "1.1",
       "score": 72.3,
       "scorecard_url": "https://gtfsscorecard.org/agency/barrie-transit/",
+      "service_horizon_status": "within_review_threshold",
       "size_tier": "medium",
       "snapshot_date": "2026-07-02",
       "state": "",
       "stops": 566,
+      "subdivision_code": "CA-ON",
+      "subdivision_name": "Ontario",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
       "validator_version": "8.0.1"
     },
@@ -43,6 +46,7 @@
       "rubric_version": "1.1",
       "score": 80.8,
       "scorecard_url": "https://gtfsscorecard.org/agency/unitrans/",
+      "service_horizon_status": "within_review_threshold",
       "size_tier": "medium",
       "snapshot_date": "2026-07-02",
       "state": "",
@@ -68,6 +72,7 @@
       "rubric_version": "1.1",
       "score": 82.5,
       "scorecard_url": "https://gtfsscorecard.org/agency/yolobus/",
+      "service_horizon_status": "within_review_threshold",
       "size_tier": "medium",
       "snapshot_date": "2026-07-02",
       "state": "",
@@ -77,12 +82,74 @@
     }
   ],
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-10T19:45:48+00:00",
+  "generated_at": "2026-07-14T03:48:50+00:00",
   "license": "CC-BY-4.0",
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "summary": {
     "agencies": 3,
     "average_score": 78.5,
+    "countries": [
+      {
+        "agencies": 2,
+        "average_score": 81.7,
+        "country_code": "US",
+        "country_name": "United States",
+        "expired": 0,
+        "grade_distribution": {
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "D": 0,
+          "F": 0
+        },
+        "subdivisions": [
+          {
+            "agencies": 2,
+            "average_score": 81.7,
+            "expired": 0,
+            "grade_distribution": {
+              "A": 0,
+              "B": 2,
+              "C": 0,
+              "D": 0,
+              "F": 0
+            },
+            "subdivision_code": null,
+            "subdivision_name": "Unlocated"
+          }
+        ]
+      },
+      {
+        "agencies": 1,
+        "average_score": 72.3,
+        "country_code": "CA",
+        "country_name": "Canada",
+        "expired": 0,
+        "grade_distribution": {
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "D": 0,
+          "F": 0
+        },
+        "subdivisions": [
+          {
+            "agencies": 1,
+            "average_score": 72.3,
+            "expired": 0,
+            "grade_distribution": {
+              "A": 0,
+              "B": 0,
+              "C": 1,
+              "D": 0,
+              "F": 0
+            },
+            "subdivision_code": "CA-ON",
+            "subdivision_name": "Ontario"
+          }
+        ]
+      }
+    ],
     "expired": {
       "lapsed": 0,
       "stale": 0,

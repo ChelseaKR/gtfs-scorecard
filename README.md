@@ -44,7 +44,9 @@ Any agency can be added via `agencies.yaml`.
 - "Top 3 things to fix", in plain language with effort hints. Findings are
   framed as fixes, never as failures.
 - For U.S. agencies only, an NTD GTFS-readiness read (published, valid,
-  current) and an optional `agency_id`/NTD ID alignment flag.
+  current, and `agency_id` present) plus a neutral check of whether `agency_id`
+  happens to equal the five-digit NTD ID. Equality is optional; RY2026 presence
+  and the P-50 crosswalk are not.
 - Trend history, one JSON artifact per agency per day.
 - An embeddable grade badge (`<agency>/badge.svg`) the agency can put on its
   own developer page.
@@ -75,10 +77,14 @@ different seats at an agency check-in: a board one-pager
 - **Program pages** (`/program/<state>/`) for 46 states plus DC and named
   cohorts from [`rollups.yaml`](rollups.yaml), each with the fixes shared
   across the group.
-- **Practitioner tools** — score any feed on the spot (`/try.html`), check a
-  feed before publishing (`/check/`), compare two agencies (`/compare/`),
+- **Practitioner tools** — request a one-off score through GitHub or run it
+  locally (`/try.html`), check a feed before publishing (`/check/`), compare two agencies (`/compare/`),
   query the dataset with SQL in the browser (`/query/`), and put feed quality
   in a vendor contract (`/procurement/`).
+- **Board-ready outputs** — each agency has a printable one-pager; see the
+  [live Unitrans example](https://gtfsscorecard.org/agency/unitrans/board/), or
+  generate a self-contained, custom-branded offline report with the
+  [board-report tool](docs/board-report.md).
 - **A fix knowledge base** (`/fix/<rule>/`, one plain-language page per common
   validator finding) and the standards crosswalk (`/crosswalk/`).
 - **Machine-readable surfaces** — the versioned read API
@@ -186,7 +192,7 @@ current deployment status.
 | Sharded daily run | `scorecard shards` + CI matrix | live in Actions |
 | Expiry/regression alerts | `scorecard alerts`, `notify --send`, `infra/alerts` | applied and live; SES sender verified, digest sends daily |
 | Artifacts on S3 + CloudFront | `infra/artifacts` | applied and live; daily mirror on, site still serves from Pages |
-| Self-serve submission form | `web/submit.html`, `infra/submit` | built; endpoint needs `terraform apply` |
+| Self-serve submission form | `web/submit.html`, `infra/submit` | applied and live; submissions open reviewable pull requests |
 | Instant scoring | `web/try.html`, `infra/instant-score` | built; falls back to the issue-form path until applied (ADR 0029) |
 | Fan-out compute (Year 2) | `infra/compute` (SQS + worker) | built; apply when the daily run outgrows the Actions matrix |
 
@@ -200,9 +206,22 @@ that duplicated an already-listed feed).
 
 Any agency with a public GTFS feed can be added with one YAML block in
 [`agencies.yaml`](agencies.yaml) and a pull request; the walkthrough is
-[docs/add-your-agency.md](docs/add-your-agency.md). The web form at
-[`web/submit.html`](web/submit.html) does the same without YAML once its
-serverless endpoint (`infra/submit`) is deployed.
+[docs/add-your-agency.md](docs/add-your-agency.md). The live web form at
+[`web/submit.html`](web/submit.html) does the same without YAML through the
+deployed `infra/submit` endpoint; every submission still opens a pull request
+for human review before publication.
+
+## Support and services
+
+The public scorecards, data, API, local pre-publish check, and request-backed
+one-off scoring remain free. The [support page](https://gtfsscorecard.org/support/)
+explains the project's infrastructure needs and accepts sponsorship inquiries;
+it does not advertise a payment rail that is not ready.
+
+Programs and agencies that want a facilitated audit, workshop, or implementation
+help can review the current [consulting services and pricing](https://chelseakr.com/consulting/).
+Paid help is separate from scoring and never changes a grade or removes anything
+from the free tier.
 
 ## Standards conformance
 

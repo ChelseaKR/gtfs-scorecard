@@ -44,14 +44,11 @@ them. Cited directly rather than assumed:
    - Adds a **shapes.txt** requirement inside the GTFS submission, phased in
      by reporter type: RY2025 for Full Reporters, RY2026 for Reduced, Rural,
      and Tribal reporters.
-   - Considered, and **declined**, requiring `agency_id` to equal the
-     five-digit NTD ID inside the feed itself, after 15 of 18 commenters
-     opposed a mandated feed-side change. FTA instead links `agency_id` to
-     the NTD ID internally via the P-50 form. (This repo's own
-     [ADR 0016](../decisions/0016-ntd-id-alignment.md) tracks the same
-     correction — an earlier draft of that ADR said FTA "requires" the
-     alignment in-feed, which was the October 2024 *proposed* rule, not what
-     the final rule adopted.)
+   - Requires every RY2026 submission to provide a stable `agency_id`, unique
+     among the reporters represented in the feed, and crosswalk each value to
+     the reporter's NTD ID on P-50. It does **not** require `agency_id` to equal
+     the five-digit NTD ID. (This repo's [ADR 0016](../decisions/0016-ntd-id-alignment.md)
+     records the distinction between required presence and optional equality.)
    - Adds a **Reduced Reporter Exemption for Operators Predominantly Serving
      Rural Areas**, a genuine waiver from the GTFS requirement for an
      estimated 10-15 agencies meeting five specified criteria, effective
@@ -222,10 +219,11 @@ staff capacity, independent of anything the GTFS-specific mandate itself did.
 
 ### The one metric built directly around the actual obligation: no gap at all
 
-The scorecard's own `ntd_readiness` block (`published`/`valid`/`current`
-pillars, the same three things FTA's P-50/D-10 certification actually checks)
-is the closest thing in this dataset to a direct read on "is this agency
-meeting the GTFS obligation right now." On that metric:
+At the time of this frozen experiment, the scorecard's `ntd_readiness` block
+used `published`/`valid`/`current` pillars. The live readiness method now also
+checks required `agency_id` presence; the historical percentages below were not
+recomputed and must not be presented as current RY2026 readiness. On the old
+three-pillar metric:
 
 | NTD readiness | ready | not_ready | at_risk |
 |---|---|---|---|

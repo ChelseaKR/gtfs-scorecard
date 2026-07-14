@@ -1597,7 +1597,7 @@ def test_history_section_leads_with_a_dated_grade_story_paragraph() -> None:
     html = _history_section(history, artifacts)
     assert 'class="grade-story"' in html
     assert "On 2026-06-10 this feed started at grade B." in html
-    assert "it cleared missing_feed_contact" in html
+    assert "it cleared: no contact" in html
     # The story sits above the newest-first timeline lede.
     assert html.index('class="grade-story"') < html.index("newest first")
 
@@ -1820,8 +1820,8 @@ def test_ntd_section_renders_id_alignment_when_present() -> None:
             "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
         },
     }
-    # A mismatch shows the optional alignment as a neutral "Not aligned", never as
-    # a required change (RESEARCH-ROADMAP R7).
+    # A mismatch shows optional equality neutrally; required agency_id presence
+    # is a separate readiness pillar (ADR 0016).
     mismatch = {
         **base,
         "ntd_id_alignment": {
@@ -1833,20 +1833,38 @@ def test_ntd_section_renders_id_alignment_when_present() -> None:
         },
     }
     html = _ntd_section(mismatch)
-    assert "agency_id matches your NTD ID" in html
-    assert "Not aligned" in html
+    assert "agency_id provided" in html
+    assert "agency_id equals your NTD ID (optional)" in html
+    assert "Different (allowed)" in html
     assert "Needs attention" not in html
     # The wording is recomputed at render time from the stored inputs, so a
     # stale artifact can never resurface pre-final-rule prescriptive copy: the
     # fixture's baked-in strings are ignored in favour of the current ones.
-    assert "Optionally set the agency_id for your service to 90142" in html
+    assert "Confirm that P-50 crosswalks agency_id UNITRANS to NTD ID 90142" in html
     assert "Your feed uses agency_id UNITRANS." not in html
-    # The fineprint cites the final rule and the P-50 crosswalk, not a feed mandate.
+    # The fineprint states the P-50 crosswalk and rejects an equality mandate.
     assert "P-50 form" in html
-    assert "final rule" in html
+    assert "values do not need to be equal" in html
 
     # Absent block (older artifacts) renders no alignment row.
-    assert "agency_id matches your NTD ID" not in _ntd_section(base)
+    old_html = _ntd_section(base)
+    assert "agency_id equals your NTD ID (optional)" not in old_html
+    assert "agency_id presence has not been checked" in old_html
+
+    # Missing presence is required work, not an optional-equality suggestion.
+    missing = {
+        **base,
+        "ntd_id_alignment": {
+            "status": "missing",
+            "detail": "stale",
+            "ntd_id": "90142",
+            "feed_agency_ids": [],
+        },
+    }
+    missing_html = _ntd_section(missing)
+    assert "agency.txt has no nonblank agency_id" in missing_html
+    assert "Not ready" in missing_html
+    assert "agency_id equals your NTD ID (optional)" not in missing_html
 
 
 def test_ntd_section_renders_shapes_readiness_when_present() -> None:
@@ -2367,7 +2385,7 @@ def test_render_equity_page_without_geometry_keeps_tables() -> None:
 
 
 def test_ntd_page_carries_ry2026_and_one_fix_table() -> None:
-    from scorecard_pipeline.render_site import _render_ntd_page
+    from scorecard_pipeline.render_site import _FEDERAL_REGISTER_RY2026, _render_ntd_page
 
     payload = {
         "total": 2,
@@ -2398,7 +2416,7 @@ def test_ntd_page_carries_ry2026_and_one_fix_table() -> None:
     # The RY2026 wave and the waiver path are named, with the rule cited.
     assert "Report year 2026" in html
     assert "waiver" in html
-    assert "federalregister.gov" in html
+    assert f'<a href="{_FEDERAL_REGISTER_RY2026}">' in html
     # The triage list renders with the forwardable fix text.
     assert "One fix from ready" in html
     assert 'href="/agency/close-t/"' in html
@@ -2414,7 +2432,7 @@ def test_ntd_page_carries_ry2026_and_one_fix_table() -> None:
 
 
 def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
-    from scorecard_pipeline.render_site import _render_shapes_page
+    from scorecard_pipeline.render_site import _FEDERAL_REGISTER_RY2026, _render_shapes_page
 
     shapes = {
         "total": 4,
@@ -2430,7 +2448,7 @@ def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
     assert "Report Year 2025" in html
     assert "Report Year 2026" in html
     # The requirement is sourced and the waiver path is named.
-    assert "federalregister.gov" in html
+    assert f'<a href="{_FEDERAL_REGISTER_RY2026}">' in html
     assert "waiver" in html
     # Live numbers: the headline share, the coverage table, and the state row.
     assert "25.0% carry a shape for every trip" in html

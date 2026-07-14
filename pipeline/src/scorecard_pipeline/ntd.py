@@ -6,22 +6,24 @@ certify it annually on the D-10 form, and FTA periodically checks that the
 published link is viable and current
 (https://transit.dot.gov/ntd/recent-ntd-developments-frequently-asked-questions-0).
 
-This turns the scores the pipeline already computes into a plain-language answer
-to the question a small agency actually faces at certification time: is my feed
-in shape to certify? Three pillars mirror the requirement:
+This turns the scores and feed-identity fields the pipeline already reads into a
+plain-language answer to the question a small agency actually faces at
+certification time: is my feed in shape to certify? Four pillars mirror the
+Report Year 2026 requirement:
 
 - Published: the feed is reachable at a public URL.
 - Valid: it has no validator errors that would break a rider's trip.
 - Current: the service calendar has not lapsed.
+- Identified: agency.txt provides the stable agency_id value that is crosswalked
+  to the reporter's NTD ID on the P-50 form.
 
 This is a readiness signal that maps the grade onto the federal requirement, not
 an official determination or legal advice. The official assessment is the
-agency's own D-10 certification.
+agency's own D-10 and P-50 filing.
 """
 
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass
 from typing import Any
 
@@ -36,7 +38,7 @@ _RANK = {READY: 0, AT_RISK: 1, NOT_READY: 2}
 
 @dataclass(frozen=True)
 class Pillar:
-    key: str  # published | valid | current
+    key: str  # published | valid | current | agency_id
     status: str  # ready | at_risk | not_ready
     detail: str
 
@@ -112,39 +114,65 @@ def _current(artifact: dict[str, Any]) -> Pillar:
     )
 
 
+def _identified(artifact: dict[str, Any]) -> Pillar:
+    """Whether agency.txt provides an agency_id for the RY2026 P-50 crosswalk.
+
+    The scorecard can establish presence from the feed, but it cannot establish
+    from the feed alone that a value stayed stable across reporting years or
+    that the reporter entered the crosswalk on P-50. The detail says exactly
+    which part was observed and leaves those filing facts to the reporter.
+    """
+    alignment = artifact.get("ntd_id_alignment")
+    if not isinstance(alignment, dict):
+        return Pillar(
+            "agency_id",
+            AT_RISK,
+            "agency_id presence has not been checked for this feed yet.",
+        )
+    values = alignment.get("feed_agency_ids")
+    ids = [str(value).strip() for value in values] if isinstance(values, list) else []
+    ids = [value for value in ids if value]
+    if not ids:
+        return Pillar(
+            "agency_id",
+            NOT_READY,
+            "agency.txt has no nonblank agency_id. Every RY2026 NTD GTFS submission "
+            "needs a stable value unique among the reporters represented in the feed, "
+            "crosswalked to each reporter's NTD ID on the P-50 form.",
+        )
+    return Pillar(
+        "agency_id",
+        READY,
+        "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD "
+        "reporter represented in the feed and crosswalk each value on the P-50 form.",
+    )
+
+
 def assess(artifact: dict[str, Any]) -> NtdReadiness:
     """Assess a feed's readiness to certify for the NTD GTFS requirement."""
-    pillars = [_published(artifact), _valid(artifact), _current(artifact)]
+    pillars = [_published(artifact), _valid(artifact), _current(artifact), _identified(artifact)]
     status = max(pillars, key=lambda p: _RANK[p.status]).status
     return NtdReadiness(status, pillars, _summary(status, pillars))
 
 
 def presented_readiness(artifact: dict[str, Any]) -> dict[str, Any] | None:
-    """Copy stored readiness and suppress only a legacy sentinel countdown."""
+    """Present current readiness wording from the stored artifact inputs.
+
+    Recomputing lets older artifacts gain the RY2026 agency_id presence pillar
+    immediately, without waiting for every feed to be rescored.
+    """
     stored = artifact.get("ntd_readiness")
     if not isinstance(stored, dict):
         return None
-    presented = copy.deepcopy(stored)
-    details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
-    if (
-        resolve_service_horizon_status(details, artifact.get("snapshot_date"))
-        == "unusually_distant"
-    ):
-        for pillar in presented.get("pillars", []):
-            if isinstance(pillar, dict) and pillar.get("key") == "current":
-                pillar["detail"] = (
-                    "The published window is current, but its service end date is unusually "
-                    "distant; confirm that date is intentional."
-                )
-    return presented
+    return assess(artifact).to_dict()
 
 
 def _summary(status: str, pillars: list[Pillar]) -> str:
     if status == READY:
         return (
-            "Published at a public URL, valid, and current: the three things the NTD "
-            "GTFS requirement asks of a feed all hold here. Only your own D-10 "
-            "certification makes that official; this is a heads-up, not a determination."
+            "Published at a public URL, valid, current, and identified with agency_id: "
+            "the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 "
+            "filings make that official; this is a heads-up, not a determination."
         )
     problems = " ".join(p.detail for p in pillars if p.status != READY)
     if status == NOT_READY:
@@ -163,18 +191,17 @@ UNKNOWN = "unknown"
 class NtdIdAlignment:
     """Whether a feed's agency_id matches the agency's NTD ID.
 
-    Setting GTFS ``agency_id`` to the agency's five-digit NTD ID lets a feed
-    join cleanly to its National Transit Database record. The October 2024
-    proposed rule would have required that alignment in the feed; the July 2025
-    final rule did not adopt it, after most commenters opposed a mandated
-    feed-side change, and instead links agency_id to the NTD ID on the agency's
-    P-50 form. So this is an optional convenience the scorecard surfaces, never
-    a federal requirement the agency has to meet in its GTFS.
+    Every RY2026 NTD GTFS submission must provide a stable ``agency_id`` value,
+    unique among the reporters represented in the feed, and crosswalk that value
+    to the reporter's NTD ID on the P-50 form. The value does not have to equal
+    the five-digit NTD ID. Equality is an optional convention that can make joins
+    convenient, so the scorecard surfaces it without treating a difference as an
+    error or a score deduction.
 
     ``status`` is one of ``aligned``, ``mismatch``, ``missing``, or ``unknown``.
-    It is framed as an optional improvement, not a penalty: it carries no score
-    deduction, and when we have no NTD ID on file the status is ``unknown``
-    rather than a failure.
+    The equality comparison is framed neutrally: it carries no score deduction,
+    and when we have no NTD ID on file the status is ``unknown`` rather than a
+    failure. Missing agency_id is different because presence itself is required.
     """
 
     status: str
@@ -201,18 +228,31 @@ def assess_id_alignment(feed_agency_ids: list[str], ntd_id: str) -> NtdIdAlignme
 
     ``feed_agency_ids`` is the agency_id values read from agency.txt (see
     ``gtfs.read_agency_ids``); ``ntd_id`` is the curated NTD ID, empty when we
-    do not have one. The requirement and its phase-in are documented on
-    ``NtdIdAlignment``.
+    do not have one. Presence is checked even when the NTD ID is unknown; the
+    optional equality comparison is only possible when both values are present.
     """
     ids = [v.strip() for v in feed_agency_ids if v.strip()]
     ntd = ntd_id.strip()
+    if not ids:
+        crosswalk_target = f"NTD ID {ntd}" if ntd else "the reporter's NTD ID"
+        return NtdIdAlignment(
+            MISSING,
+            "Your agency.txt sets no nonblank agency_id. Every RY2026 NTD GTFS "
+            "submission needs a stable value unique among the reporters represented "
+            "in the feed, crosswalked on the P-50 form.",
+            "Add agency_id to agency.txt and use the same value wherever routes.txt "
+            f"identifies that agency. Keep it stable, and enter its crosswalk to "
+            f"{crosswalk_target} on P-50. It does not need to equal the five-digit NTD ID.",
+            ntd,
+            ids,
+        )
     if not ntd:
         return NtdIdAlignment(
             UNKNOWN,
-            "Setting your GTFS agency_id to your five-digit NTD ID is an optional "
-            "way to line a feed up with its National Transit Database record. FTA "
-            "links the two on your P-50 form, so it is not a required feed change. "
-            "We don't have your NTD ID on file, so this is not checked yet.",
+            "This feed provides agency_id. For RY2026, keep one stable value for each "
+            "NTD reporter represented in the feed and crosswalk it on the P-50 form. "
+            "The value does not need to equal the five-digit NTD ID; we do not have "
+            "that ID on file, so the optional equality comparison is not checked yet.",
             "",
             "",
             ids,
@@ -220,21 +260,10 @@ def assess_id_alignment(feed_agency_ids: list[str], ntd_id: str) -> NtdIdAlignme
     if ntd in ids:
         return NtdIdAlignment(
             ALIGNED,
-            f"Your agency_id is set to your NTD ID ({ntd}), so this feed lines up "
-            "with your National Transit Database record.",
+            f"This feed's agency_id also equals its NTD ID ({ntd}). Equality is "
+            "allowed but not required; keep the value stable and retain the P-50 "
+            "crosswalk.",
             "",
-            ntd,
-            ids,
-        )
-    if not ids:
-        return NtdIdAlignment(
-            MISSING,
-            "Your agency.txt sets no agency_id, so this feed can't be lined up "
-            f"automatically with your National Transit Database record (NTD ID {ntd}).",
-            f"Optionally set agency_id to {ntd} in agency.txt (and the matching "
-            "agency_id in routes.txt) so the feed lines up with your NTD record. "
-            "It is a convenience, not a required feed change: FTA also links the "
-            "two on your P-50 form.",
             ntd,
             ids,
         )
@@ -243,12 +272,10 @@ def assess_id_alignment(feed_agency_ids: list[str], ntd_id: str) -> NtdIdAlignme
         MISMATCH,
         f"Your feed's agency_id is {found}; your National Transit Database ID is "
         f"{ntd}. A feed that serves several agencies (a shared regional feed) can "
-        "legitimately carry more than one agency_id, so a difference here is a "
-        "heads-up, not an error.",
-        f"Optionally set the agency_id for your service to {ntd} in agency.txt (and "
-        "the matching agency_id in routes.txt) so the feed lines up with your NTD "
-        "record. It is a convenience, not a required feed change: FTA also links "
-        "agency_id to your NTD ID on your P-50 form.",
+        "legitimately carry more than one agency_id. The values do not need to equal "
+        "the five-digit NTD ID, so this difference is allowed and carries no score.",
+        f"Confirm that P-50 crosswalks agency_id {found} to NTD ID {ntd}, and keep "
+        "the feed value stable. Do not change it solely to make the two values equal.",
         ntd,
         ids,
     )
@@ -450,15 +477,17 @@ def shapes_portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummar
 def one_fix_from_ready(artifacts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Feeds where a single fix would make the feed look ready to certify.
 
-    Report year 2026 brings reduced, rural, and tribal reporters into the NTD
-    GTFS requirement, and for a liaison triaging a portfolio the highest-leverage
-    list is the feeds exactly one pillar short of ready. Each row carries that
+    Report year 2026 adds the agency_id requirement to NTD GTFS submissions, and
+    for a liaison triaging a portfolio the highest-leverage list is the feeds
+    exactly one pillar short of ready. Each row carries that
     pillar's plain-language detail as the fix to forward to the agency. Worst
     status first, then by name, so the near-misses that would otherwise read
     "not ready" surface at the top.
     """
     rows: list[dict[str, Any]] = []
     for artifact in artifacts:
+        if artifact.get("agency", {}).get("country", "US") != "US":
+            continue
         verdict = assess(artifact)
         failing = [p for p in verdict.pillars if p.status != READY]
         if len(failing) != 1:
@@ -506,7 +535,7 @@ def render_portfolio(summary: PortfolioSummary) -> str:
         )
     lines.append("")
     lines.append(
-        "Readiness mirrors the published, valid, and current pillars. "
-        "The official check is each agency's own D-10 certification."
+        "Readiness mirrors the published, valid, current, and agency_id pillars. "
+        "The official check is each agency's own D-10 and P-50 filing."
     )
     return "\n".join(lines)

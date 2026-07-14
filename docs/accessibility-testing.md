@@ -39,8 +39,8 @@ complete the task without sighted, mouse-driven help.
 1. **Find an agency and read its grade.** From `/` open the app, search or filter to
    an agency, open it. Confirm the screen reader announces the agency name, the
    overall grade, and the "top fixes" — in a sensible order.
-2. **Read the NTD readiness block** on an agency page. The three checks
-   (published / valid / current) and the plain-language note should each be reachable
+2. **Read the NTD readiness block** on an agency page. The four checks
+   (published / valid / current / agency_id) and the plain-language note should each be reachable
    and announced.
 3. **Read a printable brief** (`/agency/<id>/brief/`). Headings and tables make sense
    when navigated by structure.

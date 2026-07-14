@@ -407,23 +407,12 @@ function renderOverview(directory) {
     `<button type="button" class="facet-chip" data-facet="${key}" aria-pressed="${key === "all"}">${label}</button>`;
 
   main.innerHTML = `
-    <h1 class="page-title reveal">How is transit data doing?</h1>
-    <p class="page-lede reveal">Every published
+    <h1 class="page-title reveal">Find an agency scorecard.</h1>
+    <p class="page-lede reveal">Search every published
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed we track, read
-    daily and graded in plain language. Find your agency, or browse a location to see the ones that
-    need a call. The same directory exists as
+    daily and graded in plain language. Or browse a location to find the ones that need a call.
+    The same directory exists as
     <a href="/agencies/">plain linkable pages</a>; this view adds live search and filters.</p>
-
-    <section class="overview-summary reveal" aria-labelledby="ov-h">
-      <h2 class="visually-hidden" id="ov-h">Directory summary</h2>
-      <div class="summary-stats">
-        ${stat(formatNumber(total), "agencies tracked")}
-        ${stat(s.median_score == null ? "—" : s.median_score, "median score")}
-        ${stat(s.expiring_soon || 0, "feeds expiring within 30 days")}
-        ${stat(expired.total || 0, "feeds already expired")}
-      </div>
-      ${gradeDistributionBar(s.grade_distribution || {}, total)}
-    </section>
 
     <div class="picker-controls reveal">
       <label for="agency-search" class="visually-hidden">Search agencies by name, country, or subdivision</label>
@@ -439,6 +428,17 @@ function renderOverview(directory) {
         </select>
       </div>
     </div>
+
+    <section class="overview-summary reveal" aria-labelledby="ov-h">
+      <h2 class="visually-hidden" id="ov-h">Directory summary</h2>
+      <div class="summary-stats">
+        ${stat(formatNumber(total), "agencies tracked")}
+        ${stat(s.median_score == null ? "—" : s.median_score, "median score")}
+        ${stat(s.expiring_soon || 0, "feeds expiring within 30 days")}
+        ${stat(expired.total || 0, "feeds already expired")}
+      </div>
+      ${gradeDistributionBar(s.grade_distribution || {}, total)}
+    </section>
     <div class="picker-facets reveal" role="group" aria-label="Filter agencies by grade, size, or feed status">
       ${facet("all", "All")}
       ${facet("A", "A")}${facet("B", "B")}${facet("C", "C")}${facet("D", "D")}${facet("F", "F")}
@@ -1807,41 +1807,109 @@ function setupFindings(findings) {
 // static page (pipeline/src/scorecard_pipeline/render_site.py) so the SPA card
 // and the prerendered /agency/<id>/ page read the same.
 const NTD_LABELS = { ready: "Ready", at_risk: "Needs attention", not_ready: "Not ready" };
-const NTD_PILLAR_NAMES = { published: "Published", valid: "Valid", current: "Current" };
+const NTD_PILLAR_NAMES = {
+  published: "Published",
+  valid: "Valid",
+  current: "Current",
+  agency_id: "agency_id provided",
+};
 const NTD_ALIGN_LABELS = {
-  aligned: "Aligned",
-  mismatch: "Needs attention",
-  missing: "Needs attention",
+  aligned: "Equal",
+  mismatch: "Different (allowed)",
+  missing: "Not available",
   unknown: "Not checked yet",
 };
 const NTD_ALIGN_CLASSES = {
   aligned: "ntd-ready",
-  mismatch: "ntd-at_risk",
-  missing: "ntd-at_risk",
+  mismatch: "ntd-unknown",
+  missing: "ntd-unknown",
   unknown: "ntd-unknown",
 };
 const CONFORMANCE_NAMES = { valid: "Valid", current: "Current", accessible: "Accessible" };
 
-/** The NTD ID alignment line: whether the feed's agency_id matches the agency's
- *  NTD ID (FTA RY2025/26). Reads the stored `ntd_id_alignment` block; "" if the
- *  artifact predates the check. Framed as a fix, carries no score.
+/** Recompute agency_id presence from the alignment block stored in older artifacts.
+ *  Presence and the P-50 crosswalk are required for RY2026; equality to the
+ *  five-digit NTD ID is not.
+ *  @param {any} artifact */
+function ntdIdentityPillar(artifact) {
+  const align = artifact.ntd_id_alignment;
+  if (!align || !Array.isArray(align.feed_agency_ids)) {
+    return {
+      key: "agency_id",
+      status: "at_risk",
+      detail: "agency_id presence has not been checked for this feed yet.",
+    };
+  }
+  const ids = align.feed_agency_ids.map((value) => String(value).trim()).filter(Boolean);
+  if (!ids.length) {
+    return {
+      key: "agency_id",
+      status: "not_ready",
+      detail:
+        "agency.txt has no nonblank agency_id. Every RY2026 NTD GTFS submission needs a stable value unique among the reporters represented in the feed, crosswalked to each reporter's NTD ID on the P-50 form.",
+    };
+  }
+  return {
+    key: "agency_id",
+    status: "ready",
+    detail:
+      "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+  };
+}
+
+/** Current wording for the optional equality comparison, derived from stored inputs.
+ *  @param {any} stored */
+function currentNtdAlignment(stored) {
+  if (!stored || !Array.isArray(stored.feed_agency_ids)) return stored;
+  const ids = stored.feed_agency_ids.map((value) => String(value).trim()).filter(Boolean);
+  const ntd = String(stored.ntd_id || "").trim();
+  if (!ids.length) return { ...stored, status: "missing" };
+  if (!ntd) {
+    return {
+      ...stored,
+      status: "unknown",
+      detail:
+        "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+      fix: "",
+    };
+  }
+  if (ids.includes(ntd)) {
+    return {
+      ...stored,
+      status: "aligned",
+      detail: `This feed's agency_id also equals its NTD ID (${ntd}). Equality is allowed but not required; keep the value stable and retain the P-50 crosswalk.`,
+      fix: "",
+    };
+  }
+  const found = ids.join(", ");
+  return {
+    ...stored,
+    status: "mismatch",
+    detail: `Your feed's agency_id is ${found}; your National Transit Database ID is ${ntd}. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id. The values do not need to equal the five-digit NTD ID, so this difference is allowed and carries no score.`,
+    fix: `Confirm that P-50 crosswalks agency_id ${found} to NTD ID ${ntd}, and keep the feed value stable. Do not change it solely to make the two values equal.`,
+  };
+}
+
+/** The optional agency_id / NTD-ID equality line. Reads the stored alignment
+ *  inputs, rewrites stale copy, and omits the line when agency_id is missing
+ *  because the required presence check is already a readiness pillar.
  *  @param {any} artifact */
 function ntdAlignmentRow(artifact) {
-  const align = artifact.ntd_id_alignment;
-  if (!align) return "";
+  const align = currentNtdAlignment(artifact.ntd_id_alignment);
+  if (!align || align.status === "missing") return "";
   const status = String(align.status || "unknown");
   const label = NTD_ALIGN_LABELS[status] || status;
   const cls = NTD_ALIGN_CLASSES[status] || "ntd-unknown";
   let body = esc(String(align.detail || ""));
   if (align.fix) body += " " + esc(String(align.fix));
   return `<dl class="standards-list">
-      <dt>agency_id matches your NTD ID <span class="ntd-status ${cls}">${esc(label)}</span></dt>
+      <dt>agency_id equals your NTD ID (optional) <span class="ntd-status ${cls}">${esc(label)}</span></dt>
       <dd>${body}</dd></dl>`;
 }
 
-/** NTD GTFS readiness: three pillars (published, valid, current) plus
- *  the agency_id alignment line. Reads the precomputed `ntd_readiness`; renders
- *  whatever is present and is "" only when both are absent (older artifacts).
+/** NTD GTFS readiness: four pillars (published, valid, current, agency_id) plus
+ *  a neutral optional equality line. Older artifacts get the identity pillar
+ *  from their stored alignment inputs at presentation time.
  *  @param {any} artifact */
 function ntdSection(artifact) {
   if (String(artifact.agency?.country || "US").toUpperCase() !== "US") return "";
@@ -1852,24 +1920,47 @@ function ntdSection(artifact) {
   let summary = "";
   let head = '<abbr title="National Transit Database">NTD</abbr> GTFS readiness';
   if (r) {
-    const headStatus = String(r.status || "unknown");
+    const sourcePillars = (r.pillars || []).filter((p) => p.key !== "agency_id");
+    sourcePillars.push(ntdIdentityPillar(artifact));
+    const shownPillars = sourcePillars.map((p) => {
+      const distant =
+        p.key === "current" &&
+        effectiveServiceHorizonStatus(
+          artifact.categories?.freshness?.details || {},
+          artifact.snapshot_date,
+        ) === "unusually_distant";
+      return {
+        ...p,
+        detail: distant
+          ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
+          : String(p.detail || ""),
+      };
+    });
+    const rank = { ready: 0, at_risk: 1, not_ready: 2 };
+    const headStatus = shownPillars.reduce(
+      (worst, p) => ((rank[p.status] || 0) > (rank[worst] || 0) ? p.status : worst),
+      "ready",
+    );
     const overall = NTD_LABELS[headStatus] || headStatus;
     head = `<abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="ntd-status ntd-${escAttr(headStatus)}">${esc(overall)}</span>`;
-    summary = String(r.summary || "");
-    pillars = (r.pillars || [])
+    if (headStatus === "ready") {
+      summary =
+        "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination.";
+    } else {
+      const problems = shownPillars
+        .filter((p) => p.status !== "ready")
+        .map((p) => p.detail)
+        .join(" ");
+      summary =
+        headStatus === "not_ready"
+          ? `Resolve this before you certify on the D-10. ${problems}`
+          : `This feed is close to NTD-ready. ${problems}`;
+    }
+    pillars = shownPillars
       .map((p) => {
         const label = NTD_LABELS[p.status] || p.status;
         const name = NTD_PILLAR_NAMES[p.key] || p.key;
-        const distant =
-          p.key === "current" &&
-          effectiveServiceHorizonStatus(
-            artifact.categories?.freshness?.details || {},
-            artifact.snapshot_date,
-          ) === "unusually_distant";
-        const detail = distant
-          ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
-          : String(p.detail || "");
-        return `<dt>${esc(name)} <span class="ntd-status ntd-${escAttr(String(p.status))}">${esc(label)}</span></dt><dd>${esc(detail)}</dd>`;
+        return `<dt>${esc(name)} <span class="ntd-status ntd-${escAttr(String(p.status))}">${esc(label)}</span></dt><dd>${esc(p.detail)}</dd>`;
       })
       .join("");
   }
@@ -1879,15 +1970,16 @@ function ntdSection(artifact) {
     ${pillars ? `<dl class="standards-list">${pillars}</dl>` : ""}
     ${alignRow}
     <p class="plain-summary"><strong>In plain words:</strong> if you report to the federal transit
-      database, you have to publish a working, up-to-date feed and confirm it once a year. This box
-      is a heads-up on whether yours looks ready; it is not the official sign-off.</p>
+      database, you have to publish a working, up-to-date feed, provide a stable agency_id for each
+      represented reporter, and confirm the feed and P-50 crosswalk each year. This box is a
+      heads-up; your filings are the official check.</p>
     <p class="fineprint">A readiness signal mapping this feed to the
       <a href="https://www.transit.dot.gov/ntd"><abbr title="Federal Transit Administration">FTA</abbr> National Transit Database</a> GTFS
-      requirement (Report Year 2023 onward: a public, valid, current feed, certified
-      annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). The <a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">July
-      2025 final rule</a> links agency identifiers on the P-50 form rather than requiring
-      a feed-side ID change. Not an official determination; your certification is the
-      official check.</p>
+      requirement (Report Year 2023 onward: a public, valid, current feed, certified annually on
+      the <abbr title="FTA NTD certification form D-10">D-10</abbr>). For RY2026, each represented
+      reporter needs a stable agency_id, unique within the feed and crosswalked to its five-digit
+      NTD ID on P-50; the values do not need to be equal. Not an official determination; your
+      filings are the official check.</p>
   </section>`;
 }
 
@@ -2076,9 +2168,14 @@ function renderNotFound(agencyId) {
  *  @param {string} [country] */
 function showUsPolicyToolsForCountry(country = "US") {
   const ntdLink = document.querySelector('.site-footer a[href="/ntd/"]');
-  const section = ntdLink?.closest("p");
-  if (section instanceof HTMLElement) {
-    section.hidden = String(country).toUpperCase() !== "US";
+  const ntdItem = ntdLink?.closest("li");
+  const equityItem = document
+    .querySelector('.site-footer a[href="/equity/"]')
+    ?.closest("li");
+  const legacySection = ntdLink?.closest("p");
+  const show = String(country).toUpperCase() === "US";
+  for (const element of [ntdItem?.previousElementSibling, ntdItem, equityItem, legacySection]) {
+    if (element instanceof HTMLElement) element.hidden = !show;
   }
 }
 

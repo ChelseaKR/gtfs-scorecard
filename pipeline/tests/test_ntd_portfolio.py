@@ -26,6 +26,11 @@ def _artifact(
     return {
         "agency": {"state": state, "country": country},
         "feed": {"reachable": reachable, "static_url": url},
+        "ntd_id_alignment": {
+            "status": "unknown",
+            "detail": "",
+            "feed_agency_ids": ["TEST"],
+        },
         "categories": {
             "correctness": {"status": "measured", "findings": findings},
             "freshness": {"status": "measured", "details": {"days_until_expiry": days}},
@@ -107,6 +112,7 @@ def test_render_includes_headline_counts_and_sorted_states() -> None:
     assert "At risk: 0" in md
     assert "Not ready: 1" in md
     assert "D-10" in md
+    assert "P-50" in md
     # States sorted alphabetically: CA row precedes OR row.
     assert md.index("| CA |") < md.index("| OR |")
 

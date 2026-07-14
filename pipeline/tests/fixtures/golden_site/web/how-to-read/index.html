@@ -15,10 +15,6 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <script>
@@ -44,7 +40,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/agencies/"><span itemprop="name">All agencies</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">How to read your scorecard</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -56,7 +52,7 @@
     <p>Transit apps and trip planners read a file your agency publishes, called a
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed.
     It lists your stops, routes, and schedule. This tool downloads that feed every day, runs the
-    same validator the State and the apps use, and turns the result into a grade and a short list
+    canonical validator used across the GTFS ecosystem, and turns the result into a grade and a short list
     of fixes. It does not look at your buses or your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
@@ -139,14 +135,15 @@
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="methodology-h"><h2 class="section-title" id="methodology-h">Methodology and versions</h2>
-    <p>Every grade is computed by scorecard rubric <strong>v1.1</strong> on top of the
+    <p>Every grade is computed by scorecard rubric <strong>v1.2</strong> on top of the
     MobilityData <abbr title="GTFS Schedule Validator">gtfs-validator</abbr> <strong>8.0.1</strong>,
-    anchored to the California Transit Data Guidelines v4.0. The same validator and rubric version are
-    stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
+    using portable GTFS fields and published weights. California guidance informed the first profile and
+    remains a local authority for California, not a worldwide compliance standard. The same validator and
+    rubric version are stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
     with citations, is in the <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">scoring rubric</a>.</p>
     <p>When the rubric changes we log it here with the date it took effect, so a score change is never a
     silent rule change:</p>
-    <dl class="standards-list"><dt>Rubric v1.1 <span class="ntd-status ntd-unknown">Effective 2026-06-16</span></dt><dd>The most rider-affecting fix is ranked first, and every grade now carries the validator and rubric version that produced it, so a trend can tell a feed change apart from a methodology change.</dd><dt>Rubric v1.0 <span class="ntd-status ntd-unknown">Effective 2026-06-11</span></dt><dd>First published rubric: four weighted categories (Correctness 35%, Freshness 20%, Rider experience 25%, Realtime 20%), A-F grade bands, scored on the MobilityData gtfs-validator and anchored to the California Transit Data Guidelines v4.0.</dd></dl></section>
+    <dl class="standards-list"><dt>Rubric v1.2 <span class="ntd-status ntd-unknown">Effective 2026-07-13</span></dt><dd>Realtime quality now assesses only the GTFS-Realtime feed kinds an agency publishes. Unconfigured kinds are neutral, and TripUpdates coverage or VehiclePositions plausibility enters the score only when that kind is configured. Finding points use the same measurable-component denominator as the category score, and a dependent measure drops out when its endpoint produced no successful sample. A fixed-corpus replay projected 15 of 31 partial-feed artifacts changing letter bands; see docs/rubric-impact-1.2.md.</dd><dt>Rubric v1.1 <span class="ntd-status ntd-unknown">Effective 2026-06-16</span></dt><dd>The most rider-affecting fix is ranked first, and every grade now carries the validator and rubric version that produced it, so a trend can tell a feed change apart from a methodology change.</dd><dt>Rubric v1.0 <span class="ntd-status ntd-unknown">Effective 2026-06-11</span></dt><dd>First published rubric: four weighted categories (Correctness 35%, Freshness 20%, Rider experience 25%, Realtime 20%), A-F grade bands, scored on the MobilityData gtfs-validator and anchored to the California Transit Data Guidelines v4.0.</dd></dl></section>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="glossary-h"><h2 class="section-title" id="glossary-h">Glossary</h2>
@@ -159,14 +156,21 @@
       <dd>The live companion to GTFS: real-time trip updates, vehicle positions, and service alerts.</dd>
       <dt><dfn id="g-rt"><abbr title="realtime">RT</abbr></dfn></dt>
       <dd>Short for realtime: live arrival and position data, as opposed to the static schedule.</dd>
+    </dl>
+    <h3 class="section-sub">United States terms</h3>
+    <p>These appear only on the site's explicitly U.S.-scoped reporting and equity views.</p>
+    <dl class="standards-list">
       <dt><dfn id="g-ntd"><abbr title="National Transit Database">NTD</abbr></dfn></dt>
-      <dd>The Federal Transit Administration's national reporting system for transit agencies.</dd>
+      <dd>The U.S. Federal Transit Administration's reporting system for transit agencies.</dd>
       <dt><dfn id="g-fta"><abbr title="Federal Transit Administration">FTA</abbr></dfn></dt>
-      <dd>The federal agency that funds transit and runs the National Transit Database.</dd>
+      <dd>The United States federal agency that funds transit and runs the National Transit Database.</dd>
       <dt><dfn id="g-d10"><abbr title="FTA NTD certification form D-10">D-10</abbr></dfn></dt>
-      <dd>The annual NTD certification form on which an agency certifies its GTFS feed.</dd>
+      <dd>The annual U.S. NTD form on which an agency certifies its GTFS feed.</dd>
       <dt><dfn id="g-acs"><abbr title="American Community Survey">ACS</abbr></dfn></dt>
-      <dd>The Census Bureau survey used for the equity overlay's poverty and access indicators.</dd>
+      <dd>The U.S. Census Bureau survey used for the U.S. equity overlay's poverty and access indicators.</dd>
+    </dl>
+    <h3 class="section-sub">Data and implementation terms</h3>
+    <dl class="standards-list">
       <dt><dfn id="g-mdb"><abbr title="Mobility Database">MDB</abbr></dfn></dt>
       <dd>The Mobility Database, the open catalog of transit feeds the scorecard discovers feeds from.</dd>
       <dt><dfn id="g-gbfs"><abbr title="General Bikeshare Feed Specification">GBFS</abbr></dfn></dt>
@@ -347,20 +351,24 @@
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
+      <a href="/try.html">Request a one-off score</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

@@ -39,14 +39,38 @@
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/" aria-current="page"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/" aria-current="page"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
 
-  <main id="main" class="wrap" tabindex="-1">
+  <main id="main" class="wrap wrap-wide" tabindex="-1">
     <a class="backlink" href="/about/">&larr; About</a>
-    <h1 class="page-title">Support this project</h1>
+    <h1 class="page-title">Get help or support the project</h1>
     <p class="page-lede">The scorecard is free for every transit agency, and it will stay that
-    way. It still costs money to host and to keep the data fresh. One small recurring sponsor
-    covers the whole thing.</p>
+    way. Choose the path that matches what you need: use the public tools, get hands-on help,
+    or fund the shared infrastructure.</p>
+
+    <div class="support-paths">
+      <section class="support-path" aria-labelledby="path-free-h">
+        <p class="support-path-kicker">Free</p>
+        <h2 id="path-free-h">Use the public tools</h2>
+        <p>Find an agency, check a zip before publishing, or request a full one-off score.</p>
+        <p><a class="report-action" href="/tools/">Open the tool directory</a></p>
+      </section>
+      <section class="support-path support-path-featured" aria-labelledby="path-help-h">
+        <p class="support-path-kicker">Professional help</p>
+        <h2 id="path-help-h">Implement the fixes with Chelsea</h2>
+        <p>Fixed-scope feed audits, practical staff workshops, and implementation support.
+        Review the scope, rates, and public work samples before getting in touch.</p>
+        <p><a class="report-action report-action-primary" href="https://chelseakr.com/consulting/">See consulting and workshops</a></p>
+        <p class="fineprint"><a href="/agency/unitrans/board/">See a live board-report example.</a></p>
+      </section>
+      <section class="support-path" aria-labelledby="path-sponsor-h">
+        <p class="support-path-kicker">Public infrastructure</p>
+        <h2 id="path-sponsor-h">Sponsor the open project</h2>
+        <p>Help cover daily refreshes, hosting, and shared realtime infrastructure without
+        affecting scores or placement.</p>
+        <p><a class="report-action" href="#how-h">How sponsorship works</a></p>
+      </section>
+    </div>
 
     <section aria-labelledby="costs-h">
       <h2 class="section-title" id="costs-h">What it costs to run</h2>
@@ -60,8 +84,8 @@
         <li><strong>The daily data refresh</strong>: fetching and validating about
         1,140 configured feeds in the current worldwide coverage, still mostly in the US and
         Canada, every day.</li>
-        <li><strong>Instant scoring</strong>, so anyone can paste a feed URL and see a grade
-        before publishing, at a cost of a cent or two per run.</li>
+        <li><strong>Hosted one-off scoring capacity</strong>, a planned capped service for
+        checking a published feed without running the scorer locally. It is not enabled today.</li>
         <li><strong>A cross-agency realtime archive</strong> that samples GTFS-Realtime feeds
         around the clock. This is the largest planned line item and the first thing new
         sponsorship would unlock.</li>
@@ -73,11 +97,12 @@
     <section aria-labelledby="free-h">
       <h2 class="section-title" id="free-h">What stays free, no matter what</h2>
       <p>Everything an agency touches: the scorecards, the plain-language fix guidance, the
-      open data and API, the badges, instant scoring, and feed-health alerts. Sponsorship adds
-      capacity. It never moves an existing feature behind a paywall.</p>
-      <p>If a paid offering ever exists, it will be an addition for the programs that support
-      many agencies at once, such as a saved-portfolio workspace for a state liaison. Nothing
-      is subtracted from the free tier to create it.</p>
+      open data and API, the badges, local pre-publish check, request-backed one-off scoring,
+      and feed-health alerts. Sponsorship adds capacity. It never moves an existing feature
+      behind a paywall.</p>
+      <p>Paid <a href="https://chelseakr.com/consulting/">consulting services</a> are an
+      optional addition for programs and agencies that want a facilitated audit, workshop, or
+      implementation help. Nothing is subtracted from the free tier to create them.</p>
     </section>
 
     <section aria-labelledby="independence-h">
@@ -89,8 +114,9 @@
         <li><strong>No official status.</strong> This is an independent data-quality lens, not
         a compliance determination or a certification. It states what a feed publishes; it does
         not certify it.</li>
-        <li><strong>No rankings.</strong> The scorecard exists to help agencies fix things, not
-        to shame them, and sponsor placement will never be used to frame it otherwise.</li>
+        <li><strong>No paid placement or score influence.</strong> Coverage views may sort public
+        results to help programs decide where to start, but sponsors cannot buy prominence,
+        change a grade, or alter how an agency is framed.</li>
       </ul>
       <p>Sponsors are disclosed on this page and in the repository, always. Funding that comes
       with a request to change any of the above is declined.</p>
@@ -101,8 +127,8 @@
       <p>Sponsorship accounts are being set up. Until the buttons below go live, the fastest
       way to start is to get in touch directly:</p>
       <p><a class="submit-button" href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry">Start a sponsorship conversation on GitHub</a></p>
-      <p>Prefer email? Reach the maintainer through
-      <a href="https://chelseakr.com">chelseakr.com</a>.</p>
+      <p>Prefer email? Write to
+      <a href="mailto:ckellyreif@gmail.com">Chelsea Kelly-Reif</a>.</p>
       <!-- PLACEHOLDER(owner): uncomment and fill in once the sponsor accounts exist.
            Also update .github/FUNDING.yml so GitHub shows the Sponsor button on the repo.
       <p>
@@ -117,39 +143,64 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

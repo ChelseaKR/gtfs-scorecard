@@ -14,6 +14,24 @@ from playwright.sync_api import Page, Route, expect
 pytestmark = pytest.mark.e2e
 
 
+def test_static_compare_search_filters_large_pickers(page: Page, base_url: str) -> None:
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(f"{base_url}/compare/")
+
+    page.locator("#compare-a-filter").fill("unitrans")
+    expect(page.locator("#compare-a option")).to_have_count(2)
+    page.locator("#compare-a").select_option("unitrans")
+
+    page.locator("#compare-b-filter").fill("yolobus")
+    expect(page.locator("#compare-b option")).to_have_count(3)
+    page.locator("#compare-b").select_option("yolobus")
+    page.get_by_role("button", name="Compare").click()
+
+    expect(page.locator("#compare-status")).to_contain_text("Comparing Unitrans")
+    expect(page.locator(".table-scroll-hint")).to_be_visible()
+    expect(page.locator(".compare-static-table")).to_be_visible()
+
+
 def test_alert_form_identifies_and_focuses_invalid_fields(page: Page, base_url: str) -> None:
     page.goto(f"{base_url}/subscribe.html")
     page.get_by_role("button", name="Email me alerts").click()
@@ -223,6 +241,27 @@ def test_mobile_theme_and_menu_keyboard_recovery(page: Page, app_url: str) -> No
 
     theme = page.locator("#theme-toggle-btn")
     expect(theme).to_have_accessible_name("Theme: System")
+    expect(theme).to_have_attribute("aria-haspopup", "menu")
+    expect(theme).to_have_attribute("aria-controls", "theme-menu")
+
+    theme.press("ArrowDown")
+    expect(theme).to_have_attribute("aria-expanded", "true")
+    expect(page.get_by_role("menuitemradio", name="System")).to_be_focused()
+    page.keyboard.press("ArrowDown")
+    expect(page.get_by_role("menuitemradio", name="Light")).to_be_focused()
+    page.keyboard.press("End")
+    expect(page.get_by_role("menuitemradio", name="Dark")).to_be_focused()
+    page.keyboard.press("Home")
+    expect(page.get_by_role("menuitemradio", name="System")).to_be_focused()
+    page.keyboard.press("ArrowUp")
+    expect(page.get_by_role("menuitemradio", name="Dark")).to_be_focused()
+    page.keyboard.press("Escape")
+    expect(theme).to_have_attribute("aria-expanded", "false")
+    expect(theme).to_be_focused()
+    # The theme menu consumes its own Escape instead of also closing the
+    # containing mobile navigation and moving focus to that menu's trigger.
+    expect(menu).to_have_attribute("aria-expanded", "true")
+
     theme.click()
     page.get_by_role("menuitemradio", name="High contrast").click()
     expect(page.locator("html")).to_have_attribute("data-theme", "contrast")

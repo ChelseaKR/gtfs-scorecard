@@ -13,6 +13,7 @@ const POLL_INTERVAL_MS = 3000;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
 
 const form = /** @type {HTMLFormElement} */ (document.getElementById("try-form"));
+const hosted = /** @type {HTMLElement} */ (document.getElementById("hosted-scorer"));
 const status = /** @type {HTMLElement} */ (document.getElementById("try-status"));
 const result = /** @type {HTMLElement} */ (document.getElementById("try-result"));
 
@@ -57,12 +58,12 @@ function gradeClass(grade) {
 }
 
 if (!TRY_URL) {
-  setStatus(
-    "Instant scoring is not enabled on this deployment yet. Use the form below instead.",
-    "info"
-  );
-  form?.querySelector("button")?.setAttribute("disabled", "true");
+  // The available GitHub request is already first in the document. Keep an
+  // unavailable control out of the task flow instead of presenting a disabled
+  // primary button.
+  hosted.hidden = true;
 } else {
+  hosted.hidden = false;
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());

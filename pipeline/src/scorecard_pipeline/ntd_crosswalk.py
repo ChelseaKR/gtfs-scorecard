@@ -1,8 +1,9 @@
 """Populate agency NTD IDs from the Transitland Atlas crosswalk.
 
-ADR 0016 added an `ntd_id` to the registry and a check that an agency's
-`agency_id` matches it, but the check can only run where we know the NTD ID, and
-we curated that only for the two pilots. The Transitland Atlas
+ADR 0016 added an `ntd_id` to the registry so the scorecard can compare optional
+equality with the required feed `agency_id`. That comparison can only run where
+we know the NTD ID, and we curated it only for the two pilots. Required
+agency_id presence is checked separately. The Transitland Atlas
 (github.com/transitland/transitland-atlas, CC-BY) records `us_ntd_id` on its US
 operators and links each operator to its feeds, so it is an open join from a
 feed to its five-digit NTD ID. This turns that into a one-time, reviewable

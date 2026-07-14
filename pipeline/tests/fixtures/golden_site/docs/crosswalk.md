@@ -19,15 +19,11 @@ for that agency's state.
 - **The [FTA National Transit Database](https://www.transit.dot.gov/ntd) GTFS
   requirement.** Since Report Year 2023, every NTD reporter with fixed-route
   service must publish and maintain a valid, public GTFS feed and certify it
-  annually. This is the one standard that applies nationwide, and it tracks the
-  scorecard's Correctness and Freshness categories. Aligning the GTFS `agency_id`
-  with the agency's five-digit NTD ID lets a feed join cleanly to its NTD record.
-  The October 2024 proposal would have required that alignment in the feed; the
-  [July 2025 final rule](https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026)
-  did not adopt it, collecting the `agency_id`-to-NTD-ID link on the P-50 form
-  instead. When the agency's NTD ID is on file, the NTD readiness section on its
-  scorecard checks the alignment and frames it as an optional convenience, never
-  a required feed change and not part of the grade.
+  annually. For RY2026, every submission must also provide a stable `agency_id`
+  value for each represented reporter, unique among those reporters, and
+  crosswalk it to the reporter's NTD ID on P-50. The value does not have to equal
+  the five-digit NTD ID. The scorecard treats presence as a readiness check and
+  shows equality only as a neutral, zero-deduction comparison.
 - **A state's own guideline or program, where it has one.** California is
   currently the only US state with a formal published GTFS quality *guideline*:
   the [California Transit Data Guidelines](https://dot.ca.gov/cal-itp/california-transit-data-guidelines)

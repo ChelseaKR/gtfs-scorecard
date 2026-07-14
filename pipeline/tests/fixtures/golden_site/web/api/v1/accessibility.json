@@ -8,36 +8,83 @@
     "none": 2,
     "some": 0
   },
-  "generated_at": "2026-07-10T19:45:48+00:00",
+  "countries": [
+    {
+      "agencies": 1,
+      "average_boarding_pct": 0.0,
+      "country_code": "CA",
+      "country_name": "Canada",
+      "most": 0,
+      "none": 1,
+      "subdivisions": [
+        {
+          "agencies": 1,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 1,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    },
+    {
+      "agencies": 2,
+      "average_boarding_pct": 49.8,
+      "country_code": "US",
+      "country_name": "United States",
+      "most": 1,
+      "none": 1,
+      "subdivisions": [
+        {
+          "agencies": 2,
+          "average_boarding_pct": 49.8,
+          "most": 1,
+          "none": 1,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-07-14T03:48:50+00:00",
   "license": "CC-BY-4.0",
   "most_complete": [
     {
+      "country": "US",
       "id": "yolobus",
       "name": "Yolobus (Yolo County Transportation District)",
       "pct": 99.5,
-      "state": "Unlocated"
+      "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": ""
     }
   ],
   "no_data_count": 2,
   "states": [
     {
-      "agencies": 3,
-      "average_boarding_pct": 33.2,
+      "agencies": 2,
+      "average_boarding_pct": 49.8,
       "most": 1,
-      "none": 2,
+      "none": 1,
       "state": "Unlocated"
     }
   ],
   "to_improve_sample": [
     {
+      "country": "CA",
       "id": "barrie-transit",
       "name": "Barrie Transit (Ontario)",
-      "state": "Unlocated"
+      "state": "",
+      "subdivision_code": "",
+      "subdivision_name": ""
     },
     {
+      "country": "US",
       "id": "unitrans",
       "name": "Unitrans (ASUCD / City of Davis)",
-      "state": "Unlocated"
+      "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": ""
     }
   ]
 }

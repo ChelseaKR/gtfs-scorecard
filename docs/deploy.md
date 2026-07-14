@@ -16,9 +16,9 @@ branding config (`instance.yaml`) and the deploy steps below in order.
 > **Current deployment status (maintainer's account).** The artifacts CDN (§1)
 > and the feed-health digest (§2) are applied and live: `gtfsscorecard.org` is
 > verified in SES and out of the sandbox, and the daily workflow mirrors
-> artifacts to S3 and sends the digest. The self-serve submission form (§3),
-> the fan-out compute (§4), and instant scoring (§5) are written but not yet
-> applied. The steps below are the from-scratch runbook, so they still read as
+> artifacts to S3 and sends the digest. The self-serve submission form (§3) is
+> also applied and live. The fan-out compute (§4) and instant scoring (§5) are
+> written but not yet applied. The steps below are the from-scratch runbook, so they still read as
 > operator work to do — follow them for a fork or a clean rebuild, and skip
 > the stacks that are already up.
 
@@ -118,7 +118,10 @@ the send is off until you verify a sender and set `SES_FROM`.
 
 ## 3. Self-serve submission form (`infra/submit`)
 
-Lets an agency add itself from `web/submit.html` without opening a pull request.
+Lets an agency add itself from `web/submit.html` without manually opening a pull request.
+The maintainer's endpoint is applied and wired into `web/src/config.js`; the
+commands below are for a fork or clean rebuild. The service opens the pull
+request on the submitter's behalf so a person still reviews every addition.
 
 ```sh
 cd infra/submit

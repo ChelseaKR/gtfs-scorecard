@@ -3,25 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>National map — GTFS Scorecard</title>
-  <meta name="description" content="A national map of transit agencies labelled and coloured by GTFS data quality grade.">
+  <title>Agency map — GTFS Scorecard</title>
+  <meta name="description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
   <link rel="canonical" href="https://gtfsscorecard.org/map/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="National map — GTFS Scorecard">
-  <meta property="og:description" content="A national map of transit agencies labelled and coloured by GTFS data quality grade.">
+  <meta property="og:title" content="Agency map — GTFS Scorecard">
+  <meta property="og:description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
   <meta property="og:url" content="https://gtfsscorecard.org/map/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -45,11 +40,11 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">National map</span><meta itemprop="position" content="2"></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Agency map</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">The national map.</h1>
+    <h1 class="page-title">Agency map.</h1>
     <p class="page-lede">Every tracked agency with a locatable
     <abbr title="General Transit Feed Specification">GTFS</abbr> feed, placed at its
     service area, labelled with its grade letter and coloured by grade. 3 agencies
@@ -64,16 +59,22 @@
         <label for="map-grade">Grade</label>
         <select id="map-grade" name="grade"><option value="">All grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option><option value="D">Grade D</option><option value="F">Grade F</option></select>
         <label for="map-state">Location</label>
-        <select id="map-state" name="state"><option value="">All locations</option><option value="Canada">Canada</option></select>
+        <select id="map-state" name="state"><option value="">All locations</option><optgroup label="Countries"><option value="country:CA">Canada</option><option value="country:US">United States</option></optgroup><optgroup label="Subdivisions"><option value="subdivision:CA-ON">Ontario, Canada</option></optgroup></select>
       </div>
       <div class="map-filter-row">
         <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
       </div>
     </form>
-    <div id="map" class="national-map" aria-hidden="true"><p class="map-fallback">The map
-      draws here once its library loads from a content delivery network. If it stays
-      blank (a blocked or slow network), the agency list below carries everything the
-      map shows.</p></div>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="map-load">
+        Load interactive map
+      </button>
+      <p id="map-load-status" class="fineprint" role="status">The agency list is ready now.
+        Load the map only when you want the geographic view. It uses additional data.</p>
+    </div>
+    <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
+      The interactive map has not loaded. The agency list below carries the same agencies,
+      grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
@@ -82,27 +83,37 @@
       <p class="map-count" role="status"><span id="map-result-count">3</span> of 3
         agencies shown.</p>
       <table class="leaderboard map-table">
-        <caption class="visually-hidden">Agencies on the national map, with grade, location,
+        <caption class="visually-hidden">Agencies on the coverage map, with grade, location,
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
-        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/">Barrie Transit (Ontario)</a></td><td>C</td><td>CA</td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/">Unitrans (ASUCD / City of Davis)</a></td><td>B</td><td>&mdash;</td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/">Yolobus (Yolo County Transportation District)</a></td><td>B</td><td>&mdash;</td><td>82.5</td></tr></tbody>
+        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
       </table>
     </section>
-    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script>
       (function () {
         var gradeEl = document.getElementById("map-grade");
         var stateEl = document.getElementById("map-state");
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
+        var loadEl = document.getElementById("map-load");
+        var loadStatusEl = document.getElementById("map-load-status");
+        var mapEl = document.getElementById("map");
         var rows = Array.prototype.slice.call(
           document.querySelectorAll("#map-tbody tr"));
         var all = null;  // the full FeatureCollection, fetched once
+        var map = null;
 
-        function matches(grade, state, country, hasFlex) {
+        function matches(grade, state, country, subdivision, hasFlex) {
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
-          var locOk = !loc || state === loc || (loc === "Canada" && country === "CA");
+          var countryPrefix = "country:";
+          var subdivisionPrefix = "subdivision:";
+          var locOk = !loc ||
+            (loc.indexOf(countryPrefix) === 0
+              ? country === loc.slice(countryPrefix.length)
+              : loc.indexOf(subdivisionPrefix) === 0
+              ? subdivision === loc.slice(subdivisionPrefix.length)
+              : state === loc);
           // hasFlex is a string from the table's data attribute and a boolean
           // from the GeoJSON properties; accept both.
           var flexOk = !f || hasFlex === true || hasFlex === "true";
@@ -116,6 +127,7 @@
             var ok = matches(tr.getAttribute("data-grade"),
                              tr.getAttribute("data-state"),
                              tr.getAttribute("data-country"),
+                             tr.getAttribute("data-subdivision"),
                              tr.getAttribute("data-has-flex"));
             tr.hidden = !ok;
             if (ok) shown++;
@@ -129,19 +141,16 @@
         // filter never moves focus: on a native <select>, keyboard arrow keys
         // fire "change" per option, and moving focus then would yank the caret
         // out of the control mid-choice (WCAG 3.2.2 On Input).
-        if (!window.maplibregl) {
-          gradeEl.addEventListener("change", filterTable);
-          stateEl.addEventListener("change", filterTable);
-          if (flexEl) flexEl.addEventListener("change", filterTable);
-          filterTable();
-          return;
-        }
+        function initMap() {
         var reduce = window.matchMedia
           && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var map = new maplibregl.Map({
+        var worldBounds = [[-180, -85], [180, 85]];
+        map = new maplibregl.Map({
           container: "map",
           style: "https://tiles.openfreemap.org/styles/positron",
-          center: [-96, 38], zoom: 3, keyboard: false,
+          bounds: worldBounds,
+          fitBoundsOptions: { padding: 16, duration: 0 },
+          keyboard: false,
           attributionControl: false
         });
         // Take the canvas out of the tab order synchronously (not only on load),
@@ -153,6 +162,7 @@
         // a cluster zooms in; the table is the operable primary.
 
         var NONE = "__none__";  // sentinel agency id; no real feature matches
+        var fittedLocation = "";  // last location that changed the default camera
 
         // Agency id -> table row, so a hovered map point can light up its row
         // and the reverse. Visual only: the row text is the accessible source.
@@ -212,14 +222,57 @@
             type: "FeatureCollection",
             features: all.features.filter(function (f) {
               var p = f.properties || {};
-              return matches(p.grade, p.state || "", p.country || "", p.has_flex);
+              return matches(
+                p.grade,
+                p.state || "",
+                p.country || "",
+                p.subdivision_code || "",
+                p.has_flex
+              );
             })
           };
         }
+        function fitFiltered(data) {
+          // The default camera shows the world. Once a reader chooses a
+          // location, move the optional visual map to those results.
+          if (!map) return;
+          var location = stateEl.value;
+          if (!location) {
+            // Clearing a location restores the default camera once. Grade and
+            // Flex changes with no active location leave a reader's pan/zoom
+            // alone instead of repeatedly snapping the map back.
+            if (fittedLocation) {
+              map.fitBounds(worldBounds, {
+                padding: 16, animate: !reduce, duration: reduce ? 0 : 500
+              });
+            }
+            fittedLocation = "";
+            return;
+          }
+          fittedLocation = location;
+          if (!data.features.length) return;
+          if (data.features.length === 1) {
+            map.easeTo({
+              center: data.features[0].geometry.coordinates,
+              zoom: 7, animate: !reduce, duration: reduce ? 0 : 500
+            });
+            return;
+          }
+          var bounds = new maplibregl.LngLatBounds();
+          data.features.forEach(function (feature) {
+            bounds.extend(feature.geometry.coordinates);
+          });
+          map.fitBounds(bounds, {
+            padding: 48, maxZoom: 8,
+            animate: !reduce, duration: reduce ? 0 : 500
+          });
+        }
         function applyFilter() {
           filterTable();
-          var src = map.getSource("agencies");
-          if (src) src.setData(filtered());
+          var data = filtered();
+          var src = map && map.getSource("agencies");
+          if (src) src.setData(data);
+          fitFiltered(data);
         }
 
         map.on("load", function () {
@@ -287,6 +340,8 @@
           if (current !== null) {
             map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
           }
+          mapEl.classList.remove("national-map-pending");
+          if (loadStatusEl) loadStatusEl.textContent = "Interactive map loaded.";
           fetch("/map.geojson").then(function (r) { return r.json(); })
             .then(function (gj) { all = gj; applyFilter(); })
             .catch(function () {});
@@ -332,10 +387,39 @@
           map.on("mouseenter", "clusters", function () { map.getCanvas().style.cursor = "pointer"; });
           map.on("mouseleave", "clusters", function () { map.getCanvas().style.cursor = ""; });
         });
-        function onFilterChange() { applyFilter(); }
+        }
+        function onFilterChange() {
+          // Filtering the accessible table never depends on the optional map.
+          if (!map || !all) { filterTable(); return; }
+          applyFilter();
+        }
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
+        filterTable();
+
+        loadEl.addEventListener("click", function () {
+          loadEl.disabled = true;
+          loadEl.textContent = "Loading map…";
+          if (loadStatusEl) loadStatusEl.textContent = "Loading the interactive map.";
+          var css = document.createElement("link");
+          css.rel = "stylesheet";
+          css.href = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css";
+          document.head.appendChild(css);
+          var script = document.createElement("script");
+          script.src = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js";
+          script.onload = function () {
+            loadEl.hidden = true;
+            initMap();
+          };
+          script.onerror = function () {
+            loadEl.disabled = false;
+            loadEl.textContent = "Try loading the map again";
+            if (loadStatusEl) loadStatusEl.textContent =
+              "The map could not load. The complete agency list is still available below.";
+          };
+          document.head.appendChild(script);
+        });
       })();
     </script>
   </main>
@@ -345,20 +429,24 @@
       <p><strong>Agencies:</strong>
       <a href="/agencies/">Directory</a> ·
       <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
       <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
+      <a href="/realtime/">Realtime</a> ·
       <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
       <p><strong>Tools:</strong>
       <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
       <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
+      <a href="/try.html">Request a one-off score</a> ·
       <a href="/query/">Query the dataset</a> ·
       <a href="/subscribe.html">Feed-health alerts</a> ·
       <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
       <a href="/procurement/">For agencies: procurement</a></p>
       <p><a href="/about/">About</a> ·
       <a href="/status/">Status</a> ·

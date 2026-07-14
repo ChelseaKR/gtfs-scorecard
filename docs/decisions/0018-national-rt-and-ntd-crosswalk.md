@@ -30,8 +30,9 @@ is neutral.
 
 ## Decision 2: populate NTD IDs from the Transitland Atlas, by feed URL
 
-ADR 0016 could only check ID alignment where we knew the agency's NTD ID, and we
-curated that for two pilots. The Transitland Atlas (CC-BY) records `us_ntd_id` on
+ADR 0016 could only compare optional equality where we knew the agency's NTD ID,
+and we curated that for two pilots. Required agency_id presence can be checked
+without this registry value. The Transitland Atlas (CC-BY) records `us_ntd_id` on
 its US operators and links each operator to its feeds, giving an open join from a
 feed to its five-digit NTD ID.
 
@@ -54,15 +55,17 @@ host case, and trailing slash) is precise; a fuzzy name match would risk assigni
 a wrong NTD ID, which is worse than none, because the alignment check would then
 report a confident but false mismatch. Dropping ambiguous regional feeds and
 exact-matching only keeps the populated IDs trustworthy. Agencies we cannot match
-stay `unknown`, shown neutrally, exactly as before.
+stay `unknown` on the optional equality comparison; their presence check still
+runs.
 
 ## Consequences
 
 - Both `rt_national` and `ntd_crosswalk`'s matching logic are pure and unit
   tested without the network; only `fetch_atlas` reaches out, and it is injectable
   for tests.
-- Turning more NTD IDs on lights up the existing ID-alignment flag (ADR 0016) for
-  every matched agency, with zero grade impact.
+- Turning more NTD IDs on lights up the optional equality flag (ADR 0016) for
+  every matched agency, with zero grade impact. Presence remains part of the
+  separate NTD-readiness status.
 - Re-running `ntd-crosswalk` is safe and idempotent: agencies that already have an
   `ntd_id` are skipped, so it only ever adds.
 - The `/realtime/` page and `/ntd/` page now give a program the two national views

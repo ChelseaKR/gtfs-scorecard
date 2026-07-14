@@ -29,6 +29,11 @@ def _artifact(
     findings.append({"severity": "WARNING", "code": "w"})
     return {
         "feed": {"reachable": reachable, "static_url": url},
+        "ntd_id_alignment": {
+            "status": "unknown",
+            "detail": "",
+            "feed_agency_ids": ["TEST"],
+        },
         "categories": {
             "correctness": {"status": "measured", "findings": findings},
             "freshness": {"status": "measured", "details": {"days_until_expiry": days}},
@@ -133,6 +138,17 @@ def test_alignment_missing_when_no_agency_id() -> None:
     r = assess_id_alignment([], "90090")
     assert r.status == MISSING
     assert "90090" in r.fix
+    assert "Every RY2026" in r.detail
+    assert "stable" in r.detail
+    assert "P-50" in f"{r.detail} {r.fix}"
+    assert "does not need to equal" in r.fix
+
+
+def test_alignment_missing_even_without_ntd_id_on_file() -> None:
+    r = assess_id_alignment([], "")
+    assert r.status == MISSING
+    assert "Every RY2026" in r.detail
+    assert "P-50" in f"{r.detail} {r.fix}"
 
 
 def test_alignment_unknown_without_an_ntd_id_on_file() -> None:
@@ -149,34 +165,43 @@ def test_alignment_tolerates_whitespace_and_blanks() -> None:
     assert assess_id_alignment(["", "  "], "90142").status == MISSING
 
 
-def test_alignment_copy_is_optional_not_a_mandated_feed_change() -> None:
-    """RESEARCH-ROADMAP R7: the July 2025 NTD final rule did not adopt the proposed
-    agency_id-to-NTD-ID mandate (FTA links them on the P-50 form), so the copy must
-    never tell an agency it is *required* to change its feed."""
+def test_alignment_copy_requires_presence_but_not_equality() -> None:
+    """RY2026 requires agency_id and the P-50 crosswalk, not equality to NTD ID."""
     for result in (
         assess_id_alignment(["WHATEVER"], ""),  # unknown
-        assess_id_alignment([], "90090"),  # missing
         assess_id_alignment(["UNITRANS"], "90142"),  # mismatch
     ):
         text = f"{result.detail} {result.fix}".lower()
-        # No affirmative language implying FTA mandates the feed-side change.
-        # ("not a required feed change" is allowed; it negates the obligation.)
+        # No language implies that the feed value must equal the NTD ID.
         for mandate in (
-            "fta requires",
-            "ntd requires",
-            "requires the",
-            "requires your",
-            "you must",
-            "must change",
-            "must set",
-            "you have to",
-            "asks that agency_id",
-            "should be your",
+            "must equal",
+            "must match",
+            "required to equal",
+            "required to match",
+            "change agency_id to",
+            "set agency_id to 90142",
         ):
             assert mandate not in text, f"mandate phrasing leaked: {mandate!r}"
-        # The final-rule framing is present: optional, and FTA's own P-50 form.
         assert "p-50" in text
-        assert "optional" in text or "convenience" in text
+        assert "does not need to equal" in text or "difference is allowed" in text
+
+
+def test_readiness_requires_agency_id_presence() -> None:
+    artifact = _artifact()
+    artifact["ntd_id_alignment"]["feed_agency_ids"] = []
+    result = assess(artifact)
+    identity = next(p for p in result.pillars if p.key == "agency_id")
+    assert identity.status == NOT_READY
+    assert result.status == NOT_READY
+
+
+def test_readiness_is_cautious_when_identity_was_not_checked() -> None:
+    artifact = _artifact()
+    del artifact["ntd_id_alignment"]
+    result = assess(artifact)
+    identity = next(p for p in result.pillars if p.key == "agency_id")
+    assert identity.status == AT_RISK
+    assert result.status == AT_RISK
 
 
 def test_alignment_mismatch_acknowledges_shared_regional_feeds() -> None:
@@ -185,7 +210,8 @@ def test_alignment_mismatch_acknowledges_shared_regional_feeds() -> None:
     result = assess_id_alignment(["AGENCY_A", "AGENCY_B"], "90142")
     assert result.status == MISMATCH
     assert "shared regional feed" in result.detail.lower()
-    assert "not an error" in result.detail.lower()
+    assert "difference is allowed" in result.detail.lower()
+    assert "no score" in result.detail.lower()
 
 
 def test_one_fix_from_ready_keeps_only_single_pillar_misses() -> None:
@@ -206,6 +232,19 @@ def test_one_fix_from_ready_keeps_only_single_pillar_misses() -> None:
     assert "expired" in rows[0]["fix"]
     assert rows[1]["pillar"] == "valid"
     assert "error" in rows[1]["fix"]
+
+
+def test_one_fix_from_ready_excludes_non_us_feeds() -> None:
+    from scorecard_pipeline.ntd import one_fix_from_ready
+
+    canadian = _artifact()
+    canadian["agency"] = {
+        "id": "ca-feed",
+        "name": "Canadian Feed",
+        "country": "CA",
+    }
+    canadian["ntd_id_alignment"]["feed_agency_ids"] = []
+    assert one_fix_from_ready([canadian]) == []
 
 
 # --- Shapes readiness (shapes.txt coverage of trips.txt, FTA RY2025/26) ---
