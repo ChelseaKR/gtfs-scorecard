@@ -25,8 +25,6 @@ The real return is the tool itself: it stays free for every agency, including th
 
 - [Open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) and we will take it from there. No payment rail is advertised until an account is actually ready to receive funds.
 
-## For programs and consultancies
+## For programs supporting many agencies
 
-Organizations that support many agencies at once, such as state DOT programs and consultancies, sometimes need more than the public site: portfolio views across a region, or help reading results during agency check-ins. Paid services like that exist alongside the free tool and never replace it. Nothing is subtracted from the free tier to create them.
-
-See the current [consulting services and pricing](https://chelseakr.com/consulting/), or write to [Chelsea Kelly-Reif](mailto:ckellyreif@gmail.com) to start that conversation.
+State DOT programs and other organizations supporting many agencies can use the public program rollups, open data, and read API to prepare for agency check-ins. These public tools use the same rubric and remain free.

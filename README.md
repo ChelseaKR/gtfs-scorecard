@@ -211,17 +211,12 @@ Any agency with a public GTFS feed can be added with one YAML block in
 deployed `infra/submit` endpoint; every submission still opens a pull request
 for human review before publication.
 
-## Support and services
+## Support
 
 The public scorecards, data, API, local pre-publish check, and request-backed
 one-off scoring remain free. The [support page](https://gtfsscorecard.org/support/)
 explains the project's infrastructure needs and accepts sponsorship inquiries;
 it does not advertise a payment rail that is not ready.
-
-Programs and agencies that want a facilitated audit, workshop, or implementation
-help can review the current [consulting services and pricing](https://chelseakr.com/consulting/).
-Paid help is separate from scoring and never changes a grade or removes anything
-from the free tier.
 
 ## Standards conformance
 
