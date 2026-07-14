@@ -1583,10 +1583,9 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
     top fix, stitching the pieces that already exist into a single per-finding
     path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
-    the change", naming the producing tool detected from the feed host and, when a
-    safe mechanical autofix covers that exact finding, a link to the corrected
-    feed, and (3) "Check the result", explaining that the next comparable run
-    checks whether the finding is still reported.
+    the change", naming the producing tool detected from the feed host, and (3)
+    "Check the result", explaining that the next comparable run checks whether
+    the finding is still reported.
 
     The boundary stays explicit: the scorecard observes the published feed; an
     action or ticket record is required to attribute a change. Empty when the
@@ -1597,17 +1596,6 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
         return ""
     fix_tool = detect_tool(artifact.get("feed", {}).get("static_url"))
     tool_path = esc(fix_tool.fix_path) if fix_tool else ""
-    # Reuse the autofix block's own data (see _autofix_section): a corrected feed
-    # is offered only when the engine is available and a download URL was attached
-    # at score time. Map it by finding code so the download shows on exactly the
-    # fixes it can make.
-    autofix = artifact.get("autofix") or {}
-    autofix_codes = (
-        {str(f.get("code", "")) for f in autofix.get("fixes", [])}
-        if autofix.get("available")
-        else set()
-    )
-    autofix_url = autofix.get("download_url")
     if has_fixlog:
         prove_link = (
             f' <a class="fix-guide" href="/agency/{esc(agency_id)}/fixes/">'
@@ -1621,15 +1609,9 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     for f in fixes:
         code = str(f.get("code", ""))
         guide = _fix_guide_link(code)
-        if code and code in autofix_codes and autofix_url:
-            change = (f"{tool_path} " if tool_path else "") + (
-                f'<a class="fix-guide" href="{esc(str(autofix_url))}" download>'
-                "Download the corrected feed for this fix</a>."
-            )
-        else:
-            change = tool_path or (
-                "Make this change in whatever tool produces your feed, then re-export."
-            )
+        change = tool_path or (
+            "Make this change in whatever tool produces your feed, then re-export."
+        )
         items.append(
             f'<li class="fixloop-item"><p class="fixloop-name">{esc(f.get("fix", ""))}{guide}</p>'
             f'<p class="fixloop-step"><strong>Make the change.</strong> {change}</p>'
@@ -2725,13 +2707,14 @@ def _recommendations_section(artifact: dict[str, Any]) -> str:
 
 
 def _autofix_section(artifact: dict[str, Any]) -> str:
-    """The safe mechanical subset of fixes, offered as a corrected feed.
+    """Describe the safe mechanical subset that a user can run locally.
 
     The autofix engine (autofix.py) makes only changes that have one certain
     edit (surrounding whitespace, shouting stop and route names) and leaves the
-    feed otherwise byte-for-byte. This shows what it touched and, when a download
-    URL was attached at score time, a button to grab the corrected zip. Empty
-    when the artifact carries no autofix block or found nothing to change."""
+    feed otherwise byte-for-byte. Legacy artifacts may carry a public download
+    URL, but this renderer deliberately ignores it: the service does not publish
+    modified copies of agency feeds. Empty when the artifact carries no autofix
+    block or found nothing to change."""
     autofix = artifact.get("autofix")
     if not autofix or not autofix.get("available"):
         return ""
@@ -2750,23 +2733,16 @@ def _autofix_section(artifact: dict[str, Any]) -> str:
             f'<li class="autofix-item"><p class="autofix-label">{label} '
             f'<span class="count">{count} {noun}</span></p>{example_html}</li>'
         )
-    download_url = autofix.get("download_url")
-    if download_url:
-        action = (
-            f'<p class="autofix-action"><a class="download-btn" href="{esc(str(download_url))}" '
-            "download>Download corrected feed</a></p>"
-        )
-    else:
-        action = (
-            '<p class="autofix-cli">Run it yourself on your own copy of the feed: '
-            "<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>"
-        )
+    action = (
+        '<p class="autofix-cli">Run it locally on a copy of the feed you control: '
+        "<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>"
+    )
     return (
         '<section aria-labelledby="autofix-h"><h2 class="section-title" id="autofix-h">'
-        "Some fixes we can make for you</h2>"
-        '<p class="page-lede">These are the safe mechanical fixes, applied to a copy of your '
-        "feed. They change only what is certain and leave everything else untouched. Review the "
-        "diff before you publish.</p>"
+        "Safe fixes you can run locally</h2>"
+        '<p class="page-lede">The local command applies only these mechanical changes to a copy '
+        "you control. The scorecard does not publish a modified feed. Review the diff before you "
+        "publish through your usual process.</p>"
         f'<ul class="autofix-list">{"".join(rows)}</ul>{action}</section>'
     )
 

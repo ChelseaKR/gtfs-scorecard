@@ -82,11 +82,12 @@ def test_targeted_publish_is_path_bounded_and_preserves_daily_status() -> None:
     assert "data/artifacts/run" not in text
     assert "perf_gate: advisory" in text
 
-    # No command may upload the entire artifact tree. The only delete is scoped
-    # to the bounded named-change namespace so unauditable legacy claims cannot
-    # survive additive hydration.
+    # No command may upload the entire artifact tree. Deletes are scoped to the
+    # private fixlog cache and bounded named-change namespace, so reconciliation
+    # can retire stale claims without touching score history.
     assert 'aws s3 sync data/artifacts "' not in text
-    assert text.count("\n            --delete ") == 1
+    assert text.count("\n            --delete ") == 2
+    assert '"s3://${ARTIFACTS_BUCKET}/cache/fixlog"' in text
     assert '"${artifact_uri}/changes"' in text
 
 

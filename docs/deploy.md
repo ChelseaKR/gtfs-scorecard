@@ -87,9 +87,35 @@ Then:
    keeps the app reading from Pages.
 4. **Forks:** set the `ARTIFACTS_CDN` Actions variable to your `cdn_domain`.
    When `ARTIFACTS_BUCKET` is set but `ARTIFACTS_CDN` is not, the daily
-   workflow falls back to the maintainer's CloudFront domain
-   (`scorecard.yml`'s `SCORECARD_CDN_BASE` default), which a fork does not
-   want to inherit.
+   workflow's CDN privacy canary falls back to the maintainer's CloudFront
+   domain, which a fork does not want to inherit.
+
+### One-time validator-cache privacy migration
+
+Deployments created before the validator cache moved to the private
+`cache/validator/` prefix may still contain
+`data/artifacts/<agency>/validator-cache.json` objects. Upgrade in this order:
+
+1. Apply `infra/artifacts` so the CloudFront viewer function and S3 origin
+   policy deny the legacy key shape.
+2. Deploy the current Pages workflow. It publishes an explicit file allowlist.
+   Raw validator caches, structural fingerprints, finding-clearance state, and
+   generated feed copies remain private; the renderer still turns reconciled
+   receipts into public HTML.
+3. Remove the old public-path objects from S3. The daily, hourly, and targeted
+   publishers do this idempotently; an operator can perform the cleanup
+   immediately with:
+
+   ```sh
+     aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive \
+       --exclude "*" --include "*/validator-cache.json" \
+       --include "*/structure.json" --include "*/fixlog.json" \
+       --include "*/corrected.zip"
+   ```
+
+4. Verify a current `latest.json` returns HTTP 200 and the four former internal
+   paths return HTTP 403 or 404 through the CDN. The daily workflow runs this
+   public/private canary after each publication.
 
 ## 2. Feed-health email digest (`infra/alerts` + SES)
 

@@ -26,7 +26,8 @@ jobs:
         run: |
           mkdir -p _site/data
           cp -r web/. _site/
-          cp -r data/artifacts _site/data/artifacts
+          bash pipeline/scripts/assemble_public_artifacts.sh \
+            data/artifacts _site/data/artifacts
       # axe-core at WCAG 2.0 AA (the Section 508 technical bar) on representative
       # routes. Contrast is owned by the dedicated token gate
       # (pipeline/scripts/check_contrast.py), which verifies AAA across every theme

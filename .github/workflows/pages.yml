@@ -65,18 +65,21 @@ jobs:
           # S3 is authoritative. index.json already carries complete score
           # histories, so rendering needs each current artifact plus only the
           # two newest dated snapshots for finding diffs. This bounded set
-          # avoids downloading the 400-day archive or CDN-hosted corrected ZIPs.
+          # avoids downloading the 400-day archive or any private pipeline files.
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --exclude "*" \
             --include "directory.json" --include "index.json" \
             --include "scoring.json" --include "sensitivity.json" \
+            --include "canada-equity.json" \
             --include "changes/*" --include "rollups/*" --include "run/*" \
             --include "*/latest.json" --include "*/badge.json" --include "*/badge.svg" \
-            --include "*/conformance.json" --include "*/fixlog.json" \
+            --include "*/conformance.json" --include "*/mark.svg" \
             --include "*/geometry.geojson" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
+            --only-show-errors
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
@@ -87,25 +90,10 @@ jobs:
           cd ..
           mkdir -p _site/data
           cp -r web/. _site/
-          # Publish only root aggregate files, reserved aggregate directories,
-          # and feed directories named by the registry-bounded index. The S3
-          # hydrate is additive and may contain delisted history; copying the
-          # whole tree would make those raw scorecards publicly reachable even
-          # though render-site correctly removed their HTML pages.
-          mkdir -p _site/data/artifacts
-          find data/artifacts -maxdepth 1 -type f -exec cp {} _site/data/artifacts/ \;
-          # run/ is intentionally private input. Its public, catalog-scoped
-          # projection is web/api/v1/run-status.json.
-          for aggregate in changes rollups; do
-            if [ -d "data/artifacts/$aggregate" ]; then
-              cp -r "data/artifacts/$aggregate" _site/data/artifacts/
-            fi
-          done
-          jq -r '.agencies | keys[]' data/artifacts/index.json | while IFS= read -r id; do
-            if [ -d "data/artifacts/$id" ]; then
-              cp -r "data/artifacts/$id" _site/data/artifacts/
-            fi
-          done
+          # Fail closed: raw fix logs remain available to the renderer above,
+          # but only the documented public filenames cross into Pages.
+          bash pipeline/scripts/assemble_public_artifacts.sh \
+            data/artifacts _site/data/artifacts
       - name: Lighthouse CI (accessibility >= 95; performance per gate mode)
         env:
           PERF_GATE: ${{ inputs.perf_gate || 'block' }}

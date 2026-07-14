@@ -322,11 +322,12 @@ the data, and the stated commitment matches measured reality.
 
 ### EXP-11 — A guided change with a comparable finding-clearance record
 
-**Status: Done (reviewed 2026-07-14).** `autofix.py` produces a conservative
-changed feed, and `fixlog.py` records a dated clearance only when a finding is
-absent from a later run under the same complete producer contract. The record
-is persisted per agency in `fixlog.json` and makes no claim about who caused
-the change.
+**Status: Done with a local-only patch boundary (reviewed 2026-07-14).** The
+explicit `scorecard autofix` command can produce a conservative changed copy
+for the user who invokes it. The daily service does not generate or host changed
+agency feeds. `fixlog.py` records a dated clearance only when a finding is absent
+from a later run under the same complete producer contract. The record makes no
+claim about who caused the change.
 
 **Pitch.** Walk a manager from a named finding, through the exact export setting
 and a safe auto-patch, to a dated comparable-feed result, with action attribution
@@ -341,15 +342,17 @@ firmly on the safe side of the no-editor red line: the tool never publishes for
 the agency.
 
 **Shape.** A guided flow on the agency page: (1) the finding in plain language,
-(2) the tool-specific setting (`tool_profiles.py`) or a downloadable `autofix.py`
-patch for the mechanically-safe cases only, (3) after the agency republishes, an
-auto-detected finding-clearance record (RR:R4) with a permalink for a board packet
-or NTD narrative (pairs with RR:E6 and EXP-09). Explicit boundary copy says the
-scorecard observes later feed state and a separate action record identifies who
-made the change. The shipped `/check/` client-side page is the safe upload surface.
+(2) the tool-specific setting (`tool_profiles.py`) or the explicit local
+`scorecard autofix` command for mechanically safe cases, (3) after the agency
+republishes, an auto-detected finding-clearance record (RR:R4) with a permalink
+for a board packet or NTD narrative (pairs with RR:E6 and EXP-09). Explicit
+boundary copy says the scorecard observes later feed state and a separate action
+record identifies who made the change. The shipped `/check/` client-side page is
+the safe upload surface.
 
-**Effort:** M. **Risks/deps:** brushes the "no feed editor" red line — the
-guardrail is that `autofix.py` stays conservative and the agency always publishes.
+**Effort:** M. **Risks/deps:** brushes the "no feed editor" red line. The
+guardrail is that `autofix.py` stays conservative, runs only when a user invokes
+it on their own copy, and the agency always publishes.
 **Excellence bar:** a manager goes from "what is wrong" to a reproducible later
 feed-state check without the tool ever touching their published feed or claiming
 causality it cannot establish.
@@ -358,10 +361,9 @@ causality it cannot establish.
 
 **Status: Done (2026-07-12).** `portfolio_digest.py` and the
 `scorecard portfolio-digest` command shipped earlier; the missing schedule
-now runs in the daily workflow on Mondays with `--save`, publishing the
-digest beside the rollups and persisting each cohort's weekly baseline
-through S3. Email delivery stays behind its consent gate, as this item
-required.
+now runs in the daily workflow on Mondays with `--save`, placing the digest in
+the private run summary and persisting each cohort's weekly baseline through
+S3. Email delivery stays behind its consent gate, as this item required.
 
 **Pitch.** Email a liaison a weekly "what moved in your cohort" digest, the way
 the agency alert loop already emails managers.

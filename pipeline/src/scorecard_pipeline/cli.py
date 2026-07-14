@@ -264,8 +264,8 @@ def run_agency(  # noqa: C901
         geometry_path.unlink(missing_ok=True)
         artifact["route_map"] = dict(geometry.summary)
     # The export diff (EXP-18): what changed in the feed itself since the last
-    # export, diffed from the compact structure fingerprint remembered beside
-    # the artifact. Best-effort by design; a diff must never block a score.
+    # export, diffed from the compact structure fingerprint remembered in the
+    # private cache. Best-effort by design; a diff must never block a score.
     from .exportdiff import export_diff
 
     try:
@@ -311,40 +311,6 @@ def run_agency(  # noqa: C901
         # NTD GTFS readiness (published / valid / current / agency_id), precomputed so
         # the web app and API render it without re-deriving the verdict.
         artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()
-    # Corrected-feed offer: run the safe deterministic fixes over the feed we
-    # already fetched (no extra network call) and attach a summary the page can
-    # render. The patched zip is written next to the agency's artifacts; it is
-    # gitignored and reaches the CDN through the workflow's S3 file sync, so the
-    # download link points at SCORECARD_CDN_BASE when that is set.
-    from .autofix import autofix_zip
-    from .config import artifacts_dir
-
-    corrected = artifacts_dir() / agency.id / "corrected.zip"
-    corrected.parent.mkdir(parents=True, exist_ok=True)
-    fixes = autofix_zip(str(fetched.path), str(corrected))
-    if fixes:
-        autofix_block: dict[str, Any] = {
-            "available": True,
-            "total": sum(f.count for f in fixes),
-            "fixes": [
-                {
-                    "code": f.code,
-                    "label": f.label,
-                    "count": f.count,
-                    "examples": f.examples[:3],
-                }
-                for f in fixes
-            ],
-            "download_path": f"data/artifacts/{agency.id}/corrected.zip",
-        }
-        cdn_base = os.environ.get("SCORECARD_CDN_BASE")
-        if cdn_base:
-            autofix_block["download_url"] = (
-                f"{cdn_base.rstrip('/')}/data/artifacts/{agency.id}/corrected.zip"
-            )
-        artifact["autofix"] = autofix_block
-    else:
-        artifact["autofix"] = {"available": False}
     path = publish(artifact)
     log.info(
         "%s: %s (%s) -> %s",

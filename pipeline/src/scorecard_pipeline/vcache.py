@@ -2,27 +2,27 @@
 
 The MobilityData Java validator is the most expensive step in a score, and the
 daily run re-validates every feed even though most feeds are byte-identical to
-the day before. This caches the normalized validator report next to a feed's
-artifacts, keyed by the feed's sha256, validator version, and validator country.
+the day before. This caches the normalized validator report in the private
+pipeline cache, keyed by the feed's sha256, validator version, and validator
+country.
 A re-score whose bytes, version, and country all match the cache reuses the
 report and skips the Java run entirely; anything else re-validates and refreshes
 the cache.
 
-The cache lives at data/artifacts/<id>/validator-cache.json so it rides the same
-upload-and-commit path as the artifacts and is ignored by the index and rollup
-walkers (which only read dated files and latest.json). One file per agency,
-overwritten when the feed changes, so the cache stays bounded.
+The local cache lives at data/cache/validator/<id>.json, outside the published
+data/artifacts tree and covered by the repository's data/cache ignore rule. One
+file per agency is overwritten when the feed changes, so the cache stays
+bounded and cannot become a public scorecard artifact.
 
-Optional S3 tier. The local file works because data/artifacts is committed, so
-every CI checkout carries yesterday's cache. When artifacts move off git to S3
-(docs/roadmap.md, Year 1), that git-carried copy goes cold, so this module also
-keeps the cache in S3 when ``VALIDATOR_CACHE_BUCKET`` (or ``ARTIFACTS_BUCKET``)
-is set: the local file stays the fast first tier, S3 is the durable second tier,
-and an S3 hit writes through to the local file. The S3 path is best-effort by
-design: boto3 is imported lazily and every S3 error is swallowed, so a missing
-dependency, missing credentials, or a transient failure never fails a score, it
-just falls back to running the validator. With no bucket set (local dev, forks)
-the behaviour is exactly the committed-file cache it has always been.
+Optional S3 tier. Production CI keeps the durable cache under the private
+``cache/validator/`` prefix when ``VALIDATOR_CACHE_BUCKET`` (or
+``ARTIFACTS_BUCKET``) is set: the ignored local file stays the fast first tier,
+S3 is the durable second tier, and an S3 hit writes through locally. The S3
+path is best-effort by design: boto3 is imported lazily and every S3 error is
+swallowed, so a missing dependency, missing credentials, or a transient
+failure never fails a score; it just falls back to running the validator. With
+no bucket set (local development and forks), the cache remains local and
+private to that checkout.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from .config import artifacts_dir
+from .config import cache_dir
 from .location import normalize_country_code
 from .validate import NoticeGroup, ValidationReport
 
@@ -71,7 +71,8 @@ def _report_from_json(data: dict[str, Any]) -> ValidationReport:
 
 
 def cache_path(agency_id: str) -> Path:
-    return artifacts_dir() / agency_id / "validator-cache.json"
+    """Private local path for one agency's normalized validator result."""
+    return cache_dir() / "validator" / f"{agency_id}.json"
 
 
 def _cache_country(country_code: str) -> str:
@@ -177,8 +178,8 @@ def load_cached(
     """The cached report when bytes, version, and country match, else None.
 
     Checks the local file first (fast, no network), then the S3 tier if a bucket
-    is configured. An S3 hit is written through to the local file so the rest of
-    this run, and any commit or upload step, sees it."""
+    is configured. An S3 hit is written through to the ignored local file so the
+    rest of this run can reuse it without placing it in published artifacts."""
     country = _cache_country(country_code)
     path = cache_path(agency_id)
     try:

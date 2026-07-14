@@ -27,6 +27,19 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+- Replaced parallel expansion queues with one proof-gated 90-day sequence:
+  Marketplace release, participant recruitment, six concierge remediation
+  requests, audited exact-feed closure receipts, and a pass-or-stop decision.
+- Kept deterministic autofix as an explicit local command; scheduled scoring no
+  longer generates, hosts, or advertises modified agency feed copies.
+
+### Security
+- Moved validator results, structural fingerprints, and raw finding-clearance
+  state behind private storage paths. Pages and CloudFront now publish from
+  positive filename allowlists, and publishers retire legacy public cache,
+  structure, fixlog, and corrected-feed objects.
+
 ## [1.2.0] - 2026-07-14
 
 ### Added

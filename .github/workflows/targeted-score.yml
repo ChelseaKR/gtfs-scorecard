@@ -27,7 +27,6 @@ jobs:
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
-      queue: max
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -88,6 +87,17 @@ jobs:
             --targets-file "$RUNNER_TEMP/targets.txt" \
             --index-before-out "$RUNNER_TEMP/index.before.json" \
             --etag-out "$RUNNER_TEMP/index.etag"
+          cd ..
+          # Ignore legacy public-path fix logs. Hydrate the private durable copy
+          # that the publisher replaces only after reconciliation.
+          find data/artifacts -mindepth 2 -maxdepth 2 -type f -name fixlog.json -delete
+          aws s3 sync "s3://${ARTIFACTS_BUCKET}/cache/fixlog" data/artifacts \
+            --only-show-errors
+          mkdir -p data/cache/structure
+          while IFS= read -r id; do
+            aws s3 cp "s3://${ARTIFACTS_BUCKET}/cache/structure/${id}.json" \
+              "data/cache/structure/${id}.json" --only-show-errors || true
+          done < "$RUNNER_TEMP/targets.txt"
 
       - name: Score selected agencies sequentially
         working-directory: pipeline
@@ -95,7 +105,6 @@ jobs:
           VALIDATOR_CACHE_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
           AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
-          SCORECARD_CDN_BASE: ${{ format('https://{0}', vars.ARTIFACTS_CDN || 'd14aimrgrbaz2a.cloudfront.net') }}
         run: |
           set -euo pipefail
           while IFS= read -r id; do
@@ -133,6 +142,15 @@ jobs:
             exit 1
           fi
 
+          fixlog_stage="$RUNNER_TEMP/private-fixlogs"
+          rm -rf "$fixlog_stage"
+          mkdir -p "$fixlog_stage"
+          jq -r '.agencies | keys[]' data/artifacts/index.json | while IFS= read -r id; do
+            if [ -f "data/artifacts/${id}/fixlog.json" ]; then
+              mkdir -p "$fixlog_stage/$id"
+              cp "data/artifacts/${id}/fixlog.json" "$fixlog_stage/$id/fixlog.json"
+            fi
+          done
           # Upload and tag the immutable dated snapshot before latest.json can
           # expose it. A tagging failure therefore leaves only an unreachable
           # dated object and safely blocks the aggregate/index commit.
@@ -153,8 +171,13 @@ jobs:
             # Publish each remaining selected-directory file, never the whole
             # tree. Additive sync only: no --delete or unrelated agency path.
             aws s3 sync "data/artifacts/${id}" "${artifact_uri}/${id}" \
-              --exclude "${snapshot_date}.json" \
+              --exclude "${snapshot_date}.json" --exclude "validator-cache.json" \
+              --exclude "structure.json" --exclude "fixlog.json" \
+              --exclude "corrected.zip" \
               --cache-control "max-age=300" --only-show-errors
+            for internal in validator-cache.json structure.json fixlog.json corrected.zip; do
+              aws s3 rm "${artifact_uri}/${id}/${internal}" --only-show-errors
+            done
           done < "$RUNNER_TEMP/targets.txt"
 
           # Aggregates were regenerated from every authoritative latest.json.
@@ -181,6 +204,18 @@ jobs:
               --cache-control "max-age=300" \
               --content-type application/json >/dev/null
           fi
+
+          # The public commit completed. Comparison memory may now advance to
+          # the selected feed states without getting ahead of publication.
+          while IFS= read -r id; do
+            if [ -f "data/cache/structure/${id}.json" ]; then
+              aws s3 cp "data/cache/structure/${id}.json" \
+                "s3://${ARTIFACTS_BUCKET}/cache/structure/${id}.json" \
+                --only-show-errors
+            fi
+          done < "$RUNNER_TEMP/targets.txt"
+          aws s3 sync "$fixlog_stage" "s3://${ARTIFACTS_BUCKET}/cache/fixlog" \
+            --delete --only-show-errors
 
   # S3 writes do not update main, so explicitly render and deploy the newly
   # activated records. Performance remains advisory for a data-only refresh;
