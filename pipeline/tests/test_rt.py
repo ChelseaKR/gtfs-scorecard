@@ -157,10 +157,11 @@ class TestScoring:
         assert finding.to_json()["points"] == round(100.0 - result.score, 1)
 
     def test_global_basmy_kangar_registry_entry_is_scored_as_vp_only(self) -> None:
-        from scorecard_pipeline.agencies import read_agencies
+        from scorecard_pipeline.agencies import _load_manifest
 
-        registry = Path(__file__).resolve().parents[2] / "agencies.yaml"
-        kangar = next(agency for agency in read_agencies(registry) if agency.id == "basmy-kangar")
+        root = Path(__file__).resolve().parents[2]
+        registry = _load_manifest(root, root / "registry" / "index.yaml")
+        kangar = next(agency for agency in registry if agency.id == "basmy-kangar")
         assert kangar.country == "MY"
         assert set(kangar.rt_urls) == {"vehicle_positions"}
 
