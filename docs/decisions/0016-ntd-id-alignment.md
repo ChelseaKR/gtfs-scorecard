@@ -1,80 +1,74 @@
-# 0016: NTD ID alignment as a forward-looking flag, not a grade input
+# 0016: Required agency_id presence with optional NTD-ID equality
 
-Status: accepted (2026-06)
+Status: accepted (updated 2026-07)
 
 ## Context
 
-Aligning the GTFS `agency_id` field with the agency's five-digit NTD ID lets a
-published feed join cleanly to its NTD record. The October 2024 proposed rule
-would have *required* that alignment in the feed; the
-[July 2025 final rule](https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026)
-did **not** adopt it, after 15 of 18 commenters opposed a mandated feed-side
-change, and instead collects the `agency_id`-to-NTD-ID link on the agency's P-50
-form. So this is a useful, optional convention, not a federal requirement the
-agency must satisfy in its GTFS.
+Every RY2026 NTD GTFS submission must provide a stable `agency_id` value for
+each reporter represented in the feed. Each value must be unique among those
+reporters and crosswalked to the reporter's five-digit NTD ID on the P-50 form.
+The feed's `agency_id` does **not** have to equal the NTD ID.
 
-Surfacing the alignment still helps the small and rural agencies this tool serves
-join their feed to their NTD record, and the service plan (Stage 5) calls for
-flagging it. We show it as an optional improvement, framed as a fix and never as
-a penalty.
+Equality is still a convenient convention for some single-reporter feeds, and
+the service plan (Stage 5) calls for showing it. The scorecard must distinguish
+that optional, neutral comparison from required presence and the required P-50
+crosswalk.
 
-> **Update (2026-06-30, RESEARCH-ROADMAP R7):** the original draft of this ADR and
-> the copy it drove said FTA "requires" `agency_id` to equal the NTD ID. That was
-> the October 2024 *proposed* rule, which the July 2025 final rule softened to the
-> P-50 crosswalk. The readiness copy in `ntd.py`, `render_site.py`, `config.py`,
-> and `docs/crosswalk.md` was corrected to the final-rule framing (optional
-> alignment, not a mandated feed change). The decision below is unchanged.
+> **Update (2026-07-13):** the original draft said FTA requires `agency_id` to
+> equal the NTD ID. A June correction then overcorrected by describing
+> `agency_id` presence itself as optional. Current RY2026 policy requires the
+> stable feed value and P-50 crosswalk, but not equality between the two
+> identifiers. The decision below records that distinction.
 
 Two facts shape how we can check it:
 
-- We can only *verify* alignment when we know the agency's NTD ID. For the curated
-  pilots we do; for the national Mobility Database cohort we usually do not.
-- The `agency_id` field is optional in GTFS when a feed has a single agency, so a
-  blank `agency_id` is valid GTFS even though it is not NTD-aligned.
+- Presence is observable from agency.txt, whether or not the registry has the
+  reporter's NTD ID.
+- The base GTFS Schedule specification permits `agency_id` to be omitted from a
+  single-agency feed, but an RY2026 NTD submission requires the value. A feed can
+  therefore be valid GTFS while still not ready for that NTD submission.
 
 ## Decision
 
-Add the NTD ID to the registry as an optional `ntd_id` and check `agency_id`
-against it as a standalone, zero-deduction flag in the NTD readiness section.
+Treat `agency_id` presence as a fourth NTD readiness pillar. Add the NTD ID to
+the registry as an optional `ntd_id` and compare equality separately as a
+standalone, zero-deduction flag in the same section.
 
 - `gtfs.read_agency_ids` reads the distinct `agency_id` values from agency.txt.
 - `ntd.assess_id_alignment(feed_agency_ids, ntd_id)` returns one of `aligned`,
-  `mismatch`, `missing`, or `unknown`, each with plain-language detail and, when
-  there is an action, a concrete fix.
-- The result rides on the artifact as `ntd_id_alignment` and renders below the
-  published/valid/current pillars on the static scorecard page.
+  `mismatch`, `missing`, or `unknown`. Missing presence names the required fix;
+  mismatch is allowed and asks only for confirmation of the P-50 crosswalk.
+- The result rides on the artifact as `ntd_id_alignment`. The presence verdict
+  joins published, valid, and current in `ntd_readiness`; the equality row
+  renders below those pillars only when there is a value to compare.
 
-It is **not** a fourth readiness pillar and does not affect the readiness status
-or any category grade.
+Presence affects the NTD-readiness status but not any category grade. Equality
+does not affect either.
 
-## Why a separate flag, not a pillar
+## Why equality stays a separate flag
 
-The three readiness pillars (published, valid, current) each apply to every feed
-and combine into a single certify-readiness status. Alignment is different on both
-counts: it is only checkable when we have the NTD ID, and it is a distinct
-requirement from "is this feed certifiable today." Folding it into the readiness
-status would, for the many feeds where we have no NTD ID, either invent an
-"unknown" pillar that drags the status down or silently pass it. Keeping it
-adjacent lets the status stay honest while the flag still surfaces the
-requirement.
+Presence is observable from every feed and required in RY2026, so it belongs in
+readiness. Equality is only checkable when the registry has the NTD ID and is not
+required. Folding equality into readiness would penalize legitimate values and
+shared regional feeds. Keeping it adjacent makes the optional convention visible
+without misrepresenting it as a filing rule.
 
 ## Why neutral when the NTD ID is unknown
 
-The product principles say findings are framed as fixes and absence is shown
-neutrally, the way a missing realtime feed is never a zero. When we have no NTD ID
-on file we cannot tell whether a feed is aligned, so the status is `unknown` with
-a short note about the requirement and no fix or penalty. This mirrors the
-state-level equity overlay degrading to "unknown" rather than failing
+When we have no NTD ID on file we cannot compare equality, so that status is
+`unknown` with no penalty. The presence pillar still reports whether agency.txt
+provides a value. This mirrors the state-level equity overlay degrading to
+"unknown" rather than failing
 ([ADR 0015](0015-equity-overlay-state-level.md)).
 
 ## Consequences
 
-- The two pilots (Unitrans `90142`, Yolobus `90090`) get a real aligned or
-  mismatch read; everyone else sees a neutral, educational note until their NTD ID
-  is curated in.
+- Every US artifact gets an agency_id presence read. The two pilots (Unitrans
+  `90142`, Yolobus `90090`) also get a real equality comparison; everyone else
+  sees a neutral equality note until their NTD ID is curated in.
 - Adding an NTD ID is a one-line registry edit (`ntd_id: "NNNNN"`), so a curator
-  or a supporter can turn the check on per agency without code.
-- Zero grade impact, consistent with the other attached blocks (recommendations,
-  conformance, routability).
-- Older artifacts without the block render exactly as before; the renderer omits
-  the line when `ntd_id_alignment` is absent.
+  or supporter can turn on equality comparison without code.
+- Zero category-grade impact, consistent with the other attached blocks
+  (recommendations, conformance, routability).
+- Older artifacts with `feed_agency_ids` are re-presented with the current
+  presence and equality wording without waiting for a rescore.

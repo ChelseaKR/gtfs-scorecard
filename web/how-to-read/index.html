@@ -15,10 +15,6 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <script>
@@ -36,7 +32,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -44,7 +40,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/agencies/"><span itemprop="name">All agencies</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">How to read your scorecard</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -55,9 +51,10 @@
     <section><h2 class="section-title">What this checks</h2>
     <p>Transit apps and trip planners read a file your agency publishes, called a
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed.
-    It lists your stops, routes, and schedule. This tool downloads that feed every day, runs the
-    same validator the State and the apps use, and turns the result into a grade and a short list
-    of fixes. It does not look at your buses or your service, only the data file.
+    It lists your stops, routes, and schedule. This tool is scheduled to download that feed once a day,
+    run the canonical validator used across the GTFS ecosystem, and turn the result into a grade and a
+    short list of fixes. The <a href="/status/">status page</a> shows when that work actually completed.
+    It does not look at your buses or your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
     <strong>Freshness</strong> (is the feed about to expire), <strong>Rider experience</strong>
@@ -82,18 +79,19 @@
     band. A small upward margin is encouragement, not a warning: it means the next letter is
     within reach, often with a single fix.</p>
     <p>The category weights behind the score are documented judgment calls, so we also measure
-    their consequences the same way: rescoring all 1449 tracked agencies under every &plusmn;20% single-weight change, at most 8.1% of letter grades move, studied 2026-07-02. Full numbers, per perturbation: <a href="/data/artifacts/sensitivity.json">sensitivity.json</a>.</p></section>
+    their consequences the same way: a current-contract study has not been published yet. When it runs, its headline lands here and the full numbers are published at <a href="/data/artifacts/sensitivity.json">sensitivity.json</a>.</p></section>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="sandbox" aria-labelledby="sandbox-h">
     <h2 class="section-title" id="sandbox-h">Methodology sandbox</h2>
     <p>The grade blends the four categories with fixed weights. Curious how much those
-    weights matter? Move the sliders to reweight the rubric and watch how many of the
-    agencies we track would change letter grade. Nothing is saved and no grade on the
-    site changes; this is a what-if you run in your own browser. Agencies without
+    weights matter? Move the sliders to reweight the rubric and watch how the aggregate
+    grade distribution changes for the current comparison-eligible cohort. The sandbox
+    never names hypothetical winners or losers. Nothing is saved and no grade on the
+    site changes; this is a what-if you run in your own browser. Feed records without
     realtime data have that weight spread across the categories they do have, exactly
     as the published score does.</p>
-    <p id="sandbox-status" role="status">Loading the live weights and agency scores…</p>
+    <p id="sandbox-status" role="status">Loading the live weights and eligible feed scores…</p>
     <div class="sandbox-controls" hidden>
       <div class="sandbox-slider"><label for="w-correctness">Correctness</label><input type="range" id="w-correctness" data-cat="correctness" min="0" max="100" step="1" value="0" disabled aria-describedby="w-correctness-out"><output id="w-correctness-out" data-cat="correctness" for="w-correctness">—</output></div>      <div class="sandbox-slider"><label for="w-freshness">Freshness</label><input type="range" id="w-freshness" data-cat="freshness" min="0" max="100" step="1" value="0" disabled aria-describedby="w-freshness-out"><output id="w-freshness-out" data-cat="freshness" for="w-freshness">—</output></div>      <div class="sandbox-slider"><label for="w-completeness">Rider experience</label><input type="range" id="w-completeness" data-cat="completeness" min="0" max="100" step="1" value="0" disabled aria-describedby="w-completeness-out"><output id="w-completeness-out" data-cat="completeness" for="w-completeness">—</output></div>      <div class="sandbox-slider"><label for="w-realtime">Realtime quality</label><input type="range" id="w-realtime" data-cat="realtime" min="0" max="100" step="1" value="0" disabled aria-describedby="w-realtime-out"><output id="w-realtime-out" data-cat="realtime" for="w-realtime">—</output></div>
       <div class="sandbox-buttons">
@@ -101,23 +99,18 @@
       </div>
     </div>
     <div id="sandbox-summary" aria-live="polite"></div>
-    <div id="sandbox-sample"></div>
     </section>
     <style>
       #sandbox .sandbox-controls { display: grid; gap: 0.9rem; margin: 1rem 0; }
       #sandbox .sandbox-slider { display: grid; grid-template-columns: 10rem 1fr 3.5rem; align-items: center; gap: 0.75rem; }
       #sandbox .sandbox-slider label { font-weight: 600; }
-      #sandbox .sandbox-slider input[type="range"] { width: 100%; accent-color: var(--green); }
+      #sandbox .sandbox-slider input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--green); }
       #sandbox .sandbox-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); }
       #sandbox .sandbox-buttons { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
       #sandbox .sandbox-headline { font-weight: 600; margin: 0.75rem 0; }
       #sandbox .sandbox-table-scroll { overflow-x: auto; }
       #sandbox table.sandbox-table { border-collapse: collapse; width: 100%; max-width: 34rem; }
       #sandbox table.sandbox-table th, #sandbox table.sandbox-table td { text-align: left; padding: 0.35rem 0.75rem; border-bottom: 1.5px solid var(--line); font-variant-numeric: tabular-nums; }
-      #sandbox .sandbox-sub { font-size: 1rem; margin: 1rem 0 0.4rem; }
-      #sandbox .sandbox-movers { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
-      #sandbox .sandbox-movers li { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-      #sandbox .sandbox-delta { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
       @media (max-width: 40rem) { #sandbox .sandbox-slider { grid-template-columns: 1fr; gap: 0.25rem; } #sandbox .sandbox-slider output { text-align: left; } }
     </style>
 
@@ -139,14 +132,16 @@
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="methodology-h"><h2 class="section-title" id="methodology-h">Methodology and versions</h2>
-    <p>Every grade is computed by scorecard rubric <strong>v1.1</strong> on top of the
+    <p>New checks use scorecard rubric <strong>v1.2</strong> on top of the
     MobilityData <abbr title="GTFS Schedule Validator">gtfs-validator</abbr> <strong>8.0.1</strong>,
-    anchored to the California Transit Data Guidelines v4.0. The same validator and rubric version are
-    stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
+    using portable GTFS fields and published weights. California guidance informed the first profile and
+    remains a local authority for California, not a worldwide compliance standard. The same validator and
+    methodology version used for each stored grade is stamped on its scorecard, so older and current
+    results remain traceable without implying they are directly comparable. The full method,
     with citations, is in the <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">scoring rubric</a>.</p>
     <p>When the rubric changes we log it here with the date it took effect, so a score change is never a
     silent rule change:</p>
-    <dl class="standards-list"><dt>Rubric v1.1 <span class="ntd-status ntd-unknown">Effective 2026-06-16</span></dt><dd>The most rider-affecting fix is ranked first, and every grade now carries the validator and rubric version that produced it, so a trend can tell a feed change apart from a methodology change.</dd><dt>Rubric v1.0 <span class="ntd-status ntd-unknown">Effective 2026-06-11</span></dt><dd>First published rubric: four weighted categories (Correctness 35%, Freshness 20%, Rider experience 25%, Realtime 20%), A-F grade bands, scored on the MobilityData gtfs-validator and anchored to the California Transit Data Guidelines v4.0.</dd></dl></section>
+    <dl class="standards-list"><dt>Rubric v1.2 <span class="ntd-status ntd-unknown">Effective 2026-07-13</span></dt><dd>Realtime quality now assesses only the GTFS-Realtime feed kinds an agency publishes. Unconfigured kinds are neutral, and TripUpdates coverage or VehiclePositions plausibility enters the score only when that kind is configured. Finding points use the same measurable-component denominator as the category score, and a dependent measure drops out when its endpoint produced no successful sample. A fixed-corpus replay projected 15 of 31 partial-feed artifacts changing letter bands; see docs/rubric-impact-1.2.md.</dd><dt>Rubric v1.1 <span class="ntd-status ntd-unknown">Effective 2026-06-16</span></dt><dd>The most rider-affecting fix is ranked first, and every grade now carries the validator and rubric version that produced it, so a trend can tell a feed change apart from a methodology change.</dd><dt>Rubric v1.0 <span class="ntd-status ntd-unknown">Effective 2026-06-11</span></dt><dd>First published rubric: four weighted categories (Correctness 35%, Freshness 20%, Rider experience 25%, Realtime 20%), A-F grade bands, scored on the MobilityData gtfs-validator and anchored to the California Transit Data Guidelines v4.0.</dd></dl></section>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="glossary-h"><h2 class="section-title" id="glossary-h">Glossary</h2>
@@ -159,14 +154,21 @@
       <dd>The live companion to GTFS: real-time trip updates, vehicle positions, and service alerts.</dd>
       <dt><dfn id="g-rt"><abbr title="realtime">RT</abbr></dfn></dt>
       <dd>Short for realtime: live arrival and position data, as opposed to the static schedule.</dd>
+    </dl>
+    <h3 class="section-sub">United States terms</h3>
+    <p>These appear only on the site's explicitly U.S.-scoped reporting and equity views.</p>
+    <dl class="standards-list">
       <dt><dfn id="g-ntd"><abbr title="National Transit Database">NTD</abbr></dfn></dt>
-      <dd>The Federal Transit Administration's national reporting system for transit agencies.</dd>
+      <dd>The U.S. Federal Transit Administration's reporting system for transit agencies.</dd>
       <dt><dfn id="g-fta"><abbr title="Federal Transit Administration">FTA</abbr></dfn></dt>
-      <dd>The federal agency that funds transit and runs the National Transit Database.</dd>
+      <dd>The United States federal agency that funds transit and runs the National Transit Database.</dd>
       <dt><dfn id="g-d10"><abbr title="FTA NTD certification form D-10">D-10</abbr></dfn></dt>
-      <dd>The annual NTD certification form on which an agency certifies its GTFS feed.</dd>
+      <dd>The annual U.S. NTD form on which an agency certifies its GTFS feed.</dd>
       <dt><dfn id="g-acs"><abbr title="American Community Survey">ACS</abbr></dfn></dt>
-      <dd>The Census Bureau survey used for the equity overlay's poverty and access indicators.</dd>
+      <dd>The U.S. Census Bureau survey used for the U.S. equity overlay's poverty and access indicators.</dd>
+    </dl>
+    <h3 class="section-sub">Data and implementation terms</h3>
+    <dl class="standards-list">
       <dt><dfn id="g-mdb"><abbr title="Mobility Database">MDB</abbr></dfn></dt>
       <dd>The Mobility Database, the open catalog of transit feeds the scorecard discovers feeds from.</dd>
       <dt><dfn id="g-gbfs"><abbr title="General Bikeshare Feed Specification">GBFS</abbr></dfn></dt>
@@ -186,7 +188,6 @@
         var GRADES = ["A", "B", "C", "D", "F"];
         var status = document.getElementById("sandbox-status");
         var summary = document.getElementById("sandbox-summary");
-        var sample = document.getElementById("sandbox-sample");
         var resetBtn = document.getElementById("sandbox-reset");
         var sliders = {}, outputs = {};
         CATS.forEach(function (c) {
@@ -214,12 +215,6 @@
           return den > 0 ? num / den : 0;
         }
 
-        function esc(s) {
-          return String(s).replace(/[&<>"]/g, function (ch) {
-            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch];
-          });
-        }
-
         function currentWeights() {
           var w = {};
           CATS.forEach(function (c) { w[c] = Number(sliders[c].value) / 100; });
@@ -233,7 +228,7 @@
           });
           var userCounts = {}, pubCounts = {};
           GRADES.forEach(function (g) { userCounts[g] = 0; pubCounts[g] = 0; });
-          var moved = [], changed = 0;
+          var changed = 0;
           agencies.forEach(function (a) {
             // Baseline: the same formula run at the published weights, so any
             // difference below is attributable to the user's weights alone, not
@@ -249,10 +244,6 @@
             userCounts[ug]++;
             if (ug !== pub) {
               changed++;
-              moved.push({
-                id: a.id, name: a.name, from: pub, to: ug,
-                delta: uo - bo,
-              });
             }
           });
 
@@ -266,41 +257,15 @@
           summary.innerHTML =
             '<p class="sandbox-headline">' +
             (changed === 0
-              ? "These are the published weights: no agency changes band."
+              ? "These are the published weights: no eligible feed record changes band."
               : changed + " of " + agencies.length +
-                " agencies change letter grade under these weights.") +
+                " eligible feed records change letter grade under these weights.") +
             "</p>" +
             '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
-            "<caption class=\"visually-hidden\">Agencies per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            "<caption class=\"visually-hidden\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
             "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
             "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
             "<tbody>" + rows + "</tbody></table></div>";
-
-          if (!moved.length) {
-            sample.innerHTML = "";
-            return;
-          }
-          var up = moved.filter(function (m) { return m.delta > 0; })
-            .sort(function (a, b) { return b.delta - a.delta; }).slice(0, 5);
-          var down = moved.filter(function (m) { return m.delta < 0; })
-            .sort(function (a, b) { return a.delta - b.delta; }).slice(0, 5);
-          function li(m) {
-            return "<li><span>" + esc(m.name) + "</span> " +
-              '<span class="grade-chip grade-' + m.from.toLowerCase() + '">' + m.from +
-              '</span> &rarr; <span class="grade-chip grade-' + m.to.toLowerCase() +
-              '">' + m.to + "</span> <span class=\"sandbox-delta\">(" +
-              (m.delta > 0 ? "+" : "") + m.delta.toFixed(1) + ")</span></li>";
-          }
-          var html = "";
-          if (up.length) {
-            html += "<h3 class=\"sandbox-sub\">Rise the most</h3><ul class=\"sandbox-movers\">" +
-              up.map(li).join("") + "</ul>";
-          }
-          if (down.length) {
-            html += "<h3 class=\"sandbox-sub\">Fall the most</h3><ul class=\"sandbox-movers\">" +
-              down.map(li).join("") + "</ul>";
-          }
-          sample.innerHTML = html;
         }
 
         function applyDefaults() {
@@ -320,8 +285,15 @@
           });
           defaults = scoring.category_weights || {};
           agencies = (agenciesDoc.agencies || []).filter(function (a) {
-            return typeof a.score === "number";
+            return a.comparison_eligible === true && typeof a.score === "number";
           });
+          if (!agencies.length) {
+            if (status) {
+              status.textContent =
+                "No current-contract comparison cohort is available for the sandbox yet.";
+            }
+            return;
+          }
           CATS.forEach(function (c) {
             sliders[c].disabled = false;
             sliders[c].addEventListener("input", recompute);
@@ -343,37 +315,64 @@
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

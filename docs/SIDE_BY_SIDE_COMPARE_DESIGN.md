@@ -10,7 +10,7 @@ remain future work.
 
 ## Motivation
 
-Users want to compare two transit agencies side-by-side: "How does Agency A's realtime quality stack up against Agency B?" or "Which has better fare data, X or Y?" The national leaderboard shows rankings, but direct comparison would highlight actionable differences.
+Users want to compare two transit agencies side-by-side: "How does Agency A's realtime quality stack up against Agency B?" or "Which has better fare data, X or Y?" A user-selected comparison highlights actionable differences without publishing an absolute ranking.
 
 ## Design
 
@@ -18,7 +18,7 @@ Users want to compare two transit agencies side-by-side: "How does Agency A's re
 
 - **URL:** `/compare/?a=agency-id-1&b=agency-id-2`
 - **Entry points:**
-  - Leaderboard row: "Compare with …" context menu (select another agency)
+  - Coverage or directory row: "Compare with …" context menu (select another agency)
   - Agency page: "Compare with another agency" link
   - Direct link (e.g., `/compare/?a=whitehorse-transit&b=barrie-transit`)
 
@@ -151,7 +151,7 @@ test suites as of 2026-07-10.
 ## Future Enhancements
 
 Once MVP is live:
-- Add to leaderboard: "Compare this agency" option
+- Add to the scorecard directory: "Compare this agency" option
 - Add to homepage: "Start a comparison" link + search
 - Track usage: which comparisons are made most? (informs future features)
 - Highlight deltas: "Agency A is 15 points higher on Correctness"

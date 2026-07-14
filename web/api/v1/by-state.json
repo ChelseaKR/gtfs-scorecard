@@ -1,615 +1,685 @@
 {
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "states": [
     {
-      "count": 10,
-      "grade_distribution": {
-        "A": 0,
-        "B": 1,
-        "C": 3,
-        "D": 0,
-        "F": 6
-      },
-      "median_score": 52.0,
-      "state": "Alabama"
-    },
-    {
+      "comparison_eligible_count": 0,
       "count": 9,
       "grade_distribution": {
         "A": 0,
-        "B": 6,
-        "C": 0,
-        "D": 1,
-        "F": 2
-      },
-      "median_score": 81.3,
-      "state": "Alaska"
-    },
-    {
-      "count": 30,
-      "grade_distribution": {
-        "A": 3,
-        "B": 3,
-        "C": 3,
-        "D": 3,
-        "F": 18
-      },
-      "median_score": 56.3,
-      "state": "Arizona"
-    },
-    {
-      "count": 3,
-      "grade_distribution": {
-        "A": 0,
         "B": 0,
-        "C": 0,
-        "D": 0,
-        "F": 3
-      },
-      "median_score": 39.7,
-      "state": "Arkansas"
-    },
-    {
-      "count": 199,
-      "grade_distribution": {
-        "A": 14,
-        "B": 27,
-        "C": 21,
-        "D": 16,
-        "F": 121
-      },
-      "median_score": 53.5,
-      "state": "California"
-    },
-    {
-      "count": 126,
-      "grade_distribution": {
-        "A": 2,
-        "B": 30,
-        "C": 42,
-        "D": 10,
-        "F": 42
-      },
-      "median_score": 73.6,
-      "state": "Colorado"
-    },
-    {
-      "count": 15,
-      "grade_distribution": {
-        "A": 0,
-        "B": 1,
-        "C": 5,
-        "D": 1,
-        "F": 8
-      },
-      "median_score": 58.3,
-      "state": "Connecticut"
-    },
-    {
-      "count": 1,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 0,
-        "F": 1
-      },
-      "median_score": 48.0,
-      "state": "Delaware"
-    },
-    {
-      "count": 6,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 0,
-        "F": 6
-      },
-      "median_score": 42.9,
-      "state": "District of Columbia"
-    },
-    {
-      "count": 52,
-      "grade_distribution": {
-        "A": 4,
-        "B": 0,
-        "C": 6,
-        "D": 4,
-        "F": 38
-      },
-      "median_score": 50.7,
-      "state": "Florida"
-    },
-    {
-      "count": 18,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 1,
-        "F": 16
-      },
-      "median_score": 42.4,
-      "state": "Georgia"
-    },
-    {
-      "count": 3,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 0,
-        "F": 3
-      },
-      "median_score": 40.1,
-      "state": "Hawaii"
-    },
-    {
-      "count": 4,
-      "grade_distribution": {
-        "A": 1,
-        "B": 0,
-        "C": 1,
-        "D": 0,
-        "F": 2
-      },
-      "median_score": 60.0,
-      "state": "Idaho"
-    },
-    {
-      "count": 17,
-      "grade_distribution": {
-        "A": 0,
-        "B": 1,
-        "C": 3,
-        "D": 3,
-        "F": 10
-      },
-      "median_score": 52.2,
-      "state": "Illinois"
-    },
-    {
-      "count": 13,
-      "grade_distribution": {
-        "A": 0,
-        "B": 5,
-        "C": 2,
-        "D": 0,
-        "F": 6
-      },
-      "median_score": 75.3,
-      "state": "Indiana"
-    },
-    {
-      "count": 34,
-      "grade_distribution": {
-        "A": 0,
-        "B": 10,
-        "C": 18,
-        "D": 3,
-        "F": 3
-      },
-      "median_score": 75.2,
-      "state": "Iowa"
-    },
-    {
-      "count": 6,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 2,
-        "F": 4
-      },
-      "median_score": 45.5,
-      "state": "Kansas"
-    },
-    {
-      "count": 8,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 4,
-        "F": 3
-      },
-      "median_score": 63.0,
-      "state": "Kentucky"
-    },
-    {
-      "count": 3,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 1,
-        "F": 2
-      },
-      "median_score": 46.2,
-      "state": "Louisiana"
-    },
-    {
-      "count": 7,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 1,
-        "F": 5
-      },
-      "median_score": 46.6,
-      "state": "Maine"
-    },
-    {
-      "count": 36,
-      "grade_distribution": {
-        "A": 1,
-        "B": 4,
-        "C": 4,
-        "D": 4,
-        "F": 23
-      },
-      "median_score": 50.0,
-      "state": "Maryland"
-    },
-    {
-      "count": 67,
-      "grade_distribution": {
-        "A": 1,
-        "B": 16,
-        "C": 13,
-        "D": 4,
-        "F": 33
-      },
-      "median_score": 60.4,
-      "state": "Massachusetts"
-    },
-    {
-      "count": 22,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 3,
-        "D": 3,
-        "F": 14
-      },
-      "median_score": 56.1,
-      "state": "Michigan"
-    },
-    {
-      "count": 9,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 1,
-        "D": 3,
-        "F": 3
-      },
-      "median_score": 61.7,
-      "state": "Minnesota"
-    },
-    {
-      "count": 4,
-      "grade_distribution": {
-        "A": 1,
-        "B": 0,
-        "C": 1,
-        "D": 0,
-        "F": 2
-      },
-      "median_score": 58.2,
-      "state": "Mississippi"
-    },
-    {
-      "count": 6,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 1,
-        "F": 4
-      },
-      "median_score": 48.7,
-      "state": "Missouri"
-    },
-    {
-      "count": 9,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 1,
-        "D": 0,
-        "F": 6
-      },
-      "median_score": 49.9,
-      "state": "Montana"
-    },
-    {
-      "count": 5,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 1,
-        "F": 3
-      },
-      "median_score": 52.1,
-      "state": "Nebraska"
-    },
-    {
-      "count": 9,
-      "grade_distribution": {
-        "A": 0,
-        "B": 3,
-        "C": 0,
-        "D": 2,
-        "F": 4
-      },
-      "median_score": 69.0,
-      "state": "Nevada"
-    },
-    {
-      "count": 3,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 0,
-        "F": 2
-      },
-      "median_score": 42.3,
-      "state": "New Hampshire"
-    },
-    {
-      "count": 7,
-      "grade_distribution": {
-        "A": 2,
-        "B": 1,
-        "C": 0,
-        "D": 0,
-        "F": 4
-      },
-      "median_score": 52.9,
-      "state": "New Jersey"
-    },
-    {
-      "count": 20,
-      "grade_distribution": {
-        "A": 1,
-        "B": 1,
-        "C": 0,
-        "D": 6,
-        "F": 12
-      },
-      "median_score": 57.9,
-      "state": "New Mexico"
-    },
-    {
-      "count": 87,
-      "grade_distribution": {
-        "A": 6,
-        "B": 2,
-        "C": 11,
-        "D": 22,
-        "F": 46
-      },
-      "median_score": 56.7,
-      "state": "New York"
-    },
-    {
-      "count": 36,
-      "grade_distribution": {
-        "A": 0,
-        "B": 6,
-        "C": 3,
-        "D": 5,
-        "F": 22
-      },
-      "median_score": 51.0,
-      "state": "North Carolina"
-    },
-    {
-      "count": 3,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 1,
-        "D": 0,
-        "F": 2
-      },
-      "median_score": 44.4,
-      "state": "North Dakota"
-    },
-    {
-      "count": 21,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 6,
-        "D": 2,
-        "F": 11
-      },
-      "median_score": 57.6,
-      "state": "Ohio"
-    },
-    {
-      "count": 4,
-      "grade_distribution": {
-        "A": 0,
-        "B": 1,
-        "C": 0,
-        "D": 1,
-        "F": 2
-      },
-      "median_score": 55.3,
-      "state": "Oklahoma"
-    },
-    {
-      "count": 92,
-      "grade_distribution": {
-        "A": 0,
-        "B": 23,
-        "C": 24,
-        "D": 5,
-        "F": 40
-      },
-      "median_score": 71.7,
-      "state": "Oregon"
-    },
-    {
-      "count": 16,
-      "grade_distribution": {
-        "A": 1,
-        "B": 0,
-        "C": 4,
-        "D": 2,
-        "F": 9
-      },
-      "median_score": 50.2,
-      "state": "Pennsylvania"
-    },
-    {
-      "count": 5,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 4,
-        "D": 0,
-        "F": 1
-      },
-      "median_score": 76.5,
-      "state": "Rhode Island"
-    },
-    {
-      "count": 7,
-      "grade_distribution": {
-        "A": 0,
-        "B": 1,
-        "C": 0,
-        "D": 1,
-        "F": 5
-      },
-      "median_score": 46.6,
-      "state": "South Carolina"
-    },
-    {
-      "count": 2,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 0,
-        "F": 2
-      },
-      "median_score": 50.0,
-      "state": "South Dakota"
-    },
-    {
-      "count": 11,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 2,
-        "D": 2,
-        "F": 7
-      },
-      "median_score": 56.8,
-      "state": "Tennessee"
-    },
-    {
-      "count": 17,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 4,
-        "D": 2,
-        "F": 9
-      },
-      "median_score": 53.4,
-      "state": "Texas"
-    },
-    {
-      "count": 161,
-      "grade_distribution": {
-        "A": 7,
-        "B": 35,
-        "C": 29,
-        "D": 10,
-        "F": 80
-      },
-      "median_score": 60.0,
-      "state": "Unlocated"
-    },
-    {
-      "count": 5,
-      "grade_distribution": {
-        "A": 0,
-        "B": 0,
-        "C": 0,
-        "D": 0,
-        "F": 5
-      },
-      "median_score": 48.2,
-      "state": "Utah"
-    },
-    {
-      "count": 28,
-      "grade_distribution": {
-        "A": 0,
-        "B": 8,
-        "C": 10,
-        "D": 1,
-        "F": 9
-      },
-      "median_score": 75.5,
-      "state": "Vermont"
-    },
-    {
-      "count": 75,
-      "grade_distribution": {
-        "A": 0,
-        "B": 19,
-        "C": 23,
-        "D": 10,
-        "F": 23
-      },
-      "median_score": 74.1,
-      "state": "Virginia"
-    },
-    {
-      "count": 95,
-      "grade_distribution": {
-        "A": 8,
-        "B": 24,
-        "C": 26,
-        "D": 7,
-        "F": 30
-      },
-      "median_score": 75.5,
-      "state": "Washington"
-    },
-    {
-      "count": 1,
-      "grade_distribution": {
-        "A": 0,
-        "B": 1,
         "C": 0,
         "D": 0,
         "F": 0
       },
-      "median_score": 85.6,
+      "median_score": null,
+      "state": "Alabama"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 6,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Alaska"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 23,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Arizona"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Arkansas"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 186,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "California"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 95,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Colorado"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 11,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Connecticut"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 1,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Delaware"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 5,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "District of Columbia"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 43,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Florida"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 16,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Georgia"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Hawaii"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Idaho"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 15,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Illinois"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 11,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Indiana"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 21,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Iowa"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 6,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Kansas"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 7,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Kentucky"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Louisiana"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 7,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Maine"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 34,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Maryland"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 41,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Massachusetts"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 18,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Michigan"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 9,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Minnesota"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Mississippi"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 5,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Missouri"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 6,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Montana"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 5,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Nebraska"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 6,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Nevada"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "New Hampshire"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 6,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "New Jersey"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 14,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "New Mexico"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 84,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "New York"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 24,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "North Carolina"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "North Dakota"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 19,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Ohio"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 4,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Oklahoma"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 78,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Oregon"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 15,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Pennsylvania"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Rhode Island"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 4,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "South Carolina"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 1,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "South Dakota"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 10,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Tennessee"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 15,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Texas"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 68,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Unlocated"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 5,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Utah"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 16,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Vermont"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 58,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Virginia"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 78,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "state": "Washington"
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 1,
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
       "state": "West Virginia"
     },
     {
-      "count": 22,
+      "comparison_eligible_count": 0,
+      "count": 15,
       "grade_distribution": {
         "A": 0,
-        "B": 7,
-        "C": 3,
-        "D": 2,
-        "F": 10
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
       },
-      "median_score": 62.5,
+      "median_score": null,
       "state": "Wisconsin"
     }
   ]

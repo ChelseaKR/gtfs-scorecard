@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Any, cast
 
@@ -29,7 +28,6 @@ def test_artifact_writers_share_one_job_level_lock() -> None:
         assert job["concurrency"] == {
             "group": "artifacts-publish",
             "cancel-in-progress": False,
-            "queue": "max",
         }
 
     # Scoring remains parallel; only jobs that can write the public artifact
@@ -83,9 +81,21 @@ def test_targeted_publish_is_path_bounded_and_preserves_daily_status() -> None:
     assert "data/artifacts/run" not in text
     assert "perf_gate: advisory" in text
 
-    # No command may upload the entire artifact tree or delete remote objects.
+    # No command may upload the entire artifact tree. Deletes are scoped to the
+    # private fixlog cache and bounded named-change namespace, so reconciliation
+    # can retire stale claims without touching score history.
     assert 'aws s3 sync data/artifacts "' not in text
-    assert not re.search(r"^\s*aws s3 (?:sync|rm).*--delete", text, flags=re.MULTILINE)
+    assert text.count("\n            --delete ") == 2
+    assert '"s3://${ARTIFACTS_BUCKET}/cache/fixlog"' in text
+    assert '"${artifact_uri}/changes"' in text
+
+
+def test_artifact_publishers_regenerate_and_prune_named_change_claims() -> None:
+    for name in ("scorecard.yml", "refresh.yml"):
+        text = (WORKFLOWS / name).read_text()
+        assert "uv run scorecard render-site" in text
+        assert "data/artifacts/changes" in text
+        assert "--delete --cache-control" in text
 
 
 def test_boto3_workflow_commands_use_the_temporary_python_environment() -> None:
@@ -94,3 +104,13 @@ def test_boto3_workflow_commands_use_the_temporary_python_environment() -> None:
 
     assert "uv run --with boto3 scorecard" not in combined
     assert combined.count("uv run --with boto3 python -m scorecard_pipeline.cli") == 5
+
+
+def test_daily_collect_hydrates_current_before_overlaying_shards() -> None:
+    text = (WORKFLOWS / "scorecard.yml").read_text()
+
+    hydrate = text.index("Hydrate the authoritative current corpus and compact history")
+    gather = text.index("Gather shard artifacts")
+    assert hydrate < gather
+    assert '--recursive --exclude "*" --include "*/latest.json"' in text
+    assert "index.json proves" in text

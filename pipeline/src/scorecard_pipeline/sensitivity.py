@@ -102,6 +102,16 @@ def weight_sensitivity(
         for agency_id, cats in per_agency.items()
     }
     total = len(per_agency)
+    if total == 0:
+        # No denominator means no robustness result. Publishing synthetic
+        # perturbations with 0% churn would read as evidence that the rubric is
+        # stable when the study did not measure a single feed record.
+        return {
+            "factor": factor,
+            "agency_count": 0,
+            "perturbations": [],
+            "max_grade_change_pct": None,
+        }
     perturbations: list[dict[str, Any]] = []
     for perturbation in perturbed_weights(factor):
         changed = sum(
@@ -109,11 +119,11 @@ def weight_sensitivity(
             for agency_id, cats in per_agency.items()
             if letter_grade(rescore(cats, perturbation["weights"])) != baseline[agency_id]
         )
-        share = round(changed / total * 100, 1) if total else 0.0
+        share = round(changed / total * 100, 1)
         perturbations.append(
             {**perturbation, "agencies_changed": changed, "grade_change_pct": share}
         )
-    max_churn = max((p["grade_change_pct"] for p in perturbations), default=0.0)
+    max_churn = max(p["grade_change_pct"] for p in perturbations)
     return {
         "factor": factor,
         "agency_count": total,

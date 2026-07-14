@@ -11,10 +11,12 @@ import requests
 
 from scorecard_pipeline import fetch as fetchmod
 from scorecard_pipeline.config import Agency, raw_dir
-from scorecard_pipeline.net import UnsafeURLError
+from scorecard_pipeline.net import FetchTrace, UnsafeURLError
 
 ORIGIN = "https://origin.example.org/g.zip"
+ORIGIN_FINAL = "https://cdn.example.org/releases/current.zip"
 MIRROR = "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/x.zip?alt=media"
+MIRROR_FINAL = "https://storage.googleapis.com/download/storage/v1/b/mdb-latest/o/x.zip"
 AGENCY = Agency(id="x", name="X Transit", static_gtfs_url=ORIGIN)
 
 
@@ -35,6 +37,24 @@ def test_origin_success_records_origin_provenance(monkeypatch: pytest.MonkeyPatc
     assert prov.origin_error is None
 
 
+def test_origin_redirect_records_the_url_that_served_the_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_safe_get(_url: str, **kwargs: object) -> bytes:
+        trace = kwargs["trace"]
+        assert isinstance(trace, FetchTrace)
+        trace.final_url = ORIGIN_FINAL
+        trace.redirect_chain = (ORIGIN, ORIGIN_FINAL)
+        return _zip_bytes()
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
+
+    _body, prov = fetchmod._download_with_mirror_fallback(AGENCY)
+
+    assert prov.source == "origin"
+    assert prov.final_url == ORIGIN_FINAL
+
+
 def test_falls_back_to_mirror_when_origin_times_out(monkeypatch: pytest.MonkeyPatch) -> None:
     seen: list[str] = []
 
@@ -53,6 +73,27 @@ def test_falls_back_to_mirror_when_origin_times_out(monkeypatch: pytest.MonkeyPa
     assert prov.source == "mirror"
     assert prov.final_url == MIRROR
     assert prov.origin_error == "ConnectTimeout"
+
+
+def test_mirror_redirect_records_the_url_that_served_the_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_safe_get(url: str, **kwargs: object) -> bytes:
+        if url == ORIGIN:
+            raise requests.exceptions.ConnectTimeout("origin firewalls our IP")
+        trace = kwargs["trace"]
+        assert isinstance(trace, FetchTrace)
+        trace.final_url = MIRROR_FINAL
+        trace.redirect_chain = (MIRROR, MIRROR_FINAL)
+        return _zip_bytes()
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
+    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: MIRROR)
+
+    _body, prov = fetchmod._download_with_mirror_fallback(AGENCY)
+
+    assert prov.source == "mirror"
+    assert prov.final_url == MIRROR_FINAL
 
 
 def test_mirror_fallback_on_origin_403_records_the_error(
@@ -82,6 +123,37 @@ def test_reraises_when_no_mirror_exists(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: None)
     with pytest.raises(requests.exceptions.ConnectTimeout):
         fetchmod._download_with_mirror_fallback(AGENCY)
+
+
+def test_similar_language_provider_cannot_substitute_mirror_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb
+
+    uruguay = Agency(
+        id="mtop-uruguay-metropolitan",
+        name="Servicios metropolitanos de ómnibus (MTOP Uruguay)",
+        static_gtfs_url="https://catalogodatos.gub.uy/uruguay.zip",
+    )
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,urls.latest\n"
+        "santiago,gtfs,Servicios Metropolitanos,Santiago,"
+        "https://santiago.example.org/gtfs.zip,https://mirror.example.org/santiago.zip\n"
+    )
+    monkeypatch.setattr(mobilitydb, "load_catalog", lambda **_: mobilitydb.parse_catalog(catalog))
+    seen: list[str] = []
+
+    def fake_safe_get(url: str, **_: object) -> bytes:
+        seen.append(url)
+        if url == uruguay.static_gtfs_url:
+            raise requests.exceptions.SSLError("origin TLS failure")
+        return b"SANTIAGO BYTES MUST NEVER BE SCORED AS URUGUAY"
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
+
+    with pytest.raises(requests.exceptions.SSLError, match="origin TLS failure"):
+        fetchmod._download_with_mirror_fallback(uruguay)
+    assert seen == [uruguay.static_gtfs_url]
 
 
 def test_unsafe_url_is_never_mirrored(monkeypatch: pytest.MonkeyPatch) -> None:

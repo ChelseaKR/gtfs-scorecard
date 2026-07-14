@@ -17,7 +17,7 @@ import pytest
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
-from scorecard_pipeline import SCHEMA_VERSION
+from scorecard_pipeline import RUBRIC_VERSION, SCHEMA_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.metrics import CategoryResult, Finding
@@ -28,6 +28,7 @@ from scorecard_pipeline.publish import (
     validate_artifact,
 )
 from scorecard_pipeline.score import build_scorecard
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 # The source checkout, not the SCORECARD_ROOT tmp dir the autouse fixture sets:
 # the schemas and the real published outputs live here.
@@ -121,27 +122,89 @@ def test_coverage_api_conforms_to_its_schema() -> None:
 
 
 def test_by_location_api_conforms_to_its_schema() -> None:
-    from scorecard_pipeline.dataset import build_quality_dataset
-    from scorecard_pipeline.publicapi import by_location
+    from scorecard_pipeline.publicapi import build_api
 
     index = {
         "agencies": {
             "demo": {
-                "history": [{"score": 80.0, "grade": "B"}],
+                "name": "Demo",
+                "history": [
+                    {
+                        "date": "2026-06-11",
+                        "score": 80.0,
+                        "grade": "B",
+                        "rubric_version": RUBRIC_VERSION,
+                        "scoring_profile_id": SCORING_PROFILE_ID,
+                        "scoring_profile_rubric_version": RUBRIC_VERSION,
+                        "validator_version": VALIDATOR_VERSION,
+                        "feed_sha256": "sha-demo",
+                        "categories": {
+                            "correctness": 80.0,
+                            "freshness": 80.0,
+                            "completeness": 80.0,
+                        },
+                        "days_until_expiry": 100,
+                    }
+                ],
             }
         }
     }
-    payload = by_location(
-        build_quality_dataset(index),
-        {
+    payload = build_api(
+        index,
+        agencies=[Agency("demo", "Demo", "https://example.org/feed.zip")],
+        states={"demo": "Ontario"},
+        locations={
             "demo": {
                 "country": "CA",
                 "subdivision_code": "CA-ON",
                 "subdivision_name": "Ontario",
             }
         },
-    )
+        base_url="https://example.org",
+        generated_at="2026-06-11T12:00:00+00:00",
+    )["by-location.json"]
+    assert payload["countries"][0]["comparison_eligible_count"] == 1
+    assert payload["comparison"]["required_scoring_profile_id"] == SCORING_PROFILE_ID
     _validator("by-location.schema.json").validate(payload)
+
+
+def test_current_directory_and_catalog_compatibility_fields_conform() -> None:
+    from scorecard_pipeline.directory import build_directory
+
+    record = {
+        "id": "demo",
+        "name": "Demo",
+        "date": "2026-06-11",
+        "grade": "B",
+        "score": 80.0,
+        "correctness": 80.0,
+        "freshness": 80.0,
+        "completeness": 80.0,
+        "realtime": None,
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile_id": SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": RUBRIC_VERSION,
+        "validator_version": VALIDATOR_VERSION,
+        "feed_sha256": "sha-demo",
+        "days_until_expiry": 100,
+        "expiry_status": "current",
+        "stops": 20,
+        "country": "US",
+        "subdivision_code": "US-CA",
+        "subdivision_name": "California",
+        "state": "California",
+        "scorecard_url": "https://example.org/agency/demo/",
+    }
+    directory = build_directory([record], GENERATED_AT.isoformat())
+
+    assert directory["agencies"][0]["national_percentile"] is None
+    assert directory["agencies"][0]["peer_percentile"] is None
+    assert directory["agencies"][0]["comparison_eligible"] is True
+    assert directory["summary"]["comparison_eligible_count"] == 1
+    _validator("directory.schema.json").validate(directory)
+    _validator("catalog.schema.json").validate(
+        {"schema_version": SCHEMA_VERSION, "agencies": directory["agencies"]}
+    )
 
 
 def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
@@ -196,7 +259,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.9"
+    assert SCHEMA_VERSION == "1.11"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 
@@ -401,9 +464,7 @@ def test_published_directory_conforms_to_its_schema(relative: str) -> None:
 
 
 def test_build_rollup_output_conforms_to_the_rollup_schema() -> None:
-    """publish_rollups() attaches state_percentile after build_rollup() runs
-    (it needs every state's average first), the same after-the-build pattern
-    as the artifact's NTD block, so the direct test attaches it too."""
+    """The current rollup producer contract conforms as one complete payload."""
     from scorecard_pipeline.rollups import Rollup, build_rollup
 
     for agency_id, score, grade, days in [("a-one", 55.0, "D", 12), ("b-two", 91.0, "A", None)]:
@@ -412,10 +473,26 @@ def test_build_rollup_output_conforms_to_the_rollup_schema() -> None:
         (agency_dir / "latest.json").write_text(
             json.dumps(
                 {
+                    "rubric_version": RUBRIC_VERSION,
+                    "scoring_profile": {
+                        "id": SCORING_PROFILE_ID,
+                        "rubric_version": RUBRIC_VERSION,
+                    },
+                    "validator_version": VALIDATOR_VERSION,
                     "agency": {"id": agency_id, "name": agency_id.title()},
                     "snapshot_date": "2026-06-11",
                     "overall": {"score": score, "grade": grade},
-                    "categories": {"freshness": {"details": {"days_until_expiry": days}}},
+                    "feed": {"sha256": f"sha-{agency_id}"},
+                    "categories": {
+                        "correctness": {"status": "measured", "score": score},
+                        "freshness": {
+                            "status": "measured",
+                            "score": score,
+                            "details": {"days_until_expiry": days},
+                        },
+                        "completeness": {"status": "measured", "score": score},
+                        "realtime": {"status": "not_yet_measured"},
+                    },
                     "top_fixes": [{"code": "scorecard_feed_expired", "fix": "Re-export."}],
                 }
             )
@@ -425,7 +502,6 @@ def test_build_rollup_output_conforms_to_the_rollup_schema() -> None:
         GENERATED_AT,
         attention={"a-one": "Service data expires in 12 days"},
     )
-    payload["state_percentile"] = None
     _validator("rollup.schema.json").validate(payload)
 
 

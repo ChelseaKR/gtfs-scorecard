@@ -158,7 +158,11 @@ def _change_entry(change: dict[str, object], base_url: str) -> Entry:
 
 
 def site_change_feed(
-    changes: list[dict[str, object]], *, base_url: str, max_entries: int = 60
+    changes: list[dict[str, object]],
+    *,
+    base_url: str,
+    max_entries: int = 60,
+    comparison: dict[str, object] | None = None,
 ) -> str:
     """The site-wide Atom feed: every agency that moved on the latest run.
 
@@ -167,12 +171,29 @@ def site_change_feed(
     an unbounded document.
     """
     entries = [_change_entry(c, base_url) for c in changes[:max_entries]]
+    eligible = (comparison or {}).get("eligible_count")
+    if isinstance(eligible, int) and not isinstance(eligible, bool):
+        if eligible > 0:
+            subtitle = (
+                "Same-feed grade or score changes among "
+                f"{eligible} current-contract, comparison-eligible feed records."
+            )
+        else:
+            subtitle = (
+                "Change entries are unavailable until current-contract checks create "
+                "a comparable feed-record cohort; an empty feed is not a no-change claim."
+            )
+    else:
+        # Historical callers did not pass comparison metadata. Keep their feed
+        # valid, but do not infer an eligibility denominator.
+        subtitle = (
+            "Transit feed records whose GTFS data quality grade or score moved "
+            "since their last like-for-like check."
+        )
     return render_atom(
         feed_id=f"{_TAG_BASE}changes",
         title="GTFS Scorecard: feed quality changes",
-        subtitle=(
-            "Transit agencies whose GTFS data quality grade or score moved since their last check."
-        ),
+        subtitle=subtitle,
         self_url=f"{base_url}/changes/feed.xml",
         alternate_url=f"{base_url}/pulse/#changes",
         entries=entries,

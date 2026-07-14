@@ -4,9 +4,35 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+from typing import Any
 
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.alerts import build_digest, render_digest
 from scorecard_pipeline.config import artifacts_dir
+from scorecard_pipeline.validate import VALIDATOR_VERSION
+
+
+def comparable_history_point(
+    date: str,
+    score: float,
+    grade: str,
+    *,
+    validator_version: str = VALIDATOR_VERSION,
+) -> dict[str, Any]:
+    return {
+        "date": date,
+        "score": score,
+        "grade": grade,
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile_id": SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": RUBRIC_VERSION,
+        "validator_version": validator_version,
+        "categories": {
+            "correctness": 80.0,
+            "freshness": 80.0,
+            "completeness": 80.0,
+        },
+    }
 
 
 def write_latest(
@@ -77,8 +103,8 @@ def test_grade_drop_is_a_regression() -> None:
             "slip": {
                 "name": "Slip Transit",
                 "history": [
-                    {"date": "2026-06-11", "score": 84.0, "grade": "B"},
-                    {"date": "2026-06-12", "score": 78.0, "grade": "C"},
+                    comparable_history_point("2026-06-11", 84.0, "B"),
+                    comparable_history_point("2026-06-12", 78.0, "C"),
                 ],
             }
         }
@@ -95,14 +121,35 @@ def test_small_wobble_is_not_a_regression() -> None:
             "steady": {
                 "name": "Steady Transit",
                 "history": [
-                    {"date": "2026-06-11", "score": 84.0, "grade": "B"},
-                    {"date": "2026-06-12", "score": 83.0, "grade": "B"},
+                    comparable_history_point("2026-06-11", 84.0, "B"),
+                    comparable_history_point("2026-06-12", 83.0, "B"),
                 ],
             }
         }
     )
     digest = build_digest(today=dt.date(2026, 6, 12))
     assert [i for i in digest.items if i.kind == "regression"] == []
+
+
+def test_producer_change_is_not_a_regression() -> None:
+    write_latest("changed", "Changed Transit", 60.0, "D", days_until_expiry=200)
+    write_index(
+        {
+            "changed": {
+                "name": "Changed Transit",
+                "history": [
+                    comparable_history_point(
+                        "2026-06-11", 90.0, "A", validator_version="different-validator"
+                    ),
+                    comparable_history_point("2026-06-12", 60.0, "D"),
+                ],
+            }
+        }
+    )
+
+    digest = build_digest(today=dt.date(2026, 6, 12))
+
+    assert [i for i in digest.items if i.kind in {"regression", "anomaly"}] == []
 
 
 def test_render_includes_fix_language() -> None:

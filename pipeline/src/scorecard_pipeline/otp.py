@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from typing import Any
 
 Point = tuple[float, float]  # (lon, lat)
+Place = Point | str
 
 
 def sample_od_pairs(points: list[Point], count: int = 3) -> list[tuple[Point, Point]]:
@@ -41,23 +42,73 @@ def sample_od_pairs(points: list[Point], count: int = 3) -> list[tuple[Point, Po
     return pairs
 
 
-def plan_url(base: str, origin: Point, destination: Point, *, date: str, time: str) -> str:
+def _place_value(place: Place) -> str:
+    if isinstance(place, str):
+        return place
+    lon, lat = place
+    return f"{lat},{lon}"
+
+
+def plan_url(base: str, origin: Place, destination: Place, *, date: str, time: str) -> str:
     """Build an OTP REST plan URL for one origin/destination pair.
 
     Uses the OTP ``/otp/routers/default/plan`` endpoint with ``fromPlace`` and
     ``toPlace`` as ``lat,lon`` (OTP's order, the reverse of GeoJSON). Date and
     time anchor the query inside the feed's service window.
     """
-    o_lon, o_lat = origin
-    d_lon, d_lat = destination
     params = {
-        "fromPlace": f"{o_lat},{o_lon}",
-        "toPlace": f"{d_lat},{d_lon}",
+        "fromPlace": _place_value(origin),
+        "toPlace": _place_value(destination),
         "date": date,
         "time": time,
         "mode": "TRANSIT,WALK",
     }
     return f"{base.rstrip('/')}/otp/routers/default/plan?" + urllib.parse.urlencode(params)
+
+
+def sample_scheduled_stop_pairs(
+    trips: list[dict[str, str]],
+    stop_times: list[dict[str, str]],
+    active_service_ids: set[str],
+    *,
+    count: int = 3,
+    feed_id: str = "qa",
+) -> list[tuple[str, str, str]]:
+    """Pick stop-ID pairs and departure times from trips active on the QA date."""
+    active_trips = {
+        row.get("trip_id", "")
+        for row in trips
+        if row.get("service_id", "") in active_service_ids and row.get("trip_id", "")
+    }
+    by_trip: dict[str, list[dict[str, str]]] = {}
+    for row in stop_times:
+        trip_id = row.get("trip_id", "")
+        if trip_id in active_trips:
+            by_trip.setdefault(trip_id, []).append(row)
+
+    pairs: list[tuple[str, str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for trip_id in sorted(by_trip):
+        rows = sorted(by_trip[trip_id], key=lambda row: int(row.get("stop_sequence", "0") or 0))
+        if len(rows) < 2:
+            continue
+        origin = rows[0].get("stop_id", "")
+        destination = rows[-1].get("stop_id", "")
+        departure = rows[0].get("departure_time") or rows[0].get("arrival_time", "")
+        try:
+            hour, minute, _second = (int(part) for part in departure.split(":"))
+        except (TypeError, ValueError):
+            continue
+        key = (origin, destination)
+        if not origin or not destination or origin == destination or hour >= 24 or key in seen:
+            continue
+        seen.add(key)
+        pairs.append(
+            (f"{feed_id}:{origin}", f"{feed_id}:{destination}", f"{hour:02d}:{minute:02d}")
+        )
+        if len(pairs) >= count:
+            break
+    return pairs
 
 
 @dataclass(frozen=True)
@@ -114,13 +165,54 @@ def assess_routing(results: list[PlanResult]) -> RoutingQA:
 
 
 def fetch_plan(
-    base: str, origin: Point, destination: Point, *, date: str, time: str, timeout: int = 30
+    base: str,
+    origin: Place,
+    destination: Place,
+    *,
+    date: str,
+    time: str,
+    timeout: int = 30,
+    allow_loopback: bool = False,
 ) -> PlanResult:
-    """Query a live OTP instance for one pair. Thin; the parsing is tested."""
+    """Query a live OTP instance for one pair. Thin; the parsing is tested.
+
+    Public OTP endpoints use the shared SSRF-guarded fetcher. The containerized
+    CI harness may explicitly allow a literal loopback endpoint; redirects stay
+    disabled and no hostname other than ``localhost`` is accepted on that path.
+    """
     import json
 
-    from .net import safe_get
-
     url = plan_url(base, origin, destination, date=date, time=time)
-    body = safe_get(url, timeout=timeout)
+    if allow_loopback:
+        body = _loopback_get(url, timeout=timeout)
+    else:
+        from .net import safe_get
+
+        body = safe_get(url, timeout=timeout)
     return parse_plan(json.loads(body.decode("utf-8")))
+
+
+def _loopback_get(url: str, *, timeout: int) -> bytes:
+    """Fetch one explicitly trusted local OTP response without redirects."""
+    import ipaddress
+
+    import requests
+
+    parts = urllib.parse.urlsplit(url)
+    host = parts.hostname
+    try:
+        is_literal_loopback = bool(host and ipaddress.ip_address(host).is_loopback)
+    except ValueError:
+        is_literal_loopback = False
+    if parts.scheme not in {"http", "https"} or not (host == "localhost" or is_literal_loopback):
+        raise ValueError("allow_loopback requires a localhost or loopback-IP OTP base URL")
+    response = requests.get(url, timeout=timeout, allow_redirects=False)
+    try:
+        response.raise_for_status()
+        if response.is_redirect or response.is_permanent_redirect:
+            raise ValueError("local OTP endpoint must not redirect")
+        if len(response.content) > 1024 * 1024:
+            raise ValueError("local OTP response exceeded 1 MiB")
+        return response.content
+    finally:
+        response.close()

@@ -3,16 +3,22 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.11: additive configured_kinds and kinds_configured in Realtime details, so
+# machine consumers can interpret kinds_reachable against the exact set an
+# agency publishes under capability-aware partial-feed scoring.
+# 1.10: additive effective_expiry_date, service_horizon_review_years, and
+# service_horizon_status in freshness details; the status also rides on index
+# history, catalog rows, and the open dataset/API. It classifies end dates more
+# than ten calendar years beyond a check as an advisory outside rubric findings.
 # 1.9: country fields accept every assigned ISO 3166-1 alpha-2 jurisdiction;
 # schemas describe that portable shape while the generated ISO vocabulary is
 # the stricter write boundary. No score or rubric field changed.
 # 1.8: additive scoring_profile metadata on every per-agency artifact. The
 # profile identifies the project-authored scoring contract independently from
 # the artifact schema and states its provenance and limits explicitly.
-# 1.7: additive state_percentile on per-state rollup payloads (None on "all"
-# and named-cohort rollups, which are not peers of a 50-state comparison), so a
-# program page can say how its average score compares to other states'
-# programs -- framed as a neutral distribution read, never a rank.
+# 1.7 introduced state_percentile on per-state rollups. Public percentile
+# claims are now retired; current rollups retain that key as null for v1
+# compatibility and carry guarded comparison cohort metadata instead.
 # 1.6: additive measurement-confidence read on every artifact (a confidence
 # block: level, measured vs total categories, fetch source, realtime sampling
 # depth, snapshot age, plain-language notes), so a reader can tell a
@@ -26,7 +32,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.9"
+SCHEMA_VERSION = "1.11"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)
@@ -39,7 +45,7 @@ DATA_ATTRIBUTION = (
 
 # Bump when the rubric (weights, deductions, grade bands, or what is measured)
 # changes, so a trend can tell a feed change apart from a methodology change.
-RUBRIC_VERSION = "1.1"
+RUBRIC_VERSION = "1.2"
 
 # Stable identity for the scoring contract. This is deliberately distinct from
 # SCHEMA_VERSION: adding an API field must not imply a methodology change.

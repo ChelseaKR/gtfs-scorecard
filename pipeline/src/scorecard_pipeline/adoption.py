@@ -79,6 +79,9 @@ def _share(records: list[dict[str, Any]], key: str) -> dict[str, Any]:
 def _location_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     """Capability counts for one country or subdivision."""
     return {
+        "feed_records": len(records),
+        # v1 compatibility alias. These rows count feed records, not distinct
+        # operating organizations.
         "agencies": len(records),
         "flex": sum(bool(record.get("has_flex")) for record in records),
         "fares": sum(bool(record.get("has_fares")) for record in records),
@@ -127,7 +130,10 @@ def national_adoption(records: list[dict[str, Any]], *, top: int = 10) -> dict[s
         if r["has_pathways"]:
             bucket["pathways"] += 1
 
-    states = [by_state[s] for s in sorted(by_state, key=lambda s: (-by_state[s]["agencies"], s))]
+    states = []
+    for state in sorted(by_state, key=lambda s: (-by_state[s]["agencies"], s)):
+        row = by_state[state]
+        states.append({**row, "feed_records": row["agencies"]})
 
     def sample(key: str) -> list[dict[str, Any]]:
         return [
@@ -143,6 +149,8 @@ def national_adoption(records: list[dict[str, Any]], *, top: int = 10) -> dict[s
         ][:top]
 
     return {
+        "measured_feed_record_count": count,
+        # v1 compatibility alias. The metric denominator is feed records.
         "agency_count": count,
         "flex": _share(records, "has_flex"),
         "fares": _share(records, "has_fares"),

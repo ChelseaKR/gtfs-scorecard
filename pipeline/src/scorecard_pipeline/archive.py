@@ -84,8 +84,9 @@ def _archive_bucket() -> str | None:
 
 
 def _s3_key(sha256: str) -> str:
-    # A prefix outside data/artifacts/ keeps archived zips off the public CDN
-    # mirror; this store is private-to-pipeline (see module docstring).
+    # The artifacts distribution enforces a viewer-request allowlist and an
+    # origin policy that both exclude this prefix. Keeping the raw archive out
+    # of data/artifacts/ makes that private boundary fail closed.
     return f"feeds/{sha256}.zip"
 
 

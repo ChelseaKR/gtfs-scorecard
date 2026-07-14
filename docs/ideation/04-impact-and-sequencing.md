@@ -1,5 +1,12 @@
 # Impact, sequencing, and gates
 
+> **Status: superseded planning snapshot.** This July 1 matrix and sequence are
+> preserved for decision history. They stopped being the active ship order on
+> 2026-07-14 after most of the do-first work shipped and competitive review moved
+> verified remediation into the current 90-day proof. Use
+> [`../feature-roadmap.md`](../feature-roadmap.md) for delivery order and
+> [`../roadmap.md`](../roadmap.md) for current gates.
+
 Drafted 2026-07-01. A cross-cut over every ID in `02-large-scale-fixes.md`
 (FIX-01…FIX-13) and `03-expansions.md` (EXP-01…EXP-17): where each sits on impact
 versus effort, what depends on what, a Now/Next/Later sequence that runs *beside*
@@ -12,7 +19,24 @@ the tool exists for (the inherited-feed manager and the liaison) and the portfol
 ethos (honesty enforced in code, reproducibility, accessibility). Effort tiers
 match the source files: S ≈ days, M ≈ 1–2 weeks, L ≈ a month, XL ≈ a quarter.
 
-## The matrix
+## Disposition as of 2026-07-14
+
+The source files carry item-level status notes. At roadmap level, the work now
+falls into these groups:
+
+| Disposition | Items and interpretation |
+| --- | --- |
+| Shipped or absorbed | FIX-01, FIX-03, FIX-05 through FIX-11; EXP-01 through EXP-04, EXP-06, EXP-09 through EXP-13, EXP-18, and EXP-20. Several are useful precursors, not proof of verified remediation. |
+| Partial or maintenance | FIX-02 code paths, FIX-04, FIX-12, FIX-13, EXP-07, EXP-14, EXP-15, EXP-17, and EXP-19. Continue only when a reliability trigger, adopted instance, or current proof dependency requires it. |
+| Current proof | The shipped EXP-11 guided change and finding-clearance record becomes input to a new participant-tested chain: accepted owner, exact intended-feed recheck, and audited closure receipt. This work is Now. |
+| Demand or evidence gated | EXP-05, EXP-08, and EXP-16; public vendor intelligence from EXP-07; further multimodal work from EXP-14; hosted scoring; deeper realtime collection. Each needs the named gate in the current roadmap. |
+| Parked or cut | A public raw-feed archive, broad place-based mobility index without a named user, consumer-app scraping, public agency or vendor rankings, and a continuous national realtime archive. |
+
+Do not use the matrix below to select the next item. It records how the July 1
+candidates were judged before their rapid implementation and the later
+proof-first decision.
+
+## Historical matrix
 
 Impact is High / Med / Low. "Depends on" names the load-bearing prerequisite (not
 every soft link). "Gate" flags a non-engineering blocker, detailed in the last
@@ -54,7 +78,7 @@ section.
 \* EXP-14's impact is high only if a real place-level user asks; absent that, it is
 a scope risk, not a win.
 
-## Reading the matrix
+## Historical reading of the matrix
 
 **Do-first quadrant — high impact, low-to-moderate effort, no gate.** FIX-01,
 FIX-05, FIX-07, FIX-10, FIX-11, and then EXP-01 and EXP-10 that consume them. Every
@@ -78,7 +102,7 @@ and everything hanging off it (needs the AWS/cost decision). These are real, but
 starting them ahead of their gate is how a focused tool becomes an unfocused
 platform — the exact scope risk named in `RESEARCH-ROADMAP.md`.
 
-## Dependency notes
+## Historical dependency notes
 
 A few chains matter more than the table's single "depends on" column shows.
 
@@ -104,9 +128,9 @@ A few chains matter more than the table's single "depends on" column shows.
   integration, but it brushes the no-editor red line and must be built with that
   guardrail explicit.
 
-## Now / Next / Later — a track beside the existing roadmaps
+## Superseded Now / Next / Later track
 
-The existing plans already own two tracks: the operational finish-what-is-built
+The text below is the original sequence. The existing plans already owned two tracks: the operational finish-what-is-built
 sprint (`RESEARCH-ROADMAP.md`: RR:R1–R4, R6–R9) and the multiyear scaling roadmap
 (`roadmap.md` Years 1–3). This folder proposes a third, **the trust-and-depth
 track**, sequenced so it does not collide with either. It assumes the RR first
@@ -147,7 +171,7 @@ The through-line: spend the ungated near term making the honesty claims
 enforced rather than asserted, then deepen, and let every gated bet wait behind a
 declared gate rather than a faked one.
 
-## Items behind a gate (declared, not worked around)
+## Historical gates (still binding where relevant)
 
 Per the portfolio ethos, these gates are stated so nothing below is built by
 pretending its gate is met. Grouped by the kind of gate.
@@ -162,7 +186,7 @@ single-digit-dollars-a-month line):
 
 **Real-data / time-depth gate** (needs longitudinal history the panel has not yet
 accumulated, or that is discarded today — see FIX-02):
-- **EXP-03** calibrated fix-effort — needs runs-to-clear distributions.
+- **EXP-03** finding-clearance timing — needs compatible retained histories.
 - **EXP-13** predictive lapse — needs behavioral history depth.
 - **EXP-16** policy-effect study — needs history spanning the RY2026 effective
   dates.
@@ -200,12 +224,11 @@ cannot synthesize):
   because the agency always publishes; EXP-14 stays safe only if a real place-level
   user is driving it.
 
-## The honest bottom line
+## Historical conclusion
 
-Nothing here is validated with a real user, costed against the budget guardrail,
-or approved by the maintainer. The strongest, safest work is the ungated Now
-cluster: it makes the trust-brand claims true in code, needs no partner and no
-new infrastructure, and is mostly S/M effort. The most valuable *gated* item is
-FIX-02, because the reproducibility spine unlocks four downstream expansions. The
-biggest scope risk is EXP-14. Everything else is honest optionality, held behind a
-gate that is declared rather than skipped.
+At drafting time, none of these ideas had been validated with a real user,
+costed against the budget guardrail, or approved by the maintainer. The original
+conclusion favored the ungated trust cluster and identified FIX-02 as the most
+valuable gated item and EXP-14 as the largest scope risk. Much of the trust
+cluster then shipped. The remaining work now follows the participant proof,
+operating triggers, and stop conditions in the current roadmap.

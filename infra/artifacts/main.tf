@@ -98,6 +98,22 @@ resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
       noncurrent_days = 30
     }
   }
+
+  # Daily score shards hand private export fingerprints to the serialized
+  # collect job through a run-scoped prefix. A failed run can strand that
+  # staging data, so expire it independently of successful cleanup.
+  rule {
+    id     = "expire-structure-staging"
+    status = "Enabled"
+
+    filter {
+      prefix = "cache/structure-staging/"
+    }
+
+    expiration {
+      days = 7
+    }
+  }
 }
 
 resource "aws_cloudfront_origin_access_control" "artifacts" {
@@ -127,6 +143,20 @@ resource "aws_cloudfront_response_headers_policy" "cors" {
   }
 }
 
+# The bucket also holds private pipeline inputs: content-addressed source feed
+# archives under feeds/, validator cache entries under cache/, and the raw run
+# ledger under data/artifacts/run/. Legacy internal state objects also exist
+# under agency artifact directories. A viewer-request allowlist runs
+# before the cache lookup, so even an object cached before this policy existed
+# cannot be served. The bucket policy below repeats the boundary at the origin.
+resource "aws_cloudfront_function" "public_artifacts_only" {
+  name    = "${var.project}-public-artifacts-only"
+  runtime = "cloudfront-js-1.0"
+  comment = "Allow only published scorecard artifacts; hide private pipeline inputs"
+  publish = true
+  code    = file("${path.module}/public-artifacts-only.js")
+}
+
 resource "aws_cloudfront_distribution" "artifacts" {
   enabled         = true
   comment         = "${var.project} artifacts"
@@ -146,6 +176,11 @@ resource "aws_cloudfront_distribution" "artifacts" {
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
     response_headers_policy_id = aws_cloudfront_response_headers_policy.cors.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.public_artifacts_only.arn
+    }
 
     # Artifacts refresh daily; a short TTL keeps the site current without a
     # per-deploy invalidation. CORS-friendly so an agency page can embed a
@@ -178,8 +213,53 @@ resource "aws_cloudfront_distribution" "artifacts" {
 # Allow only this distribution to read the bucket.
 data "aws_iam_policy_document" "artifacts" {
   statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.artifacts.arn}/*"]
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/directory.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/index.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/scoring.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/sensitivity.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/canada-equity.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/changes/*.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/*.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/*.csv",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/latest.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/????-??-??.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/badge.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/badge.svg",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/conformance.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/mark.svg",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/geometry.geojson",
+      "${aws_s3_bucket.artifacts.arn}/data/liveness.json",
+    ]
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.artifacts.arn]
+    }
+  }
+
+  # The allow statement above is the public contract. Repeat every private
+  # prefix and legacy pipeline-state shape as an explicit deny for defense in
+  # depth and to keep the intended boundary visible in a policy review.
+  statement {
+    effect  = "Deny"
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/run/*",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/validator-cache.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/structure.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/fixlog.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/corrected.zip",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/*.state.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/digest.md",
+      "${aws_s3_bucket.artifacts.arn}/feeds/*",
+      "${aws_s3_bucket.artifacts.arn}/cache/*",
+    ]
     principals {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]

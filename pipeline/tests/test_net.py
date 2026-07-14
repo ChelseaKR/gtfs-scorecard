@@ -35,6 +35,24 @@ def test_rejects_missing_host() -> None:
         validate_public_url("http:///nohost")
 
 
+@pytest.mark.parametrize("url", ["https://example.org:abc/feed.zip", "https://example.org:99999/"])
+def test_rejects_invalid_ports_as_unsafe_urls(url: str) -> None:
+    with pytest.raises(UnsafeURLError, match="invalid port"):
+        validate_public_url(url)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://[::1/feed.zip",
+        "https://example.org\uff0f@evil.example/feed.zip",
+    ],
+)
+def test_rejects_malformed_netlocs_as_unsafe_urls(url: str) -> None:
+    with pytest.raises(UnsafeURLError, match="malformed"):
+        validate_public_url(url)
+
+
 import socket  # noqa: E402
 import time  # noqa: E402
 
@@ -204,6 +222,31 @@ def test_fetch_once_returns_body_under_cap(monkeypatch: pytest.MonkeyPatch) -> N
     _use_session(monkeypatch, [_FakeResp(headers={"content-length": "6"}, chunks=(b"ZIPDAT",))])
     body = net._fetch_once(PUBLIC, headers=None, timeout=1, max_bytes=1000, max_redirects=5)
     assert body == b"ZIPDAT"
+
+
+def test_fetch_once_records_the_actual_final_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    final = "https://93.184.216.34/releases/current.zip"
+    _use_session(
+        monkeypatch,
+        [
+            _FakeResp(redirect=True, location="/releases/current.zip"),
+            _FakeResp(chunks=(b"ZIPDATA",)),
+        ],
+    )
+    trace = net.FetchTrace()
+
+    body = net._fetch_once(
+        PUBLIC,
+        headers=None,
+        timeout=1,
+        max_bytes=1000,
+        max_redirects=5,
+        trace=trace,
+    )
+
+    assert body == b"ZIPDATA"
+    assert trace.final_url == final
+    assert trace.redirect_chain == (PUBLIC, final)
 
 
 def test_fetch_once_revalidates_a_redirect_to_an_internal_host(

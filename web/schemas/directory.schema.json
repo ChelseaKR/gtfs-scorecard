@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gtfsscorecard.org/schemas/directory.schema.json",
   "title": "GTFS Scorecard national directory",
-  "description": "Slim per-agency directory plus a national and per-state summary. Additive within a major schema_version: tolerate unknown fields.",
+  "description": "Slim per-scorecard directory plus guarded covered-corpus and location summaries. Additive within a major schema_version: tolerate unknown fields.",
   "type": "object",
   "required": [
     "schema_version",
@@ -30,6 +30,18 @@
       ],
       "properties": {
         "agencies": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "feed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scored_feed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "comparison_eligible_count": {
           "type": "integer",
           "minimum": 0
         },
@@ -84,6 +96,14 @@
               "agencies": {
                 "type": "integer"
               },
+              "feed_records": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "comparison_eligible_count": {
+                "type": "integer",
+                "minimum": 0
+              },
               "average_score": {
                 "type": [
                   "number",
@@ -122,6 +142,14 @@
                 "type": "integer",
                 "minimum": 0
               },
+              "feed_records": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "comparison_eligible_count": {
+                "type": "integer",
+                "minimum": 0
+              },
               "average_score": {
                 "type": ["number", "null"]
               },
@@ -150,6 +178,14 @@
                       "type": "string"
                     },
                     "agencies": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "feed_records": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "comparison_eligible_count": {
                       "type": "integer",
                       "minimum": 0
                     },
@@ -182,8 +218,49 @@
               },
               "agencies": {
                 "type": "integer"
+              },
+              "feed_records": {
+                "type": "integer"
               }
             }
+          }
+        },
+        "comparison": {
+          "type": "object",
+          "required": [
+            "eligible_count",
+            "excluded_count",
+            "required_rubric_version",
+            "required_scoring_profile_id",
+            "required_validator_version",
+            "required_measured_categories",
+            "measured_category_cohorts",
+            "exclusion_counts",
+            "absolute_rankings_published",
+            "individual_percentiles_published",
+            "note"
+          ],
+          "properties": {
+            "eligible_count": {"type": "integer", "minimum": 0},
+            "excluded_count": {"type": "integer", "minimum": 0},
+            "required_rubric_version": {"type": "string"},
+            "required_scoring_profile_id": {"type": "string"},
+            "required_validator_version": {"type": "string"},
+            "required_measured_categories": {
+              "type": "array",
+              "items": {
+                "enum": ["correctness", "freshness", "completeness", "realtime"]
+              },
+              "uniqueItems": true
+            },
+            "measured_category_cohorts": {
+              "type": "object",
+              "additionalProperties": {"type": "integer", "minimum": 0}
+            },
+            "absolute_rankings_published": {"const": false},
+            "individual_percentiles_published": {"const": false},
+            "exclusion_counts": {"type": "object", "additionalProperties": {"type": "integer"}},
+            "note": {"type": "string"}
           }
         }
       }
@@ -228,20 +305,38 @@
           "score": {
             "type": "number"
           },
+          "comparison_eligible": {
+            "type": "boolean",
+            "description": "Whether this row belongs to the comparison cohort documented in summary.comparison."
+          },
+          "correctness": {
+            "type": ["number", "null"]
+          },
+          "freshness": {
+            "type": ["number", "null"]
+          },
+          "completeness": {
+            "type": ["number", "null"]
+          },
+          "realtime": {
+            "type": ["number", "null"]
+          },
           "size_tier": {
             "type": "string"
           },
           "national_percentile": {
-            "type": [
-              "integer",
-              "null"
-            ]
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "maximum": 100,
+            "deprecated": true,
+            "description": "Deprecated compatibility field. Current payloads publish null; integers remain valid only so historical 1.x documents still conform."
           },
           "peer_percentile": {
-            "type": [
-              "integer",
-              "null"
-            ]
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "maximum": 100,
+            "deprecated": true,
+            "description": "Deprecated compatibility field. Current payloads publish null; integers remain valid only so historical 1.x documents still conform."
           },
           "expiry_status": {
             "type": "string"
@@ -318,6 +413,14 @@
               "null"
             ],
             "description": "Rubric version that produced this grade."
+          },
+          "scoring_profile_id": {
+            "type": ["string", "null"],
+            "description": "Stable scoring-profile identifier that produced this grade."
+          },
+          "scoring_profile_rubric_version": {
+            "type": ["string", "null"],
+            "description": "Rubric version declared by the scoring profile."
           },
           "validator_version": {
             "type": [

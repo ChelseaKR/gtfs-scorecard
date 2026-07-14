@@ -1,0 +1,17 @@
+# GitHub Actions downloads a source archive for every `uses:` invocation. Keep
+# that archive to the Action runtime instead of shipping the dashboard, scored
+# corpus, infrastructure, and development suite to every consumer.
+/* export-ignore
+/action -export-ignore
+/action.yml -export-ignore
+/CODE_OF_CONDUCT.md -export-ignore
+/LICENSE -export-ignore
+/NOTICE -export-ignore
+/README.md -export-ignore
+/SECURITY.md -export-ignore
+/pipeline -export-ignore
+/pipeline/* export-ignore
+/pipeline/.python-version -export-ignore
+/pipeline/pyproject.toml -export-ignore
+/pipeline/src -export-ignore
+/pipeline/uv.lock -export-ignore

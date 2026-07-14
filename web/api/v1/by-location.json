@@ -1,0 +1,797 @@
+{
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
+  "countries": [
+    {
+      "comparison_eligible_count": 0,
+      "count": 3,
+      "country_code": "CA",
+      "country_name": "Canada",
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "subdivisions": [
+        {
+          "comparison_eligible_count": 0,
+          "count": 2,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "CA-ON",
+          "subdivision_name": "Ontario"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 1,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "CA-YT",
+          "subdivision_name": "Yukon"
+        }
+      ]
+    },
+    {
+      "comparison_eligible_count": 0,
+      "count": 1125,
+      "country_code": "US",
+      "country_name": "United States",
+      "grade_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "F": 0
+      },
+      "median_score": null,
+      "subdivisions": [
+        {
+          "comparison_eligible_count": 0,
+          "count": 68,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 6,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-AK",
+          "subdivision_name": "Alaska"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 9,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-AL",
+          "subdivision_name": "Alabama"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-AR",
+          "subdivision_name": "Arkansas"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 23,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-AZ",
+          "subdivision_name": "Arizona"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 186,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-CA",
+          "subdivision_name": "California"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 95,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-CO",
+          "subdivision_name": "Colorado"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 11,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-CT",
+          "subdivision_name": "Connecticut"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 5,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-DC",
+          "subdivision_name": "District of Columbia"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 1,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-DE",
+          "subdivision_name": "Delaware"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 43,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-FL",
+          "subdivision_name": "Florida"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 16,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-GA",
+          "subdivision_name": "Georgia"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-HI",
+          "subdivision_name": "Hawaii"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 21,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-IA",
+          "subdivision_name": "Iowa"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-ID",
+          "subdivision_name": "Idaho"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 15,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-IL",
+          "subdivision_name": "Illinois"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 11,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-IN",
+          "subdivision_name": "Indiana"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 6,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-KS",
+          "subdivision_name": "Kansas"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 7,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-KY",
+          "subdivision_name": "Kentucky"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-LA",
+          "subdivision_name": "Louisiana"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 41,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MA",
+          "subdivision_name": "Massachusetts"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 34,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MD",
+          "subdivision_name": "Maryland"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 7,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-ME",
+          "subdivision_name": "Maine"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 18,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MI",
+          "subdivision_name": "Michigan"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 9,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MN",
+          "subdivision_name": "Minnesota"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 5,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MO",
+          "subdivision_name": "Missouri"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MS",
+          "subdivision_name": "Mississippi"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 6,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-MT",
+          "subdivision_name": "Montana"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 24,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NC",
+          "subdivision_name": "North Carolina"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-ND",
+          "subdivision_name": "North Dakota"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 5,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NE",
+          "subdivision_name": "Nebraska"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NH",
+          "subdivision_name": "New Hampshire"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 6,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NJ",
+          "subdivision_name": "New Jersey"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 14,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NM",
+          "subdivision_name": "New Mexico"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 6,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NV",
+          "subdivision_name": "Nevada"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 84,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-NY",
+          "subdivision_name": "New York"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 19,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-OH",
+          "subdivision_name": "Ohio"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 4,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-OK",
+          "subdivision_name": "Oklahoma"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 78,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-OR",
+          "subdivision_name": "Oregon"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 15,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-PA",
+          "subdivision_name": "Pennsylvania"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 3,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-RI",
+          "subdivision_name": "Rhode Island"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 4,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-SC",
+          "subdivision_name": "South Carolina"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 1,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-SD",
+          "subdivision_name": "South Dakota"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 10,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-TN",
+          "subdivision_name": "Tennessee"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 15,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-TX",
+          "subdivision_name": "Texas"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 5,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-UT",
+          "subdivision_name": "Utah"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 58,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-VA",
+          "subdivision_name": "Virginia"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 16,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-VT",
+          "subdivision_name": "Vermont"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 78,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-WA",
+          "subdivision_name": "Washington"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 15,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-WI",
+          "subdivision_name": "Wisconsin"
+        },
+        {
+          "comparison_eligible_count": 0,
+          "count": 1,
+          "grade_distribution": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0
+          },
+          "median_score": null,
+          "subdivision_code": "US-WV",
+          "subdivision_name": "West Virginia"
+        }
+      ]
+    }
+  ]
+}

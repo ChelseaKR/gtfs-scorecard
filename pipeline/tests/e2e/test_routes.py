@@ -32,12 +32,7 @@ def _first_rollup() -> tuple[str, str]:
 
 
 def _portable_directory() -> dict[str, Any]:
-    """Current directory enriched with the additive portable location fields.
-
-    The committed production snapshot predates the generated contract. Keeping
-    this browser fixture local lets the SPA behavior be exercised without
-    changing the pipeline or checked-in operational data.
-    """
+    """Current directory normalized into stable portable-location test cases."""
     directory = json.loads((ARTIFACTS / "directory.json").read_text())
     canadian = {
         "barrie-transit": ("CA-ON", "Ontario"),
@@ -47,6 +42,11 @@ def _portable_directory() -> dict[str, Any]:
     for agency in directory["agencies"]:
         if agency["id"] in canadian:
             agency["subdivision_code"], agency["subdivision_name"] = canadian[agency["id"]]
+        elif agency["id"] == "whitehorse-transit":
+            # Keep one Canadian agency deliberately unlocated so the duplicate
+            # UNLOCATED sentinel can be tested independently in two countries.
+            agency["subdivision_code"] = None
+            agency["subdivision_name"] = ""
         elif agency.get("country") == "US" and agency.get("state") == "California":
             agency["subdivision_code"] = "US-CA"
             agency["subdivision_name"] = "California"
@@ -132,7 +132,7 @@ def _assert_not_stuck_loading(page: Page) -> None:
 
 def test_overview_route_renders_directory(page: Page, app_url: str) -> None:
     page.goto(f"{app_url}#/")
-    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
+    expect(page.locator("#main h1.page-title")).to_have_text("Find an agency scorecard.")
     expect(page.locator("#agency-search")).to_be_visible()
     _assert_not_stuck_loading(page)
 
@@ -144,6 +144,28 @@ def test_agency_route_renders_scorecard(page: Page, app_url: str) -> None:
     expect(page.locator("#cats-h")).to_have_text("Score by category")
     expect(page.locator(".platforms .platform")).to_have_count(4)
     _assert_not_stuck_loading(page)
+
+
+def test_agency_route_allowlists_hostile_artifact_severity(page: Page, app_url: str) -> None:
+    artifact = json.loads((ARTIFACTS / AGENCY_ID / "latest.json").read_text())
+    hostile = 'ERROR" onmouseover="window.__pwned=1'
+    finding = artifact["categories"]["correctness"]["findings"][0]
+    finding["severity"] = hostile
+    finding["code"] = "hostile-severity-test"
+    page.route(
+        f"**/data/artifacts/{AGENCY_ID}/latest.json",
+        lambda route: route.fulfill(json=artifact),
+    )
+
+    page.goto(f"{app_url}#/agency/{AGENCY_ID}")
+
+    row = page.locator(".findings .finding").filter(has_text="hostile-severity-test")
+    badge = row.locator(".sev")
+    expect(badge).to_have_class("sev sev-info")
+    expect(badge).to_have_text("Info")
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert hostile not in row.inner_html()
+    assert page.evaluate("() => window.__pwned") is None
 
 
 def test_agency_route_scopes_us_policy_footer_to_us_agencies(page: Page, app_url: str) -> None:
@@ -177,7 +199,9 @@ def test_program_route_renders_members(page: Page, app_url: str) -> None:
     rollup_id, rollup_name = _first_rollup()
     page.goto(f"{app_url}#/program/{rollup_id}")
     expect(page.locator("#main h1.page-title")).to_have_text(rollup_name)
-    expect(page.locator("#members-h")).to_have_text("Agencies, worst first")
+    expect(page.locator("#members-h")).to_have_text(
+        "Feed scorecards: attention first, then alphabetical"
+    )
     expect(page.locator(".program-list .program-row").first).to_be_visible()
     _assert_not_stuck_loading(page)
 
@@ -185,11 +209,11 @@ def test_program_route_renders_members(page: Page, app_url: str) -> None:
 def test_hash_navigation_reroutes_without_reload(page: Page, app_url: str) -> None:
     """The hashchange listener re-renders in place, both forward and back."""
     page.goto(f"{app_url}#/")
-    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
+    expect(page.locator("#main h1.page-title")).to_have_text("Find an agency scorecard.")
     page.locator('#main a[href="#/programs"]').click()
     expect(page.locator("#main h1.page-title")).to_have_text("Program rollups.")
     page.go_back()
-    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
+    expect(page.locator("#main h1.page-title")).to_have_text("Find an agency scorecard.")
     _assert_not_stuck_loading(page)
 
 
@@ -227,7 +251,7 @@ def test_empty_directory_state_recovers_to_search(page: Page, app_url: str) -> N
     search = page.locator("#agency-search")
     search.fill("zzzz no matching agency")
     expect(page.locator(".agency-count")).to_contain_text("0 of")
-    expect(page.locator(".agency-count")).to_contain_text("agencies")
+    expect(page.locator(".agency-count")).to_contain_text("scorecards")
     expect(page.locator(".no-match")).to_be_visible()
     expect(page.locator("#agency-list .agency-card")).to_have_count(0)
 
@@ -254,9 +278,9 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
 
     # Any user change writes the canonical, upper-case portable keys while
     # preserving the other active controls.
-    page.locator("#agency-sort").select_option("best")
+    page.locator("#agency-sort").select_option("za")
     params = _hash_params(page)
-    assert params == {"country": "CA", "subdivision": "CA-ON", "sort": "best"}
+    assert params == {"country": "CA", "subdivision": "CA-ON", "sort": "za"}
 
     page.locator('.location-subdivision[data-subdivision="CA-ON"]').first.click()
     page.locator('.location-country[data-country="CA"]').first.click()
@@ -272,6 +296,26 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
             "button", name='Quoted "country" onmouseover="window.__pwned=1" <test> 0'
         ).first
     ).to_be_visible()
+    expect(page.locator("[onmouseover]")).to_have_count(0)
+    assert page.evaluate("() => window.__pwned") is None
+
+
+def test_cohort_agency_name_cannot_inject_attributes(page: Page, app_url: str) -> None:
+    index = json.loads((ARTIFACTS / "index.json").read_text())
+    agency_id = next(iter(index["agencies"]))
+    hostile_name = 'Quoted " onmouseover="window.__pwned=1" <agency>'
+    index["agencies"][agency_id]["name"] = hostile_name
+    page.route(
+        "**/data/artifacts/index.json",
+        lambda route: route.fulfill(json=index),
+    )
+
+    page.goto(f"{app_url}#/cohort?ids={agency_id}")
+
+    expect(page.locator(".program-row h3 a")).to_have_text(hostile_name)
+    expect(page.locator(".cohort-remove")).to_have_attribute(
+        "aria-label", f"Remove {hostile_name} from my agencies"
+    )
     expect(page.locator("[onmouseover]")).to_have_count(0)
     assert page.evaluate("() => window.__pwned") is None
 
@@ -295,11 +339,11 @@ def test_arbitrary_country_deep_link_filters_searches_and_canonicalizes(
 
     # The first user interaction rewrites portable location keys to their
     # canonical upper-case form while retaining the active sort.
-    page.locator("#agency-sort").select_option("best")
+    page.locator("#agency-sort").select_option("za")
     assert _hash_params(page) == {
         "country": "GB",
         "subdivision": "GB-ENG",
-        "sort": "best",
+        "sort": "za",
     }
 
     page.locator("#agency-search").fill("GB-ENG")
@@ -359,9 +403,9 @@ def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: s
     )
     assert page.evaluate("() => location.hash") == "#/?state=California"
 
-    page.locator("#agency-sort").select_option("worst")
+    page.locator("#agency-sort").select_option("za")
     params = _hash_params(page)
-    assert params == {"country": "US", "subdivision": "US-CA", "sort": "worst"}
+    assert params == {"country": "US", "subdivision": "US-CA", "sort": "za"}
 
 
 def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(

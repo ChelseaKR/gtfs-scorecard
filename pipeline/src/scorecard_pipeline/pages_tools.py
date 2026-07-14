@@ -20,8 +20,9 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     """The side-by-side compare page (/compare/?a=<id>&b=<id>).
 
     Two agencies' latest artifacts, loaded client-side and rendered as one
-    accessible table: overall grade, each rubric category, days of service
-    left, and the adoption flags (fares, flex, pathways). The pickers are
+    accessible table only when rubric, scoring profile, validator, and measured
+    category set match and the feed hashes are distinct. Otherwise the page explains why the grades are kept separate
+    and links to both scorecards. The pickers are
     plain selects submitted as a GET form, so choosing agencies works with
     JavaScript off and every comparison has a shareable URL; only the result
     table itself needs JS, and the noscript path says so. An unmeasured
@@ -39,20 +40,25 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("Compare agencies", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Compare two agencies.</h1>
-    <p class="page-lede">Put two scorecards side by side: overall grade, each category,
-    days of service left, and which optional
-    <abbr title="General Transit Feed Specification">GTFS</abbr> features each feed has
-    adopted. Pick two agencies and the page builds one table from their latest
-    scorecards.</p>
+    <p class="page-lede">Choose two scorecards to check whether they use the same rubric,
+    scoring profile, validator, and measured category set, and come from distinct feed bytes.
+    Like-for-like results can appear in one table; otherwise the page keeps the grades
+    separate and links to both full scorecards.</p>
     <form class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
       <div class="map-filter-row">
-        <label for="compare-a">First agency</label>
+        <label for="compare-a-filter">First agency</label>
+        <input id="compare-a-filter" class="agency-search compare-filter" type="search"
+          autocomplete="off" aria-controls="compare-a" placeholder="Type a name to filter">
+        <label class="visually-hidden" for="compare-a">Choose the first agency from the matches</label>
         <select id="compare-a" name="a" required>
           <option value="">Choose an agency</option>{options}
         </select>
       </div>
       <div class="map-filter-row">
-        <label for="compare-b">Second agency</label>
+        <label for="compare-b-filter">Second agency</label>
+        <input id="compare-b-filter" class="agency-search compare-filter" type="search"
+          autocomplete="off" aria-controls="compare-b" placeholder="Type a name to filter">
+        <label class="visually-hidden" for="compare-b">Choose the second agency from the matches</label>
         <select id="compare-b" name="b" required>
           <option value="">Choose an agency</option>{options}
         </select>
@@ -76,6 +82,32 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
         var selB = document.getElementById("compare-b");
         var statusEl = document.getElementById("compare-status");
         var result = document.getElementById("compare-result");
+        function installFilter(inputId, select) {{
+          var input = document.getElementById(inputId);
+          var choices = Array.from(select.options).slice(1).map(function (option) {{
+            return {{ value: option.value, text: option.textContent || option.value }};
+          }});
+          input.addEventListener("input", function () {{
+            var query = input.value.trim().toLocaleLowerCase();
+            var selected = select.value;
+            var matches = query
+              ? choices.filter(function (choice) {{
+                  return (choice.text + " " + choice.value).toLocaleLowerCase().includes(query);
+                }}).slice(0, 100)
+              : choices;
+            select.textContent = "";
+            select.appendChild(new Option(
+              query && !matches.length ? "No matching agencies" : "Choose an agency", ""
+            ));
+            matches.forEach(function (choice) {{
+              select.appendChild(new Option(choice.text, choice.value));
+            }});
+            if (matches.some(function (choice) {{ return choice.value === selected; }}))
+              select.value = selected;
+          }});
+        }}
+        installFilter("compare-a-filter", selA);
+        installFilter("compare-b-filter", selB);
         var params = new URLSearchParams(window.location.search);
         var a = params.get("a"), b = params.get("b");
         if (!a || !b) return;
@@ -134,13 +166,61 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             pathways: !!(comp.pathways && comp.pathways.has_pathways)
           }};
         }}
+        function comparisonContract(art) {{
+          var profile = art.scoring_profile || {{}};
+          return {{
+            rubric: String(art.rubric_version || ""),
+            profile: String(profile.id || ""),
+            profileRubric: String(profile.rubric_version || ""),
+            validator: String(art.validator_version || ""),
+            feedHash: String(((art.feed || {{}}).sha256) || ""),
+            measured: CATS.filter(function (c) {{
+              return ((art.categories || {{}})[c[0]] || {{}}).status === "measured";
+            }}).map(function (c) {{ return c[0]; }})
+          }};
+        }}
         Promise.all([fetchArtifact(a), fetchArtifact(b)]).then(function (arts) {{
           var artA = arts[0], artB = arts[1];
           var nameA = artA.agency.name, nameB = artB.agency.name;
+          var contractA = comparisonContract(artA), contractB = comparisonContract(artB);
+          var likeForLike = contractA.rubric && contractA.profile && contractA.validator &&
+            contractA.feedHash && contractB.feedHash &&
+            contractA.feedHash !== contractB.feedHash &&
+            contractA.profileRubric === contractA.rubric &&
+            contractB.profileRubric === contractB.rubric &&
+            contractA.rubric === contractB.rubric &&
+            contractA.profile === contractB.profile &&
+            contractA.validator === contractB.validator &&
+            JSON.stringify(contractA.measured) === JSON.stringify(contractB.measured);
+          if (!likeForLike) {{
+            result.textContent = "";
+            var warning = el("div");
+            warning.className = "error-box";
+            warning.setAttribute("role", "status");
+            warning.appendChild(el("h2", "These scorecards are not like-for-like."));
+            warning.appendChild(el("p", nameA + " and " + nameB +
+              " do not have distinct feed bytes under the same verified scoring profile, " +
+              "rubric, validator, and measured category set. Their grades stay separate so " +
+              "a duplicate record, methodology, or realtime-coverage difference is not " +
+              "presented as a feed-quality difference."));
+            var links = el("p");
+            [[nameA, a], [nameB, b]].forEach(function (pair, index) {{
+              if (index) links.appendChild(document.createTextNode(" \u00b7 "));
+              var link = el("a", "Open " + pair[0]);
+              link.href = "/agency/" + encodeURIComponent(pair[1]) + "/";
+              links.appendChild(link);
+            }});
+            warning.appendChild(links);
+            result.appendChild(warning);
+            statusEl.textContent = "Scorecards kept separate: " + nameA + " and " + nameB +
+              " are not like-for-like.";
+            return;
+          }}
           var table = el("table");
-          table.className = "leaderboard";
+          table.className = "leaderboard compare-static-table";
           var caption = el("caption", "Side-by-side scorecard comparison of " +
             nameA + " and " + nameB + ".");
+          caption.className = "visually-hidden";
           table.appendChild(caption);
           var thead = el("thead"), hr = el("tr");
           hr.appendChild(el("th", "Measure")).setAttribute("scope", "col");
@@ -180,7 +260,13 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           row("Pathways (station wayfinding)", el("td", flag(dA.pathways)), el("td", flag(dB.pathways)));
           table.appendChild(tbody);
           result.textContent = "";
-          result.appendChild(table);
+          var scrollHint = el("p", "Swipe the table sideways to see both agencies.");
+          scrollHint.className = "table-scroll-hint";
+          result.appendChild(scrollHint);
+          var tableWrap = el("div");
+          tableWrap.className = "table-wrap";
+          tableWrap.appendChild(table);
+          result.appendChild(tableWrap);
           statusEl.textContent = "Comparing " + nameA + " and " + nameB + ".";
         }}).catch(function (err) {{
           statusEl.textContent = "We couldn't load a scorecard for \\"" + err.message +
@@ -191,8 +277,8 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     return _page(
         title="Compare two agencies side by side — GTFS Scorecard",
         description=(
-            "Put two transit agencies' GTFS scorecards side by side: overall grade, "
-            "category scores, days of service left, and adopted features."
+            "Check whether two transit agencies' GTFS scorecards are like-for-like "
+            "before showing their grades and category scores side by side."
         ),
         canonical=f"{BASE_URL}/compare/",
         body=body,
@@ -203,20 +289,22 @@ _DUCKDB_WASM_VERSION = "1.29.0"
 
 _QUERY_EXAMPLES = [
     (
-        "Grade distribution",
-        "SELECT grade, count(*) AS agencies\nFROM agencies\nGROUP BY grade\nORDER BY grade",
+        "Expiry support worklist",
+        "SELECT id, name, date, days_until_expiry\nFROM agencies\n"
+        "WHERE days_until_expiry BETWEEN -365 AND 60\n"
+        "ORDER BY days_until_expiry, name\nLIMIT 50",
     ),
     (
-        "Feeds closest to expiry",
-        "SELECT name, days_until_expiry\nFROM agencies\n"
-        "WHERE days_until_expiry BETWEEN 0 AND 60\n"
-        "ORDER BY days_until_expiry\nLIMIT 15",
+        "Rows outside the comparison cohort",
+        "SELECT id, name, date, rubric_version, scoring_profile_id, validator_version\n"
+        "FROM agencies\nWHERE comparison_eligible = false\nORDER BY name\nLIMIT 50",
     ),
     (
-        "Covered-set category averages",
-        "SELECT round(avg(correctness), 1) AS correctness,\n"
-        "       round(avg(freshness), 1) AS freshness,\n"
-        "       round(avg(completeness), 1) AS completeness\nFROM agencies",
+        "Producer provenance",
+        "SELECT rubric_version, scoring_profile_id, validator_version,\n"
+        "       count(*) AS feed_records\nFROM agencies\n"
+        "GROUP BY rubric_version, scoring_profile_id, validator_version\n"
+        "ORDER BY rubric_version, scoring_profile_id, validator_version",
     ),
 ]
 
@@ -242,9 +330,10 @@ def _render_query_page() -> str:
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Query the dataset.</h1>
     <p class="page-lede">Run SQL against the covered scorecard dataset, right here in your
-    browser. One table, <code>agencies</code>, holds every tracked agency's latest snapshot:
+    browser. One table, <code>agencies</code>, holds every published feed record's latest snapshot:
     <code>id</code>, <code>name</code>, <code>date</code>, <code>grade</code>,
-    <code>score</code>, <code>days_until_expiry</code>, and the
+    <code>score</code>, <code>days_until_expiry</code>, producer-version fields,
+    <code>comparison_eligible</code>, and the
     <code>correctness</code>, <code>freshness</code>, <code>completeness</code>, and
     <code>realtime</code> category scores. Nothing is sent to a server: the engine
     (DuckDB) and the data load into the page and the query runs on your machine.</p>
@@ -253,6 +342,12 @@ def _render_query_page() -> str:
     <a href="/catalog.csv">catalog.csv</a>, and the JSON described in the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/api.md">data
     dictionary</a>.</p>
+    <p><strong>Comparison warning:</strong> the table includes old-methodology,
+    duplicate-identity, and otherwise non-comparable rows so the public record stays complete.
+    Do not compare or average scores unless you filter
+    <code>comparison_eligible = true</code> and inspect the current contract in
+    <a href="/api/v1/agencies.json">agencies.json</a>. The examples below are support
+    worklists and provenance checks, not rankings.</p>
     <form aria-label="SQL query" class="query-form">
       <label for="query-sql">SQL to run against the <code>agencies</code> table</label>
       <textarea id="query-sql" class="outreach-text" rows="6"
@@ -353,7 +448,7 @@ def _render_query_page() -> str:
         title="Query the dataset in your browser — GTFS Scorecard",
         description=(
             "Run SQL against the covered GTFS quality dataset in your browser with "
-            "DuckDB: grades, category scores, and freshness for every tracked agency."
+            "DuckDB: grades, category scores, and freshness for every tracked feed record."
         ),
         canonical=f"{BASE_URL}/query/",
         body=body,
@@ -660,10 +755,10 @@ def _render_check_page() -> str:
     <p id="check-status" role="status"></p>
     <div id="check-result"></div>
     <noscript><p>Reading a zip in the page needs JavaScript. You can run the full check
-    instead: <a href="/try.html">score a feed now</a>.</p></noscript>
+    instead: <a href="/try.html">request a full score</a>.</p></noscript>
     <p class="fineprint">A preview, not the full validation. The canonical
     <a href="https://github.com/MobilityData/gtfs-validator">MobilityData validator</a>
-    stays the authority; <a href="/try.html">score a feed now</a> runs it over the whole
+    stays the authority; <a href="/try.html">request a full score</a> to run it over the whole
     feed, and <a href="/subscribe.html">subscribe</a> to hear before a published feed
     expires.</p>
 {_CHECK_PAGE_SCRIPT.replace("__FFLATE__", _FFLATE_VERSION)}"""
@@ -689,7 +784,7 @@ _TOOLS = [
     (
         "/compare/",
         "Compare two agencies",
-        "Two scorecards side by side: grades, categories, and adopted features.",
+        "Check whether two scorecards are like-for-like before showing them side by side.",
     ),
     (
         "/check/",
@@ -698,8 +793,8 @@ _TOOLS = [
     ),
     (
         "/try.html",
-        "Score any feed now",
-        "Paste a published feed URL and get the full graded scorecard back.",
+        "Request a one-off score",
+        "Submit a published feed URL through the GitHub-backed request path, or run the scorer locally; hosted instant scoring is not enabled.",
     ),
     ("/query/", "Query the dataset", "Run SQL over the covered dataset, right in the page."),
     (
@@ -712,6 +807,11 @@ _TOOLS = [
         "/agency/unitrans/brief/",
         "Call-prep briefs",
         "Every agency has a printable one-page brief for a check-in call (this links an example; find yours from its scorecard).",
+    ),
+    (
+        "/agency/unitrans/board/",
+        "Board-ready one-pagers",
+        "Open a printable board summary for each agency (this links the Unitrans example).",
     ),
     (
         "/procurement/",
@@ -731,7 +831,8 @@ def _render_tools_page() -> str:
     each, so nothing depends on a visitor discovering the footer. Linked from
     the primary nav."""
     items = "".join(
-        f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a></p>'
+        f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a> '
+        f'<span class="availability">{"GitHub account" if href == "/try.html" else "No account"}</span></p>'
         f'<p class="why">{esc(what)}</p></li>'
         for href, name, what in _TOOLS
     )
@@ -739,8 +840,8 @@ def _render_tools_page() -> str:
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Tools.</h1>
     <p class="page-lede">Everything on this site you can act with, not just read: check a
-    feed, score a feed, compare agencies, query the data, and get alerts. Each tool works
-    without an account and most work without a backend at all.</p>
+    feed, request a full score, compare agencies, query the data, and get alerts. Most work
+    without an account; the one-off request is clearly marked because it uses GitHub.</p>
     <ul class="findings">{items}</ul>
     <p class="fineprint">All of it is open source; the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard">repository</a> has the CLI and

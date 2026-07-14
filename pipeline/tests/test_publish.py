@@ -15,7 +15,12 @@ from scorecard_pipeline import (
 from scorecard_pipeline.config import Agency, artifacts_dir
 from scorecard_pipeline.fetch import USER_AGENT, FetchResult
 from scorecard_pipeline.metrics import CategoryResult
-from scorecard_pipeline.publish import build_artifact, publish
+from scorecard_pipeline.publish import (
+    _history_entry,
+    build_artifact,
+    enrich_index_history_provenance,
+    publish,
+)
 from scorecard_pipeline.score import build_scorecard
 
 AGENCY = Agency(
@@ -70,6 +75,34 @@ def test_artifact_schema_essentials() -> None:
         "final_url": AGENCY.static_gtfs_url,
         "user_agent": USER_AGENT,
     }
+
+
+def test_history_entry_derives_legacy_horizon_status_for_public_api() -> None:
+    artifact = make_artifact(dt.date(2026, 7, 13))
+    artifact["categories"]["freshness"] = {
+        "name": "freshness",
+        "status": "measured",
+        "score": 100.0,
+        "summary": "Review the distant end date.",
+        "findings": [],
+        "details": {"days_until_expiry": 26_834},
+    }
+    entry = _history_entry(artifact)
+    assert entry["days_until_expiry"] == 26_834
+    assert entry["service_horizon_status"] == "unusually_distant"
+
+
+def test_history_entry_keeps_genuinely_unknown_legacy_horizon_unknown() -> None:
+    artifact = make_artifact(dt.date(2026, 7, 13))
+    artifact["categories"]["freshness"] = {
+        "name": "freshness",
+        "status": "measured",
+        "score": 0.0,
+        "summary": "No service end date could be found.",
+        "findings": [],
+        "details": {"days_until_expiry": None},
+    }
+    assert _history_entry(artifact)["service_horizon_status"] == "unknown"
 
 
 def test_fetch_provenance_block_carries_mirror_details() -> None:
@@ -182,8 +215,27 @@ def test_publish_writes_dated_latest_and_index() -> None:
     assert entry["date"] == "2026-06-11"
     assert entry["score"] == 88.0
     assert entry["grade"] == "B"
+    assert entry["rubric_version"] == RUBRIC_VERSION
+    assert entry["feed_sha256"] == "abc123"
     # History carries per-category scores for trend rendering.
     assert "correctness" in entry["categories"]
+
+
+def test_enrich_index_history_provenance_backfills_local_dated_artifact() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    agency_dir = artifacts_dir() / "unitrans"
+    agency_dir.mkdir(parents=True)
+    (agency_dir / "2026-06-11.json").write_text(json.dumps(artifact))
+    point = _history_entry(artifact)
+    del point["rubric_version"]
+    del point["feed_sha256"]
+    index = {"agencies": {"unitrans": {"history": [point]}}}
+
+    changed = enrich_index_history_provenance(index)
+
+    assert changed == 2
+    assert point["rubric_version"] == RUBRIC_VERSION
+    assert point["feed_sha256"] == "abc123"
 
 
 def test_publish_writes_shields_badge_json() -> None:
@@ -319,11 +371,10 @@ def test_operating_note_absent_keeps_agency_block_minimal() -> None:
     assert "operating_note" not in index["agencies"]["unitrans"]
 
 
-def test_reindex_skips_corrupt_dated_artifact_and_keeps_the_rest() -> None:
-    # At national scale one corrupt dated file (e.g. a truncated or doubled
-    # write surfacing as JSONDecodeError "Extra data") must not abort the whole
-    # daily reindex. The good days for the same agency still index, and the
-    # newest good day drives latest.json.
+def test_reindex_recovers_corrupt_current_dated_from_authoritative_latest() -> None:
+    # The S3 latest/index pair is the durable current record. If the matching
+    # dated copy is corrupt, reindex keeps the verified current summary while
+    # warning about (and not rewriting) the immutable dated object.
     from scorecard_pipeline.publish import rebuild_index
 
     publish(make_artifact(dt.date(2026, 6, 17), score=72.0))
@@ -338,9 +389,56 @@ def test_reindex_skips_corrupt_dated_artifact_and_keeps_the_rest() -> None:
 
     index = json.loads((artifacts_dir() / "index.json").read_text())
     dates = [h["date"] for h in index["agencies"]["unitrans"]["history"]]
-    assert dates == ["2026-06-17"]
+    assert dates == ["2026-06-17", "2026-06-18"]
     latest = json.loads((artifacts_dir() / "unitrans" / "latest.json").read_text())
+    assert latest["snapshot_date"] == "2026-06-18"
+    assert latest["overall"]["score"] == 84.0
+
+
+def test_reindex_drops_corrupt_historical_dated_artifact() -> None:
+    from scorecard_pipeline.publish import rebuild_index
+
+    publish(make_artifact(dt.date(2026, 6, 17), score=72.0))
+    publish(make_artifact(dt.date(2026, 6, 18), score=84.0))
+    publish(make_artifact(dt.date(2026, 6, 19), score=90.0))
+    bad = artifacts_dir() / "unitrans" / "2026-06-18.json"
+    bad.write_text(bad.read_text() + bad.read_text())
+
+    rebuild_index()
+
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    dates = [h["date"] for h in index["agencies"]["unitrans"]["history"]]
+    assert dates == ["2026-06-17", "2026-06-19"]
+    latest = json.loads((artifacts_dir() / "unitrans" / "latest.json").read_text())
+    assert latest["snapshot_date"] == "2026-06-19"
+
+
+def test_reindex_drops_dated_artifact_with_mismatched_identity_or_date() -> None:
+    from scorecard_pipeline.publish import rebuild_index
+
+    publish(make_artifact(dt.date(2026, 6, 17), score=72.0))
+    agency_dir = artifacts_dir() / "unitrans"
+
+    wrong_id = make_artifact(dt.date(2026, 6, 18), score=99.0)
+    wrong_id["agency"]["id"] = "wrong-id"
+    (agency_dir / "2026-06-18.json").write_text(json.dumps(wrong_id))
+
+    wrong_date = make_artifact(dt.date(2026, 6, 19), score=99.0)
+    wrong_date["snapshot_date"] = "2099-01-01"
+    (agency_dir / "2026-06-19.json").write_text(json.dumps(wrong_date))
+
+    invalid_date = make_artifact(dt.date(2026, 6, 20), score=99.0)
+    invalid_date["snapshot_date"] = "2026-99-99"
+    (agency_dir / "2026-99-99.json").write_text(json.dumps(invalid_date))
+
+    rebuild_index()
+
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    history = index["agencies"]["unitrans"]["history"]
+    assert [item["date"] for item in history] == ["2026-06-17"]
+    latest = json.loads((agency_dir / "latest.json").read_text())
     assert latest["snapshot_date"] == "2026-06-17"
+    assert latest["overall"]["score"] == 72.0
 
 
 def test_reindex_repairs_clobbered_latest_and_badge_from_newest_dated() -> None:
@@ -381,3 +479,79 @@ def test_reindex_preserves_s3_history_not_present_in_clean_checkout() -> None:
     index = json.loads((artifacts_dir() / "index.json").read_text())
     dates = [item["date"] for item in index["agencies"]["unitrans"]["history"]]
     assert dates == ["2026-06-16", "2026-06-17"]
+
+
+def test_reindex_preserves_authoritative_latest_when_current_dated_is_absent() -> None:
+    """A skipped feed cannot roll back to the checkout's older cutover file."""
+    from scorecard_pipeline.publish import rebuild_index
+
+    publish(make_artifact(dt.date(2026, 6, 16), score=70.0))
+    publish(make_artifact(dt.date(2026, 6, 19), score=90.0))
+    current_dated = artifacts_dir() / "unitrans" / "2026-06-19.json"
+    current_dated.unlink()
+
+    rebuild_index()
+
+    latest = json.loads((artifacts_dir() / "unitrans" / "latest.json").read_text())
+    assert latest["snapshot_date"] == "2026-06-19"
+    assert latest["overall"]["score"] == 90.0
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    history = index["agencies"]["unitrans"]["history"]
+    assert [item["date"] for item in history] == ["2026-06-16", "2026-06-19"]
+    assert history[-1]["score"] == 90.0
+    # Reindex uses latest in memory; it does not recreate a lifecycle-expired
+    # dated object that the broad S3 sync would upload without expiry tags.
+    assert not current_dated.exists()
+
+
+def test_reindex_accepts_verified_same_day_shard_replacement() -> None:
+    """A methodology re-score may replace today's artifact without changing its date."""
+    from scorecard_pipeline.publish import rebuild_index
+
+    date = dt.date(2026, 7, 14)
+    publish(make_artifact(date, score=70.0))
+    replacement = make_artifact(date, score=90.0)
+    agency_dir = artifacts_dir() / "unitrans"
+    replacement_text = json.dumps(replacement, indent=2, sort_keys=True) + "\n"
+    # The shard overlays both files, but collect retains the older S3 index
+    # until rebuild. Matching payloads prove this is a publish() pair rather
+    # than a clobbered checkout latest.
+    (agency_dir / "2026-07-14.json").write_text(replacement_text)
+    (agency_dir / "latest.json").write_text(replacement_text)
+
+    rebuild_index()
+
+    latest = json.loads((agency_dir / "latest.json").read_text())
+    assert latest["overall"]["score"] == 90.0
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    history = index["agencies"]["unitrans"]["history"]
+    assert len(history) == 1
+    assert history[0]["date"] == "2026-07-14"
+    assert history[0]["score"] == 90.0
+
+
+def test_reindex_purges_unverifiable_legacy_fixlog() -> None:
+    """A stale legacy receipt is removed, not left public after reconciliation."""
+    from scorecard_pipeline.publish import rebuild_index
+
+    publish(make_artifact(dt.date(2026, 7, 14)))
+    agency_dir = artifacts_dir() / "unitrans"
+    fixlog = agency_dir / "fixlog.json"
+    fixlog.write_text(
+        json.dumps(
+            {
+                "receipts": [
+                    {
+                        "code": "legacy",
+                        "what": "No supporting artifacts remain.",
+                        "last_seen": "2025-01-01",
+                        "cleared": "2025-01-02",
+                    }
+                ]
+            }
+        )
+    )
+
+    rebuild_index()
+
+    assert not fixlog.exists()

@@ -4,14 +4,56 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import shutil
 import subprocess
 import sys
+import tarfile
+import tomllib
+from io import BytesIO
 from pathlib import Path
 
 import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_marketplace_metadata_and_documented_refs_match_release_version() -> None:
+    action = yaml.safe_load((ROOT / "action.yml").read_text())
+    project = tomllib.loads((ROOT / "pipeline/pyproject.toml").read_text())
+    version = project["project"]["version"]
+    major = version.split(".", maxsplit=1)[0]
+    docs = (ROOT / "docs/ci-action.md").read_text()
+
+    assert action["name"] == "GTFS Scorecard gate"
+    assert action["description"]
+    assert action["author"]
+    assert action["branding"] == {"icon": "check-circle", "color": "green"}
+    assert set(re.findall(r"ChelseaKR/gtfs-scorecard@(v\d+)", docs)) == {f"v{major}"}
+    assert f"@v{version}" in docs
+
+
+def test_release_sign_validates_the_actual_tag_before_release_operations() -> None:
+    workflow = (ROOT / ".github/workflows/release-sign.yml").read_text()
+    validate_start = workflow.index("- name: Validate release tag")
+    cosign_start = workflow.index("- name: Install cosign")
+    sign_start = workflow.index("- name: Sign the manifest (keyless)")
+    attest_start = workflow.index("- name: Attest release provenance")
+    validate_step = workflow[validate_start:cosign_start]
+    attach_step = workflow.split("Wait for the release and attach verification assets", 1)[1]
+
+    assert validate_start < cosign_start < sign_start < attest_start
+    assert "RESOLVED_TAG: ${{ inputs.tag || github.ref_name }}" in validate_step
+    assert "^v[0-9]+\\.[0-9]+\\.[0-9]+$" in validate_step
+    assert 'git show-ref --verify --quiet "refs/tags/$RESOLVED_TAG"' in validate_step
+    assert 'git rev-parse "refs/tags/${RESOLVED_TAG}^{commit}"' in validate_step
+    assert 'gpg.ssh.allowedSignersFile "$GITHUB_WORKSPACE/.github/release-signers"' in validate_step
+    assert 'git tag -v "$RESOLVED_TAG"' in validate_step
+    assert 'printf \'tag=%s\\n\' "$RESOLVED_TAG" >> "$GITHUB_OUTPUT"' in validate_step
+    assert "RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}" in attach_step
+    assert 'tag="$RELEASE_TAG"' in attach_step
+    assert 'tag="${{ steps.release_tag.outputs.tag }}"' not in attach_step
 
 
 def test_action_declares_stable_outputs_and_json_input() -> None:
@@ -29,7 +71,33 @@ def test_action_declares_stable_outputs_and_json_input() -> None:
     run = action["runs"]["steps"][-1]["run"]
     assert '--country "$FEED_COUNTRY"' in run
     assert '--json-out "$result_json"' in run
+    assert 'uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev' in run
+    assert "git+https://" not in run
+    assert "uvx" not in run
     assert 'exit "$gate_rc"' in run
+
+
+def test_action_source_archive_is_runtime_bounded() -> None:
+    git = shutil.which("git")
+    assert git is not None
+    archive = subprocess.run(  # noqa: S603 - resolved git binary over this checkout
+        [git, "archive", "--worktree-attributes", "--format=tar", "HEAD"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
+    with tarfile.open(fileobj=BytesIO(archive), mode="r:") as bundle:
+        names = set(bundle.getnames())
+
+    assert "action.yml" in names
+    assert "action/render_result.py" in names
+    assert "pipeline/pyproject.toml" in names
+    assert "pipeline/src/scorecard_pipeline/cli.py" in names
+    assert "pipeline/uv.lock" in names
+    assert not any(name.startswith("data/") for name in names)
+    assert not any(name.startswith("web/") for name in names)
+    assert not any(name.startswith("pipeline/tests/") for name in names)
+    assert len(names) < 600
 
 
 def test_result_script_writes_outputs_summary_and_annotation(tmp_path: Path) -> None:

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gtfsscorecard.org/schemas/catalog.schema.json",
   "title": "GTFS Scorecard catalog",
-  "description": "Flat list of every scored agency. Additive within a major schema_version: tolerate unknown fields.",
+  "description": "Flat list of every published feed scorecard. Additive within a major schema_version: tolerate unknown fields.",
   "type": "object",
   "required": [
     "schema_version",
@@ -17,7 +17,14 @@
       "type": "string"
     },
     "rubric_version": {
-      "type": "string"
+      "type": "string",
+      "description": "The sole rubric version present in agencies, or mixed when rows span versions; unknown when no row records one."
+    },
+    "rubric_versions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true,
+      "description": "Sorted rubric-version values present in row provenance; unknown represents a row without a version."
     },
     "license": {
       "type": "string"
@@ -73,6 +80,30 @@
           "minimum": 0,
           "maximum": 100
         },
+        "comparison_eligible": {
+          "type": "boolean",
+          "description": "Whether this row belongs to the current producer-, category-, and identity-safe comparison cohort."
+        },
+        "correctness": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "freshness": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "completeness": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "realtime": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
         "size_tier": {
           "type": "string",
           "enum": [
@@ -83,20 +114,18 @@
           ]
         },
         "national_percentile": {
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": ["integer", "null"],
           "minimum": 0,
-          "maximum": 100
+          "maximum": 100,
+          "deprecated": true,
+          "description": "Deprecated compatibility field. Current payloads publish null; integers remain valid only so historical 1.x documents still conform."
         },
         "peer_percentile": {
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": ["integer", "null"],
           "minimum": 0,
-          "maximum": 100
+          "maximum": 100,
+          "deprecated": true,
+          "description": "Deprecated compatibility field. Current payloads publish null; integers remain valid only so historical 1.x documents still conform."
         },
         "snapshot_date": {
           "type": "string",
@@ -107,6 +136,15 @@
             "integer",
             "null"
           ]
+        },
+        "service_horizon_status": {
+          "type": "string",
+          "enum": [
+            "within_review_threshold",
+            "unusually_distant",
+            "unknown"
+          ],
+          "description": "Whether the effective service end date extends beyond the scorecard's conservative review threshold. Unusually distant is a display and trust advisory outside category findings, not a GTFS error or score deduction."
         },
         "expiry_status": {
           "type": "string",
@@ -132,6 +170,12 @@
             "string",
             "null"
           ]
+        },
+        "scoring_profile_id": {
+          "type": ["string", "null"]
+        },
+        "scoring_profile_rubric_version": {
+          "type": ["string", "null"]
         },
         "retrieved_at": {
           "type": [
@@ -172,7 +216,7 @@
             "not_ready",
             null
           ],
-          "description": "Readiness for the FTA NTD GTFS requirement, rolled up from the published/valid/current pillars. A data-quality heads-up, never an official determination: ready = all three pillars hold; at_risk = a recoverable gap (validator errors, expiring soon); not_ready = unreachable or lapsed. NTD is a US-federal concept, so this is null for non-US agencies (ADR 0026)."
+          "description": "Readiness for the FTA NTD GTFS requirement, rolled up from the published/valid/current/agency_id pillars. A data-quality heads-up, never an official determination: ready = all four pillars hold; at_risk = a recoverable or unchecked gap; not_ready = unreachable, lapsed, or missing agency_id. NTD is a US-federal concept, so this is null for non-US agencies (ADR 0026)."
         },
         "google_gate": {
           "type": "string",

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GTFS Scorecard: is your transit data any good?</title>
-<meta name="description" content="A free, daily, plain-language quality check for a small transit agency's GTFS feed. A letter grade, the three things to fix, and why each one matters to riders.">
+<meta name="description" content="A free, plain-language quality check for a small transit agency's GTFS feed, with scheduled monitoring and public last-run status.">
 <meta property="og:title" content="GTFS Scorecard">
-<meta property="og:description" content="Find out if your transit feed is any good. Free, daily, plain language.">
+<meta property="og:description" content="Find out if your transit feed is any good. Free, plain language, with public refresh status.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gtfsscorecard.org/">
 <meta property="og:image" content="https://gtfsscorecard.org/og.png">
@@ -16,12 +16,13 @@
 <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
 <link rel="canonical" href="https://gtfsscorecard.org/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/","description":"A free, plain-language data-quality scorecard for transit GTFS feeds, built for small and rural agencies."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard","description":"Daily data quality scores for the public GTFS feeds this site currently covers. Checks correctness, freshness, rider-experience completeness, and realtime health. Plain-language fixes included. Built for transit managers at small agencies, riders, and program staff.","url":"https://gtfsscorecard.org/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"keywords":["GTFS","transit data quality","General Transit Feed Specification","GTFS-RT","public transit","small transit agency","open data"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard","description":"Published data quality scores for the public GTFS feeds this site currently covers, with a daily check schedule and public last-run status. Checks correctness, freshness, rider-experience completeness, and realtime health. Plain-language fixes included. Built for transit managers at small agencies, riders, and program staff.","url":"https://gtfsscorecard.org/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"keywords":["GTFS","transit data quality","General Transit Feed Specification","GTFS-RT","public transit","small transit agency","open data"]}</script>
 <script src="/analytics.js" defer></script>
 <script>
   /* Apply the saved theme before first paint to avoid a flash (full control
      mounts from /src/theme.js). Mirrors theme.js THEME_KEY/THEMES. */
   try {
+    document.documentElement.classList.add("js");
     var t = localStorage.getItem("scorecard-theme");
     if (t && ["light", "contrast", "dark"].indexOf(t) >= 0)
       document.documentElement.setAttribute("data-theme", t);
@@ -30,29 +31,56 @@
 <script src="/src/theme.js" defer></script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23163a2c'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
 <style>
+  /* Match the shared site without importing its component selectors into this
+     intentionally bespoke landing page. */
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 400 900;
+    /* Avoid a late metric-changing swap on slower runners and devices. The
+       local font is used when it is ready for first paint; otherwise the
+       declared system fallback remains stable for this page load. */
+    font-display: optional;
+    src: url("/fonts/overpass-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Overpass Mono";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: optional;
+    src: url("/fonts/overpass-mono-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Public Sans";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: optional;
+    src: url("/fonts/public-sans-latin.woff2") format("woff2");
+  }
+
   :root {
     --pine: #102a20;        /* guide-sign green, near black: hero ground */
     --pine-2: #163a2c;
-    --green: #11522a;       /* guide-sign green, darkened to clear AAA 7:1 */
+    --green: #163a2c;       /* canonical civic green from web/src/styles.css */
     --green-on-dark: #6fc8a0; /* green used as text on the pine ground */
     --on-pine: #f4f6f0;     /* sign-white text/borders on the pine chrome (hero,
                                board, cta, footer, nav); stays light in EVERY
                                theme, so dark mode never turns this dark-on-dark */
     --paper: #f2f3ee;       /* enamel sign blank, a near-white with a green cast */
     --paper-2: #e5e8df;
-    --ink: #15231c;         /* near-black green, body text on the sign blank */
-    --ink-soft: #3c4840;    /* darkened to clear AAA 7:1 on both papers */
+    --ink: #20241f;         /* canonical near-black body ink */
+    --ink-soft: #3d4339;    /* canonical muted ink; clears AAA on both papers */
     --amber: #fdc70a;       /* the one sharp accent: warning-sign yellow */
-    --rust: #822c12;        /* darkened to clear AAA 7:1 on the sign blank */
+    --rust: #8e2a23;        /* canonical error/failing-grade red */
     --line: rgba(244,246,240,.22);
     --line-ink: #c6ccbe;
-    --radius: 14px;
+    --radius: 10px;
     --measure: 70ch;        /* 1.4.8 line-length cap for prose blocks */
     --display: "Overpass", "Helvetica Neue", Arial, sans-serif;
     --body: "Public Sans", system-ui, sans-serif;
     --mono: "Overpass Mono", ui-monospace, monospace;
     /* grade swatches */
-    --g-a:#11522a; --g-b:#356b1b; --g-c:#7d660a; --g-d:#8f4d16; --g-f:#8a1b1b;
+    --g-a:#1d5c40; --g-b:#2c5f70; --g-c:#8a5a14; --g-d:#9c4511; --g-f:#8e2a23;
     --focus-ring: var(--amber);
   }
 
@@ -159,6 +187,11 @@
   /* ===================================================================
      HERO  — dark pine ground, a route line drawing down the side
      =================================================================== */
+  .home-header {
+    position: absolute; inset: 0 0 auto; z-index: 20;
+    color: var(--on-pine);
+    padding-top: clamp(1.2rem, 3vw, 2rem);
+  }
   .hero {
     position: relative;
     background:
@@ -166,7 +199,10 @@
       radial-gradient(90% 70% at 5% 110%, rgba(31,122,77,.30), transparent 60%),
       var(--pine);
     color: var(--on-pine);
-    padding: clamp(1.2rem, 3vw, 2rem) 0 clamp(3rem, 7vw, 6rem);
+    /* Reserve the same vertical space the overlaid site header occupied when
+       it lived inside the hero. This keeps the composition unchanged while
+       making the document landmarks valid. */
+    padding: calc(clamp(1.2rem, 3vw, 2rem) + 5.6rem) 0 clamp(3rem, 7vw, 6rem);
     overflow: hidden;
   }
   /* the route line: a vertical dashed spine */
@@ -187,10 +223,29 @@
     display: grid; place-items: center; flex: none; }
   .brand .dot::after { content:""; width: 9px; height: 9px; border-radius:50%; background: var(--green); }
   .brand b { font-family: var(--display); font-weight: 900; font-size: 1.15rem; }
+  .topbar-controls { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
   .topbar nav { display: flex; gap: 1.4rem; align-items: center; font-size: .92rem; }
   .topbar nav a { text-decoration: none; opacity: .85; }
   .topbar nav a:hover { opacity: 1; }
   .topbar .navcta { color: var(--amber); font-weight: 700; }
+  .home-menu-toggle {
+    display: none; align-items: center; justify-content: center; gap: .45rem;
+    min-height: 44px; min-width: 44px; padding: .45rem .8rem;
+    border: 1.5px solid var(--line); border-radius: 999px;
+    background: transparent; color: var(--on-pine); font: inherit; font-weight: 700;
+    cursor: pointer;
+  }
+  .home-menu-toggle:hover { border-color: var(--on-pine); }
+  .menu-glyph { position: relative; width: 1rem; height: 1rem; flex: none; }
+  .menu-glyph::before {
+    content: ""; position: absolute; inset: 1px auto 1px 7px; width: 2px;
+    background: var(--on-pine);
+  }
+  .menu-glyph::after {
+    content: ""; position: absolute; left: 4px; top: 1px; width: 8px; height: 8px;
+    border: 2px solid var(--on-pine); border-radius: 50%;
+    box-shadow: 0 7px 0 -2px var(--pine), 0 7px 0 0 var(--on-pine);
+  }
 
   /* theme control (1.4.8) */
   .theme-control { position: relative; display: inline-flex; }
@@ -276,9 +331,12 @@
   .reel-strip span {
     display: grid; place-items: center;
     font-family: var(--display); font-weight: 900; font-size: 3.4rem; line-height: 1;
+    /* A real split-flap board uses luminous sign-white lettering. Grade colour
+       belongs in the data bars; white keeps every reel letter legible on black. */
+    color: var(--on-pine);
   }
   /* strip order F,D,C,B,A; the final A row is visible */
-  .card-head h3 { font-family: var(--display); font-weight: 900; font-size: 1.35rem; margin: 0 0 .15rem; letter-spacing: -.01em; }
+  .card-head h2 { font-family: var(--display); font-weight: 900; font-size: 1.35rem; margin: 0 0 .15rem; letter-spacing: -.01em; }
   .card-head .sub { margin: 0; font-family: var(--mono); font-size: .78rem; color: var(--ink-soft); }
   .bars { margin: 1.3rem 0 1.2rem; display: grid; gap: .7rem; }
   .bar { display: grid; grid-template-columns: 7.5rem 1fr 2.4rem; align-items: center; gap: .6rem; font-size: .82rem; }
@@ -314,12 +372,11 @@
      THE LINE — how it works, as stops on a route
      =================================================================== */
   section.band { padding: clamp(3.5rem, 8vw, 6.5rem) 0; }
-  /* Keep below-the-fold sections out of initial layout and paint work. The
-     intrinsic size reserves scroll space until each section approaches the
-     viewport, avoiding both blocking-time spikes and layout shifts on phones. */
+  /* The page is small enough to paint eagerly. Layout/style containment keeps
+     section work isolated without content-visibility placeholders, which can
+     leave full-page captures and programmatic scrolling with blank bands. */
   section.band, .cta, footer {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 36rem;
+    contain: layout style;
   }
   .sectlabel { font-family: var(--mono); font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; color: var(--green); margin: 0 0 .8rem; }
   .secttitle { font-family: var(--display); font-weight: 900; font-size: clamp(1.9rem, 4.5vw, 3rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 .6rem; max-width: 18ch; }
@@ -413,11 +470,33 @@
   .bar.subbar > span:first-child { padding-left: 1rem; color: var(--ink-soft); }
 
   /* ---------- responsive ---------- */
+  /* Switch the navigation before the desktop row gets cramped. Content keeps
+     its two-column tablet layout until the narrower breakpoint below. */
+  @media (max-width: 960px) {
+    .js .home-menu-toggle { display: inline-flex; margin-left: auto; }
+    .topbar-controls {
+      display: grid; position: absolute; top: calc(100% + .25rem); left: 0; right: 0;
+      gap: .55rem; margin-left: 0; padding: .7rem;
+      background: var(--pine-2); border: 1.5px solid var(--line); border-radius: var(--radius);
+      box-shadow: 0 18px 35px -18px rgba(0,0,0,.75);
+    }
+    .js .topbar:not(.menu-open) .topbar-controls { display: none; }
+    :root:not(.js) .home-header { position: relative; background: var(--pine); }
+    :root:not(.js) .topbar { flex-wrap: wrap; }
+    :root:not(.js) .topbar-controls { position: static; flex-basis: 100%; }
+    :root:not(.js) .hero { padding-top: clamp(1.2rem, 3vw, 2rem); }
+    .topbar nav { display: grid; gap: .15rem; }
+    .topbar nav a { width: 100%; padding: .45rem .55rem; border-radius: 6px; }
+    .topbar nav a:hover { background: rgba(244,246,240,.08); }
+    .topbar-theme { border-top: 1px solid var(--line); padding: .6rem .55rem 0; }
+    .topbar-theme .theme-toggle { width: 100%; justify-content: center; }
+    .topbar-theme .theme-menu { left: 0; right: auto; }
+  }
+
   @media (max-width: 860px) {
     .hero-grid { grid-template-columns: 1fr; }
     .card { rotate: 0deg; max-width: 26rem; }
     .sect-head { grid-template-columns: 1fr; gap: .9rem; }
-    .topbar nav { display: none; }
     .board .wrap { grid-template-columns: 1fr 1fr; }
     .who-grid { grid-template-columns: 1fr; }
     .hero .route { left: 4%; }
@@ -438,11 +517,14 @@
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="hero">
-  <div class="route" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="topbar">
-      <a class="brand" href="/" aria-current="page"><span class="dot" aria-hidden="true"></span><b>GTFS&nbsp;Scorecard</b></a>
+<header class="home-header">
+  <div class="wrap topbar">
+    <a class="brand" href="/" aria-current="page"><span class="dot" aria-hidden="true"></span><b>GTFS&nbsp;Scorecard</b></a>
+    <button class="home-menu-toggle" type="button" aria-expanded="false" aria-controls="home-menu">
+      <span class="menu-glyph" aria-hidden="true"></span>
+      <span>Menu</span>
+    </button>
+    <div class="topbar-controls" id="home-menu">
       <nav aria-label="Primary">
         <a href="#how">How it works</a>
         <a href="#explore">Explore</a>
@@ -452,14 +534,20 @@
       </nav>
       <div id="theme-control" class="topbar-theme"></div>
     </div>
+  </div>
+</header>
 
-    <main id="main" class="hero-grid">
+<main id="main" tabindex="-1">
+<section class="hero" aria-labelledby="home-title">
+  <div class="route" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
       <div>
-        <p class="eyebrow kicker rise">Free · checked daily · plain language</p>
-        <h1 class="rise d1">Is your transit data <em>any good?</em></h1>
+        <p class="eyebrow kicker rise">Free · scheduled daily · last-run status published</p>
+        <h1 class="rise d1" id="home-title">Is your transit data <em>any good?</em></h1>
         <p class="lede rise d2">You inherited a <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed from a vendor and have no way to know if it's right.
-          This reads your feed every day, runs the same validator the apps use, and tells you in plain
-          words: a grade, the three things to fix, and why each one matters to riders.</p>
+          Each completed check runs the same validator the apps use and tells you in plain words:
+          a grade, the three things to fix, and why each one matters to riders. <a href="/status/">See
+          when the pipeline last completed</a>.</p>
         <div class="hero-actions rise d3">
           <a class="btn btn-primary" href="/app/">Check your agency <span class="arrow" aria-hidden="true">&rarr;</span></a>
           <a class="btn btn-ghost" href="#how">See how it works</a>
@@ -468,15 +556,15 @@
       </div>
 
       <!-- sample scorecard -->
-      <aside class="card" aria-label="Example scorecard">
-        <span class="tag">Example</span>
+      <aside class="card" aria-label="Illustrative scorecard for a fictional transit agency">
+        <span class="tag">Fictional example</span>
         <div class="card-head">
           <div class="reel" role="img" aria-label="Grade A">
-            <div class="reel-strip"><span style="color:var(--g-f)">F</span><span style="color:var(--g-d)">D</span><span style="color:var(--g-c)">C</span><span style="color:var(--g-b)">B</span><span style="color:var(--g-a)">A</span></div>
+            <div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div>
           </div>
           <div>
-            <h3>Tri-County Transit</h3>
-            <p class="sub">88 / 100 · checked today</p>
+            <h2>Tri-County Transit</h2>
+            <p class="sub">88 / 100 · illustrative check: today</p>
           </div>
         </div>
         <div class="bars">
@@ -492,15 +580,14 @@
             plan a trip when it's marked unknown. Often one default in your export.</p>
         </div>
       </aside>
-    </main>
   </div>
-</header>
+</section>
 
 <!-- proof band -->
 <div class="board" role="group" aria-label="At a glance">
   <div class="wrap">
-    <div class="cell"><div class="big">1,100+</div><div class="lab">agencies tracked</div></div>
-    <div class="cell"><div class="big">Daily</div><div class="lab">re-checked</div></div>
+    <div class="cell"><div class="big">1,100+</div><div class="lab">feed scorecards</div></div>
+    <div class="cell"><div class="big">Public</div><div class="lab">last-run status</div></div>
     <div class="cell"><div class="big">A&ndash;F</div><div class="lab">one clear grade</div></div>
     <div class="cell"><div class="big">$0</div><div class="lab">open source</div></div>
   </div>
@@ -520,7 +607,7 @@
       <div class="stop">
         <span class="n">STOP 01</span>
         <h3>We fetch your published feed</h3>
-        <p>The same <a class="ctx" href="https://gtfs.org/" target="_blank" rel="noopener">GTFS<span class="visually-hidden"> (opens in a new tab)</span></a> file trip planners read. Once a day, politely, straight from the URL you already publish.</p>
+        <p>The same <a class="ctx" href="https://gtfs.org/" target="_blank" rel="noopener">GTFS<span class="visually-hidden"> (opens in a new tab)</span></a> file trip planners read. Scheduled once a day, politely, straight from the URL you already publish; the <a href="/status/">status page</a> records actual completion.</p>
       </div>
       <div class="stop">
         <span class="n">STOP 02</span>
@@ -596,7 +683,7 @@
         <span class="corner" aria-hidden="true"></span>
         <p class="role">The program liaison</p>
         <h3>You support a whole region</h3>
-        <p>Follow your agencies into one list, sorted worst-first, with the feed about to expire flagged at the top. The screen to have open during an agency call.</p>
+        <p><a href="/app/">Open the scorecard list</a>, filter to the places you support, and open the feeds with a specific fix to discuss. It is the screen to have open during an agency call.</p>
       </div>
       <div class="who-card">
         <span class="corner" aria-hidden="true"></span>
@@ -625,7 +712,8 @@
         <ul class="feat-list" aria-labelledby="feat-agency">
           <li><a href="/app/">Your scorecard</a>: the grade, four category scores, and the top things to fix.</li>
           <li><a href="/app/">Find your agency</a>: search covered feeds by name, country, subdivision, or grade.</li>
-          <li><a href="/compare/">Compare two agencies</a>: put two scorecards side by side.</li>
+          <li><a href="/compare/">Compare two agencies</a>: check whether two scorecards are
+          like-for-like before viewing them side by side.</li>
           <li><a href="/subscribe.html">Watch your feed</a>: get an email before it expires or its grade slips.</li>
           <li><a href="/how-to-read/">How to read a scorecard</a>: what each score means, in plain words.</li>
         </ul>
@@ -636,7 +724,7 @@
         <ul class="feat-list" aria-labelledby="feat-country">
           <li><a href="/map/">Agency map</a>: every located agency currently covered, coloured by grade.</li>
           <li><a href="/routes/">Every route on one map</a>: all tracked route lines together.</li>
-          <li><a href="/pulse/">Coverage overview</a>: rankings, recent movers, and the corpus trend.</li>
+          <li><a href="/pulse/">Coverage overview</a>: recent changes and the comparable corpus trend.</li>
           <li><a href="/problems/">Common problems</a>: the fixes that recur most across feeds.</li>
         </ul>
       </div>
@@ -655,7 +743,7 @@
         <p class="role" id="feat-tools">Data &amp; tools</p>
         <ul class="feat-list" aria-labelledby="feat-tools">
           <li><a href="/check/">Check a feed before you publish</a>: drop your GTFS zip in; it never leaves your browser.</li>
-          <li><a href="/try.html">Score any feed now</a>: paste a feed URL and get the full scorecard.</li>
+          <li><a href="/try.html">Request a one-off score</a>: use the GitHub-backed path or run the scorer locally.</li>
           <li><a href="/query/">Query the dataset</a>: run SQL over covered feeds, right in the page.</li>
           <li><a href="/data/">Open data</a>: download the scorecard dataset, CC BY 4.0.</li>
           <li><a href="/api/v1/index.json">Public API</a>: versioned JSON endpoints, no key needed.</li>
@@ -674,11 +762,13 @@
     <div class="sect-head">
       <div>
         <p class="sectlabel">Live</p>
-        <h2 class="secttitle" id="improved-h">Agencies are fixing their feeds.</h2>
+        <h2 class="secttitle" id="improved-h">See what changed in published feeds.</h2>
       </div>
-      <p class="sectlede">Some feeds get better every day. A few that improved since their last check.</p>
+      <p class="sectlede">The guarded view compares a feed only with its own prior check under the
+      same complete producer contract. When no feed qualifies, it says so.</p>
     </div>
-    <p class="movers-fallback">See which agencies improved or slipped on the <a href="/pulse/#changes">coverage overview</a>.</p>
+    <p class="movers-fallback">Open the <a href="/pulse/#changes">coverage overview</a> for
+    comparable named changes and its current availability.</p>
     <p style="margin-top:1.8rem"><a class="btn btn-ink" href="/pulse/#changes">See what changed <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
   </div>
 </section>
@@ -691,6 +781,7 @@
     <a class="btn btn-primary" href="/app/">Open the scorecard <span class="arrow" aria-hidden="true">&rarr;</span></a>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="wrap">
@@ -709,7 +800,7 @@
       <a href="/adoption/">What feeds publish</a>
       <a href="/procurement/">For agencies</a>
       <a href="/how-to-read/">How to read a scorecard</a>
-      <a href="/data/" aria-label="Open transit data downloads">Open data</a>
+      <a href="/data/">Open data</a>
       <a href="https://github.com/ChelseaKR/gtfs-scorecard" target="_blank" rel="noopener" aria-label="Source code on GitHub (opens in a new tab)">Source</a>
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/accessibility.md" target="_blank" rel="noopener">Accessibility<span class="visually-hidden"> (opens in a new tab)</span></a>
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md" target="_blank" rel="noopener">Listing policy<span class="visually-hidden"> (opens in a new tab)</span></a>
@@ -717,5 +808,50 @@
     </nav>
   </div>
 </footer>
+<script>
+  (function () {
+    "use strict";
+    var topbar = document.querySelector(".topbar");
+    var toggle = document.querySelector(".home-menu-toggle");
+    var menu = document.getElementById("home-menu");
+    if (!(topbar instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement) || !menu) return;
+
+    function isOpen() {
+      return topbar.classList.contains("menu-open");
+    }
+    function closeMenu(restoreFocus) {
+      topbar.classList.remove("menu-open");
+      toggle.setAttribute("aria-expanded", "false");
+      if (restoreFocus) toggle.focus();
+    }
+    function openMenu() {
+      topbar.classList.add("menu-open");
+      toggle.setAttribute("aria-expanded", "true");
+    }
+
+    toggle.addEventListener("click", function () {
+      if (isOpen()) closeMenu(false);
+      else openMenu();
+    });
+    menu.addEventListener("click", function (event) {
+      var link = event.target instanceof Element ? event.target.closest("nav a") : null;
+      if (link) closeMenu(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.defaultPrevented || event.key !== "Escape" || !isOpen()) return;
+      event.preventDefault();
+      closeMenu(true);
+    });
+    document.addEventListener("click", function (event) {
+      if (isOpen() && event.target instanceof Node && !topbar.contains(event.target)) closeMenu(false);
+    });
+    var mobile = window.matchMedia("(max-width: 960px)");
+    function resetAtDesktop(event) {
+      if (!event.matches) closeMenu(false);
+    }
+    if (typeof mobile.addEventListener === "function") mobile.addEventListener("change", resetAtDesktop);
+    else if (typeof mobile.addListener === "function") mobile.addListener(resetAtDesktop);
+  })();
+</script>
 </body>
 </html>

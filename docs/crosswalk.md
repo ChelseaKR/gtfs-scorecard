@@ -33,15 +33,13 @@ programs are labelled as support resources rather than scoring authorities.
 - **The [FTA National Transit Database](https://www.transit.dot.gov/ntd) GTFS
   requirement.** Since Report Year 2023, every NTD reporter with fixed-route
   service must publish and maintain a valid, public GTFS feed and certify it
-  annually. This is the one standard that applies nationwide, and it tracks the
-  scorecard's Correctness and Freshness categories. Aligning the GTFS `agency_id`
-  with the agency's five-digit NTD ID lets a feed join cleanly to its NTD record.
-  The October 2024 proposal would have required that alignment in the feed; the
-  [July 2025 final rule](https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026)
-  did not adopt it, collecting the `agency_id`-to-NTD-ID link on the P-50 form
-  instead. When the agency's NTD ID is on file, the NTD readiness section on its
-  scorecard checks the alignment and frames it as an optional convenience, never
-  a required feed change and not part of the grade.
+  annually. For RY2026, every submission must also provide a stable `agency_id`
+  value for each represented reporter, unique among those reporters, and
+  crosswalk it to the reporter's NTD ID on P-50. The value does not have to equal
+  the five-digit NTD ID. The scorecard treats presence as a readiness check and
+  shows equality only as a neutral, zero-deduction comparison. This nationwide
+  layer tracks the scorecard's Correctness and Freshness categories but does not
+  change their grades.
 ### State and provincial overlays
 
 - **A jurisdiction's own guideline, where one has been mapped.** California is
@@ -137,9 +135,12 @@ present, human-readable stop names, headsigns, and valid agency contact details.
 
 ### Realtime quality (20%)
 
-What it measures: the GTFS-Realtime feed reachable and fresh, the share of
-scheduled trips represented in TripUpdates, and plausible vehicle positions. Shown
-neutrally as "Not yet published" when an agency has no realtime feed.
+What it measures: each configured GTFS-Realtime feed reachable, header freshness
+for configured TripUpdates and VehiclePositions feeds, the share of scheduled
+trips represented when TripUpdates is configured, and plausible vehicle
+positions when VehiclePositions is configured. Unpublished feed kinds are
+neutral. Shown neutrally as "Not yet published" when an agency has no realtime
+feed.
 
 - **California Guidelines:** the GTFS Realtime Features — standard formats at a
   stable URL, with high uptime and update frequency.
@@ -147,7 +148,8 @@ neutrally as "Not yet published" when an agency has no realtime feed.
 
 ## Where the scorecard and the standards differ
 
-- The scorecard is automated and runs daily; the Grading Scheme's accuracy checks
+- The scorecard's automated run is scheduled daily, and its public status page
+  records when each run actually completes. The Grading Scheme's accuracy checks
   are manual by design. The scorecard approximates them, it does not replace them.
 - The scorecard weights and grades; the California Guidelines are pass/fail per
   Feature. A good grade is encouragement toward the Features, not a substitute for

@@ -18,8 +18,9 @@ scoring; it does not use model inference or make eligibility decisions.
   attributes are collected.
 - Public agency data is scored, not people. Grades are not service-quality,
   compliance, procurement, or staff-performance certifications.
-- Missing realtime is neutral. Ranked comparisons require measured, current records and
-  a minimum cohort; individual scorecards remain available when rankings are suppressed.
+- Missing realtime is neutral. Absolute rankings and individual percentiles are
+  not published. Aggregate scores and named changes require the current rubric,
+  measured schedule categories, and an unambiguous canonical feed identity.
 - Feed corrections and agency claims require evidence and human review. Opening a request
   never verifies control or changes the registry automatically.
 - Alert subscriptions use double opt-in, store only the minimum delivery information,

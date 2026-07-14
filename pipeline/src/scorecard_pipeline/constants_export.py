@@ -11,8 +11,8 @@ file (``render-site`` runs it too); ``tests/test_generated_constants.py``
 fails CI when the committed copy no longer matches a fresh render.
 
 Constants whose semantics live elsewhere are imported from their home module
-(``metrics.STALE_FEED_DAYS``, ``score.GRADE_BANDS``, ``site_shell``'s category
-and severity labels, the ``rule_links`` table). Presentation constants that had
+(``metrics`` freshness thresholds, ``score.GRADE_BANDS``, ``site_shell``'s
+category and severity labels, the ``rule_links`` table). Presentation constants that had
 no single Python home before (grade order and rank, size-tier display words,
 the fix-guide base URL) are defined here, and the Python renderers import them
 from here for the same one-definition guarantee.
@@ -32,7 +32,7 @@ from .jurisdiction_guidance import (
     US_NTD_GUIDANCE,
     US_STATE_SUBDIVISION_CODES,
 )
-from .metrics import STALE_FEED_DAYS
+from .metrics import SERVICE_HORIZON_REVIEW_YEARS, STALE_FEED_DAYS
 from .rule_links import AUTHORITY_LABELS, RULE_LINKS, VALIDATOR_RULES_PAGE
 from .score import GRADE_BANDS
 from .site_shell import CATEGORY_LABELS, CATEGORY_ORDER, SEVERITY_LABELS
@@ -59,8 +59,8 @@ GENERATED_PATH = Path("web") / "src" / "generated" / "constants.js"
 _HEADER = (
     "// GENERATED — do not edit; run `scorecard render-constants`.\n"
     "// Source of truth: pipeline/src/scorecard_pipeline/constants_export.py\n"
-    "// (grade bands from score.py, STALE_FEED_DAYS from metrics.py, category and\n"
-    "// severity labels from site_shell.py, rule links from rule_links.py).\n"
+    "// (grade bands from score.py, freshness thresholds from metrics.py, category\n"
+    "// and severity labels from site_shell.py, rule links from rule_links.py).\n"
     "// pipeline/tests/test_generated_constants.py fails CI when this file drifts.\n"
 )
 
@@ -70,6 +70,7 @@ def _exports() -> dict[str, Any]:
     order they are emitted. Every value must be JSON-serializable."""
     return {
         "STALE_FEED_DAYS": STALE_FEED_DAYS,
+        "SERVICE_HORIZON_REVIEW_YEARS": SERVICE_HORIZON_REVIEW_YEARS,
         "GRADE_BANDS": [{"min_score": floor, "grade": letter} for floor, letter in GRADE_BANDS],
         "GRADE_ORDER": GRADE_ORDER,
         "GRADE_RANK": GRADE_RANK,

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import copy
+import json
 from typing import Any
 
 from scorecard_pipeline.mcp_server import TOOLS, call_tool, handle_request
@@ -18,6 +20,7 @@ _CATALOG = {
             "subdivision_code": "US-CA",
             "subdivision_name": "California",
             "days_until_expiry": 83,
+            "service_horizon_status": "within_review_threshold",
             "ntd_ready": "ready",
             "scorecard_url": "https://gtfsscorecard.org/agency/unitrans/",
         },
@@ -31,6 +34,7 @@ _CATALOG = {
             "subdivision_code": "CA-ON",
             "subdivision_name": "Ontario",
             "days_until_expiry": 40,
+            "service_horizon_status": "within_review_threshold",
             "ntd_ready": None,
             "scorecard_url": "https://gtfsscorecard.org/agency/barrie-transit/",
         },
@@ -144,6 +148,59 @@ def test_get_scorecard_trims_and_frames_as_fixes() -> None:
     assert "not an official compliance determination" in card["note"]
 
 
+def test_search_derives_legacy_catalog_horizon_from_snapshot_and_days() -> None:
+    import scorecard_pipeline.mcp_server as mcp
+
+    catalog = {
+        "agencies": [
+            {
+                "id": "legacy-global",
+                "name": "Legacy Global Transit",
+                "snapshot_date": "2026-07-13",
+                "days_until_expiry": 26_834,
+            }
+        ]
+    }
+    mcp._catalog_cache.clear()
+    result = call_tool(
+        "search_agencies",
+        {"query": "legacy-global"},
+        lambda _url: catalog,
+    )
+    assert result["agencies"][0]["service_horizon_status"] == "unusually_distant"
+    mcp._catalog_cache.clear()
+
+
+def test_get_scorecard_normalizes_legacy_embedded_countdown() -> None:
+    artifact: dict[str, Any] = copy.deepcopy(_ARTIFACT)
+    artifact["snapshot_date"] = "2026-07-13"
+    artifact["feed"] = {"static_url": "https://example.org/gtfs.zip", "reachable": True}
+    artifact["categories"]["freshness"] = {
+        "status": "measured",
+        "score": 100.0,
+        "summary": "Service data covers the next 26834 days.",
+        "findings": [],
+        "details": {"days_until_expiry": 26_834},
+    }
+    artifact["ntd_readiness"] = {
+        "status": "ready",
+        "summary": "Ready.",
+        "pillars": [
+            {
+                "key": "current",
+                "status": "ready",
+                "detail": "Service data covers the next 26834 days.",
+            }
+        ],
+    }
+
+    card = call_tool("get_scorecard", {"agency_id": "unitrans"}, lambda _url: artifact)
+    freshness = card["categories"]["freshness"]
+    assert freshness["service_horizon_status"] == "unusually_distant"
+    assert "unusually distant" in freshness["summary"]
+    assert "26834" not in json.dumps(card)
+
+
 def test_tools_call_wraps_payload_and_errors_in_content() -> None:
     ok = handle_request(
         {
@@ -203,17 +260,18 @@ def test_search_limit_zero_returns_none_and_catalog_is_cached() -> None:
 
 def test_search_rows_carry_the_documented_readiness_fields() -> None:
     # The MCP slim row must not lag the documented catalog contract (api.md):
-    # readiness and percentile fields ride along so an agent never has to
-    # refetch the raw catalog for them.
+    # readiness fields ride along so an agent does not have to refetch the raw
+    # catalog. Individual percentile fields are deliberately not published.
     row = call_tool("search_agencies", {"query": "davis"}, _fetch)["agencies"][0]
     for field in (
         "country",
         "subdivision_code",
         "subdivision_name",
         "expiry_status",
-        "national_percentile",
-        "peer_percentile",
+        "service_horizon_status",
         "ntd_ready",
         "google_gate",
     ):
         assert field in row, field
+    assert row["national_percentile"] is None
+    assert row["peer_percentile"] is None

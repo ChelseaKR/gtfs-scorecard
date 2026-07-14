@@ -15,10 +15,6 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <meta name="robots" content="noindex,follow">
@@ -37,7 +33,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -45,15 +41,15 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
-    <div class="brief">
+    <div class="brief brief-board">
     <p class="brief-nav no-print"><a href="/agency/gwinnett-county-transit-2241/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked 2026-07-10</p>
       <h1 class="brief-title">Gwinnett County Transit</h1>
       <p class="brief-grade">Grade C &middot; 71.7 / 100</p>
-      <p class="brief-trend">Unchanged since 2026-07-09.</p>
+      <p class="brief-trend">The scoring methodology changed since the prior check; the trend restarts here without an improvement or regression claim.</p>
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>
@@ -71,7 +67,6 @@
       <p>Three improvements, in priority order, each sized so the board can see what it is approving:</p><ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">872 of 872 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">2792 of 2792 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="brief-fix-eta">Estimated effort: Often one default setting in your export.</p></li><li class="brief-fix"><p class="brief-fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p class="brief-fix-why">The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="brief-fix-eta">Estimated effort: A small file for most flat-fare systems.</p></li></ol>
       
     </section>
-    <section aria-labelledby="board-standing-h"><h2 id="board-standing-h">Where this agency stands</h2><p>Ahead of 62% of all tracked agencies, and ahead of 60% of mid-size agencies nationwide.</p></section>
     <p class="brief-foot">Produced by the GTFS Scorecard, an open-source data quality
       tool. A data-quality read to support the board conversation, not an official
       compliance determination. Live scorecard: https://gtfsscorecard.org/agency/gwinnett-county-transit-2241/.
@@ -81,37 +76,64 @@
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

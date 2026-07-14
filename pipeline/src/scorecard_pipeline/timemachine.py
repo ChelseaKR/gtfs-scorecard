@@ -123,6 +123,13 @@ def history_events(
 _STORY_MIDDLE_BUDGET = 3
 
 
+def _story_finding_label(code: str, what: str) -> str:
+    """A sentence-ready finding name, preferring the artifact's plain-language
+    description and retaining a readable fallback for older sparse artifacts."""
+    label = what.strip().rstrip(".") or code.replace("_", " ")
+    return label[:1].lower() + label[1:]
+
+
 def grade_story(
     history: list[dict[str, Any]], artifacts: list[dict[str, Any]] | None = None
 ) -> list[str]:
@@ -162,7 +169,10 @@ def grade_story(
         prev_codes = finding_codes(prev)
         cleared = sorted(c for c in prev_codes if c not in finding_codes(curr))
         if cleared:
-            middle.append(f"On {_artifact_date(curr)} it cleared {', '.join(cleared)}.")
+            labels = [_story_finding_label(code, prev_codes[code]) for code in cleared]
+            middle.append(
+                f"On {_artifact_date(curr)} the check no longer reported: {'; '.join(labels)}."
+            )
 
     if not middle:
         # No band move, expiry crossing, or cleared finding. The grade held, but

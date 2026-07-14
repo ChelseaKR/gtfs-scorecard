@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import inspect
 import zipfile
 from collections.abc import Callable
 from pathlib import Path
 
 from scorecard_pipeline.autofix import apply_fixes, autofix_zip, render_report
+from scorecard_pipeline.cli import main, run_agency
 from scorecard_pipeline.gtfs import read_tables
 
 
@@ -88,3 +90,15 @@ def test_render_report_lists_changes_and_clean_case() -> None:
     assert "Auto-fix applied to demo.zip" in report
     assert "Main Street" in report
     assert "nothing to change" in render_report([], feed_label="demo.zip")
+
+
+def test_daily_scoring_does_not_generate_or_advertise_a_corrected_feed() -> None:
+    source = inspect.getsource(run_agency)
+
+    assert "autofix_zip" not in source
+    assert "corrected.zip" not in source
+    assert 'artifact["autofix"]' not in source
+
+
+def test_autofix_remains_an_explicit_local_cli_command() -> None:
+    assert '"autofix": _cmd_autofix' in inspect.getsource(main)

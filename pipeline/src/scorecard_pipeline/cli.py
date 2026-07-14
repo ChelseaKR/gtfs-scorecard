@@ -46,7 +46,7 @@ from .config import AGENCIES, Agency, raw_dir, repo_root
 from .constants_export import GRADE_RANK
 from .fetch import fetch_static
 from .gtfs import read_feed_dates
-from .metrics import correctness, freshness
+from .metrics import CategoryResult, correctness, freshness
 from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
@@ -92,6 +92,42 @@ class RunOutcome:
     path: str
     mirrored: bool
     cache_hit: bool
+
+
+def _realtime_category(
+    agency: Agency,
+    static_path: Path,
+    date: dt.date,
+    *,
+    rt_samples: int,
+    rt_interval: int,
+) -> CategoryResult:
+    """Sample and score only the realtime capabilities an agency publishes.
+
+    TripUpdates analysis reads schedule tables and VehiclePositions analysis
+    reads shapes. Avoiding those paths when the corresponding feed kind is not
+    configured keeps a partial realtime feed from paying irrelevant CPU and
+    memory costs or failing on data that its score does not use.
+    """
+    window = capture_window(agency, date, samples=rt_samples, interval_seconds=rt_interval)
+    has_trip_updates = "trip_updates" in agency.rt_urls
+    has_vehicle_positions = "vehicle_positions" in agency.rt_urls
+    scheduled = (
+        scheduled_trip_ids_at(str(static_path), dt.datetime.now(dt.UTC))
+        if has_trip_updates
+        else None
+    )
+    drift = compute_drift(window.samples, str(static_path)) if has_trip_updates else None
+    plausibility = (
+        vehicle_plausibility(window.samples, str(static_path)) if has_vehicle_positions else None
+    )
+    return realtime(
+        window,
+        scheduled or None,
+        drift=drift,
+        plausibility=plausibility,
+        configured_kinds=agency.rt_urls,
+    )
 
 
 def run_agency(  # noqa: C901
@@ -168,14 +204,13 @@ def run_agency(  # noqa: C901
         completeness(str(fetched.path), fare_free=agency.fare_free),
     ]
     if agency.rt_urls and not skip_rt:
-        window = capture_window(agency, date, samples=rt_samples, interval_seconds=rt_interval)
-        scheduled = scheduled_trip_ids_at(str(fetched.path), dt.datetime.now(dt.UTC))
         cats.append(
-            realtime(
-                window,
-                scheduled or None,
-                drift=compute_drift(window.samples, str(fetched.path)),
-                plausibility=vehicle_plausibility(window.samples, str(fetched.path)),
+            _realtime_category(
+                agency,
+                fetched.path,
+                date,
+                rt_samples=rt_samples,
+                rt_interval=rt_interval,
             )
         )
     scorecard = build_scorecard(cats)
@@ -229,8 +264,8 @@ def run_agency(  # noqa: C901
         geometry_path.unlink(missing_ok=True)
         artifact["route_map"] = dict(geometry.summary)
     # The export diff (EXP-18): what changed in the feed itself since the last
-    # export, diffed from the compact structure fingerprint remembered beside
-    # the artifact. Best-effort by design; a diff must never block a score.
+    # export, diffed from the compact structure fingerprint remembered in the
+    # private cache. Best-effort by design; a diff must never block a score.
     from .exportdiff import export_diff
 
     try:
@@ -249,7 +284,7 @@ def run_agency(  # noqa: C901
         **routability.to_details(),
         "findings": [f.to_json() for f in routability.findings],
     }
-    # NTD GTFS readiness and agency_id alignment are US-only surfaces:
+    # NTD GTFS readiness and optional NTD-ID equality are US-only surfaces:
     # they map the feed onto the FTA National Transit Database, which has no
     # meaning abroad. A non-US agency is scored on the same rubric but skips both,
     # so no hollow NTD box appears (ADR 0026). Absent keys mean the SPA and API
@@ -259,9 +294,10 @@ def run_agency(  # noqa: C901
         from .ntd import assess as assess_ntd_readiness
         from .ntd import assess_id_alignment, assess_shapes_readiness
 
-        # NTD ID alignment: does the feed's agency_id match the agency's NTD ID?
-        # A forward-looking compliance flag (FTA RY2025/26), zero-deduction, shown
-        # as not-yet-checked when we have no NTD ID on file.
+        # RY2026 feed identity plus optional NTD-ID equality: agency_id presence
+        # is required and crosswalked on P-50, while equality to the five-digit
+        # NTD ID is only a neutral, zero-deduction convention. The comparison is
+        # shown as not-yet-checked when we have no NTD ID on file.
         artifact["ntd_id_alignment"] = assess_id_alignment(
             read_agency_ids(str(fetched.path)), agency.ntd_id
         ).to_dict()
@@ -272,43 +308,9 @@ def run_agency(  # noqa: C901
         artifact["shapes_readiness"] = assess_shapes_readiness(
             shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
-        # NTD GTFS readiness (published / valid / current), precomputed so
+        # NTD GTFS readiness (published / valid / current / agency_id), precomputed so
         # the web app and API render it without re-deriving the verdict.
         artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()
-    # Corrected-feed offer: run the safe deterministic fixes over the feed we
-    # already fetched (no extra network call) and attach a summary the page can
-    # render. The patched zip is written next to the agency's artifacts; it is
-    # gitignored and reaches the CDN through the workflow's S3 file sync, so the
-    # download link points at SCORECARD_CDN_BASE when that is set.
-    from .autofix import autofix_zip
-    from .config import artifacts_dir
-
-    corrected = artifacts_dir() / agency.id / "corrected.zip"
-    corrected.parent.mkdir(parents=True, exist_ok=True)
-    fixes = autofix_zip(str(fetched.path), str(corrected))
-    if fixes:
-        autofix_block: dict[str, Any] = {
-            "available": True,
-            "total": sum(f.count for f in fixes),
-            "fixes": [
-                {
-                    "code": f.code,
-                    "label": f.label,
-                    "count": f.count,
-                    "examples": f.examples[:3],
-                }
-                for f in fixes
-            ],
-            "download_path": f"data/artifacts/{agency.id}/corrected.zip",
-        }
-        cdn_base = os.environ.get("SCORECARD_CDN_BASE")
-        if cdn_base:
-            autofix_block["download_url"] = (
-                f"{cdn_base.rstrip('/')}/data/artifacts/{agency.id}/corrected.zip"
-            )
-        artifact["autofix"] = autofix_block
-    else:
-        artifact["autofix"] = {"available": False}
     path = publish(artifact)
     log.info(
         "%s: %s (%s) -> %s",
@@ -464,17 +466,56 @@ def _country_arg(value: str) -> str:
         raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
+def _artifact_contract_current(agency_id: str) -> bool:
+    """Whether the last artifact was built with today's scoring contract.
+
+    Feed liveness alone is not enough to reuse an artifact. A rubric, artifact
+    schema, scoring-profile, or validator release can change the published
+    result while the GTFS bytes stay identical. Returning ``False`` makes the
+    normal run rebuild the artifact; the content-addressed validator cache
+    still avoids rerunning Java when its own version and feed hash match.
+    """
+    from . import RUBRIC_VERSION, SCHEMA_VERSION, SCORING_PROFILE_ID
+    from .config import artifacts_dir
+    from .validate import VALIDATOR_VERSION
+
+    path = artifacts_dir() / agency_id / "latest.json"
+    try:
+        artifact = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(artifact, dict):
+        return False
+
+    profile = artifact.get("scoring_profile") or {}
+    if not isinstance(profile, dict):
+        return False
+    return bool(
+        str(artifact.get("schema_version") or "") == SCHEMA_VERSION
+        and str(artifact.get("rubric_version") or "") == RUBRIC_VERSION
+        and str(artifact.get("validator_version") or "") == VALIDATOR_VERSION
+        and str(profile.get("id") or "") == SCORING_PROFILE_ID
+        and str(profile.get("rubric_version") or "") == RUBRIC_VERSION
+    )
+
+
 def _liveness_unchanged(agency_id: str) -> bool:
     """Perform a cheap conditional GET and return True when the feed is unchanged.
 
-    Updates and persists the liveness record in data/liveness.json so
-    checked_at stays current even on a skip. Returns False when there is no
-    prior record (first run always scores) or when the feed is unreachable
-    (let the normal score attempt surface the failure and increment the
-    consecutive-failure counter for the alert digest).
+    A stale or missing artifact contract returns False before the network check
+    so a methodology release rebuilds unchanged feeds. Otherwise, update and
+    persist the liveness record in data/liveness.json so checked_at stays
+    current even on a skip. Returns False when there is no prior record (first
+    run always scores) or when the feed is unreachable (let the normal score
+    attempt surface the failure and increment the consecutive-failure counter
+    for the alert digest).
     """
     from .config import repo_root
     from .liveness import UNCHANGED, check_feed, load_state, save_state
+
+    if not _artifact_contract_current(agency_id):
+        log.info("Re-scoring %s: published artifact contract is stale or missing", agency_id)
+        return False
 
     agency = AGENCIES[agency_id]
     state_path = repo_root() / "data" / "liveness.json"
@@ -495,7 +536,11 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     outcome_out = getattr(args, "outcome_out", None)
     for agency_id in targets:
         started = time.monotonic()
-        if getattr(args, "skip_unchanged", False) and _liveness_unchanged(agency_id):
+        if (
+            getattr(args, "skip_unchanged", False)
+            and not args.force_fetch
+            and _liveness_unchanged(agency_id)
+        ):
             log.info("Skipping %s: feed unchanged since last check", agency_id)
             skipped += 1
             if outcome_out:
@@ -815,9 +860,14 @@ def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser)
             artifacts: list[dict[str, Any]] = []
             for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
                 try:
-                    artifacts.append(json.loads(dated.read_text()))
-                except (OSError, json.JSONDecodeError):
+                    artifact = json.loads(dated.read_text())
+                    artifact_date = str(artifact["snapshot_date"])
+                    parsed_date = dt.date.fromisoformat(artifact_date)
+                except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
                     continue
+                if parsed_date.isoformat() != artifact_date or artifact_date != dated.stem:
+                    continue
+                artifacts.append(artifact)
             if artifacts:
                 histories[agency_dir.name] = artifacts
     report = build_fix_outcomes(histories)
@@ -955,7 +1005,10 @@ def _cmd_dataset(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    dataset = build_quality_dataset(index)
+    dataset = build_quality_dataset(
+        index,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
     if args.out:
         out = Path(args.out)
         out.write_text(_json.dumps(dataset, indent=2, sort_keys=True) + "\n")
@@ -981,31 +1034,57 @@ def _cmd_sensitivity(args: argparse.Namespace, parser: argparse.ArgumentParser) 
     import json as _json
 
     from . import DATA_ATTRIBUTION, DATA_LICENSE, RUBRIC_VERSION, SCHEMA_VERSION
+    from .comparisons import build_comparison_cohort
     from .config import artifacts_dir
+    from .dataset import build_quality_dataset
     from .sensitivity import latest_category_scores, weight_sensitivity
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    study = weight_sensitivity(latest_category_scores(index), factor=args.factor)
+    # Sensitivity is itself a cross-feed claim. Apply the same current producer,
+    # category, and identity contract as every other public aggregate before
+    # perturbing the weights; stale rubric rows must not dilute or inflate churn.
+    rows = build_quality_dataset(index)["rows"]
+    comparable, comparison = build_comparison_cohort(
+        rows,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
+    out = Path(args.out) if args.out else artifacts_dir() / "sensitivity.json"
+    comparable_ids = {str(row["id"]) for row in comparable}
+    filtered_index = {
+        "agencies": {
+            agency_id: entry
+            for agency_id, entry in (index.get("agencies") or {}).items()
+            if agency_id in comparable_ids
+        }
+    }
+    study = weight_sensitivity(latest_category_scores(filtered_index), factor=args.factor)
     payload = {
         "schema_version": SCHEMA_VERSION,
         "rubric_version": RUBRIC_VERSION,
         "license": DATA_LICENSE,
         "attribution": DATA_ATTRIBUTION,
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        "comparison": comparison,
         **study,
     }
-    out = Path(args.out) if args.out else artifacts_dir() / "sensitivity.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(_json.dumps(payload, indent=2, sort_keys=True) + "\n")
-    log.info(
-        "Weight sensitivity over %d agencies: at most %s%% of letters change "
-        "under ±%d%% single-weight perturbations (%s)",
-        study["agency_count"],
-        study["max_grade_change_pct"],
-        round(args.factor * 100),
-        out,
-    )
+    if comparable:
+        log.info(
+            "Weight sensitivity over %d comparison-eligible feed records: at most %s%% "
+            "of letters change under ±%d%% single-weight perturbations (%s)",
+            study["agency_count"],
+            study["max_grade_change_pct"],
+            round(args.factor * 100),
+            out,
+        )
+    else:
+        log.warning(
+            "Weight sensitivity is unavailable until current-contract rows exist; wrote a "
+            "guarded zero-cohort artifact to %s.",
+            out,
+        )
     return 0
 
 
@@ -1128,9 +1207,15 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
 
 
 def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .comparisons import build_comparison_cohort
     from .config import repo_root
     from .metrics import expiry_status
-    from .ridership import fetch_ridership_csv, parse_ridership_csv, weighted_impact
+    from .ridership import (
+        duplicate_ntd_reporter_ids,
+        fetch_ridership_csv,
+        parse_ridership_csv,
+        weighted_impact,
+    )
 
     csv_path = Path(args.csv) if args.csv else repo_root() / "data" / "ntd-ridership.csv"
     if args.fetch:
@@ -1161,14 +1246,53 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     ridership = parse_ridership_csv(csv_path.read_text())
     log.info("Loaded annual ridership for %d NTD reporters.", len(ridership))
 
+    latest_records = _latest_records()
+    comparison_candidates = []
+    for r in latest_records:
+        artifact = r["artifact"]
+        categories = artifact.get("categories") or {}
+        days = (categories.get("freshness", {}).get("details", {})).get("days_until_expiry")
+        profile = artifact.get("scoring_profile") or {}
+        comparison_candidates.append(
+            {
+                "id": r["id"],
+                "name": r["name"],
+                "feed_url": r.get("feed_url"),
+                "feed_sha256": (artifact.get("feed") or {}).get("sha256"),
+                "date": artifact.get("snapshot_date"),
+                "score": r["score"],
+                "grade": r["grade"],
+                "rubric_version": artifact.get("rubric_version"),
+                "scoring_profile_id": profile.get("id"),
+                "scoring_profile_rubric_version": profile.get("rubric_version"),
+                "validator_version": artifact.get("validator_version"),
+                "days_until_expiry": days,
+                **{
+                    key: (
+                        categories.get(key, {}).get("score")
+                        if categories.get(key, {}).get("status") == "measured"
+                        else None
+                    )
+                    for key in ("correctness", "freshness", "completeness", "realtime")
+                },
+            }
+        )
+    comparable, _comparison = build_comparison_cohort(
+        comparison_candidates, agencies=AGENCIES.values()
+    )
+    comparable_ids = {str(record["id"]) for record in comparable}
+
     records = []
-    for r in _latest_records():
+    for r in latest_records:
+        if r["id"] not in comparable_ids:
+            continue
         cfg = AGENCIES.get(r["id"])
         days = (r["artifact"].get("categories", {}).get("freshness", {}).get("details", {})).get(
             "days_until_expiry"
         )
         records.append(
             {
+                "id": r["id"],
                 "ntd_id": cfg.ntd_id if cfg else "",
                 "score": r["score"],
                 "grade": r["grade"],
@@ -1176,14 +1300,20 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
             }
         )
 
-    impact = weighted_impact(records, ridership)
+    impact = weighted_impact(
+        records,
+        ridership,
+        quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
+    )
     print(json.dumps(impact, indent=2, sort_keys=True))
     log.info(
-        "Weighted %d of %d agencies by ridership: %s annual trips, %s%% on expired feeds.",
-        impact["matched_agencies"],
-        impact["total_agencies"],
+        "Weighted %d unique NTD reporter matches across %d eligible feed records: "
+        "%s annual trips, %s%% on expired feeds; %d duplicate feed records excluded.",
+        impact["matched_ntd_reporters"],
+        impact["total_feed_records"],
         f"{impact['total_annual_trips']:,}",
         impact["expired_trips_pct"],
+        impact["duplicate_feed_records_excluded"],
     )
     return 0
 
@@ -1341,26 +1471,34 @@ def _cmd_feedapi(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
 
 def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .gtfs import read_tables
-    from .otp import assess_routing, fetch_plan, sample_od_pairs
+    from .otp import assess_routing, fetch_plan, sample_scheduled_stop_pairs
+    from .rt import _active_service_ids
 
-    rows = read_tables(args.feed, ["stops.txt"]).get("stops.txt", [])
-    points: list[tuple[float, float]] = []
-    for row in rows:
-        try:
-            lon, lat = float(row.get("stop_lon", "")), float(row.get("stop_lat", ""))
-        except ValueError:
-            continue
-        if -180 <= lon <= 180 and -90 <= lat <= 90 and not (lon == 0 and lat == 0):
-            points.append((lon, lat))
-    pairs = sample_od_pairs(points, args.pairs)
+    tables = read_tables(
+        args.feed, ["calendar.txt", "calendar_dates.txt", "trips.txt", "stop_times.txt"]
+    )
+    service_date = dt.date.fromisoformat(args.date)
+    pairs = sample_scheduled_stop_pairs(
+        tables["trips.txt"],
+        tables["stop_times.txt"],
+        _active_service_ids(tables, service_date),
+        count=args.pairs,
+    )
     if not pairs:
-        log.error("Not enough located stops to sample an origin/destination pair.")
+        log.error("No active trips with distinct endpoint stops to sample on %s.", args.date)
         return 1
     results = []
-    for origin, destination in pairs:
+    for origin, destination, departure_time in pairs:
         try:
             results.append(
-                fetch_plan(args.base, origin, destination, date=args.date, time=args.time)
+                fetch_plan(
+                    args.base,
+                    origin,
+                    destination,
+                    date=args.date,
+                    time=departure_time,
+                    allow_loopback=args.allow_loopback,
+                )
             )
         except Exception as exc:
             log.warning("OTP plan request failed: %s", exc)
@@ -1409,7 +1547,10 @@ def _cmd_query(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    rows = build_quality_dataset(index)["rows"]
+    rows = build_quality_dataset(
+        index,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )["rows"]
 
     if args.export:
         to_parquet(rows, args.export)
@@ -1417,6 +1558,11 @@ def _cmd_query(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
         return 0
     if not args.sql:
         parser.error("pass a SQL query, or --export <path>")
+    log.warning(
+        "This is a covered feed set, not a census. For cross-feed score comparisons, "
+        "filter comparison_eligible = true and inspect the comparison metadata in "
+        "api/v1/agencies.json."
+    )
     result = query_rows(rows, args.sql)
     print(_json.dumps(result, indent=2, default=str))
     log.info("%d row(s).", len(result))
@@ -1432,7 +1578,10 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    dataset = build_quality_dataset(index)
+    dataset = build_quality_dataset(
+        index,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
     states = _published_states()
     try:
         indicators = fetch_state_indicators()
@@ -1451,7 +1600,12 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
             return 1
         log.warning("equity: ACS fetch failed; --allow-empty set, writing counts-only (%s)", exc)
         indicators = {}
-    overlay = build_overlay(dataset["rows"], states, indicators)
+    overlay = build_overlay(
+        dataset["rows"],
+        states,
+        indicators,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
     tiered = sum(1 for s in overlay["states"] if s["need_tier"] != "unknown")
     log.info("equity: %d of %d states have an ACS need tier.", tiered, len(overlay["states"]))
     if tiered == 0 and not args.allow_empty:
@@ -2118,8 +2272,9 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument(
         "--skip-unchanged",
         action="store_true",
-        help="skip re-scoring when a cheap conditional GET confirms the feed is unchanged "
-        "(exit 2 for a single skipped agency so the CI loop can distinguish skip from error)",
+        help="skip re-scoring only when a conditional GET confirms the feed is unchanged "
+        "and latest.json already uses the current artifact, rubric, scoring-profile, and "
+        "validator contract (exit 2 for a single skip)",
     )
     run.add_argument(
         "--outcome-out",
@@ -2217,6 +2372,11 @@ def main(argv: list[str] | None = None) -> int:
         "--feed", required=True, help="GTFS zip to sample origin/destination stops from"
     )
     otp.add_argument("--pairs", type=int, default=3, help="how many O/D pairs to test")
+    otp.add_argument(
+        "--allow-loopback",
+        action="store_true",
+        help="allow the OTP base to be localhost (only for a trusted local QA server)",
+    )
     otp.add_argument(
         "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
     )

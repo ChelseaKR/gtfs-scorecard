@@ -1,90 +1,38 @@
 {
-  "agency_count": 3,
+  "agency_count": 0,
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "average_accessible_pct": 0.0,
-  "average_boarding_pct": 33.2,
+  "average_accessible_pct": null,
+  "average_boarding_pct": null,
   "bands": {
-    "most": 1,
-    "none": 2,
+    "most": 0,
+    "none": 0,
     "some": 0
   },
-  "countries": [
-    {
-      "agencies": 1,
-      "average_boarding_pct": 0.0,
-      "country_code": "CA",
-      "country_name": "Canada",
-      "most": 0,
-      "none": 1,
-      "subdivisions": [
-        {
-          "agencies": 1,
-          "average_boarding_pct": 0.0,
-          "most": 0,
-          "none": 1,
-          "subdivision_code": null,
-          "subdivision_name": "Unlocated"
-        }
-      ]
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
     },
-    {
-      "agencies": 2,
-      "average_boarding_pct": 49.8,
-      "country_code": "US",
-      "country_name": "United States",
-      "most": 1,
-      "none": 1,
-      "subdivisions": [
-        {
-          "agencies": 2,
-          "average_boarding_pct": 49.8,
-          "most": 1,
-          "none": 1,
-          "subdivision_code": null,
-          "subdivision_name": "Unlocated"
-        }
-      ]
-    }
-  ],
-  "generated_at": "2026-07-12T21:07:06+00:00",
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
+  "comparison_eligible_count": 0,
+  "countries": [],
+  "feed_record_count": 3,
+  "generated_at": "2026-07-14T10:15:31+00:00",
   "license": "CC-BY-4.0",
-  "most_complete": [
-    {
-      "country": "US",
-      "id": "yolobus",
-      "name": "Yolobus (Yolo County Transportation District)",
-      "pct": 99.5,
-      "state": "Unlocated",
-      "subdivision_code": "",
-      "subdivision_name": ""
-    }
-  ],
-  "no_data_count": 2,
-  "states": [
-    {
-      "agencies": 2,
-      "average_boarding_pct": 49.8,
-      "most": 1,
-      "none": 1,
-      "state": "Unlocated"
-    }
-  ],
-  "to_improve_sample": [
-    {
-      "country": "CA",
-      "id": "barrie-transit",
-      "name": "Barrie Transit (Ontario)",
-      "state": "",
-      "subdivision_code": "",
-      "subdivision_name": ""
-    },
-    {
-      "country": "US",
-      "id": "unitrans",
-      "name": "Unitrans (ASUCD / City of Davis)",
-      "state": "Unlocated",
-      "subdivision_code": "",
-      "subdivision_name": ""
-    }
-  ]
+  "measured_feed_record_count": 0,
+  "most_complete": [],
+  "no_data_count": 0,
+  "states": [],
+  "to_improve_sample": []
 }

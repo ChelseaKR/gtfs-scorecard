@@ -1,46 +1,63 @@
-# Ideation: large-scale fixes and expansions
+# Ideation archive: large-scale fixes and expansions
 
-Drafted 2026-07-01. This folder holds a layer of planning the existing documents
-deliberately do not: structural, large-scale fixes and longer-horizon expansions,
-generated from a fresh full read of the code, the CI surface, and the published
-data contract.
+> **Status: historical planning record.** Drafted beginning 2026-07-01 and
+> superseded as an active sequence on 2026-07-14. Many items shipped, some were
+> partially absorbed into the service, and the remaining expansion ideas now
+> sit behind the proof and demand gates in [`../roadmap.md`](../roadmap.md).
 
-## How this relates to the existing planning set
+This folder preserves the structural analysis, candidate designs, and dated
+sweeps that informed the service. It is useful evidence for why a capability
+exists and what risks were identified. It is not a backlog to execute from top
+to bottom.
 
-The repo already carries an unusually complete planning stack. This folder does
-not restate it; it references it by ID and goes past it.
+## Current planning source
 
-- [`../roadmap.md`](../roadmap.md), [`../product-roadmap.md`](../product-roadmap.md),
-  [`../feature-roadmap.md`](../feature-roadmap.md) — the multiyear capacity, value,
-  and ship-next plans.
-- [`../RESEARCH-ROADMAP.md`](../RESEARCH-ROADMAP.md) and
-  [`../USER-RESEARCH.md`](../USER-RESEARCH.md) — the 2026-06-30 synthetic-persona
-  pass; its R1–R16 and E1–E14 items are cited here as `RR:R#` / `RR:E#`.
-- [`../expansion-ideation-2026-07.md`](../expansion-ideation-2026-07.md) and
-  [`../expansion-research-2026-07.md`](../expansion-research-2026-07.md) — the July
-  horizon scan, much of which shipped the same day (MCP server, /query/, /check/,
-  dataset releases, NTD RY2026 triage, Canada).
-- [`../follow-ups.md`](../follow-ups.md) — the operational checklist (S3 cutover,
-  fan-out compute) this folder builds on rather than repeats.
+Use these documents for current decisions:
 
-Everything here is intended to be net-new relative to that set. Where an idea
-extends an existing item, the existing ID is named and the delta is stated.
+- [`../feature-roadmap.md`](../feature-roadmap.md): the ordered 90-day delivery
+  list.
+- [`../product-roadmap.md`](../product-roadmap.md): the product value and proof
+  gates.
+- [`../roadmap.md`](../roadmap.md): infrastructure, operating triggers, and
+  demand-gated options.
+- [`../competitive-positioning.md`](../competitive-positioning.md): why verified
+  remediation is the current wedge and where neighboring projects already
+  serve the market.
+
+Do not start an item from this archive unless it is promoted into the current
+roadmap with a named user, dependency, success measure, and stop condition.
+
+## How this relates to the earlier planning set
+
+The repo already carried a broad planning stack when this folder was drafted:
+
+- `RESEARCH-ROADMAP.md` and `USER-RESEARCH.md` held the 2026-06-30
+  synthetic-persona pass. Their R and E items are cited here as `RR:R#` and
+  `RR:E#`.
+- `expansion-ideation-2026-07.md` and `expansion-research-2026-07.md` held the
+  July horizon scan. Much of it shipped quickly, including the MCP server,
+  query and check tools, dataset releases, NTD triage, and Canada coverage.
+- `follow-ups.md` held the operational S3 and compute work this folder assumed.
+
+The status annotations inside each candidate remain the most precise record of
+what shipped. The impact ranking and Now/Next/Later sequence in
+[`04-impact-and-sequencing.md`](04-impact-and-sequencing.md) are preserved as a
+dated snapshot and must not override the current roadmap.
 
 ## Contents
 
 | File | What it holds |
 | --- | --- |
-| [`01-deep-dive.md`](01-deep-dive.md) | Current-state assessment from a fresh read: architecture, genuine strengths, observed structural debt, portfolio position |
-| [`02-large-scale-fixes.md`](02-large-scale-fixes.md) | FIX-01…FIX-13: deep structural fixes (correctness, provenance, architecture, testing, operability) |
-| [`03-expansions.md`](03-expansions.md) | EXP-01…EXP-17 across three horizons: deepen the core, adjacent capabilities, transformative bets |
-| [`04-impact-and-sequencing.md`](04-impact-and-sequencing.md) | Impact × effort matrix, dependencies, a Now/Next/Later sequence beyond the existing roadmaps, and the human/legal/SME/real-data gates |
-| [`05-sweep-2026-07-10.md`](05-sweep-2026-07-10.md) | Dated sweep: mobile performance evidence, eight candidates considered, four implemented |
-| [`06-sweep-2026-07-12.md`](06-sweep-2026-07-12.md) | Demo-readiness check against live CI and pipeline evidence, plus FIX-14…15 and EXP-18…21 |
+| [`01-deep-dive.md`](01-deep-dive.md) | 2026-07 architecture, strengths, structural debt, and portfolio assessment |
+| [`02-large-scale-fixes.md`](02-large-scale-fixes.md) | FIX-01 through FIX-13 structural candidates and their later status notes |
+| [`03-expansions.md`](03-expansions.md) | EXP-01 through EXP-17 candidate expansions and their later status notes |
+| [`04-impact-and-sequencing.md`](04-impact-and-sequencing.md) | The superseded impact matrix, dependencies, sequence, and declared gates |
+| [`05-sweep-2026-07-10.md`](05-sweep-2026-07-10.md) | Mobile-performance evidence and the decisions taken from that sweep |
+| [`06-sweep-2026-07-12.md`](06-sweep-2026-07-12.md) | Demo-readiness evidence plus FIX-14 through FIX-15 and EXP-18 through EXP-21 |
 
-## What this folder is not
+## Boundaries that still apply
 
-These are ideas for evaluation, not commitments. Nothing here has been validated
-with a real user, costed against the single-digit-dollars-a-month guardrail, or
-approved by the maintainer. Several items are explicitly gated on humans, real
-data, or partners; per the portfolio ethos, those gates are declared rather than
-worked around, and nothing below should be built by faking its gate.
+The original warnings remain useful. These ideas were not automatically
+validated with a real user, approved for infrastructure spend, or cleared for
+public data redistribution. Human, partner, licence, and longitudinal-data gates
+must still be satisfied rather than worked around.

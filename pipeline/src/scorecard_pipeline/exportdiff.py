@@ -10,11 +10,11 @@ plain sentences what an export changed.
 Raw zips are not retained across runs (FIX-02's durable tier is still gated),
 so the memory is a compact structure fingerprint per agency: route ids and
 names, stop positions, trip count, and the service span, a few kilobytes of
-derived data persisted beside the artifact as ``structure.json`` the same way
-the fix log is. Each run summarizes the fetched zip; when the feed's content
-hash moved, the previous fingerprint is diffed against the new one and the
-result rides on the artifact as an additive ``export_diff`` block. The tone
-stays descriptive, change is normal; this is a notice, never an accusation.
+derived data persisted under the private cache tree. Each run summarizes the
+fetched zip; when the feed's content hash moved, the previous fingerprint is
+diffed against the new one and the result rides on the artifact as an additive
+``export_diff`` block. The tone stays descriptive, change is normal; this is a
+notice, never an accusation.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ import math
 from pathlib import Path
 from typing import Any
 
-from .config import artifacts_dir
+from .config import cache_dir
 from .gtfs import read_feed_dates, read_tables
 
 STRUCTURE_SCHEMA = 1
@@ -158,7 +158,7 @@ def diff_structures(previous: dict[str, Any], current: dict[str, Any]) -> list[s
 
 
 def _structure_path(agency_id: str) -> Path:
-    return artifacts_dir() / agency_id / "structure.json"
+    return cache_dir() / "structure" / f"{agency_id}.json"
 
 
 def load_structure(agency_id: str) -> dict[str, Any] | None:

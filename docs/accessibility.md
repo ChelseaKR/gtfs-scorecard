@@ -70,7 +70,7 @@ The High contrast and Dark themes clear the same threshold with wider margin
 | 1.4.6 Contrast (Enhanced) 7:1 | MET | All normal-text pairs darkened to >=7:1 (>=4.5:1 large) across all themes; checked by `check_contrast.py`. |
 | 1.4.8 Visual Presentation | MET | Prose measure capped to ~70ch (`--measure`); no justified text; the theme menu provides the colour-selection mechanism. |
 | 2.4.8 Location | MET | `aria-current="page"` on the active nav item; a `nav[aria-label="Breadcrumb"]` on prerendered agency, program, fix, and section pages. |
-| 2.4.9 Link Purpose (Link Only) | MET | Bare-filename and arrow/"view" links given self-describing text or `aria-label` ("standards crosswalk", "the leaderboard API", "Open transit data downloads", "Source code on GitHub"). |
+| 2.4.9 Link Purpose (Link Only) | MET | Bare-filename and arrow/"view" links given self-describing text or `aria-label` ("standards crosswalk", "the change feed", "Open transit data downloads", "Source code on GitHub"). |
 | 2.4.13 Focus Appearance | MET | All `:focus-visible` outlines are >=3px solid with >=3:1 contrast; the choropleth has a real outline plus a thick dark stroke. The dark pine chrome band (header controls and footer links) rings in `--amber` rather than the blue `--focus`, which is tuned for the light page and would fall to ~1.6:1 on pine; amber clears >=9:1 on pine in every theme (`check_contrast.py`). |
 | 2.5.5 Target Size (Enhanced) 44x44 | MET (one documented exception) | Chips, filter buttons, follow/remove, selects, copy buttons, search, form controls, and dense nav/footer links are >=44px. See the choropleth exception below. |
 | 3.1.3 Unusual Words | MET | A glossary lives at `/how-to-read/#glossary`; first uses are `<dfn>` and linked to it. |

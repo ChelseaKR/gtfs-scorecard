@@ -4,21 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Query the dataset in your browser — GTFS Scorecard</title>
-  <meta name="description" content="Run SQL against the national GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked agency.">
+  <meta name="description" content="Run SQL against the covered GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked feed record.">
   <link rel="canonical" href="https://gtfsscorecard.org/query/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Query the dataset in your browser — GTFS Scorecard">
-  <meta property="og:description" content="Run SQL against the national GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked agency.">
+  <meta property="og:description" content="Run SQL against the covered GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked feed record.">
   <meta property="og:url" content="https://gtfsscorecard.org/query/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <script>
@@ -36,7 +32,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -44,15 +40,16 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/" aria-current="page"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/" aria-current="page"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Query the dataset</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Query the dataset.</h1>
-    <p class="page-lede">Run SQL against the national scorecard dataset, right here in your
-    browser. One table, <code>agencies</code>, holds every tracked agency's latest snapshot:
+    <p class="page-lede">Run SQL against the covered scorecard dataset, right here in your
+    browser. One table, <code>agencies</code>, holds every published feed record's latest snapshot:
     <code>id</code>, <code>name</code>, <code>date</code>, <code>grade</code>,
-    <code>score</code>, <code>days_until_expiry</code>, and the
+    <code>score</code>, <code>days_until_expiry</code>, producer-version fields,
+    <code>comparison_eligible</code>, and the
     <code>correctness</code>, <code>freshness</code>, <code>completeness</code>, and
     <code>realtime</code> category scores. Nothing is sent to a server: the engine
     (DuckDB) and the data load into the page and the query runs on your machine.</p>
@@ -61,26 +58,35 @@
     <a href="/catalog.csv">catalog.csv</a>, and the JSON described in the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/api.md">data
     dictionary</a>.</p>
+    <p><strong>Comparison warning:</strong> the table includes old-methodology,
+    duplicate-identity, and otherwise non-comparable rows so the public record stays complete.
+    Do not compare or average scores unless you filter
+    <code>comparison_eligible = true</code> and inspect the current contract in
+    <a href="/api/v1/agencies.json">agencies.json</a>. The examples below are support
+    worklists and provenance checks, not rankings.</p>
     <form aria-label="SQL query" class="query-form">
       <label for="query-sql">SQL to run against the <code>agencies</code> table</label>
       <textarea id="query-sql" class="outreach-text" rows="6"
-        spellcheck="false">SELECT grade, count(*) AS agencies
+        spellcheck="false">SELECT id, name, date, days_until_expiry
 FROM agencies
-GROUP BY grade
-ORDER BY grade</textarea>
+WHERE days_until_expiry BETWEEN -365 AND 60
+ORDER BY days_until_expiry, name
+LIMIT 50</textarea>
       <div class="map-filter-row">
         <button type="submit" class="copy-btn" id="query-run">Run</button>
-        <button type="button" class="copy-btn query-example" data-sql="SELECT grade, count(*) AS agencies
+        <button type="button" class="copy-btn query-example" data-sql="SELECT id, name, date, days_until_expiry
 FROM agencies
-GROUP BY grade
-ORDER BY grade">Grade distribution</button><button type="button" class="copy-btn query-example" data-sql="SELECT name, days_until_expiry
+WHERE days_until_expiry BETWEEN -365 AND 60
+ORDER BY days_until_expiry, name
+LIMIT 50">Expiry support worklist</button><button type="button" class="copy-btn query-example" data-sql="SELECT id, name, date, rubric_version, scoring_profile_id, validator_version
 FROM agencies
-WHERE days_until_expiry BETWEEN 0 AND 60
-ORDER BY days_until_expiry
-LIMIT 15">Feeds closest to expiry</button><button type="button" class="copy-btn query-example" data-sql="SELECT round(avg(correctness), 1) AS correctness,
-       round(avg(freshness), 1) AS freshness,
-       round(avg(completeness), 1) AS completeness
-FROM agencies">National category averages</button>
+WHERE comparison_eligible = false
+ORDER BY name
+LIMIT 50">Rows outside the comparison cohort</button><button type="button" class="copy-btn query-example" data-sql="SELECT rubric_version, scoring_profile_id, validator_version,
+       count(*) AS feed_records
+FROM agencies
+GROUP BY rubric_version, scoring_profile_id, validator_version
+ORDER BY rubric_version, scoring_profile_id, validator_version">Producer provenance</button>
       </div>
     </form>
     <p id="query-status" role="status">The query engine (about 6&nbsp;MB) downloads the
@@ -173,37 +179,64 @@ FROM agencies">National category averages</button>
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

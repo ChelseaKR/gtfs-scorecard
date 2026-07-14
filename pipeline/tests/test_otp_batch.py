@@ -18,7 +18,14 @@ def _index(scores: dict[str, float | None]) -> dict[str, Any]:
         "agencies": {
             agency_id: {
                 "name": agency_id.title(),
-                "history": [{"date": "2026-07-01", "grade": "B", "score": score}],
+                "history": [
+                    {
+                        "date": "2026-07-01",
+                        "grade": "B",
+                        "score": score,
+                        "days_until_expiry": 30,
+                    }
+                ],
             }
             for agency_id, score in scores.items()
         }
@@ -58,6 +65,14 @@ def test_select_skips_unscored_and_unfetchable_feeds() -> None:
     chosen = select_best_worst(index, _urls("scored", "unscored", "never-ran"), count=2)
     # Only "scored" both has a score and a URL; it fills the best cohort alone.
     assert [(f.feed_id, f.cohort) for f in chosen] == [("scored", "best")]
+
+
+def test_select_skips_expired_and_unknown_service_windows() -> None:
+    index = _index({"current": 60.0, "expired": 10.0, "unknown": 90.0})
+    index["agencies"]["expired"]["history"][0]["days_until_expiry"] = -1
+    index["agencies"]["unknown"]["history"][0]["days_until_expiry"] = None
+    chosen = select_best_worst(index, _urls("current", "expired", "unknown"), count=2)
+    assert [(f.feed_id, f.cohort) for f in chosen] == [("current", "best")]
 
 
 def test_select_never_queues_a_feed_twice() -> None:

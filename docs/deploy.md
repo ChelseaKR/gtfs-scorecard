@@ -16,9 +16,9 @@ branding config (`instance.yaml`) and the deploy steps below in order.
 > **Current deployment status (maintainer's account).** The artifacts CDN (§1)
 > and the feed-health digest (§2) are applied and live: `gtfsscorecard.org` is
 > verified in SES and out of the sandbox, and the daily workflow mirrors
-> artifacts to S3 and sends the digest. The self-serve submission form (§3),
-> the fan-out compute (§4), and instant scoring (§5) are written but not yet
-> applied. The steps below are the from-scratch runbook, so they still read as
+> artifacts to S3 and sends the digest. The self-serve submission form (§3) is
+> also applied and live. The fan-out compute (§4) and instant scoring (§5) are
+> written but not yet applied. The steps below are the from-scratch runbook, so they still read as
 > operator work to do — follow them for a fork or a clean rebuild, and skip
 > the stacks that are already up.
 
@@ -87,9 +87,35 @@ Then:
    keeps the app reading from Pages.
 4. **Forks:** set the `ARTIFACTS_CDN` Actions variable to your `cdn_domain`.
    When `ARTIFACTS_BUCKET` is set but `ARTIFACTS_CDN` is not, the daily
-   workflow falls back to the maintainer's CloudFront domain
-   (`scorecard.yml`'s `SCORECARD_CDN_BASE` default), which a fork does not
-   want to inherit.
+   workflow's CDN privacy canary falls back to the maintainer's CloudFront
+   domain, which a fork does not want to inherit.
+
+### One-time validator-cache privacy migration
+
+Deployments created before the validator cache moved to the private
+`cache/validator/` prefix may still contain
+`data/artifacts/<agency>/validator-cache.json` objects. Upgrade in this order:
+
+1. Apply `infra/artifacts` so the CloudFront viewer function and S3 origin
+   policy deny the legacy key shape.
+2. Deploy the current Pages workflow. It publishes an explicit file allowlist.
+   Raw validator caches, structural fingerprints, finding-clearance state, and
+   generated feed copies remain private; the renderer still turns reconciled
+   receipts into public HTML.
+3. Remove the old public-path objects from S3. The daily, hourly, and targeted
+   publishers do this idempotently; an operator can perform the cleanup
+   immediately with:
+
+   ```sh
+     aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive \
+       --exclude "*" --include "*/validator-cache.json" \
+       --include "*/structure.json" --include "*/fixlog.json" \
+       --include "*/corrected.zip"
+   ```
+
+4. Verify a current `latest.json` returns HTTP 200 and the four former internal
+   paths return HTTP 403 or 404 through the CDN. The daily workflow runs this
+   public/private canary after each publication.
 
 ## 2. Feed-health email digest (`infra/alerts` + SES)
 
@@ -118,7 +144,10 @@ the send is off until you verify a sender and set `SES_FROM`.
 
 ## 3. Self-serve submission form (`infra/submit`)
 
-Lets an agency add itself from `web/submit.html` without opening a pull request.
+Lets an agency add itself from `web/submit.html` without manually opening a pull request.
+The maintainer's endpoint is applied and wired into `web/src/config.js`; the
+commands below are for a fork or clean rebuild. The service opens the pull
+request on the submitter's behalf so a person still reviews every addition.
 
 ```sh
 cd infra/submit

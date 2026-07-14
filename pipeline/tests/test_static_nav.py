@@ -48,6 +48,32 @@ def test_hand_authored_pages_do_not_block_on_remote_fonts() -> None:
         assert "fonts.gstatic.com" not in html, rel
 
 
+def test_consulting_offer_stays_hidden_from_public_project_surfaces() -> None:
+    """The temporary hide covers the live page and repository entry points."""
+    public_sources = (
+        _REPO / "web" / "support" / "index.html",
+        _REPO / "README.md",
+        _REPO / "docs" / "support.md",
+    )
+    for path in public_sources:
+        text = path.read_text()
+        assert "chelseakr.com/consulting" not in text, path
+    support_html = public_sources[0].read_text()
+    assert "Professional help" not in support_html
+    assert "Implement the fixes with Chelsea" not in support_html
+
+
+def test_local_fonts_do_not_swap_after_first_paint() -> None:
+    """Keep slow font loads from moving the landing page or app shell."""
+    for rel in ("index.html", "src/styles.css"):
+        source = (_REPO / "web" / rel).read_text()
+        faces = re.findall(r"@font-face\s*\{[^}]+\}", source, flags=re.DOTALL)
+        assert faces, f"{rel}: expected local font declarations"
+        assert all("font-display: optional;" in face for face in faces), (
+            f"{rel}: local fonts must keep first-paint metrics stable"
+        )
+
+
 def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
     html = (_REPO / "web" / "app" / "index.html").read_text()
 
@@ -62,4 +88,13 @@ def test_open_data_page_publishes_data_catalog_jsonld() -> None:
     data = json.loads(match.group(1))
     assert data["@type"] == "DataCatalog"
     assert data["license"] == "https://creativecommons.org/licenses/by/4.0/"
+    assert "worldwide" in data["description"]
+    assert "United States and Canada" not in data["description"]
+    assert data["dataset"][0]["license"] == data["license"]
     assert data["dataset"][0]["distribution"][0]["contentUrl"].endswith("dataset.json")
+
+    assert "United States NTD readiness" in html
+    assert "analyze the whole country" not in html
+    assert "does not\n      relicense or redistribute the underlying GTFS files" in html
+    assert "feed records in the current file" in html
+    assert "agencies in the current file" not in html

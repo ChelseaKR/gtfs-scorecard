@@ -39,6 +39,20 @@ GRADE_BANDS = [(90.0, "A"), (80.0, "B"), (70.0, "C"), (60.0, "D"), (0.0, "F")]
 # upgrades").
 METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
     {
+        "rubric_version": "1.2",
+        "effective_date": "2026-07-13",
+        "summary": (
+            "Realtime quality now assesses only the GTFS-Realtime feed kinds an agency "
+            "publishes. Unconfigured kinds are neutral, and TripUpdates coverage or "
+            "VehiclePositions plausibility enters the score only when that kind is configured. "
+            "Finding points use the same measurable-component denominator as the category "
+            "score, and a dependent measure drops out when its endpoint produced no successful "
+            "sample. "
+            "A fixed-corpus replay projected 15 of 31 partial-feed artifacts changing letter "
+            "bands; see docs/rubric-impact-1.2.md."
+        ),
+    },
+    {
         "rubric_version": "1.1",
         "effective_date": "2026-06-16",
         "summary": (

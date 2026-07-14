@@ -6,12 +6,19 @@ The public version of this page is [gtfsscorecard.org/support](https://gtfsscore
 
 ## What sponsorship pays for
 
-Running the service costs roughly $75 to $200 a month, all of it infrastructure:
+The core service costs single-digit dollars a month today. A $75 to $200 monthly
+operating envelope would add bounded capacity while keeping hard spending caps:
 
 - Hosting and bandwidth for the static site, the read API, and the grade badges agencies embed.
-- The daily data refresh: fetching about 1,140 configured feeds in the current worldwide coverage, still mostly in the US and Canada, and scoring them every day.
-- Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator, and instant scoring lets anyone check a feed before publishing.
-- Realtime sampling around the clock, the largest planned line item and the first thing new sponsorship unlocks.
+- The scheduled daily data refresh: fetching about 1,140 configured feeds in the current worldwide coverage, still mostly in the US and Canada. The public status page records when each run actually completed.
+- Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator.
+- Release monitoring and private evidence retention needed to reproduce published checks and audit participant-approved remediation receipts.
+
+A capped hosted one-off scorer remains an option if repeated demand justifies its
+abuse controls and operating cost. It is not enabled today; the site currently
+offers a local pre-publish check and a GitHub-backed request path. Sponsorship
+does not automatically start a cross-agency realtime archive or another
+expansion without a named user and a bounded plan.
 
 Every service runs with a hard spending cap. If a cost line grows past this range, the design changes before the bill does.
 
@@ -23,12 +30,8 @@ The real return is the tool itself: it stays free for every agency, including th
 
 ## How to sponsor
 
-- GitHub Sponsors: `.github/FUNDING.yml` points at [@ChelseaKR](https://github.com/ChelseaKR). The Sponsor button appears on the repository once the account's Sponsors profile is live.
-- Until then, [open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) and we will take it from there.
+- [Open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) and we will take it from there. No payment rail is advertised until an account is actually ready to receive funds.
 
-## For programs and consultancies
+## For programs supporting many agencies
 
-Organizations that support many agencies at once, such as state DOT programs and consultancies, sometimes need more than the public site: portfolio views across a region, or help reading results during agency check-ins. Paid services like that exist alongside the free tool and never replace it. Nothing is subtracted from the free tier to create them.
-
-<!-- PLACEHOLDER(owner): replace with the real services contact address before publicizing. -->
-Write to [the maintainer](mailto:hello@gtfsscorecard.org) to start that conversation.
+State DOT programs and other organizations supporting many agencies can use the public program rollups, open data, and read API to prepare for agency check-ins. These public tools use the same rubric and remain free.

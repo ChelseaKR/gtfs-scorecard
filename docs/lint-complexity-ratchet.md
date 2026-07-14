@@ -30,7 +30,6 @@ without discussion.
 | `completeness` | `src/scorecard_pipeline/completeness.py:51` | 11 | Rider-experience field scoring; candidate: extract per-field scorers. |
 | `propose_agencies` | `src/scorecard_pipeline/mobilitydb.py:183` | 12 | Mobility Database matching heuristics; candidate: extract match-scoring helper. |
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:86` | 15 | Subscriber YAML parsing/validation; candidate: split per-field validators (same shape as `parse_agencies`). |
-| `leaderboard` | `src/scorecard_pipeline/publicapi.py:53` | 11 | Ranking/filter assembly; candidate: extract filter-predicate builder. |
 | `_board_hero` | `src/scorecard_pipeline/render_site.py:583` | 11 | Template string assembly with several conditional blocks. |
 | `_render_brief` | `src/scorecard_pipeline/render_site.py:1654` | 14 | Template string assembly. |
 | `_render_agency_index` | `src/scorecard_pipeline/render_site.py:2926` | 12 | Template string assembly. |

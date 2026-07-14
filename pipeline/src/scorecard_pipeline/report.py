@@ -35,6 +35,7 @@ from typing import Any
 
 import yaml
 
+from .comparisons import same_producer_contract
 from .config import artifacts_dir
 from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, esc
 
@@ -141,6 +142,8 @@ def _history_rows(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for i, point in enumerate(history):
         if i == 0:
             change = "first check"
+        elif not same_producer_contract(history[i - 1], point):
+            change = "not compared"
         else:
             change = _change_words(round(float(point["score"]) - float(history[i - 1]["score"]), 1))
         rows.append(
@@ -178,14 +181,19 @@ def _category_rows(artifact: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _ntd_data(artifact: dict[str, Any]) -> dict[str, Any] | None:
-    """The NTD readiness block for a US agency, straight from the stored
-    verdicts (ntd.py wrote them at score time). Re-derives the shapes.txt
-    line from the stored trip counts the same way the site does, so a wording
-    fix reaches the report without a rescore. None for non-US agencies, which
-    have no FTA NTD."""
+    """The NTD readiness block for a US agency, from stored feed inputs.
+
+    Re-derives current readiness and shapes.txt wording so older artifacts gain
+    the RY2026 agency_id presence check without a rescore. A missing or adverse
+    shapes check also makes the report's overall label conservative: an offline
+    board packet must not make an unqualified ``Ready`` claim from incomplete
+    evidence. None for non-US agencies, which have no FTA NTD.
+    """
     if artifact.get("agency", {}).get("country", "US") != "US":
         return None
-    readiness = artifact.get("ntd_readiness")
+    from .ntd import presented_readiness
+
+    readiness = presented_readiness(artifact)
     if not isinstance(readiness, dict):
         return None
     from .render_site import _NTD_LABELS, _NTD_PILLAR_NAMES, _current_shapes_readiness
@@ -199,7 +207,9 @@ def _ntd_data(artifact: dict[str, Any]) -> dict[str, Any] | None:
         for p in readiness.get("pillars", [])
     ]
     shapes = _current_shapes_readiness(artifact)
-    shapes_row = None
+    status = str(readiness.get("status", ""))
+    status_label = _NTD_LABELS.get(status, status)
+    summary = str(readiness.get("summary", ""))
     if shapes:
         detail = str(shapes.get("detail", ""))
         fix = str(shapes.get("fix", ""))
@@ -207,10 +217,32 @@ def _ntd_data(artifact: dict[str, Any]) -> dict[str, Any] | None:
             "label": _NTD_LABELS.get(str(shapes.get("status")), str(shapes.get("status"))),
             "detail": f"{detail} {fix}".strip(),
         }
-    status = str(readiness.get("status", ""))
+        shapes_status = str(shapes.get("status", ""))
+        if shapes_status == "not_ready":
+            status_label = _NTD_LABELS["not_ready"]
+        elif shapes_status == "at_risk" and status == "ready":
+            status_label = _NTD_LABELS["at_risk"]
+        if shapes_status in {"at_risk", "not_ready"}:
+            summary = (
+                f"{summary} The shapes.txt coverage check also needs attention: {detail}"
+            ).strip()
+    else:
+        shapes_row = {
+            "label": "Not checked",
+            "detail": (
+                "This scorecard artifact predates the shapes.txt trip-coverage check. "
+                "Re-score the feed before relying on this report for NTD readiness."
+            ),
+        }
+        status_label = "Not fully assessed"
+        summary = (
+            "Published, valid, current, and agency_id are assessed here, but "
+            "shapes.txt trip coverage was not checked in this legacy scorecard. "
+            "This report therefore cannot make a complete NTD readiness call."
+        )
     return {
-        "status_label": _NTD_LABELS.get(status, status),
-        "summary": str(readiness.get("summary", "")),
+        "status_label": status_label,
+        "summary": summary,
         "pillars": pillars,
         "shapes": shapes_row,
         "note": str(artifact.get("agency", {}).get("ntd_note") or "").strip(),
@@ -383,8 +415,9 @@ def _ntd_html(ntd: dict[str, Any] | None) -> str:
       <dl class="pillars">{pillars}</dl>
       <p><strong>In plain words:</strong> agencies that report to the federal National
       Transit Database certify once a year, on form D-10, that they publish a working,
-      up-to-date feed. This section is a heads-up on whether the feed looks ready; the
-      certification itself is the official check. The FTA's July 2025 final rule also
+      up-to-date feed. For RY2026, each represented reporter also needs a stable agency_id
+      crosswalked to its NTD ID on P-50; the two values need not be equal. This section is
+      a heads-up on whether the feed looks ready; the filings are the official check. FTA also
       requires shapes.txt in the published GTFS: Full Reporters from Report Year 2025,
       and Reduced, Rural, and Tribal Reporters from Report Year 2026.</p>
     </section>

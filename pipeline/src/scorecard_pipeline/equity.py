@@ -21,8 +21,12 @@ fetching ACS is a thin call.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
+
+from .comparisons import build_comparison_cohort
+from .config import Agency
 
 # ACS thresholds for the "high need" band of each indicator, as a percentage.
 # Rough national-reference cutoffs, kept as named constants so a program can tune
@@ -97,20 +101,31 @@ def build_overlay(
     dataset_rows: list[dict[str, Any]],
     states_by_agency: dict[str, str],
     state_indicators: dict[str, EquityIndicators],
+    *,
+    agencies: Iterable[Agency] | None = None,
 ) -> dict[str, Any]:
-    """Join ACS need tiers to agency grades, by state.
+    """Join ACS need tiers to guarded feed-score summaries, by state.
 
-    For each state, reports its need tier, how many agencies it has, their median
-    score, and the share on a low grade (D or F). The ``priority`` list is the
-    overlay's point: high-need states ordered by the share of feeds that are weak,
-    so a program sees where vulnerable riders are most exposed to bad data.
+    Coverage counts retain every located feed record. Median score, D/F share,
+    and the priority worklist use only the same current producer and identity
+    contract as other public cross-feed summaries. A missing comparable cohort
+    therefore yields ``None`` score fields instead of silently reusing stale or
+    duplicate records.
     """
-    by_state: dict[str, dict[str, Any]] = {}
+    comparable_rows, comparison = build_comparison_cohort(dataset_rows, agencies=agencies)
+    coverage_by_state: dict[str, int] = {}
     for row in dataset_rows:
-        state = states_by_agency.get(row["id"])
+        state = states_by_agency.get(str(row.get("id") or ""))
         if not state:
             continue
-        bucket = by_state.setdefault(state, {"scores": [], "low": 0, "count": 0})
+        coverage_by_state[state] = coverage_by_state.get(state, 0) + 1
+
+    comparable_by_state: dict[str, dict[str, Any]] = {}
+    for row in comparable_rows:
+        state = states_by_agency.get(str(row.get("id") or ""))
+        if not state:
+            continue
+        bucket = comparable_by_state.setdefault(state, {"scores": [], "low": 0, "count": 0})
         bucket["count"] += 1
         if isinstance(row.get("score"), (int, float)):
             bucket["scores"].append(float(row["score"]))
@@ -118,17 +133,21 @@ def build_overlay(
             bucket["low"] += 1
 
     states_out: list[dict[str, Any]] = []
-    for state in sorted(by_state):
-        b = by_state[state]
+    for state in sorted(coverage_by_state):
+        b = comparable_by_state.get(state, {"scores": [], "low": 0, "count": 0})
         indicators = state_indicators.get(state, EquityIndicators())
         tier = need_tier(indicators)
         median = _median(b["scores"])
-        low_share = round(b["low"] / b["count"] * 100, 1) if b["count"] else 0.0
+        low_share = round(b["low"] / b["count"] * 100, 1) if b["count"] else None
         states_out.append(
             {
                 "state": state,
                 "need_tier": tier,
-                "agency_count": b["count"],
+                # agency_count stays as a v1 compatibility alias. It counts
+                # located feed records, not necessarily distinct agencies.
+                "agency_count": coverage_by_state[state],
+                "feed_record_count": coverage_by_state[state],
+                "comparison_eligible_count": b["count"],
                 "median_score": round(median, 1) if median is not None else None,
                 "low_grade_share": low_share,
                 "indicators": {
@@ -139,17 +158,26 @@ def build_overlay(
             }
         )
 
-    # Where vulnerable riders meet weak data: high-need states, worst data first.
+    # Where vulnerable riders meet weak data: high-need states with a guarded
+    # score denominator, highest D/F share first. States without a comparable
+    # score cohort remain in ``states`` but make no quality-priority claim.
     priority = sorted(
-        (s for s in states_out if s["need_tier"] == HIGH),
-        key=lambda s: (-s["low_grade_share"], s["state"]),
+        (
+            state
+            for state in states_out
+            if state["need_tier"] == HIGH and state["comparison_eligible_count"] > 0
+        ),
+        key=lambda state: (-float(state["low_grade_share"]), state["state"]),
     )
     return {
         "states": states_out,
         "priority": priority,
+        "comparison": comparison,
         "notes": (
             "Need tiers are from ACS poverty, zero-vehicle, and disability shares, "
-            "joined by state. They prioritize data-quality help; they never change a grade."
+            "joined by state. Score summaries use one current producer contract across "
+            "canonical, non-duplicate feed records. They prioritize data-quality help; "
+            "they never change a grade."
         ),
     }
 
@@ -280,7 +308,13 @@ def render_overlay(overlay: dict[str, Any]) -> str:
     """A markdown equity report for a program lead."""
     priority = overlay.get("priority", [])
     lines = ["# Equity overlay: where weak data meets high need", ""]
-    if not priority:
+    comparable_count = int((overlay.get("comparison") or {}).get("eligible_count") or 0)
+    if comparable_count == 0:
+        lines.append(
+            "Score-based priority is unavailable until current-contract checks create a "
+            "comparable cohort. ACS need tiers remain available below."
+        )
+    elif not priority:
         lines.append(
             "No state currently meets the high-need threshold (two or more of the ACS "
             "poverty, zero-vehicle, and disability indicators in their high band), or the "
@@ -289,11 +323,12 @@ def render_overlay(overlay: dict[str, Any]) -> str:
     else:
         lines.append("High-need states (ACS), ordered by the share of feeds on a D or F grade:")
         lines.append("")
-        lines.append("| State | Low-grade share | Agencies | Median score |")
+        lines.append("| State | Low-grade share | Comparable feeds | Median score |")
         lines.append("| --- | --- | --- | --- |")
         for s in priority:
             lines.append(
-                f"| {s['state']} | {s['low_grade_share']}% | {s['agency_count']} "
+                f"| {s['state']} | {s['low_grade_share']}% | "
+                f"{s['comparison_eligible_count']} "
                 f"| {s['median_score']} |"
             )
     lines.append("")

@@ -21,7 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .metrics import expiry_status
+from .metrics import expiry_status, resolve_service_horizon_status
 
 AWARDED = "awarded"
 NOT_YET = "not_yet"
@@ -67,14 +67,20 @@ def _valid(artifact: dict[str, Any]) -> Criterion:
 
 
 def _current(artifact: dict[str, Any]) -> Criterion:
-    days = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("days_until_expiry")
-    )
+    details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    days = details.get("days_until_expiry")
     status = expiry_status(days)
     if status == "current":
+        if (
+            resolve_service_horizon_status(details, artifact.get("snapshot_date"))
+            == "unusually_distant"
+        ):
+            return Criterion(
+                "current",
+                True,
+                "The published window is current, but its service end date is unusually "
+                "distant; confirm that date is intentional.",
+            )
         return Criterion("current", True, f"Service data covers the next {days} days.")
     if status == "expiring_soon":
         return Criterion(

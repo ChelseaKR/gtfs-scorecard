@@ -1,279 +1,39 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "bands": {
-    "mostly": 4,
-    "reliable": 122,
-    "spotty": 40
+    "mostly": 0,
+    "reliable": 0,
+    "spotty": 0
   },
-  "generated_at": "2026-07-10T21:13:17+00:00",
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
+  "comparison_eligible_count": 0,
+  "countries": [],
+  "feed_record_count": 1128,
+  "generated_at": "2026-07-14T10:23:30+00:00",
   "license": "CC-BY-4.0",
-  "median_lag_seconds": 10,
-  "median_uptime_pct": 100.0,
-  "monitored_count": 166,
-  "most_reliable": [
-    {
-      "id": "bay-area-rapid-transit-bart",
-      "median_lag_seconds": 0,
-      "name": "Bay Area Rapid Transit (BART)",
-      "state": "California",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "beach-cities-transit",
-      "median_lag_seconds": 0,
-      "name": "Beach Cities Transit",
-      "state": "California",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "commerce-municipal-bus-lines",
-      "median_lag_seconds": 0,
-      "name": "Commerce Municipal Bus Lines",
-      "state": "Unlocated",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "emery-go-round-2224",
-      "median_lag_seconds": 0,
-      "name": "Emery Go-Round",
-      "state": "California",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "intercity-transit",
-      "median_lag_seconds": 0,
-      "name": "Intercity Transit",
-      "state": "Washington",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "merced-county-transit-the-bus-86",
-      "median_lag_seconds": 0,
-      "name": "Merced County Transit (The Bus)",
-      "state": "California",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "merced-county-transit-the-bus",
-      "median_lag_seconds": 0,
-      "name": "Merced County Transit (The Bus)",
-      "state": "Unlocated",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "mountain-line-transit",
-      "median_lag_seconds": 0,
-      "name": "Mountain Line Transit",
-      "state": "Arizona",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "mountain-view-transportation-management-association-mvgo-2025",
-      "median_lag_seconds": 0,
-      "name": "Mountain View Transportation Management Association (MVgo)",
-      "state": "California",
-      "uptime_pct": 100.0
-    },
-    {
-      "id": "orange-county-transportation-authority-octa",
-      "median_lag_seconds": 0,
-      "name": "Orange County Transportation Authority (OCTA)",
-      "state": "California",
-      "uptime_pct": 100.0
-    }
-  ],
-  "states": [
-    {
-      "agencies": 70,
-      "median_uptime_pct": 100.0,
-      "reliable": 55,
-      "state": "Unlocated"
-    },
-    {
-      "agencies": 20,
-      "median_uptime_pct": 100.0,
-      "reliable": 15,
-      "state": "California"
-    },
-    {
-      "agencies": 12,
-      "median_uptime_pct": 100.0,
-      "reliable": 11,
-      "state": "New York"
-    },
-    {
-      "agencies": 7,
-      "median_uptime_pct": 100.0,
-      "reliable": 6,
-      "state": "Washington"
-    },
-    {
-      "agencies": 6,
-      "median_uptime_pct": 100.0,
-      "reliable": 5,
-      "state": "Oregon"
-    },
-    {
-      "agencies": 4,
-      "median_uptime_pct": 80.5,
-      "reliable": 1,
-      "state": "Ohio"
-    },
-    {
-      "agencies": 3,
-      "median_uptime_pct": 0.9,
-      "reliable": 1,
-      "state": "Florida"
-    },
-    {
-      "agencies": 3,
-      "median_uptime_pct": 0.0,
-      "reliable": 1,
-      "state": "Kentucky"
-    },
-    {
-      "agencies": 3,
-      "median_uptime_pct": 100.0,
-      "reliable": 3,
-      "state": "Maryland"
-    },
-    {
-      "agencies": 3,
-      "median_uptime_pct": 100.0,
-      "reliable": 2,
-      "state": "Minnesota"
-    },
-    {
-      "agencies": 3,
-      "median_uptime_pct": 100.0,
-      "reliable": 2,
-      "state": "Pennsylvania"
-    },
-    {
-      "agencies": 3,
-      "median_uptime_pct": 90.4,
-      "reliable": 1,
-      "state": "Texas"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 100.0,
-      "reliable": 2,
-      "state": "Arizona"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 100.0,
-      "reliable": 2,
-      "state": "Colorado"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 50.0,
-      "reliable": 1,
-      "state": "Georgia"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 50.0,
-      "reliable": 1,
-      "state": "Maine"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 50.0,
-      "reliable": 1,
-      "state": "Massachusetts"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 0.0,
-      "reliable": 0,
-      "state": "North Carolina"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 100.0,
-      "reliable": 2,
-      "state": "South Carolina"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 50.0,
-      "reliable": 1,
-      "state": "Virginia"
-    },
-    {
-      "agencies": 2,
-      "median_uptime_pct": 100.0,
-      "reliable": 2,
-      "state": "Wisconsin"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 0.0,
-      "reliable": 0,
-      "state": "Alaska"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 67.0,
-      "reliable": 0,
-      "state": "Connecticut"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Idaho"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Illinois"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Indiana"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Iowa"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 0.0,
-      "reliable": 0,
-      "state": "Louisiana"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Michigan"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Missouri"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 98.3,
-      "reliable": 0,
-      "state": "Rhode Island"
-    },
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Tennessee"
-    }
-  ]
+  "median_lag_seconds": null,
+  "median_uptime_pct": null,
+  "monitored_count": 0,
+  "monitored_feed_record_count": 0,
+  "most_reliable": [],
+  "raw_monitored_feed_record_count": 168,
+  "states": []
 }

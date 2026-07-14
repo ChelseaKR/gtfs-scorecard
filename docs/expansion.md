@@ -68,8 +68,9 @@ budget.
   Bay Area operators) rather than per-agency plumbing.
   [511](https://511.org/open-data/transit)
 - **Cross-agency trends and a public API.** Serverless tier shipped (ADR 0013): a
-  versioned static API at `/api/v1/` (agencies list, leaderboard, per-state
-  aggregates, national stats) plus a human [/leaderboard/](https://gtfsscorecard.org/leaderboard/),
+  versioned static API at `/api/v1/` (scorecard list, guarded named changes,
+  per-state aggregates, covered-corpus stats) plus a human
+  [coverage overview](https://gtfsscorecard.org/pulse/),
   precomputed from the index and served as flat JSON, no query server. The
   warehouse (DuckDB or Athena over partitioned object storage, a keyed read API,
   or transit.land's Go + Postgres + GraphQL model) is the escalation once
@@ -104,9 +105,10 @@ budget.
 - **Auto-fix layer**: shipped (first recipes). `autofix.py` plus `scorecard
   autofix <zip> --out fixed.zip` applies the safe, deterministic edits (trim
   surrounding whitespace, recase shouting stop and route names), preserving every
-  other byte and reporting the diff. The conservative recipe set grows as more
-  findings gain one unambiguous fix; opening a PR against the agency's feed repo
-  is the downstream step on top of the patch this produces.
+  other byte and reporting the diff. This is an explicit local command for a feed
+  copy the user controls. The daily service does not generate, host, or publish
+  modified agency feeds. The conservative recipe set grows only when a finding
+  gains one unambiguous fix.
 - **GBFS expansion**: shipped (currency check). `gbfs.py` plus `scorecard gbfs
   [--country US]` reads the open MobilityData GBFS catalog and reports how many
   shared-mobility systems are on the current 3.x line versus stuck on an outdated

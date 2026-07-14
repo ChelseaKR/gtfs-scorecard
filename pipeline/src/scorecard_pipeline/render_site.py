@@ -23,6 +23,7 @@ import io
 import json
 import math
 import re
+import shutil
 import sys
 from collections import Counter
 from collections.abc import Callable
@@ -34,9 +35,10 @@ from markdown_it import MarkdownIt
 from ._stats import _GRADES
 from .anomaly import latest_anomaly
 from .atomfeed import agency_change_feed, site_change_feed
+from .comparisons import current_producer_contract_suffix, same_producer_contract
 from .config import artifacts_dir
 from .conformance import assess as conformance_assess
-from .constants_export import GRADE_RANK, TIER_LABELS
+from .constants_export import GRADE_RANK
 from .directory import build_directory
 from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
@@ -46,9 +48,15 @@ from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalog
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
 from .location import country_name, resolve_published_location
-from .metrics import expiry_status, operating_signal
+from .metrics import (
+    expiry_status,
+    operating_signal,
+    presented_freshness_summary,
+    resolve_service_horizon_status,
+)
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
+from .ntd import presented_readiness as presented_ntd_readiness
 from .pages_tools import (
     _render_check_page,
     _render_compare_page,
@@ -86,6 +94,24 @@ from .timemachine import grade_story, history_events
 from .tool_profiles import detect_tool
 
 FIX_CODES_WITH_PAGES: set[str] = set()  # filled in by render_fixes()
+
+
+def _strip_blank_line_whitespace(markup: str) -> str:
+    """Keep optional template fragments from leaving whitespace-only lines."""
+    return re.sub(r"(?m)^[ \t]+$", "", markup)
+
+
+def _finding_severity_badge(value: object) -> str:
+    """Render an artifact severity from fixed labels and CSS classes only."""
+    key = str(value or "").upper()
+    if key == "ERROR":
+        class_name, label = "sev-error", SEVERITY_LABELS["ERROR"]
+    elif key == "WARNING":
+        class_name, label = "sev-warning", SEVERITY_LABELS["WARNING"]
+    else:
+        class_name, label = "sev-info", SEVERITY_LABELS["INFO"]
+    return f'<span class="sev {class_name}">{esc(label)}</span>'
+
 
 # Non-validator RuleLink.kind -> the phrase naming that authority, for the
 # "Validator rule" line's visually-hidden context. A dict, not an if/elif
@@ -181,9 +207,13 @@ def _fix_rule_reference(code: str) -> str:
 
 
 def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[tuple[str, str]]:
-    """Findings present last run but gone this run: a fix that landed. Returns
-    (code, what) pairs, where `what` is the previous run's description."""
-    if not prev:
+    """Findings present in one comparable check but absent from the next.
+
+    Returns ``(code, what)`` pairs, where ``what`` is the earlier check's
+    description. Absence establishes later feed state, not who changed it or
+    why.
+    """
+    if not prev or not same_producer_contract(prev, cur):
         return []
     current = _finding_codes(cur)
     return [(code, what) for code, what in _finding_codes(prev).items() if code not in current]
@@ -199,10 +229,12 @@ def _history_section(
     sentences tracing how the current grade came to be, composed from the dated
     artifacts (``artifacts``, oldest first) so cleared findings are named too.
     Empty when the feed has been steady."""
-    events = history_events(history or [])
+    comparable_history = _current_rubric_history(history or [])
+    events = history_events(comparable_history)
     if not events:
         return ""
-    story = grade_story(history or [], artifacts or [])
+    comparable_artifacts = current_producer_contract_suffix(artifacts or [])
+    story = grade_story(comparable_history, comparable_artifacts)
     story_html = f'<p class="grade-story">{" ".join(esc(s) for s in story)}</p>' if story else ""
     items = "".join(
         f'<li class="event"><span class="event-date">{esc(e.date)}</span> {esc(e.detail)}</li>'
@@ -276,9 +308,10 @@ def _spark_mini(history: list[dict[str, Any]] | None, name: str) -> str:
     like the national chart, so a few-point move is visible in a table cell (a
     half-point margin keeps a flat series centred). Rows with fewer than two
     checks render an em dash instead of an empty chart."""
+    comparable = _current_rubric_history(history or [])
     points = [
         (str(p.get("date", "")), p["score"])
-        for p in (history or [])
+        for p in comparable
         if isinstance(p.get("score"), (int, float))
     ][-12:]
     if len(points) < 2:
@@ -297,6 +330,15 @@ def _spark_mini(history: list[dict[str, Any]] | None, name: str) -> str:
         last_dot_r=1.5,
         stroke_width=1.5,
     )
+
+
+def _current_rubric_history(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The contiguous history suffix produced by one complete contract.
+
+    Rubric, scoring profile, validator, and measured categories must all match.
+    Missing provenance restarts the trend at the latest point.
+    """
+    return current_producer_contract_suffix(history)
 
 
 def _service_bar_chart(
@@ -385,7 +427,7 @@ def _movement_balance(changes: list[dict[str, Any]]) -> str:
     return (
         '<figure class="movement-chart"><figcaption>'
         '<span class="service-chart-title">Direction of material changes</span>'
-        '<span class="service-chart-note">Agencies shown in the change lists below.</span>'
+        '<span class="service-chart-note">Feed scorecards shown in the change lists below.</span>'
         "</figcaption>"
         '<ul class="movement-counts">'
         f'<li class="movement-up"><strong>{improved}</strong> improved</li>'
@@ -403,12 +445,20 @@ def _trend_section(history: list[dict[str, Any]]) -> str:
     the previous check. Mirrors the interactive app so static and SPA agree. The
     finding-level change (what cleared or newly appeared) lives in the feed-diff
     section below, so it is not repeated here."""
-    if len(history) < 2:
+    comparable = _current_rubric_history(history)
+    if len(comparable) < 2:
+        lead = (
+            "The producer or measurement contract changed since the prior check, so the trend "
+            "restarts here. No improvement or regression is claimed across that boundary."
+            if len(history) >= 2
+            else 'This is the first scorecard for this agency. A trend and a "what changed" '
+            "summary appear here once it has been checked more than once."
+        )
         return (
             '<section aria-labelledby="trend-h"><h2 class="section-title" id="trend-h">Over time</h2>'
-            '<p class="page-lede">This is the first scorecard for this agency. A trend and a '
-            '"what changed" summary appear here once it has been checked more than once.</p></section>'
+            f'<p class="page-lede">{lead}</p></section>'
         )
+    history = comparable
     cur, prev = history[-1], history[-2]
     delta = round(cur["score"] - prev["score"], 1)
     direction = f"up {delta}" if delta > 0 else f"down {abs(delta)}" if delta < 0 else "unchanged"
@@ -508,12 +558,11 @@ def _feeddiff_finding_cards(changes: list[Any]) -> str:
     regression reads exactly like the check it represents."""
     items = []
     for c in changes:
-        sev = SEVERITY_LABELS.get(c.severity, c.severity)
         count = c.curr_count or 0
         noun = "instance" if count == 1 else "instances"
         items.append(
             f'<li class="finding"><div class="finding-head">'
-            f'<span class="sev sev-{esc(str(c.severity).lower())}">{esc(sev)}</span>'
+            f"{_finding_severity_badge(c.severity)}"
             f'<span class="count">{count} {noun}</span></div>'
             f'<p class="what">{esc(c.what)}</p>'
             f'<p class="code">Validator rule: {esc(c.code)}{_fix_guide_link(str(c.code))}{_rule_ref_link(str(c.code))}</p></li>'
@@ -540,7 +589,7 @@ def _feeddiff_changed_rows(changes: list[Any]) -> str:
 
 
 def _feeddiff_resolved_rows(changes: list[Any]) -> str:
-    """Findings that cleared since the previous snapshot: fixes that landed."""
+    """Findings the later comparable snapshot no longer reports."""
     return "".join(
         f'<li class="cleared-row"><span class="cleared-mark" aria-hidden="true">&#10003;</span> '
         f'{esc(c.what)} <span class="code">({esc(c.code)})</span></li>'
@@ -561,6 +610,15 @@ def _feeddiff_section(
     check)."""
     if prev_artifact is None:
         return ""
+    if not same_producer_contract(prev_artifact, cur_artifact):
+        return (
+            '<section aria-labelledby="feeddiff-h"><h2 class="section-title" '
+            'id="feeddiff-h">What changed in this feed</h2>'
+            '<p class="page-lede">The scoring or measurement contract changed since the '
+            "previous snapshot, so finding and score changes restart here. No issue is "
+            "described as new, resolved, improved, or regressed across this boundary.</p>"
+            "</section>"
+        )
     diff = diff_artifacts(prev_artifact, cur_artifact)
     feed_url = f"/agency/{esc(agency_id)}/feed.xml"
     subscribe = (
@@ -605,8 +663,11 @@ def _feeddiff_section(
     if diff.resolved:
         noun = "finding" if len(diff.resolved) == 1 else "findings"
         blocks.append(
-            f'<h3 class="trend-sub">Resolved since {esc(diff.prev_date)} ({len(diff.resolved)} {noun})</h3>'
+            f'<h3 class="trend-sub">No longer reported since {esc(diff.prev_date)} '
+            f"({len(diff.resolved)} {noun})</h3>"
             f'<ul class="cleared-list">{_feeddiff_resolved_rows(diff.resolved)}</ul>'
+            '<p class="fineprint">This records the later feed state. It does not '
+            "establish who made a change or why.</p>"
         )
 
     return (
@@ -753,15 +814,14 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     idx = GRADE_RANK.get(g, 0)
 
     chips = []
-    days = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("days_until_expiry")
-    )
+    fresh_details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    days = fresh_details.get("days_until_expiry")
+    horizon_status = resolve_service_horizon_status(fresh_details, artifact.get("snapshot_date"))
     if isinstance(days, (int, float)) and not isinstance(days, bool):
         days = int(days)
-        if days <= 0:
+        if horizon_status == "unusually_distant":
+            chips.append('<span class="chip warn">Review service end date</span>')
+        elif days <= 0:
             chips.append('<span class="chip warn">Feed expired</span>')
         elif days < 30:
             chips.append(f'<span class="chip warn">Expires in {days} days</span>')
@@ -783,11 +843,13 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     pathways = comp.get("details", {}).get("pathways", {})
     if isinstance(pathways, dict) and pathways.get("has_pathways"):
         chips.append('<span class="chip">Station pathways</span>')
-    if artifact.get("categories", {}).get("realtime", {}).get("status") != "measured":
-        chips.append('<span class="chip">No realtime feed</span>')
+    realtime = artifact.get("categories", {}).get("realtime", {})
+    if realtime.get("status") != "measured":
+        chips.append(f'<span class="chip">{esc(_realtime_unmeasured_label(realtime))}</span>')
 
-    if len(history) >= 2:
-        prev, cur = history[-2], history[-1]
+    comparable_history = _current_rubric_history(history)
+    if len(comparable_history) >= 2:
+        prev, cur = comparable_history[-2], comparable_history[-1]
         d = round(cur["score"] - prev["score"], 1)
         if d > 0:
             trend = f'<span aria-hidden="true">&#9650;</span> up {d} since {esc(prev["date"])} &middot; {esc(prev["grade"])} &rarr; {esc(cur["grade"])}'
@@ -798,7 +860,11 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         else:
             trend = f"unchanged since {esc(prev['date'])}"
     else:
-        trend = "First scorecard for this agency"
+        trend = (
+            "Methodology changed; trend restarts here"
+            if len(history) >= 2
+            else "First scorecard for this agency"
+        )
 
     reel = (
         f'<div class="reel" role="img" aria-label="Overall grade {esc(g)}" '
@@ -806,7 +872,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         '<div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div></div>'
     )
     return (
-        '<div class="board-hero"><div class="board-inner">'
+        '<div class="board-hero" id="report-overview"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
         '<p class="board-sub">Based on the feed this agency publishes</p>'
@@ -818,58 +884,27 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     )
 
 
-# The app reads the same TIER_LABELS from web/src/generated/constants.js
-# (rendered from constants_export.TIER_LABELS by `scorecard render-constants`),
-# so the static page and the interactive view agree by construction.
+def _realtime_unmeasured_label(category: dict[str, Any]) -> str:
+    """Truthful short label for an unmeasured realtime category."""
+    summary = str(category.get("summary") or "").casefold()
+    if "access key" in summary or "api key" in summary or "authentication" in summary:
+        return "Realtime access needed"
+    return "Realtime not yet published"
 
 
 def _peer_context(record: dict[str, Any] | None) -> str:
-    """Where this agency stands against the worldwide covered set and size peers, the
-    server-rendered twin of the app's peer line, so crawlers and no-JS visitors
-    see the same context. Empty when the directory record or its percentiles are
-    missing. These are deliberately not described as country percentiles: early
-    country cohorts can be tiny, while both stored percentiles use the complete
-    tracked set (with the peer value additionally grouped by size)."""
+    """Location context retained after public percentile claims were removed.
+
+    The name is kept for internal-call compatibility. A scorecard may say where
+    its feed record is catalogued, but it does not claim a national or size-peer
+    standing.
+    """
     if not record:
         return ""
-    nat = record.get("national_percentile")
-    if nat is None:
-        return ""
-    peer = record.get("peer_percentile")
-    tier_key = record.get("size_tier")
-    tier = TIER_LABELS.get(str(tier_key), str(tier_key))
-    non_us = str(record.get("country") or "US").upper() != "US"
-    nat_position = max(0.0, min(100.0, float(nat)))
-    peer_part = (
-        f" and {peer}% of {esc(tier)} agencies"
-        if peer is not None and tier_key not in (None, "unknown")
-        else ""
-    )
     location = _location_label(record)
-    where = f" Operates in <bdi>{esc(location)}</bdi>." if location else ""
-    rows = [
-        '<div class="percentile-row">'
-        '<span class="percentile-label">All agencies</span>'
-        f'<span class="percentile-value">{esc(nat)}%</span>'
-        f'<span class="percentile-track" style="--position:{nat_position:g}" aria-hidden="true">'
-        '<span class="percentile-line"></span><span class="percentile-marker"></span></span></div>'
-    ]
-    if peer is not None and tier_key not in (None, "unknown"):
-        peer_position = max(0.0, min(100.0, float(peer)))
-        rows.append(
-            '<div class="percentile-row">'
-            f'<span class="percentile-label">{esc(tier)} peers</span>'
-            f'<span class="percentile-value">{esc(peer)}%</span>'
-            f'<span class="percentile-track" style="--position:{peer_position:g}" aria-hidden="true">'
-            '<span class="percentile-line"></span><span class="percentile-marker"></span></span></div>'
-        )
-    strip = (
-        '<div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">'
-        f'{"".join(rows)}<div class="percentile-scale" aria-hidden="true">'
-        "<span>0</span><span>Ahead of more agencies</span><span>100</span></div></div>"
+    return (
+        f'<p class="peer-context">Catalogued in <bdi>{esc(location)}</bdi>.</p>' if location else ""
     )
-    scope = " Comparisons use agencies currently tracked worldwide." if non_us else ""
-    return f'<p class="peer-context">Ahead of {nat}% of all tracked agencies{peer_part}.{where}{scope}</p>{strip}'
 
 
 def _ago(now: dt.datetime, then: dt.datetime) -> str:
@@ -997,8 +1032,8 @@ _COPY_SCRIPT = (
 
 def _embed_section(agency_id: str, agency_name: str, grade: str) -> str:
     """A copy-paste embed so an agency can show its live grade on its own site or
-    feed README. The badge image regenerates daily, so the embed stays current
-    with zero backend, and it links back to the full scorecard. The copied
+    feed README. The badge image regenerates after a completed scoring check, so
+    the embed stays in step with the scorecard and links back to it. The copied
     Markdown's alt text names the agency and its current grade, not a generic
     "GTFS data quality", so a reader who can't see the image (a screen reader,
     a client that strips images) still gets the badge's actual content, and an
@@ -1013,8 +1048,8 @@ def _embed_section(agency_id: str, agency_name: str, grade: str) -> str:
     return (
         '<section class="embed" id="embed" aria-labelledby="embed-h">'
         '<h2 class="section-title" id="embed-h">Show your grade</h2>'
-        '<p class="page-lede">Put a live badge on your agency site or feed README. It updates '
-        "daily and links back to this scorecard.</p>"
+        '<p class="page-lede">Put a badge on your agency site or feed README. It updates '
+        "after each completed scoring check and links back to this scorecard.</p>"
         f'<p><img src="/data/artifacts/{esc(agency_id)}/badge.svg" '
         f'alt="{esc(alt_text)}"></p>'
         '<label class="visually-hidden" for="embed-md">Badge Markdown</label>'
@@ -1461,11 +1496,11 @@ def _route_map_section(
             for r in routes
         )
         route_table = (
-            '<table class="route-table">'
+            '<div class="table-wrap"><table class="route-table">'
             f"<caption>Routes in {agency_name}'s feed</caption>"
             '<thead><tr><th scope="col">Route</th><th scope="col">Type</th>'
             '<th scope="col">Line color</th></tr></thead>'
-            f"<tbody>{rows}</tbody></table>"
+            f"<tbody>{rows}</tbody></table></div>"
         )
     else:
         route_table = '<p class="page-lede">This feed lists no routes.</p>'
@@ -1548,34 +1583,23 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
     top fix, stitching the pieces that already exist into a single per-finding
     path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
-    the change", naming the producing tool detected from the feed host and, when a
-    safe mechanical autofix covers that exact finding, a link to the corrected
-    feed, and (3) "Prove it cleared", explaining that the next scorecard run
-    re-checks the fix and mints a dated receipt on the agency's fix log.
+    the change", naming the producing tool detected from the feed host, and (3)
+    "Check the result", explaining that the next comparable run checks whether
+    the finding is still reported.
 
-    The boundary stays explicit: the scorecard shows the fix; the agency publishes
-    it. Empty when the feed has no top fixes, so an all-clear feed renders exactly
-    as it did before this feature."""
+    The boundary stays explicit: the scorecard observes the published feed; an
+    action or ticket record is required to attribute a change. Empty when the
+    feed has no top fixes, so an all-clear feed renders exactly as it did before
+    this feature."""
     fixes = artifact.get("top_fixes", [])
     if not fixes:
         return ""
     fix_tool = detect_tool(artifact.get("feed", {}).get("static_url"))
     tool_path = esc(fix_tool.fix_path) if fix_tool else ""
-    # Reuse the autofix block's own data (see _autofix_section): a corrected feed
-    # is offered only when the engine is available and a download URL was attached
-    # at score time. Map it by finding code so the download shows on exactly the
-    # fixes it can make.
-    autofix = artifact.get("autofix") or {}
-    autofix_codes = (
-        {str(f.get("code", "")) for f in autofix.get("fixes", [])}
-        if autofix.get("available")
-        else set()
-    )
-    autofix_url = autofix.get("download_url")
     if has_fixlog:
         prove_link = (
             f' <a class="fix-guide" href="/agency/{esc(agency_id)}/fixes/">'
-            "See this feed's dated fix log</a>."
+            "See this feed's finding-clearance log</a>."
         )
     else:
         prove_link = (
@@ -1585,28 +1609,26 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     for f in fixes:
         code = str(f.get("code", ""))
         guide = _fix_guide_link(code)
-        if code and code in autofix_codes and autofix_url:
-            change = (f"{tool_path} " if tool_path else "") + (
-                f'<a class="fix-guide" href="{esc(str(autofix_url))}" download>'
-                "Download the corrected feed for this fix</a>."
-            )
-        else:
-            change = tool_path or (
-                "Make this change in whatever tool produces your feed, then re-export."
-            )
+        change = tool_path or (
+            "Make this change in whatever tool produces your feed, then re-export."
+        )
         items.append(
             f'<li class="fixloop-item"><p class="fixloop-name">{esc(f.get("fix", ""))}{guide}</p>'
             f'<p class="fixloop-step"><strong>Make the change.</strong> {change}</p>'
-            f'<p class="fixloop-step"><strong>Prove it cleared.</strong> The next scorecard '
-            "run re-checks this automatically and, once it is gone, mints a dated receipt."
+            f'<p class="fixloop-step"><strong>Check the result.</strong> The next scorecard '
+            "run checks this finding again. If a comparable check no longer reports it, "
+            "the feed's clearance log records that result. This confirms feed state, not "
+            "who made the change."
             f"{prove_link}</p></li>"
         )
     return (
-        '<div class="fixloop">'
-        '<p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, '
-        "make the change in your tool, and let the next run verify it &mdash; the scorecard "
-        "shows the fix; the agency publishes it.</p>"
-        f'<ol class="fixloop-list">{"".join(items)}</ol></div>'
+        '<details class="fixloop">'
+        "<summary>How to make and check these changes</summary>"
+        '<p class="fixloop-lede"><strong>Check the result on the published feed.</strong> '
+        "Read the guide, make the change in your tool, and use the next comparable run to "
+        "see whether the finding is still reported. Only an action or ticket record can "
+        "attribute who made the change.</p>"
+        f'<ol class="fixloop-list">{"".join(items)}</ol></details>'
     )
 
 
@@ -1619,7 +1641,9 @@ def _rider_impact_section(artifact: dict[str, Any]) -> str:
     being treated as a gap.
     """
 
-    schedule = _rider_schedule_text(_artifact_category(artifact, "freshness"))
+    schedule = _rider_schedule_text(
+        _artifact_category(artifact, "freshness"), artifact.get("snapshot_date")
+    )
     completeness = _artifact_category(artifact, "completeness")
     accessibility = _rider_accessibility_text(completeness)
     fare = _rider_fare_text(completeness)
@@ -1652,7 +1676,7 @@ def _measured_details(category: dict[str, Any]) -> dict[str, Any]:
     return details if category.get("status") == "measured" and isinstance(details, dict) else {}
 
 
-def _rider_schedule_text(freshness: dict[str, Any]) -> str:
+def _rider_schedule_text(freshness: dict[str, Any], snapshot_date: Any = None) -> str:
     fresh_details = freshness.get("details", {})
     fresh_details = fresh_details if isinstance(fresh_details, dict) else {}
     days = (
@@ -1662,6 +1686,13 @@ def _rider_schedule_text(freshness: dict[str, Any]) -> str:
     )
     if days is None:
         return "Schedule visibility is not known from this scorecard."
+    if resolve_service_horizon_status(fresh_details, snapshot_date) == "unusually_distant":
+        end = fresh_details.get("effective_expiry_date")
+        through = f" through {esc(str(end))}" if end else " to an unusually distant date"
+        return (
+            f"The feed states that service is published{through}. This may be intentional "
+            "or a placeholder; confirm current service with the transit operator."
+        )
     if days > 0:
         return f"The feed's last published service date is in {_plain_number(days)} days."
     if days == 0:
@@ -1756,7 +1787,7 @@ def _plain_number(value: float) -> str:
 
 
 def _load_effort_bands() -> dict[str, str]:
-    """Code -> empirical effort band, from the corpus calibration file.
+    """Code -> empirical clearance-timing band, from the calibration file.
 
     Only codes that clear the sample floor get an entry (band_text returns None
     below it). A missing or unreadable file yields an empty mapping, which is
@@ -1778,13 +1809,13 @@ def _load_effort_bands() -> dict[str, str]:
 
 
 def _effort_band_html(code: str, effort_bands: dict[str, str] | None) -> str:
-    """Empirical effort band for a notice code, or '' when none applies.
+    """Empirical clearance timing for a notice code, or '' when none applies.
 
     Additive by design: the hand-authored hint always renders first, and this
-    appends the observed runs-to-clear band only when the corpus has enough
-    closed episodes for this code (effort_calibration.band_text) and the
-    calibration file exists. Absent file -> empty mapping -> no change, so
-    goldens rendered without calibration stay byte-identical."""
+    appends a causally neutral timing band only when the corpus has enough
+    compatible closed episodes for this code (effort_calibration.band_text)
+    and the calibration file exists. Absent file -> empty mapping -> no change,
+    so goldens rendered without calibration stay byte-identical."""
     band = (effort_bands or {}).get(str(code))
     return f'<p class="effort-band">{esc(band)}</p>' if band else ""
 
@@ -1808,7 +1839,7 @@ def _location_label(record: dict[str, Any] | None) -> str:
     return country_label or legacy_state
 
 
-def _render_agency(
+def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
     prev_artifact: dict[str, Any] | None = None,
@@ -1875,7 +1906,8 @@ def _render_agency(
             cls = " sev-warning" if sev == "WARNING" else " sev-info" if sev == "INFO" else ""
             pts = f.get("points")
             worth = (
-                f'<span class="aworth">worth about +{round(float(pts))} points</span>'
+                f'<span class="aworth">worth about +{round(float(pts))} '
+                "points in its category</span>"
                 if isinstance(pts, (int, float)) and pts >= 1
                 else ""
             )
@@ -1908,8 +1940,13 @@ def _render_agency(
         cat = artifact["categories"].get(key, {})
         label = CATEGORY_LABELS[key]
         trk = f"{i + 1:02d}"
+        summary = (
+            presented_freshness_summary(cat, artifact.get("snapshot_date"))
+            if key == "freshness"
+            else str(cat.get("summary") or "")
+        )
         if cat.get("status") != "measured":
-            note = cat.get("summary") or "Not part of the grade yet."
+            note = summary or "Not part of the grade yet."
             cats_html += (
                 f'<div class="platform neutral">'
                 f'<span class="trk" aria-hidden="true">{trk}</span>'
@@ -1938,7 +1975,7 @@ def _render_agency(
             f'<div class="pbar" role="meter" aria-valuenow="{score}" aria-valuemin="0" '
             f'aria-valuemax="100" aria-label="{esc(label)} score">'
             f'<span style="width:{width}%;background:var(--grade-{band})"></span></div>'
-            f'<p class="pstat">{esc(cat["summary"])}</p>{substat}</div></div>'
+            f'<p class="pstat">{esc(summary)}</p>{substat}</div></div>'
         )
         measured_vars.append({"@type": "PropertyValue", "name": label, "value": score})
 
@@ -1949,19 +1986,27 @@ def _render_agency(
             findings.extend(cat.get("findings", []))
     rank = {"ERROR": 0, "WARNING": 1, "INFO": 2}
     findings.sort(key=lambda f: (rank.get(f.get("severity"), 9), -f.get("count", 0)))
-    findings_html = (
-        "".join(
-            f'<li class="finding"><div class="finding-head">'
-            f'<span class="sev sev-{str(f.get("severity", "INFO")).lower()}">{SEVERITY_LABELS.get(f.get("severity"), f.get("severity", "Info"))}</span>'
-            f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
-            f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
-            f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
-            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
-            f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
-            for f in findings
-        )
-        or '<li class="finding"><p class="what">No findings.</p></li>'
+    findings_html = "".join(
+        f'<li class="finding"><div class="finding-head">'
+        f"{_finding_severity_badge(f.get('severity'))}"
+        f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
+        f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
+        f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
+        f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
+        f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
+        for f in findings
     )
+    if findings_html:
+        finding_word = "finding" if len(findings) == 1 else "findings"
+        findings_block = (
+            f'<p class="findings-count">{len(findings)} {finding_word}, ordered by severity.</p>'
+            '<details class="evidence-drawer"><summary>Show every finding</summary>'
+            f'<ul class="findings">{findings_html}</ul></details>'
+        )
+    else:
+        findings_block = (
+            '<p class="all-clear">No findings. This feed passed every measured check.</p>'
+        )
 
     op_note = artifact.get("agency", {}).get("operating_note")
     op_html = (
@@ -1978,6 +2023,53 @@ def _render_agency(
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name, str(overall["grade"]))
     _citation_block = _citation_section(artifact, agency_id, agency_name)
+    action_links = []
+    if _vendor_block:
+        action_links.append(
+            '<a class="report-action report-action-primary" href="#send-vendor">Send fixes</a>'
+        )
+    action_links.extend(
+        [
+            f'<a class="report-action" href="/agency/{esc(agency_id)}/board/">Board one-pager</a>',
+            f'<a class="report-action" href="/agency/{esc(agency_id)}/brief/">Call brief</a>',
+            f'<a class="report-action" href="/compare/?a={esc(agency_id)}">Compare</a>',
+            '<a class="report-action" href="/subscribe.html">Watch this feed</a>',
+            f'<a class="report-action" href="/claim/?agency={esc(agency_id)}">Correct listing</a>',
+        ]
+    )
+    if has_fixlog:
+        action_links.append(
+            f'<a class="report-action" href="/agency/{esc(agency_id)}/fixes/">Clearance log</a>'
+        )
+    actions = (
+        '<nav class="report-actions" aria-label="Scorecard actions">'
+        + "".join(action_links)
+        + "</nav>"
+    )
+    report_stops = [
+        ("Overview", "#report-overview"),
+        ("Fixes", "#fixes-h"),
+        ("Scores", "#cats-h"),
+    ]
+    if map_section:
+        report_stops.append(("Routes", "#map-h"))
+    report_stops.extend(
+        [
+            ("History", "#trend-h"),
+            ("Evidence", "#findings-h"),
+            ("Standards", "#standards-h"),
+        ]
+    )
+    report_route = (
+        '<nav class="report-route" aria-label="On this scorecard">'
+        '<p class="report-route-kicker">Report route</p>'
+        '<p class="report-route-title">Stops on this page</p><ol>'
+        + "".join(
+            f'<li><a href="{href}"><span aria-hidden="true"></span>{label}</a></li>'
+            for label, href in report_stops
+        )
+        + "</ol></nav>"
+    )
     # The copy script is emitted once if any copyable block (outreach, vendor,
     # embed, citation) is present, so multiple buttons never double-bind.
     _copy_script = (
@@ -1986,14 +2078,10 @@ def _render_agency(
         else ""
     )
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (agency_name, None)])
-    body = f"""    {crumb}
+    body = f"""    <div class="report-head">
+    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    <p class="brief-link"><a href="/agency/{esc(agency_id)}/brief/">Prep for a call: printable one-page brief</a>
-      · <a href="/agency/{esc(agency_id)}/board/">For your board packet: printable one-pager</a>
-      {f'· <a href="/agency/{esc(agency_id)}/fixes/">Fix log: every issue this feed has cleared</a>' if has_fixlog else ""}
-      · <a href="/compare/?a={esc(agency_id)}">Compare with another agency</a>
-      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a>
-      · <a href="/claim/?agency={esc(agency_id)}">Correct or claim this listing</a></p>
+    {actions}
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
     {op_html}
     {_anomaly_note(history)}
@@ -2003,6 +2091,9 @@ def _render_agency(
       <a href="/how-to-read/">New to this? How to read your scorecard.</a>
       <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
       Rubric v{esc(artifact.get("rubric_version", "—"))}, validator {esc(artifact.get("validator_version", "—"))}.</p>
+    </div>
+    {report_route}
+    <div class="report-content">
     {_liveness_note(liveness, now)}{confidence_block}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
@@ -2025,7 +2116,7 @@ def _render_agency(
     {_route_rule()}
     <section aria-labelledby="findings-h">
       <h2 class="section-title" id="findings-h">Everything we checked</h2>
-      <ul class="findings">{findings_html}</ul>
+      {findings_block}
     </section>
     {_recommendations_section(artifact)}
     {_autofix_section(artifact)}
@@ -2044,7 +2135,9 @@ def _render_agency(
     {_route_rule()}
     {_embed_block}
     {_citation_block}
-    {_copy_script}"""
+    {_copy_script}
+    </div>"""
+    body = "\n".join(line.rstrip() for line in body.splitlines())
 
     jsonld = {
         "@context": "https://schema.org",
@@ -2098,6 +2191,8 @@ def _render_agency(
         jsonld=jsonld,
         head_extra=atom,
         country_code=str(location_record.get("country") or "US"),
+        wide=True,
+        main_modifier="agency-report",
     )
 
 
@@ -2106,9 +2201,15 @@ def _brief_trend_line(history: list[dict[str, Any]] | None) -> str:
     reusing the same delta logic the trend section uses. Neutral on the first
     check."""
     hist = history or []
-    if len(hist) < 2:
+    comparable = _current_rubric_history(hist)
+    if len(comparable) < 2:
+        if len(hist) >= 2:
+            return (
+                "The scoring methodology changed since the prior check; the trend "
+                "restarts here without an improvement or regression claim."
+            )
         return "First check for this agency, so there is no trend yet."
-    prev, cur = hist[-2], hist[-1]
+    prev, cur = comparable[-2], comparable[-1]
     delta = round(cur["score"] - prev["score"], 1)
     if delta > 0:
         return f"Up {delta} points since {prev['date']} ({prev['grade']} to {cur['grade']})."
@@ -2126,8 +2227,9 @@ def _brief_changed_section(
     is handled by the caller."""
     hist = history or []
     rows = ""
-    if len(hist) >= 2:
-        prev, cur = hist[-2], hist[-1]
+    comparable = _current_rubric_history(hist)
+    if len(comparable) >= 2:
+        prev, cur = comparable[-2], comparable[-1]
         items = []
         for key in CATEGORY_ORDER:
             a = (prev.get("categories") or {}).get(key)
@@ -2141,13 +2243,21 @@ def _brief_changed_section(
             )
         if items:
             rows = f'<ul class="brief-deltas">{"".join(items)}</ul>'
+    elif len(hist) >= 2:
+        rows = (
+            "<p>The scoring methodology changed since the prior check. Category "
+            "deltas restart with this scorecard.</p>"
+        )
     cleared_html = ""
     if cleared:
         lis = "".join(f"<li>{esc(what)} ({esc(code)})</li>" for code, what in cleared)
         noun = "finding" if len(cleared) == 1 else "findings"
         cleared_html = (
-            f'<p class="brief-sub">Fixed since the last check ({len(cleared)} {noun}):</p>'
+            f'<p class="brief-sub">No longer reported since the last check '
+            f"({len(cleared)} {noun}):</p>"
             f'<ul class="brief-cleared">{lis}</ul>'
+            '<p class="fineprint">This compares feed state. It does not identify who '
+            "made a change or why.</p>"
         )
     if not rows and not cleared_html:
         rows = "<p>No category changes since the last check.</p>"
@@ -2195,8 +2305,9 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     else:
         fixes_html = "<p>Nothing urgent. This feed passed every check we translate into a fix.</p>"
 
-    # NTD readiness verdict and pillars, precomputed at score time.
-    readiness = artifact.get("ntd_readiness") or {}
+    # NTD readiness verdict and pillars, recomputed from stored inputs so older
+    # artifacts gain the RY2026 agency_id presence check without a rescore.
+    readiness = presented_ntd_readiness(artifact) or {}
     ntd_status = str(readiness.get("status", "unknown"))
     ntd_label = _NTD_LABELS.get(ntd_status, ntd_status)
     pillar_rows = "".join(
@@ -2213,18 +2324,18 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             f'<dl class="brief-ntd">{pillar_rows}</dl>'
         )
 
-    # agency_id vs NTD ID alignment line, re-worded at render time so old
-    # artifacts never resurface pre-final-rule prescriptive copy.
+    # Optional agency_id-vs-NTD-ID equality line, re-worded at render time so
+    # old artifacts never conflate required presence with optional equality.
     align = _current_alignment(artifact) or {}
     align_html = ""
-    if align:
+    if align and align.get("status") != "missing":
         a_status = str(align.get("status", "unknown"))
         a_label = _NTD_ALIGN_LABELS.get(a_status, a_status)
         body = esc(str(align.get("detail", "")))
         if align.get("fix"):
             body += f" {esc(str(align.get('fix')))}"
         align_html = (
-            f'<p class="brief-align"><strong>agency_id and NTD ID:</strong> '
+            f'<p class="brief-align"><strong>agency_id equals NTD ID (optional):</strong> '
             f"{esc(a_label)}. {body}</p>"
         )
 
@@ -2232,9 +2343,18 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # when the artifact carries them.
     fresh = artifact.get("categories", {}).get("freshness", {}).get("details", {})
     days = fresh.get("days_until_expiry")
+    horizon_status = resolve_service_horizon_status(fresh, artifact.get("snapshot_date"))
     if isinstance(days, (int, float)) and not isinstance(days, bool):
         days = int(days)
-        expiry = "Feed has expired." if days <= 0 else f"{days} days of service data remain."
+        if horizon_status == "unusually_distant":
+            end = fresh.get("effective_expiry_date")
+            through = f" through {esc(str(end))}" if end else " unusually far ahead"
+            expiry = (
+                f"The feed states that service is published{through}. Confirm that this "
+                "end date is intentional before relying on it as a maintenance signal."
+            )
+        else:
+            expiry = "Feed has expired." if days <= 0 else f"{days} days of service data remain."
         if fresh.get("last_service_date"):
             expiry += f" Last service date {esc(str(fresh['last_service_date']))}."
     else:
@@ -2323,7 +2443,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if country.upper() == "US"
         else "confirm the feed is current and the rider information is complete"
     )
-    body = f"""    <div class="brief">
+    body = f"""    <div class="brief brief-call">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
       <p class="brief-kicker">Call-prep brief &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
@@ -2354,6 +2474,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       Not an official compliance determination. Rubric v{esc(str(artifact.get("rubric_version", "—")))},
       validator {esc(str(artifact.get("validator_version", "—")))}.</p>
     </div>"""
+    body = "\n".join(line.rstrip() for line in body.splitlines())
     scope_detail = "NTD readiness" if country.upper() == "US" else "guidance"
     desc = (
         f"Call-prep brief for {agency_name}: grade {overall['grade']}, top fixes, "
@@ -2390,16 +2511,17 @@ def _render_board_page(
         (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
     )
 
-    # Progress first. Boards respond to movement, and a cleared finding is the
-    # concrete, dated proof that staff time spent on the feed paid off.
+    # Progress first. A compatible later check can show that a finding is no
+    # longer reported, but not who acted or why.
     cleared = _cleared_findings(prev_artifact, artifact)
     if cleared:
         wins = "".join(f"<li>{esc(what)}</li>" for _code, what in cleared)
-        noun = "issue" if len(cleared) == 1 else "issues"
+        noun = "finding" if len(cleared) == 1 else "findings"
         progress_html = (
-            f"<p>Since the previous check, {len(cleared)} data {noun} "
-            f"{'was' if len(cleared) == 1 else 'were'} fixed and verified:</p>"
+            f"<p>Since the previous compatible check, {len(cleared)} {noun} "
+            f"{'was' if len(cleared) == 1 else 'were'} no longer reported:</p>"
             f'<ul class="brief-cleared">{wins}</ul>'
+            '<p class="fineprint">This records feed state, not who made a change or why.</p>'
         )
     else:
         progress_html = (
@@ -2429,34 +2551,12 @@ def _render_board_page(
             "translates into a fix; the ask is continued upkeep.</p>"
         )
 
-    # Standing among peers, when the directory carries percentiles. The board
-    # version names the comparison plainly instead of using the chip styling.
-    standing_html = ""
-    if dir_record and dir_record.get("national_percentile") is not None:
-        nat = dir_record["national_percentile"]
-        peer = dir_record.get("peer_percentile")
-        tier_key = dir_record.get("size_tier")
-        tier = TIER_LABELS.get(str(tier_key), str(tier_key))
-        non_us = str(dir_record.get("country") or country).upper() != "US"
-        peer_part = (
-            f", and ahead of {peer}% of covered {esc(tier)} agencies"
-            if peer is not None and tier_key not in (None, "unknown")
-            else ""
-        )
-        scope = " Comparisons use agencies currently tracked worldwide." if non_us else ""
-        standing_html = (
-            '<section aria-labelledby="board-standing-h">'
-            '<h2 id="board-standing-h">Where this agency stands</h2>'
-            f"<p>Ahead of {nat}% of all tracked agencies{peer_part}.{scope}</p>"
-            "</section>"
-        )
-
     who_makes = ""
     tool = detect_tool(artifact.get("feed", {}).get("static_url"))
     if tool and fixes:
         who_makes = f'<p class="brief-fix-why">{esc(tool.fix_path)}</p>'
 
-    body = f"""    <div class="brief">
+    body = f"""    <div class="brief brief-board">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
@@ -2480,7 +2580,6 @@ def _render_board_page(
       {asks_html}
       {who_makes}
     </section>
-    {standing_html}
     <p class="brief-foot">Produced by the GTFS Scorecard, an open-source data quality
       tool. A data-quality read to support the board conversation, not an official
       compliance determination. Live scorecard: {esc(f"{BASE_URL}/agency/{agency_id}/")}.
@@ -2512,11 +2611,12 @@ def _render_fixlog_page(
     receipts: list[dict[str, str]],
     dir_record: dict[str, Any] | None = None,
 ) -> str:
-    """The durable fix log (/agency/<id>/fixes/): every finding this feed has
-    cleared, dated, newest first, each entry with its own link. The agency page's
-    "resolved since last check" line is gone the next day; this is the citable
-    record a manager can put in a board packet or a regulatory filing (docs/
-    expansion-ideation-2026-07.md, fix verification as a product)."""
+    """The durable clearance log (/agency/<id>/fixes/), newest first.
+
+    Each receipt says only that one compatible check found a code and a later
+    check did not. It is a citable check result, not causal proof that a named
+    agency, vendor, or intervention produced the change.
+    """
     agency_id = artifact["agency"]["id"]
     agency_name = artifact["agency"]["name"]
     canonical = f"{BASE_URL}/agency/{agency_id}/fixes/"
@@ -2543,26 +2643,28 @@ def _render_fixlog_page(
 
     body = f"""    <p class="brief-nav"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="page-head">
-      <h1 class="page-title">Fix log: {esc(agency_name)}</h1>
-      <p class="page-lede">A dated record of every data issue this feed has cleared since
-      tracking began. Each entry keeps its own link, so a specific fix can be cited in a
-      board packet, a grant report, or a regulatory filing.</p>
+      <h1 class="page-title">Finding clearance log: {esc(agency_name)}</h1>
+      <p class="page-lede">A dated record of findings that appeared in one compatible
+      check and were absent from a later one. Each entry keeps its own link so the check
+      result can be cited without guessing who changed the feed or why.</p>
     </header>
     <section aria-labelledby="fixlog-h">
-      <h2 class="section-title" id="fixlog-h">{len(receipts)} verified {"fix" if len(receipts) == 1 else "fixes"}</h2>
+      <h2 class="section-title" id="fixlog-h">{len(receipts)} verified finding {"clearance" if len(receipts) == 1 else "clearances"}</h2>
       <ul class="cleared-list">{"".join(items)}</ul>
-      <p class="fineprint">Verified means the daily check stopped reporting the finding. A
-      finding that returns and clears again appears as a separate entry.</p>
-      <p class="fixloop-close">This log is the end of the guided fix loop: you make a change,
-      republish, and the next run verifies it and records it here as
-      <a href="/agency/{esc(agency_id)}/">linkable proof for a board packet or
-      regulatory filing</a>.</p>
+      <p class="fineprint">Verified means the later check used the same complete producer
+      contract, measured the finding's category, and stopped reporting its code. It does
+      not establish who acted, why the feed changed, or how much work it took. A finding
+      that returns and clears again appears as a separate entry.</p>
+      <p class="fixloop-close">This is the comparable-feed check in the guided change flow.
+      Pair a clearance with the owner or vendor's action record when you need evidence of a
+      specific intervention. <a href="/agency/{esc(agency_id)}/">Return to the current scorecard</a>.</p>
     </section>"""
     desc = (
-        f"Dated, linkable record of {len(receipts)} data-quality "
-        f"{'fix' if len(receipts) == 1 else 'fixes'} verified on {agency_name}'s GTFS feed."
+        f"Dated, linkable record of {len(receipts)} finding "
+        f"{'clearance' if len(receipts) == 1 else 'clearances'} observed on "
+        f"{agency_name}'s GTFS feed."
     )
-    title = f"{agency_name} fix log — GTFS Scorecard"
+    title = f"{agency_name} finding clearance log — GTFS Scorecard"
     country = str(
         (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
     )
@@ -2605,13 +2707,14 @@ def _recommendations_section(artifact: dict[str, Any]) -> str:
 
 
 def _autofix_section(artifact: dict[str, Any]) -> str:
-    """The safe mechanical subset of fixes, offered as a corrected feed.
+    """Describe the safe mechanical subset that a user can run locally.
 
     The autofix engine (autofix.py) makes only changes that have one certain
     edit (surrounding whitespace, shouting stop and route names) and leaves the
-    feed otherwise byte-for-byte. This shows what it touched and, when a download
-    URL was attached at score time, a button to grab the corrected zip. Empty
-    when the artifact carries no autofix block or found nothing to change."""
+    feed otherwise byte-for-byte. Legacy artifacts may carry a public download
+    URL, but this renderer deliberately ignores it: the service does not publish
+    modified copies of agency feeds. Empty when the artifact carries no autofix
+    block or found nothing to change."""
     autofix = artifact.get("autofix")
     if not autofix or not autofix.get("available"):
         return ""
@@ -2630,23 +2733,16 @@ def _autofix_section(artifact: dict[str, Any]) -> str:
             f'<li class="autofix-item"><p class="autofix-label">{label} '
             f'<span class="count">{count} {noun}</span></p>{example_html}</li>'
         )
-    download_url = autofix.get("download_url")
-    if download_url:
-        action = (
-            f'<p class="autofix-action"><a class="download-btn" href="{esc(str(download_url))}" '
-            "download>Download corrected feed</a></p>"
-        )
-    else:
-        action = (
-            '<p class="autofix-cli">Run it yourself on your own copy of the feed: '
-            "<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>"
-        )
+    action = (
+        '<p class="autofix-cli">Run it locally on a copy of the feed you control: '
+        "<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>"
+    )
     return (
         '<section aria-labelledby="autofix-h"><h2 class="section-title" id="autofix-h">'
-        "Some fixes we can make for you</h2>"
-        '<p class="page-lede">These are the safe mechanical fixes, applied to a copy of your '
-        "feed. They change only what is certain and leave everything else untouched. Review the "
-        "diff before you publish.</p>"
+        "Safe fixes you can run locally</h2>"
+        '<p class="page-lede">The local command applies only these mechanical changes to a copy '
+        "you control. The scorecard does not publish a modified feed. Review the diff before you "
+        "publish through your usual process.</p>"
         f'<ul class="autofix-list">{"".join(rows)}</ul>{action}</section>'
     )
 
@@ -2705,17 +2801,21 @@ def _google_gate_line(artifact: dict[str, Any], now: dt.datetime | None = None) 
 
 
 _NTD_LABELS = {"ready": "Ready", "at_risk": "Needs attention", "not_ready": "Not ready"}
-_NTD_PILLAR_NAMES = {"published": "Published", "valid": "Valid", "current": "Current"}
+_NTD_PILLAR_NAMES = {
+    "published": "Published",
+    "valid": "Valid",
+    "current": "Current",
+    "agency_id": "agency_id provided",
+}
 
-# NTD ID alignment is a forward-looking compliance flag, not part of the
-# readiness status, so it renders below the pillars with its own label. Reuses
-# the readiness status classes (text label carries the meaning; color does not).
-# Alignment is an optional convenience, not a graded requirement, so a feed that
-# is not aligned reads neutrally (the "unknown" class), never as a problem.
+# Equality between agency_id and the five-digit NTD ID is optional, separate
+# from the required agency_id presence pillar, and carries no score. A mismatch
+# therefore reads neutrally. A missing value is handled by the readiness pillar
+# and the equality row is omitted.
 _NTD_ALIGN_LABELS = {
-    "aligned": "Aligned",
-    "mismatch": "Not aligned",
-    "missing": "Not aligned",
+    "aligned": "Equal",
+    "mismatch": "Different (allowed)",
+    "missing": "Not available",
     "unknown": "Not checked yet",
 }
 _NTD_ALIGN_CLASSES = {
@@ -2727,14 +2827,15 @@ _NTD_ALIGN_CLASSES = {
 
 
 def _current_alignment(artifact: dict[str, Any]) -> dict[str, Any] | None:
-    """The NTD ID alignment block, re-worded at render time.
+    """The agency_id / NTD-ID equality block, re-worded at render time.
 
     Artifacts store the alignment verdict's prose at score time, so a feed not
     re-scored since the July 2025 final-rule copy fix can still carry the old
     prescriptive "should be your NTD ID by report year 2026" text. The stored
     inputs (feed_agency_ids, ntd_id) let us recompute the current wording here,
-    so every rendered page speaks final-rule language regardless of artifact
-    age; the stored block is the fallback when the inputs are absent."""
+    so every rendered page distinguishes required agency_id presence from
+    optional equality regardless of artifact age. The stored block is the
+    fallback when the inputs are absent."""
     align = artifact.get("ntd_id_alignment")
     if not align:
         return None
@@ -2747,15 +2848,14 @@ def _current_alignment(artifact: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _ntd_id_alignment_html(artifact: dict[str, Any]) -> str:
-    """Render the NTD ID alignment line, when the check ran for this feed.
+    """Render the optional NTD-ID equality line when it can be compared.
 
-    Whether the feed's agency_id matches the agency's NTD ID. Aligning the two
-    lets a feed join cleanly to its NTD record; the July 2025 final rule did not
-    require that feed change (FTA links them on the P-50 form), so this is shown
-    as an optional convenience carrying no score. Absent for artifacts that
-    predate the check."""
+    RY2026 requires agency_id presence and a P-50 crosswalk, but not equality to
+    the five-digit NTD ID. Missing presence is already shown as a readiness
+    pillar, so this neutral, zero-deduction row is omitted when there is no value
+    to compare. It is also absent for artifacts that predate the check."""
     align = _current_alignment(artifact)
-    if not align:
+    if not align or align.get("status") == "missing":
         return ""
     status = str(align.get("status", "unknown"))
     label = _NTD_ALIGN_LABELS.get(status, status)
@@ -2767,7 +2867,7 @@ def _ntd_id_alignment_html(artifact: dict[str, Any]) -> str:
         body += f" {esc(fix)}"
     return (
         '<dl class="standards-list">'
-        f'<dt>agency_id matches your NTD ID <span class="ntd-status {cls}">'
+        f'<dt>agency_id equals your NTD ID (optional) <span class="ntd-status {cls}">'
         f"{esc(label)}</span></dt><dd>{body}</dd></dl>"
     )
 
@@ -2854,8 +2954,8 @@ def _canada_equity_section(artifact: dict[str, Any]) -> str:
 def _ntd_section(artifact: dict[str, Any]) -> str:
     """Map this feed's scores onto the FTA National Transit Database GTFS
     requirement, so an agency facing annual D-10 certification gets a direct
-    'is my feed ready?' read. Three pillars (published, valid, current), each
-    labelled in text as well as color so the status never relies on color alone.
+    'is my feed ready?' read. Four pillars (published, valid, current, agency_id),
+    each labelled in text as well as color so status never relies on color alone.
 
     US-only: a non-US agency (agency.country != "US") has no FTA NTD, so this
     returns "" and the page shows just the GTFS-quality rubric. See ADR 0026."""
@@ -2891,19 +2991,17 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         f"{_ntd_id_alignment_html(artifact)}"
         f"{_shapes_readiness_html(artifact)}"
         '<p class="plain-summary"><strong>In plain words:</strong> if you report to the federal '
-        "transit database, you have to publish a working, up-to-date feed and confirm it once a "
-        "year. This box is a heads-up on whether yours looks ready; it is not the official "
-        "sign-off.</p>"
+        "transit database, you have to publish a working, up-to-date feed, provide a stable "
+        "agency_id for each represented reporter, and confirm the feed and P-50 crosswalk each "
+        "year. This box is a heads-up; your filings are the official check.</p>"
         '<p class="fineprint">A readiness signal mapping this feed to the '
         '<a href="https://www.transit.dot.gov/ntd">'
         '<abbr title="Federal Transit Administration">FTA</abbr> National Transit Database</a> GTFS '
         "requirement (Report Year 2023 onward: a public, valid, current feed, certified "
-        'annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). Aligning '
-        "agency_id with your NTD ID lets the feed line up with your NTD record; the "
-        '<a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/'
-        'national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">'
-        "July 2025 final rule</a> links the two on the P-50 form rather than requiring that "
-        "feed change, and requires shapes.txt in the published GTFS: Full Reporters from Report "
+        'annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). For RY2026, '
+        "each represented reporter needs a stable agency_id, unique within the feed and "
+        "crosswalked to its five-digit NTD ID on P-50; the values do not need to be equal. "
+        "FTA also requires shapes.txt in the published GTFS: Full Reporters from Report "
         "Year 2025, and Reduced, Rural, and Tribal Reporters from Report Year 2026. Not an "
         "official determination; your certification is the official check.</p></section>"
     )
@@ -3349,6 +3447,8 @@ def _standards_section(
         cat = artifact.get("categories", {}).get(key, {})
         if cat.get("status") == "measured":
             score = f"{round(float(cat.get('score', 0)))} / 100"
+        elif key == "realtime" and _realtime_unmeasured_label(cat) == "Realtime access needed":
+            score = "Access needed to measure"
         else:
             score = "Not yet published"
         note = str(universal["category_notes"][key])
@@ -3429,9 +3529,7 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
     )
 
 
-def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
-    index: dict[str, Any], liveness: dict[str, dict[str, Any]]
-) -> str:
+def _render_agency_index(index: dict[str, Any], liveness: dict[str, dict[str, Any]]) -> str:
     canonical = f"{BASE_URL}/agencies/"
     agencies = sorted(index["agencies"].items(), key=lambda kv: kv[1]["name"].lower())
 
@@ -3486,8 +3584,8 @@ def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratc
                 '<section aria-labelledby="lapsed-h">'
                 '<h3 class="section-sub" id="lapsed-h">Recently lapsed '
                 f'<span class="grade-count">{len(lapsed)} '
-                f"{'agency' if len(lapsed) == 1 else 'agencies'}</span></h3>"
-                '<p class="group-note">Expired within the last year. These agencies are '
+                f"{'feed' if len(lapsed) == 1 else 'feeds'}</span></h3>"
+                '<p class="group-note">Expired within the last year. These feeds are '
                 "almost certainly still running. Re-exporting the feed with a calendar that "
                 "reaches further out brings them back into trip planners.</p>"
                 f'<ul class="agency-list">{rows}</ul></section>'
@@ -3501,7 +3599,7 @@ def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratc
                 '<section aria-labelledby="stale-h">'
                 '<h3 class="section-sub" id="stale-h">Expired over a year ago '
                 f'<span class="grade-count">{len(stale_reachable)} '
-                f"{'agency' if len(stale_reachable) == 1 else 'agencies'}</span></h3>"
+                f"{'feed' if len(stale_reachable) == 1 else 'feeds'}</span></h3>"
                 '<p class="group-note">Expired more than a year ago. For these, the feed URL on '
                 "file is still the one listed in the Mobility Database, so the stale data is at "
                 "the source: the agency or its vendor stopped refreshing the export. Worth "
@@ -3519,7 +3617,7 @@ def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratc
                 '<section aria-labelledby="unreachable-h">'
                 '<h3 class="section-sub" id="unreachable-h">Long unreachable '
                 f'<span class="grade-count">{len(stale_unreachable)} '
-                f"{'agency' if len(stale_unreachable) == 1 else 'agencies'}</span></h3>"
+                f"{'feed' if len(stale_unreachable) == 1 else 'feeds'}</span></h3>"
                 '<p class="group-note">Expired more than a year ago, and the feed URL itself '
                 "has not answered the last 30 checks in a row &mdash; a stronger signal than "
                 "an old calendar alone. This may mean the feed moved, the listing is stale, or "
@@ -3531,51 +3629,46 @@ def _render_agency_index(  # noqa: C901 - tracked, see docs/lint-complexity-ratc
             '<section class="expired-panel" aria-labelledby="expired">'
             '<h2 class="section-title" id="expired">Expired feeds '
             f'<span class="grade-count">{len(lapsed) + stale_total} '
-            f"{'agency' if len(lapsed) + stale_total == 1 else 'agencies'}</span></h2>"
+            f"{'feed' if len(lapsed) + stale_total == 1 else 'feeds'}</span></h2>"
             '<p class="page-lede">A feed whose calendar has run out is invisible to trip '
             "planners even when the buses keep running. These are pulled out of the grade list "
             "below so the fixable ones are easy to find.</p>"
             f"{''.join(groups)}</section>"
         )
 
-    # Group the remaining (non-expired) agencies by grade: a jump nav, then a
-    # section per grade (A first), alphabetical within each.
-    by_grade: dict[str, list[tuple[str, dict[str, Any]]]] = {g: [] for g in "ABCDF"}
-    for aid, a in graded:
-        by_grade.setdefault(str(a["history"][-1]["grade"]), []).append((aid, a))
-
     sections: list[str] = []
-    for g in "ABCDF":
-        members = by_grade.get(g, [])
-        if not members:
-            continue
-        nav.append(f'<a href="#grade-{g}">{g} ({len(members)})</a>')
-        rows = "".join(_index_card(aid, a) for aid, a in members)
+    if graded:
+        # ``agencies`` was sorted by name before the expiry split, so this stays
+        # alphabetical. Each row keeps its own grade, but the page does not turn
+        # mixed-contract feed records into a high-to-low list or grade aggregate.
+        nav.append('<a href="#current">Current and upcoming service</a>')
+        rows = "".join(_index_card(aid, agency) for aid, agency in graded)
         sections.append(
-            f'<section aria-labelledby="grade-{g}">'
-            f'<h2 class="section-title" id="grade-{g}">Grade {g} '
-            f'<span class="grade-count">{len(members)} '
-            f"{'agency' if len(members) == 1 else 'agencies'}</span></h2>"
+            '<section aria-labelledby="current">'
+            '<h2 class="section-title" id="current">Current and upcoming service</h2>'
+            '<p class="group-note">Listed alphabetically. Each grade describes only that '
+            "feed's published bytes under its stated scoring contract; this list is not a "
+            "cross-feed ranking.</p>"
             f'<ul class="agency-list">{rows}</ul></section>'
         )
 
     desc = (
-        f"GTFS data quality scorecards for {len(agencies)} transit agencies. Expired feeds are "
-        "listed first, split into recently lapsed and long dead, then the rest by grade."
+        f"GTFS data quality scorecards for {len(agencies)} published feed records. Expired feeds are "
+        "listed first, split into recently lapsed and long dead, then the rest alphabetically."
     )
     body = f"""    {_breadcrumb([("Home", "/"), ("All agencies", None)])}
-    <h1 class="page-title">All agencies</h1>
-    <p class="page-lede">{len(agencies)} transit agencies, each with a
+    <h1 class="page-title">Agency scorecards</h1>
+    <p class="page-lede">{len(agencies)} published feed scorecards, each with a
     <abbr title="General Transit Feed Specification">GTFS</abbr> data
     quality grade and the fixes to start with.</p>
-    <nav class="grade-jump" aria-label="Other views of the same agencies">Same agencies, other
+    <nav class="grade-jump" aria-label="Other views of the same scorecards">Same scorecards, other
     views: <a href="/app/">live search and filters</a> · <a href="/map/">on a map</a> ·
     <a href="/routes/">every route</a> · <a href="/compare/">compare two</a></nav>
     <nav class="grade-jump" aria-label="Jump to section">Jump to: {" · ".join(nav)}</nav>
     {expired_section}
     {"".join(sections)}"""
     return _page(
-        title="All agencies — GTFS Scorecard",
+        title="Agency scorecards — GTFS Scorecard",
         description=desc,
         canonical=canonical,
         body=body,
@@ -3611,15 +3704,49 @@ def _grade_distribution_bar(dist: dict[str, Any], total: int) -> str:
 
 
 def _rollup_percentile_context(payload: dict[str, Any]) -> str:
-    """How this program's average score compares to other state programs, the
-    rollup-level twin of the per-agency _peer_context. A neutral distribution
-    read ("ahead of N% of..."), never a rank -- and None (rendered as nothing)
-    for "all tracked agencies" and named cohorts, which are not peers of a
-    50-state comparison (rollups.publish_rollups)."""
-    pct = payload.get("state_percentile")
-    if pct is None:
-        return ""
-    return f'<p class="peer-context">This program\'s average score is ahead of {pct}% of tracked state programs.</p>'
+    """Compatibility shim for retired public program-percentile output."""
+    del payload
+    return ""
+
+
+def _comparison_contract_text(comparison: dict[str, Any]) -> str:
+    """Human-readable producer contract behind a cross-feed aggregate."""
+    rubric = esc(comparison.get("required_rubric_version") or "current")
+    profile = esc(comparison.get("required_scoring_profile_id") or "current")
+    validator = esc(comparison.get("required_validator_version") or "current")
+    raw_categories = comparison.get("required_measured_categories") or []
+    categories = [
+        esc(CATEGORY_LABELS.get(str(category), str(category))) for category in raw_categories
+    ]
+    measured = ", ".join(categories) if categories else "one shared measured-category set"
+    return (
+        f"rubric {rubric}, scoring profile {profile}, MobilityData gtfs-validator "
+        f"{validator}, and measured categories {measured}"
+    )
+
+
+def _guarded_comparison_count(payload: dict[str, Any]) -> int:
+    """A cross-feed denominator only when both public count fields agree.
+
+    The aggregate APIs carry a convenient top-level count and the same count in
+    their auditable ``comparison`` block.  Rendering fails closed when either is
+    missing, malformed, or stale so a legacy metric cannot appear beside a new
+    zero-cohort disclaimer.
+    """
+    raw_comparison = payload.get("comparison")
+    comparison = raw_comparison if isinstance(raw_comparison, dict) else {}
+    nested = comparison.get("eligible_count")
+    declared = payload.get("comparison_eligible_count")
+    if not (
+        isinstance(nested, int)
+        and not isinstance(nested, bool)
+        and isinstance(declared, int)
+        and not isinstance(declared, bool)
+        and nested == declared
+        and nested > 0
+    ):
+        return 0
+    return nested
 
 
 def _render_rollup(rollup: dict[str, Any]) -> str:
@@ -3627,8 +3754,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     rname = rollup["rollup"]["name"]
     canonical = f"{BASE_URL}/program/{rid}/"
     desc = (
-        f"{rname}: GTFS data quality across {rollup['agency_count']} agencies, "
-        f"worst first, with {rollup['needs_attention']} needing attention and the "
+        f"{rname}: GTFS data quality across {rollup['agency_count']} feed scorecards, "
+        f"attention work first, with {rollup['needs_attention']} needing attention and the "
         "fixes shared across the group."
     )
     rows_parts = []
@@ -3646,11 +3773,31 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
             "</div></li>"
         )
     rows = "".join(rows_parts)
-    avg = "—" if rollup.get("average_score") is None else f"{rollup['average_score']} out of 100"
-    percentile_context = _rollup_percentile_context(rollup)
-    dist_bar = _grade_distribution_bar(
-        rollup.get("grade_distribution") or {}, rollup["agency_count"]
+    raw_comparison = rollup.get("comparison")
+    comparison = raw_comparison if isinstance(raw_comparison, dict) else {}
+    raw_comparable_count = comparison.get("eligible_count")
+    comparable_count = (
+        raw_comparable_count
+        if isinstance(raw_comparable_count, int) and not isinstance(raw_comparable_count, bool)
+        else 0
     )
+    raw_distribution = rollup.get("grade_distribution")
+    distribution = raw_distribution if isinstance(raw_distribution, dict) else {}
+    distribution_total = sum(
+        count
+        for count in distribution.values()
+        if isinstance(count, int) and not isinstance(count, bool) and count >= 0
+    )
+    average_score = rollup.get("average_score")
+    guarded_summary = bool(
+        comparable_count > 0
+        and isinstance(average_score, (int, float))
+        and not isinstance(average_score, bool)
+        and distribution_total == comparable_count
+    )
+    avg = f"{average_score} out of 100 average" if guarded_summary else "average unavailable"
+    comparison_contract = _comparison_contract_text(comparison)
+    dist_bar = _grade_distribution_bar(distribution, comparable_count) if guarded_summary else ""
     dist_section = (
         f'<section aria-labelledby="dist-h"><h2 class="section-title visually-hidden" '
         f'id="dist-h">Grade distribution</h2>{dist_bar}</section>'
@@ -3659,16 +3806,28 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     )
     expired_section = _rollup_expired_section(rollup)
     shapes_section = _rollup_shapes_section(rollup)
-    common_fixes_section = _rollup_common_fixes_section(rollup)
+    common_fixes_section = _rollup_common_fixes_section(rollup) if guarded_summary else ""
+    if guarded_summary:
+        comparison_note = (
+            f"The average and grade distribution use {comparable_count} canonical, "
+            "non-duplicate feed scorecards under one producer contract: "
+            f"{comparison_contract}. Every member remains listed below."
+        )
+    else:
+        comparison_note = (
+            "The cross-feed average, grade distribution, and shared-fix counts are "
+            "unavailable until this rollup has a complete guarded summary under "
+            f"{comparison_contract}. Every member remains listed below."
+        )
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (rname, None)])
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
     <div class="score-hero">
       <div>
         <h1 class="page-title">{esc(rname)}</h1>
-        <p class="overall"><strong>{rollup["agency_count"]} agencies</strong> ·
-          {avg} average · {rollup["needs_attention"]} need attention</p>
-        {percentile_context}
+        <p class="overall"><strong>{rollup["agency_count"]} feed scorecards</strong> ·
+          {avg} · {rollup["needs_attention"]} need attention</p>
+        <p class="fineprint">{comparison_note}</p>
       </div>
     </div>
     {_route_rule()}
@@ -3677,7 +3836,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     {shapes_section}
     {common_fixes_section}
     <section aria-labelledby="members-h">
-      <h2 class="section-title" id="members-h">Agencies, worst first</h2>
+      <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">{rows}</ul>
     </section>"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
@@ -3944,11 +4103,10 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
     after_republish = (
         '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
         "After you republish</h2>"
-        "<p>Once the corrected feed is live at your published URL, the next scorecard run "
-        "re-checks it automatically. When this finding is gone, it is recorded as a dated "
-        "receipt on your agency's fix log &mdash; a citable, linkable record that the fix "
-        "cleared. That closes the loop: the scorecard shows the fix; the agency publishes "
-        "it.</p></section>"
+        "<p>Once the changed feed is live at your published URL, the next scorecard run "
+        "checks it again. When the same complete producer contract no longer reports this "
+        "finding, it can be recorded as a dated finding clearance. That confirms the later "
+        "feed state, not who changed the feed or why.</p></section>"
     )
     body = f"""    {crumb}
     <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
@@ -4190,9 +4348,11 @@ def _render_accessibility() -> str:
 
     <section><h2 class="section-title">How we check</h2>
     <p>Every colour pair is verified to clear AAA contrast in all four themes by an
-    automated gate, and accessibility checks (axe and Lighthouse) run on each change.
-    On top of the automated checks we review the site by keyboard and with assistive
-    technology. You can read the full results in the
+    automated gate. Axe checks a representative set of page families in the accessibility
+    workflow, Lighthouse checks the landing page in the publishing workflow, and browser
+    tests exercise keyboard and form journeys. We also review with a keyboard. A recorded
+    screen-reader walkthrough is still pending, so automated results are not presented as
+    an assistive-technology attestation. You can read the full results in the
     <a href="{repo}/blob/main/docs/accessibility.md">conformance report</a> and the
     <a href="{repo}/blob/main/docs/vpat.md">508-edition <abbr title="Voluntary Product Accessibility Template">VPAT</abbr></a>.</p></section>
 
@@ -4211,7 +4371,7 @@ def _render_accessibility() -> str:
     through the contact link on <a href="https://chelseakr.com">chelseakr.com</a>.
     We aim to acknowledge accessibility reports within a few business days.</p></section>
 
-    <p class="page-lede" style="margin-top:2rem">Last reviewed: 22 June 2026.</p>"""
+    <p class="page-lede" style="margin-top:2rem">Last reviewed: 13 July 2026.</p>"""
     return _page(
         title="Accessibility | GTFS Scorecard",
         description="How the GTFS Scorecard meets WCAG 2.2 AAA and Section 508, its known limitations, and how to report an accessibility barrier.",
@@ -4265,8 +4425,9 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
     <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
-    <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
-    every feed runs daily regardless of tier.</p>
+    <p>Every feed is assigned to one of two cadence tiers (ADR&nbsp;0010); a full re-validation
+    of every feed is scheduled daily regardless of tier. The latest-run section below shows
+    when that work actually completed.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
     <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
 
@@ -4302,11 +4463,12 @@ def _methodology_versions_section() -> str:
     )
     return f"""    {_route_rule()}
     <section aria-labelledby="methodology-h"><h2 class="section-title" id="methodology-h">Methodology and versions</h2>
-    <p>Every grade is computed by scorecard rubric <strong>v{esc(RUBRIC_VERSION)}</strong> on top of the
+    <p>New checks use scorecard rubric <strong>v{esc(RUBRIC_VERSION)}</strong> on top of the
     MobilityData <abbr title="GTFS Schedule Validator">gtfs-validator</abbr> <strong>{esc(VALIDATOR_VERSION)}</strong>,
     using portable GTFS fields and published weights. California guidance informed the first profile and
     remains a local authority for California, not a worldwide compliance standard. The same validator and
-    rubric version are stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
+    methodology version used for each stored grade is stamped on its scorecard, so older and current
+    results remain traceable without implying they are directly comparable. The full method,
     with citations, is in the <a href="{repo}/blob/main/docs/rubric.md">scoring rubric</a>.</p>
     <p>When the rubric changes we log it here with the date it took effect, so a score change is never a
     silent rule change:</p>
@@ -4320,22 +4482,32 @@ def _sensitivity_note() -> str:
     base the other national artifacts are served from; a missing or malformed
     file degrades to the placeholder so the guide renders fine on a fresh
     checkout."""
+    from . import RUBRIC_VERSION
+
     path = _repo_root() / "data" / "artifacts" / "sensitivity.json"
     try:
         study = json.loads(path.read_text())
     except (FileNotFoundError, ValueError, OSError):
         study = None
     link = '<a href="/data/artifacts/sensitivity.json">sensitivity.json</a>'
-    if not isinstance(study, dict) or not study.get("agency_count"):
+    comparison = study.get("comparison") if isinstance(study, dict) else None
+    valid_current_study = bool(
+        isinstance(comparison, dict)
+        and comparison.get("eligible_count") == study.get("agency_count")
+        and comparison.get("eligible_count")
+        and comparison.get("required_rubric_version") == RUBRIC_VERSION
+        and comparison.get("required_measured_categories")
+    )
+    if not valid_current_study:
         return (
-            "the first study has not been published yet. When it runs, its headline "
+            "a current-contract study has not been published yet. When it runs, its headline "
             f"lands here and the full numbers are published at {link}."
         )
     factor_pct = round(float(study.get("factor", 0.2)) * 100)
     date = esc(str(study.get("generated_at", ""))[:10])
     dated = f", studied {date}" if date else ""
     return (
-        f"rescoring all {int(study['agency_count'])} tracked agencies under every "
+        f"rescoring {int(study['agency_count'])} comparison-eligible feed records under every "
         f"&plusmn;{factor_pct}% single-weight change, at most "
         f"{study.get('max_grade_change_pct', 0)}% of letter grades move{dated}. "
         f"Full numbers, per perturbation: {link}."
@@ -4352,9 +4524,9 @@ def _sensitivity_note() -> str:
 # score.build_scorecard exactly: overall = weighted average of the *measured*
 # categories, with the weights of any unmeasured category (realtime is null for
 # most agencies) renormalized out, then mapped to a letter by the grade bands'
-# min_score thresholds. The published side of every comparison uses each
-# agency's already-published grade, so at the default weights nothing moves --
-# which is the visible proof the JS and the pipeline compute the same score.
+# min_score thresholds. Only rows in the published comparison cohort enter the
+# sandbox, and at the default weights nothing moves. That is visible proof the
+# JS and the pipeline compute the same score without naming hypothetical movers.
 _SANDBOX_JS = r"""    <script>
       (function () {
         var root = document.getElementById("sandbox");
@@ -4363,7 +4535,6 @@ _SANDBOX_JS = r"""    <script>
         var GRADES = ["A", "B", "C", "D", "F"];
         var status = document.getElementById("sandbox-status");
         var summary = document.getElementById("sandbox-summary");
-        var sample = document.getElementById("sandbox-sample");
         var resetBtn = document.getElementById("sandbox-reset");
         var sliders = {}, outputs = {};
         CATS.forEach(function (c) {
@@ -4391,12 +4562,6 @@ _SANDBOX_JS = r"""    <script>
           return den > 0 ? num / den : 0;
         }
 
-        function esc(s) {
-          return String(s).replace(/[&<>"]/g, function (ch) {
-            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch];
-          });
-        }
-
         function currentWeights() {
           var w = {};
           CATS.forEach(function (c) { w[c] = Number(sliders[c].value) / 100; });
@@ -4410,7 +4575,7 @@ _SANDBOX_JS = r"""    <script>
           });
           var userCounts = {}, pubCounts = {};
           GRADES.forEach(function (g) { userCounts[g] = 0; pubCounts[g] = 0; });
-          var moved = [], changed = 0;
+          var changed = 0;
           agencies.forEach(function (a) {
             // Baseline: the same formula run at the published weights, so any
             // difference below is attributable to the user's weights alone, not
@@ -4426,10 +4591,6 @@ _SANDBOX_JS = r"""    <script>
             userCounts[ug]++;
             if (ug !== pub) {
               changed++;
-              moved.push({
-                id: a.id, name: a.name, from: pub, to: ug,
-                delta: uo - bo,
-              });
             }
           });
 
@@ -4443,41 +4604,15 @@ _SANDBOX_JS = r"""    <script>
           summary.innerHTML =
             '<p class="sandbox-headline">' +
             (changed === 0
-              ? "These are the published weights: no agency changes band."
+              ? "These are the published weights: no eligible feed record changes band."
               : changed + " of " + agencies.length +
-                " agencies change letter grade under these weights.") +
+                " eligible feed records change letter grade under these weights.") +
             "</p>" +
             '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
-            "<caption class=\"visually-hidden\">Agencies per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            "<caption class=\"visually-hidden\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
             "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
             "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
             "<tbody>" + rows + "</tbody></table></div>";
-
-          if (!moved.length) {
-            sample.innerHTML = "";
-            return;
-          }
-          var up = moved.filter(function (m) { return m.delta > 0; })
-            .sort(function (a, b) { return b.delta - a.delta; }).slice(0, 5);
-          var down = moved.filter(function (m) { return m.delta < 0; })
-            .sort(function (a, b) { return a.delta - b.delta; }).slice(0, 5);
-          function li(m) {
-            return "<li><span>" + esc(m.name) + "</span> " +
-              '<span class="grade-chip grade-' + m.from.toLowerCase() + '">' + m.from +
-              '</span> &rarr; <span class="grade-chip grade-' + m.to.toLowerCase() +
-              '">' + m.to + "</span> <span class=\"sandbox-delta\">(" +
-              (m.delta > 0 ? "+" : "") + m.delta.toFixed(1) + ")</span></li>";
-          }
-          var html = "";
-          if (up.length) {
-            html += "<h3 class=\"sandbox-sub\">Rise the most</h3><ul class=\"sandbox-movers\">" +
-              up.map(li).join("") + "</ul>";
-          }
-          if (down.length) {
-            html += "<h3 class=\"sandbox-sub\">Fall the most</h3><ul class=\"sandbox-movers\">" +
-              down.map(li).join("") + "</ul>";
-          }
-          sample.innerHTML = html;
         }
 
         function applyDefaults() {
@@ -4497,8 +4632,15 @@ _SANDBOX_JS = r"""    <script>
           });
           defaults = scoring.category_weights || {};
           agencies = (agenciesDoc.agencies || []).filter(function (a) {
-            return typeof a.score === "number";
+            return a.comparison_eligible === true && typeof a.score === "number";
           });
+          if (!agencies.length) {
+            if (status) {
+              status.textContent =
+                "No current-contract comparison cohort is available for the sandbox yet.";
+            }
+            return;
+          }
           CATS.forEach(function (c) {
             sliders[c].disabled = false;
             sliders[c].addEventListener("input", recompute);
@@ -4523,17 +4665,13 @@ _SANDBOX_STYLE = """    <style>
       #sandbox .sandbox-controls { display: grid; gap: 0.9rem; margin: 1rem 0; }
       #sandbox .sandbox-slider { display: grid; grid-template-columns: 10rem 1fr 3.5rem; align-items: center; gap: 0.75rem; }
       #sandbox .sandbox-slider label { font-weight: 600; }
-      #sandbox .sandbox-slider input[type="range"] { width: 100%; accent-color: var(--green); }
+      #sandbox .sandbox-slider input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--green); }
       #sandbox .sandbox-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); }
       #sandbox .sandbox-buttons { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
       #sandbox .sandbox-headline { font-weight: 600; margin: 0.75rem 0; }
       #sandbox .sandbox-table-scroll { overflow-x: auto; }
       #sandbox table.sandbox-table { border-collapse: collapse; width: 100%; max-width: 34rem; }
       #sandbox table.sandbox-table th, #sandbox table.sandbox-table td { text-align: left; padding: 0.35rem 0.75rem; border-bottom: 1.5px solid var(--line); font-variant-numeric: tabular-nums; }
-      #sandbox .sandbox-sub { font-size: 1rem; margin: 1rem 0 0.4rem; }
-      #sandbox .sandbox-movers { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
-      #sandbox .sandbox-movers li { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-      #sandbox .sandbox-delta { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
       @media (max-width: 40rem) { #sandbox .sandbox-slider { grid-template-columns: 1fr; gap: 0.25rem; } #sandbox .sandbox-slider output { text-align: left; } }
     </style>"""
 
@@ -4564,12 +4702,13 @@ def _sandbox_section() -> str:
     <section id="sandbox" aria-labelledby="sandbox-h">
     <h2 class="section-title" id="sandbox-h">Methodology sandbox</h2>
     <p>The grade blends the four categories with fixed weights. Curious how much those
-    weights matter? Move the sliders to reweight the rubric and watch how many of the
-    agencies we track would change letter grade. Nothing is saved and no grade on the
-    site changes; this is a what-if you run in your own browser. Agencies without
+    weights matter? Move the sliders to reweight the rubric and watch how the aggregate
+    grade distribution changes for the current comparison-eligible cohort. The sandbox
+    never names hypothetical winners or losers. Nothing is saved and no grade on the
+    site changes; this is a what-if you run in your own browser. Feed records without
     realtime data have that weight spread across the categories they do have, exactly
     as the published score does.</p>
-    <p id="sandbox-status" role="status">Loading the live weights and agency scores…</p>
+    <p id="sandbox-status" role="status">Loading the live weights and eligible feed scores…</p>
     <div class="sandbox-controls" hidden>
 {sliders}
       <div class="sandbox-buttons">
@@ -4577,7 +4716,6 @@ def _sandbox_section() -> str:
       </div>
     </div>
     <div id="sandbox-summary" aria-live="polite"></div>
-    <div id="sandbox-sample"></div>
     </section>
 {_SANDBOX_STYLE}"""
 
@@ -4609,9 +4747,10 @@ def _render_guide() -> str:
     <section><h2 class="section-title">What this checks</h2>
     <p>Transit apps and trip planners read a file your agency publishes, called a
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed.
-    It lists your stops, routes, and schedule. This tool downloads that feed every day, runs the
-    canonical validator used across the GTFS ecosystem, and turns the result into a grade and a short list
-    of fixes. It does not look at your buses or your service, only the data file.
+    It lists your stops, routes, and schedule. This tool is scheduled to download that feed once a day,
+    run the canonical validator used across the GTFS ecosystem, and turn the result into a grade and a
+    short list of fixes. The <a href="/status/">status page</a> shows when that work actually completed.
+    It does not look at your buses or your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
     <strong>Freshness</strong> (is the feed about to expire), <strong>Rider experience</strong>
@@ -4773,7 +4912,13 @@ def _published_states() -> dict[str, str]:
     }
 
 
-def compute_changes(index: dict[str, Any], min_score_delta: float = 1.0) -> list[dict[str, Any]]:
+def compute_changes(
+    index: dict[str, Any],
+    min_score_delta: float = 1.0,
+    *,
+    allowed_ids: set[str] | None = None,
+    required_rubric_version: str | None = None,
+) -> list[dict[str, Any]]:
     """Agencies whose grade or score moved between their two most recent checks.
 
     The "what changed today" feed an ops consumer (a trip planner, a transit app)
@@ -4782,10 +4927,19 @@ def compute_changes(index: dict[str, Any], min_score_delta: float = 1.0) -> list
     """
     out: list[dict[str, Any]] = []
     for agency_id, entry in index.get("agencies", {}).items():
+        if allowed_ids is not None and agency_id not in allowed_ids:
+            continue
         hist = entry.get("history", [])
         if len(hist) < 2:
             continue
         prev, cur = hist[-2], hist[-1]
+        if required_rubric_version is not None and (
+            str(prev.get("rubric_version") or "") != required_rubric_version
+            or str(cur.get("rubric_version") or "") != required_rubric_version
+        ):
+            continue
+        if not same_producer_contract(prev, cur):
+            continue
         grade_changed = prev.get("grade") != cur.get("grade")
         delta = round(float(cur.get("score", 0)) - float(prev.get("score", 0)), 1)
         if not grade_changed and abs(delta) < min_score_delta:
@@ -4813,7 +4967,7 @@ def compute_changes(index: dict[str, Any], min_score_delta: float = 1.0) -> list
 
 
 def _changes_sections(changes: list[dict[str, Any]]) -> str:
-    """The improved/needs-attention sections of the daily change feed
+    """The upward/downward sections of the change feed
     (compute_changes), side by side on wide screens. Rendered inside the
     national pulse page; reuses the delta-* styles from the per-agency trend
     section."""
@@ -4825,9 +4979,9 @@ def _changes_sections(changes: list[dict[str, Any]]) -> str:
     def _rows(items: list[dict[str, Any]], up: bool) -> str:
         if not items:
             msg = (
-                "No agencies improved since their last check."
+                "No comparable upward moves were recorded in this snapshot."
                 if up
-                else "No agencies slipped &mdash; a good day."
+                else "No comparable downward moves were recorded in this snapshot."
             )
             return f'<li class="delta-row"><span class="delta-cat">{msg}</span></li>'
         cls, arrow, word = (
@@ -4871,18 +5025,25 @@ def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
     Rendered only when the NTD ridership snapshot matched enough feeds to be
     honest, and always with its coverage stated. A stat about trips, never a
     worldwide ranking."""
-    if not impact or not impact.get("matched_agencies"):
+    if not impact or not impact.get("matched_ntd_reporters", impact.get("matched_agencies")):
         return ""
-    matched = impact["matched_agencies"]
-    total = impact.get("total_agencies", matched)
+    matched = impact.get("matched_ntd_reporters", impact.get("matched_agencies", 0))
+    total = impact.get("total_feed_records", impact.get("total_agencies", matched))
+    excluded = impact.get("duplicate_feed_records_excluded", 0)
     trips = impact.get("total_annual_trips", 0)
     pct = impact.get("expired_trips_pct", 0)
+    duplicate_note = (
+        f"{excluded} feed records sharing an NTD ID were excluded rather than double-counted. "
+        if excluded
+        else ""
+    )
     return (
         '<p class="page-lede"><strong>United States ridership context:</strong> '
-        "weighted by ridership, feeds with a matched NTD record carry about "
-        f"<strong>{trips:,}</strong> annual rider-trips (the {matched} of {total} "
-        f"tracked agencies with a matched NTD ridership record), and "
+        "among unique, unambiguous NTD reporter matches, tracked feeds carry about "
+        f"<strong>{trips:,}</strong> annual rider-trips ({matched} matches across {total} "
+        f"eligible feed records), and "
         f"<strong>{pct}%</strong> of those trips ride on a feed that has expired. "
+        f"{duplicate_note}"
         'The same numbers are at <a href="/api/v1/ridership-impact.json">the '
         "ridership-impact API</a>.</p>"
     )
@@ -4897,39 +5058,60 @@ def _render_pulse_page(
     ridership_impact: dict[str, Any] | None = None,
     histories: dict[str, list[dict[str, Any]]] | None = None,
 ) -> str:
-    """The coverage overview (/pulse/): rankings, what changed, and the trend on
-    one page instead of three thin ones. Each former page is a titled section
-    with a stable anchor, reached by a plain jump nav (no JS, no tabs), so the
-    retired /leaderboard/, /changes/, and /trends/ URLs redirect here without
-    losing their in-page destinations. Common problems keeps its own page (it
-    is an actionable fix list, a different job) and is linked from here."""
+    """The coverage overview (/pulse/): named changes and the corpus trend.
+
+    Absolute rankings and individual percentiles are deliberately absent. The
+    retired /leaderboard/, /changes/, and /trends/ URLs redirect to the closest
+    useful section. Common problems keeps its own actionable page.
+    """
+    del histories  # retained in the signature for direct-caller compatibility
+    comparison = board.get("comparison") or {}
+    raw_eligible_count = comparison.get("eligible_count")
+    guarded_comparisons_available = bool(
+        isinstance(raw_eligible_count, int)
+        and not isinstance(raw_eligible_count, bool)
+        and raw_eligible_count > 0
+    )
+    if guarded_comparisons_available:
+        changes_content = _changes_sections(changes)
+        trend_content = _trend_sections(trend_points, trend_sum, improvers)
+    else:
+        changes_content = (
+            '<p class="page-lede">Named changes are unavailable until current-contract '
+            "checks create a comparable cohort. No improvement or regression claim is made "
+            "for this snapshot.</p>"
+        )
+        trend_content = (
+            '<p class="page-lede">The covered-corpus trend is unavailable until '
+            "current-contract checks create a comparable cohort.</p>"
+        )
     jump = (
         '<nav class="grade-jump" aria-label="Jump to section">Jump to: '
-        '<a href="#rankings">Rankings</a> · <a href="#changes">What changed</a> · '
+        '<a href="#changes">What changed</a> · '
         '<a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>'
     )
     body = f"""    {_breadcrumb([("Home", "/"), ("Coverage overview", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Coverage overview.</h1>
     <p class="page-lede">How the public transit feeds in this site's current coverage
-    are doing: how agencies compare, who moved since their last check, and whether the
-    covered corpus is getting better. This is not a census of any country or of the
-    world. An agency that is absent is simply not covered yet, never failing.</p>
+    are changing and whether the comparable covered corpus is getting better. This is
+    not a census of any country or of the world. An absent scorecard is simply not
+    covered yet.</p>
     {jump}
-    <section id="rankings" aria-labelledby="rankings-h" tabindex="-1">
-      <h2 class="section-title" id="rankings-h">Rankings</h2>
-      {_ridership_impact_line(ridership_impact)}
-      {_leaderboard_sections(board, histories)}
-    </section>
-    {_route_rule()}
+    <p class="fineprint">Absolute score rankings and individual percentiles are not
+    published. Named changes compare a feed only with its own prior check when the rubric,
+    scoring profile, validator, and measured category set are unchanged. Corpus aggregates
+    use {_comparison_contract_text(comparison)}; records with unresolved duplicate identities
+    are excluded.</p>
+    {_ridership_impact_line(ridership_impact)}
     <section id="changes" aria-labelledby="changes-h" tabindex="-1">
       <h2 class="section-title" id="changes-h">What changed since the last check</h2>
-      {_changes_sections(changes)}
+      {changes_content}
     </section>
     {_route_rule()}
     <section id="trend" aria-labelledby="trend-h" tabindex="-1">
       <h2 class="section-title" id="trend-h">Is transit data getting better?</h2>
-      {_trend_sections(trend_points, trend_sum, improvers)}
+      {trend_content}
     </section>
     <p class="plain-summary"><strong>In plain words:</strong> this page tracks the covered
     corpus at once, not any single agency. The <a href="/problems/">most common
@@ -4939,8 +5121,8 @@ def _render_pulse_page(
     return _page(
         title="Coverage overview — GTFS Scorecard",
         description=(
-            "How the public GTFS feeds covered by this site are doing: agency comparisons, "
-            "who improved or slipped, and the corpus trend over time."
+            "How the public GTFS feeds covered by this site are changing, and the "
+            "comparable corpus trend over time."
         ),
         canonical=f"{BASE_URL}/pulse/",
         body=body,
@@ -4980,8 +5162,8 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
             "/ntd/",
             "NTD GTFS readiness",
             f"{pct_ready}% of assessed U.S. feeds look ready to certify",
-            "Which U.S. feeds are published, valid, and current against the FTA "
-            "requirement, with a state breakdown.",
+            "Which U.S. feeds are published, valid, current, and identified with "
+            "agency_id against the FTA requirement, with a state breakdown.",
         ),
         (
             "/equity/",
@@ -5024,14 +5206,23 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
 
 
 def _write_catalog(write: Callable[..., None], catalog: list[dict[str, Any]]) -> None:
-    """Write catalog.json and catalog.csv: every agency's grade, score, feed URL,
-    days-until-expiry, and top fix in one document."""
-    from . import DATA_ATTRIBUTION, DATA_LICENSE, RUBRIC_VERSION, SCHEMA_VERSION
+    """Write catalog.json and catalog.csv with row-level producer provenance."""
+    from . import DATA_ATTRIBUTION, DATA_LICENSE, SCHEMA_VERSION
+
+    rubric_versions = sorted(
+        {str(row.get("rubric_version") or "").strip() or "unknown" for row in catalog}
+    )
+    catalog_rubric = rubric_versions[0] if len(rubric_versions) == 1 else "mixed"
+    if not rubric_versions:
+        catalog_rubric = "unknown"
 
     payload = {
         "source": BASE_URL,
         "schema_version": SCHEMA_VERSION,
-        "rubric_version": RUBRIC_VERSION,
+        # This describes the rows actually published, not the version imported
+        # by the renderer. During a methodology rollout the honest value is mixed.
+        "rubric_version": catalog_rubric,
+        "rubric_versions": rubric_versions,
         "license": DATA_LICENSE,
         "attribution": DATA_ATTRIBUTION,
         "agencies": catalog,
@@ -5045,13 +5236,18 @@ def _write_catalog(write: Callable[..., None], catalog: list[dict[str, Any]]) ->
         "state",
         "grade",
         "score",
+        "comparison_eligible",
         "size_tier",
-        "national_percentile",
         "snapshot_date",
         "days_until_expiry",
+        "service_horizon_status",
         "expiry_status",
         "mdb_id",
+        "rubric_version",
+        "scoring_profile_id",
+        "scoring_profile_rubric_version",
         "validator_version",
+        "feed_sha256",
         "feed_url",
         "top_fix",
         "scorecard_url",
@@ -5247,12 +5443,12 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("Agency map", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Agency map.</h1>
-    <p class="page-lede">Every tracked agency with a locatable
-    <abbr title="General Transit Feed Specification">GTFS</abbr> feed, placed at its
-    service area, labelled with its grade letter and coloured by grade. {count} agencies
+    <p class="page-lede">Every tracked feed scorecard with locatable
+    <abbr title="General Transit Feed Specification">GTFS</abbr> stops, placed at the feed's
+    service area, labelled with its grade letter and coloured by grade. {count} feed scorecards
     are on the map. Select a point for its grade and a link to the scorecard, or work
     the list below.</p>
-    <p class="page-lede">To see the actual route lines instead of one point per agency,
+    <p class="page-lede">To see the actual route lines instead of one point per feed scorecard,
     open <a href="/routes/">every route on one map</a>.</p>
     <a class="skip-link-inline" href="#agency-list">Skip to the agency list</a>
     <form class="map-filters" aria-label="Filter the map and list">
@@ -5271,23 +5467,23 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
       <button type="button" class="button button-secondary" id="map-load">
         Load interactive map
       </button>
-      <p id="map-load-status" class="fineprint" role="status">The agency list is ready now.
+      <p id="map-load-status" class="fineprint" role="status">The scorecard list is ready now.
         Load the map only when you want the geographic view. It uses additional data.</p>
     </div>
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
-      The interactive map has not loaded. The agency list below carries the same agencies,
+      The interactive map has not loaded. The scorecard list below carries the same feed records,
       grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours">{legend_items}</ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
-      <h2 class="section-title" id="agency-list-h">Every agency on the map</h2>
+      <h2 class="section-title" id="agency-list-h">Every feed scorecard on the map</h2>
       <p class="map-count" role="status"><span id="map-result-count">{count}</span> of {count}
-        agencies shown.</p>
+        feed scorecards shown.</p>
       <table class="leaderboard map-table">
-        <caption class="visually-hidden">Agencies on the coverage map, with grade, location,
+        <caption class="visually-hidden">Feed scorecards on the coverage map, with grade, location,
           and score. Use the grade and location filters above to narrow the list.</caption>
-        <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
+        <thead><tr><th scope="col">Scorecard</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
         <tbody id="map-tbody">{table_rows}</tbody>
       </table>
@@ -5627,7 +5823,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     return _page(
         title="Agency map — GTFS Scorecard",
         description=(
-            "A world map of the transit agencies currently covered, labelled and coloured "
+            "A world map of the feed scorecards currently covered, labelled and coloured "
             "by GTFS data quality grade."
         ),
         canonical=f"{BASE_URL}/map/",
@@ -5766,13 +5962,13 @@ def _routes_map_script() -> str:
 
 
 def _render_routes_page(summary: dict[str, Any]) -> str:
-    """The all-routes coverage map: every agency's route shapes on one canvas,
+    """The all-routes coverage map: every feed record's route shapes on one canvas,
     rendered from a single PMTiles archive of vector tiles.
 
     This is an exploratory enhancement, not the conformant data interface. A
     map of route lines cannot be a literal data table, so the page leads
     with a prominent bypass to the equivalents that *are* AAA-conformant: the
-    sortable agencies list and the per-agency route tables. See docs/vpat.md.
+    sortable scorecard list and the per-scorecard route tables. See docs/vpat.md.
     """
     agency_count = int(summary.get("agency_count") or 0)
     route_count = int(summary.get("route_count") or 0)
@@ -5789,33 +5985,33 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("All routes", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Every route, one map.</h1>
-    <p class="page-lede">The route shapes of every tracked agency, drawn from each
+    <p class="page-lede">The route shapes of every tracked feed record, drawn from each
     feed's own <abbr title="General Transit Feed Specification">GTFS</abbr> and
-    combined on a single map. {route_count} routes from {agency_count} agencies are
-    on it. Recolour by route type or by the agency's data-quality grade, and select
-    a line for the agency and a link to its scorecard.</p>
+    combined on a single map. {route_count} routes from {agency_count} feed records are
+    on it. Recolour by route type or by the scorecard's data-quality grade, and select
+    a line for the named operator and a link to its scorecard.</p>
     <p class="page-lede"><strong>This map is a visual extra, not the accessible way
     to read the data.</strong> A map of this many route lines can't be a data table.
     For a screen-reader and keyboard friendly view, use
-    <a href="/agencies/">the grade-grouped agency list</a>; each agency's own scorecard
+    <a href="/agencies/">the alphabetical scorecard list</a>; each scorecard
     carries <a href="/agency/unitrans/">a route-by-route table</a> of its lines.</p>
     <section aria-labelledby="routes-map-h" class="route-map-section">
       <h2 id="routes-map-h" class="section-title">All tracked routes</h2>
-      <a class="skip-link-inline" href="#routes-after-map">Skip to the accessible agency list</a>
+      <a class="skip-link-inline" href="#routes-after-map">Skip to the accessible scorecard list</a>
       <fieldset class="map-colormode">
         <legend>Colour routes by</legend>
         <label><input type="radio" name="route-color-mode" value="type" checked> Route type</label>
-        <label><input type="radio" name="route-color-mode" value="grade"> Agency grade</label>
+        <label><input type="radio" name="route-color-mode" value="grade"> Scorecard grade</label>
       </fieldset>
       <div id="routes-map" class="national-map" aria-hidden="true"></div>
       <ul class="map-legend" id="legend-type" aria-label="Route type colours">{type_legend_items}</ul>
-      <ul class="map-legend" id="legend-grade" aria-label="Agency grade colours" hidden>{grade_legend_items}</ul>
+      <ul class="map-legend" id="legend-grade" aria-label="Scorecard grade colours" hidden>{grade_legend_items}</ul>
     </section>
     <div id="routes-after-map" tabindex="-1"></div>
     <p class="page-lede">Read the data without the map:</p>
     <ul class="route-skip-targets">
-      <li><a href="/app/">All agencies</a>, searchable by name, country, subdivision, grade, and size.</li>
-      <li><a href="/pulse/#rankings">Coverage rankings</a> of the highest and lowest scoring feeds.</li>
+      <li><a href="/app/">All scorecards</a>, searchable by name, country, subdivision, grade, and size.</li>
+      <li><a href="/pulse/#changes">Coverage changes</a> since each feed's prior check.</li>
       <li>Each scorecard (for example <a href="/agency/unitrans/">Unitrans</a>) lists its
         routes and stops in a table.</li>
     </ul>
@@ -5831,7 +6027,7 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
     return _page(
         title="Every route on one map — GTFS Scorecard",
         description=(
-            "A world vector map of every tracked agency's transit routes, "
+            "A world vector map of every tracked feed record's transit routes, "
             "coloured by route type or data-quality grade."
         ),
         canonical=f"{BASE_URL}/routes/",
@@ -5843,23 +6039,14 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
 def _leaderboard_sections(
     board: dict[str, Any], histories: dict[str, list[dict[str, Any]]] | None = None
 ) -> str:
-    """Best and worst standings and the biggest movers, as a two-column grid of
-    tables inside the national pulse page. The same data the /api/v1 endpoints
-    serve. Each row links to that agency's scorecard and carries a small score
-    sparkline from its history (an em dash until it has two checks). A
-    "Riders/yr" column appears in a table only when the NTD ridership snapshot
-    (ADR 0021) matched at least one of its rows, so an unweighted build renders
-    exactly as before."""
+    """Render only same-feed changes from the legacy leaderboard payload.
+
+    The function is kept for downstream callers of the v1 payload, but ignores
+    ``top`` and ``bottom`` even if an old cached payload contains them. This is
+    defense in depth for the no-absolute-rankings policy.
+    """
     hist = histories or {}
     comparison = board.get("comparison") or {}
-    if comparison.get("suppressed"):
-        return (
-            '<section class="feed-details"><h2 class="section-title">Comparisons withheld</h2>'
-            f"<p>Only {esc(comparison.get('eligible_count', 0))} feeds meet the comparison "
-            f"rules. At least {esc(comparison.get('minimum_cohort', 20))} are required before "
-            "publishing a ranked list. Individual scorecards and the open dataset remain "
-            "available.</p></section>"
-        )
 
     def _trend_cell(r: dict[str, Any]) -> str:
         return f"<td>{_spark_mini(hist.get(str(r['id'])), str(r.get('name', r['id'])))}</td>"
@@ -5867,25 +6054,6 @@ def _leaderboard_sections(
     def _trips_cell(r: dict[str, Any]) -> str:
         t = r.get("annual_trips")
         return f"<td>{esc(f'{t:,}')}</td>" if t is not None else "<td></td>"
-
-    def _rank_table(rows: list[dict[str, Any]], caption: str) -> str:
-        if not rows:
-            return ""
-        show_trips = any(r.get("annual_trips") is not None for r in rows)
-        items = "".join(
-            f'<tr><td><a href="/agency/{esc(r["id"])}/"><bdi>'
-            f"{esc(r.get('name', r['id']))}</bdi></a></td>"
-            f"<td>{esc(r.get('grade'))}</td><td>{esc(r.get('score'))}</td>"
-            f"{_trips_cell(r) if show_trips else ''}{_trend_cell(r)}</tr>"
-            for r in rows
-        )
-        trips_th = "<th>Riders/yr</th>" if show_trips else ""
-        return (
-            f'<section class="feed-details"><h2 class="section-title">{esc(caption)}</h2>'
-            '<table class="leaderboard"><thead><tr><th>Agency</th><th>Grade</th>'
-            f"<th>Score</th>{trips_th}<th>Trend</th></tr></thead>"
-            f"<tbody>{items}</tbody></table></section>"
-        )
 
     def _move_table(rows: list[dict[str, Any]], caption: str) -> str:
         if not rows:
@@ -5908,19 +6076,15 @@ def _leaderboard_sections(
         )
 
     return f"""<div class="section-grid">
-    {_rank_table(board.get("top", []), "Highest scoring")}
-    {_move_table(board.get("most_improved", []), "Most improved")}
-    {_move_table(board.get("most_declined", []), "Needs attention")}
-    {_rank_table(board.get("bottom", []), "Lowest scoring")}
+    {_move_table(board.get("most_improved", []), "Recent improvements")}
+    {_move_table(board.get("most_declined", []), "Changes to review")}
     </div>
-    <p class="fineprint">Only comparable feeds are included: the snapshot must be dated,
-    the required schedule categories measured, and service data no more than one year expired.
-    Cohorts below {esc(comparison.get("minimum_cohort", 20))} are withheld. Lowest-scoring feeds
-    are listed to help, not to shame: a low
-    grade is usually a vendor export setting, and each scorecard names the fix.
-    The same standings are available as
-    <abbr title="JavaScript Object Notation">JSON</abbr> at
-    <a href="/api/v1/leaderboard.json">the leaderboard API (leaderboard.json)</a>.</p>"""
+    <p class="fineprint">These rows compare each feed only with its own prior check when
+    the rubric, scoring profile, validator, and measured category set are unchanged.
+    Absolute rankings and individual percentiles are not published.
+    The v1-compatible JSON is available at
+    <a href="/api/v1/leaderboard.json">leaderboard.json</a>; its historical top and bottom
+    arrays are always empty. {esc(comparison.get("note", ""))}</p>"""
 
 
 _NEED_LABELS = {
@@ -5974,12 +6138,21 @@ def _equity_choropleth(states_geo: dict[str, Any], by_state: dict[str, dict[str,
         fill = _NEED_TIER_FILL.get(tier, _NEED_TIER_FILL["unknown"])
         pattern = _NEED_TIER_PATTERN.get(tier, "")
         share = row.get("low_grade_share")
-        agencies = row.get("agency_count")
-        noun = "agency" if agencies == 1 else "agencies"
-        label = (
-            f"{name}: {_NEED_LABELS.get(tier, tier)}, "
-            f"{share}% of feeds on D or F, {agencies} {noun}"
-        )
+        comparable = row.get("comparison_eligible_count")
+        feed_records = row.get("feed_record_count", row.get("agency_count", 0))
+        noun = "feed record" if feed_records == 1 else "feed records"
+        label = f"{name}: {_NEED_LABELS.get(tier, tier)}, {feed_records} {noun} covered"
+        if (
+            isinstance(comparable, int)
+            and not isinstance(comparable, bool)
+            and comparable > 0
+            and isinstance(share, (int, float))
+            and not isinstance(share, bool)
+        ):
+            comparable_noun = (
+                "comparable feed record" if comparable == 1 else "comparable feed records"
+            )
+            label += f", {share}% on D or F across {comparable} {comparable_noun}"
         fill_attr = f"fill:{fill}"
         path = (
             f'<path d="{esc(d)}" class="need-state need-{esc(tier)}" '
@@ -6074,21 +6247,38 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
     and the committed state geometry are present. The priority and per-state
     tables are the conformant primary: they carry every number the map encodes,
     reached by a 'Skip to the state tables' bypass before the map."""
-    priority = overlay.get("priority") or []
+    raw_comparison = overlay.get("comparison")
+    comparison = raw_comparison if isinstance(raw_comparison, dict) else {}
+    raw_eligible_count = comparison.get("eligible_count")
+    comparable_count = (
+        raw_eligible_count
+        if isinstance(raw_eligible_count, int) and not isinstance(raw_eligible_count, bool)
+        else 0
+    )
+    guarded_scores_available = comparable_count > 0
+    priority = (overlay.get("priority") or []) if guarded_scores_available else []
     states = overlay.get("states") or []
     by_state = {str(s.get("state")): s for s in states}
 
-    if priority:
+    if not guarded_scores_available:
+        table = ""
+        lead = (
+            "ACS transit-need tiers remain available, but score-based priority, state "
+            "medians, and D/F shares are unavailable until current-contract checks create "
+            "a comparable cohort. No state quality ranking is shown for this snapshot."
+        )
+    elif priority:
         rows = "".join(
             f"<tr><td>{esc(s['state'])}</td><td>{esc(s['low_grade_share'])}%</td>"
-            f"<td>{esc(s['agency_count'])}</td><td>{esc(s.get('median_score'))}</td></tr>"
+            f"<td>{esc(s['comparison_eligible_count'])}</td>"
+            f"<td>{esc(s.get('median_score'))}</td></tr>"
             for s in priority
         )
         table = (
             '<section aria-labelledby="priority-h"><h2 class="section-title" id="priority-h">'
             "High-need states</h2>"
             '<table class="leaderboard"><thead><tr><th scope="col">State</th>'
-            '<th scope="col">D/F share</th><th scope="col">Agencies</th>'
+            '<th scope="col">D/F share</th><th scope="col">Comparable feeds</th>'
             '<th scope="col">Median score</th></tr></thead>'
             f"<tbody>{rows}</tbody></table></section>"
         )
@@ -6106,8 +6296,8 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
         )
 
     # The full per-state table: the conformant equivalent of the choropleth, so
-    # every state the map shades is also readable as text, ordered by need then
-    # by the share of feeds on a low grade.
+    # every state the map shades is also readable as text. A guarded score share
+    # may order states within a need tier only when the comparison cohort exists.
     states_table = ""
     if states:
         tier_rank = {"high": 0, "moderate": 1, "lower": 2, "unknown": 3}
@@ -6115,27 +6305,42 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
             states,
             key=lambda s: (
                 tier_rank.get(str(s.get("need_tier")), 9),
-                -float(s.get("low_grade_share") or 0),
+                -float(s.get("low_grade_share") or 0) if guarded_scores_available else 0,
                 str(s.get("state")),
             ),
         )
+
+        def _score_cell(state: dict[str, Any], key: str, suffix: str = "") -> str:
+            state_count = state.get("comparison_eligible_count")
+            if not (
+                guarded_scores_available
+                and isinstance(state_count, int)
+                and not isinstance(state_count, bool)
+                and state_count > 0
+            ):
+                return "Not compared"
+            value = state.get(key)
+            return f"{esc(value)}{suffix}" if value is not None else "Not compared"
+
         srows = "".join(
             f'<tr data-state-key="{esc(s.get("state"))}">'
             f'<th scope="row">{esc(s.get("state"))}</th>'
             f"<td>{esc(_NEED_LABELS.get(str(s.get('need_tier')), s.get('need_tier')))}</td>"
-            f"<td>{esc(s.get('low_grade_share'))}%</td>"
-            f"<td>{esc(s.get('agency_count'))}</td>"
-            f"<td>{esc(s.get('median_score'))}</td></tr>"
+            f"<td>{_score_cell(s, 'low_grade_share', '%')}</td>"
+            f"<td>{esc(s.get('feed_record_count', s.get('agency_count')))}</td>"
+            f"<td>{esc(s.get('comparison_eligible_count', 0))}</td>"
+            f"<td>{_score_cell(s, 'median_score')}</td></tr>"
             for s in ordered
         )
         states_table = (
             '<section aria-labelledby="states-h"><h2 class="section-title" id="states-h">'
             "Every state</h2>"
-            '<p class="page-lede">The need tier and low-grade share for every state we track, '
-            "the same figures the map encodes.</p>"
+            '<p class="page-lede">The ACS need tier for every state we track, with guarded '
+            "score summaries only where a comparable feed cohort exists.</p>"
             '<table class="leaderboard"><thead><tr><th scope="col">State</th>'
             '<th scope="col">Need tier</th><th scope="col">D/F share</th>'
-            '<th scope="col">Agencies</th><th scope="col">Median score</th></tr></thead>'
+            '<th scope="col">Feed records</th><th scope="col">Comparable feeds</th>'
+            '<th scope="col">Median score</th></tr></thead>'
             f"<tbody>{srows}</tbody></table></section>"
         )
 
@@ -6147,12 +6352,21 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
             skip = '<a class="skip-link-inline" href="#equity-tables">Skip to the state tables</a>'
     brush_script = _EQUITY_BRUSH_JS if choropleth else ""
 
+    plain_summary = (
+        "this highlights high-need states where a guarded score cohort also shows weak "
+        "feeds, so help can go where it matters most."
+        if guarded_scores_available
+        else "this shows ACS transit-need tiers without making state quality comparisons "
+        "until current-contract feed checks are available."
+    )
+    comparison_contract = _comparison_contract_text(comparison)
     return _page(
         title="Equity overlay — GTFS Scorecard",
         description="Where weak GTFS data meets high transit need, from Census ACS indicators.",
         canonical=f"{BASE_URL}/equity/",
         wide=True,
-        body=f"""    {_breadcrumb([("Home", "/"), ("Equity overlay", None)])}
+        body=_strip_blank_line_whitespace(
+            f"""    {_breadcrumb([("Home", "/"), ("Equity overlay", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Equity overlay.</h1>
     <p class="page-lede">{lead}</p>
@@ -6162,17 +6376,18 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
     {table}
     {states_table}
     </div>
-    <p class="plain-summary"><strong>In plain words:</strong> this highlights states where many
-    weak feeds overlap with riders who most depend on transit, so help can go where it matters
-    most. It never changes any agency's grade.</p>
+    <p class="plain-summary"><strong>In plain words:</strong> {plain_summary} It never changes
+    any feed's grade.</p>
     <p class="fineprint">Need tiers come from Census
     <abbr title="American Community Survey">ACS</abbr> (poverty, zero-vehicle households,
     disability share), joined to agencies by state. They prioritize data-quality help; they
-    never change a grade. The same data is at
+    never change a grade. Score summaries use {comparable_count} canonical, non-duplicate feed
+    scorecards under {comparison_contract}. The same data is at
     <a href="/api/v1/equity.json">the equity API (equity.json)</a>. State outlines:
     public-domain simplified geometry (docs/decisions/0022-equity-choropleth.md). State-level is
     a first cut; a tract-level refinement is in progress.</p>
-    {brush_script}""",
+    {brush_script}"""
+        ),
     )
 
 
@@ -6203,9 +6418,10 @@ def _render_ntd_page(
         )
         lead = (
             f"<strong>{esc(payload.get('pct_ready', 0))}% of {esc(total)} tracked feeds "
-            "look ready to certify</strong> against the three things the "
-            "Federal Transit Administration checks: the feed is published at a working "
-            "URL, it is valid, and its calendar has not lapsed."
+            "look ready to certify</strong> against four feed checks for RY2026: the "
+            "feed is published at a working "
+            "URL, it is valid, its calendar has not lapsed, and agency.txt provides "
+            "agency_id for the P-50 crosswalk."
         )
     else:
         state_table = ""
@@ -6239,10 +6455,11 @@ def _render_ntd_page(
     ry2026 = (
         '<section class="feed-details"><h2 class="section-title">Report year 2026: '
         "small and rural reporters join</h2>"
-        '<p class="page-lede">Full reporters have had to include valid GTFS in their NTD '
-        "report since report year 2025. Reduced, rural, and tribal reporters join in "
-        "report year 2026, which brings most of the small agencies this site tracks into "
-        "the requirement for the first time. An agency that cannot comply yet can request "
+        '<p class="page-lede">Since Report Year 2023, NTD reporters with fixed-route '
+        "service have had to publish and maintain GTFS. For RY2026, every submission must "
+        "provide a stable agency_id for each represented reporter and crosswalk it to the "
+        "reporter's NTD ID on P-50; agency_id does not need to equal that five-digit ID. "
+        "An agency that cannot comply yet can request "
         "a one-year waiver by showing it is pursuing technical assistance to establish "
         "its GTFS data. The same rule adds shapes.txt to the published feed: "
         '<a href="/ntd/shapes/">does your feed need shapes.txt, explained</a>.</p>'
@@ -6277,9 +6494,10 @@ def _render_ntd_page(
     {state_table}
     <p class="plain-summary"><strong>In plain words:</strong> since Report Year 2023, every
     NTD reporter with fixed-route or deviated-fixed-route service has to publish a valid,
-    current GTFS feed and certify it each year. This page reads the published, valid, and
-    current signals for every feed we track and rolls them up, so a program can see at a
-    glance how its agencies are doing.</p>
+    current GTFS feed and certify it each year. For RY2026, each represented reporter also
+    needs a stable agency_id crosswalked on P-50. This page reads those four feed signals
+    for every feed we track and rolls them up, so a program can see at a glance how its
+    agencies are doing.</p>
     <p class="fineprint">This is a data-quality heads-up, not an official compliance
     determination. Each agency's annual
     <a href="https://www.transit.dot.gov/ntd">D-10 certification</a> is the official one.
@@ -6406,7 +6624,7 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     hand-drawn maps. If a vendor or scheduling tool produces your GTFS export, ask for
     shapes.txt in the export, with trips.shape_id set to match. If some trips already have
     shapes, the remaining work is to fill in the rest so every trip has a path.</p>
-    <p>After you republish, the next daily run re-checks your feed and the readiness line
+    <p>After you republish, the next completed scoring run re-checks your feed and the readiness line
     on your agency's page updates on its own.</p></section>
 
     {numbers}
@@ -6525,9 +6743,11 @@ def _access_sections(coverage: dict[str, Any]) -> str:
     stops carrying ``wheelchair_boarding``), across the corpus and by U.S. state, with the
     most complete feeds highlighted. Changes no grade; framed as coverage to
     build on, for the advocate and the program staff who support them."""
-    count = coverage.get("agency_count", 0)
+    count = coverage.get("measured_feed_record_count", coverage.get("agency_count", 0))
+    comparable_count = _guarded_comparison_count(coverage)
+    raw_count = coverage.get("feed_record_count", 0)
     bands = coverage.get("bands", {})
-    if count:
+    if comparable_count > 0 and count:
         band_rows = "".join(
             f"<tr><td>{esc(_ACCESS_BAND_LABELS.get(key, key))}</td>"
             f"<td>{esc(bands.get(key, 0))}</td></tr>"
@@ -6561,30 +6781,31 @@ def _access_sections(coverage: dict[str, Any]) -> str:
         complete_table = (
             (
                 '<section class="feed-details"><h2 class="section-title">Most complete</h2>'
-                '<p class="page-lede">Feeds whose stops are the most fully marked for '
+                '<p class="page-lede">Feed records whose stops are the most fully marked for '
                 "wheelchair access. A target to aim for.</p>"
-                '<table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th>'
+                '<table class="leaderboard"><thead><tr><th>Feed record</th><th>Location</th>'
                 f"<th>Stops marked</th></tr></thead><tbody>{complete_rows}</tbody></table></section>"
             )
             if complete
             else ""
         )
         state_rows = "".join(
-            f"<tr><td>{esc(s['state'])}</td><td>{esc(s['agencies'])}</td>"
+            f"<tr><td>{esc(s['state'])}</td>"
+            f"<td>{esc(s.get('feed_records', s.get('agencies', 0)))}</td>"
             f"<td>{esc(s.get('average_boarding_pct'))}%</td><td>{esc(s['most'])}</td>"
             f"<td>{esc(s['none'])}</td></tr>"
             for s in coverage.get("states", [])
         )
         state_table = (
             '<section class="feed-details"><h2 class="section-title">United States by state</h2>'
-            '<table class="leaderboard"><thead><tr><th>State</th><th>Agencies</th>'
+            '<table class="leaderboard"><thead><tr><th>State</th><th>Feed records</th>'
             "<th>Avg stops marked</th><th>Nearly all</th><th>None yet</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table></section>"
         )
         location_table = _portable_rollup_table(
             coverage.get("countries") or [],
             [
-                ("agencies", "Agencies", ""),
+                ("feed_records", "Feed records", ""),
                 ("average_boarding_pct", "Avg stops marked", "%"),
                 ("most", "Nearly all", ""),
                 ("none", "None yet", ""),
@@ -6596,9 +6817,27 @@ def _access_sections(coverage: dict[str, Any]) -> str:
             "wheelchair-access information. When a stop is unmarked, a rider who uses a "
             "wheelchair cannot tell from a trip planner whether they can board there."
         )
+    elif comparable_count <= 0:
+        band_table = complete_table = state_table = location_table = ""
+        lead = (
+            "Cross-feed accessibility coverage is unavailable until current-contract "
+            "checks create a comparable feed-record cohort. This snapshot makes no "
+            "corpus-wide completeness or named-feed claim."
+        )
     else:
         band_table = complete_table = state_table = location_table = ""
-        lead = "No accessibility coverage has been measured yet."
+        lead = (
+            f"{comparable_count} feed records meet the comparison contract, but none has "
+            "a readable accessibility-detail block yet."
+        )
+    comparison_note = (
+        f"The directory contains {esc(raw_count)} published feed records; "
+        f"{esc(comparable_count)} meet {_comparison_contract_text(coverage.get('comparison') or {})}, "
+        f"and {esc(count)} supply the accessibility detail used here."
+        if comparable_count > 0
+        else f"The directory contains {esc(raw_count)} published feed records. "
+        "No cross-feed denominator is published for this snapshot."
+    )
     return f"""<p class="page-lede">{lead}
     <strong>What this measures:</strong> whether feeds publish the data, never
     whether a stop is physically usable.</p>
@@ -6616,7 +6855,7 @@ def _access_sections(coverage: dict[str, Any]) -> str:
     same data is at <a href="/api/v1/accessibility.json">the accessibility API
     (accessibility.json)</a>. This page is about data completeness; for how this site itself
     meets <abbr title="Web Content Accessibility Guidelines">WCAG</abbr>, see
-    <a href="/accessibility/">Accessibility</a>.</p>"""
+    <a href="/accessibility/">Accessibility</a>. {comparison_note}</p>"""
 
 
 def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) -> str:
@@ -6626,8 +6865,10 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     the corpus adoption and accessibility-coverage rollups.
     Changes no grade; a lens on where the spec is spreading, framed as adoption
     to encourage. The retired /access/ URL redirects to #access here."""
-    count = adoption.get("agency_count", 0)
-    if count:
+    count = adoption.get("measured_feed_record_count", adoption.get("agency_count", 0))
+    comparable_count = _guarded_comparison_count(adoption)
+    raw_count = adoption.get("feed_record_count", 0)
+    if comparable_count > 0 and count:
         capabilities = [
             ("Flexible (demand-responsive) service", adoption.get("flex") or {}),
             ("Fare data (any model)", adoption.get("fares") or {}),
@@ -6677,28 +6918,29 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
                 '<section class="feed-details"><h2 class="section-title">Publishing flexible '
                 'service</h2><p class="page-lede">Feeds that already describe demand-responsive or '
                 "dial-a-ride service in GTFS-Flex, so a trip planner can offer it.</p>"
-                '<table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th></tr></thead>'
+                '<table class="leaderboard"><thead><tr><th>Feed record</th><th>Location</th></tr></thead>'
                 f"<tbody>{flex_rows}</tbody></table></section>"
             )
             if flex_sample
             else ""
         )
         state_rows = "".join(
-            f"<tr><td>{esc(s['state'])}</td><td>{esc(s['agencies'])}</td>"
+            f"<tr><td>{esc(s['state'])}</td>"
+            f"<td>{esc(s.get('feed_records', s.get('agencies', 0)))}</td>"
             f"<td>{esc(s['flex'])}</td><td>{esc(s['fares'])}</td>"
             f"<td>{esc(s['fares_v2'])}</td><td>{esc(s['pathways'])}</td></tr>"
             for s in adoption.get("states", [])
         )
         state_table = (
             '<section class="feed-details"><h2 class="section-title">United States by state</h2>'
-            '<table class="leaderboard"><thead><tr><th>State</th><th>Agencies</th>'
+            '<table class="leaderboard"><thead><tr><th>State</th><th>Feed records</th>'
             "<th>Flex</th><th>Fares</th><th>Fares v2</th><th>Pathways</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table></section>"
         )
         location_table = _portable_rollup_table(
             adoption.get("countries") or [],
             [
-                ("agencies", "Agencies", ""),
+                ("feed_records", "Feed records", ""),
                 ("flex", "Flex", ""),
                 ("fares", "Fares", ""),
                 ("fares_v2", "Fares v2", ""),
@@ -6716,9 +6958,27 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             f"<strong>{esc(paths.get('pct', 0))}%</strong> model stations with accessible paths. "
             "These are the newer, optional parts of GTFS; adoption shows where the spec is spreading."
         )
+    elif comparable_count <= 0:
+        cap_table = flex_table = state_table = location_table = ""
+        lead = (
+            "Cross-feed capability adoption is unavailable until current-contract checks "
+            "create a comparable feed-record cohort. This snapshot makes no adoption-rate "
+            "or named-feed claim."
+        )
     else:
         cap_table = flex_table = state_table = location_table = ""
-        lead = "No capability adoption has been measured yet."
+        lead = (
+            f"{comparable_count} feed records meet the comparison contract, but none has "
+            "a readable capability-detail block yet."
+        )
+    comparison_note = (
+        f"The directory contains {esc(raw_count)} published feed records; "
+        f"{esc(comparable_count)} meet {_comparison_contract_text(adoption.get('comparison') or {})}, "
+        f"and {esc(count)} supply the capability detail used here."
+        if comparable_count > 0
+        else f"The directory contains {esc(raw_count)} published feed records. "
+        "No cross-feed denominator is published for this snapshot."
+    )
     jump = (
         '<nav class="grade-jump" aria-label="Jump to section">Jump to: '
         '<a href="#features">Optional features</a> · '
@@ -6754,7 +7014,8 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     (<code>fare_attributes.txt</code> for the legacy model, <code>fare_products.txt</code> and
     <code>fare_leg_rules.txt</code> for Fares v2), and GTFS-Pathways (<code>pathways.txt</code>,
     <code>levels.txt</code>). It never changes a grade. The same data is at
-    <a href="/api/v1/adoption.json">the adoption API (adoption.json)</a>.</p>"""
+    <a href="/api/v1/adoption.json">the adoption API (adoption.json)</a>.
+    {comparison_note}</p>"""
     return _page(
         title="What feeds publish — GTFS Scorecard",
         description=(
@@ -6762,7 +7023,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             "Fares v2, station pathways) and how complete their accessibility data is."
         ),
         canonical=f"{BASE_URL}/adoption/",
-        body=body,
+        body=_strip_blank_line_whitespace(body),
         wide=True,
     )
 
@@ -6822,21 +7083,90 @@ def _status_shard_rows(shards: list[dict[str, Any]]) -> str:
     return "".join(rows)
 
 
+def _scope_run_summary(
+    run_summary: dict[str, Any] | None, catalog: list[dict[str, Any]]
+) -> dict[str, Any] | None:
+    """Bound named run evidence to currently published feed records.
+
+    Aggregate shard counts still describe the historical run's attempted set.
+    Removed records are counted, never retained as dead public links or names.
+    The transform is idempotent so both the API boundary and HTML helper can
+    apply it defensively.
+    """
+    if run_summary is None:
+        return None
+    published_ids = {str(row.get("id") or "") for row in catalog}
+    published_ids.discard("")
+
+    def _scope_named_unreachable(record: dict[str, Any]) -> dict[str, Any]:
+        raw = [str(agency_id) for agency_id in record.get("unreachable_agencies", [])]
+        current = [agency_id for agency_id in raw if agency_id in published_ids]
+        source = int(record.get("source_unreachable_agency_count", len(raw)))
+        outside = int(
+            record.get(
+                "unreachable_outside_current_published_set",
+                max(0, source - len(current)),
+            )
+        )
+        result = dict(record)
+        result.update(
+            {
+                "unreachable_agencies": current,
+                "source_unreachable_agency_count": source,
+                "current_published_unreachable_count": len(current),
+                "unreachable_outside_current_published_set": outside,
+            }
+        )
+        return result
+
+    raw_ids = [str(agency_id) for agency_id in run_summary.get("unreachable_agencies", [])]
+    current_ids = [agency_id for agency_id in raw_ids if agency_id in published_ids]
+    source_count = int(run_summary.get("source_unreachable_agency_count", len(raw_ids)))
+    omitted = int(
+        run_summary.get(
+            "unreachable_outside_current_published_set",
+            max(0, source_count - len(current_ids)),
+        )
+    )
+    scoped = dict(run_summary)
+    scoped.update(
+        {
+            "unreachable_agencies": current_ids,
+            "source_unreachable_agency_count": source_count,
+            "current_published_unreachable_count": len(current_ids),
+            "unreachable_outside_current_published_set": omitted,
+            "published_feed_record_count": len(published_ids),
+            "shards": [
+                _scope_named_unreachable(shard)
+                for shard in run_summary.get("shards", [])
+                if isinstance(shard, dict)
+            ],
+            "scope_note": (
+                "Aggregate counts describe the feed-record set attempted by that run. "
+                "Named unreachable records are restricted to the current published catalog; "
+                "older out-of-scope records are counted but not named or linked."
+            ),
+        }
+    )
+    return scoped
+
+
 def _status_evidence_section(
     run_summary: dict[str, Any] | None, catalog: list[dict[str, Any]], now: dt.datetime
 ) -> str:
-    """The "today's evidence" half of /status/ (FIX-11,
-    docs/ideation/02-large-scale-fixes.md): what the daily run itself did --
+    """The latest-run-evidence half of /status/ (FIX-11,
+    docs/ideation/02-large-scale-fixes.md): what the latest scheduled run did --
     shard outcomes, unreachable feeds, mirror fallbacks, validator cache hits --
     plus how stale the published catalog is right now. Users are asked to trust
-    the daily numbers; the operational evidence used to live only in private
-    Actions logs, so one shard failing left ~1/12 of agencies silently showing
-    yesterday's data with no signal anywhere on the site. This section is that
+    scheduled refreshes happened; the operational evidence used to live only in private
+    Actions logs, so one shard failing left ~1/12 of feed records silently showing
+    older data with no signal anywhere on the site. This section is that
     signal, built entirely from data/artifacts/run/latest.json (merged by
     `scorecard run-summary merge` in the collect job) and the same catalog the
     directory page reads -- no separate trust required. Returns a fragment (no
     page chrome); composed into the combined /status/ page by `_render_status`
     alongside `_status_commitment_section`."""
+    run_summary = _scope_run_summary(run_summary, catalog)
     staleness = _staleness_distribution(catalog, now)
     staleness_rows = "".join(
         f"<tr><td>{esc(label)}</td><td>{count}</td></tr>" for label, count in staleness
@@ -6844,12 +7174,12 @@ def _status_evidence_section(
     staleness_chart = _bucket_chart(
         staleness,
         title="Snapshot age distribution",
-        note=f"All {len(catalog)} tracked agencies, grouped by age of their current scorecard.",
+        note=f"All {len(catalog)} tracked feed scorecards, grouped by snapshot age.",
         css_class="staleness-chart",
     )
 
     if run_summary is None:
-        run_section = """    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+        run_section = """    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
     <p>No run-health summary has been published yet. This page fills in the day after the
     first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>"""
     else:
@@ -6859,8 +7189,9 @@ def _status_evidence_section(
         badge_class = "pill-warn" if degraded else "pill-ok"
         badge_text = "Degraded" if degraded else "Healthy"
         unreachable_agencies = run_summary.get("unreachable_agencies", [])
+        omitted_unreachable = int(run_summary.get("unreachable_outside_current_published_set", 0))
         names_by_id = {row["id"]: row["name"] for row in catalog}
-        unreachable_list = (
+        current_unreachable_list = (
             "<ul>"
             + "".join(
                 f'<li><a href="/agency/{esc(aid)}/">{esc(names_by_id.get(aid, aid))}</a></li>'
@@ -6868,27 +7199,38 @@ def _status_evidence_section(
             )
             + "</ul>"
             if unreachable_agencies
-            else "<p>No agencies were unreachable this run.</p>"
+            else "<p>No currently published feed record was unreachable in this run.</p>"
         )
+        omitted_note = (
+            f'<p class="fineprint">{omitted_unreachable} additional '
+            f"{'record was' if omitted_unreachable == 1 else 'records were'} in the prior "
+            "run but are outside the current published catalog, so they are counted in the "
+            "historical run totals without being named or linked here.</p>"
+            if omitted_unreachable
+            else ""
+        )
+        unreachable_list = current_unreachable_list + omitted_note
         degraded_note = (
             f"""<p><span class="{badge_class}">Degraded run</span>. More than
-        {threshold_pct}% of agencies could not be refreshed. The agencies below are still
-        showing their last good scorecard, not today's data.</p>"""
+        {threshold_pct}% of that run's attempted feed records could not be refreshed. Currently
+        published records from that unreachable set are listed below.</p>"""
             if degraded
             else ""
         )
         shard_count = run_summary.get("shard_count", 0)
         shard_word = "shard" if shard_count == 1 else "shards"
-        run_section = f"""    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+        run_section = f"""    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
     <p><span class="{badge_class}">{badge_text}</span>
     Generated {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}),
     across {shard_count} {shard_word}, {run_summary.get("agency_count", 0)}
-    agencies attempted.</p>
+    feed records attempted. The current published catalog has
+    {run_summary.get("published_feed_record_count", len(catalog))} feed records.</p>
     {degraded_note}
     <dl>
       <dt>Scored (fresh data this run)</dt><dd>{run_summary.get("scored", 0)}</dd>
       <dt>Reused (feed unchanged since last check)</dt><dd>{run_summary.get("reused", 0)}</dd>
-      <dt>Unreachable (kept last good artifact)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
+      <dt>Unreachable in that run (all attempted records)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
+      <dt>Currently published and unreachable in that run</dt><dd>{run_summary.get("current_published_unreachable_count", 0)}</dd>
       <dt>Fell back to the Mobility Database mirror</dt><dd>{run_summary.get("mirrored", 0)}</dd>
       <dt>Validator cache hits</dt><dd>{run_summary.get("cache_hit", 0)}</dd>
     </dl>
@@ -6904,37 +7246,36 @@ def _status_evidence_section(
     </table></div>
     </section>
 
-    <section class="feed-details"><h3 class="section-title">Agencies unreachable this run</h3>
-    <p>The pipeline could not fetch or validate these feeds today; each is still showing its
-    last successful scorecard. This is usually the agency's feed host being down, not a
-    pipeline bug -- if a name stays on this list for several days running, its own feed URL
-    is worth checking.</p>
+    <section class="feed-details"><h3 class="section-title">Feed records unreachable this run</h3>
+    <p>The pipeline could not fetch or validate these currently published feeds in that run;
+    each continues to show its last successful scorecard. A feed host outage is one possible
+    cause, but this evidence does not diagnose why a check failed.</p>
     {unreachable_list}
     </section>"""
 
-    return f"""    <h2 class="section-title" id="evidence-h">Today's evidence</h2>
-    <p>What the daily pipeline itself did, published the same way the scorecards are: shard
-    outcomes, feeds it could not reach, and how stale the catalog is right now. No part of this
-    page requires trusting the maintainer's word. Machine-readable at
+    return f"""    <h2 class="section-title" id="evidence-h">Latest run evidence</h2>
+    <p>What the latest published run summary recorded, including when it ran: shard outcomes,
+    feeds it could not reach, and how stale the current catalog is now. No part of this page
+    requires trusting the maintainer's word. Machine-readable at
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
 {run_section}
 
     <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
-    <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
-    (not just this run -- an agency scored successfully days ago still counts here if nothing
+    <p>Age of the scored snapshot behind every tracked feed scorecard, right now
+    (not just this run -- a feed scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
     {staleness_chart}
     <details class="viz-data"><summary>Show the table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
-      <caption class="visually-hidden">Agency count by snapshot age</caption>
-      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
+      <caption class="visually-hidden">Feed scorecard count by snapshot age</caption>
+      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Feed scorecards</th></tr></thead>
       <tbody>{staleness_rows}</tbody>
     </table></div></details>
     </section>
 
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
-    refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
+    refreshed after each completed scoring run. See <a href="/how-to-read/">how to read a scorecard</a> for what
     the grades themselves mean.</p>"""
 
 
@@ -6945,13 +7286,13 @@ def _render_status(
     now: dt.datetime,
 ) -> str:
     """The one public /status/ page. EXP-10 (the freshness/uptime commitment)
-    and FIX-11 (today's concrete run evidence) both used to render their own
+    and FIX-11 (latest-run evidence) both used to render their own
     full page to this same URL, so whichever `write()` ran last silently
     clobbered the other's file on disk. This composes both instead: the
     commitment (`_status_commitment_section`, sourced from
-    `api/v1/status.json`) on top, framed as what we commit to; today's run
+    `api/v1/status.json`) on top, framed as what we commit to; latest-run
     evidence (`_status_evidence_section`, sourced from
-    `api/v1/run-status.json`) below, framed as today's evidence. Both JSON
+    `api/v1/run-status.json`) below, framed as latest-run evidence. Both JSON
     endpoints stay published unchanged and are cross-linked from here and
     from within each section."""
     canonical = f"{BASE_URL}/status/"
@@ -6959,7 +7300,7 @@ def _render_status(
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Status.</h1>
     <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
-    we commit to for refresh cadence and uptime; below is concrete evidence from today's run.
+    we commit to for refresh cadence and uptime; below is evidence from the latest recorded run.
     Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
@@ -6972,7 +7313,7 @@ def _render_status(
         title="Status | GTFS Scorecard",
         description=(
             "What this pipeline commits to for refresh cadence and uptime, the historical "
-            "refresh-success record, and concrete evidence from today's run: shard outcomes, "
+            "refresh-success record, and evidence from the latest recorded run: shard outcomes, "
             "unreachable feeds, and catalog freshness."
         ),
         canonical=canonical,
@@ -7016,9 +7357,10 @@ def _render_press_page() -> str:
       <li><strong>"Agency X is out of compliance."</strong> Nothing here is an official
       determination; the readiness signals map data quality onto requirements, and the
       official checks belong to the agencies and their regulators.</li>
-      <li><strong>Grade comparisons across sizes without saying so.</strong> A 10-bus rural
-      system and a metro network face different capacity; the per-agency pages show peer
-      percentiles within size bands for that reason.</li>
+      <li><strong>Grade differences as agency performance.</strong> A grade describes the
+      published feed bytes under a disclosed scoring contract, not the agency's capacity or
+      service quality. Public absolute rankings and individual peer percentiles are not
+      published; direct comparisons appear only for like-for-like scorecards.</li>
     </ul></section>
 
     <section class="feed-details"><h2 class="section-title">Story-ready data</h2>
@@ -7027,7 +7369,7 @@ def _render_press_page() -> str:
     rows in <a href="/api/v1/by-location.json">the location API</a> to state the
     denominator precisely. For a citable snapshot, use a dated
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/releases">dataset release</a>
-    rather than the live site, which changes daily. Methodology, rubric weights, and
+    rather than the live site, which can change after a completed scoring run. Methodology, rubric weights, and
     the validator version are all published:
     <a href="/how-to-read/">how to read a scorecard</a> and
     <a href="/data/">the open dataset</a>.</p></section>
@@ -7117,7 +7459,7 @@ def _render_procurement() -> str:
     <p>You do not need to take the vendor's word for it. Find your agency on this site to see
     where the feed stands today, add a <a href="{repo}/blob/main/docs/ci-action.md">GTFS
     Scorecard check</a> to a build so a bad feed fails before it publishes, or
-    <a href="/try.html">paste a feed URL</a> to grade it right now.</p></section>
+    <a href="/try.html">request a one-off score</a> through the GitHub-backed path.</p></section>
 
     <p class="fineprint">This is sample language to adapt, not legal advice. Check it against
     your agency's procurement rules.</p>""",
@@ -7141,9 +7483,12 @@ def _render_rt_page(
     the most reliable feeds. It changes no grade; absence of a realtime feed is
     shown neutrally elsewhere, so this page only covers agencies that publish one.
     """
-    count = nat.get("monitored_count", 0)
+    count = nat.get("monitored_feed_record_count", nat.get("monitored_count", 0))
+    comparable_count = _guarded_comparison_count(nat)
+    raw_count = nat.get("feed_record_count", 0)
+    raw_monitored_count = nat.get("raw_monitored_feed_record_count", 0)
     bands = nat.get("bands", {})
-    if count:
+    if comparable_count > 0 and count:
         band_rows = "".join(
             f"<tr><td>{esc(_RT_BAND_LABELS.get(key, key))}</td><td>{esc(bands.get(key, 0))}</td></tr>"
             for key in ("reliable", "mostly", "spotty")
@@ -7179,9 +7524,9 @@ def _render_rt_page(
         reliable_table = (
             (
                 '<section class="feed-details"><h2 class="section-title">Most reliable</h2>'
-                '<p class="page-lede">Feeds that responded on nearly every check, freshest '
+                '<p class="page-lede">Comparison-eligible feed records that responded on nearly every check, freshest '
                 "first. A target to aim for.</p>"
-                '<table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th>'
+                '<table class="leaderboard"><thead><tr><th>Feed record</th><th>Location</th>'
                 "<th>Uptime</th><th>Median lag (s)</th><th>Score trend</th></tr></thead>"
                 f"<tbody>{reliable_rows}</tbody></table></section>"
             )
@@ -7189,7 +7534,8 @@ def _render_rt_page(
             else ""
         )
         state_rows = "".join(
-            f"<tr><td>{esc(s['state'])}</td><td>{esc(s['agencies'])}</td>"
+            f"<tr><td>{esc(s['state'])}</td>"
+            f"<td>{esc(s.get('feed_records', s.get('agencies', 0)))}</td>"
             f"<td>{esc(s.get('median_uptime_pct'))}%</td><td>{esc(s['reliable'])}</td></tr>"
             for s in nat.get("states", [])
         )
@@ -7202,7 +7548,7 @@ def _render_rt_page(
         location_table = _portable_rollup_table(
             nat.get("countries") or [],
             [
-                ("agencies", "Feeds", ""),
+                ("feed_records", "Feed records", ""),
                 ("median_uptime_pct", "Median uptime", "%"),
                 ("reliable", "Reliable", ""),
             ],
@@ -7210,22 +7556,42 @@ def _render_rt_page(
         lag = nat.get("median_lag_seconds")
         lag_txt = f"{esc(lag)} seconds" if lag is not None else "not recorded"
         lead = (
-            f"Of <strong>{esc(count)} agencies</strong> we monitor for realtime, the median "
+            f"Across <strong>{esc(count)} monitored feed records</strong>, the median realtime "
             f"feed responded <strong>{esc(nat.get('median_uptime_pct'))}% of the time</strong>, "
             f"with the data arriving about {lag_txt} behind real time."
         )
+    elif comparable_count <= 0:
+        band_table = reliable_table = state_table = location_table = ""
+        lead = (
+            "Cross-feed realtime reliability is unavailable until current-contract checks "
+            "create a comparable feed-record cohort. The raw monitor state contains "
+            f"{esc(raw_monitored_count)} observed feed records, but this snapshot makes no "
+            "reliability aggregate or named-feed claim."
+        )
     else:
         band_table = reliable_table = state_table = location_table = ""
-        lead = "No realtime feeds have been monitored yet."
+        lead = (
+            f"{comparable_count} feed records meet the comparison contract, but none has "
+            "a realtime monitor observation yet."
+        )
+    comparison_note = (
+        f"The directory contains {esc(raw_count)} published feed records; "
+        f"{esc(comparable_count)} meet {_comparison_contract_text(nat.get('comparison') or {})}, "
+        f"and {esc(count)} have realtime observations used here."
+        if comparable_count > 0
+        else f"The directory contains {esc(raw_count)} published feed records. "
+        "No cross-feed denominator is published for this snapshot."
+    )
     return _page(
         title="Realtime reliability — GTFS Scorecard",
         description=(
-            "How reliable the covered transit agencies' GTFS-Realtime feeds are: "
+            "How reliable the covered GTFS-Realtime feed records are: "
             "uptime and freshness across the corpus, with regional breakdowns."
         ),
         canonical=f"{BASE_URL}/realtime/",
         wide=True,
-        body=f"""    {_breadcrumb([("Home", "/"), ("Realtime reliability", None)])}
+        body=_strip_blank_line_whitespace(
+            f"""    {_breadcrumb([("Home", "/"), ("Realtime reliability", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Realtime reliability.</h1>
     <p class="page-lede">{lead}</p>
@@ -7234,13 +7600,15 @@ def _render_rt_page(
     {location_table}
     {state_table}
     <p class="plain-summary"><strong>In plain words:</strong> a realtime feed is only useful if
-    it is actually up and current. This tracks whether each agency's feed responded when we
+    it is actually up and current. This tracks whether each monitored feed responded when we
     checked and how far behind real time it was. An agency that publishes no realtime feed is not
     counted here and is never penalized for it.</p>
     <p class="fineprint">Reliability is the share of monitor runs the feed responded to, over the
     recorded window; freshness is the median header lag. It never changes a grade. The same data
     is at <a href="/api/v1/realtime.json">the realtime API (realtime.json)</a>. Sampling is
-    periodic, not continuous, so this is a reliability signal, not a complete uptime log.</p>""",
+    periodic, not continuous, so this is a reliability signal, not a complete uptime log.
+    {comparison_note}</p>"""
+        ),
     )
 
 
@@ -7275,8 +7643,11 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
     never as a ranking of who is worst; it changes no grade.
     """
     problems = nat.get("problems", [])
-    total = nat.get("total_agencies", 0)
-    if problems:
+    total = nat.get("comparison_feed_record_count", nat.get("total_agencies", 0))
+    comparable_count = _guarded_comparison_count(nat)
+    raw_count = nat.get("feed_record_count", 0)
+    guarded_available = comparable_count > 0 and total == comparable_count
+    if guarded_available and problems:
         rows = ""
         for p in problems:
             code = esc(p["code"])
@@ -7302,14 +7673,14 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             (
                 _problem_chart_label(p),
                 float(p.get("prevalence_pct", 0)),
-                f"{p.get('agencies', 0)} feeds",
+                f"{p.get('feed_records', p.get('agencies', 0))} feed records",
             )
             for p in problems[:6]
         ]
         prevalence_chart = _service_bar_chart(
             chart_rows,
             title="The six most widespread problems",
-            note="Share of all tracked feeds carrying each problem.",
+            note="Share of comparison-eligible feed records carrying each problem.",
             css_class="problems-chart",
         )
         body_problems = (
@@ -7318,17 +7689,28 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             f'<ul class="events">{rows}</ul>'
         )
         lead = (
-            f"Across {esc(total)} tracked feeds, these are the problems the most agencies "
+            f"Across {esc(total)} comparable feed records, these are the problems most feeds "
             "share. Each one is common, which means each fix helps a lot of riders at once."
         )
-    else:
+    elif guarded_available:
         body_problems = ""
-        lead = "No findings have been aggregated yet."
+        lead = (
+            f"The {esc(total)} comparable feed records have no aggregated findings in this "
+            "snapshot. This is a measured empty result under one producer contract."
+        )
+    else:
+        problems = []
+        body_problems = ""
+        lead = (
+            "Cross-feed problem prevalence is unavailable until current-contract checks "
+            "create a comparable feed-record cohort. This snapshot makes no clean-corpus "
+            "or most-common-problem claim."
+        )
     # Plain-language coverage governance: how much of what readers see in the corpus
     # carries curated what/why/fix text, plus the queue of what to curate next.
     # The metric makes the curation debt visible, which is the feature.
     coverage = plain_language_coverage(nat)
-    if coverage["total_codes"]:
+    if guarded_available and coverage["total_codes"]:
         queue = coverage["uncurated_queue"][:10]
         if queue:
             queue_rows = "".join(
@@ -7340,7 +7722,7 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
                 "<p>Next up for curation, ranked by how often riders' data actually "
                 "hits each problem:</p>"
                 '<div class="table-wrap"><table class="leaderboard"><thead><tr><th>Notice code</th>'
-                "<th>Instances</th><th>Agencies</th></tr></thead>"
+                "<th>Instances</th><th>Feed records</th></tr></thead>"
                 f"<tbody>{queue_rows}</tbody></table></div>"
             )
         else:
@@ -7359,15 +7741,24 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
         )
     else:
         coverage_section = ""
+    plain_summary = (
+        "most feeds trip on the same handful of things, and most of those are one export "
+        "setting. If you run an agency, scanning this list is a fast way to find a fix that "
+        "probably applies to you too."
+        if guarded_available and problems
+        else "this page waits for a valid comparison denominator before describing a problem "
+        "as common across feeds. Open an individual scorecard for its own current findings."
+    )
     return _page(
         title="The most common GTFS problems — GTFS Scorecard",
         description=(
             "The most widespread GTFS data problems across covered transit feeds, how many "
-            "agencies share each, and the one fix for each."
+            "feed records share each, and the one fix for each."
         ),
         canonical=f"{BASE_URL}/problems/",
         wide=True,
-        body=f"""    {_breadcrumb([("Home", "/"), ("Common problems", None)])}
+        body=_strip_blank_line_whitespace(
+            f"""    {_breadcrumb([("Home", "/"), ("Common problems", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">The most common GTFS problems.</h1>
     <p class="page-lede">{lead}</p>
@@ -7376,12 +7767,13 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
     {body_problems}
     </section>
     {coverage_section}
-    <p class="plain-summary"><strong>In plain words:</strong> most feeds trip on the same handful
-    of things, and most of those are one export setting. If you run an agency, scanning this list
-    is a fast way to find a fix that probably applies to you too.</p>
-    <p class="fineprint">Prevalence is the share of tracked feeds carrying a finding, from the
-    same checks each scorecard runs. It never changes a grade. The same data is at
-    <a href="/api/v1/problems.json">the problems API (problems.json)</a>.</p>""",
+    <p class="plain-summary"><strong>In plain words:</strong> {plain_summary}</p>
+    <p class="fineprint">The directory contains {esc(raw_count)} published feed records.
+    Prevalence uses {esc(comparable_count)} canonical, non-duplicate records under
+    {_comparison_contract_text(nat.get("comparison") or {})}. It never changes a grade.
+    The same data is at
+    <a href="/api/v1/problems.json">the problems API (problems.json)</a>.</p>"""
+        ),
     )
 
 
@@ -7390,7 +7782,7 @@ def _trend_sections(
     summary: dict[str, Any],
     improvers: list[dict[str, Any]] | None = None,
 ) -> str:
-    """The corpus quality trend, inside the coverage page: the average score over
+    """The guarded corpus quality trend, inside the coverage page: the average score over
     time as an autoscaled line plus a by-date table and the 90-day improvers.
     A measure of the whole corpus, not of any one agency; changes no grade."""
     if len(points) >= 2:
@@ -7435,7 +7827,8 @@ def _trend_sections(
             else f"slipped {abs(delta)} points"
         )
         lead = (
-            f"Across the feeds we track, the corpus average score {move} between "
+            f"Across feed scorecards with one rubric, scoring profile, validator, and measured "
+            f"category set, the corpus average score {move} between "
             f"{esc(summary['first']['date'])} and {esc(summary['last']['date'])} "
             f"(now {esc(summary['last']['average_score'])})."
         )
@@ -7485,6 +7878,62 @@ def _trend_sections(
     (trend.json)</a>.</p>"""
 
 
+def _remove_unlisted_agency_pages(agency_pages: Path, published_ids: set[str]) -> None:
+    """Remove generated HTML for ids absent from the bounded artifact index."""
+    if not agency_pages.exists():
+        return
+    for page_dir in agency_pages.iterdir():
+        if page_dir.is_dir() and page_dir.name not in published_ids:
+            shutil.rmtree(page_dir)
+
+
+def _scope_liveness_state(
+    liveness_state: dict[str, dict[str, Any]], published_ids: set[str]
+) -> dict[str, dict[str, Any]]:
+    """Restrict refresh-success evidence to the current published catalog."""
+    return {
+        agency_id: record
+        for agency_id, record in liveness_state.items()
+        if agency_id in published_ids
+    }
+
+
+def _has_auditable_change_contract(payload: object) -> bool:
+    """Whether a named-change snapshot discloses a complete comparison contract."""
+    if not isinstance(payload, dict):
+        return False
+    comparison = payload.get("comparison")
+    eligible = payload.get("comparison_eligible_count")
+    changes = payload.get("changes")
+    if not isinstance(comparison, dict) or not isinstance(eligible, int):
+        return False
+    if comparison.get("eligible_count") != eligible:
+        return False
+    if not isinstance(changes, list) or payload.get("count") != len(changes):
+        return False
+    for key in (
+        "required_rubric_version",
+        "required_scoring_profile_id",
+        "required_validator_version",
+    ):
+        if not isinstance(comparison.get(key), str) or not comparison[key].strip():
+            return False
+    return isinstance(comparison.get("required_measured_categories"), list)
+
+
+def _prune_unverifiable_change_snapshots(changes_dir: Path) -> None:
+    """Remove legacy named-change JSON that cannot prove its comparison basis."""
+    if not changes_dir.exists():
+        return
+    for path in changes_dir.glob("*.json"):
+        try:
+            payload = json.loads(path.read_text())
+        except (OSError, ValueError):
+            payload = None
+        if not _has_auditable_change_contract(payload):
+            path.unlink(missing_ok=True)
+
+
 def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Generate all static pages, the sitemap, and robots.txt under web/.
 
@@ -7497,9 +7946,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     root = _repo_root()
     web = root / "web"
     art = artifacts_dir()
-    # Empirical fix-effort bands, loaded once for the whole render. Empty when
-    # the corpus has not yet written a calibration file, which keeps the band
-    # purely additive (EXP-03).
+    index_file = art / "index.json"
+    index = json.loads(index_file.read_text()) if index_file.exists() else {"agencies": {}}
+    published_ids = {str(agency_id) for agency_id in (index.get("agencies") or {})}
+    raw_liveness_state = _load_liveness()
+    liveness_state = _scope_liveness_state(raw_liveness_state, published_ids)
+    # Empirical finding-clearance timing, loaded once for the whole render.
+    # Empty when the corpus has not yet written a calibration file, which keeps
+    # the causally neutral band purely additive (EXP-03).
     effort_bands = _load_effort_bands()
     written: list[Path] = []
     urls: list[str] = [
@@ -7508,7 +7962,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/support/",
         f"{BASE_URL}/fetcher/",
         f"{BASE_URL}/data/",
-        f"{BASE_URL}/concept/",
         f"{BASE_URL}/submit.html",
         f"{BASE_URL}/try.html",
         f"{BASE_URL}/subscribe.html",
@@ -7558,6 +8011,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("fix/index.html", _render_fix_index(fix_guides), f"{BASE_URL}/fix/")
 
     write("how-to-read/index.html", _render_guide(), f"{BASE_URL}/how-to-read/")
+    # Retire the hand-built visual prototype now that its strongest ideas live
+    # in the shared system. Keep old links useful without presenting a third,
+    # stale design language or indexing duplicate guidance.
+    write("concept/index.html", _redirect_page("/how-to-read/", "Design concept"))
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
     write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
     validate_catalogs()
@@ -7573,7 +8030,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # (FIX-11's half of /status/) are also ready -- see `_render_status`.
     from .status_commitment import build_status_commitment
 
-    status_doc = build_status_commitment(_load_liveness(), now, BASE_URL)
+    status_doc = build_status_commitment(liveness_state, now, BASE_URL)
+    status_doc["scope"] = {
+        "published_feed_record_count": len(published_ids),
+        "liveness_records_in_scope": len(liveness_state),
+        "liveness_records_outside_current_published_set": (
+            len(raw_liveness_state) - len(liveness_state)
+        ),
+        "note": (
+            "Refresh-success statistics are restricted to feed records in the current "
+            "published artifact index. Older liveness records are excluded."
+        ),
+    }
     write(
         "api/v1/status.json",
         json.dumps(status_doc, indent=2, sort_keys=True) + "\n",
@@ -7586,10 +8054,17 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             f"{BASE_URL}/crosswalk/",
         )
 
-    index_file = art / "index.json"
-    index = json.loads(index_file.read_text()) if index_file.exists() else {"agencies": {}}
-    # Per-agency score histories, keyed by id, for the small row sparklines on
-    # the leaderboard-style tables (pulse rankings, NTD one-fix, realtime).
+    # web/ is committed between renders. Remove generated scorecard directories
+    # that are no longer present in the registry-bounded index, or a delisted
+    # feed would retain a directly reachable HTML page after disappearing from
+    # the directory and sitemap.
+    _remove_unlisted_agency_pages(web / "agency", published_ids)
+    from .publish import enrich_index_history_provenance
+
+    if enrich_index_history_provenance(index, art):
+        index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")
+    # Per-feed score histories, keyed by id, for compact trend graphics on
+    # named change, NTD one-fix, and realtime tables.
     histories: dict[str, list[dict[str, Any]]] = {
         str(aid): (entry or {}).get("history") or []
         for aid, entry in (index.get("agencies") or {}).items()
@@ -7597,7 +8072,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # Per-feed change-detection freshness from the intraday refresh; loaded once,
     # early, so both the directory's expired-feed split and each agency page
     # (below) read the same state.
-    liveness_state = _load_liveness()
     write("agencies/index.html", _render_agency_index(index, liveness_state))
     states = _states_by_agency()
     from .config import AGENCIES
@@ -7610,12 +8084,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
         registry_by_id = {agency.id: agency for agency in read_agencies()}
 
-    # Pass 1: read each agency once to build the catalog records the directory
-    # needs (grade, score, state, size). Percentiles are cross-agency, so the
-    # per-agency pages can't be rendered until every score is in.
+    # Pass 1: read each scorecard once to build the catalog records the
+    # directory needs (grade, score, location, size, and comparison provenance).
     catalog: list[dict[str, Any]] = []
     ntd_artifacts: list[dict[str, Any]] = []
-    problem_findings: list[list[dict[str, Any]]] = []
+    artifacts_by_id: dict[str, dict[str, Any]] = {}
+    problem_findings_by_id: dict[str, list[dict[str, Any]]] = {}
     for agency_id in sorted(index["agencies"]):
         latest = art / agency_id / "latest.json"
         if not latest.exists():
@@ -7628,6 +8102,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             print(f"::warning title=unreadable artifact::skipping {latest}: {exc}", file=sys.stderr)
             continue
         overall = artifact["overall"]
+        categories = artifact.get("categories", {})
         fresh = artifact.get("categories", {}).get("freshness", {}).get("details", {})
         comp = artifact.get("categories", {}).get("completeness", {}).get("details", {})
         feed = artifact.get("feed", {})
@@ -7647,13 +8122,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         # Artifacts don't persist state; inject it so the NTD portfolio's
         # per-state breakdown works at publish time.
         artifact_agency["state"] = states.get(agency_id, "")
+        artifacts_by_id[agency_id] = artifact
         ntd_artifacts.append(artifact)
-        problem_findings.append(agency_findings(artifact))
+        problem_findings_by_id[agency_id] = agency_findings(artifact)
         catalog_record = {
             "id": agency_id,
             "name": artifact["agency"]["name"],
             "grade": overall["grade"],
             "score": overall["score"],
+            "correctness": (categories.get("correctness") or {}).get("score"),
+            "freshness": (categories.get("freshness") or {}).get("score"),
+            "completeness": (categories.get("completeness") or {}).get("score"),
+            "realtime": (categories.get("realtime") or {}).get("score"),
             "state": states.get(agency_id, ""),
             # ISO country code so consumers and the app can place non-US
             # agencies (Canada) instead of bucketing them as unlocated.
@@ -7661,9 +8141,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             "stops": comp.get("stops"),
             "snapshot_date": artifact["snapshot_date"],
             "days_until_expiry": days,
+            "service_horizon_status": resolve_service_horizon_status(
+                fresh, artifact.get("snapshot_date")
+            ),
             "expiry_status": expiry_status(days),
             # Readiness for the FTA NTD GTFS requirement (published/valid/
-            # current), so a state program can filter its portfolio by who is
+            # current/agency_id), so a state program can filter its portfolio by who is
             # ready to certify without opening each scorecard. NTD is a
             # US-federal concept, so this is null for non-US feeds (ADR 0026):
             # the directory filter and national rollup never count them.
@@ -7682,6 +8165,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # per-agency artifact.
             "validator_version": artifact.get("validator_version"),
             "rubric_version": artifact.get("rubric_version"),
+            "scoring_profile_id": (artifact.get("scoring_profile") or {}).get("id"),
+            "scoring_profile_rubric_version": (artifact.get("scoring_profile") or {}).get(
+                "rubric_version"
+            ),
             "retrieved_at": artifact.get("generated_at"),
             "feed_sha256": feed.get("sha256"),
         }
@@ -7691,16 +8178,38 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             catalog_record["subdivision_name"] = location.subdivision_name
         catalog.append(catalog_record)
 
-    # The directory dataset the national view reads: per-agency size tier and
-    # percentile, plus the national and by-state summary. Built before the flat
-    # catalog because it enriches each record in place (size_tier, percentiles),
+    # The directory dataset the coverage view reads: per-feed size tier plus
+    # national and location summaries. Score aggregates use a current-rubric,
+    # identity-safe cohort; every record remains searchable. Built before the
+    # flat catalog because it enriches each record in place with size_tier,
     # which the catalog then carries too. Written alongside index.json under
     # data/artifacts so the web app reaches it through the same data base it uses
     # for index.json and per-agency artifacts, and so the existing
     # `git add data/artifacts` publishes it.
-    directory = build_directory(catalog, dt.datetime.now(dt.UTC).isoformat(timespec="seconds"))
+    directory = build_directory(
+        catalog,
+        dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        agencies=registry_by_id.values(),
+    )
     (art / "directory.json").write_text(json.dumps(directory, indent=2, sort_keys=True) + "\n")
     by_id = {r["id"]: r for r in directory["agencies"]}
+    from . import RUBRIC_VERSION
+    from .comparisons import build_comparison_cohort
+
+    comparable_records, _comparison_metadata = build_comparison_cohort(
+        catalog, agencies=registry_by_id.values()
+    )
+    comparable_ids = {str(record["id"]) for record in comparable_records}
+    comparable_artifacts = [
+        artifacts_by_id[agency_id]
+        for agency_id in sorted(comparable_ids)
+        if agency_id in artifacts_by_id
+    ]
+    aggregate_context = {
+        "feed_record_count": len(catalog),
+        "comparison_eligible_count": len(comparable_ids),
+        "comparison": _comparison_metadata,
+    }
 
     # Daily change feed: agencies whose grade or score moved since their last
     # check, so a consumer ingests transitions instead of diffing the whole
@@ -7708,20 +8217,32 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # as a stable changes/latest.json plus an immutable dated copy.
     from . import DATA_ATTRIBUTION, DATA_LICENSE, SCHEMA_VERSION
 
-    changes = compute_changes(index)
+    changes = compute_changes(
+        index,
+        allowed_ids=comparable_ids,
+        required_rubric_version=RUBRIC_VERSION,
+    )
     changes_payload = {
         "schema_version": SCHEMA_VERSION,
         "license": DATA_LICENSE,
         "attribution": DATA_ATTRIBUTION,
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        "feed_record_count": len(catalog),
+        "comparison_eligible_count": len(comparable_ids),
+        "comparison": _comparison_metadata,
         "count": len(changes),
         "changes": changes,
     }
     changes_dir = art / "changes"
     changes_dir.mkdir(parents=True, exist_ok=True)
+    # Before the comparison contract was explicit, dated change snapshots did
+    # not disclose enough producer provenance to audit their named moves. Do
+    # not keep serving those legacy claims merely because artifact hydration is
+    # additive. Valid dated snapshots remain immutable.
+    _prune_unverifiable_change_snapshots(changes_dir)
     changes_text = json.dumps(changes_payload, indent=2, sort_keys=True) + "\n"
     (changes_dir / "latest.json").write_text(changes_text)
-    (changes_dir / f"{dt.date.today().isoformat()}.json").write_text(changes_text)
+    (changes_dir / f"{now.date().isoformat()}.json").write_text(changes_text)
     # The human view of the movers lives on the national pulse page now; the
     # retired URL keeps working via a static redirect (no sitemap entry).
     write("changes/index.html", _redirect_page("/pulse/#changes", "What changed"))
@@ -7729,7 +8250,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # webhook can subscribe to grade drops without an opt-in store or an email
     # sender (the email digest covers confirmed subscribers; this covers everyone
     # else). Deterministic: timestamps come from snapshot dates, not wall-clock.
-    write("changes/feed.xml", site_change_feed(changes, base_url=BASE_URL))
+    write(
+        "changes/feed.xml",
+        site_change_feed(changes, base_url=BASE_URL, comparison=_comparison_metadata),
+    )
 
     # Machine-readable methodology (category weights, grade bands, correctness
     # deductions) so the grade is reproducible and contestable, not an opaque
@@ -7745,7 +8269,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # copies, so the interactive widget and the pipeline agree by construction.
     write("api/v1/scoring.json", scoring_json)
 
-    # Public pipeline-health surface (FIX-11): what the daily run itself did,
+    # Public pipeline-health surface (FIX-11): what the latest recorded run did,
     # merged by `scorecard run-summary merge` into data/artifacts/run/latest.json
     # in the collect job. Absent on the first render after this shipped (no run
     # has published a summary yet); the page and API both degrade to an
@@ -7760,9 +8284,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 f"::warning title=unreadable run summary::{run_summary_path}: {exc}",
                 file=sys.stderr,
             )
+    run_summary = _scope_run_summary(run_summary, catalog)
     write("api/v1/run-status.json", json.dumps(run_summary, indent=2, sort_keys=True) + "\n")
     # The combined /status/ page (EXP-10 + FIX-11): the commitment (status_doc,
-    # computed above from liveness state) and today's run evidence (run_summary
+    # computed above from liveness state) and latest-run evidence (run_summary
     # + catalog, both ready by this point in the render), composed into one page.
     write(
         "status/index.html",
@@ -7880,15 +8405,19 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
             ),
         )
-        # The durable fix log, only once the collect step has recorded at least
-        # one receipt (fixlog.py); a feed with no cleared findings has no page
-        # rather than an empty shell.
+        # The durable clearance log, only once the collect step has recorded at
+        # least one provenance-bearing receipt. Remove a previously generated
+        # page when reconciliation fails closed, or committed web output would
+        # keep serving a stale claim after its evidence disappeared.
+        fixlog_page_dir = web / "agency" / agency_id / "fixes"
         if receipts:
             write(
                 f"agency/{agency_id}/fixes/index.html",
                 _render_fixlog_page(artifact, receipts, by_id[agency_id]),
                 f"{BASE_URL}/agency/{agency_id}/fixes/",
             )
+        elif fixlog_page_dir.exists():
+            shutil.rmtree(fixlog_page_dir)
         # This feed's own Atom history (grade moves, expiry crossings, score
         # swings), so anyone supporting the agency can subscribe to just it. The
         # events are the same ones the "What changed over time" timeline shows.
@@ -7897,7 +8426,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             agency_change_feed(
                 agency_id,
                 artifact["agency"]["name"],
-                history_events(history),
+                history_events(_current_rubric_history(history)),
                 base_url=BASE_URL,
             ),
         )
@@ -7910,7 +8439,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # CSV, so researchers and state programs can download and analyze it directly.
     from .dataset import build_quality_dataset, to_csv
 
-    dataset = build_quality_dataset(index)
+    dataset = build_quality_dataset(index, agencies=registry_by_id.values())
     write("dataset.json", json.dumps(dataset, indent=2, sort_keys=True) + "\n")
     write("dataset.csv", to_csv(dataset))
 
@@ -7965,21 +8494,20 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # from the same artifacts already read, published as an API endpoint and a page.
     from .access import coverage_record, national_coverage
 
-    coverage_records = [rec for art in ntd_artifacts if (rec := coverage_record(art)) is not None]
+    coverage_records = [
+        rec for art in comparable_artifacts if (rec := coverage_record(art)) is not None
+    ]
     coverage = national_coverage(coverage_records)
+    coverage_payload = {
+        "license": DATA_LICENSE,
+        "attribution": DATA_ATTRIBUTION,
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        **aggregate_context,
+        **coverage,
+    }
     write(
         "api/v1/accessibility.json",
-        json.dumps(
-            {
-                "license": DATA_LICENSE,
-                "attribution": DATA_ATTRIBUTION,
-                "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-                **coverage,
-            },
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n",
+        json.dumps(coverage_payload, indent=2, sort_keys=True) + "\n",
     )
     # Accessibility coverage lives on the What-feeds-publish page now.
     write("access/index.html", _redirect_page("/adoption/#access", "Accessibility data coverage"))
@@ -7989,25 +8517,24 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # completeness already records. Published as an API endpoint and a page.
     from .adoption import adoption_record, national_adoption
 
-    adoption_records = [rec for art in ntd_artifacts if (rec := adoption_record(art)) is not None]
+    adoption_records = [
+        rec for art in comparable_artifacts if (rec := adoption_record(art)) is not None
+    ]
     adoption_national = national_adoption(adoption_records)
+    adoption_payload = {
+        "license": DATA_LICENSE,
+        "attribution": DATA_ATTRIBUTION,
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        **aggregate_context,
+        **adoption_national,
+    }
     write(
         "api/v1/adoption.json",
-        json.dumps(
-            {
-                "license": DATA_LICENSE,
-                "attribution": DATA_ATTRIBUTION,
-                "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-                **adoption_national,
-            },
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n",
+        json.dumps(adoption_payload, indent=2, sort_keys=True) + "\n",
     )
     write(
         "adoption/index.html",
-        _render_adoption_page(adoption_national, coverage),
+        _render_adoption_page(adoption_payload, coverage_payload),
         f"{BASE_URL}/adoption/",
     )
 
@@ -8031,58 +8558,91 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             health = summarize(load_observations(rt_id))
             if health.observations == 0:
                 continue
-            cfg = AGENCIES.get(rt_id)
+            cfg = registry_by_id.get(rt_id)
             name = cfg.name if cfg else index["agencies"].get(rt_id, {}).get("name", rt_id)
             rt_summaries.append(
-                {"id": rt_id, "name": name, "state": states.get(rt_id, ""), **health.to_dict()}
+                {
+                    "id": rt_id,
+                    "name": name,
+                    "state": states.get(rt_id, ""),
+                    "country": cfg.country if cfg else "",
+                    "subdivision_code": cfg.subdivision_code if cfg else "",
+                    "subdivision_name": cfg.subdivision_name if cfg else "",
+                    **health.to_dict(),
+                }
             )
-    rt_rollup = national_rt(rt_summaries)
+    comparable_rt_summaries = [
+        summary for summary in rt_summaries if str(summary.get("id") or "") in comparable_ids
+    ]
+    rt_rollup = national_rt(comparable_rt_summaries)
+    rt_payload = {
+        "license": DATA_LICENSE,
+        "attribution": DATA_ATTRIBUTION,
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        **aggregate_context,
+        "raw_monitored_feed_record_count": len(rt_summaries),
+        **rt_rollup,
+    }
     write(
         "api/v1/realtime.json",
-        json.dumps(
-            {
-                "license": DATA_LICENSE,
-                "attribution": DATA_ATTRIBUTION,
-                "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-                **rt_rollup,
-            },
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n",
+        json.dumps(rt_payload, indent=2, sort_keys=True) + "\n",
     )
-    write("realtime/index.html", _render_rt_page(rt_rollup, histories), f"{BASE_URL}/realtime/")
+    write(
+        "realtime/index.html",
+        _render_rt_page(rt_payload, histories),
+        f"{BASE_URL}/realtime/",
+    )
 
     # National "most common problems" knowledge base, for practitioners and the
-    # press. Aggregated from the findings read in pass 1, so it adds no per-agency
-    # work. total_agencies is the scored count, so prevalence is a share of feeds.
+    # press. Findings are retained by feed id in pass 1, then restricted to the
+    # guarded cohort here so duplicate or old-contract records cannot inflate
+    # prevalence or the curation queue.
     from .findings_national import national_problems
 
-    problems = national_problems(problem_findings, total_agencies=len(catalog))
+    problems = national_problems(
+        [problem_findings_by_id[agency_id] for agency_id in sorted(comparable_ids)],
+        total_feed_records=len(comparable_ids),
+    )
+    problems_payload = {
+        "license": DATA_LICENSE,
+        "attribution": DATA_ATTRIBUTION,
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        **aggregate_context,
+        **problems,
+    }
     write(
         "api/v1/problems.json",
-        json.dumps(
-            {
-                "license": DATA_LICENSE,
-                "attribution": DATA_ATTRIBUTION,
-                "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-                **problems,
-            },
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n",
+        json.dumps(problems_payload, indent=2, sort_keys=True) + "\n",
     )
-    write("problems/index.html", _render_problems_page(problems), f"{BASE_URL}/problems/")
+    write(
+        "problems/index.html",
+        _render_problems_page(problems_payload),
+        f"{BASE_URL}/problems/",
+    )
 
     # National quality trend over time, derived from the per-agency histories in
     # the index (no new stored state), for the "is transit data getting better?"
     # question. Pure and reproducible.
-    from .national_trend import as_of_points, top_improvers, trend_summary
+    from .national_trend import as_of_points, trend_summary
 
-    trend_points = as_of_points(index)
+    # Corpus claims use the same identity-safe, current-rubric cohort as the
+    # directory aggregates. Strip older rubric points before building the
+    # series so a methodology release cannot appear as national improvement or
+    # regression. The named top-improvers ranking is retired; Pulse already
+    # carries the guarded same-feed change view.
+    trend_index = {
+        "agencies": {
+            agency_id: {
+                **entry,
+                "history": _current_rubric_history(entry.get("history", [])),
+            }
+            for agency_id, entry in index.get("agencies", {}).items()
+            if agency_id in comparable_ids
+        }
+    }
+    trend_points = as_of_points(trend_index)
     trend_sum = trend_summary(trend_points)
-    improvers = top_improvers(index)
+    improvers: list[dict[str, Any]] = []
     write(
         "api/v1/trend.json",
         json.dumps(
@@ -8093,6 +8653,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 "summary": trend_sum,
                 "points": trend_points,
                 "top_improvers": improvers,
+                "comparison": _comparison_metadata,
             },
             indent=2,
             sort_keys=True,
@@ -8214,15 +8775,23 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # (the daily run fetches it via `scorecard ntd-ridership --fetch`), weight
     # quality by annual unlinked passenger trips and publish the national
     # numbers. National framing only: trips on expired feeds, never a ranking.
-    from .ridership import load_ridership, weighted_impact
+    from .ridership import duplicate_ntd_reporter_ids, load_ridership, weighted_impact
 
     ridership_impact: dict[str, Any] | None = None
+    # This endpoint is optional. Remove an earlier render before inspecting the
+    # current inputs so a missing NTD snapshot or empty guarded cohort can never
+    # leave old, unguarded national numbers publicly reachable.
+    ridership_api_path = web / "api" / "v1" / "ridership-impact.json"
+    ridership_api_path.unlink(missing_ok=True)
     ridership_csv = root / "data" / "ntd-ridership.csv"
     rid = load_ridership(ridership_csv)
-    if rid is not None:
+    if rid is not None and comparable_ids:
         rid_records = []
         for a in ntd_artifacts:
-            cfg = AGENCIES.get(str(a.get("agency", {}).get("id", "")))
+            agency_id = str(a.get("agency", {}).get("id", ""))
+            if agency_id not in comparable_ids:
+                continue
+            cfg = AGENCIES.get(agency_id)
             if cfg is None or cfg.country != "US":
                 continue
             days = (a.get("categories", {}).get("freshness", {}).get("details", {})).get(
@@ -8230,34 +8799,47 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             )
             rid_records.append(
                 {
+                    "id": agency_id,
                     "ntd_id": cfg.ntd_id,
                     "score": a.get("overall", {}).get("score"),
                     "grade": a.get("overall", {}).get("grade"),
                     "expiry_status": expiry_status(days),
                 }
             )
-        ridership_impact = weighted_impact(rid_records, rid)
-        write(
-            "api/v1/ridership-impact.json",
-            json.dumps(
-                {
-                    "license": DATA_LICENSE,
-                    "attribution": DATA_ATTRIBUTION,
-                    "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-                    "source": "FTA NTD annual metrics (data.transportation.gov, g27i-aq2u)",
-                    **ridership_impact,
-                },
-                indent=2,
-                sort_keys=True,
-            )
-            + "\n",
+        candidate_impact = weighted_impact(
+            rid_records,
+            rid,
+            quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
         )
+        if candidate_impact.get("matched_ntd_reporters", 0) > 0:
+            ridership_impact = candidate_impact
+            write(
+                "api/v1/ridership-impact.json",
+                json.dumps(
+                    {
+                        "license": DATA_LICENSE,
+                        "attribution": DATA_ATTRIBUTION,
+                        "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+                        "source": "FTA NTD annual metrics (data.transportation.gov, g27i-aq2u)",
+                        "comparison_eligible_count": len(comparable_ids),
+                        "comparison": _comparison_metadata,
+                        **ridership_impact,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n",
+            )
 
     # The coverage overview: worldwide comparisons stay score/delta-only. U.S.
     # NTD ridership is shown in the explicitly labelled context sentence above,
     # never used to move U.S. feeds ahead of equally scored feeds elsewhere.
     # retired URLs redirect to their anchors so old links keep working.
-    board = leaderboard(index, build_quality_dataset(index))
+    board = leaderboard(
+        index,
+        dataset,
+        agencies=registry_by_id.values(),
+    )
     write(
         "pulse/index.html",
         _render_pulse_page(
@@ -8265,7 +8847,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         ),
         f"{BASE_URL}/pulse/",
     )
-    write("leaderboard/index.html", _redirect_page("/pulse/#rankings", "Rankings"))
+    write("leaderboard/index.html", _redirect_page("/pulse/#changes", "Feed changes"))
 
     # The focus-areas hub the primary nav points at.
     write(
@@ -8279,9 +8861,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     from .warehouse import duckdb_available, to_parquet
 
     if duckdb_available():
-        to_parquet(
-            build_quality_dataset(index)["rows"], str(web / "api" / "v1" / "agencies.parquet")
-        )
+        to_parquet(dataset["rows"], str(web / "api" / "v1" / "agencies.parquet"))
         written.append(web / "api" / "v1" / "agencies.parquet")
 
     # The equity overlay page reads the published overlay (the equity workflow's

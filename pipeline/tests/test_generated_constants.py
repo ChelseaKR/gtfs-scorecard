@@ -44,6 +44,7 @@ def test_render_is_marked_generated_and_every_export_is_json() -> None:
     names = [name for name, _ in exports]
     for expected in (
         "STALE_FEED_DAYS",
+        "SERVICE_HORIZON_REVIEW_YEARS",
         "GRADE_BANDS",
         "GRADE_ORDER",
         "GRADE_RANK",

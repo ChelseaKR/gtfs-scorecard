@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Realtime reliability — GTFS Scorecard</title>
-  <meta name="description" content="How reliable the covered transit agencies&#x27; GTFS-Realtime feeds are: uptime and freshness across the corpus, with regional breakdowns.">
+  <meta name="description" content="How reliable the covered GTFS-Realtime feed records are: uptime and freshness across the corpus, with regional breakdowns.">
   <link rel="canonical" href="https://gtfsscorecard.org/realtime/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Realtime reliability — GTFS Scorecard">
-  <meta property="og:description" content="How reliable the covered transit agencies&#x27; GTFS-Realtime feeds are: uptime and freshness across the corpus, with regional breakdowns.">
+  <meta property="og:description" content="How reliable the covered GTFS-Realtime feed records are: uptime and freshness across the corpus, with regional breakdowns.">
   <meta property="og:url" content="https://gtfsscorecard.org/realtime/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -32,7 +32,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -40,60 +40,86 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/" aria-current="page"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/" aria-current="page"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Realtime reliability</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Realtime reliability.</h1>
-    <p class="page-lede">Of <strong>1 agencies</strong> we monitor for realtime, the median feed responded <strong>100.0% of the time</strong>, with the data arriving about 10 seconds behind real time.</p>
-    <section class="feed-details"><h2 class="section-title">Where feeds stand</h2><figure class="service-chart reliability-chart"><figcaption><span class="service-chart-title">Realtime reliability bands</span><span class="service-chart-note">Share of monitored feeds in each uptime band.</span></figcaption><ol class="service-bars"><li class="service-bar" style="--value:100"><div class="service-bar-head"><span class="service-bar-label">Reliable (99%+ uptime)</span><span class="service-bar-value">100%<span class="service-bar-detail">1 of 1 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:0"><div class="service-bar-head"><span class="service-bar-label">Mostly up (90–99%)</span><span class="service-bar-value">0%<span class="service-bar-detail">0 of 1 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:0"><div class="service-bar-head"><span class="service-bar-label">Spotty (under 90%)</span><span class="service-bar-value">0%<span class="service-bar-detail">0 of 1 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li></ol><div class="service-scale" aria-hidden="true"><span>0%</span><span>100%</span></div></figure><details class="viz-data"><summary>Show the table</summary><table class="leaderboard"><thead><tr><th>Reliability</th><th>Feeds</th></tr></thead><tbody><tr><td>Reliable (99%+ uptime)</td><td>1</td></tr><tr><td>Mostly up (90–99%)</td><td>0</td></tr><tr><td>Spotty (under 90%)</td><td>0</td></tr></tbody></table></details></section>
-    <section class="feed-details"><h2 class="section-title">Most reliable</h2><p class="page-lede">Feeds that responded on nearly every check, freshest first. A target to aim for.</p><table class="leaderboard"><thead><tr><th>Agency</th><th>Location</th><th>Uptime</th><th>Median lag (s)</th><th>Score trend</th></tr></thead><tbody><tr><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td><bdi>Unlocated</bdi></td><td>100.0%</td><td>10</td><td><svg class="trend-spark spark-mini" viewBox="0 0 80 20" preserveAspectRatio="none" role="img" aria-label="Score trend for Yolobus (Yolo County Transportation District): 2026-06-21 82.7; 2026-06-22 81.4; 2026-06-23 83.1; 2026-06-24 81.9; 2026-06-25 83.8; 2026-06-26 82.5; 2026-06-27 82.5; 2026-06-28 82.5; 2026-06-29 82.5; 2026-06-30 82.5; 2026-07-01 82.5; 2026-07-02 82.5"><polyline points="3.0,9.6 9.7,14.9 16.5,7.9 23.2,12.9 29.9,5.1 36.6,10.4 43.4,10.4 50.1,10.4 56.8,10.4 63.5,10.4 70.3,10.4 77.0,10.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle class="trend-dot" cx="3.0" cy="9.6" r="1.5" fill="currentColor"><title>2026-06-21: 82.7</title></circle><circle class="trend-dot" cx="9.7" cy="14.9" r="1.5" fill="currentColor"><title>2026-06-22: 81.4</title></circle><circle class="trend-dot" cx="16.5" cy="7.9" r="1.5" fill="currentColor"><title>2026-06-23: 83.1</title></circle><circle class="trend-dot" cx="23.2" cy="12.9" r="1.5" fill="currentColor"><title>2026-06-24: 81.9</title></circle><circle class="trend-dot" cx="29.9" cy="5.1" r="1.5" fill="currentColor"><title>2026-06-25: 83.8</title></circle><circle class="trend-dot" cx="36.6" cy="10.4" r="1.5" fill="currentColor"><title>2026-06-26: 82.5</title></circle><circle class="trend-dot" cx="43.4" cy="10.4" r="1.5" fill="currentColor"><title>2026-06-27: 82.5</title></circle><circle class="trend-dot" cx="50.1" cy="10.4" r="1.5" fill="currentColor"><title>2026-06-28: 82.5</title></circle><circle class="trend-dot" cx="56.8" cy="10.4" r="1.5" fill="currentColor"><title>2026-06-29: 82.5</title></circle><circle class="trend-dot" cx="63.5" cy="10.4" r="1.5" fill="currentColor"><title>2026-06-30: 82.5</title></circle><circle class="trend-dot" cx="70.3" cy="10.4" r="1.5" fill="currentColor"><title>2026-07-01: 82.5</title></circle><circle class="trend-dot" cx="77.0" cy="10.4" r="1.5" fill="currentColor"><title>2026-07-02: 82.5</title></circle></svg></td></tr></tbody></table></section>
-    <section class="feed-details"><h2 class="section-title">By country and subdivision</h2><div class="table-wrap"><table class="leaderboard"><thead><tr><th scope="col">Location</th><th scope="col">Feeds</th><th scope="col">Median uptime</th><th scope="col">Reliable</th></tr></thead><tbody><tr><th scope="row"><bdi>United States</bdi></th><td>1</td><td>100.0%</td><td>1</td></tr></tbody></table></div><details class="subdivision-rollup"><summary>Show 1 covered subdivision in <bdi>United States</bdi></summary><div class="table-wrap"><table class="leaderboard"><caption class="visually-hidden">Covered subdivisions in United States</caption><thead><tr><th scope="col">Subdivision</th><th scope="col">Feeds</th><th scope="col">Median uptime</th><th scope="col">Reliable</th></tr></thead><tbody><tr><th scope="row"><span aria-hidden="true">↳ </span><bdi>Unlocated</bdi><span class="visually-hidden">, <bdi>United States</bdi></span></th><td>1</td><td>100.0%</td><td>1</td></tr></tbody></table></div></details></section>
-    <section class="feed-details"><h2 class="section-title">United States by state</h2><table class="leaderboard"><thead><tr><th>State</th><th>Feeds</th><th>Median uptime</th><th>Reliable</th></tr></thead><tbody><tr><td>Unlocated</td><td>1</td><td>100.0%</td><td>1</td></tr></tbody></table></section>
+    <p class="page-lede">Cross-feed realtime reliability is unavailable until current-contract checks create a comparable feed-record cohort. The raw monitor state contains 1 observed feed records, but this snapshot makes no reliability aggregate or named-feed claim.</p>
+
+
+
+
     <p class="plain-summary"><strong>In plain words:</strong> a realtime feed is only useful if
-    it is actually up and current. This tracks whether each agency's feed responded when we
+    it is actually up and current. This tracks whether each monitored feed responded when we
     checked and how far behind real time it was. An agency that publishes no realtime feed is not
     counted here and is never penalized for it.</p>
     <p class="fineprint">Reliability is the share of monitor runs the feed responded to, over the
     recorded window; freshness is the median header lag. It never changes a grade. The same data
     is at <a href="/api/v1/realtime.json">the realtime API (realtime.json)</a>. Sampling is
-    periodic, not continuous, so this is a reliability signal, not a complete uptime log.</p>
+    periodic, not continuous, so this is a reliability signal, not a complete uptime log.
+    The directory contains 3 published feed records. No cross-feed denominator is published for this snapshot.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

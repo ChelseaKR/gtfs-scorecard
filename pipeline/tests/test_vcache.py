@@ -21,7 +21,13 @@ REPORT = ValidationReport(
 
 
 def _point_cache_at(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(vcache, "artifacts_dir", lambda: tmp_path)
+    monkeypatch.setattr(vcache, "cache_dir", lambda: tmp_path)
+
+
+def test_cache_path_is_outside_the_public_artifact_shape(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    _point_cache_at(tmp_path, monkeypatch)
+
+    assert vcache.cache_path("demo") == tmp_path / "validator" / "demo.json"
 
 
 def test_store_then_load_round_trips_the_report(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]

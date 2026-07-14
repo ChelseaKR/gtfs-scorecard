@@ -14,6 +14,7 @@ aborted, so the tests exercise committed data only and never touch the network.
 
 from __future__ import annotations
 
+import json
 import re
 import threading
 from collections.abc import Iterator
@@ -53,7 +54,22 @@ def site_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     data_dir.mkdir()
     for entry in (REPO_ROOT / "web" / "data").iterdir():
         (data_dir / entry.name).symlink_to(entry)
-    (data_dir / "artifacts").symlink_to(REPO_ROOT / "data" / "artifacts")
+    artifact_source = REPO_ROOT / "data" / "artifacts"
+    public_artifacts = data_dir / "artifacts"
+    public_artifacts.mkdir()
+    for entry in artifact_source.iterdir():
+        if entry.is_file():
+            (public_artifacts / entry.name).symlink_to(entry)
+    for aggregate in ("changes", "rollups"):
+        source = artifact_source / aggregate
+        if source.exists():
+            (public_artifacts / aggregate).symlink_to(source)
+    index = json.loads((artifact_source / "index.json").read_text())
+    for agency_id in index.get("agencies", {}):
+        source = artifact_source / agency_id
+        if source.is_dir():
+            (public_artifacts / agency_id).symlink_to(source)
+    assert not (public_artifacts / "run").exists()
     return docroot
 
 

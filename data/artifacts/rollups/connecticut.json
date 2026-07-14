@@ -1,95 +1,44 @@
 {
-  "agency_count": 15,
-  "average_score": 59.8,
-  "common_fixes": [
-    {
-      "agencies": 12,
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+  "agency_count": 11,
+  "average_score": null,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 11,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 11,
+      "scoring_profile_missing": 11,
+      "scoring_profile_rubric_missing": 11,
+      "service_data_long_expired": 5
     },
-    {
-      "agencies": 7,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "agencies": 7,
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
-    },
-    {
-      "agencies": 4,
-      "code": "missing_required_column",
-      "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 3,
-      "code": "scorecard_no_fare_data",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
-    },
-    {
-      "agencies": 3,
-      "code": "mixed_case_recommended_field",
-      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE')."
-    },
-    {
-      "agencies": 2,
-      "code": "stop_without_stop_time",
-      "fix": "Remove retired stops from the export, or add them back to the trips that should serve them."
-    }
-  ],
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "expired": {
     "lapsed": 0,
-    "stale": 7,
-    "total": 7
+    "stale": 5,
+    "total": 5
   },
-  "generated_at": "2026-07-10T21:00:41+00:00",
-  "grade_distribution": {
-    "B": 1,
-    "C": 5,
-    "D": 1,
-    "F": 8
-  },
+  "generated_at": "2026-07-14T09:01:50+00:00",
+  "grade_distribution": {},
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1652,
+      "days_until_expiry": -1141,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "norwalk-transit-district",
-      "name": "Norwalk Transit District",
+      "id": "connecticut-transit-597",
+      "name": "Hartford Line - Rail",
       "needs_attention": true,
-      "score": 20.9,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1139,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "southeast-area-transit-district",
-      "name": "Southeast Area Transit District",
-      "needs_attention": true,
-      "score": 44.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1139,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "southeast-area-transit-district-552",
-      "name": "Southeast Area Transit District",
-      "needs_attention": true,
-      "score": 44.5,
-      "shapes_status": null,
+      "score": 58.3,
+      "shapes_status": "not_ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -110,14 +59,14 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1106,
+      "days_until_expiry": -1652,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "middletown-area-transit-576",
-      "name": "Middletown Area Transit",
+      "id": "norwalk-transit-district",
+      "name": "Norwalk Transit District",
       "needs_attention": true,
-      "score": 44.9,
-      "shapes_status": null,
+      "score": 20.9,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -138,30 +87,16 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1141,
+      "days_until_expiry": -1139,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "connecticut-transit-597",
-      "name": "Hartford Line - Rail",
+      "id": "southeast-area-transit-district",
+      "name": "Southeast Area Transit District",
       "needs_attention": true,
-      "score": 58.3,
-      "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Score changed sharply on 2026-06-25",
-      "days_until_expiry": 353,
-      "expiry_status": "current",
-      "grade": "D",
-      "id": "lower-hudson-valley-transit",
-      "name": "Lower Hudson Valley Transit",
-      "needs_attention": true,
-      "score": 69.8,
+      "score": 44.5,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
@@ -194,13 +129,27 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 170,
+      "days_until_expiry": 112,
       "expiry_status": "current",
-      "grade": "C",
-      "id": "greater-bridgeport-transit-530",
-      "name": "Greater Bridgeport Transit",
+      "grade": "B",
+      "id": "connecticut-transit-2840",
+      "name": "Hartford Line - Rail",
       "needs_attention": false,
-      "score": 75.2,
+      "score": 83.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 353,
+      "expiry_status": "current",
+      "grade": "D",
+      "id": "lower-hudson-valley-transit",
+      "name": "Lower Hudson Valley Transit",
+      "needs_attention": false,
+      "score": 69.8,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -222,20 +171,6 @@
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 321,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "middletown-area-transit-mat-551",
-      "name": "Middletown Area Transit (MAT)",
-      "needs_attention": false,
-      "score": 77.7,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
       "days_until_expiry": 352,
       "expiry_status": "current",
       "grade": "C",
@@ -246,34 +181,20 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 112,
-      "expiry_status": "current",
-      "grade": "B",
-      "id": "connecticut-transit-2840",
-      "name": "Hartford Line - Rail",
-      "needs_attention": false,
-      "score": 83.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
     }
   ],
-  "needs_attention": 8,
+  "needs_attention": 5,
   "rollup": {
     "id": "connecticut",
     "name": "Connecticut agencies"
   },
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 12,
+    "not_measured": 8,
     "not_ready": 2,
     "ready": 1,
-    "total": 15
+    "total": 11
   },
-  "state_percentile": 63
+  "state_percentile": null
 }

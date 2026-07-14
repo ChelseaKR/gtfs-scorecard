@@ -1,8 +1,9 @@
-"""Measure observed finding resolution and recurrence from artifact history.
+"""Measure observed finding clearance and recurrence from artifact history.
 
-These are product outcomes, not page views: whether a published GTFS finding
-later clears under a measured category, how long that took, and whether it came
-back. Open episodes are right-censored and are never described as failures.
+These are feed-state observations, not proof of an intervention: whether a
+published GTFS finding later clears under the same complete producer contract,
+how long it stayed visible, and whether it came back. Open episodes are
+right-censored and are never described as failures.
 """
 
 from __future__ import annotations
@@ -37,7 +38,18 @@ def build_fix_outcomes(
     observation_start: str | None = None
     observation_end: str | None = None
     for agency_id, artifacts_iter in histories.items():
-        artifacts = sorted(artifacts_iter, key=lambda a: str(a.get("snapshot_date", "")))
+        artifacts: list[dict[str, Any]] = []
+        for artifact in artifacts_iter:
+            try:
+                artifact_id = str(artifact["agency"]["id"])
+                date = str(artifact["snapshot_date"])
+                parsed_date = dt.date.fromisoformat(date)
+            except (KeyError, TypeError, ValueError):
+                continue
+            if artifact_id != agency_id or parsed_date.isoformat() != date:
+                continue
+            artifacts.append(artifact)
+        artifacts.sort(key=lambda a: str(a["snapshot_date"]))
         dates = [str(a.get("snapshot_date", "")) for a in artifacts if a.get("snapshot_date")]
         if dates:
             observation_start = min([observation_start, *dates] if observation_start else dates)
@@ -80,8 +92,9 @@ def build_fix_outcomes(
     return {
         "schema_version": OUTCOME_SCHEMA_VERSION,
         "method": (
-            "A finding opens when its code appears and resolves only when it is absent in a later "
-            "run where the same category was measured. Open episodes are right-censored."
+            "A finding opens when its code appears and clears only when it is absent in a later "
+            "check under the same complete producer contract where the category was measured. "
+            "A clearance does not establish who acted or why. Open episodes are right-censored."
         ),
         "observation_window": {"start": observation_start, "end": observation_end},
         "agencies_with_history": len(histories),
@@ -127,8 +140,9 @@ def render_fix_outcomes_markdown(report: dict[str, Any], *, min_episodes: int = 
     lines.extend(
         [
             "",
-            "Resolution rates are descriptive, not causal. Still-open episodes include recent "
-            "findings that have not had enough time to clear.",
+            "Clearance rates are descriptive, not causal. They do not show who changed a feed "
+            "or why. Still-open episodes include recent findings that have not had enough time "
+            "to clear.",
             "",
         ]
     )

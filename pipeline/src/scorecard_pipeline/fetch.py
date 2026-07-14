@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import Agency, raw_dir
-from .net import UnsafeURLError, safe_get
+from .net import FetchTrace, UnsafeURLError, safe_get
 
 log = logging.getLogger(__name__)
 
@@ -167,16 +167,18 @@ def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenan
     import requests
 
     try:
+        trace = FetchTrace()
         body = safe_get(
             agency.static_gtfs_url,
             headers=FEED_HEADERS,
             timeout=TIMEOUT,
             max_bytes=MAX_GTFS_DOWNLOAD_BYTES,
             retries=FETCH_RETRIES,
+            trace=trace,
         )
         return body, FetchProvenance(
             source="origin",
-            final_url=agency.static_gtfs_url,
+            final_url=trace.final_url or agency.static_gtfs_url,
             max_attempts=FETCH_RETRIES + 1,
         )
     except (requests.exceptions.RequestException, UnsafeURLError) as origin_exc:
@@ -196,12 +198,17 @@ def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenan
             type(origin_exc).__name__,
             mirror,
         )
+        trace = FetchTrace()
         body = safe_get(
-            mirror, headers=FEED_HEADERS, timeout=TIMEOUT, max_bytes=MAX_GTFS_DOWNLOAD_BYTES
+            mirror,
+            headers=FEED_HEADERS,
+            timeout=TIMEOUT,
+            max_bytes=MAX_GTFS_DOWNLOAD_BYTES,
+            trace=trace,
         )
         return body, FetchProvenance(
             source="mirror",
-            final_url=mirror,
+            final_url=trace.final_url or mirror,
             max_attempts=1,  # the mirror fetch is a single attempt (no retries)
             origin_error=type(origin_exc).__name__,
         )

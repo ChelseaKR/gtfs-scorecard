@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from scorecard_pipeline import exportdiff
-from scorecard_pipeline.config import artifacts_dir
+from scorecard_pipeline.config import cache_dir
 
 FIXTURE_ZIP = str(Path(__file__).resolve().parent / "fixtures" / "unitrans_trimmed.zip")
 
@@ -133,7 +133,7 @@ def test_changed_bytes_with_identical_structure_stay_quiet() -> None:
 
 
 def test_foreign_or_corrupt_memory_is_discarded_not_trusted() -> None:
-    path = artifacts_dir() / "acme" / "structure.json"
+    path = cache_dir() / "structure" / "acme.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("{not json")
     assert exportdiff.load_structure("acme") is None

@@ -57,12 +57,12 @@ def _compare(actual: str, golden_name: str) -> None:
 
 
 def test_unbranded_report_golden(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Unitrans: US agency, NTD ready, realtime not yet measured, 20 checks."""
+    """Unitrans: legacy US artifact, NTD shapes check absent, 20 checks."""
     _compare(_generate("unitrans", tmp_path, monkeypatch), "unitrans.html")
 
 
 def test_branded_report_golden(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Yolobus with the fixture brand: cover line, embedded SVG logo, accent."""
+    """Legacy Yolobus artifact: branded cover plus conservative NTD status."""
     actual = _generate("yolobus", tmp_path, monkeypatch, brand_file=BRAND_FILE)
     _compare(actual, "yolobus-branded.html")
 

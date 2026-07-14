@@ -65,9 +65,12 @@ sources; the repo's own `expansion-research.md` independently verified several o
 - FTA, NTD Reporting Changes and Clarifications, RY2023 (public GTFS required for
   fixed-route reporters).
   https://www.federalregister.gov/documents/2023/03/03/2023-04379/national-transit-database-reporting-changes-and-clarifications
-- FTA, NTD Reporting Changes for RY2025 and RY2026, final rule (agency_id ↔ NTD ID
-  handled internally via the P-50 form, after 15 of 18 commenters opposed a mandated
-  agency-side change).
+- FTA, 2026 NTD Full Reporting Policy Manual (`agency_id` required, stable and
+  unique among represented reporters, crosswalked to the NTD ID on P-50; equality
+  to the five-digit NTD ID is not required).
+  https://www.transit.dot.gov/sites/fta.dot.gov/files/2026-06/2026-NTD-Full-Policy-Manual_0.pdf
+- FTA, NTD Reporting Changes for RY2025 and RY2026, final rule (the rulemaking
+  history behind the current P-50 crosswalk).
   https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026
 - Proposed rule (the stronger October 2024 version that was softened).
   https://www.federalregister.gov/documents/2024/10/31/2024-25341/national-transit-database-proposed-reporting-changes-and-clarifications-for-report-years-2025-and
@@ -118,10 +121,10 @@ sources; the repo's own `expansion-research.md` independently verified several o
 | R1 | **Resilient feed fetching** — browser-realistic User-Agent + `Accept`, retry/backoff on 403/429, fall back to Mobility Database `direct_download`; record "feed unreachable" as a neutral state distinct from a low grade | A1,A2,B1,D1,E4,F2 | P0 | M | `[corroborates feature-roadmap.md "Resilient feed fetching"]` · ✅ Implemented (`net.py` browser UA + backoff on 403/429, `fetch.py` Mobility Database mirror fallback, neutral "unreachable" state) |
 | R2 | **Public self-serve claim + verify endpoint** so an agency turns on its own expiry/regression alerts (the built `notify.py`/SES loop's missing front door) | A1,F1,F2 | P0 | M | `[corroborates service-plan.md Stage 1 / ADR 0004]` |
 | R3 | **Tiered expiry lead-time alerts (60/30/14/7 days)** so a subscriber sees a ramp, not a cliff-edge warning | A1,F1,E2 | P0 | S | `[corroborates feature-roadmap.md "Expiry forecasting"]`; Google guidance on staying current · ✅ Implemented (60/30/14/7-day tiers in `alerts.py`) |
-| R4 | **Show which findings cleared between runs** ("fixed since last check" by name) so a manager sees a specific fix land | A1,F1 | P0 | S | `[corroborates feature-roadmap.md / product-roadmap.md]` — strongest retention signal · ✅ Implemented ("fixed since last check" diff on the scorecard) |
+| R4 | **Show which findings cleared between compatible runs** ("no longer reported" by name) so a manager sees the later feed state without a causal claim | A1,F1 | P0 | S | `[corroborates feature-roadmap.md / product-roadmap.md]` — strongest retention signal · ✅ Implemented (causal-neutral finding diff on the scorecard) |
 | R5 | **Per-vendor fix instructions** — name the exact export setting in the detected scheduling tool, not a generic description | A1,B1,F1 | P1 | M | `[corroborates product-roadmap.md Yr1 / service-plan.md Stage 4]` · ✅ Implemented 2026-07-01 (`tool_profiles.py`: producing tool detected from the feed host, named on the fix surfaces) |
 | R6 | **Human assistive-technology pass to fill the VPAT functional-performance log** (NVDA+Firefox, VoiceOver+Safari; status/loading messages; map exceptions re-verified) | E3,E2 | P1 | M | `[corroborates section-508-plan.md Phase 2 / vpat.md "verification in Phase 2"]` — the AAA claim is asserted where it should be demonstrated |
-| R7 | **Audit NTD-readiness copy against the RY2025/2026 final rule** so the `agency_id` flag never implies a mandated agency-side change (FTA handles it via P-50), and handle multi-dataset / shared-regional-feed agencies | E1,C2 | P1 | S | `[corroborates expansion-research.md caveat / ADR 0016]`; final rule · ✅ Implemented 2026-06-30 (committed) |
+| R7 | **Audit NTD-readiness identity copy** so it requires stable `agency_id` presence and the P-50 crosswalk without requiring equality to the NTD ID; handle multi-dataset / shared-regional-feed agencies | E1,C2 | P1 | S | `[corroborates expansion-research.md caveat / ADR 0016]`; 2026 policy manual · ✅ Corrected 2026-07-13 |
 | R8 | **Keep "states it, does not certify usability" unmissable in the UI** on the accessibility sub-score, conformance mark, and NTD flag (not only in docs) | E2,E3,E1,A3 | P1 | S | `[corroborates conformance.md / rubric.md framing]` `[NET-NEW: enforce in UI, not just prose]` |
 | R9 | **Visible validator-version stamp + methodology changelog with effective dates** on the rubric/methodology page | C1,D3,E4 | P1 | S | `[corroborates roadmap.md "rubric fairness" / rubric.md "Last verified"]` `[NET-NEW: surface in UI]` · ✅ Implemented 2026-06-30 (committed) |
 | R10 | **Expired section in every program rollup** (lapsed vs long-expired, worst-first) and a cohort filter to lapsed feeds | F1,D2 | P1 | S | `[corroborates feature-roadmap.md "Recurring stale-feed report"]` · ✅ Implemented (`rollups.py` expired block on every program page) |

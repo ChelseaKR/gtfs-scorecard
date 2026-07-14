@@ -19,16 +19,17 @@ manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains ~1,140 curated feed records,
+District). Beyond the pilots, the registry contains ~1,149 curated feed records,
 mostly in the United States and Canada, plus official first canaries in Japan,
-Australia, and Ireland (~1,450 published scorecard pages). Scores are refreshed
-daily. A feed record
-is not always a distinct transit agency: regional
+Australia, Ireland, France, Malaysia, New Zealand, and Uruguay. The repository
+keeps the generated corpus registry-bounded (~1,128 published scorecard pages),
+with 21 configured feeds still awaiting a current artifact. Scoring is scheduled
+daily, and the public status page records when it actually completed. A feed record is not always a distinct transit agency: regional
 feeds, modal variants, and retired aliases are counted separately while the
 identity registry is reconciled.
 
-**Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — refreshed daily by
-a scheduled pipeline run.
+**Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
+completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).
 
 **Status:** Beta. The three schedule categories score for every published
 scorecard. Realtime quality is scored only when a usable realtime feed is
@@ -43,7 +44,9 @@ Any agency can be added through `registry/intake.yaml`.
 - "Top 3 things to fix", in plain language with effort hints. Findings are
   framed as fixes, never as failures.
 - For U.S. agencies only, an NTD GTFS-readiness read (published, valid,
-  current) and an optional `agency_id`/NTD ID alignment flag.
+  current, and `agency_id` present) plus a neutral check of whether `agency_id`
+  happens to equal the five-digit NTD ID. Equality is optional; RY2026 presence
+  and the P-50 crosswalk are not.
 - Trend history, one JSON artifact per agency per day.
 - An embeddable grade badge (`<agency>/badge.svg`) the agency can put on its
   own developer page.
@@ -63,8 +66,8 @@ what the product becomes for its users is in
 
 Each agency gets a scorecard page, plus three companion pages written for the
 different seats at an agency check-in: a board one-pager
-(`/agency/<id>/board/`), a call-prep brief (`/brief/`), and a fix log
-(`/fixes/`). Around those sit:
+(`/agency/<id>/board/`), a call-prep brief (`/brief/`), and, when comparable
+finding-clearance records exist, a clearance log (`/fixes/`). Around those sit:
 
 - **Coverage views** — the coverage overview (`/pulse/`), most common problems
   (`/problems/`), realtime reliability (`/realtime/`), newer-capability
@@ -74,10 +77,14 @@ different seats at an agency check-in: a board one-pager
 - **Program pages** (`/program/<state>/`) for 46 states plus DC and named
   cohorts from [`rollups.yaml`](rollups.yaml), each with the fixes shared
   across the group.
-- **Practitioner tools** — score any feed on the spot (`/try.html`), check a
-  feed before publishing (`/check/`), compare two agencies (`/compare/`),
+- **Practitioner tools** — request a one-off score through GitHub or run it
+  locally (`/try.html`), check a feed before publishing (`/check/`), compare two agencies (`/compare/`),
   query the dataset with SQL in the browser (`/query/`), and put feed quality
   in a vendor contract (`/procurement/`).
+- **Board-ready outputs** — each agency has a printable one-pager; see the
+  [live Unitrans example](https://gtfsscorecard.org/agency/unitrans/board/), or
+  generate a self-contained, custom-branded offline report with the
+  [board-report tool](docs/board-report.md).
 - **A fix knowledge base** (`/fix/<rule>/`, one plain-language page per common
   validator finding) and the standards crosswalk (`/crosswalk/`).
 - **Machine-readable surfaces** — the versioned read API
@@ -182,10 +189,10 @@ current deployment status.
 | Roadmap piece | In the repo | State |
 | --- | --- | --- |
 | Mobility Database sync | `scorecard sync` (`mobilitydb.py`) | run on demand |
-| Sharded daily run | `scorecard shards` + CI matrix | live in Actions |
+| Scheduled scoring run | `scorecard shards` + CI matrix | daily schedule live in Actions; observed completion is on `/status/` |
 | Expiry/regression alerts | `scorecard alerts`, `notify --send`, `infra/alerts` | applied and live; SES sender verified, digest sends daily |
 | Artifacts on S3 + CloudFront | `infra/artifacts` | applied and live; daily mirror on, site still serves from Pages |
-| Self-serve submission form | `web/submit.html`, `infra/submit` | built; endpoint needs `terraform apply` |
+| Self-serve submission form | `web/submit.html`, `infra/submit` | applied and live; submissions open reviewable pull requests |
 | Instant scoring | `web/try.html`, `infra/instant-score` | built; falls back to the issue-form path until applied (ADR 0029) |
 | Fan-out compute (Year 2) | `infra/compute` (SQS + worker) | built; apply when the daily run outgrows the Actions matrix |
 
@@ -199,9 +206,17 @@ pass removed ~350 records that duplicated an already-listed feed).
 
 Any agency with a public GTFS feed can be added with one YAML block in
 [`registry/intake.yaml`](registry/intake.yaml) and a pull request; the walkthrough is
-[docs/add-your-agency.md](docs/add-your-agency.md). The web form at
-[`web/submit.html`](web/submit.html) does the same without YAML once its
-serverless endpoint (`infra/submit`) is deployed.
+[docs/add-your-agency.md](docs/add-your-agency.md). The live web form at
+[`web/submit.html`](web/submit.html) does the same without YAML through the
+deployed `infra/submit` endpoint; every submission still opens a pull request
+for human review before publication.
+
+## Support
+
+The public scorecards, data, API, local pre-publish check, and request-backed
+one-off scoring remain free. The [support page](https://gtfsscorecard.org/support/)
+explains the project's infrastructure needs and accepts sponsorship inquiries;
+it does not advertise a payment rail that is not ready.
 
 ## Standards conformance
 
@@ -222,7 +237,7 @@ declared here; none is silently skipped.
 | AI-EVALUATION | **N/A** — no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
 | [QUALITY & METRICS](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [DOCUMENTATION](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [RELEASE & VERSIONING](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — marketplace action tags (`v1`/`v1.0.0`), monthly dataset releases, MCP registry entry |
+| [RELEASE & VERSIONING](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.2.0`), monthly dataset releases, MCP registry entry |
 | [RESPONSIBLE-TECH](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked

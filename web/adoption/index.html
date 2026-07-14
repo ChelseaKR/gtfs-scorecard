@@ -4,21 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>What feeds publish — GTFS Scorecard</title>
-  <meta name="description" content="Which GTFS features US transit feeds publish (flexible service, fares and Fares v2, station pathways) and how complete their accessibility data is.">
+  <meta name="description" content="Which GTFS features covered transit feeds publish (flexible service, fares and Fares v2, station pathways) and how complete their accessibility data is.">
   <link rel="canonical" href="https://gtfsscorecard.org/adoption/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="What feeds publish — GTFS Scorecard">
-  <meta property="og:description" content="Which GTFS features US transit feeds publish (flexible service, fares and Fares v2, station pathways) and how complete their accessibility data is.">
+  <meta property="og:description" content="Which GTFS features covered transit feeds publish (flexible service, fares and Fares v2, station pathways) and how complete their accessibility data is.">
   <meta property="og:url" content="https://gtfsscorecard.org/adoption/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,600;0,700;0,900;1,600&family=Overpass+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <script>
@@ -36,7 +32,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -44,12 +40,12 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>National pulse</a><a class="nav-stop" href="/focus/" aria-current="page"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/" aria-current="page"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">What feeds publish</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">What feeds publish.</h1>
-    <p class="page-lede">Across 1449 feeds, <strong>42.8%</strong> publish flexible (demand-responsive) service, <strong>62.9%</strong> publish fare data (5.7% using the newer Fares v2), and <strong>0.3%</strong> model stations with accessible paths. These are the newer, optional parts of GTFS; adoption shows where the spec is spreading.</p>
+    <p class="page-lede">Cross-feed capability adoption is unavailable until current-contract checks create a comparable feed-record cohort. This snapshot makes no adoption-rate or named-feed claim.</p>
     <p class="page-lede"><strong>What this measures:</strong> adoption of optional
     parts of the spec, never quality. None of these counts changes a grade, and a
     feed without them is early, not failing.</p>
@@ -57,29 +53,33 @@
     <section id="features" aria-labelledby="features-h" tabindex="-1">
       <h2 class="section-title" id="features-h">The newer, optional parts of GTFS</h2>
       <div class="section-grid">
-      <section class="feed-details"><h2 class="section-title">What feeds publish</h2><figure class="service-chart adoption-chart"><figcaption><span class="service-chart-title">Adoption by capability</span><span class="service-chart-note">Share of tracked feeds publishing each optional capability.</span></figcaption><ol class="service-bars"><li class="service-bar" style="--value:62.9"><div class="service-bar-head"><span class="service-bar-label">Fare data (any model)</span><span class="service-bar-value">62.9%<span class="service-bar-detail">911 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:42.8"><div class="service-bar-head"><span class="service-bar-label">Flexible (demand-responsive) service</span><span class="service-bar-value">42.8%<span class="service-bar-detail">620 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:5.7"><div class="service-bar-head"><span class="service-bar-label">Fare data using Fares v2</span><span class="service-bar-value">5.7%<span class="service-bar-detail">83 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:0.3"><div class="service-bar-head"><span class="service-bar-label">Station accessibility (pathways)</span><span class="service-bar-value">0.3%<span class="service-bar-detail">5 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:0.3"><div class="service-bar-head"><span class="service-bar-label">Step-free station paths</span><span class="service-bar-value">0.3%<span class="service-bar-detail">5 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:0.1"><div class="service-bar-head"><span class="service-bar-label">Contactless payment declared (cEMV)</span><span class="service-bar-value">0.1%<span class="service-bar-detail">1 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li></ol><div class="service-scale" aria-hidden="true"><span>0%</span><span>100%</span></div></figure><details class="viz-data"><summary>Show the table</summary><table class="leaderboard"><thead><tr><th>Capability</th><th>Feeds</th><th>Share</th></tr></thead><tbody><tr><td>Flexible (demand-responsive) service</td><td>620</td><td>42.8%</td></tr><tr><td>Fare data (any model)</td><td>911</td><td>62.9%</td></tr><tr><td>Fare data using Fares v2</td><td>83</td><td>5.7%</td></tr><tr><td>Station accessibility (pathways)</td><td>5</td><td>0.3%</td></tr><tr><td>Step-free station paths</td><td>5</td><td>0.3%</td></tr><tr><td>Contactless payment declared (cEMV)</td><td>1</td><td>0.1%</td></tr></tbody></table></details></section>
-      <section class="feed-details"><h2 class="section-title">Publishing flexible service</h2><p class="page-lede">Feeds that already describe demand-responsive or dial-a-ride service in GTFS-Flex, so a trip planner can offer it.</p><table class="leaderboard"><thead><tr><th>Agency</th><th>State</th></tr></thead><tbody><tr><td><a href="/agency/north-lake-tahoe-express/">24 hour advance reservations required</a></td><td>Nevada</td></tr><tr><td><a href="/agency/advance-transit/">Advance Transit</a></td><td>Vermont</td></tr><tr><td><a href="/agency/advance-transit-631/">Advance Transit</a></td><td>Vermont</td></tr><tr><td><a href="/agency/alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet/">Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue &amp; Gold Fleet</a></td><td>California</td></tr><tr><td><a href="/agency/alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet-595/">Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue &amp; Gold Fleet</a></td><td>California</td></tr><tr><td><a href="/agency/alhambra-community-transit/">Alhambra Community Transit</a></td><td>Unlocated</td></tr><tr><td><a href="/agency/alhambra-community-transit-211/">Alhambra Community Transit</a></td><td>California</td></tr><tr><td><a href="/agency/all-points-transit/">All Points Transit</a></td><td>Colorado</td></tr><tr><td><a href="/agency/all-points-transit-212/">All Points Transit</a></td><td>Colorado</td></tr><tr><td><a href="/agency/altavista-community-transit-system/">Altavista Community Transit System</a></td><td>Virginia</td></tr></tbody></table></section>
+
+
       </div>
-      <section class="feed-details"><h2 class="section-title">By state</h2><table class="leaderboard"><thead><tr><th>State</th><th>Agencies</th><th>Flex</th><th>Fares</th><th>Fares v2</th><th>Pathways</th></tr></thead><tbody><tr><td>California</td><td>199</td><td>96</td><td>155</td><td>38</td><td>0</td></tr><tr><td>Unlocated</td><td>161</td><td>93</td><td>115</td><td>24</td><td>0</td></tr><tr><td>Colorado</td><td>126</td><td>98</td><td>85</td><td>2</td><td>0</td></tr><tr><td>Washington</td><td>95</td><td>52</td><td>57</td><td>5</td><td>0</td></tr><tr><td>Oregon</td><td>92</td><td>45</td><td>66</td><td>1</td><td>0</td></tr><tr><td>New York</td><td>87</td><td>2</td><td>16</td><td>0</td><td>0</td></tr><tr><td>Virginia</td><td>75</td><td>47</td><td>56</td><td>0</td><td>0</td></tr><tr><td>Massachusetts</td><td>67</td><td>26</td><td>44</td><td>3</td><td>1</td></tr><tr><td>Florida</td><td>52</td><td>16</td><td>32</td><td>0</td><td>0</td></tr><tr><td>Maryland</td><td>36</td><td>6</td><td>12</td><td>3</td><td>1</td></tr><tr><td>North Carolina</td><td>36</td><td>18</td><td>24</td><td>0</td><td>0</td></tr><tr><td>Iowa</td><td>34</td><td>4</td><td>19</td><td>0</td><td>0</td></tr><tr><td>Arizona</td><td>30</td><td>8</td><td>22</td><td>0</td><td>0</td></tr><tr><td>Vermont</td><td>28</td><td>24</td><td>26</td><td>0</td><td>0</td></tr><tr><td>Michigan</td><td>22</td><td>6</td><td>6</td><td>0</td><td>0</td></tr><tr><td>Wisconsin</td><td>22</td><td>12</td><td>16</td><td>1</td><td>0</td></tr><tr><td>Ohio</td><td>21</td><td>0</td><td>12</td><td>1</td><td>0</td></tr><tr><td>New Mexico</td><td>20</td><td>2</td><td>19</td><td>0</td><td>0</td></tr><tr><td>Georgia</td><td>18</td><td>0</td><td>7</td><td>0</td><td>0</td></tr><tr><td>Illinois</td><td>17</td><td>4</td><td>9</td><td>1</td><td>0</td></tr><tr><td>Texas</td><td>17</td><td>6</td><td>12</td><td>1</td><td>0</td></tr><tr><td>Pennsylvania</td><td>16</td><td>2</td><td>9</td><td>2</td><td>1</td></tr><tr><td>Connecticut</td><td>15</td><td>8</td><td>10</td><td>0</td><td>0</td></tr><tr><td>Indiana</td><td>13</td><td>2</td><td>9</td><td>0</td><td>0</td></tr><tr><td>Tennessee</td><td>11</td><td>1</td><td>5</td><td>0</td><td>0</td></tr><tr><td>Alabama</td><td>10</td><td>2</td><td>4</td><td>0</td><td>0</td></tr><tr><td>Alaska</td><td>9</td><td>4</td><td>7</td><td>0</td><td>0</td></tr><tr><td>Minnesota</td><td>9</td><td>4</td><td>5</td><td>0</td><td>1</td></tr><tr><td>Montana</td><td>9</td><td>7</td><td>6</td><td>0</td><td>0</td></tr><tr><td>Nevada</td><td>9</td><td>3</td><td>5</td><td>0</td><td>0</td></tr><tr><td>Kentucky</td><td>8</td><td>0</td><td>3</td><td>0</td><td>0</td></tr><tr><td>Maine</td><td>7</td><td>0</td><td>2</td><td>0</td><td>0</td></tr><tr><td>New Jersey</td><td>7</td><td>2</td><td>4</td><td>0</td><td>0</td></tr><tr><td>South Carolina</td><td>7</td><td>4</td><td>6</td><td>0</td><td>0</td></tr><tr><td>District of Columbia</td><td>6</td><td>2</td><td>3</td><td>0</td><td>1</td></tr><tr><td>Kansas</td><td>6</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>Missouri</td><td>6</td><td>2</td><td>2</td><td>0</td><td>0</td></tr><tr><td>Nebraska</td><td>5</td><td>1</td><td>2</td><td>0</td><td>0</td></tr><tr><td>Rhode Island</td><td>5</td><td>2</td><td>2</td><td>0</td><td>0</td></tr><tr><td>Utah</td><td>5</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>Idaho</td><td>4</td><td>0</td><td>3</td><td>0</td><td>0</td></tr><tr><td>Mississippi</td><td>4</td><td>2</td><td>3</td><td>0</td><td>0</td></tr><tr><td>Oklahoma</td><td>4</td><td>0</td><td>2</td><td>1</td><td>0</td></tr><tr><td>Arkansas</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>Hawaii</td><td>3</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>Louisiana</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>New Hampshire</td><td>3</td><td>2</td><td>2</td><td>0</td><td>0</td></tr><tr><td>North Dakota</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>South Dakota</td><td>2</td><td>2</td><td>2</td><td>0</td><td>0</td></tr><tr><td>Delaware</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>West Virginia</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr></tbody></table></section>
+
+
     </section>
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="access" aria-labelledby="access-h" tabindex="-1">
       <h2 class="section-title" id="access-h">Accessibility data coverage</h2>
-      <p class="page-lede">Across 1449 feeds, an average of <strong>13.7% of stops</strong> carry wheelchair-access information. When a stop is unmarked, a rider who uses a wheelchair cannot tell from a trip planner whether they can board there.
+      <p class="page-lede">Cross-feed accessibility coverage is unavailable until current-contract checks create a comparable feed-record cohort. This snapshot makes no corpus-wide completeness or named-feed claim.
     <strong>What this measures:</strong> whether feeds publish the data, never
     whether a stop is physically usable.</p>
     <div class="section-grid">
-    <section class="feed-details"><h2 class="section-title">Where feeds stand</h2><figure class="service-chart access-coverage-chart"><figcaption><span class="service-chart-title">Stop-level accessibility coverage</span><span class="service-chart-note">Share of feeds in each coverage band.</span></figcaption><ol class="service-bars"><li class="service-bar" style="--value:9.5"><div class="service-bar-head"><span class="service-bar-label">Nearly every stop marked</span><span class="service-bar-value">9.5%<span class="service-bar-detail">138 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:15.9"><div class="service-bar-head"><span class="service-bar-label">Some stops marked</span><span class="service-bar-value">15.9%<span class="service-bar-detail">231 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li><li class="service-bar" style="--value:74.5"><div class="service-bar-head"><span class="service-bar-label">No accessibility data yet</span><span class="service-bar-value">74.5%<span class="service-bar-detail">1080 of 1449 feeds</span></span></div><div class="service-track" aria-hidden="true"><span class="service-fill"></span><span class="service-stop"></span></div></li></ol><div class="service-scale" aria-hidden="true"><span>0%</span><span>100%</span></div></figure><details class="viz-data"><summary>Show the table</summary><table class="leaderboard"><thead><tr><th>Stop-level coverage</th><th>Feeds</th></tr></thead><tbody><tr><td>Nearly every stop marked</td><td>138</td></tr><tr><td>Some stops marked</td><td>231</td></tr><tr><td>No accessibility data yet</td><td>1080</td></tr></tbody></table></details></section>
-    <section class="feed-details"><h2 class="section-title">Most complete</h2><p class="page-lede">Feeds whose stops are the most fully marked for wheelchair access. A target to aim for.</p><table class="leaderboard"><thead><tr><th>Agency</th><th>State</th><th>Stops marked</th></tr></thead><tbody><tr><td><a href="/agency/altamont-corridor-express/">Altamont Corridor Express</a></td><td>California</td><td>100.0%</td></tr><tr><td><a href="/agency/ann-arbor-area-transportation-authority-theride/">Ann Arbor Area Transportation Authority (TheRide)</a></td><td>Michigan</td><td>100.0%</td></tr><tr><td><a href="/agency/annapolis-transit-2285/">Annapolis Transit</a></td><td>Maryland</td><td>100.0%</td></tr><tr><td><a href="/agency/avon-transit-2433/">Avon Transit</a></td><td>Colorado</td><td>100.0%</td></tr><tr><td><a href="/agency/bwi-thurgood-marshall-airport-bwi-shuttle/">BWI Thurgood Marshall Airport (BWI) Shuttle</a></td><td>Maryland</td><td>100.0%</td></tr><tr><td><a href="/agency/black-ball-ferry-line/">Black Ball Ferry Line</a></td><td>Washington</td><td>100.0%</td></tr><tr><td><a href="/agency/black-ball-ferry-line-286/">Black Ball Ferry Line</a></td><td>Washington</td><td>100.0%</td></tr><tr><td><a href="/agency/boston-harbor-islands-ferries-2073/">Boston Harbor Islands Ferries</a></td><td>Massachusetts</td><td>100.0%</td></tr><tr><td><a href="/agency/boston-harbor-islands-ferry/">Boston Harbor Islands Ferry</a></td><td>New York</td><td>100.0%</td></tr><tr><td><a href="/agency/brightline-trains-llc/">Brightline Trains LLC</a></td><td>Florida</td><td>100.0%</td></tr></tbody></table></section>
+
+
     </div>
-    <section class="feed-details"><h2 class="section-title">By state</h2><table class="leaderboard"><thead><tr><th>State</th><th>Agencies</th><th>Avg stops marked</th><th>Nearly all</th><th>None yet</th></tr></thead><tbody><tr><td>California</td><td>199</td><td>17.4%</td><td>21</td><td>140</td></tr><tr><td>Unlocated</td><td>161</td><td>15.3%</td><td>14</td><td>112</td></tr><tr><td>Colorado</td><td>126</td><td>7.8%</td><td>7</td><td>103</td></tr><tr><td>Washington</td><td>95</td><td>24.5%</td><td>20</td><td>66</td></tr><tr><td>Oregon</td><td>92</td><td>1.9%</td><td>1</td><td>87</td></tr><tr><td>New York</td><td>87</td><td>11.5%</td><td>10</td><td>71</td></tr><tr><td>Virginia</td><td>75</td><td>0.3%</td><td>0</td><td>64</td></tr><tr><td>Massachusetts</td><td>67</td><td>10.7%</td><td>2</td><td>57</td></tr><tr><td>Florida</td><td>52</td><td>18.3%</td><td>6</td><td>36</td></tr><tr><td>Maryland</td><td>36</td><td>18.9%</td><td>5</td><td>20</td></tr><tr><td>North Carolina</td><td>36</td><td>3.3%</td><td>0</td><td>21</td></tr><tr><td>Iowa</td><td>34</td><td>8.7%</td><td>1</td><td>27</td></tr><tr><td>Arizona</td><td>30</td><td>26.7%</td><td>8</td><td>20</td></tr><tr><td>Vermont</td><td>28</td><td>0.0%</td><td>0</td><td>28</td></tr><tr><td>Michigan</td><td>22</td><td>40.0%</td><td>4</td><td>9</td></tr><tr><td>Wisconsin</td><td>22</td><td>8.7%</td><td>1</td><td>14</td></tr><tr><td>Ohio</td><td>21</td><td>35.4%</td><td>7</td><td>12</td></tr><tr><td>New Mexico</td><td>20</td><td>15.9%</td><td>3</td><td>13</td></tr><tr><td>Georgia</td><td>18</td><td>8.9%</td><td>1</td><td>16</td></tr><tr><td>Illinois</td><td>17</td><td>16.0%</td><td>2</td><td>12</td></tr><tr><td>Texas</td><td>17</td><td>9.9%</td><td>0</td><td>11</td></tr><tr><td>Pennsylvania</td><td>16</td><td>25.0%</td><td>4</td><td>12</td></tr><tr><td>Connecticut</td><td>15</td><td>14.5%</td><td>2</td><td>8</td></tr><tr><td>Indiana</td><td>13</td><td>8.3%</td><td>1</td><td>9</td></tr><tr><td>Tennessee</td><td>11</td><td>34.9%</td><td>2</td><td>6</td></tr><tr><td>Alabama</td><td>10</td><td>10.0%</td><td>1</td><td>9</td></tr><tr><td>Alaska</td><td>9</td><td>24.1%</td><td>2</td><td>5</td></tr><tr><td>Minnesota</td><td>9</td><td>22.2%</td><td>2</td><td>7</td></tr><tr><td>Montana</td><td>9</td><td>8.5%</td><td>0</td><td>7</td></tr><tr><td>Nevada</td><td>9</td><td>0.0%</td><td>0</td><td>9</td></tr><tr><td>Kentucky</td><td>8</td><td>0.0%</td><td>0</td><td>8</td></tr><tr><td>Maine</td><td>7</td><td>0.4%</td><td>0</td><td>5</td></tr><tr><td>New Jersey</td><td>7</td><td>28.6%</td><td>2</td><td>5</td></tr><tr><td>South Carolina</td><td>7</td><td>23.4%</td><td>1</td><td>2</td></tr><tr><td>District of Columbia</td><td>6</td><td>16.7%</td><td>1</td><td>5</td></tr><tr><td>Kansas</td><td>6</td><td>25.7%</td><td>1</td><td>4</td></tr><tr><td>Missouri</td><td>6</td><td>33.3%</td><td>2</td><td>4</td></tr><tr><td>Nebraska</td><td>5</td><td>19.8%</td><td>1</td><td>4</td></tr><tr><td>Rhode Island</td><td>5</td><td>0.0%</td><td>0</td><td>5</td></tr><tr><td>Utah</td><td>5</td><td>26.9%</td><td>0</td><td>2</td></tr><tr><td>Idaho</td><td>4</td><td>23.9%</td><td>1</td><td>3</td></tr><tr><td>Mississippi</td><td>4</td><td>25.1%</td><td>1</td><td>1</td></tr><tr><td>Oklahoma</td><td>4</td><td>22.4%</td><td>0</td><td>3</td></tr><tr><td>Arkansas</td><td>3</td><td>0.0%</td><td>0</td><td>3</td></tr><tr><td>Hawaii</td><td>3</td><td>0.0%</td><td>0</td><td>3</td></tr><tr><td>Louisiana</td><td>3</td><td>0.0%</td><td>0</td><td>3</td></tr><tr><td>New Hampshire</td><td>3</td><td>0.0%</td><td>0</td><td>3</td></tr><tr><td>North Dakota</td><td>3</td><td>0.0%</td><td>0</td><td>3</td></tr><tr><td>South Dakota</td><td>2</td><td>0.0%</td><td>0</td><td>2</td></tr><tr><td>Delaware</td><td>1</td><td>0.0%</td><td>0</td><td>1</td></tr><tr><td>West Virginia</td><td>1</td><td>97.9%</td><td>1</td><td>0</td></tr></tbody></table></section>
+
+
     <p class="fineprint">Coverage is the share of a feed's stops carrying
     <code>wheelchair_boarding</code> and trips carrying <code>wheelchair_accessible</code>,
-    the fields the California Transit Data Guidelines ask for. It never changes a grade. The
+    the portable GTFS accessibility fields used by trip planners. California's
+    Transit Data Guidelines are one regional source for this published scoring profile,
+    not its worldwide authority. It never changes a grade. The
     same data is at <a href="/api/v1/accessibility.json">the accessibility API
     (accessibility.json)</a>. This page is about data completeness; for how this site itself
     meets <abbr title="Web Content Accessibility Guidelines">WCAG</abbr>, see
-    <a href="/accessibility/">Accessibility</a>.</p>
+    <a href="/accessibility/">Accessibility</a>. The directory contains 1128 published feed records. No cross-feed denominator is published for this snapshot.</p>
     </section>
     <p class="plain-summary"><strong>In plain words:</strong> a feed does not need any of these to
     earn a good grade. This tracks where the newer, optional parts of GTFS are catching on, so an
@@ -89,41 +89,69 @@
     (<code>fare_attributes.txt</code> for the legacy model, <code>fare_products.txt</code> and
     <code>fare_leg_rules.txt</code> for Fares v2), and GTFS-Pathways (<code>pathways.txt</code>,
     <code>levels.txt</code>). It never changes a grade. The same data is at
-    <a href="/api/v1/adoption.json">the adoption API (adoption.json)</a>.</p>
+    <a href="/api/v1/adoption.json">the adoption API (adoption.json)</a>.
+    The directory contains 1128 published feed records. No cross-feed denominator is published for this snapshot.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>The nation:</strong>
-      <a href="/pulse/">National pulse</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/realtime/">Realtime</a> · <a href="/equity/">Equity</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

@@ -10,7 +10,7 @@
  */
 
 /* Presentation constants shared with the pipeline: grade bands and ranks,
- * category and severity labels, tier words, the fix-guide base URL, and the
+ * category and severity labels, the fix-guide base URL, and the
  * canonical validator rules page. Generated from the Python definitions
  * (pipeline/src/scorecard_pipeline/constants_export.py) by
  * `scorecard render-constants`, so the app cannot drift from the pipeline;
@@ -23,8 +23,8 @@ import {
   GRADE_RANK,
   SEVERITY_LABELS,
   JURISDICTION_GUIDANCE,
+  SERVICE_HORIZON_REVIEW_YEARS,
   SUPPORT_RESOURCES,
-  TIER_LABELS,
   UNIVERSAL_GUIDANCE,
   US_NTD_GUIDANCE,
   US_STATE_SUBDIVISION_CODES,
@@ -53,10 +53,24 @@ function ruleRefLink(code) {
   if (!code || String(code).startsWith("scorecard_")) return "";
   const url = `${VALIDATOR_RULES_PAGE}#${encodeURIComponent(code)}-rule`;
   return ` ·
-            <a class="rule-ref" href="${esc(url)}" target="_blank" rel="noopener">See the GTFS Validator rule<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on gtfs-validator.mobilitydata.org)</span></a>`;
+            <a class="rule-ref" href="${escAttr(url)}" target="_blank" rel="noopener">See the GTFS Validator rule<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on gtfs-validator.mobilitydata.org)</span></a>`;
 }
 
 const main = /** @type {HTMLElement} */ (document.getElementById("main"));
+
+/** Artifact severities cross a public JSON boundary. Keep both the label and
+ *  CSS token on a closed allowlist; an unknown value is informational rather
+ *  than becoming markup. @param {unknown} value */
+function findingSeverity(value) {
+  switch (String(value || "").toUpperCase()) {
+    case "ERROR":
+      return { key: "ERROR", className: "sev-error", label: SEVERITY_LABELS.ERROR };
+    case "WARNING":
+      return { key: "WARNING", className: "sev-warning", label: SEVERITY_LABELS.WARNING };
+    default:
+      return { key: "INFO", className: "sev-info", label: SEVERITY_LABELS.INFO };
+  }
+}
 
 /* A "cohort" is a personal list of agencies a liaison follows, kept in this
  * browser and shareable by URL (#/cohort?ids=a,b,c). No account, no backend. */
@@ -170,7 +184,8 @@ function escAttr(text) {
 
 /** @param {string} grade @returns {string} */
 function gradeClass(grade) {
-  return `grade-${grade.toLowerCase()}`;
+  const normalized = String(grade || "F").toUpperCase();
+  return `grade-${["A", "B", "C", "D", "F"].includes(normalized) ? normalized.toLowerCase() : "f"}`;
 }
 
 function routeRule() {
@@ -180,10 +195,29 @@ function routeRule() {
   </div>`;
 }
 
+/** Human-readable producer contract behind a cross-feed aggregate. @param {any} comparison */
+function comparisonContractText(comparison) {
+  const contract = comparison || {};
+  const categories = Array.isArray(contract.required_measured_categories)
+    ? contract.required_measured_categories.map(
+        (category) => CATEGORY_LABELS[category] || String(category),
+      )
+    : [];
+  const measured = categories.length
+    ? categories.map((category) => esc(category)).join(", ")
+    : "one shared measured-category set";
+  return (
+    `rubric ${esc(String(contract.required_rubric_version || "current"))}, ` +
+    `scoring profile ${esc(String(contract.required_scoring_profile_id || "current"))}, ` +
+    `MobilityData gtfs-validator ${esc(String(contract.required_validator_version || "current"))}, ` +
+    `and measured categories ${measured}`
+  );
+}
+
 /* ---------------- national overview + directory ---------------- */
 
-/** The directory document, fetched once and reused for the overview and for the
- *  per-agency peer line. @type {Promise<any> | null} */
+/** The directory document, fetched once and reused for the overview and for
+ *  per-scorecard location context. @type {Promise<any> | null} */
 let directoryPromise = null;
 
 /** @returns {Promise<any>} */
@@ -234,21 +268,11 @@ function placeLabel(row) {
   return subdivision ? `${subdivision}, ${countryLabel}` : countryLabel || row?.state || "";
 }
 
-/** Plain-language peer context for one directory card from its size-peer
- *  percentile. Reads the normalized card record (pct, tier).
- *  @param {{pct: number|null, tier: string}} a @returns {string} */
-function peerNote(a) {
-  const pct = a.pct;
-  if (pct == null || a.tier === "unknown") return "";
-  const tier = TIER_LABELS[a.tier] || a.tier;
-  return `Better than ${pct}% of ${tier} agencies`;
-}
-
 /** A grade-distribution bar: one labelled segment per grade, sized
  *  by share. Decorative fill, but each segment is a labelled list item so the
  *  same information is available without color. @param {any} dist @param {number} total
  *  @param {string} [label] */
-function gradeDistributionBar(dist, total, label = "Grade distribution across all agencies") {
+function gradeDistributionBar(dist, total, label = "Grade distribution across comparable scorecards") {
   const order = ["A", "B", "C", "D", "F"];
   const segs = order
     .map((g) => {
@@ -262,7 +286,29 @@ function gradeDistributionBar(dist, total, label = "Grade distribution across al
       </li>`;
     })
     .join("");
-  return `<ul class="grade-distribution" aria-label="${esc(label)}">${segs}</ul>`;
+  return `<ul class="grade-distribution" aria-label="${escAttr(label)}">${segs}</ul>`;
+}
+
+/** Fail-closed validation for a guarded score aggregate. A stale payload must
+ *  not display an old median/average beside a zero or missing comparison cohort.
+ *  @param {any} payload @param {any} center */
+function guardedAggregateState(payload, center) {
+  const rawCount = payload?.comparison?.eligible_count;
+  const count = Number.isInteger(rawCount) && rawCount > 0 ? rawCount : 0;
+  const distribution = payload?.grade_distribution || {};
+  const distributionTotal = ["A", "B", "C", "D", "F"].reduce((total, grade) => {
+    const value = distribution[grade];
+    return total + (Number.isInteger(value) && value >= 0 ? value : 0);
+  }, 0);
+  return {
+    count,
+    distribution,
+    valid:
+      count > 0 &&
+      typeof center === "number" &&
+      Number.isFinite(center) &&
+      distributionTotal === count,
+  };
 }
 
 /** Five buckets of expired-feed share, for the choropleth's sequential fill.
@@ -277,7 +323,7 @@ function expiredQuintile(share) {
 }
 
 /** Build the US choropleth SVG from the projected state paths and the per-state
- *  summary rows. States with no tracked agencies render faint and inert.
+ *  summary rows. States with no published feed records render faint and inert.
  *  @param {{viewBox: string, states: Record<string,string>}} mapData
  *  @param {Record<string, any>} byState @returns {string} */
 function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations = false) {
@@ -289,13 +335,13 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
       }
       const pct = Math.round((row.expired / row.agencies) * 100);
       const q = expiredQuintile(row.expired / row.agencies);
-      const noun = row.agencies === 1 ? "agency" : "agencies";
+      const noun = row.agencies === 1 ? "feed" : "feeds";
       const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
       const subdivision = subdivisionCodes[name] || "";
       if (portableLocations && !subdivision) {
-        return `<path d="${d}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
+        return `<path d="${escAttr(d)}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
       }
-      return `<path d="${d}" class="us-state q${q}" data-country="US" data-state="${escAttr(name)}"
+      return `<path d="${escAttr(d)}" class="us-state q${q}" data-country="US" data-state="${escAttr(name)}"
         data-subdivision="${escAttr(subdivision)}" data-subdivision-name="${escAttr(name)}"
         tabindex="0" role="button" aria-pressed="false"
         aria-label="${escAttr(label)} — filter to this state"><title>${esc(label)}</title></path>`;
@@ -338,7 +384,7 @@ function locationControlsHtml(countries, states) {
           data-state="Unlocated" aria-pressed="false">Unlocated
           <span class="state-n">${unlocated.agencies}</span></button>`
       : "";
-    return `<div class="state-grid" role="group" aria-label="Filter agencies by state">
+    return `<div class="state-grid" role="group" aria-label="Filter scorecards by state">
       ${chips}${unknown}</div><div class="us-map" id="us-map" hidden></div>`;
   }
 
@@ -349,7 +395,7 @@ function locationControlsHtml(countries, states) {
         <bdi>${esc(country.country_name)}</bdi> <span class="state-n">${country.agencies}</span></button>`
     )
     .join("");
-  return `<div class="country-grid" role="group" aria-label="Filter agencies by country">
+  return `<div class="country-grid" role="group" aria-label="Filter scorecards by country">
       ${countryChips}</div><div class="us-map" id="us-map" hidden></div>
       <div class="location-groups"></div>`;
 }
@@ -377,7 +423,6 @@ function renderOverview(directory) {
       subdivisionName: a.subdivision_name || a.state || "",
       tier: a.size_tier || "unknown",
       expiry: a.expiry_status || "unknown",
-      pct: a.peer_percentile,
       date: a.snapshot_date,
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
@@ -385,32 +430,31 @@ function renderOverview(directory) {
 
   const total = agencies.length;
   const expired = s.expired || { total: 0 };
+  const aggregate = guardedAggregateState(s, s.median_score);
+  const comparableCount = aggregate.count;
+  const comparisonContract = comparisonContractText(s.comparison);
+  const comparisonNote = aggregate.valid
+    ? `The median and grade distribution use ${formatNumber(comparableCount)} of
+      ${formatNumber(total)} feed scorecards: canonical, active, non-duplicate records under
+      one producer contract, ${comparisonContract}.`
+    : `The cross-feed median and grade distribution are unavailable until the directory has
+      a complete guarded summary under ${comparisonContract}. All ${formatNumber(total)}
+      feed scorecards remain searchable.`;
   const stat = (num, lab) => `<div class="stat"><span class="stat-num">${num}</span><span class="stat-lab">${lab}</span></div>`;
 
   const facet = (key, label) =>
     `<button type="button" class="facet-chip" data-facet="${key}" aria-pressed="${key === "all"}">${label}</button>`;
 
   main.innerHTML = `
-    <h1 class="page-title reveal">How is transit data doing?</h1>
-    <p class="page-lede reveal">Every published
+    <h1 class="page-title reveal">Find an agency scorecard.</h1>
+    <p class="page-lede reveal">Search every published
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed we track, read
-    daily and graded in plain language. Find your agency, or browse a location to see the ones that
-    need a call. The same directory exists as
+    on a scheduled cadence and graded in plain language. Or browse a location to find the ones that need a call.
+    The same directory exists as
     <a href="/agencies/">plain linkable pages</a>; this view adds live search and filters.</p>
 
-    <section class="overview-summary reveal" aria-labelledby="ov-h">
-      <h2 class="visually-hidden" id="ov-h">Directory summary</h2>
-      <div class="summary-stats">
-        ${stat(formatNumber(total), "agencies tracked")}
-        ${stat(s.median_score == null ? "—" : s.median_score, "median score")}
-        ${stat(s.expiring_soon || 0, "feeds expiring within 30 days")}
-        ${stat(expired.total || 0, "feeds already expired")}
-      </div>
-      ${gradeDistributionBar(s.grade_distribution || {}, total)}
-    </section>
-
     <div class="picker-controls reveal">
-      <label for="agency-search" class="visually-hidden">Search agencies by name, country, or subdivision</label>
+      <label for="agency-search" class="visually-hidden">Search scorecards by agency name, country, or subdivision</label>
       <input id="agency-search" class="agency-search" type="search" autocomplete="off"
         enterkeyhint="search" aria-controls="agency-list"
         placeholder="Find your agency among ${formatNumber(total)}…">
@@ -418,12 +462,23 @@ function renderOverview(directory) {
         <label for="agency-sort">Sort</label>
         <select id="agency-sort">
           <option value="az">Name (A–Z)</option>
-          <option value="worst">Lowest score first</option>
-          <option value="best">Highest score first</option>
+          <option value="za">Name (Z–A)</option>
         </select>
       </div>
     </div>
-    <div class="picker-facets reveal" role="group" aria-label="Filter agencies by grade, size, or feed status">
+
+    <section class="overview-summary reveal" aria-labelledby="ov-h">
+      <h2 class="visually-hidden" id="ov-h">Directory summary</h2>
+      <div class="summary-stats">
+        ${stat(formatNumber(total), "scorecards available")}
+        ${stat(aggregate.valid ? s.median_score : "—", "median score")}
+        ${stat(s.expiring_soon || 0, "feeds expiring within 30 days")}
+        ${stat(expired.total || 0, "feeds already expired")}
+      </div>
+      ${aggregate.valid ? gradeDistributionBar(aggregate.distribution, comparableCount) : ""}
+      <p class="fineprint">${comparisonNote}</p>
+    </section>
+    <div class="picker-facets reveal" role="group" aria-label="Filter scorecards by grade, size, or feed status">
       ${facet("all", "All")}
       ${facet("A", "A")}${facet("B", "B")}${facet("C", "C")}${facet("D", "D")}${facet("F", "F")}
       ${facet("small", "Small")}${facet("medium", "Mid-size")}${facet("large", "Large")}
@@ -438,8 +493,8 @@ function renderOverview(directory) {
     <p class="agency-count" role="status" aria-live="polite"></p>
     <ul class="agency-list" id="agency-list"></ul>
     <p class="results-hint" id="results-hint">Search by name, pick a grade or size, or choose a
-      location above to list agencies.</p>
-    <p class="no-match" hidden>No agencies match.
+      location above to list scorecards.</p>
+    <p class="no-match" hidden>No scorecards match.
       <button type="button" class="linklike" id="clear-search">Clear filters</button></p>
     <div class="show-more-wrap" hidden><button type="button" class="show-more" id="show-more">Show more</button></div>
 
@@ -587,23 +642,21 @@ function setupOverview(agencies, total, summary) {
   function cardHtml(a) {
     const cohort = getCohort();
     const followed = cohort.has(a.id);
-    const note = peerNote(a);
     const place = placeLabel(a);
     return `<li class="agency-card">
-      <span class="grade-chip ${gradeClass(a.grade)}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
+      <span class="grade-chip ${escAttr(gradeClass(a.grade))}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
       <div>
-        <h2><a href="#/agency/${esc(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
+        <h2><a href="#/agency/${escAttr(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
         <p class="meta">Overall ${a.score} out of 100${place ? ` · <bdi>${esc(place)}</bdi>` : ""} · checked ${formatDate(a.date)}</p>
-        ${note ? `<p class="peer-note">${esc(note)}</p>` : ""}
       </div>
-      <button type="button" class="follow" data-id="${esc(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
+      <button type="button" class="follow" data-id="${escAttr(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
     </li>`;
   }
 
   function sorted(rows) {
     const mode = sortSel.value;
     if (mode === "az") return rows;
-    return rows.slice().sort((a, b) => (mode === "best" ? b.score - a.score : a.score - b.score));
+    return rows.slice().sort((a, b) => compareText(b.name, a.name));
   }
 
   function paintMore() {
@@ -645,7 +698,7 @@ function setupOverview(agencies, total, summary) {
             (locationFilter.legacyState === "Canada" && a.country === "CA"))
       )
     );
-    const noun = matches.length === 1 ? "agency" : "agencies";
+    const noun = matches.length === 1 ? "scorecard" : "scorecards";
     count.textContent = `${formatNumber(matches.length)} of ${formatNumber(total)} ${noun}`;
     noMatch.hidden = matches.length !== 0;
     paintMore();
@@ -877,11 +930,15 @@ function renderPrograms(index) {
       const attention = r.needs_attention
         ? `<span class="pill-warn">${r.needs_attention} need attention</span>`
         : `<span class="pill-ok">all in good shape</span>`;
-      const avg = r.average_score == null ? "—" : `${r.average_score} avg`;
+      const sample = Number(r.comparison_eligible ?? 0);
+      const avg =
+        sample > 0 && typeof r.average_score === "number" && Number.isFinite(r.average_score)
+          ? `${r.average_score} avg`
+          : "average unavailable";
       return `<li class="agency-card reveal">
         <div>
-          <h2><a href="#/program/${esc(r.id)}">${esc(r.name)}</a></h2>
-          <p class="meta">${r.agency_count} agencies · ${avg} · ${attention}</p>
+          <h2><a href="#/program/${escAttr(r.id)}">${esc(r.name)}</a></h2>
+          <p class="meta">${r.agency_count} feed scorecards · ${avg} (${sample} comparable) · ${attention}</p>
         </div>
       </li>`;
     })
@@ -890,8 +947,8 @@ function renderPrograms(index) {
     <a class="backlink" href="#/">&larr; All agencies</a>
     <h1 class="page-title reveal">Program rollups.</h1>
     <p class="page-lede reveal">A view for the people who support many agencies at once.
-    Each rollup lists its agencies worst-first, so the ones that need a call are at the top,
-    and surfaces the fixes shared across several feeds.</p>
+    Each rollup puts attention work first, ordered by rider impact when known, then lists
+    other feed scorecards alphabetically. It also surfaces fixes shared across several feeds.</p>
     <ul class="agency-list">${cards}</ul>`;
 }
 
@@ -905,9 +962,9 @@ function renderProgram(rollup) {
         : "";
       const fix = m.top_fix ? `<p class="program-fix">Start with: ${esc(m.top_fix)}</p>` : "";
       return `<li class="program-row">
-        <span class="grade-chip ${gradeClass(m.grade)}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
+        <span class="grade-chip ${escAttr(gradeClass(m.grade))}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
         <div>
-          <h3><a href="#/agency/${esc(m.id)}">${esc(m.name)}</a>${flag}</h3>
+          <h3><a href="#/agency/${escAttr(m.id)}">${esc(m.name)}</a>${flag}</h3>
           <p class="meta">${m.score} out of 100 · checked ${formatDate(m.snapshot_date)}</p>
           ${fix}
         </div>
@@ -915,13 +972,17 @@ function renderProgram(rollup) {
     })
     .join("");
 
-  const dist = gradeDistributionBar(
-    rollup.grade_distribution || {},
-    rollup.agency_count,
-    "Grade distribution across this program",
-  );
+  const aggregate = guardedAggregateState(rollup, rollup.average_score);
+  const comparableCount = aggregate.count;
+  const dist = aggregate.valid
+    ? gradeDistributionBar(
+        aggregate.distribution,
+        comparableCount,
+        "Grade distribution across this program",
+      )
+    : "";
 
-  const common = (rollup.common_fixes || [])
+  const common = (aggregate.valid ? rollup.common_fixes || [] : [])
     .map(
       (c) => `<li class="fix-card">
         <p class="fix-action">${esc(c.fix)}</p>
@@ -938,7 +999,17 @@ function renderProgram(rollup) {
        </section>`
     : "";
 
-  const avg = rollup.average_score == null ? "—" : `${rollup.average_score} out of 100`;
+  const avg = aggregate.valid
+    ? `${rollup.average_score} out of 100 average`
+    : "average unavailable";
+  const comparisonContract = comparisonContractText(rollup.comparison);
+  const comparisonNote = aggregate.valid
+    ? `The average and grade distribution use ${comparableCount} canonical, non-duplicate
+      feed scorecards under one producer contract: ${comparisonContract}. Every member
+      remains listed below.`
+    : `The cross-feed average, grade distribution, and shared-fix counts are unavailable
+      until this rollup has a complete guarded summary under ${comparisonContract}. Every
+      member remains listed below.`;
   const shapes = rollup.shapes_readiness;
   const measured = shapes ? shapes.total - shapes.not_measured : 0;
   const shapesNote =
@@ -950,8 +1021,9 @@ function renderProgram(rollup) {
     <div class="score-hero reveal">
       <div>
         <h1 class="page-title">${esc(rollup.rollup.name)}</h1>
-        <p class="overall"><strong>${rollup.agency_count} agencies</strong> ·
-          ${avg} average · ${rollup.needs_attention} need attention</p>
+        <p class="overall"><strong>${rollup.agency_count} feed scorecards</strong> ·
+          ${avg} · ${rollup.needs_attention} need attention</p>
+        <p class="fineprint">${comparisonNote}</p>
         ${shapesNote}
       </div>
     </div>
@@ -960,7 +1032,7 @@ function renderProgram(rollup) {
       <h2 class="section-title visually-hidden" id="dist-h">Grade distribution</h2>${dist}
     </section>` : ""}
     <section aria-labelledby="members-h" class="reveal">
-      <h2 class="section-title" id="members-h">Agencies, worst first</h2>
+      <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">${rows}</ul>
     </section>
     ${commonSection}`;
@@ -968,8 +1040,8 @@ function renderProgram(rollup) {
 
 /* ---------------- my cohort (client-side) ---------------- */
 
-/** Render the follower's personal cohort, worst-first, the same way a program
- *  rollup reads. Membership comes from a shared URL or this browser's saved list.
+/** Render the follower's personal cohort as an attention-first worklist, then
+ *  alphabetically. Membership comes from a shared URL or this browser's saved list.
  *  @param {any} index @param {string[]|null} urlIds */
 async function renderCohort(index, urlIds) {
   document.title = "My agencies — GTFS Scorecard";
@@ -1000,7 +1072,8 @@ async function renderCohort(index, urlIds) {
     } catch {
       /* keep the row from index data even if the artifact is briefly unavailable */
     }
-    const prev = hist.length >= 2 ? hist[hist.length - 2] : null;
+    const comparableHist = currentProducerHistory(hist);
+    const prev = comparableHist.length >= 2 ? comparableHist[comparableHist.length - 2] : null;
     const regressed =
       prev &&
       (GRADE_RANK[last.grade] < GRADE_RANK[prev.grade] || prev.score - last.score >= 3);
@@ -1024,7 +1097,9 @@ async function renderCohort(index, urlIds) {
       gradeChanged: !!(prev && last.grade !== prev.grade),
     });
   }
-  members.sort((m, n) => (!!m.reason === !!n.reason ? m.score - n.score : m.reason ? -1 : 1));
+  members.sort((m, n) =>
+    !!m.reason === !!n.reason ? compareText(m.name, n.name) : m.reason ? -1 : 1
+  );
 
   const notes = getNotes();
   const changed = members.filter((m) => m.gradeChanged);
@@ -1064,20 +1139,20 @@ async function renderCohort(index, urlIds) {
         change = `<p class="cohort-change">Score ${m.scoreDelta > 0 ? "up" : "down"} ${Math.abs(m.scoreDelta)} since ${formatDate(m.prevDate)}</p>`;
       const note = notes[m.id] || "";
       return `<li class="program-row">
-        <span class="grade-chip ${gradeClass(m.grade)}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
+        <span class="grade-chip ${escAttr(gradeClass(m.grade))}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
         <div>
-          <h3><a href="#/agency/${esc(m.id)}">${esc(m.name)}</a>${flag}</h3>
+          <h3><a href="#/agency/${escAttr(m.id)}">${esc(m.name)}</a>${flag}</h3>
           <p class="meta">${m.score} out of 100 · checked ${formatDate(m.date)}</p>
           ${change}
           ${fix}
           <details class="cohort-note"${note ? " open" : ""}>
             <summary>Note${note ? " ✓" : ""}</summary>
-            <label class="visually-hidden" for="note-${esc(m.id)}">Private note for ${esc(m.name)}</label>
-            <textarea id="note-${esc(m.id)}" class="note-input" data-id="${esc(m.id)}"
+            <label class="visually-hidden" for="note-${escAttr(m.id)}">Private note for ${esc(m.name)}</label>
+            <textarea id="note-${escAttr(m.id)}" class="note-input" data-id="${escAttr(m.id)}"
               rows="2" placeholder="Call notes (saved in this browser only)">${esc(note)}</textarea>
           </details>
         </div>
-        <button type="button" class="cohort-remove" data-id="${esc(m.id)}" aria-label="Remove ${esc(m.name)} from my agencies">Remove</button>
+        <button type="button" class="cohort-remove" data-id="${escAttr(m.id)}" aria-label="Remove ${escAttr(m.name)} from my agencies">Remove</button>
       </li>`;
     })
     .join("");
@@ -1115,7 +1190,7 @@ async function renderCohort(index, urlIds) {
     ${sharedHtml}
     ${routeRule()}
     <section aria-labelledby="cohort-h" class="reveal">
-      <h2 class="section-title" id="cohort-h">Agencies, worst first</h2>
+      <h2 class="section-title" id="cohort-h">Agencies: attention first, then alphabetical</h2>
       <ul class="program-list">${rows}</ul>
     </section>`;
 
@@ -1164,7 +1239,9 @@ function renderScorecard(artifact, history, dirRecord) {
   document.title = `${name} — GTFS Scorecard`;
   const overall = artifact.overall;
 
-  const cats = CATEGORY_ORDER.map((key, i) => categoryCard(key, artifact.categories[key], i)).join("");
+  const cats = CATEGORY_ORDER.map((key, i) =>
+    categoryCard(key, artifact.categories[key], i, artifact),
+  ).join("");
   const fixes = topFixes(artifact.top_fixes);
   const findings = collectFindings(artifact);
   const recsHtml = recommendationsSection(artifact);
@@ -1221,7 +1298,7 @@ function renderScorecard(artifact, history, dirRecord) {
     <section aria-labelledby="feed-h" class="feed-details">
       <h2 class="section-title" id="feed-h">About this data</h2>
       <dl>
-        <dt>Feed checked</dt><dd><a href="${esc(safeUrl(artifact.feed.static_url))}">${esc(artifact.feed.static_url)}</a></dd>
+        <dt>Feed checked</dt><dd><a href="${escAttr(safeUrl(artifact.feed.static_url))}">${esc(artifact.feed.static_url)}</a></dd>
         <dt>Snapshot</dt><dd>${esc(artifact.snapshot_date)}${artifact.feed?.sha256 ? ` (<abbr title="Secure Hash Algorithm, 256-bit">SHA-256</abbr> ${esc(artifact.feed.sha256.slice(0, 12))}…)` : ""}</dd>
         <dt>Validator</dt><dd>MobilityData gtfs-validator ${esc(String(artifact.validator_version ?? artifact.categories.correctness?.details?.validator_version ?? ""))}</dd>
         <dt>Rubric</dt><dd>version ${esc(String(artifact.rubric_version ?? "—"))}; <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">methodology and citations (docs/rubric.md)</a></dd>
@@ -1239,8 +1316,14 @@ function riderImpactSection(artifact) {
   const freshness = categories.freshness || {};
   const freshDetails = freshness.details || {};
   const days = freshness.status === "measured" ? numericValue(freshDetails.days_until_expiry) : null;
+  const horizonStatus = effectiveServiceHorizonStatus(freshDetails, artifact?.snapshot_date);
   let schedule;
   if (days === null) schedule = "Schedule visibility is not known from this scorecard.";
+  else if (horizonStatus === "unusually_distant") {
+    const end = freshDetails.effective_expiry_date;
+    const through = end ? ` through ${esc(String(end))}` : " to an unusually distant date";
+    schedule = `The feed states that service is published${through}. This may be intentional or a placeholder; confirm current service with the transit operator.`;
+  }
   else if (days > 0) schedule = `The feed's last published service date is in ${plainNumber(days)} days.`;
   else if (days === 0) schedule = "The feed's last published service date is today.";
   else schedule = `The feed's last published service date was ${plainNumber(Math.abs(days))} days ago.`;
@@ -1305,6 +1388,94 @@ function numericValue(value) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+/** Parse a strict published YYYY-MM-DD value without using the browser's locale.
+ *  @param {unknown} value @returns {{year:number, month:number, day:number}|null} */
+function publishedDate(value) {
+  if (typeof value !== "string") return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+  const parts = { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
+  if (parts.year < 1) return null;
+  const date = new Date(0);
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCFullYear(parts.year, parts.month - 1, parts.day);
+  if (
+    !Number.isFinite(date.getTime()) ||
+    date.getUTCFullYear() !== parts.year ||
+    date.getUTCMonth() + 1 !== parts.month ||
+    date.getUTCDate() !== parts.day
+  )
+    return null;
+  return parts;
+}
+
+/** @param {{year:number, month:number, day:number}} value @param {number} days */
+function publishedDateAfterDays(value, days) {
+  if (!Number.isInteger(days)) return null;
+  const date = new Date(0);
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCFullYear(value.year, value.month - 1, value.day + days);
+  if (!Number.isFinite(date.getTime())) return null;
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+  };
+}
+
+/** @param {{year:number, month:number, day:number}} value @param {number} years */
+function publishedDateAfterYears(value, years) {
+  const year = value.year + years;
+  const leapDay = value.month === 2 && value.day === 29;
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  return { year, month: value.month, day: leapDay && !leapYear ? 28 : value.day };
+}
+
+/** @param {{year:number, month:number, day:number}} value */
+function publishedDateKey(value) {
+  return value.year * 10000 + value.month * 100 + value.day;
+}
+
+/** Resolve schema-1.10 status, deriving it for legacy artifacts deterministically.
+ *  @param {any} details @param {unknown} snapshotDate @returns {string} */
+function effectiveServiceHorizonStatus(details, snapshotDate) {
+  const explicit = details?.service_horizon_status;
+  if (
+    explicit === "within_review_threshold" ||
+    explicit === "unusually_distant" ||
+    explicit === "unknown"
+  )
+    return explicit;
+  const checked =
+    publishedDate(snapshotDate) || publishedDate(details?.snapshot_date) || publishedDate(details?.date);
+  if (!checked) return "unknown";
+  let expiry = publishedDate(details?.effective_expiry_date);
+  if (!expiry) {
+    const days = numericValue(details?.days_until_expiry);
+    if (days === null) return "unknown";
+    expiry = publishedDateAfterDays(checked, days);
+  }
+  if (!expiry) return "unknown";
+  const boundary = publishedDateAfterYears(checked, SERVICE_HORIZON_REVIEW_YEARS);
+  return publishedDateKey(expiry) > publishedDateKey(boundary)
+    ? "unusually_distant"
+    : "within_review_threshold";
+}
+
+/** Replace a legacy embedded countdown with the horizon trust advisory.
+ *  @param {any} category @param {unknown} snapshotDate @returns {string} */
+function presentedFreshnessSummary(category, snapshotDate) {
+  const summary = String(category?.summary || "");
+  const details = category?.details || {};
+  if (effectiveServiceHorizonStatus(details, snapshotDate) !== "unusually_distant")
+    return summary;
+  const end = publishedDate(details.effective_expiry_date)
+    ? String(details.effective_expiry_date).trim()
+    : null;
+  const through = end ? ` through ${end}` : " to an unusually distant date";
+  return `Service is published${through}. It may be intentional, but confirm the end date before treating the feed as maintained.`;
+}
+
 /** @param {number} value @returns {string} */
 function plainNumber(value) {
   const rounded = Math.round(value * 10) / 10;
@@ -1315,7 +1486,7 @@ function plainNumber(value) {
 function gradeReel(grade) {
   const g = String(grade || "F").toUpperCase().slice(0, 1);
   const idx = GRADE_RANK[g] ?? 0;
-  return `<div class="reel" role="img" aria-label="Overall grade ${esc(g)}"
+  return `<div class="reel" role="img" aria-label="Overall grade ${escAttr(g)}"
       style="--flap-end: calc(var(--reel-h) * -${idx})">
     <div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div>
   </div>`;
@@ -1324,25 +1495,42 @@ function gradeReel(grade) {
 /** Status chips from the feed's freshness, completeness, and realtime. @param {any} artifact */
 function statusChips(artifact) {
   const chips = [];
-  const days = artifact.categories?.freshness?.details?.days_until_expiry;
+  const freshDetails = artifact.categories?.freshness?.details || {};
+  const days = freshDetails.days_until_expiry;
+  const horizonStatus = effectiveServiceHorizonStatus(freshDetails, artifact.snapshot_date);
   if (typeof days === "number") {
-    if (days <= 0) chips.push('<span class="chip warn">Feed expired</span>');
+    if (horizonStatus === "unusually_distant")
+      chips.push('<span class="chip warn">Review service end date</span>');
+    else if (days <= 0) chips.push('<span class="chip warn">Feed expired</span>');
     else if (days < 30) chips.push(`<span class="chip warn">Expires in ${days} days</span>`);
     else chips.push(`<span class="chip ok">Covers ${days} days</span>`);
   }
   const comp = artifact.categories?.completeness;
   if (comp?.status === "measured" && comp.score < 70)
     chips.push('<span class="chip warn">Accessibility gaps</span>');
-  if (artifact.categories?.realtime?.status !== "measured")
-    chips.push('<span class="chip">No realtime feed</span>');
+  const realtime = artifact.categories?.realtime || {};
+  if (realtime.status !== "measured")
+    chips.push(`<span class="chip">${esc(realtimeUnmeasuredLabel(realtime))}</span>`);
   return chips.join("");
+}
+
+/** @param {any} category @returns {string} */
+function realtimeUnmeasuredLabel(category) {
+  const summary = String(category?.summary || "").toLowerCase();
+  if (summary.includes("access key") || summary.includes("api key") || summary.includes("authentication"))
+    return "Realtime access needed";
+  return "Realtime not yet published";
 }
 
 /** A clean trend line for the board (no leading separator). @param {any[]} history */
 function boardTrend(history) {
-  if (history.length < 2) return "First scorecard for this agency";
-  const prev = history[history.length - 2];
-  const cur = history[history.length - 1];
+  const comparable = currentProducerHistory(history);
+  if (comparable.length < 2)
+    return history.length >= 2
+      ? "Producer or measurement contract changed; trend restarts here"
+      : "First scorecard for this agency";
+  const prev = comparable[comparable.length - 2];
+  const cur = comparable[comparable.length - 1];
   const d = Math.round((cur.score - prev.score) * 10) / 10;
   if (d > 0)
     return `<span aria-hidden="true">▲</span> up ${d} since ${formatDate(prev.date)} · ${prev.grade} → ${cur.grade}`;
@@ -1350,44 +1538,44 @@ function boardTrend(history) {
   return `unchanged since ${formatDate(prev.date)}`;
 }
 
-/** Where this agency stands against the worldwide tracked set and its size peers.
- *  Empty when the directory record or its percentiles are unavailable.
- *  These are not country percentiles: early country cohorts can be tiny, while
- *  both values use the complete tracked set (grouped by size for the peer row).
+/** Full producer/measurement contract of one compact history point.
+ *  @param {any} point @returns {string[] | null} */
+function historyProducerContract(point) {
+  const rubric = String(point?.rubric_version || "");
+  const profile = String(point?.scoring_profile_id || point?.scoring_profile?.id || "");
+  const profileRubric = String(
+    point?.scoring_profile_rubric_version || point?.scoring_profile?.rubric_version || "",
+  );
+  const validator = String(point?.validator_version || "");
+  const categories = point?.categories || {};
+  const measured = CATEGORY_ORDER.filter(
+    (key) => typeof categories[key] === "number" && Number.isFinite(categories[key]),
+  );
+  if (!rubric || !profile || !profileRubric || !validator || !measured.length) return null;
+  return [rubric, profile, profileRubric, validator, measured.join(",")];
+}
+
+/** Contiguous suffix produced by one full producer and measurement contract.
+ *  Missing provenance restarts the trend at the latest point. @param {any[]} history */
+function currentProducerHistory(history) {
+  if (!history.length) return [];
+  const contract = historyProducerContract(history[history.length - 1]);
+  if (!contract) return history.slice(-1);
+  let start = history.length - 1;
+  while (start > 0) {
+    const previous = historyProducerContract(history[start - 1]);
+    if (!previous || previous.some((value, index) => value !== contract[index])) break;
+    start -= 1;
+  }
+  return history.slice(start);
+}
+
+/** Catalog location retained after public percentile claims were removed.
  *  @param {any} [dirRecord] */
 function peerContext(dirRecord) {
   if (!dirRecord) return "";
-  const nat = dirRecord.national_percentile;
-  const peer = dirRecord.peer_percentile;
-  const tier = TIER_LABELS[dirRecord.size_tier] || dirRecord.size_tier;
-  const nonUs = String(dirRecord.country || "US").toUpperCase() !== "US";
-  if (nat == null) return "";
-  const peerPart =
-    peer != null && tier && dirRecord.size_tier !== "unknown"
-      ? ` and ${peer}% of ${tier} agencies`
-      : "";
   const place = placeLabel(dirRecord);
-  const where = place ? ` Operates in <bdi>${esc(place)}</bdi>.` : "";
-  const percentileRow = (label, value) => {
-    const position = Math.max(0, Math.min(100, Number(value)));
-    return `<div class="percentile-row">
-      <span class="percentile-label">${esc(label)}</span>
-      <span class="percentile-value">${position}%</span>
-      <span class="percentile-track" style="--position:${position}" aria-hidden="true">
-        <span class="percentile-line"></span><span class="percentile-marker"></span>
-      </span>
-    </div>`;
-  };
-  const rows = [percentileRow("All agencies", nat)];
-  if (peer != null && tier && dirRecord.size_tier !== "unknown") {
-    rows.push(percentileRow(`${tier} peers`, peer));
-  }
-  const scope = nonUs ? " Comparisons use agencies currently tracked worldwide." : "";
-  return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}${scope}</p>
-    <div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">
-      ${rows.join("")}
-      <div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div>
-    </div>`;
+  return place ? `<p class="peer-context">Catalogued in <bdi>${esc(place)}</bdi>.</p>` : "";
 }
 
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
@@ -1413,9 +1601,13 @@ function boardHero(name, artifact, history, dirRecord) {
 
 /** @param {Array<{date: string, score: number, grade: string}>} history */
 function trendNote(history) {
-  if (history.length < 2) return " · first scorecard for this agency";
-  const prev = history[history.length - 2];
-  const cur = history[history.length - 1];
+  const comparable = currentProducerHistory(history);
+  if (comparable.length < 2)
+    return history.length >= 2
+      ? " · methodology changed; trend restarts here"
+      : " · first scorecard for this agency";
+  const prev = comparable[comparable.length - 2];
+  const cur = comparable[comparable.length - 1];
   const delta = Math.round((cur.score - prev.score) * 10) / 10;
   if (delta > 0) return ` · <span aria-hidden="true">▲</span> up ${delta} since ${formatDate(prev.date)}`;
   if (delta < 0) return ` · <span aria-hidden="true">▼</span> down ${Math.abs(delta)} since ${formatDate(prev.date)}`;
@@ -1447,7 +1639,7 @@ function scoreSparkline(history) {
     )
     .join("");
   return `<svg class="trend-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"
-      role="img" aria-label="Overall score across ${n} checks: ${esc(series)}">
+      role="img" aria-label="Overall score across ${n} checks: ${escAttr(series)}">
     <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2"
       stroke-linejoin="round" stroke-linecap="round"/>
     ${dots}
@@ -1506,13 +1698,17 @@ function sinceLastCheck(history) {
 /** The "Over time" section: trend line plus what changed since the last check.
  *  @param {any[]} history */
 function trendSection(history) {
-  if (history.length < 2) {
+  const comparable = currentProducerHistory(history);
+  if (comparable.length < 2) {
+    const message = history.length >= 2
+      ? "The producer or measurement contract changed since the prior check, so the trend restarts here. No improvement or regression is claimed across that boundary."
+      : 'This is the first scorecard for this agency. A trend and a "what changed" summary appear here once it has been checked more than once.';
     return `<section aria-labelledby="trend-h" class="reveal">
       <h2 class="section-title" id="trend-h">Over time</h2>
-      <p class="page-lede">This is the first scorecard for this agency. A trend and a
-      "what changed" summary appear here once it has been checked more than once.</p>
+      <p class="page-lede">${message}</p>
     </section>`;
   }
+  history = comparable;
   const cur = history[history.length - 1];
   const prev = history[history.length - 2];
   const delta = Math.round((cur.score - prev.score) * 10) / 10;
@@ -1538,12 +1734,15 @@ function gradeBand(score) {
   return (band ? band.grade : "F").toLowerCase();
 }
 
-/** One category as a departure-board "platform" row. @param {string} key @param {any} cat @param {number} index */
-function categoryCard(key, cat, index) {
+/** One category as a departure-board "platform" row.
+ *  @param {string} key @param {any} cat @param {number} index @param {any} artifact */
+function categoryCard(key, cat, index, artifact) {
   const label = CATEGORY_LABELS[/** @type {keyof CATEGORY_LABELS} */ (key)] ?? key;
   const trk = String(index + 1).padStart(2, "0");
+  const summary =
+    key === "freshness" ? presentedFreshnessSummary(cat, artifact?.snapshot_date) : String(cat?.summary || "");
   if (!cat || cat.status !== "measured") {
-    const note = cat?.summary ?? "Not part of the grade yet. Nothing here counts against you.";
+    const note = summary || "Not part of the grade yet. Nothing here counts against you.";
     return `<div class="platform neutral">
       <span class="trk" aria-hidden="true">${trk}</span>
       <div class="pmain">
@@ -1566,10 +1765,10 @@ function categoryCard(key, cat, index) {
         <span class="pscore">${score}<span class="outof"> / 100</span></span>
       </div>
       <div class="pbar" role="meter" aria-valuenow="${score}" aria-valuemin="0"
-           aria-valuemax="100" aria-label="${esc(label)} score">
+           aria-valuemax="100" aria-label="${escAttr(label)} score">
         <span style="width:${w}%;background:var(--grade-${band})"></span>
       </div>
-      <p class="pstat">${esc(cat.summary)}</p>
+      <p class="pstat">${esc(summary)}</p>
     </div>
   </div>`;
 }
@@ -1587,7 +1786,7 @@ function topFixes(fixes) {
       const rank = String(i + 1).padStart(2, "0");
       const worth =
         typeof f.points === "number" && f.points >= 1
-          ? `<span class="aworth">worth about +${Math.round(f.points)} points</span>`
+          ? `<span class="aworth">worth about +${Math.round(f.points)} points in its category</span>`
           : "";
       const owner = f.owner ? `<span class="aowner">${esc(f.owner)}</span>` : "";
       return `<div class="alert">
@@ -1608,7 +1807,9 @@ function collectFindings(artifact) {
   for (const key of CATEGORY_ORDER) {
     const cat = artifact.categories[key];
     if (cat?.status === "measured") {
-      for (const f of cat.findings) all.push({ ...f, category: key });
+      for (const f of cat.findings) {
+        all.push({ ...f, severity: findingSeverity(f.severity).key, category: key });
+      }
     }
   }
   const rank = { ERROR: 0, WARNING: 1, INFO: 2 };
@@ -1652,18 +1853,21 @@ function setupFindings(findings) {
       visible.length === 1 ? "Showing 1 finding." : `Showing ${visible.length} findings.`;
     list.innerHTML = visible
       .map(
-        (f) => `<li class="finding">
+        (f) => {
+          const severity = findingSeverity(f.severity);
+          return `<li class="finding">
           <div class="finding-head">
-            <span class="sev sev-${String(f.severity || "info").toLowerCase()}">${SEVERITY_LABELS[f.severity] || esc(f.severity || "Info")}</span>
+            <span class="sev ${severity.className}">${esc(severity.label)}</span>
             <span class="count">${f.count === 1 ? "1 instance" : `${f.count} instances`}</span>
           </div>
           <p class="what">${esc(f.what)}</p>
           <p class="why">${esc(f.why)}</p>
           <p class="how"><strong>Fix:</strong> ${esc(f.fix)} <em>(${esc(f.effort)})</em></p>
           <p class="code">Validator rule: ${esc(f.code)} ·
-            <a class="fix-guide" href="${esc(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
+            <a class="fix-guide" href="${escAttr(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
                target="_blank" rel="noopener">Read the fix guide<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on GitHub)</span></a>${ruleRefLink(f.code)}</p>
-        </li>`
+        </li>`;
+        }
       )
       .join("");
     if (!visible.length) {
@@ -1683,41 +1887,109 @@ function setupFindings(findings) {
 // static page (pipeline/src/scorecard_pipeline/render_site.py) so the SPA card
 // and the prerendered /agency/<id>/ page read the same.
 const NTD_LABELS = { ready: "Ready", at_risk: "Needs attention", not_ready: "Not ready" };
-const NTD_PILLAR_NAMES = { published: "Published", valid: "Valid", current: "Current" };
+const NTD_PILLAR_NAMES = {
+  published: "Published",
+  valid: "Valid",
+  current: "Current",
+  agency_id: "agency_id provided",
+};
 const NTD_ALIGN_LABELS = {
-  aligned: "Aligned",
-  mismatch: "Needs attention",
-  missing: "Needs attention",
+  aligned: "Equal",
+  mismatch: "Different (allowed)",
+  missing: "Not available",
   unknown: "Not checked yet",
 };
 const NTD_ALIGN_CLASSES = {
   aligned: "ntd-ready",
-  mismatch: "ntd-at_risk",
-  missing: "ntd-at_risk",
+  mismatch: "ntd-unknown",
+  missing: "ntd-unknown",
   unknown: "ntd-unknown",
 };
 const CONFORMANCE_NAMES = { valid: "Valid", current: "Current", accessible: "Accessible" };
 
-/** The NTD ID alignment line: whether the feed's agency_id matches the agency's
- *  NTD ID (FTA RY2025/26). Reads the stored `ntd_id_alignment` block; "" if the
- *  artifact predates the check. Framed as a fix, carries no score.
+/** Recompute agency_id presence from the alignment block stored in older artifacts.
+ *  Presence and the P-50 crosswalk are required for RY2026; equality to the
+ *  five-digit NTD ID is not.
+ *  @param {any} artifact */
+function ntdIdentityPillar(artifact) {
+  const align = artifact.ntd_id_alignment;
+  if (!align || !Array.isArray(align.feed_agency_ids)) {
+    return {
+      key: "agency_id",
+      status: "at_risk",
+      detail: "agency_id presence has not been checked for this feed yet.",
+    };
+  }
+  const ids = align.feed_agency_ids.map((value) => String(value).trim()).filter(Boolean);
+  if (!ids.length) {
+    return {
+      key: "agency_id",
+      status: "not_ready",
+      detail:
+        "agency.txt has no nonblank agency_id. Every RY2026 NTD GTFS submission needs a stable value unique among the reporters represented in the feed, crosswalked to each reporter's NTD ID on the P-50 form.",
+    };
+  }
+  return {
+    key: "agency_id",
+    status: "ready",
+    detail:
+      "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+  };
+}
+
+/** Current wording for the optional equality comparison, derived from stored inputs.
+ *  @param {any} stored */
+function currentNtdAlignment(stored) {
+  if (!stored || !Array.isArray(stored.feed_agency_ids)) return stored;
+  const ids = stored.feed_agency_ids.map((value) => String(value).trim()).filter(Boolean);
+  const ntd = String(stored.ntd_id || "").trim();
+  if (!ids.length) return { ...stored, status: "missing" };
+  if (!ntd) {
+    return {
+      ...stored,
+      status: "unknown",
+      detail:
+        "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+      fix: "",
+    };
+  }
+  if (ids.includes(ntd)) {
+    return {
+      ...stored,
+      status: "aligned",
+      detail: `This feed's agency_id also equals its NTD ID (${ntd}). Equality is allowed but not required; keep the value stable and retain the P-50 crosswalk.`,
+      fix: "",
+    };
+  }
+  const found = ids.join(", ");
+  return {
+    ...stored,
+    status: "mismatch",
+    detail: `Your feed's agency_id is ${found}; your National Transit Database ID is ${ntd}. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id. The values do not need to equal the five-digit NTD ID, so this difference is allowed and carries no score.`,
+    fix: `Confirm that P-50 crosswalks agency_id ${found} to NTD ID ${ntd}, and keep the feed value stable. Do not change it solely to make the two values equal.`,
+  };
+}
+
+/** The optional agency_id / NTD-ID equality line. Reads the stored alignment
+ *  inputs, rewrites stale copy, and omits the line when agency_id is missing
+ *  because the required presence check is already a readiness pillar.
  *  @param {any} artifact */
 function ntdAlignmentRow(artifact) {
-  const align = artifact.ntd_id_alignment;
-  if (!align) return "";
+  const align = currentNtdAlignment(artifact.ntd_id_alignment);
+  if (!align || align.status === "missing") return "";
   const status = String(align.status || "unknown");
   const label = NTD_ALIGN_LABELS[status] || status;
   const cls = NTD_ALIGN_CLASSES[status] || "ntd-unknown";
   let body = esc(String(align.detail || ""));
   if (align.fix) body += " " + esc(String(align.fix));
   return `<dl class="standards-list">
-      <dt>agency_id matches your NTD ID <span class="ntd-status ${cls}">${esc(label)}</span></dt>
+      <dt>agency_id equals your NTD ID (optional) <span class="ntd-status ${cls}">${esc(label)}</span></dt>
       <dd>${body}</dd></dl>`;
 }
 
-/** NTD GTFS readiness: three pillars (published, valid, current) plus
- *  the agency_id alignment line. Reads the precomputed `ntd_readiness`; renders
- *  whatever is present and is "" only when both are absent (older artifacts).
+/** NTD GTFS readiness: four pillars (published, valid, current, agency_id) plus
+ *  a neutral optional equality line. Older artifacts get the identity pillar
+ *  from their stored alignment inputs at presentation time.
  *  @param {any} artifact */
 function ntdSection(artifact) {
   if (String(artifact.agency?.country || "US").toUpperCase() !== "US") return "";
@@ -1728,15 +2000,47 @@ function ntdSection(artifact) {
   let summary = "";
   let head = '<abbr title="National Transit Database">NTD</abbr> GTFS readiness';
   if (r) {
-    const headStatus = String(r.status || "unknown");
+    const sourcePillars = (r.pillars || []).filter((p) => p.key !== "agency_id");
+    sourcePillars.push(ntdIdentityPillar(artifact));
+    const shownPillars = sourcePillars.map((p) => {
+      const distant =
+        p.key === "current" &&
+        effectiveServiceHorizonStatus(
+          artifact.categories?.freshness?.details || {},
+          artifact.snapshot_date,
+        ) === "unusually_distant";
+      return {
+        ...p,
+        detail: distant
+          ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
+          : String(p.detail || ""),
+      };
+    });
+    const rank = { ready: 0, at_risk: 1, not_ready: 2 };
+    const headStatus = shownPillars.reduce(
+      (worst, p) => ((rank[p.status] || 0) > (rank[worst] || 0) ? p.status : worst),
+      "ready",
+    );
     const overall = NTD_LABELS[headStatus] || headStatus;
-    head = `<abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="ntd-status ntd-${esc(headStatus)}">${esc(overall)}</span>`;
-    summary = String(r.summary || "");
-    pillars = (r.pillars || [])
+    head = `<abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="ntd-status ntd-${escAttr(headStatus)}">${esc(overall)}</span>`;
+    if (headStatus === "ready") {
+      summary =
+        "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination.";
+    } else {
+      const problems = shownPillars
+        .filter((p) => p.status !== "ready")
+        .map((p) => p.detail)
+        .join(" ");
+      summary =
+        headStatus === "not_ready"
+          ? `Resolve this before you certify on the D-10. ${problems}`
+          : `This feed is close to NTD-ready. ${problems}`;
+    }
+    pillars = shownPillars
       .map((p) => {
         const label = NTD_LABELS[p.status] || p.status;
         const name = NTD_PILLAR_NAMES[p.key] || p.key;
-        return `<dt>${esc(name)} <span class="ntd-status ntd-${esc(String(p.status))}">${esc(label)}</span></dt><dd>${esc(String(p.detail || ""))}</dd>`;
+        return `<dt>${esc(name)} <span class="ntd-status ntd-${escAttr(String(p.status))}">${esc(label)}</span></dt><dd>${esc(p.detail)}</dd>`;
       })
       .join("");
   }
@@ -1746,15 +2050,16 @@ function ntdSection(artifact) {
     ${pillars ? `<dl class="standards-list">${pillars}</dl>` : ""}
     ${alignRow}
     <p class="plain-summary"><strong>In plain words:</strong> if you report to the federal transit
-      database, you have to publish a working, up-to-date feed and confirm it once a year. This box
-      is a heads-up on whether yours looks ready; it is not the official sign-off.</p>
+      database, you have to publish a working, up-to-date feed, provide a stable agency_id for each
+      represented reporter, and confirm the feed and P-50 crosswalk each year. This box is a
+      heads-up; your filings are the official check.</p>
     <p class="fineprint">A readiness signal mapping this feed to the
       <a href="https://www.transit.dot.gov/ntd"><abbr title="Federal Transit Administration">FTA</abbr> National Transit Database</a> GTFS
-      requirement (Report Year 2023 onward: a public, valid, current feed, certified
-      annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). The <a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">July
-      2025 final rule</a> links agency identifiers on the P-50 form rather than requiring
-      a feed-side ID change. Not an official determination; your certification is the
-      official check.</p>
+      requirement (Report Year 2023 onward: a public, valid, current feed, certified annually on
+      the <abbr title="FTA NTD certification form D-10">D-10</abbr>). For RY2026, each represented
+      reporter needs a stable agency_id, unique within the feed and crosswalked to its five-digit
+      NTD ID on P-50; the values do not need to be equal. Not an official determination; your
+      filings are the official check.</p>
   </section>`;
 }
 
@@ -1770,13 +2075,22 @@ function conformanceSection(artifact, agencyId, agencyName) {
       const name = CONFORMANCE_NAMES[c.key] || c.key;
       const status = c.met ? "ntd-ready" : "ntd-not_ready";
       const label = c.met ? "Met" : "Not yet";
-      return `<dt>${esc(name)} <span class="ntd-status ${status}">${label}</span></dt><dd>${esc(String(c.detail || ""))}</dd>`;
+      const distant =
+        c.key === "current" &&
+        effectiveServiceHorizonStatus(
+          artifact.categories?.freshness?.details || {},
+          artifact.snapshot_date,
+        ) === "unusually_distant";
+      const detail = distant
+        ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
+        : String(c.detail || "");
+      return `<dt>${esc(name)} <span class="ntd-status ${status}">${label}</span></dt><dd>${esc(detail)}</dd>`;
     })
     .join("");
   const headStatus = mark.awarded ? "ntd-ready" : "ntd-not_ready";
   const headLabel = mark.awarded ? "Awarded" : "Not yet";
   const seal = mark.awarded
-    ? `<p><img src="${esc(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="GTFS conformance mark for ${esc(agencyName)}"></p>`
+    ? `<p><img src="${escAttr(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="GTFS conformance mark for ${escAttr(agencyName)}"></p>`
     : "";
   return `<section aria-labelledby="mark-h" class="feed-details reveal">
     <h2 class="section-title" id="mark-h">Conformance mark <span class="ntd-status ${headStatus}">${headLabel}</span></h2>
@@ -1814,10 +2128,9 @@ function recommendationsSection(artifact) {
   </section>`;
 }
 
-/** The safe mechanical subset of fixes, offered as a corrected feed. Renders
- *  only the precomputed artifact.autofix block: each fix label and count with an
- *  example, plus a download button when a download_url was attached at score
- *  time, otherwise a one-line CLI hint. Empty when no autofix block is present
+/** The safe mechanical subset of fixes a user can run locally. Renders only
+ *  the precomputed artifact.autofix summary from older artifacts and deliberately
+ *  ignores any legacy public-download URL. Empty when no autofix block is present
  *  or it found nothing to change. */
 function autofixSection(artifact) {
   const autofix = artifact.autofix;
@@ -1836,15 +2149,13 @@ function autofixSection(artifact) {
       );
     })
     .join("");
-  const action = autofix.download_url
-    ? `<p class="autofix-action"><a class="download-btn" href="${esc(safeUrl(autofix.download_url))}" download>Download corrected feed</a></p>`
-    : `<p class="autofix-cli">Run it yourself on your own copy of the feed: ` +
-      `<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>`;
+  const action = `<p class="autofix-cli">Run it locally on a copy of the feed you control: ` +
+    `<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>`;
   return `<section aria-labelledby="autofix-h" class="reveal">
-    <h2 class="section-title" id="autofix-h">Some fixes we can make for you</h2>
-    <p class="page-lede">These are the safe mechanical fixes, applied to a copy of your feed.
-      They change only what is certain and leave everything else untouched. Review the diff
-      before you publish.</p>
+    <h2 class="section-title" id="autofix-h">Safe fixes you can run locally</h2>
+    <p class="page-lede">The local command applies only these mechanical changes to a copy you
+      control. The scorecard does not publish a modified feed. Review the diff before you publish
+      through your usual process.</p>
     <ul class="autofix-list">${items}</ul>${action}
   </section>`;
 }
@@ -1873,10 +2184,10 @@ function standardsSection(artifact, dirRecord) {
     ? " This resource supports agencies; it is not a scoring authority."
     : "";
   const stateHtml = local
-    ? `<p class="page-lede">${lead}<a href="${esc(local.url)}">${esc(local.name)}</a>. ${esc(local.note)}${localBoundary}</p>`
+    ? `<p class="page-lede">${lead}<a href="${escAttr(local.url)}">${esc(local.name)}</a>. ${esc(local.note)}${localBoundary}</p>`
     : "";
   const refs = [...UNIVERSAL_GUIDANCE.references, ...(national ? [national] : [])]
-    .map((ref) => `<a href="${esc(ref.url)}">${esc(ref.name)}</a>`)
+    .map((ref) => `<a href="${escAttr(ref.url)}">${esc(ref.name)}</a>`)
     .join(", ");
   return `<section aria-labelledby="standards-h" class="feed-details reveal">
     <h2 class="section-title" id="standards-h">How this maps to the standards</h2>
@@ -1899,11 +2210,11 @@ function badgeSection(agencyId) {
   return `<section aria-labelledby="badge-h" class="badge-section reveal">
     <h2 class="section-title" id="badge-h">Show your grade</h2>
     <p class="page-lede">Put the current grade on your own developer page. The badge
-    updates automatically each day and links back to this scorecard.</p>
-    <p><img src="${esc(safeUrl(badgeUrl))}" alt="Current GTFS quality grade badge"></p>
+    updates after each completed scoring check and links back to this scorecard.</p>
+    <p><img src="${escAttr(safeUrl(badgeUrl))}" alt="Current GTFS quality grade badge"></p>
     <label class="badge-embed-label" for="badge-embed">Markdown to embed</label>
     <input id="badge-embed" class="badge-embed" type="text" readonly
-      value="${esc(markdown)}">
+      value="${escAttr(markdown)}">
   </section>`;
 }
 
@@ -1934,13 +2245,18 @@ function renderNotFound(agencyId) {
  *  @param {string} [country] */
 function showUsPolicyToolsForCountry(country = "US") {
   const ntdLink = document.querySelector('.site-footer a[href="/ntd/"]');
-  const section = ntdLink?.closest("p");
-  if (section instanceof HTMLElement) {
-    section.hidden = String(country).toUpperCase() !== "US";
+  const ntdItem = ntdLink?.closest("li");
+  const equityItem = document
+    .querySelector('.site-footer a[href="/equity/"]')
+    ?.closest("li");
+  const legacySection = ntdLink?.closest("p");
+  const show = String(country).toUpperCase() === "US";
+  for (const element of [ntdItem?.previousElementSibling, ntdItem, equityItem, legacySection]) {
+    if (element instanceof HTMLElement) element.hidden = !show;
   }
 }
 
-/** Two agencies side by side as an accessible comparison table, shareable via
+/** Two like-for-like scorecards side by side as an accessible comparison table, shareable via
  *  #/compare?a=<id>&b=<id>. No new dependency: a data table, not a map, so it
  *  works with a keyboard and a screen reader out of the box. When either id is
  *  missing or unknown, a picker chooses two agencies and navigates to the URL.
@@ -1960,18 +2276,21 @@ async function renderCompare(aId, bId) {
         : agencies.find((agency) => agency.id !== firstId)?.id || "";
     const options = (selected) =>
       agencies
-        .map((a) => `<option value="${esc(a.id)}"${a.id === selected ? " selected" : ""}>${esc(a.name)}</option>`)
+        .map((a) => `<option value="${escAttr(a.id)}"${a.id === selected ? " selected" : ""}>${esc(a.name)}</option>`)
         .join("");
     main.innerHTML = `
       <a class="backlink" href="#/">&larr; All agencies</a>
       <h1 class="page-title">Compare two agencies</h1>
-      <p class="page-lede">Put two scorecards side by side to benchmark one feed against another. The result has a shareable link.</p>
+      <p class="page-lede">Choose two scorecards to check whether they use the same rubric,
+      scoring profile, validator, and measured category set, and come from distinct feed bytes.
+      Like-for-like results can appear side by side; otherwise this page keeps the scores
+      separate and links to each full scorecard.</p>
       <form id="compare-pick" class="compare-pick">
         <p><label for="cmp-a">First agency</label>
           <select id="cmp-a" name="a">${options(firstId)}</select></p>
         <p><label for="cmp-b">Second agency</label>
           <select id="cmp-b" name="b">${options(secondId)}</select></p>
-        <p><button type="submit" class="compare-go">Compare</button></p>
+        <p><button type="submit" class="compare-go">Check comparability</button></p>
         <p id="compare-pick-status" class="form-status form-status-err" role="alert" hidden></p>
       </form>`;
     const form = /** @type {HTMLFormElement} */ (main.querySelector("#compare-pick"));
@@ -2005,9 +2324,53 @@ async function renderCompare(aId, bId) {
     fetchJson(`${bId}/latest.json`),
   ]);
 
+  const comparisonContract = (art) => {
+    const profile = art.scoring_profile || {};
+    return {
+      rubric: String(art.rubric_version || ""),
+      profile: String(profile.id || ""),
+      profileRubric: String(profile.rubric_version || ""),
+      validator: String(art.validator_version || ""),
+      feedHash: String(art.feed?.sha256 || ""),
+      measured: CATEGORY_ORDER.filter((key) => art.categories?.[key]?.status === "measured"),
+    };
+  };
+  const aContract = comparisonContract(aArt);
+  const bContract = comparisonContract(bArt);
+  const likeForLike =
+    aContract.rubric !== "" &&
+    aContract.profile !== "" &&
+    aContract.validator !== "" &&
+    aContract.feedHash !== "" &&
+    bContract.feedHash !== "" &&
+    aContract.feedHash !== bContract.feedHash &&
+    aContract.profileRubric === aContract.rubric &&
+    bContract.profileRubric === bContract.rubric &&
+    aContract.rubric === bContract.rubric &&
+    aContract.profile === bContract.profile &&
+    aContract.validator === bContract.validator &&
+    JSON.stringify(aContract.measured) === JSON.stringify(bContract.measured);
+
+  const aName = aArt.agency.name;
+  const bName = bArt.agency.name;
+  if (!likeForLike) {
+    main.innerHTML = `
+      <a class="backlink" href="#/compare">&larr; Choose different agencies</a>
+      <h1 class="page-title">These scorecards are not like-for-like.</h1>
+      <div class="error-box" role="status">
+        <p>${esc(aName)} and ${esc(bName)} do not have distinct feed bytes under the same
+        verified scoring profile, rubric, validator, and measured category set. Showing their
+        grades side by side could make a duplicate record, methodology, or realtime-coverage
+        difference look like a feed-quality difference.</p>
+        <p><a href="#/agency/${escAttr(aId)}">Open ${esc(aName)}</a> &nbsp;·&nbsp;
+        <a href="#/agency/${escAttr(bId)}">Open ${esc(bName)}</a></p>
+      </div>`;
+    return;
+  }
+
   const gradeCell = (art) => {
     const o = art.overall || {};
-    return `<span class="grade-chip ${gradeClass(o.grade)}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>`;
+    return `<span class="grade-chip ${escAttr(gradeClass(o.grade))}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>`;
   };
   const catCell = (art, key) => {
     const c = (art.categories || {})[key];
@@ -2015,7 +2378,7 @@ async function renderCompare(aId, bId) {
     const s = Number(c.score);
     const w = Math.max(2, Math.min(100, s));
     const band = gradeBand(s);
-    return `<div class="pbar cmp-bar" role="meter" aria-valuenow="${s}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(CATEGORY_LABELS[key])} score for ${esc(art.agency.name)}"><span style="width:${w}%;background:var(--grade-${band})"></span></div><span class="cmp-num">${s} / 100</span>`;
+    return `<div class="pbar cmp-bar" role="meter" aria-valuenow="${s}" aria-valuemin="0" aria-valuemax="100" aria-label="${escAttr(`${CATEGORY_LABELS[key]} score for ${art.agency.name}`)}"><span style="width:${w}%;background:var(--grade-${band})"></span></div><span class="cmp-num">${s} / 100</span>`;
   };
   const fixesCell = (art) => {
     const fixes = (art.top_fixes || []).slice(0, 3);
@@ -2023,8 +2386,6 @@ async function renderCompare(aId, bId) {
     return `<ol class="cmp-fixes">${fixes.map((f) => `<li>${esc(f.fix)}</li>`).join("")}</ol>`;
   };
 
-  const aName = aArt.agency.name;
-  const bName = bArt.agency.name;
   const catRows = CATEGORY_ORDER.map(
     (key) =>
       `<tr><th scope="row">${esc(CATEGORY_LABELS[key])}</th><td>${catCell(aArt, key)}</td><td>${catCell(bArt, key)}</td></tr>`
@@ -2033,13 +2394,15 @@ async function renderCompare(aId, bId) {
   main.innerHTML = `
     <a class="backlink" href="#/compare">&larr; Choose different agencies</a>
     <h1 class="page-title">${esc(aName)} vs ${esc(bName)}</h1>
-    <p class="page-lede">Two scorecards side by side. Each column links to its full page.</p>
+    <p class="page-lede">These scorecards use the same verified rubric, scoring profile,
+    validator, and measured category set, and they come from distinct feed bytes. Each column
+    links to its full page.</p>
     <div class="table-wrap"><table class="compare-table">
       <caption class="visually-hidden">Data-quality comparison of ${esc(aName)} and ${esc(bName)}</caption>
       <thead><tr>
         <td></td>
-        <th scope="col"><a href="#/agency/${esc(aId)}">${esc(aName)}</a></th>
-        <th scope="col"><a href="#/agency/${esc(bId)}">${esc(bName)}</a></th>
+        <th scope="col"><a href="#/agency/${escAttr(aId)}">${esc(aName)}</a></th>
+        <th scope="col"><a href="#/agency/${escAttr(bId)}">${esc(bName)}</a></th>
       </tr></thead>
       <tbody>
         <tr><th scope="row">Overall grade</th><td>${gradeCell(aArt)}</td><td>${gradeCell(bArt)}</td></tr>

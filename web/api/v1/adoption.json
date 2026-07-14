@@ -1,576 +1,62 @@
 {
-  "agency_count": 1449,
+  "agency_count": 0,
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "cemv": {
-    "count": 1,
-    "pct": 0.1
+    "count": 0,
+    "pct": 0.0
   },
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
+  "comparison_eligible_count": 0,
+  "countries": [],
   "fare_models": {
-    "legacy": 828,
-    "none": 538,
-    "v2": 83
+    "legacy": 0,
+    "none": 0,
+    "v2": 0
   },
   "fares": {
-    "count": 911,
-    "pct": 62.9
+    "count": 0,
+    "pct": 0.0
   },
   "fares_v2": {
-    "count": 83,
-    "pct": 5.7
+    "count": 0,
+    "pct": 0.0
   },
-  "fares_v2_sample": [
-    {
-      "id": "auburn-transit",
-      "name": "Auburn Transit",
-      "state": "Unlocated"
-    },
-    {
-      "id": "auburn-transit-217",
-      "name": "Auburn Transit",
-      "state": "California"
-    },
-    {
-      "id": "auburn-transit-2275",
-      "name": "Auburn Transit",
-      "state": "California"
-    },
-    {
-      "id": "avalon-transit",
-      "name": "Avalon Transit",
-      "state": "Unlocated"
-    },
-    {
-      "id": "avalon-transit-12",
-      "name": "Avalon Transit",
-      "state": "California"
-    },
-    {
-      "id": "avon-transit-2433",
-      "name": "Avon Transit",
-      "state": "Colorado"
-    },
-    {
-      "id": "bell-gardens-trolley",
-      "name": "Bell Gardens Trolley",
-      "state": "California"
-    },
-    {
-      "id": "bellflower-bus",
-      "name": "Bellflower Bus",
-      "state": "California"
-    },
-    {
-      "id": "southeastern-pennsylvania-transportation-authority-septa",
-      "name": "Bus",
-      "state": "Pennsylvania"
-    },
-    {
-      "id": "regional-transportation-district-rtd-2280",
-      "name": "Bustang",
-      "state": "Colorado"
-    }
-  ],
+  "fares_v2_sample": [],
+  "feed_record_count": 1128,
   "flex": {
-    "count": 620,
-    "pct": 42.8
+    "count": 0,
+    "pct": 0.0
   },
-  "flex_sample": [
-    {
-      "id": "north-lake-tahoe-express",
-      "name": "24 hour advance reservations required",
-      "state": "Nevada"
-    },
-    {
-      "id": "advance-transit",
-      "name": "Advance Transit",
-      "state": "Vermont"
-    },
-    {
-      "id": "advance-transit-631",
-      "name": "Advance Transit",
-      "state": "Vermont"
-    },
-    {
-      "id": "alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet",
-      "name": "Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue & Gold Fleet",
-      "state": "California"
-    },
-    {
-      "id": "alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet-595",
-      "name": "Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue & Gold Fleet",
-      "state": "California"
-    },
-    {
-      "id": "alhambra-community-transit",
-      "name": "Alhambra Community Transit",
-      "state": "Unlocated"
-    },
-    {
-      "id": "alhambra-community-transit-211",
-      "name": "Alhambra Community Transit",
-      "state": "California"
-    },
-    {
-      "id": "all-points-transit",
-      "name": "All Points Transit",
-      "state": "Colorado"
-    },
-    {
-      "id": "all-points-transit-212",
-      "name": "All Points Transit",
-      "state": "Colorado"
-    },
-    {
-      "id": "altavista-community-transit-system",
-      "name": "Altavista Community Transit System",
-      "state": "Virginia"
-    }
-  ],
-  "generated_at": "2026-07-10T21:13:17+00:00",
+  "flex_sample": [],
+  "generated_at": "2026-07-14T10:23:30+00:00",
   "license": "CC-BY-4.0",
+  "measured_feed_record_count": 0,
   "pathways": {
-    "count": 5,
-    "pct": 0.3
+    "count": 0,
+    "pct": 0.0
   },
-  "pathways_sample": [
-    {
-      "id": "southeastern-pennsylvania-transportation-authority-septa",
-      "name": "Bus",
-      "state": "Pennsylvania"
-    },
-    {
-      "id": "massachusetts-bay-transportation-authority-mbta",
-      "name": "Massachusetts Bay Transportation Authority (MBTA)",
-      "state": "Massachusetts"
-    },
-    {
-      "id": "maryland-transit-administration-metro-subway",
-      "name": "Metro SubwayLink",
-      "state": "Maryland"
-    },
-    {
-      "id": "metro-transit",
-      "name": "Metro Transit",
-      "state": "Minnesota"
-    },
-    {
-      "id": "washington-metropolitan-area-transit-authority-wmata-1847",
-      "name": "Rail",
-      "state": "District of Columbia"
-    }
-  ],
-  "states": [
-    {
-      "agencies": 199,
-      "fares": 155,
-      "fares_v2": 38,
-      "flex": 96,
-      "pathways": 0,
-      "state": "California"
-    },
-    {
-      "agencies": 161,
-      "fares": 115,
-      "fares_v2": 24,
-      "flex": 93,
-      "pathways": 0,
-      "state": "Unlocated"
-    },
-    {
-      "agencies": 126,
-      "fares": 85,
-      "fares_v2": 2,
-      "flex": 98,
-      "pathways": 0,
-      "state": "Colorado"
-    },
-    {
-      "agencies": 95,
-      "fares": 57,
-      "fares_v2": 5,
-      "flex": 52,
-      "pathways": 0,
-      "state": "Washington"
-    },
-    {
-      "agencies": 92,
-      "fares": 66,
-      "fares_v2": 1,
-      "flex": 45,
-      "pathways": 0,
-      "state": "Oregon"
-    },
-    {
-      "agencies": 87,
-      "fares": 16,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "New York"
-    },
-    {
-      "agencies": 75,
-      "fares": 56,
-      "fares_v2": 0,
-      "flex": 47,
-      "pathways": 0,
-      "state": "Virginia"
-    },
-    {
-      "agencies": 67,
-      "fares": 44,
-      "fares_v2": 3,
-      "flex": 26,
-      "pathways": 1,
-      "state": "Massachusetts"
-    },
-    {
-      "agencies": 52,
-      "fares": 32,
-      "fares_v2": 0,
-      "flex": 16,
-      "pathways": 0,
-      "state": "Florida"
-    },
-    {
-      "agencies": 36,
-      "fares": 12,
-      "fares_v2": 3,
-      "flex": 6,
-      "pathways": 1,
-      "state": "Maryland"
-    },
-    {
-      "agencies": 36,
-      "fares": 24,
-      "fares_v2": 0,
-      "flex": 18,
-      "pathways": 0,
-      "state": "North Carolina"
-    },
-    {
-      "agencies": 34,
-      "fares": 19,
-      "fares_v2": 0,
-      "flex": 4,
-      "pathways": 0,
-      "state": "Iowa"
-    },
-    {
-      "agencies": 30,
-      "fares": 22,
-      "fares_v2": 0,
-      "flex": 8,
-      "pathways": 0,
-      "state": "Arizona"
-    },
-    {
-      "agencies": 28,
-      "fares": 26,
-      "fares_v2": 0,
-      "flex": 24,
-      "pathways": 0,
-      "state": "Vermont"
-    },
-    {
-      "agencies": 22,
-      "fares": 6,
-      "fares_v2": 0,
-      "flex": 6,
-      "pathways": 0,
-      "state": "Michigan"
-    },
-    {
-      "agencies": 22,
-      "fares": 16,
-      "fares_v2": 1,
-      "flex": 12,
-      "pathways": 0,
-      "state": "Wisconsin"
-    },
-    {
-      "agencies": 21,
-      "fares": 12,
-      "fares_v2": 1,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Ohio"
-    },
-    {
-      "agencies": 20,
-      "fares": 19,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "New Mexico"
-    },
-    {
-      "agencies": 18,
-      "fares": 7,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Georgia"
-    },
-    {
-      "agencies": 17,
-      "fares": 9,
-      "fares_v2": 1,
-      "flex": 4,
-      "pathways": 0,
-      "state": "Illinois"
-    },
-    {
-      "agencies": 17,
-      "fares": 12,
-      "fares_v2": 1,
-      "flex": 6,
-      "pathways": 0,
-      "state": "Texas"
-    },
-    {
-      "agencies": 16,
-      "fares": 9,
-      "fares_v2": 2,
-      "flex": 2,
-      "pathways": 1,
-      "state": "Pennsylvania"
-    },
-    {
-      "agencies": 15,
-      "fares": 10,
-      "fares_v2": 0,
-      "flex": 8,
-      "pathways": 0,
-      "state": "Connecticut"
-    },
-    {
-      "agencies": 13,
-      "fares": 9,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "Indiana"
-    },
-    {
-      "agencies": 11,
-      "fares": 5,
-      "fares_v2": 0,
-      "flex": 1,
-      "pathways": 0,
-      "state": "Tennessee"
-    },
-    {
-      "agencies": 10,
-      "fares": 4,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "Alabama"
-    },
-    {
-      "agencies": 9,
-      "fares": 7,
-      "fares_v2": 0,
-      "flex": 4,
-      "pathways": 0,
-      "state": "Alaska"
-    },
-    {
-      "agencies": 9,
-      "fares": 5,
-      "fares_v2": 0,
-      "flex": 4,
-      "pathways": 1,
-      "state": "Minnesota"
-    },
-    {
-      "agencies": 9,
-      "fares": 6,
-      "fares_v2": 0,
-      "flex": 7,
-      "pathways": 0,
-      "state": "Montana"
-    },
-    {
-      "agencies": 9,
-      "fares": 5,
-      "fares_v2": 0,
-      "flex": 3,
-      "pathways": 0,
-      "state": "Nevada"
-    },
-    {
-      "agencies": 8,
-      "fares": 3,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Kentucky"
-    },
-    {
-      "agencies": 7,
-      "fares": 2,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Maine"
-    },
-    {
-      "agencies": 7,
-      "fares": 4,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "New Jersey"
-    },
-    {
-      "agencies": 7,
-      "fares": 6,
-      "fares_v2": 0,
-      "flex": 4,
-      "pathways": 0,
-      "state": "South Carolina"
-    },
-    {
-      "agencies": 6,
-      "fares": 3,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 1,
-      "state": "District of Columbia"
-    },
-    {
-      "agencies": 6,
-      "fares": 1,
-      "fares_v2": 0,
-      "flex": 1,
-      "pathways": 0,
-      "state": "Kansas"
-    },
-    {
-      "agencies": 6,
-      "fares": 2,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "Missouri"
-    },
-    {
-      "agencies": 5,
-      "fares": 2,
-      "fares_v2": 0,
-      "flex": 1,
-      "pathways": 0,
-      "state": "Nebraska"
-    },
-    {
-      "agencies": 5,
-      "fares": 2,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "Rhode Island"
-    },
-    {
-      "agencies": 5,
-      "fares": 1,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Utah"
-    },
-    {
-      "agencies": 4,
-      "fares": 3,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Idaho"
-    },
-    {
-      "agencies": 4,
-      "fares": 3,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "Mississippi"
-    },
-    {
-      "agencies": 4,
-      "fares": 2,
-      "fares_v2": 1,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Oklahoma"
-    },
-    {
-      "agencies": 3,
-      "fares": 0,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Arkansas"
-    },
-    {
-      "agencies": 3,
-      "fares": 1,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Hawaii"
-    },
-    {
-      "agencies": 3,
-      "fares": 0,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Louisiana"
-    },
-    {
-      "agencies": 3,
-      "fares": 2,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "New Hampshire"
-    },
-    {
-      "agencies": 3,
-      "fares": 0,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "North Dakota"
-    },
-    {
-      "agencies": 2,
-      "fares": 2,
-      "fares_v2": 0,
-      "flex": 2,
-      "pathways": 0,
-      "state": "South Dakota"
-    },
-    {
-      "agencies": 1,
-      "fares": 1,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Delaware"
-    },
-    {
-      "agencies": 1,
-      "fares": 1,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "state": "West Virginia"
-    }
-  ],
+  "pathways_sample": [],
+  "states": [],
   "step_free": {
-    "count": 5,
-    "pct": 0.3
+    "count": 0,
+    "pct": 0.0
   }
 }

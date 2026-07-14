@@ -13,6 +13,7 @@ from google.transit import gtfs_realtime_pb2
 
 from scorecard_pipeline import rt
 from scorecard_pipeline.rt import (
+    FRESH_ZERO_SECONDS,
     RtSample,
     RtWindow,
     _active_service_ids,
@@ -73,7 +74,193 @@ class TestScoring:
         result = realtime(window, {"T1", "T2"})
         # (25 * 2/3 + 25 + 35) / 85 * 100
         assert result.score == pytest.approx(90.2, abs=0.05)
-        assert any(f.code == "scorecard_rt_vehicle_positions_unreachable" for f in result.findings)
+        finding = next(
+            f for f in result.findings if f.code == "scorecard_rt_vehicle_positions_unreachable"
+        )
+        assert finding.deduction == pytest.approx(100.0 - result.score)
+
+    def test_vehicle_positions_only_scores_configured_capabilities(self) -> None:
+        window = RtWindow(samples=[sample("vehicle_positions")])
+        plausibility = PlausibilityStats(
+            vehicles_checked=39,
+            plausible_share=36 / 39,
+            worst_meters=900,
+        )
+
+        result = realtime(
+            window,
+            {"T1", "T2"},
+            drift=DriftStats(
+                observations=5,
+                median_seconds=90,
+                p90_abs_seconds=120,
+                on_time_share=0.8,
+            ),
+            plausibility=plausibility,
+            configured_kinds={"vehicle_positions"},
+        )
+
+        # Reachability + freshness + position plausibility are measurable;
+        # TripUpdates coverage and unconfigured feed kinds are neutral.
+        expected = (25 + 25 + 15 * (36 / 39)) / (25 + 25 + 15) * 100
+        assert result.score == pytest.approx(expected)
+        assert result.details["configured_kinds"] == ["vehicle_positions"]
+        assert result.details["kinds_configured"] == 1
+        assert result.details["kinds_reachable"] == 1
+        assert result.details["coverage_pct"] is None
+        assert "scheduled_trips_in_window" not in result.details
+        assert "1 of 1 configured feed healthy" in result.summary
+        assert "outside service hours" not in result.summary
+        codes = {finding.code for finding in result.findings}
+        assert "scorecard_rt_trip_updates_unreachable" not in codes
+        assert "scorecard_rt_service_alerts_unreachable" not in codes
+        assert "scorecard_rt_trip_coverage" not in codes
+        assert "drift" not in result.details
+        assert "predictions ran" not in result.summary
+
+    def test_vehicle_positions_without_shapes_explains_unmeasured_plausibility(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("vehicle_positions")]),
+            None,
+            configured_kinds={"vehicle_positions"},
+        )
+
+        assert result.score == 100.0
+        assert "vehicle position plausibility was not measurable" in result.summary
+
+    def test_vehicle_positions_only_stale_deduction_matches_score_loss(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("vehicle_positions", lag=FRESH_ZERO_SECONDS)]),
+            None,
+            configured_kinds={"vehicle_positions"},
+        )
+
+        finding = next(f for f in result.findings if f.code == "scorecard_rt_stale")
+        assert result.score == 50.0
+        assert finding.deduction == pytest.approx(100.0 - result.score)
+        assert finding.to_json()["points"] == round(100.0 - result.score, 1)
+
+    def test_vehicle_positions_only_implausible_deduction_matches_score_loss(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("vehicle_positions")]),
+            None,
+            plausibility=PlausibilityStats(
+                vehicles_checked=4,
+                plausible_share=0.5,
+                worst_meters=900,
+            ),
+            configured_kinds={"vehicle_positions"},
+        )
+
+        finding = next(f for f in result.findings if f.code == "scorecard_rt_vehicles_off_route")
+        assert finding.deduction == pytest.approx(100.0 - result.score)
+        assert finding.to_json()["points"] == round(100.0 - result.score, 1)
+
+    def test_global_basmy_kangar_registry_entry_is_scored_as_vp_only(self) -> None:
+        from scorecard_pipeline.agencies import read_agencies
+
+        registry = Path(__file__).resolve().parents[2] / "agencies.yaml"
+        kangar = next(agency for agency in read_agencies(registry) if agency.id == "basmy-kangar")
+        assert kangar.country == "MY"
+        assert set(kangar.rt_urls) == {"vehicle_positions"}
+
+        result = realtime(
+            RtWindow(samples=[sample("vehicle_positions")]),
+            {"scheduled-but-not-a-trip-update"},
+            plausibility=PlausibilityStats(
+                vehicles_checked=23,
+                plausible_share=1.0,
+                worst_meters=20,
+            ),
+            configured_kinds=kangar.rt_urls,
+        )
+
+        assert result.score == 100.0
+        assert result.findings == []
+        assert result.details["coverage_pct"] is None
+
+    def test_unreachable_configured_vehicle_positions_still_fails(self) -> None:
+        window = RtWindow(samples=[sample("vehicle_positions", ok=False)])
+
+        result = realtime(window, {"T1"}, configured_kinds={"vehicle_positions"})
+
+        assert result.score == 0.0
+        assert [finding.code for finding in result.findings] == [
+            "scorecard_rt_vehicle_positions_unreachable"
+        ]
+        assert result.findings[0].deduction == 100.0
+
+    def test_trip_updates_only_keeps_coverage_without_other_feed_penalties(self) -> None:
+        window = RtWindow(samples=[sample("trip_updates", trip_ids=frozenset({"T1", "T2"}))])
+
+        result = realtime(
+            window,
+            {"T1", "T2"},
+            configured_kinds={"trip_updates"},
+        )
+
+        assert result.score == 100.0
+        assert result.details["coverage_pct"] == 100.0
+        assert result.findings == []
+        assert "1 of 1 configured feed healthy" in result.summary
+
+    def test_trip_updates_only_half_coverage_deduction_matches_score_loss(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("trip_updates", trip_ids=frozenset({"T1"}))]),
+            {"T1", "T2"},
+            configured_kinds={"trip_updates"},
+        )
+
+        finding = next(f for f in result.findings if f.code == "scorecard_rt_trip_coverage")
+        assert finding.deduction == pytest.approx(100.0 - result.score)
+        assert finding.to_json()["points"] == round(100.0 - result.score, 1)
+
+    def test_service_alerts_only_does_not_invent_freshness_or_coverage_gaps(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("service_alerts")]),
+            {"T1"},
+            configured_kinds={"service_alerts"},
+        )
+
+        assert result.score == 100.0
+        assert result.findings == []
+        assert result.details["rt_freshness"] is None
+        assert result.details["coverage_pct"] is None
+
+    def test_service_alerts_only_outage_deduction_matches_score_loss(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("service_alerts", ok=False)]),
+            None,
+            configured_kinds={"service_alerts"},
+        )
+
+        assert result.score == 0.0
+        assert [finding.code for finding in result.findings] == [
+            "scorecard_rt_service_alerts_unreachable"
+        ]
+        assert result.findings[0].deduction == 100.0 - result.score
+
+    def test_empty_explicit_configuration_is_rejected(self) -> None:
+        # Agencies with no realtime skip this category in the collect path. If
+        # a caller bypasses that neutral path, fail rather than invent a score.
+        with pytest.raises(ValueError, match="at least one configured"):
+            realtime(RtWindow(), None, configured_kinds=set())
+
+    def test_explicit_configuration_marks_an_unsampled_endpoint_unreachable(self) -> None:
+        # Configuration, not whichever samples happen to be present, defines
+        # the assessment boundary. This stays fail-closed for a configured
+        # endpoint if a future sampler ever omits its failure record.
+        window = RtWindow(samples=[sample("vehicle_positions")])
+
+        result = realtime(
+            window,
+            None,
+            configured_kinds={"trip_updates", "vehicle_positions"},
+        )
+
+        codes = {finding.code for finding in result.findings}
+        assert "scorecard_rt_trip_updates_unreachable" in codes
+        assert "scorecard_rt_service_alerts_unreachable" not in codes
 
     def test_stale_feed_loses_freshness_points(self) -> None:
         window = RtWindow(
@@ -129,6 +316,47 @@ class TestScoring:
         finding = next(f for f in result.findings if f.code == "scorecard_rt_trip_coverage")
         assert finding.count == 1
         assert "1 of 2" in finding.what
+
+    def test_multiple_scored_findings_sum_to_category_score_loss(self) -> None:
+        result = realtime(
+            RtWindow(
+                samples=[
+                    sample(
+                        "trip_updates",
+                        lag=FRESH_ZERO_SECONDS,
+                        trip_ids=frozenset({"T1"}),
+                    )
+                ]
+            ),
+            {"T1", "T2"},
+            configured_kinds={"trip_updates"},
+        )
+
+        scored = [finding for finding in result.findings if finding.deduction > 0]
+        assert {finding.code for finding in scored} == {
+            "scorecard_rt_stale",
+            "scorecard_rt_trip_coverage",
+        }
+        assert sum(finding.deduction for finding in scored) == pytest.approx(100.0 - result.score)
+        assert sum(finding.to_json()["points"] for finding in scored) == round(
+            100.0 - result.score, 1
+        )
+
+    def test_unreachable_trip_updates_does_not_duplicate_a_coverage_deduction(self) -> None:
+        result = realtime(
+            RtWindow(samples=[sample("trip_updates", ok=False)]),
+            {"T1"},
+            configured_kinds={"trip_updates"},
+        )
+
+        assert result.score == 0.0
+        assert [finding.code for finding in result.findings] == [
+            "scorecard_rt_trip_updates_unreachable"
+        ]
+        assert result.findings[0].deduction == 100.0
+        assert result.details["scheduled_trips_in_window"] == 1
+        assert result.details["coverage_pct"] is None
+        assert "outside service hours" not in result.summary
 
     def test_plausibility_folds_into_score(self) -> None:
         good = PlausibilityStats(vehicles_checked=4, plausible_share=1.0, worst_meters=40)

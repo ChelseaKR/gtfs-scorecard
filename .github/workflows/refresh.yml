@@ -24,7 +24,6 @@ jobs:
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
-      queue: max
     permissions:
       contents: read
       id-token: write # publish refreshed artifacts through AWS OIDC
@@ -48,12 +47,17 @@ jobs:
       - name: Hydrate current artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
+          mkdir -p data/cache/structure
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --exclude "*" --include "index.json" \
-            --include "*/latest.json" --include "*/fixlog.json" \
+            --include "*/latest.json" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
+            --only-show-errors
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
+            --only-show-errors
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure" data/cache/structure \
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
@@ -92,15 +96,41 @@ jobs:
         run: |
           uv run scorecard reindex
           uv run scorecard rollups
+          uv run scorecard render-site
 
       - name: Publish refreshed artifacts to S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
+          fixlog_stage="$RUNNER_TEMP/private-fixlogs"
+          rm -rf "$fixlog_stage"
+          mkdir -p "$fixlog_stage"
+          jq -r '.agencies | keys[]' data/artifacts/index.json | while IFS= read -r id; do
+            if [ -f "data/artifacts/${id}/fixlog.json" ]; then
+              mkdir -p "$fixlog_stage/$id"
+              cp "data/artifacts/${id}/fixlog.json" "$fixlog_stage/$id/fixlog.json"
+            fi
+          done
+          mkdir -p data/cache/structure
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
+            --exclude "*/validator-cache.json" --exclude "*/structure.json" \
+            --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
             --cache-control "max-age=300" --only-show-errors
+          aws s3 rm "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" --recursive \
+            --exclude "*" --include "*/validator-cache.json" \
+            --include "*/structure.json" --include "*/fixlog.json" \
+            --include "*/corrected.zip" --only-show-errors
+          aws s3 sync data/artifacts/changes \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
+            --delete --cache-control "max-age=300" --only-show-errors
           aws s3 cp data/liveness.json \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             --cache-control "max-age=300" --only-show-errors
+          # Persist comparison memory only after every public write succeeds.
+          aws s3 sync "$fixlog_stage" \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" --delete --only-show-errors
+          aws s3 sync data/cache/structure \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure" \
+            --only-show-errors
 
   # Refreshes do not write to main, so deploy the newly published S3 state
   # explicitly after the refresh.
