@@ -48,6 +48,21 @@ def test_hand_authored_pages_do_not_block_on_remote_fonts() -> None:
         assert "fonts.gstatic.com" not in html, rel
 
 
+def test_consulting_offer_stays_hidden_from_public_project_surfaces() -> None:
+    """The temporary hide covers the live page and repository entry points."""
+    public_sources = (
+        _REPO / "web" / "support" / "index.html",
+        _REPO / "README.md",
+        _REPO / "docs" / "support.md",
+    )
+    for path in public_sources:
+        text = path.read_text()
+        assert "chelseakr.com/consulting" not in text, path
+    support_html = public_sources[0].read_text()
+    assert "Professional help" not in support_html
+    assert "Implement the fixes with Chelsea" not in support_html
+
+
 def test_local_fonts_do_not_swap_after_first_paint() -> None:
     """Keep slow font loads from moving the landing page or app shell."""
     for rel in ("index.html", "src/styles.css"):
