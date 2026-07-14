@@ -152,7 +152,7 @@ def build_artifact(
     )
     # A curator's operating-status note (mainly for long-expired feeds) rides on
     # the agency block when set, so the scorecard and directory can show a
-    # human-verified "still running" without re-reading agencies.yaml. Omitted
+    # human-verified "still running" without re-reading the registry. Omitted
     # when empty so artifacts for agencies without a note stay byte-identical.
     agency_block: dict[str, Any] = {"id": agency.id, "name": agency.name}
     # Country rides on the block only when it is not the US default, so US
@@ -473,8 +473,8 @@ def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Pat
 
     The S3 artifacts store is additive and outlives registry edits, so a
     hydrated tree can hold directories for agencies that were removed from
-    agencies.yaml, or that a since-abandoned run published and no registry
-    version ever listed. agencies.yaml is the sole source of what is listed
+    the registry, or that a since-abandoned run published and no registry
+    version ever listed. The registry is the sole source of what is listed
     (docs/listing-policy.md), so walkers must not treat those directories as
     listings; cleanup stays a curator decision (`scorecard prune`). With no
     registry loaded (library callers, most unit tests) every directory is
@@ -488,7 +488,7 @@ def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Pat
     unregistered = [p.name for p in dirs if p.name not in AGENCIES]
     if unregistered and log_skipped:
         log.warning(
-            "skipping %d artifact directories with no agencies.yaml entry"
+            "skipping %d artifact directories with no registry entry"
             " (run `scorecard prune` to review): %s",
             len(unregistered),
             ", ".join(unregistered[:10]) + (", ..." if len(unregistered) > 10 else ""),

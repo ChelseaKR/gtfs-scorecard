@@ -12,7 +12,7 @@ Pure stdlib (no numpy/scipy in the pipeline venv). Implements:
 
 See docs/research/EXP-16-ntd-policy-effect-study.md for the write-up, the
 honest-caveats framing, and the citations behind the "obligation proxy" this
-script uses (ntd_id presence in agencies.yaml). This is a one-off research
+script uses (ntd_id presence in the agency registry). This is a one-off research
 script, not a maintained pipeline module, and it is not wired into CI.
 
 Run from the repo root:
@@ -24,19 +24,21 @@ from __future__ import annotations
 import json
 import math
 import statistics
+import sys
 from collections import Counter
+from dataclasses import asdict
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
-AGENCIES_YAML = ROOT / "agencies.yaml"
+sys.path.insert(0, str(ROOT / "pipeline" / "src"))
+
+from scorecard_pipeline.agencies import read_agencies  # noqa: E402
+
 ARTIFACTS_DIR = ROOT / "data" / "artifacts"
 
 
-def load_registry() -> list[dict]:
-    data = yaml.safe_load(AGENCIES_YAML.read_text())
-    return data["agencies"]
+def load_registry() -> list[dict[str, object]]:
+    return [asdict(agency) for agency in read_agencies()]
 
 
 def latest_artifact(agency_id: str) -> dict | None:

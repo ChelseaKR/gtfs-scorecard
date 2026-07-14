@@ -1,8 +1,9 @@
 # Add your agency in 10 minutes
 
-The scorecard tracks any agency listed in [`agencies.yaml`](../agencies.yaml)
-at the repository root. Adding yours is one YAML block and a pull request;
-no code changes.
+The scorecard tracks any agency in the manifest-backed
+[`registry`](../registry/README.md). Adding yours to
+[`registry/intake.yaml`](../registry/intake.yaml) is one YAML block and a pull
+request; no code changes.
 
 ## Preview first, no commitment
 
@@ -33,7 +34,9 @@ cache.
 
 ## Steps
 
-1. Fork this repository and open `agencies.yaml`.
+1. Fork this repository and open `registry/intake.yaml`. Curators later move a
+   verified entry into its small country/subdivision shard, so your pull
+   request touches only the intake file.
 2. Copy an existing block and fill in your values:
 
    ```yaml

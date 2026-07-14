@@ -1,4 +1,4 @@
-"""Tests for the agencies.yaml registry loader."""
+"""Tests for the legacy and manifest-backed agency registry loaders."""
 
 from __future__ import annotations
 
@@ -15,12 +15,13 @@ from scorecard_pipeline.agencies import (
     load_agencies,
     parse_agencies,
     read_agencies,
+    registry_paths,
 )
 from scorecard_pipeline.config import AGENCIES
 from scorecard_pipeline.jurisdictions import JURISDICTIONS
 from scorecard_pipeline.location import SUPPORTED_COUNTRY_CODES
 
-REPO_YAML = Path(__file__).resolve().parents[2] / "agencies.yaml"
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 VALID_ENTRY: dict[str, object] = {
     "id": "demo",
@@ -46,8 +47,9 @@ def test_valid_entry_parses() -> None:
     assert agency.license_note == "CC-BY"
 
 
-def test_repo_registry_is_valid_and_lists_pilots() -> None:
-    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+def test_repo_registry_is_valid_and_lists_pilots(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
     ids = {a.id for a in agencies}
     assert {"unitrans", "yolobus"} <= ids
     yolobus = next(a for a in agencies if a.id == "yolobus")
@@ -171,16 +173,20 @@ def test_subdivision_name_typo_is_rejected_even_when_the_code_is_valid() -> None
         parse_agencies(entry(country="GB", subdivision_code="GB-ENG", subdivision_name="Englnd"))
 
 
-def test_repo_registry_includes_canada_pilot() -> None:
-    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+def test_repo_registry_includes_canada_pilot(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
     by_id = {a.id: a for a in agencies}
     assert {"whitehorse-transit", "barrie-transit", "london-transit-commission"} <= set(by_id)
     assert all(by_id[i].country == "CA" for i in ("whitehorse-transit", "barrie-transit"))
     assert by_id["unitrans"].country == "US"  # US pilots keep the default
 
 
-def test_repo_registry_includes_four_region_worldwide_cohort() -> None:
-    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+def test_repo_registry_includes_four_region_worldwide_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
     by_id = {agency.id: agency for agency in agencies}
     cohort = {
         "lbus-bernay": ("FR", "FR-NOR", "Normandie"),
@@ -198,8 +204,11 @@ def test_repo_registry_includes_four_region_worldwide_cohort() -> None:
         assert agency.ntd_note == ""
 
 
-def test_worldwide_cohort_preserves_public_names_and_realtime_semantics() -> None:
-    agencies = parse_agencies(yaml.safe_load(REPO_YAML.read_text()))
+def test_worldwide_cohort_preserves_public_names_and_realtime_semantics(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
     by_id = {agency.id: agency for agency in agencies}
 
     bernay = by_id["lbus-bernay"]
@@ -242,6 +251,7 @@ def test_default_loader_uses_legacy_file_when_manifest_is_absent(
     load_agencies()
 
     assert list(AGENCIES) == ["demo"]
+    assert registry_paths(root) == [root.resolve() / "agencies.yaml"]
 
 
 def test_read_agencies_uses_legacy_file_without_mutating_registry(
@@ -257,6 +267,18 @@ def test_read_agencies_uses_legacy_file_without_mutating_registry(
 
     assert [agency.id for agency in agencies] == ["demo"]
     assert list(AGENCIES) == ["existing"]
+
+
+def test_default_loader_accepts_a_relative_repository_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "agencies.yaml").write_text(yaml.safe_dump(VALID))
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("SCORECARD_ROOT", "repo")
+
+    assert [agency.id for agency in read_agencies()] == ["demo"]
 
 
 def _write_registry_shard(root: Path, relative: str, agencies: list[dict[str, object]]) -> None:
@@ -284,6 +306,10 @@ def test_manifest_loads_shards_in_listed_order_and_allows_cross_shard_aliases(
 
     assert list(AGENCIES) == ["first", "second"]
     assert AGENCIES["first"].alias_of == "second"
+    assert registry_paths(root) == [
+        root.resolve() / "registry/US/ca.yaml",
+        root.resolve() / "registry/CA/on.yaml",
+    ]
 
 
 def test_read_agencies_uses_manifest_without_mutating_registry(

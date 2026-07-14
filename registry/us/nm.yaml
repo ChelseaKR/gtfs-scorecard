@@ -1,0 +1,117 @@
+# New Mexico (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: carlsbad-municipal-transit-system
+    name: Carlsbad Municipal Transit System
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://github.com/ethan-nelson/carlsbadnmtransit/blob/master/gtfs-odbl/carlsbadtransit-odbl.zip?raw=true
+    mdb_id: 149
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: navajo-transit-system
+    name: Navajo Transit System
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/navajo_google_transit.zip
+    mdb_id: 157
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: red-apple-transit
+    name: Red Apple Transit
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/redappletransit-nm-us/redappletransit-nm-us.zip
+    mdb_id: 160
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: rio-metro-regional-transit-district
+    name: Rio Metro Regional Transit District
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://www.riometro.org/DocumentCenter/View/2195/nmrailrunner_google_transit
+    mdb_id: 165
+    license_note: "License: https://www.riometro.org/261/GTFS-Data"
+
+  - id: abq-ride
+    name: ABQ RIDE
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://data.cabq.gov/transit/gtfs/google_transit.zip
+    mdb_id: 166
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: http://www.cabq.gov/abq-data/abq-data-disclaimer-1"
+
+  - id: sandia-shuttle
+    name: Sandia Shuttle
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/sandiashuttle-nm-us/sandiashuttle-nm-us.zip
+    mdb_id: 167
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: gallup-express
+    name: Gallup Express
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/gallupexpress_google_transit.zip
+    mdb_id: 462
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: roadrunner-transit
+    name: RoadRUNNER Transit
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/lascrucesroadrunner_google_transit.zip
+    mdb_id: 564
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: north-central-regional-transit-district-ncrtd
+    name: North Central Regional Transit District (NCRTD)
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://www.ncrtd.org/wp-content/uploads/2021/05/gtfs-5.12.21.zip
+    mdb_id: 582
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: santa-fe-trails
+    name: Santa Fe Trails
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/santafetrails_google_transit.zip
+    mdb_id: 839
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: atomic-city-transit
+    name: Atomic City Transit
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://gtfs.remix.com/act_los_alamos_nm_us.zip
+    mdb_id: 1240
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: roadrunner-transit-2075
+    name: RoadRUNNER Transit
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2075
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: carlsbad-municipal-transit-system-2284
+    name: Carlsbad Municipal Transit System
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://irp.cdn-website.com/f12fb9e8/files/uploaded/google_transit.zip
+    mdb_id: 2284
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: navajo-transit-system-2346
+    name: Navajo Transit System
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5372/Navajo_Transit_GTFS.zip
+    mdb_id: 2346
+    license_note: No stated data license in the Mobility Database; verify before publishing.

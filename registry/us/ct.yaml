@@ -1,0 +1,98 @@
+# Connecticut (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: norwalk-transit-district
+    name: Norwalk Transit District
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://www.norwalktransit.com/s/GTFS_Data.zip
+    mdb_id: 529
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greater-bridgeport-transit
+    name: Greater Bridgeport Transit
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip
+    mdb_id: 530
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shore-line-east
+    name: Shore Line East
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: http://www.shorelineeast.com/google_transit.zip
+    mdb_id: 550
+    license_note: "License: http://www.cttransit.com/about/developers/gtfsdata/"
+
+  - id: middletown-area-transit-mat
+    name: Middletown Area Transit (MAT)
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ninetown-connecticut-us/ninetown-connecticut-us.zip
+    mdb_id: 551
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: southeast-area-transit-district
+    name: Southeast Area Transit District
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/seatbus-ct-us/seatbus-ct-us.zip
+    mdb_id: 552
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connecticut-transit
+    ntd_id: "10048"
+    name: Connecticut Transit
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip
+    mdb_id: 553
+    rt_urls:
+      trip_updates: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/Alert/Alerts.pb
+    license_note: "License: https://www.cttransit.com/about/developers/terms-of-use"
+
+  - id: middletown-area-transit
+    name: Middletown Area Transit
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/middletown-ct-us/middletown-ct-us.zip
+    mdb_id: 576
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connecticut-transit-597
+    name: Hartford Line - Rail
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: http://www.hartfordline.com/files/gtfs/gtfs.zip
+    mdb_id: 597
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: lower-hudson-valley-transit
+    name: Lower Hudson Valley Transit
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip
+    mdb_id: 915
+    license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
+
+  - id: southeast-area-transit-district-2240
+    name: Southeast Area Transit District
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://gtfs.remix.com/seat_preston_ct_us.zip
+    mdb_id: 2240
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connecticut-transit-2840
+    ntd_id: "10048"
+    name: Hartford Line - Rail
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://ctrides.com/hlgtfs.zip
+    mdb_id: 2840
+    license_note: "License: https://www.cttransit.com/about/developers/terms-of-use"

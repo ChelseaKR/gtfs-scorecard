@@ -7,7 +7,7 @@ Date: 2026-07-11. Status: accepted.
 On 2026-07-10 the public directory count jumped from ~1,450 to 2,012 without a
 registry change. The extra 563 listings were artifact directories in the S3
 store left behind by a pre-release bulk import (scored 2026-06-27/30, never
-committed to `agencies.yaml`). The store is deliberately additive — the daily
+committed to the manifest-backed registry). The store is deliberately additive — the daily
 sync never deletes, so history survives registry churn — but the S3
 source-of-truth cutover (PRs #58–#60) made the collect and refresh jobs rebuild
 `index.json` from whatever directories the sync brought down. Every leftover
@@ -24,7 +24,7 @@ dataset label ("Flex", "Bus", "fixed route") instead of the agency's name.
 
 ## Decision
 
-`agencies.yaml` is the sole source of what the scorecard lists
+The explicit `registry/index.yaml` manifest is the sole source of what the scorecard lists
 (docs/listing-policy.md already says so for people; this makes the pipeline
 obey it). Everything that walks the artifact tree as a set of listings —
 reindex, the freshness sweep, rollups, the vendor report, the regression

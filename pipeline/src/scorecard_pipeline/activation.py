@@ -485,7 +485,7 @@ def _registered_index_ids(index: dict[str, Any], known_ids: Collection[str]) -> 
     if skipped:
         print(
             f"::warning title=unregistered index entries::skipping {len(skipped)} "
-            "index entries that are not in agencies.yaml",
+            "index entries that are not in the registry",
             file=sys.stderr,
         )
     return sorted(registered)

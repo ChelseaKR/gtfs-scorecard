@@ -3,7 +3,8 @@
 # that transit agencies publish inside their public GTFS/GTFS-RT feed URLs
 # (sourced from the Mobility Database registry) — see .gitleaks.toml for the
 # matching secret-scan allowlist. Hand-written source stays in scope.
-agencies.yaml
+registry/**/*.yaml
+registry/**/*.yml
 data/
 web/
 pipeline/tests/fixtures/

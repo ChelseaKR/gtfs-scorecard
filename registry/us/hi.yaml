@@ -1,0 +1,29 @@
+# Hawaii (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: thebus
+    name: TheBus
+    subdivision_code: US-HI
+    subdivision_name: Hawaii
+    static_gtfs_url: http://webapps.thebus.org/transitdata/Production/google_transit.zip
+    mdb_id: 10
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hawai-i-mass-transit-agency-hele-on-bus
+    name: Hawai'i Mass Transit Agency (Hele-On Bus)
+    subdivision_code: US-HI
+    subdivision_name: Hawaii
+    static_gtfs_url: http://www.heleonbus.org/transit-info-and-statistics/MTA_FEED4.zip
+    mdb_id: 557
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: thebus-2350
+    name: TheBus
+    subdivision_code: US-HI
+    subdivision_name: Hawaii
+    static_gtfs_url: https://www.thebus.org/transitdata/production/google_transit.zip
+    mdb_id: 2350
+    license_note: No stated data license in the Mobility Database; verify before publishing.

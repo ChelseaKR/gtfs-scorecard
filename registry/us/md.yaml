@@ -1,0 +1,294 @@
+# Maryland (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bethesda-circulator
+    name: Bethesda Circulator
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/bethesdacirculator-md-us.zip
+    mdb_id: 231
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: allegany-county-transit
+    name: Allegany County Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Allegany_GTFS.zip
+    mdb_id: 408
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: maryland-transit-administration
+    name: Local Bus
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_localbus.zip
+    mdb_id: 466
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: maryland-transit-administration-467
+    name: Commuter Bus
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_commuterbus.zip
+    mdb_id: 467
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: maryland-transit-administration-468
+    name: MARC Train
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_marc.zip
+    mdb_id: 468
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: maryland-transit-administration-469
+    name: Light Rail
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_lightrail.zip
+    mdb_id: 469
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: maryland-transit-administration-metro-subway
+    name: Metro SubwayLink
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip
+    mdb_id: 470
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: delmarva-community-transit
+    name: Delmarva Community Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Delmarva_GTFS.zip
+    mdb_id: 475
+    license_note: "License: https://github.com/mobilityequity/maryland-local-gtfs/blob/master/README.md"
+
+  - id: st-mary-s-transit-system-sts
+    name: St. Mary's Transit System (STS)
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/SM_GTFS.zip
+    mdb_id: 476
+    license_note: "License: https://github.com/mobilityequity/maryland-local-gtfs/blob/master/README.md"
+
+  - id: prince-george-s-county-the-bus
+    name: Prince George's County (The Bus)
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/princegeorgescounty-md-us/princegeorgescounty-md-us.zip
+    mdb_id: 477
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: charles-county-vango
+    name: Charles County VanGo
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Charles_GTFS.zip
+    mdb_id: 479
+    license_note: "License: http://www.mdtrip.org/commuter-tools/developer-resources/"
+
+  - id: calvert-county-public-transportation
+    name: Calvert County Public Transportation
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Calvert_GTFS.zip
+    mdb_id: 480
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: montgomery-county-department-of-transportation-ride-on
+    name: Montgomery County Department of Transportation (Ride On)
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://www.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip
+    mdb_id: 488
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: regional-transportation-agency-of-central-maryland-rta
+    name: Regional Transportation Agency of Central Maryland (RTA)
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/centralmarylandrta-md-us/centralmarylandrta-md-us.zip
+    mdb_id: 489
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bwi-thurgood-marshall-airport-bwi-shuttle
+    name: BWI Thurgood Marshall Airport (BWI) Shuttle
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/BWI_GTFS.zip
+    mdb_id: 490
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: annapolis-transit
+    name: Annapolis Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Annapolis_GTFS.zip
+    mdb_id: 491
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: queen-anne-s-county-ride
+    name: Queen Anne's County Ride
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/QA_GTFS.zip
+    mdb_id: 492
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: charm-city-circulator
+    name: Charm City Circulator
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/CCC_GTFS.zip
+    mdb_id: 493
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shore-transit
+    name: Shore Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Shore_GTFS.zip
+    mdb_id: 494
+    license_note: "License: https://github.com/mobilityequity/maryland-local-gtfs/blob/master/README.md"
+
+  - id: ocean-city-transportation
+    name: Ocean City Transportation
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/OC_GTFS.zip
+    mdb_id: 495
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-county-transit
+    ntd_id: "30030"
+    name: Washington County Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/WC_GTFS.zip
+    mdb_id: 497
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: frederick-county-transit
+    name: Frederick County TransIT
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://maps.frederickcountymd.gov/google/google_transit.zip
+    mdb_id: 498
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: carroll-transit-system
+    name: Carroll Transit System
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Carroll_GTFS.zip
+    mdb_id: 500
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: harford-transit-link
+    name: Harford Transit LINK
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Harford_GTFS.zip
+    mdb_id: 501
+    license_note: "License: http://mdtrip.org/About/DeveloperResources.aspx"
+
+  - id: cecil-transit
+    name: Cecil Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Cecil_GTFS.zip
+    mdb_id: 504
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: harbor-connector
+    name: Harbor Connector
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/harborconnector-md-us/harborconnector-md-us.zip
+    mdb_id: 618
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: saint-mary-s-transit-system
+    name: Saint Maryʼs Transit System
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://transitfeeds.com/p/saint-marys-transit-system/1147/latest/download
+    mdb_id: 1203
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: towson-loop
+    name: Towson Loop
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://passio3.com/towson/passioTransit/gtfs/google_transit.zip
+    mdb_id: 1784
+    rt_urls:
+      trip_updates: https://passio3.com/towson/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/towson/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/towson/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: saint-mary-s-transit-system-2268
+    name: Saint Maryʼs Transit System
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://stmgis.stmarysmd.com/Downloads/GTFS/StMarys_GTFS_5_31_22.zip
+    mdb_id: 2268
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: annapolis-transit-2285
+    name: Annapolis Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/c307923d57ab4871aff79491b4a1bfd3/data
+    mdb_id: 2285
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: washington-county-transit-2286
+    ntd_id: "30030"
+    name: Washington County Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11756/WCT_MD_GTFS.zip
+    mdb_id: 2286
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: frederick-county-transit-2432
+    name: Frederick County TransIT
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip
+    mdb_id: 2432
+    rt_urls:
+      trip_updates: https://passio3.com/frederick/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/frederick/passioTransit/gtfs/realtime/vehiclePositions
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cecil-transit-3034
+    name: Cecil Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://passio3.com/cecil/passioTransit/gtfs/google_transit.zip
+    mdb_id: 3034
+    rt_urls:
+      trip_updates: https://passio3.com/cecil/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/cecil/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/cecil/passioTransit/gtfs/realtime/serviceAlerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: shore-transit-3149
+    name: Shore Transit
+    subdivision_code: US-MD
+    subdivision_name: Maryland
+    static_gtfs_url: https://myride.shoretransit.org/gtfs/google_transit.zip
+    mdb_id: 3149
+    license_note: No stated data license in the Mobility Database; verify before publishing.

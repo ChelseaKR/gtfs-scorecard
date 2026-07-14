@@ -1,0 +1,176 @@
+# Iowa (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: sioux-city-transit-system
+    name: Sioux City Transit System
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/siouxcity-ia-us/siouxcity-ia-us.zip
+    mdb_id: 191
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: des-moines-area-regional-transit-authority-dart
+    name: Des Moines Area Regional Transit Authority (DART)
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://www.ridedart.com/gtfs/data/gtfsdata
+    mdb_id: 193
+    rt_urls:
+      trip_updates: https://www.ridedart.com/gtfs/real-time/trip-updates
+      vehicle_positions: https://www.ridedart.com/gtfs/real-time/vehicle-positions
+      service_alerts: https://www.ridedart.com/gtfs/real-time/alerts
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: marshalltown-municipal-transit
+    name: Marshalltown Municipal Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/marshalltownmunicipaltransit-ia-us/marshalltownmunicipaltransit-ia-us.zip
+    mdb_id: 194
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: 10-15-transit
+    name: 10-15 Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip
+    mdb_id: 195
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: coralville-transit
+    name: Coralville Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/coralvilletransitsystem-ia-us/coralvilletransitsystem-ia-us.zip
+    mdb_id: 196
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: university-of-iowa-cambus-cambus
+    name: University of Iowa - CAMBUS (CAMBUS)
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cambus-ia-us/cambus-ia-us.zip
+    mdb_id: 197
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cedar-rapids-transit
+    name: Cedar Rapids Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cedarrapids-ia-us/cedarrapids-ia-us.zip
+    mdb_id: 198
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: burlington-urban-service
+    name: Burlington Urban Service
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip
+    mdb_id: 199
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: muscabus
+    name: MuscaBus
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/muscabus-ia-us/muscabus-ia-us.zip
+    mdb_id: 200
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: clinton-municipal-transit-administration-clinton-mta
+    name: Clinton Municipal Transit Administration (Clinton MTA)
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/clintonmta-ia-us/clintonmta-ia-us.zip
+    mdb_id: 202
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dodger-area-rapid-transit
+    name: Dodger Area Rapid Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/dart-ia-us/dart-ia-us.zip
+    mdb_id: 203
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mason-city-public-transit
+    name: Mason City Public Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip
+    mdb_id: 204
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-jule
+    name: The Jule
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: http://www.cityofdubuque.org/gtfs.zip
+    mdb_id: 207
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: corridorrides
+    name: CorridorRides
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/corridorrides-ia-us/corridorrides-ia-us.zip
+    mdb_id: 316
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: iowa-city-transit-system
+    name: Iowa City Transit System
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/iowacitytransit-ia-us/iowacitytransit-ia-us.zip
+    mdb_id: 559
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-transit-authority-of-black-hawk-county
+    name: Metropolitan Transit Authority of Black Hawk County
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: http://mettransit.org/sites/default/files/MET_Transit_GTFS.zip
+    mdb_id: 575
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cyride
+    name: CyRide
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://www.cyride.net/gtf/gtfs.zip
+    mdb_id: 923
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bettendorf-transit
+    name: Bettendorf Transit
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip
+    mdb_id: 1826
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: the-jule-2083
+    name: The Jule
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://myride.cityofdubuque.org/gtfs/google_transit.zip
+    mdb_id: 2083
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citibus-2304
+    name: Citibus
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/davenport-ia-us/davenport-ia-us.zip
+    mdb_id: 2304
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-transit-authority-of-black-hawk-county-2414
+    name: Metropolitan Transit Authority of Black Hawk County
+    subdivision_code: US-IA
+    subdivision_name: Iowa
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cedarfalls-ia-us/cedarfalls-ia-us.zip
+    mdb_id: 2414
+    license_note: No stated data license in the Mobility Database; verify before publishing.

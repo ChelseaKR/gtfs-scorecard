@@ -3,7 +3,8 @@ name: Discover moved feeds
 # Weekly check of every expired feed's URL against the Mobility Database
 # (docs/feature-roadmap.md, "discover on a schedule"). The report is always
 # uploaded as an artifact. When a feed's canonical URL has actually moved, the
-# job rewrites agencies.yaml and opens a pull request for a human to review;
+# job rewrites the affected manifest-listed registry shard and opens a pull
+# request for a human to review;
 # it never edits the registry on its own.
 
 on:
@@ -53,12 +54,12 @@ jobs:
           retention-days: 30
 
       # The report's run date changes every week; only a real feed move (an
-      # agencies.yaml edit) is worth a pull request. Discard a report-only diff
+      # registry edit) is worth a pull request. Discard a report-only diff
       # so the job stays quiet on weeks with nothing to do.
       - name: Keep the refreshed report only when a feed moved
         id: changes
         run: |
-          if git diff --quiet -- agencies.yaml; then
+          if git diff --quiet -- registry/; then
             echo "moved=false" >> "$GITHUB_OUTPUT"
             git checkout -- docs/feed-discovery.md
           else
@@ -79,5 +80,5 @@ jobs:
             before merging; the full report is regenerated in `docs/feed-discovery.md`.
           labels: data, automated
           add-paths: |
-            agencies.yaml
+            registry/
             docs/feed-discovery.md

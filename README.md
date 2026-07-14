@@ -34,7 +34,7 @@ completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/s
 **Status:** Beta. The three schedule categories score for every published
 scorecard. Realtime quality is scored only when a usable realtime feed is
 configured and measured; otherwise it is shown neutrally as not yet measured.
-Any agency can be added via `agencies.yaml`.
+Any agency can be added through `registry/intake.yaml`.
 
 ## What an agency gets
 
@@ -153,7 +153,7 @@ reference and a complete workflow are in [docs/ci-action.md](docs/ci-action.md).
 Beyond `run`, the CLI carries the commands the rollout plan needs:
 
 ```sh
-scorecard sync --country US --state California   # propose agencies.yaml entries
+scorecard sync --country US --state California   # propose registry entries
                                                  # from the Mobility Database
 scorecard shards --count 4                        # JSON fan-out plan for CI
 scorecard reindex                                 # rebuild index.json from disk
@@ -197,15 +197,15 @@ current deployment status.
 | Fan-out compute (Year 2) | `infra/compute` (SQS + worker) | built; apply when the daily run outgrows the Actions matrix |
 
 The cohort drafted from the Mobility Database has grown well past the first
-California pass: [`agencies.yaml`](agencies.yaml) now carries ~1,140 curated
-agencies, mostly across the US and Canada and now with a geographically diverse
-official canary cohort, scheduled for daily scoring (a 2026-07 dedupe pass removed ~350 records
-that duplicated an already-listed feed).
+California pass: the manifest-backed [`registry`](registry/README.md) now
+carries ~1,140 curated agencies, mostly across the US and Canada and now with a
+geographically diverse official canary cohort, scored daily (a 2026-07 dedupe
+pass removed ~350 records that duplicated an already-listed feed).
 
 ## Add your agency
 
 Any agency with a public GTFS feed can be added with one YAML block in
-[`agencies.yaml`](agencies.yaml) and a pull request; the walkthrough is
+[`registry/intake.yaml`](registry/intake.yaml) and a pull request; the walkthrough is
 [docs/add-your-agency.md](docs/add-your-agency.md). The live web form at
 [`web/submit.html`](web/submit.html) does the same without YAML through the
 deployed `infra/submit` endpoint; every submission still opens a pull request
@@ -280,7 +280,7 @@ organization name — from config and a deploy, no code change:
 ## Layout
 
 ```
-agencies.yaml   the agencies the scorecard tracks; add yours here
+registry/       manifest-backed agency shards; add yours to intake.yaml
 instance.example.yaml   fork branding template; copy to instance.yaml to rebrand
 rollups.yaml    program rollups (portfolio views across many agencies)
 pipeline/       Python pipeline: fetch -> validate -> score -> publish

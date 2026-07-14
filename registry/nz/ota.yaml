@@ -1,0 +1,17 @@
+# Otago (NZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: orbus-otago
+    name: Orbus (Otago Regional Council)
+    country: NZ
+    subdivision_code: NZ-OTA
+    subdivision_name: Otago
+    mdb_id: "mdb-983"
+    is_official: true
+    static_gtfs_url: https://www.orc.govt.nz/transit/google_transit.zip
+    license_note: CC BY 4.0; published by Otago Regional Council.
+    rt_note: >-
+      Orbus provides live tracking in its rider tools, but no keyless public
+      GTFS-Realtime endpoint was verified. Nothing here counts against the grade.

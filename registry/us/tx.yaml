@@ -1,0 +1,145 @@
+# Texas (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: sun-metro
+    name: Sun Metro
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: http://transit.sunmetro.net/google_transit/google_transit.zip
+    mdb_id: 148
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-metro
+    ntd_id: "60048"
+    name: Capital Metro
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://data.texas.gov/download/r4v4-vz24/application/zip
+    mdb_id: 150
+    rt_urls:
+      trip_updates: https://data.texas.gov/download/rmk2-acnw/application%2Foctet-stream
+      vehicle_positions: https://data.texas.gov/download/eiei-9rpf/application%2Foctet-stream
+      service_alerts: https://data.texas.gov/download/9zu9-jwr2/text%2Fplain
+    license_note: "License: https://www.capmetro.org/metrolabs/"
+
+  - id: denton-county-transportation-authority-dcta
+    name: Denton County Transportation Authority (DCTA)
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: http://trilliumtransit.com/transit_feeds/dentoncounty-tx-us/dentoncounty-tx-us.zip
+    mdb_id: 151
+    rt_urls:
+      trip_updates: http://api.transitime.org/api/v1/key/dca04420/agency/dcta/command/gtfs-rt/tripUpdates?format=bin
+      vehicle_positions: http://api.transitime.org/api/v1/key/dca04420/agency/dcta/command/gtfs-rt/vehiclePositions?format=bin
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dallas-area-rapid-transit-dart
+    name: Dallas Area Rapid Transit (DART)
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: http://www.dart.org/transitdata/latest/google_transit.zip
+    mdb_id: 152
+    license_note: "License: https://www.dart.org/transitdata/legalnotices.asp"
+
+  - id: star-transit
+    name: STAR Transit
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/startransit-tx-us/startransit-tx-us.zip
+    mdb_id: 153
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: amarillo-city-transit
+    name: Amarillo City Transit
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://code.amarillo.gov/gtfs/gtfs.zip
+    mdb_id: 213
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: corpus-christi-regional-transportation-authority
+    name: Corpus Christi Regional Transportation Authority
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://www.ccrta.org/gtfs/ccrta-gtfs.zip
+    mdb_id: 315
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: citibus
+    name: Citibus
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip
+    mdb_id: 569
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: connect-transit
+    name: Connect Transit
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gulfcoastcenter-tx-us/gulfcoastcenter-tx-us.zip
+    mdb_id: 625
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: fort-worth-transit-authority
+    name: Fort Worth Transit Authority
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: http://sched.ridetm.org/gtfs/fwtatransitdata.zip
+    mdb_id: 885
+    license_note: "License: https://ridetrinitymetro.org/gtfs-data/"
+
+  - id: via-metropolitan-transit-via
+    ntd_id: "60011"
+    name: VIA Metropolitan Transit (VIA)
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://transitfeeds.com/p/via-metropolitan-transit/62/latest/download
+    mdb_id: 1242
+    license_note: "License: https://www.viainfo.net/developers-resources/"
+
+  - id: metro-houston-2060
+    name: METRO Houston
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip
+    mdb_id: 2060
+    license_note: "License: https://www.ridemetro.org/about/news-media/digital-assets"
+
+  - id: via-metropolitan-transit-via-2348
+    ntd_id: "60011"
+    name: VIA Metropolitan Transit (VIA)
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://www.viainfo.net/BusService/google_transit.zip
+    mdb_id: 2348
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ez-rider
+    name: EZ Rider
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://nebula.wsimg.com/40f314b8788fcc32949e0fe528a3c625?AccessKeyId=9E919CD400BCF69A0E80
+    mdb_id: 2634
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: el-paso-transportation-authority
+    name: El Paso Transportation Authority
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://data.peaktransit.com/staticgtfs/193/gtfs.zip
+    mdb_id: 3202
+    rt_urls:
+      trip_updates: https://data.peaktransit.com/gtfsrt/193/TripUpdate.pb
+      vehicle_positions: https://data.peaktransit.com/gtfsrt/193/VehiclePosition.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: dallas-host-committee
+    name: Dallas Host Committee
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    static_gtfs_url: https://d2igk3wxwksqfb.cloudfront.net/dallashostcommitteedata.zip
+    mdb_id: 3218
+    license_note: No stated data license in the Mobility Database; verify before publishing.

@@ -4851,7 +4851,7 @@ _canonical_state = canonical_state
 def _states_by_agency() -> dict[str, str]:
     """Map each tracked agency to its US state for the directory's browse-by-place.
 
-    A curator's `state` in agencies.yaml wins. The Mobility Database cohort,
+    A curator's `state` in the registry wins. The Mobility Database cohort,
     which has no hand-set state, is filled from the catalog's subdivision via the
     pinned mdb_id, normalized to a recognized state name (a stray city or region
     in the catalog drops to unlocated rather than becoming its own chip). The

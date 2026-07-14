@@ -1,0 +1,55 @@
+# Alaska (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: anchorage-people-mover
+    name: Anchorage People Mover
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    static_gtfs_url: http://gtfs.muni.org/People_Mover.gtfs.zip
+    mdb_id: 225
+    rt_urls:
+      vehicle_positions: http://gtfs-rt.codeforanchorage.org/people_mover.pb
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-area-commuter-system
+    name: Metropolitan Area Commuter System
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    static_gtfs_url: https://www.fnsb.gov/DocumentCenter/View/690/General-Transit-Feed-Specification-ZIP
+    mdb_id: 232
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: inter-island-ferry
+    name: Inter-Island Ferry
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/interisland-ak-us/interisland-ak-us.zip
+    mdb_id: 243
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ketchikan-gateway-borough
+    name: The Bus
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/kgb-ak-us/kgb-ak-us.zip
+    mdb_id: 244
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: capital-transit
+    name: Capital Transit
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityandboroughofjuneau-ak-us/cityandboroughofjuneau-ak-us.zip
+    mdb_id: 294
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: ride-sitka
+    name: RIDE Sitka
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    static_gtfs_url: https://transitfeeds.com/p/ride-sitka/713/latest/download
+    mdb_id: 1293
+    license_note: No stated data license in the Mobility Database; verify before publishing.

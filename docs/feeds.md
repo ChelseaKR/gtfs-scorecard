@@ -2,8 +2,8 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified reference;
-the full registry has ~1,149 feed records, still mostly in the United States and
-Canada, and lives in `agencies.yaml`, with the
+the full registry has ~1,150 feed records, still mostly in the United States and
+Canada, and lives in the explicit shards listed by `registry/index.yaml`, with the
 discovery process documented in `docs/feed-discovery.md`. Every URL below was
 verified with a live request on the date stamped at the bottom of this page.
 
@@ -153,9 +153,9 @@ Notes:
 - A keyless mirror exists at the Mobility Database latest bucket
   (`us-california-unitrans-gtfs-82.zip`), refreshed by MobilityData rather
   than the agency. Use only as a fallback.
-- Realtime scoring for Unitrans needs a UmoIQ API key. Until one is granted, the
-  Realtime category shows "Access needed to measure" with a note that the
-  agency operates realtime tracking. Nothing is deducted from the grade.
+- Realtime scoring for Unitrans (Phase 3) needs a UmoIQ API key. Until one is
+  granted, the Realtime category will show "Not yet published" wording with a
+  note that the agency does operate realtime tracking.
 
 ## Yolobus (Yolo County Transportation District)
 

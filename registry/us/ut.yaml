@@ -1,0 +1,52 @@
+# Utah (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: suntran-utah
+    name: SunTran Utah
+    subdivision_code: US-UT
+    subdivision_name: Utah
+    static_gtfs_url: http://www.fivecounty.utah.gov/transit/google_transit.zip
+    mdb_id: 111
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: utah-transit-authority-uta
+    name: Utah Transit Authority (UTA)
+    subdivision_code: US-UT
+    subdivision_name: Utah
+    static_gtfs_url: https://gtfsfeed.rideuta.com/GTFS.zip
+    mdb_id: 170
+    license_note: "License: http://developer.rideuta.com/TermsOfUse.aspx"
+
+  - id: uta
+    name: UTA
+    subdivision_code: US-UT
+    subdivision_name: Utah
+    static_gtfs_url: https://transitfeeds.com/p/utah-transportation-authority/59/latest/download
+    mdb_id: 1171
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: elevated-transit
+    name: Elevated Transit
+    subdivision_code: US-UT
+    subdivision_name: Utah
+    static_gtfs_url: https://transitfeeds.com/p/elevated-transit/609/latest/download
+    mdb_id: 1207
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cache-valley-transit-district
+    name: Cache Valley Transit District
+    subdivision_code: US-UT
+    subdivision_name: Utah
+    static_gtfs_url: https://cvtd.us:91/developer/googlefeed/google_transit.zip
+    mdb_id: 1906
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: uta-2349
+    name: UTA
+    subdivision_code: US-UT
+    subdivision_name: Utah
+    static_gtfs_url: https://gtfsfeed.rideuta.com/gtfs.zip
+    mdb_id: 2349
+    license_note: No stated data license in the Mobility Database; verify before publishing.

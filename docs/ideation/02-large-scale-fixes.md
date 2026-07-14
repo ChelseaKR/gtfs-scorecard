@@ -464,32 +464,28 @@ like:** any consumer can answer "how fresh is this dataset right now?" from
 
 ## FIX-12 — Registry at scale: shard and schema-gate `agencies.yaml`
 
-**Status: schema gate and transition loader done; mechanical split and writer
-migration still open (verified 2026-07-12).** The
-gate half this item sequences first already exists: `agencies.parse_agencies`
-fails the load on a malformed id, a non-URL, an unknown field, an unknown
-`rt_urls` kind, a bad `ntd_id` or `service_type`, or a duplicate id, and
-`scorecard lint` reports descriptor names, duplicate `mdb_id`/feed URLs,
-non-HTTPS URLs, and missing `mdb_id`s. The descriptor-name backlog cleared
-with the registry dedupe, so CI now runs `lint --strict` and blocks any
-regression. What remains is the mechanical per-state split
-(`registry/<country>/<state>.yaml` with merged loading and writer updates),
-which this item itself says should land as one dedicated mechanical PR, not
-inside an unrelated one. The loader now supports an explicit
-`registry/index.yaml` shard list while retaining `agencies.yaml` as a fallback.
-It rejects ambiguous or partial migrations, validates ids across the merged
-registry, and swaps the process registry only after the complete load succeeds.
+**Status: Done (2026-07-12).** The schema gate landed first: malformed entries,
+cross-shard duplicate ids and aliases, unsafe manifest paths, partial
+migrations, and unlisted shards all fail before the process registry changes.
+The dedicated mechanical migration then preserved all 1,149 agency identities,
+moved 1,082 located entries into 59 country/subdivision shards, and kept 67
+honestly unlocated entries in `registry/intake.yaml`. Entry blocks were moved
+textually so comments and formatting survived; comparison with the pre-split
+registry found no non-location field drift. `registry/index.yaml` is the one
+explicit production manifest. The submission handler appends only to intake
+and checks published ids for duplicates already in curated shards, while
+`discover`, `backfill-state`, and `ntd-crosswalk` edit only manifest-listed
+shards. The weekly discovery workflow, secret scanner, SAST boundary,
+contributor guide, and field reference all follow the new layout.
 
 **Pitch.** Split the 447 KB single-file registry into per-state files with a
 validated schema, so curation scales past one careful maintainer.
 
-**Why it matters.** `agencies.yaml` is ~1,166 entries edited by hand, by
-`discover.yml`'s auto-PRs, and by the submission flow — three writers to one
-giant file. PR review of a 447 KB YAML diff is where a bad URL or a duplicated
-id slips through; merge conflicts grow with contributor count; and the
-add-your-agency PR path (`docs/add-your-agency.md`) asks a newcomer to edit a
-file most editors struggle to open usefully. RR:R12 (mdb pinning) improves the
-entries; nothing addresses the container.
+**Why it matters.** The former `agencies.yaml` held more than a thousand entries
+and had three writers: curators, `discover.yml`, and the submission flow. PR
+review of a 447 KB YAML diff was where a bad URL or duplicate id could slip
+through, and unrelated contributions collided in one file. RR:R12 (mdb
+pinning) improved the entries; this work fixed the container.
 
 **Shape of the work.** `registry/<country>/<state>.yaml` loaded and merged by
 `agencies.py` (keep reading the legacy single file during transition); a

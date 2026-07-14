@@ -1,0 +1,36 @@
+# Oklahoma (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: campus-area-rapid-transit-cart
+    name: Campus Area Rapid Transit (CART)
+    subdivision_code: US-OK
+    subdivision_name: Oklahoma
+    static_gtfs_url: http://www.cartgps.com/gtfs
+    mdb_id: 182
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: embark
+    name: Embark
+    subdivision_code: US-OK
+    subdivision_name: Oklahoma
+    static_gtfs_url: http://embarkok.com/data/gtfs/google_transit.zip
+    mdb_id: 183
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: metropolitan-tulsa-transit-authority-mtta
+    name: Metropolitan Tulsa Transit Authority (MTTA)
+    subdivision_code: US-OK
+    subdivision_name: Oklahoma
+    static_gtfs_url: http://gtfs.tulsatransit.org/google_transit.zip
+    mdb_id: 184
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: embark-2062
+    name: Embark
+    subdivision_code: US-OK
+    subdivision_name: Oklahoma
+    static_gtfs_url: https://mna.mecatran.com/utw/ws/gtfsfeed/static/okc?apiKey=6a3b186a334d1e3e064f42782f6002520e60394c
+    mdb_id: 2062
+    license_note: No stated data license in the Mobility Database; verify before publishing.

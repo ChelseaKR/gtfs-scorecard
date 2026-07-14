@@ -1,0 +1,478 @@
+# Virginia (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bay-transit
+    name: Bay Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/baytransit-va-us/baytransit-va-us.zip
+    mdb_id: 224
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: blackstone-area-bus-service
+    name: Blackstone Area Bus Service
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/blackstone-va-us/blackstone-va-us.zip
+    mdb_id: 235
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bristol-virginia-transit
+    name: Bristol Virginia Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/bristol-va-us/bristol-va-us.zip
+    mdb_id: 238
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-lynx-transit
+    name: Mountain Lynx Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/districtthree-va-us/districtthree-va-us.zip
+    mdb_id: 334
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pulaski-area-transit-pat
+    name: Pulaski Area Transit (PAT)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://ridesolutions.org/gtfs/pulaski-va-us.zip
+    mdb_id: 379
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: radford-transit
+    name: Radford Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://passio3.com/radford/passioTransit/gtfs/google_transit.zip
+    mdb_id: 380
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greater-lynchburg-transit-co
+    name: Greater Lynchburg Transit Co.
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/gltc-lynchburg-va-us/gltc-lynchburg-va-us.zip
+    mdb_id: 381
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: harrisonburg-department-of-public-transportation-hdpt
+    name: HDPT
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://harrisonburgva.gov/sites/default/files/Transit/files/gtfs/google_transit_Working%20%281%29.zip
+    mdb_id: 382
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: farmville-area-bus
+    name: Farmville Area Bus
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/farmville-va-us/farmville-va-us.zip
+    mdb_id: 461
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: greensville-emporia-transit
+    name: Greensville Emporia Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/get-va-us/get-va-us.zip
+    mdb_id: 463
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: hampton-roads-transit-hrt
+    name: Hampton Roads Transit (HRT)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://gtfs.gohrt.com/gtfs/google_transit.zip
+    mdb_id: 473
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: williamsburg-area-transit-authority-wata
+    name: Williamsburg Area Transit Authority (WATA)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://www.gowata.org/DocumentCenter/View/500
+    mdb_id: 474
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: virginia-railway-express-vre
+    ntd_id: "30073"
+    name: Virginia Railway Express (VRE)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.vre.org/gtfs/google_transit.zip
+    mdb_id: 478
+    rt_urls:
+      trip_updates: http://www.vre.org/gtfs-realtime/TripUpdateFeed
+      vehicle_positions: http://www.vre.org/gtfs-realtime/VehiclePositionFeed
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: potomac-and-rappahannock-transportation-commission-prtc
+    name: Potomac and Rappahannock Transportation Commission (PRTC)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://www.prtctransit.org/feeds/google_transit.zip
+    mdb_id: 481
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: alexandria-transit-company-dash
+    name: Alexandria Transit Company (DASH)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://dashbus.com/google_transit.zip
+    mdb_id: 482
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: fairfax-connector
+    name: Fairfax Connector
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.fairfaxcounty.gov/connector/sites/connector/files/Assets/connector_gtfs.zip
+    mdb_id: 483
+    license_note: "License: https://www.fairfaxcounty.gov/connector/bustracker/data"
+
+  - id: fairfax-cue-bus-cue
+    name: Fairfax CUE Bus (CUE)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.fairfaxva.gov/Home/ShowDocument?id=6713
+    mdb_id: 484
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: arlington-transit
+    ntd_id: "30080"
+    name: Arlington Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip
+    mdb_id: 485
+    rt_urls:
+      trip_updates: https://realtime.arlingtontransit.com/gtfsrt/trips
+      vehicle_positions: https://realtime.arlingtontransit.com/gtfsrt/vehicles
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: petersburg-area-transit
+    name: Petersburg Area Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us.zip
+    mdb_id: 591
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: wintran
+    name: WinTran
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/wintran-va-us/wintran-va-us.zip
+    mdb_id: 608
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: graham-transit
+    name: Graham Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/grahamtransit-va-us/grahamtransit-va-us.zip
+    mdb_id: 611
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: virginia-regional-transit
+    name: Virginia Regional Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us.zip
+    mdb_id: 621
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: star-transit-819
+    name: STAR Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us.zip
+    mdb_id: 819
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pony-express
+    name: Pony Express
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/ponyexpress-va-us/ponyexpress-va-us.zip
+    mdb_id: 828
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: radar
+    name: RADAR
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/radar-va-us/radar-va-us.zip
+    mdb_id: 832
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: altavista-community-transit-system
+    name: Altavista Community Transit System
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/altavista-va-us/altavista-va-us.zip
+    mdb_id: 882
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: williamsburg-area-transit-authority
+    name: Williamsburg Area Transit Authority
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us.zip
+    mdb_id: 901
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: grtc-transit-system
+    name: GRTC Transit System
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/grtc.zip
+    mdb_id: 902
+    license_note: "License: http://ridegrtc.com/gtfs-files-developer-license-agreement-and-terms-of-use"
+
+  - id: loudoun-county-transit
+    name: Loudoun County Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.loudoun.gov/loudountransitgtfs
+    mdb_id: 1053
+    license_note: "License: http://virginia-gtfs.com/"
+
+  - id: potomac-and-rappahannock-transportation-commission-prtc-omniride
+    name: Potomac and Rappahannock Transportation Commission (PRTC) Omniride
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://omniride.com/omniride/assets/File/google_transit.zip
+    mdb_id: 1156
+    license_note: "License: http://virginia-gtfs.com/"
+
+  - id: blacksburg-transit
+    name: Blacksburg Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://www.bt4uclassic.org/gtfs/google_transit.zip
+    mdb_id: 1189
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-metro
+    name: Valley Metro
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/roanoke-va-us/roanoke-va-us.zip
+    mdb_id: 1239
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: brite
+    name: Brite
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: http://britebus.org/gtfs/brite.zip
+    mdb_id: 1287
+    license_note: "License: http://virginia-gtfs.com/"
+
+  - id: fredericksburg-regional-transit
+    name: Fredericksburg Regional Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/d1483daba66d43358e29682c91907817/data
+    mdb_id: 1299
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: jaunt-inc
+    name: JAUNT Inc
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://e8vkzj229xs.exactdn.com/wp-content/uploads/2022/04/GTFS-4.11.2022.zip
+    mdb_id: 1324
+    license_note: "License: http://virginia-gtfs.com/"
+
+  - id: virginia-breeze
+    name: Virginia Breeze
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/virginiabreeze-va-us/virginiabreeze-va-us.zip
+    mdb_id: 1328
+    license_note: "License: http://virginia-gtfs.com/"
+
+  - id: pulaski-area-transit-pat-2198
+    name: Pulaski Area Transit (PAT)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pulaski-va-us/pulaski-va-us.zip
+    mdb_id: 2198
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-metro-2274
+    name: Valley Metro
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://vmgoapp.com/gtfs
+    mdb_id: 2274
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: four-county-transit
+    name: Four County Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/fourcounty-va-us/fourcounty-va-us.zip
+    mdb_id: 2308
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: loudoun-county-transit-2411
+    name: Loudoun County Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/loudouncounty-va-us/loudouncounty-va-us--flex-v2.zip
+    mdb_id: 2411
+    license_note: "License: http://virginia-gtfs.com/"
+
+  - id: radford-transit-2415
+    name: Radford Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip
+    mdb_id: 2415
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: fredericksburg-regional-transit-2430
+    name: Fredericksburg Regional Transit
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.fredericksburgva.gov/DocumentCenter/View/28958/FXBGO-GTFS-Q1-CY2025
+    mdb_id: 2430
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: arlington-transit-2434
+    name: Arlington Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/arlington-va-us/arlington-va-us--flex-v2.zip
+    mdb_id: 2434
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: cortran
+    name: CORTRAN Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/cortran-va-us/cortran-va-us--flex-v2.zip
+    mdb_id: 2435
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-empire-transit
+    name: Mountain Empire Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainempire-va-us/mountainempire-va-us--flex-v2.zip
+    mdb_id: 2436
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: valley-metro-2437
+    name: Valley Metro Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/valleymetro-va-us/valleymetro-va-us--flex-v2.zip
+    mdb_id: 2437
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: williamsburg-area-transit-authority-2438
+    name: Williamsburg Area Transit Authority Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us--flex-v2.zip
+    mdb_id: 2438
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: bay-transit-2439
+    name: Bay Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/baytransit-va-us/baytransit-va-us--flex-v2.zip
+    mdb_id: 2439
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: danville-transit
+    name: Danville Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/danville-va-us/danville-va-us--flex-v2.zip
+    mdb_id: 2440
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: petersburg-area-transit-2441
+    name: Petersburg Area Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us--flex-v2.zip
+    mdb_id: 2441
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: pulaski-area-transit-pat-2442
+    name: Pulaski Area Transit (PAT) Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/pulaski-va-us/pulaski-va-us--flex-v2.zip
+    mdb_id: 2442
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: radar-2443
+    name: RADAR Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/radar-va-us/radar-va-us--flex-v2.zip
+    mdb_id: 2443
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: star-transit-2444
+    name: STAR Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us--flex-v2.zip
+    mdb_id: 2444
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: virginia-regional-transit-2445
+    name: Virginia Regional Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us--flex-v2.zip
+    mdb_id: 2445
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: mountain-lynx-transit-2447
+    name: Mountain Lynx Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/districtthree-va-us/districtthree-va-us--flex-v2.zip
+    mdb_id: 2447
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: four-county-transit-2448
+    name: Four County Transit Flex
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/fourcounty-va-us/fourcounty-va-us--flex-v2.zip
+    mdb_id: 2448
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: williamsburg-area-transit-authority-2649
+    name: Williamsburg Area Transit Authority
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip
+    mdb_id: 2649
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: fairfax-cue-bus-cue-2885
+    name: Fairfax CUE Bus (CUE)
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://www.fairfaxva.gov/files/assets/city/v/2/public-works/documents/schedules-and-maps/cue-gtfs.zip
+    mdb_id: 2885
+    license_note: "License: https://www.fairfaxva.gov/government/public-works/cue-bus-map-schedule#GTFS%20Schedule%20Data%20anchor"

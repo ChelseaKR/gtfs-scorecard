@@ -1,0 +1,22 @@
+# Ontario (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: barrie-transit
+    name: Barrie Transit (Ontario)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: 3
+    static_gtfs_url: http://www.myridebarrie.ca/gtfs/Google_transit.zip
+    license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: london-transit-commission
+    name: London Transit Commission (Ontario)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: 2
+    static_gtfs_url: http://www.londontransit.ca/gtfsfeed/google_transit.zip
+    license_note: No stated data license in the Mobility Database; verify before relying on.

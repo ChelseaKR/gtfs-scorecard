@@ -2,11 +2,12 @@
 # allowlist for known false positives. Everything listed here is PUBLIC
 # third-party data, not a credential owned by this repo:
 #
-#   * agencies.yaml — the agency registry. GTFS/GTFS-RT feed URLs sourced from
-#     the Mobility Database frequently embed an access key in the URL itself
-#     (e.g. `?key=...` / `?apiKey=...`). Those keys are published by the
-#     transit agencies as part of their public feed URL and are already
-#     world-readable in the upstream registry.
+#   * registry/ data shards — GTFS/GTFS-RT feed URLs sourced from the Mobility
+#     Database frequently embed an access key in the URL itself (e.g.
+#     `?key=...` / `?apiKey=...`). Those keys are published by the transit
+#     agencies as part of their public feed URL and are already world-readable
+#     in the upstream registry. Only YAML data is allowlisted; documentation or
+#     any future source file under registry/ remains scanned.
 #   * pipeline/tests/fixtures/ — golden-site fixtures derived from the same
 #     registry entries (same public feed-URL keys).
 #   * data/ — machine-generated pipeline artifacts (per-agency JSON) that echo
@@ -26,7 +27,7 @@ useDefault = true
 [allowlist]
 description = "Public GTFS registry feed-URL keys and generated artifacts that echo them"
 paths = [
-    '''^agencies\.yaml$''',
+    '''^registry/.*\.ya?ml$''',
     '''^pipeline/tests/fixtures/''',
     '''^data/''',
     '''^web/''',
