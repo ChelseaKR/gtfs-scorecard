@@ -3628,12 +3628,13 @@ def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
     # (1) the plain-language finding with its /fix/<code>/ guide.
     assert "Re-export with a longer calendar." in html
     assert 'href="/fix/expired_calendar/"' in html
-    # (2) "Make the change": the tool-specific fix path (Trillium, hosted) and, for
-    # the finding an autofix covers, the corrected-feed download.
+    # (2) "Make the change": the tool-specific fix path (Trillium, hosted). A
+    # legacy artifact URL is deliberately ignored; the service does not publish
+    # modified agency feeds.
     assert "Make the change." in html
     assert "Trillium" in html
-    assert 'href="https://cdn.example.com/demo/corrected.zip"' in html
-    assert "Download the corrected feed for this fix" in html
+    assert "https://cdn.example.com/demo/corrected.zip" not in html
+    assert "Download the corrected feed for this fix" not in html
     # (3) Check the result: comparable feed state and the clearance-log link.
     assert "Check the result." in html
     assert "clearance log records that result" in html
@@ -3641,6 +3642,18 @@ def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
     # The explicit causal boundary copy.
     assert "Only an action or ticket record can attribute" in html
     assert "not who made the change" in html
+
+
+def test_autofix_section_ignores_legacy_public_download_url() -> None:
+    from scorecard_pipeline.render_site import _autofix_section
+
+    html = _autofix_section(_guided_flow_artifact())
+
+    assert "https://cdn.example.com/demo/corrected.zip" not in html
+    assert "Download corrected feed" not in html
+    assert "Safe fixes you can run locally" in html
+    assert "scorecard autofix &lt;feed.zip&gt; --out corrected.zip" in html
+    assert "does not publish a modified feed" in html
 
 
 def test_guided_fix_flow_points_to_self_check_without_a_fixlog() -> None:

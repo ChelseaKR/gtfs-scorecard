@@ -73,11 +73,6 @@ jobs:
           VALIDATOR_CACHE_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
           AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
-          # CDN base for the corrected-feed download link. Set only when this repo
-          # publishes to S3 (the pilot); empty for forks, which then show the CLI
-          # hint instead of a download button. The zip itself reaches the CDN via
-          # the collect job's `aws s3 sync data/artifacts`.
-          SCORECARD_CDN_BASE: ${{ vars.ARTIFACTS_BUCKET != '' && format('https://{0}', vars.ARTIFACTS_CDN || 'd14aimrgrbaz2a.cloudfront.net') || '' }}
         run: |
           # One agency's feed being unreachable (a 403, a vendor outage) must not
           # abort the shard and skip the whole daily refresh. Score each agency
@@ -102,16 +97,37 @@ jobs:
               yesterday=$(date -u -d yesterday +%Y-%m-%d)
               aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}" \
                 "$GITHUB_WORKSPACE/data/artifacts/${id}" \
-                --exclude "*" --include "latest.json" --include "fixlog.json" \
-                --include "structure.json" \
+                --exclude "*" --include "latest.json" \
                 --include "${today}.json" --include "${yesterday}.json" \
                 --only-show-errors
+              aws s3 cp "s3://${ARTIFACTS_BUCKET}/cache/fixlog/${id}/fixlog.json" \
+                "$GITHUB_WORKSPACE/data/artifacts/${id}/fixlog.json" \
+                --only-show-errors || true
+              mkdir -p "$GITHUB_WORKSPACE/data/cache/structure"
+              aws s3 cp "s3://${ARTIFACTS_BUCKET}/cache/structure/${id}.json" \
+                "$GITHUB_WORKSPACE/data/cache/structure/${id}.json" \
+                --only-show-errors || true
             fi
             uv run --with boto3 python -m scorecard_pipeline.cli run \
               --agency "$id" --skip-unchanged --outcome-out "$outcomes" && EXIT=0 || EXIT=$?
             if [ "$EXIT" -eq 0 ]; then
+              # Structure fingerprints contain derived stop coordinates. Move
+              # them through a run-scoped private S3 prefix instead of a
+              # downloadable Actions artifact; collect promotes them while it
+              # holds the serialized publish lock.
+              if [ -n "$ARTIFACTS_BUCKET" ] && \
+                 [ -f "$GITHUB_WORKSPACE/data/cache/structure/${id}.json" ]; then
+                aws s3 cp "$GITHUB_WORKSPACE/data/cache/structure/${id}.json" \
+                  "s3://${ARTIFACTS_BUCKET}/cache/structure-staging/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}/${id}.json" \
+                  --only-show-errors
+              fi
               mkdir -p "$stage/$id"
               cp -a "$GITHUB_WORKSPACE/data/artifacts/$id/." "$stage/$id/"
+              # Raw fix state is reconciled again in collect from the private
+              # durable copy. Never expose it through a workflow artifact.
+              rm -f "$stage/$id/validator-cache.json" \
+                "$stage/$id/structure.json" "$stage/$id/fixlog.json" \
+                "$stage/$id/corrected.zip"
             elif [ "$EXIT" -eq 2 ]; then
               echo "feed unchanged, keeping last artifact"
             else
@@ -152,7 +168,6 @@ jobs:
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
-      queue: max
     permissions:
       contents: read
       id-token: write # OIDC for the optional CDN mirror
@@ -180,9 +195,10 @@ jobs:
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --recursive --exclude "*" --include "*/latest.json" --only-show-errors
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-            --exclude "*" --include "*/fixlog.json" \
-            --include "rollups/*.state.json" \
+            --exclude "*" --include "rollups/*.state.json" \
             --include "coverage-baseline.json" --only-show-errors
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
+            --only-show-errors
       - name: Gather shard artifacts
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
@@ -241,8 +257,8 @@ jobs:
       # EXP-12: the week-over-week cohort digest for liaisons, on the Monday
       # run only. --save advances each rollup's baseline snapshot (persisted
       # via the S3 sync below and re-hydrated above), so running it daily
-      # would shrink every "week" to a day. Delivery is the published
-      # digest.md plus the run summary; email stays behind its consent gate.
+      # would shrink every "week" to a day. Delivery is the private run
+      # summary; email stays behind its consent gate.
       - name: Weekly portfolio digest
         working-directory: pipeline
         run: |
@@ -281,15 +297,46 @@ jobs:
           # Additive sync (no --delete): S3 is the durable record of every dated
           # artifact, so it must keep history that a fresh collect checkout does
           # not carry. Pruning is handled by a bucket lifecycle policy, not here.
+          # Persist only reconciled, registry-bounded fix logs in the private
+          # prefix. --delete retires stale state that reindex removed locally.
+          fixlog_stage="$RUNNER_TEMP/private-fixlogs"
+          rm -rf "$fixlog_stage"
+          mkdir -p "$fixlog_stage"
+          jq -r '.agencies | keys[]' data/artifacts/index.json | while IFS= read -r id; do
+            if [ -f "data/artifacts/${id}/fixlog.json" ]; then
+              mkdir -p "$fixlog_stage/$id"
+              cp "data/artifacts/${id}/fixlog.json" "$fixlog_stage/$id/fixlog.json"
+            fi
+          done
+          mkdir -p data/cache/structure
+          aws s3 sync \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure-staging/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}" \
+            data/cache/structure --only-show-errors
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
+            --exclude "*/validator-cache.json" --exclude "*/structure.json" \
+            --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
             --cache-control "max-age=300" --only-show-errors
+          # Remove legacy public-path pipeline state after every upload.
+          aws s3 rm "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" --recursive \
+            --exclude "*" --include "*/validator-cache.json" \
+            --include "*/structure.json" --include "*/fixlog.json" \
+            --include "*/corrected.zip" --only-show-errors
           # Named-change history is a bounded public claim surface, not the
           # long-lived per-feed archive. Remove legacy objects that the current
           # comparison-contract cleanup rejected locally.
           aws s3 sync data/artifacts/changes \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
             --delete --cache-control "max-age=300" --only-show-errors
-      - name: Verify the CDN cannot serve a raw feed archive
+          # Advance private comparison memory only after the public publication
+          # it describes succeeded.
+          aws s3 sync "$fixlog_stage" \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" --delete --only-show-errors
+          aws s3 sync data/cache/structure \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure" --only-show-errors
+          aws s3 rm \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure-staging/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}" \
+            --recursive --only-show-errors
+      - name: Verify the CDN privacy boundary
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
           ARTIFACTS_CDN: ${{ vars.ARTIFACTS_CDN || 'd14aimrgrbaz2a.cloudfront.net' }}
@@ -306,22 +353,36 @@ jobs:
             echo "No feed hash was available for the CDN privacy canary." >&2
             exit 1
           fi
-          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
-            --head --max-time 30 "https://${ARTIFACTS_CDN}/feeds/${sha}.zip")"
-          if [ "$status" != "403" ] && [ "$status" != "404" ]; then
-            echo "Private raw archive was reachable through the CDN (HTTP ${status})." >&2
+          agency="$(basename "$(dirname "$artifact")")"
+          public_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            --head --max-time 30 "https://${ARTIFACTS_CDN}/${artifact}")"
+          if [ "$public_status" != "200" ]; then
+            echo "Public latest artifact was not reachable through the CDN (HTTP ${public_status})." >&2
             exit 1
           fi
-          echo "Raw archive stayed private (HTTP ${status})."
+          for private_path in "feeds/${sha}.zip" \
+            "data/artifacts/${agency}/validator-cache.json" \
+            "data/artifacts/${agency}/structure.json" \
+            "data/artifacts/${agency}/fixlog.json" \
+            "data/artifacts/${agency}/corrected.zip"; do
+            status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+              --head --max-time 30 "https://${ARTIFACTS_CDN}/${private_path}")"
+            if [ "$status" != "403" ] && [ "$status" != "404" ]; then
+              echo "Private object ${private_path} was reachable through the CDN (HTTP ${status})." >&2
+              exit 1
+            fi
+            echo "Private object ${private_path} stayed private (HTTP ${status})."
+          done
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
           # The bucket's expire-dated-artifacts lifecycle rule (infra/artifacts)
           # only matches objects tagged artifact-class=dated, so tag today's
           # newly-synced <agency>/<date>.json files here. latest.json,
-          # badge.json, directory.json, and validator-cache.json never match
-          # this filename pattern, so they never get this tag and never
-          # expire. History synced before this step existed stays untagged
+          # badge.json and directory.json never match this filename pattern, so
+          # they never get this tag and never expire. Validator caches live
+          # outside the published artifact tree. History synced before this
+          # step existed stays untagged
           # (fails open: it never expires rather than expiring by surprise)
           # until a future run happens to touch it again.
           today=$(date -u +%Y-%m-%d)

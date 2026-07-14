@@ -2128,10 +2128,9 @@ function recommendationsSection(artifact) {
   </section>`;
 }
 
-/** The safe mechanical subset of fixes, offered as a corrected feed. Renders
- *  only the precomputed artifact.autofix block: each fix label and count with an
- *  example, plus a download button when a download_url was attached at score
- *  time, otherwise a one-line CLI hint. Empty when no autofix block is present
+/** The safe mechanical subset of fixes a user can run locally. Renders only
+ *  the precomputed artifact.autofix summary from older artifacts and deliberately
+ *  ignores any legacy public-download URL. Empty when no autofix block is present
  *  or it found nothing to change. */
 function autofixSection(artifact) {
   const autofix = artifact.autofix;
@@ -2150,15 +2149,13 @@ function autofixSection(artifact) {
       );
     })
     .join("");
-  const action = autofix.download_url
-    ? `<p class="autofix-action"><a class="download-btn" href="${escAttr(safeUrl(autofix.download_url))}" download>Download corrected feed</a></p>`
-    : `<p class="autofix-cli">Run it yourself on your own copy of the feed: ` +
-      `<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>`;
+  const action = `<p class="autofix-cli">Run it locally on a copy of the feed you control: ` +
+    `<code>scorecard autofix &lt;feed.zip&gt; --out corrected.zip</code></p>`;
   return `<section aria-labelledby="autofix-h" class="reveal">
-    <h2 class="section-title" id="autofix-h">Some fixes we can make for you</h2>
-    <p class="page-lede">These are the safe mechanical fixes, applied to a copy of your feed.
-      They change only what is certain and leave everything else untouched. Review the diff
-      before you publish.</p>
+    <h2 class="section-title" id="autofix-h">Safe fixes you can run locally</h2>
+    <p class="page-lede">The local command applies only these mechanical changes to a copy you
+      control. The scorecard does not publish a modified feed. Review the diff before you publish
+      through your usual process.</p>
     <ul class="autofix-list">${items}</ul>${action}
   </section>`;
 }

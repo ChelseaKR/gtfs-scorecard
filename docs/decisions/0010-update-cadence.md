@@ -83,16 +83,22 @@ still runs only on the feeds that actually changed.
 
 The daily run still re-validates every feed, but most feeds are byte-identical to
 the day before, so most of those Java runs are redundant. Each score now caches
-its normalized validator report at `data/artifacts/<id>/validator-cache.json`,
-keyed by the feed's sha256, validator version, and assigned country. A re-score
-whose bytes, validator version, and country all match reuses the cached report
-and skips the validator; changed bytes, an upgraded validator, or a country
-correction re-runs and refreshes the cache. Historical cache records without a
-country are treated as U.S. records only. Reusable raw reports use the same
-country boundary: the legacy `validator/` path remains U.S.-only, while a
-non-U.S. run writes to a suffixed path such as `validator-ca/`. The cache
-rides the existing artifact upload-and-commit path and is ignored by the index
-and rollup walkers, which read only dated files and latest.json.
+its normalized validator report locally at `data/cache/validator/<id>.json`,
+keyed by the feed's sha256, validator version, and assigned country. This path
+is ignored by git and sits outside the public `data/artifacts` tree. Production
+runs also use the private S3 prefix `cache/validator/<id>.json` as the durable
+tier. A re-score whose bytes, validator version, and country all match reuses
+the cached report and skips the validator; changed bytes, an upgraded validator,
+or a country correction re-runs and refreshes the cache. Historical cache
+records without a country are treated as U.S. records only. Reusable raw reports
+use the same country boundary: the legacy `validator/` path remains U.S.-only,
+while a non-U.S. run writes to a suffixed path such as `validator-ca/`.
+
+Earlier releases wrote `validator-cache.json` inside each agency's public
+artifact directory. Those files are removed from the repository, excluded from
+all S3 and Pages publication paths, and deleted from the artifact bucket during
+publication. The CloudFront viewer function and origin bucket policy also deny
+the legacy key shape while deployed copies are retired.
 
 The agency page also shows a monitoring line ("checked for changes N hours ago;
 last changed ...") from the liveness state, so a reader can see how current the

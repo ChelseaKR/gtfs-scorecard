@@ -57,7 +57,7 @@
       <section class="support-path" aria-labelledby="path-sponsor-h">
         <p class="support-path-kicker">Public infrastructure</p>
         <h2 id="path-sponsor-h">Sponsor the open project</h2>
-        <p>Help cover scheduled refreshes, hosting, and shared realtime infrastructure without
+        <p>Help cover scheduled refreshes, hosting, and evidence reliability without
         affecting scores or placement.</p>
         <p><a class="report-action" href="#how-h">How sponsorship works</a></p>
       </section>
@@ -67,20 +67,24 @@
       <h2 class="section-title" id="costs-h">What it costs to run</h2>
       <p>The core site is deliberately cheap. Static pages, a scheduled daily scoring run, and a read
       <abbr title="application programming interface">API</abbr> together cost single-digit
-      dollars a month today. The full footprint this project wants to sustain lands at roughly
-      <strong>$75 to $200 a month</strong>. Sponsorship at that level pays for:</p>
+      dollars a month today. A bounded operating envelope of roughly
+      <strong>$75 to $200 a month</strong> would add capacity while preserving hard spending
+      caps. Sponsorship at that level pays for:</p>
       <ul>
         <li><strong>Hosting and bandwidth</strong> for the site, the read API, and the grade
         badges agencies embed.</li>
         <li><strong>The scheduled daily data refresh</strong>: fetching and validating about
         1,140 configured feeds in the current worldwide coverage, still mostly in the US and
         Canada. The <a href="/status/">status page</a> records when each run actually completed.</li>
-        <li><strong>Hosted one-off scoring capacity</strong>, a planned capped service for
-        checking a published feed without running the scorer locally. It is not enabled today.</li>
-        <li><strong>A cross-agency realtime archive</strong> that samples GTFS-Realtime feeds
-        around the clock. This is the largest planned line item and the first thing new
-        sponsorship would unlock.</li>
+        <li><strong>Release monitoring and evidence reliability</strong>, including the private
+        retention needed to reproduce published checks and audit participant-approved
+        remediation receipts.</li>
+        <li><strong>Optional hosted one-off scoring capacity</strong>, but only if repeated
+        demand justifies a capped service with abuse protection. It is not enabled today; the
+        local check and GitHub-backed request path remain available.</li>
       </ul>
+      <p>Sponsorship does not automatically start a cross-agency realtime archive or another
+      expansion. New collection work needs a named user, a bounded plan, and a cost gate.</p>
       <p class="fineprint">Every service above runs with a hard spending cap. If a cost line
       ever threatens to grow past this range, the design changes before the bill does.</p>
     </section>

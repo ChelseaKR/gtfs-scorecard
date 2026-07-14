@@ -105,9 +105,10 @@ budget.
 - **Auto-fix layer**: shipped (first recipes). `autofix.py` plus `scorecard
   autofix <zip> --out fixed.zip` applies the safe, deterministic edits (trim
   surrounding whitespace, recase shouting stop and route names), preserving every
-  other byte and reporting the diff. The conservative recipe set grows as more
-  findings gain one unambiguous fix; opening a PR against the agency's feed repo
-  is the downstream step on top of the patch this produces.
+  other byte and reporting the diff. This is an explicit local command for a feed
+  copy the user controls. The daily service does not generate, host, or publish
+  modified agency feeds. The conservative recipe set grows only when a finding
+  gains one unambiguous fix.
 - **GBFS expansion**: shipped (currency check). `gbfs.py` plus `scorecard gbfs
   [--country US]` reads the open MobilityData GBFS catalog and reports how many
   shared-mobility systems are on the current 3.x line versus stuck on an outdated

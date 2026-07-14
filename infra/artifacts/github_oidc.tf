@@ -153,10 +153,38 @@ data "aws_iam_policy_document" "pages_read_s3" {
   statement {
     actions   = ["s3:ListBucket"]
     resources = [aws_s3_bucket.artifacts.arn]
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values = [
+        "data/artifacts",
+        "data/artifacts/*",
+        "cache/fixlog",
+        "cache/fixlog/*",
+      ]
+    }
   }
   statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.artifacts.arn}/*"]
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/directory.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/index.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/scoring.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/sensitivity.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/canada-equity.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/changes/*",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/*",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/run/*",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/latest.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/badge.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/badge.svg",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/conformance.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/mark.svg",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/geometry.geojson",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/*/????-??-??.json",
+      "${aws_s3_bucket.artifacts.arn}/data/liveness.json",
+      "${aws_s3_bucket.artifacts.arn}/cache/fixlog/*",
+    ]
   }
 }
 

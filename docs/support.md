@@ -6,12 +6,19 @@ The public version of this page is [gtfsscorecard.org/support](https://gtfsscore
 
 ## What sponsorship pays for
 
-Running the service costs roughly $75 to $200 a month, all of it infrastructure:
+The core service costs single-digit dollars a month today. A $75 to $200 monthly
+operating envelope would add bounded capacity while keeping hard spending caps:
 
 - Hosting and bandwidth for the static site, the read API, and the grade badges agencies embed.
 - The scheduled daily data refresh: fetching about 1,140 configured feeds in the current worldwide coverage, still mostly in the US and Canada. The public status page records when each run actually completed.
-- Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator. A capped hosted one-off scorer is planned but is not enabled today; the site currently offers a local pre-publish check and a GitHub-backed request path.
-- Realtime sampling around the clock, the largest planned line item and the first thing new sponsorship unlocks.
+- Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator.
+- Release monitoring and private evidence retention needed to reproduce published checks and audit participant-approved remediation receipts.
+
+A capped hosted one-off scorer remains an option if repeated demand justifies its
+abuse controls and operating cost. It is not enabled today; the site currently
+offers a local pre-publish check and a GitHub-backed request path. Sponsorship
+does not automatically start a cross-agency realtime archive or another
+expansion without a named user and a bounded plan.
 
 Every service runs with a hard spending cap. If a cost line grows past this range, the design changes before the bill does.
 
