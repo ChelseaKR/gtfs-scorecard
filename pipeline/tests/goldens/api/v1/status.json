@@ -49,5 +49,11 @@
     },
     "success_rate_pct": 100.0,
     "unreachable": 0
+  },
+  "scope": {
+    "liveness_records_in_scope": 2,
+    "liveness_records_outside_current_published_set": 0,
+    "note": "Refresh-success statistics are restricted to feed records in the current published artifact index. Older liveness records are excluded.",
+    "published_feed_record_count": 3
   }
 }

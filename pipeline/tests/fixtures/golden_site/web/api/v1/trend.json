@@ -1,57 +1,30 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-14T03:48:50+00:00",
-  "license": "CC-BY-4.0",
-  "points": [
-    {
-      "agency_count": 3,
-      "average_score": 78.5,
-      "date": "2026-07-01",
-      "expired_pct": 0.0,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 1,
-        "D": 0,
-        "F": 0
-      }
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
     },
-    {
-      "agency_count": 3,
-      "average_score": 78.5,
-      "date": "2026-07-02",
-      "expired_pct": 0.0,
-      "grade_distribution": {
-        "A": 0,
-        "B": 2,
-        "C": 1,
-        "D": 0,
-        "F": 0
-      }
-    }
-  ],
-  "summary": {
-    "first": {
-      "average_score": 78.5,
-      "date": "2026-07-01"
-    },
-    "last": {
-      "average_score": 78.5,
-      "date": "2026-07-02"
-    },
-    "points": 2,
-    "score_delta": 0.0
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
   },
-  "top_improvers": [
-    {
-      "date_end": "2026-07-02",
-      "date_start": "2026-06-11",
-      "delta": 8.6,
-      "grade_end": "B",
-      "id": "unitrans",
-      "name": "Unitrans (ASUCD / City of Davis)",
-      "score_end": 80.8,
-      "score_start": 72.2
-    }
-  ]
+  "generated_at": "2026-07-14T10:15:31+00:00",
+  "license": "CC-BY-4.0",
+  "points": [],
+  "summary": {
+    "first": null,
+    "last": null,
+    "points": 0,
+    "score_delta": null
+  },
+  "top_improvers": []
 }

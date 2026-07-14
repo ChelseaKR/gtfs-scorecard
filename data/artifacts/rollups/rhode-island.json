@@ -1,42 +1,35 @@
 {
-  "agency_count": 5,
-  "average_score": 71.4,
-  "common_fixes": [
-    {
-      "agencies": 5,
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+  "agency_count": 3,
+  "average_score": null,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
     },
-    {
-      "agencies": 5,
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
-    },
-    {
-      "agencies": 2,
-      "code": "missing_bike_allowance",
-      "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_no_fare_data",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
-    }
-  ],
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "expired": {
     "lapsed": 1,
     "stale": 0,
     "total": 1
   },
-  "generated_at": "2026-07-10T21:00:41+00:00",
-  "grade_distribution": {
-    "C": 4,
-    "F": 1
-  },
+  "generated_at": "2026-07-14T09:01:50+00:00",
+  "grade_distribution": {},
   "members": [
     {
       "annual_trips": null,
-      "attention_reason": "Service window shortened unexpectedly on 2026-06-30",
+      "attention_reason": "Service data has expired",
       "days_until_expiry": -21,
       "expiry_status": "lapsed",
       "grade": "F",
@@ -47,34 +40,6 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 94,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "vineyard-fast-ferry",
-      "name": "Vineyard Fast Ferry",
-      "needs_attention": false,
-      "score": 76.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 94,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "vineyard-fast-ferry-419",
-      "name": "Vineyard Fast Ferry",
-      "needs_attention": false,
-      "score": 76.5,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     },
     {
       "annual_trips": null,
@@ -96,10 +61,10 @@
       "days_until_expiry": 94,
       "expiry_status": "current",
       "grade": "C",
-      "id": "block-island-ferry-554",
-      "name": "Block Island Ferry",
+      "id": "vineyard-fast-ferry",
+      "name": "Vineyard Fast Ferry",
       "needs_attention": false,
-      "score": 77.0,
+      "score": 76.5,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
@@ -110,13 +75,13 @@
     "id": "rhode-island",
     "name": "Rhode Island agencies"
   },
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 5,
+    "not_measured": 3,
     "not_ready": 0,
     "ready": 0,
-    "total": 5
+    "total": 3
   },
-  "state_percentile": 96
+  "state_percentile": null
 }

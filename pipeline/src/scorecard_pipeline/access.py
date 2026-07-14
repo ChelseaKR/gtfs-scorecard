@@ -92,6 +92,9 @@ def _location_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     boarding = [float(record["wheelchair_boarding_pct"]) for record in records]
     bands = [band_for(value) for value in boarding]
     return {
+        "feed_records": len(records),
+        # v1 compatibility alias. These rows count feed records, not distinct
+        # operating organizations.
         "agencies": len(records),
         "average_boarding_pct": _avg(boarding),
         "none": bands.count("none"),
@@ -139,6 +142,7 @@ def national_coverage(records: list[dict[str, Any]], *, top: int = 10) -> dict[s
         states.append(
             {
                 "state": state,
+                "feed_records": b["agencies"],
                 "agencies": b["agencies"],
                 "average_boarding_pct": _avg(b["_boarding"]),
                 "none": b["none"],
@@ -174,6 +178,8 @@ def national_coverage(records: list[dict[str, Any]], *, top: int = 10) -> dict[s
     ][:top]
 
     return {
+        "measured_feed_record_count": count,
+        # v1 compatibility alias. The metric denominator is feed records.
         "agency_count": count,
         "bands": bands,
         "average_boarding_pct": _avg(boarding_values),

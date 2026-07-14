@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gtfsscorecard.org/schemas/rollup.schema.json",
   "title": "GTFS Scorecard program rollup",
-  "description": "One program's cohort view: member scorecards worst-first with attention flags, common fixes counted across the cohort, and expiry / shapes-readiness summaries. Additive within a major schema_version: fields added after 1.0 (shapes_readiness, state_percentile, members' shapes_status and annual_trips) stay optional so older published documents still conform. Top level is closed (additionalProperties: false) so a new block cannot reach production without a schema update, the same enforcement point as artifact.schema.json.",
+  "description": "One program's cohort view: members needing attention first, common fixes counted only across the guarded comparison cohort, and expiry / shapes-readiness summaries over all members. Additive within a major schema_version: newer fields stay optional so older published documents still conform. Top level is closed (additionalProperties: false) so a new block cannot reach production without a schema update, the same enforcement point as artifact.schema.json.",
   "type": "object",
   "required": [
     "schema_version",
@@ -127,10 +127,53 @@
         }
       }
     },
+    "comparison": {
+      "type": "object",
+      "required": [
+        "eligible_count",
+        "excluded_count",
+        "required_rubric_version",
+        "required_scoring_profile_id",
+        "required_validator_version",
+        "required_measured_categories",
+        "measured_category_cohorts",
+        "exclusion_counts",
+        "absolute_rankings_published",
+        "individual_percentiles_published",
+        "note"
+      ],
+      "properties": {
+        "eligible_count": {"type": "integer", "minimum": 0},
+        "excluded_count": {"type": "integer", "minimum": 0},
+        "required_rubric_version": {"type": "string"},
+        "required_scoring_profile_id": {"type": "string"},
+        "required_validator_version": {"type": "string"},
+        "required_measured_categories": {
+          "type": "array",
+          "items": {
+            "enum": ["correctness", "freshness", "completeness", "realtime"]
+          },
+          "uniqueItems": true
+        },
+        "measured_category_cohorts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "exclusion_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "absolute_rankings_published": {"const": false},
+        "individual_percentiles_published": {"const": false},
+        "note": {"type": "string"}
+      }
+    },
     "state_percentile": {
       "type": ["integer", "null"],
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "deprecated": true,
+      "description": "Deprecated compatibility field. Current payloads publish null; historical 1.x state rollups may contain an integer."
     }
   }
 }

@@ -162,7 +162,7 @@ single-digit-dollars-a-month line):
 
 **Real-data / time-depth gate** (needs longitudinal history the panel has not yet
 accumulated, or that is discarded today — see FIX-02):
-- **EXP-03** calibrated fix-effort — needs runs-to-clear distributions.
+- **EXP-03** finding-clearance timing — needs compatible retained histories.
 - **EXP-13** predictive lapse — needs behavioral history depth.
 - **EXP-16** policy-effect study — needs history spanning the RY2026 effective
   dates.

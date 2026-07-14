@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Open data — GTFS Scorecard</title>
   <meta name="description"
-        content="Download the worldwide GTFS data-quality dataset and the separate United States NTD readiness portfolio. One row per covered feed record, refreshed daily, free to use and cite.">
+        content="Download the worldwide GTFS data-quality dataset and the separate United States NTD readiness portfolio. One row per covered feed record, updated on completed scoring runs.">
   <link rel="canonical" href="https://gtfsscorecard.org/data/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Open data — GTFS Scorecard">
@@ -14,7 +14,7 @@
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard open data","description":"Daily GTFS data-quality reports for the public transit feed records this site currently covers worldwide.","url":"https://gtfsscorecard.org/data/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"dataset":[{"@type":"Dataset","name":"GTFS Scorecard agency feed-quality dataset","url":"https://gtfsscorecard.org/dataset.json","license":"https://creativecommons.org/licenses/by/4.0/","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/dataset.json"},{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://gtfsscorecard.org/dataset.csv"}]}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard open data","description":"Scheduled GTFS data-quality reports for the public transit feed records this site currently covers worldwide, with public last-run status.","url":"https://gtfsscorecard.org/data/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"dataset":[{"@type":"Dataset","name":"GTFS Scorecard agency feed-quality dataset","url":"https://gtfsscorecard.org/dataset.json","license":"https://creativecommons.org/licenses/by/4.0/","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://gtfsscorecard.org/dataset.json"},{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://gtfsscorecard.org/dataset.csv"}]}]}</script>
   <script src="/analytics.js" defer></script>
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
@@ -37,8 +37,8 @@
   <main id="main" class="wrap" tabindex="-1">
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">The open dataset</h1>
-    <p class="page-lede">Every feed record's latest grade and measured category scores in one file, refreshed
-    daily, free to download and cite. The same scores behind the agency pages, published flat so a
+    <p class="page-lede">Every feed record's latest grade and measured category scores in one file,
+    updated on completed scoring runs and free to download and cite. The same scores behind the agency pages, published flat so a
     researcher or transit program can analyze every feed this site currently covers at once.</p>
 
     <section aria-labelledby="get-h">
@@ -61,15 +61,15 @@
 
     <section aria-labelledby="ntd-h">
       <h2 class="section-title" id="ntd-h">United States NTD readiness, by state</h2>
-      <p>This separate view covers United States agencies. Since Report Year 2023, every
+      <p>This separate view covers United States feed records. Since Report Year 2023, every
       National Transit Database reporter with fixed-route or
       deviated-fixed-route service has to publish a valid, current GTFS feed and certify it each
-      year. This is how many tracked U.S. agencies look ready, nationally and per state.
+      year. This is how many tracked U.S. feed scorecards look ready, nationally and per state.
       Readiness mirrors three pillars (published, valid, current); it is a heads-up, not an
       official determination.</p>
       <p id="ntd-headline" class="page-lede"></p>
       <table id="ntd-table" class="data-table" hidden>
-        <caption class="visually-hidden">Agencies ready to certify, by state</caption>
+        <caption class="visually-hidden">Feed scorecards ready to certify, by state</caption>
         <thead>
           <tr><th scope="col">State</th><th scope="col">Ready</th><th scope="col">Needs attention</th><th scope="col">Not ready</th><th scope="col">Total</th></tr>
         </thead>
@@ -83,7 +83,8 @@
       <h2 class="section-title" id="use-h">How to use and cite it</h2>
       <p>Free to use, share, and build on. If you cite it, please link
       <a href="https://gtfsscorecard.org/">gtfsscorecard.org</a> and note the date you pulled the
-      data, since it refreshes daily. The scoring method, with citations, is in
+      data, since it can change after a completed scoring run. Check <a href="/status/">pipeline
+      status</a> for the latest run time. The scoring method, with citations, is in
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">docs/rubric.md</a>,
       how it maps to the standards is in
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/crosswalk.md">docs/crosswalk.md</a>,
@@ -167,21 +168,30 @@
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-    fetch("/dataset.json")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
+    Promise.all([
+      fetch("/dataset.json").then((r) => (r.ok ? r.json() : null)),
+      fetch("/api/v1/stats.json").then((r) => (r.ok ? r.json() : null)),
+    ])
+      .then(([d, stats]) => {
         const rows = (d && d.rows) || [];
         if (!rows.length) return;
-        let scored = 0, total = 0, current = 0;
+        let current = 0;
         for (const row of rows) {
-          if (typeof row.score === "number") { scored += row.score; total += 1; }
           if (typeof row.days_until_expiry === "number" && row.days_until_expiry > 0) current += 1;
         }
-        const avg = total ? (scored / total).toFixed(1) : "—";
         const pctCurrent = rows.length ? Math.round((current / rows.length) * 100) : 0;
+        const comparable = Number(stats && stats.comparison && stats.comparison.eligible_count);
+        const guardedAverage =
+          Number.isInteger(comparable) && comparable > 0 &&
+          stats && typeof stats.average_score === "number";
+        const averageText = guardedAverage
+          ? ` Guarded average score ${stats.average_score} out of 100 across ` +
+            `${comparable.toLocaleString()} canonical, non-duplicate feed records.`
+          : " Cross-feed average unavailable until current-contract checks create a " +
+            "comparable cohort.";
         document.getElementById("dataset-summary").textContent =
           `${rows.length.toLocaleString()} feed records in the current file. ` +
-          `Average score ${avg} out of 100, and ${pctCurrent}% have a calendar that has not expired.`;
+          `${pctCurrent}% have a calendar that has not expired.` + averageText;
       })
       .catch(() => {});
 
@@ -190,7 +200,7 @@
       .then((d) => {
         if (!d || typeof d.total !== "number" || !d.total) return;
         document.getElementById("ntd-headline").innerHTML =
-          `<strong>${d.pct_ready}% of ${d.total.toLocaleString()} tracked agencies look ready to certify.</strong> ` +
+          `<strong>${d.pct_ready}% of ${d.total.toLocaleString()} tracked feed records look ready to certify.</strong> ` +
           `${d.ready.toLocaleString()} ready, ${d.at_risk.toLocaleString()} need attention, ` +
           `${d.not_ready.toLocaleString()} not ready.`;
         const byState = d.by_state || {};

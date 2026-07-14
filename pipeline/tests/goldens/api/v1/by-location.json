@@ -1,56 +1,77 @@
 {
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "countries": [
     {
+      "comparison_eligible_count": 0,
       "count": 1,
       "country_code": "CA",
       "country_name": "Canada",
       "grade_distribution": {
         "A": 0,
         "B": 0,
-        "C": 1,
+        "C": 0,
         "D": 0,
         "F": 0
       },
-      "median_score": 72.3,
+      "median_score": null,
       "subdivisions": [
         {
+          "comparison_eligible_count": 0,
           "count": 1,
           "grade_distribution": {
             "A": 0,
             "B": 0,
-            "C": 1,
+            "C": 0,
             "D": 0,
             "F": 0
           },
-          "median_score": 72.3,
+          "median_score": null,
           "subdivision_code": "CA-ON",
           "subdivision_name": "Ontario"
         }
       ]
     },
     {
+      "comparison_eligible_count": 0,
       "count": 2,
       "country_code": "US",
       "country_name": "United States",
       "grade_distribution": {
         "A": 0,
-        "B": 2,
+        "B": 0,
         "C": 0,
         "D": 0,
         "F": 0
       },
-      "median_score": 81.7,
+      "median_score": null,
       "subdivisions": [
         {
+          "comparison_eligible_count": 0,
           "count": 2,
           "grade_distribution": {
             "A": 0,
-            "B": 2,
+            "B": 0,
             "C": 0,
             "D": 0,
             "F": 0
           },
-          "median_score": 81.7,
+          "median_score": null,
           "subdivision_code": null,
           "subdivision_name": "Unlocated"
         }

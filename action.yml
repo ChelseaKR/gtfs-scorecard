@@ -55,7 +55,7 @@ inputs:
     required: false
     default: "true"
   ref:
-    description: "Ref of gtfs-scorecard to install the scorer from (branch, tag, or SHA). Defaults to the version this action was called as, so pinning the action (e.g. @v1) installs the matching scorer; falls back to main."
+    description: "Deprecated compatibility input. The scorer is bundled with the Action release, so its version always matches the Action ref."
     required: false
     default: ""
 
@@ -81,10 +81,10 @@ runs:
         HTML_OUT: ${{ inputs.html }}
         JSON_OUT: ${{ inputs.json }}
         WRITE_SUMMARY: ${{ inputs.summary }}
-        # An explicit ref wins; otherwise install the scorer from the same ref
-        # this action was referenced at (github.action_ref), so @v1 is reproducible
-        # rather than floating on main. Falls back to main for local/`./` use.
-        SCORECARD_REF: ${{ inputs.ref != '' && inputs.ref || github.action_ref || 'main' }}
+        # Keep the downloaded Action tree immutable and all feed/validator
+        # scratch data under the runner's temporary directory.
+        SCORECARD_ROOT: ${{ runner.temp }}/gtfs-scorecard-work
+        UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/gtfs-scorecard-venv
       run: |
         set -euo pipefail
         result_json="${JSON_OUT:-${RUNNER_TEMP}/gtfs-scorecard-result.json}"
@@ -96,7 +96,7 @@ runs:
         if [[ -n "$MIN_DAYS" ]]; then args+=(--min-days-to-expiry "$MIN_DAYS"); fi
         args+=(--json-out "$result_json")
         set +e
-        uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard@${SCORECARD_REF}#subdirectory=pipeline" \
+        uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev \
           scorecard try "${args[@]}"
         gate_rc=$?
         set -e

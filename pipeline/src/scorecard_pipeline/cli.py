@@ -500,17 +500,56 @@ def _country_arg(value: str) -> str:
         raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
+def _artifact_contract_current(agency_id: str) -> bool:
+    """Whether the last artifact was built with today's scoring contract.
+
+    Feed liveness alone is not enough to reuse an artifact. A rubric, artifact
+    schema, scoring-profile, or validator release can change the published
+    result while the GTFS bytes stay identical. Returning ``False`` makes the
+    normal run rebuild the artifact; the content-addressed validator cache
+    still avoids rerunning Java when its own version and feed hash match.
+    """
+    from . import RUBRIC_VERSION, SCHEMA_VERSION, SCORING_PROFILE_ID
+    from .config import artifacts_dir
+    from .validate import VALIDATOR_VERSION
+
+    path = artifacts_dir() / agency_id / "latest.json"
+    try:
+        artifact = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(artifact, dict):
+        return False
+
+    profile = artifact.get("scoring_profile") or {}
+    if not isinstance(profile, dict):
+        return False
+    return bool(
+        str(artifact.get("schema_version") or "") == SCHEMA_VERSION
+        and str(artifact.get("rubric_version") or "") == RUBRIC_VERSION
+        and str(artifact.get("validator_version") or "") == VALIDATOR_VERSION
+        and str(profile.get("id") or "") == SCORING_PROFILE_ID
+        and str(profile.get("rubric_version") or "") == RUBRIC_VERSION
+    )
+
+
 def _liveness_unchanged(agency_id: str) -> bool:
     """Perform a cheap conditional GET and return True when the feed is unchanged.
 
-    Updates and persists the liveness record in data/liveness.json so
-    checked_at stays current even on a skip. Returns False when there is no
-    prior record (first run always scores) or when the feed is unreachable
-    (let the normal score attempt surface the failure and increment the
-    consecutive-failure counter for the alert digest).
+    A stale or missing artifact contract returns False before the network check
+    so a methodology release rebuilds unchanged feeds. Otherwise, update and
+    persist the liveness record in data/liveness.json so checked_at stays
+    current even on a skip. Returns False when there is no prior record (first
+    run always scores) or when the feed is unreachable (let the normal score
+    attempt surface the failure and increment the consecutive-failure counter
+    for the alert digest).
     """
     from .config import repo_root
     from .liveness import UNCHANGED, check_feed, load_state, save_state
+
+    if not _artifact_contract_current(agency_id):
+        log.info("Re-scoring %s: published artifact contract is stale or missing", agency_id)
+        return False
 
     agency = AGENCIES[agency_id]
     state_path = repo_root() / "data" / "liveness.json"
@@ -531,7 +570,11 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     outcome_out = getattr(args, "outcome_out", None)
     for agency_id in targets:
         started = time.monotonic()
-        if getattr(args, "skip_unchanged", False) and _liveness_unchanged(agency_id):
+        if (
+            getattr(args, "skip_unchanged", False)
+            and not args.force_fetch
+            and _liveness_unchanged(agency_id)
+        ):
             log.info("Skipping %s: feed unchanged since last check", agency_id)
             skipped += 1
             if outcome_out:
@@ -839,9 +882,14 @@ def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser)
             artifacts: list[dict[str, Any]] = []
             for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
                 try:
-                    artifacts.append(json.loads(dated.read_text()))
-                except (OSError, json.JSONDecodeError):
+                    artifact = json.loads(dated.read_text())
+                    artifact_date = str(artifact["snapshot_date"])
+                    parsed_date = dt.date.fromisoformat(artifact_date)
+                except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
                     continue
+                if parsed_date.isoformat() != artifact_date or artifact_date != dated.stem:
+                    continue
+                artifacts.append(artifact)
             if artifacts:
                 histories[agency_dir.name] = artifacts
     report = build_fix_outcomes(histories)
@@ -979,7 +1027,10 @@ def _cmd_dataset(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    dataset = build_quality_dataset(index)
+    dataset = build_quality_dataset(
+        index,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
     if args.out:
         out = Path(args.out)
         out.write_text(_json.dumps(dataset, indent=2, sort_keys=True) + "\n")
@@ -1005,31 +1056,57 @@ def _cmd_sensitivity(args: argparse.Namespace, parser: argparse.ArgumentParser) 
     import json as _json
 
     from . import DATA_ATTRIBUTION, DATA_LICENSE, RUBRIC_VERSION, SCHEMA_VERSION
+    from .comparisons import build_comparison_cohort
     from .config import artifacts_dir
+    from .dataset import build_quality_dataset
     from .sensitivity import latest_category_scores, weight_sensitivity
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    study = weight_sensitivity(latest_category_scores(index), factor=args.factor)
+    # Sensitivity is itself a cross-feed claim. Apply the same current producer,
+    # category, and identity contract as every other public aggregate before
+    # perturbing the weights; stale rubric rows must not dilute or inflate churn.
+    rows = build_quality_dataset(index)["rows"]
+    comparable, comparison = build_comparison_cohort(
+        rows,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
+    out = Path(args.out) if args.out else artifacts_dir() / "sensitivity.json"
+    comparable_ids = {str(row["id"]) for row in comparable}
+    filtered_index = {
+        "agencies": {
+            agency_id: entry
+            for agency_id, entry in (index.get("agencies") or {}).items()
+            if agency_id in comparable_ids
+        }
+    }
+    study = weight_sensitivity(latest_category_scores(filtered_index), factor=args.factor)
     payload = {
         "schema_version": SCHEMA_VERSION,
         "rubric_version": RUBRIC_VERSION,
         "license": DATA_LICENSE,
         "attribution": DATA_ATTRIBUTION,
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        "comparison": comparison,
         **study,
     }
-    out = Path(args.out) if args.out else artifacts_dir() / "sensitivity.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(_json.dumps(payload, indent=2, sort_keys=True) + "\n")
-    log.info(
-        "Weight sensitivity over %d agencies: at most %s%% of letters change "
-        "under ±%d%% single-weight perturbations (%s)",
-        study["agency_count"],
-        study["max_grade_change_pct"],
-        round(args.factor * 100),
-        out,
-    )
+    if comparable:
+        log.info(
+            "Weight sensitivity over %d comparison-eligible feed records: at most %s%% "
+            "of letters change under ±%d%% single-weight perturbations (%s)",
+            study["agency_count"],
+            study["max_grade_change_pct"],
+            round(args.factor * 100),
+            out,
+        )
+    else:
+        log.warning(
+            "Weight sensitivity is unavailable until current-contract rows exist; wrote a "
+            "guarded zero-cohort artifact to %s.",
+            out,
+        )
     return 0
 
 
@@ -1145,9 +1222,15 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
 
 
 def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .comparisons import build_comparison_cohort
     from .config import repo_root
     from .metrics import expiry_status
-    from .ridership import fetch_ridership_csv, parse_ridership_csv, weighted_impact
+    from .ridership import (
+        duplicate_ntd_reporter_ids,
+        fetch_ridership_csv,
+        parse_ridership_csv,
+        weighted_impact,
+    )
 
     csv_path = Path(args.csv) if args.csv else repo_root() / "data" / "ntd-ridership.csv"
     if args.fetch:
@@ -1178,14 +1261,53 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     ridership = parse_ridership_csv(csv_path.read_text())
     log.info("Loaded annual ridership for %d NTD reporters.", len(ridership))
 
+    latest_records = _latest_records()
+    comparison_candidates = []
+    for r in latest_records:
+        artifact = r["artifact"]
+        categories = artifact.get("categories") or {}
+        days = (categories.get("freshness", {}).get("details", {})).get("days_until_expiry")
+        profile = artifact.get("scoring_profile") or {}
+        comparison_candidates.append(
+            {
+                "id": r["id"],
+                "name": r["name"],
+                "feed_url": r.get("feed_url"),
+                "feed_sha256": (artifact.get("feed") or {}).get("sha256"),
+                "date": artifact.get("snapshot_date"),
+                "score": r["score"],
+                "grade": r["grade"],
+                "rubric_version": artifact.get("rubric_version"),
+                "scoring_profile_id": profile.get("id"),
+                "scoring_profile_rubric_version": profile.get("rubric_version"),
+                "validator_version": artifact.get("validator_version"),
+                "days_until_expiry": days,
+                **{
+                    key: (
+                        categories.get(key, {}).get("score")
+                        if categories.get(key, {}).get("status") == "measured"
+                        else None
+                    )
+                    for key in ("correctness", "freshness", "completeness", "realtime")
+                },
+            }
+        )
+    comparable, _comparison = build_comparison_cohort(
+        comparison_candidates, agencies=AGENCIES.values()
+    )
+    comparable_ids = {str(record["id"]) for record in comparable}
+
     records = []
-    for r in _latest_records():
+    for r in latest_records:
+        if r["id"] not in comparable_ids:
+            continue
         cfg = AGENCIES.get(r["id"])
         days = (r["artifact"].get("categories", {}).get("freshness", {}).get("details", {})).get(
             "days_until_expiry"
         )
         records.append(
             {
+                "id": r["id"],
                 "ntd_id": cfg.ntd_id if cfg else "",
                 "score": r["score"],
                 "grade": r["grade"],
@@ -1193,14 +1315,20 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
             }
         )
 
-    impact = weighted_impact(records, ridership)
+    impact = weighted_impact(
+        records,
+        ridership,
+        quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
+    )
     print(json.dumps(impact, indent=2, sort_keys=True))
     log.info(
-        "Weighted %d of %d agencies by ridership: %s annual trips, %s%% on expired feeds.",
-        impact["matched_agencies"],
-        impact["total_agencies"],
+        "Weighted %d unique NTD reporter matches across %d eligible feed records: "
+        "%s annual trips, %s%% on expired feeds; %d duplicate feed records excluded.",
+        impact["matched_ntd_reporters"],
+        impact["total_feed_records"],
         f"{impact['total_annual_trips']:,}",
         impact["expired_trips_pct"],
+        impact["duplicate_feed_records_excluded"],
     )
     return 0
 
@@ -1434,7 +1562,10 @@ def _cmd_query(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    rows = build_quality_dataset(index)["rows"]
+    rows = build_quality_dataset(
+        index,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )["rows"]
 
     if args.export:
         to_parquet(rows, args.export)
@@ -1442,6 +1573,11 @@ def _cmd_query(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
         return 0
     if not args.sql:
         parser.error("pass a SQL query, or --export <path>")
+    log.warning(
+        "This is a covered feed set, not a census. For cross-feed score comparisons, "
+        "filter comparison_eligible = true and inspect the comparison metadata in "
+        "api/v1/agencies.json."
+    )
     result = query_rows(rows, args.sql)
     print(_json.dumps(result, indent=2, default=str))
     log.info("%d row(s).", len(result))
@@ -1457,7 +1593,10 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-    dataset = build_quality_dataset(index)
+    dataset = build_quality_dataset(
+        index,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
     states = _published_states()
     try:
         indicators = fetch_state_indicators()
@@ -1476,7 +1615,12 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
             return 1
         log.warning("equity: ACS fetch failed; --allow-empty set, writing counts-only (%s)", exc)
         indicators = {}
-    overlay = build_overlay(dataset["rows"], states, indicators)
+    overlay = build_overlay(
+        dataset["rows"],
+        states,
+        indicators,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
     tiered = sum(1 for s in overlay["states"] if s["need_tier"] != "unknown")
     log.info("equity: %d of %d states have an ACS need tier.", tiered, len(overlay["states"]))
     if tiered == 0 and not args.allow_empty:
@@ -2143,8 +2287,9 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument(
         "--skip-unchanged",
         action="store_true",
-        help="skip re-scoring when a cheap conditional GET confirms the feed is unchanged "
-        "(exit 2 for a single skipped agency so the CI loop can distinguish skip from error)",
+        help="skip re-scoring only when a conditional GET confirms the feed is unchanged "
+        "and latest.json already uses the current artifact, rubric, scoring-profile, and "
+        "validator contract (exit 2 for a single skip)",
     )
     run.add_argument(
         "--outcome-out",

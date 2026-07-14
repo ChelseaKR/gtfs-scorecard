@@ -5,13 +5,26 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.cli import main
 from scorecard_pipeline.outcomes import build_fix_outcomes, render_fix_outcomes_markdown
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 
-def _artifact(date: str, codes: list[str], *, measured: bool = True) -> dict[str, object]:
+def _artifact(
+    date: str,
+    codes: list[str],
+    *,
+    measured: bool = True,
+    agency_id: str = "one",
+) -> dict[str, object]:
     return {
         "snapshot_date": date,
+        "agency": {"id": agency_id, "name": f"{agency_id.title()} Transit"},
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile_id": SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": RUBRIC_VERSION,
+        "validator_version": VALIDATOR_VERSION,
         "categories": {
             "correctness": {
                 "status": "measured" if measured else "not_measured",
@@ -30,8 +43,8 @@ def test_outcomes_measure_resolution_time_and_recurrence() -> None:
             _artifact("2026-01-25", []),
         ],
         "two": [
-            _artifact("2026-01-01", ["unused_stop"]),
-            _artifact("2026-01-21", []),
+            _artifact("2026-01-01", ["unused_stop"], agency_id="two"),
+            _artifact("2026-01-21", [], agency_id="two"),
         ],
     }
 
@@ -67,8 +80,8 @@ def test_markdown_is_descriptive_and_filters_thin_codes() -> None:
                 _artifact("2026-01-10", []),
             ],
             "two": [
-                _artifact("2026-01-01", ["common"]),
-                _artifact("2026-01-08", []),
+                _artifact("2026-01-01", ["common"], agency_id="two"),
+                _artifact("2026-01-08", [], agency_id="two"),
             ],
         }
     )
@@ -76,6 +89,16 @@ def test_markdown_is_descriptive_and_filters_thin_codes() -> None:
     assert "| common |" in markdown
     assert "| thin |" not in markdown
     assert "descriptive, not causal" in markdown
+    assert "do not show who changed a feed" in markdown
+
+
+def test_outcomes_fail_closed_on_missing_or_changed_producer_contract() -> None:
+    missing = _artifact("2026-01-01", ["x"])
+    del missing["scoring_profile_id"]
+    changed = _artifact("2026-01-02", [])
+    changed["rubric_version"] = "different"
+    report = build_fix_outcomes({"one": [missing, changed]})
+    assert report["codes"] == {}
 
 
 def test_empty_histories_have_no_division_error() -> None:

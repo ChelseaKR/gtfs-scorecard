@@ -27,18 +27,42 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-14
+
+### Added
+- Marketplace release metadata and a publication runbook for the composite GTFS
+  quality gate, prepared for a protected `v1.2.0` tag and the floating `v1` tag.
+
+### Changed
+- Public coverage pages now focus on feeds that need attention and recent changes
+  instead of ranking agencies from best to worst.
+- Cross-feed comparisons exclude incompatible scoring profiles and duplicate feed
+  records. Agency pages no longer present a national percentile as a performance
+  judgment.
+- Coverage totals now describe feed records or scorecards rather than implying each
+  record is a distinct transit agency.
+- Unitrans realtime copy now says its UmoIQ feeds require an API key and remain
+  unmeasured here; it no longer says the agency publishes no realtime feed.
+- Action documentation is prepared for the v1 line (`@v1` and the planned
+  `@v1.2.0` release ref) instead of referencing a nonexistent v2 tag.
+
+### Fixed
+- Rubric-version copy no longer implies that every historical scorecard was computed
+  with the current methodology.
+
 ## [1.1.0] - 2026-07-11
 
 Cut from current `main` to re-anchor releases to reachable history:
 `v1.0.0` was orphaned by a branch rewrite (see the note above) and stays as
-a historical marker. The floating `v1` tag now points at this release, which
-is also the release submitted to the GitHub Actions Marketplace.
+a historical marker. The floating `v1` tag now points at this release. It
+prepared the action for Marketplace submission, but the listing remained
+unpublished; Marketplace publication is a v1.2.0 release step.
 
 ### Added
 - Searchable, quality-gated fix library; canonical feed identity ledger;
   reviewed listing-claim/correction workflow; vendor evidence packets; fix
   outcome analytics; program campaign pages; and fair-comparison guardrails.
-- GitHub Action v2 controls, EXP-16 policy research materials, board-ready
+- GitHub Action gate controls, EXP-16 policy research materials, board-ready
   reports, and transparent project sponsorship documentation.
 - Spanish-first `/es/` agency lookup backed by key-parity `en`/`es` locale
   catalogs, with explicit limits on what a scorecard certifies.
@@ -88,7 +112,7 @@ is also the release submitted to the GitHub Actions Marketplace.
 
 ## [1.0.0] - 2026-06-21
 
-First tagged release (`v1`/`v1.0.0`, GitHub Actions Marketplace). Summarized
+First tagged release (`v1`/`v1.0.0`). Summarized
 rather than itemized commit-by-commit: the tag predates a history rewrite on
 `main` (see the note above), so an exact commit list can't be reconstructed
 from `git log` against current history. As of this tag, the repo shipped:
@@ -100,12 +124,13 @@ from `git log` against current history. As of this tag, the repo shipped:
 - The static frontend (agency picker, scorecard pages, trend charts) with a
   WCAG-AAA-targeted accessibility posture.
 - The composite GitHub Action (`action.yml`) gating a caller's CI on feed
-  grade/expiry, published to the Marketplace as `ChelseaKR/gtfs-scorecard@v1`.
+  grade/expiry, packaged for reuse as `ChelseaKR/gtfs-scorecard@v1`.
 - NTD certification-readiness signals and the `agencies.yaml` scale-out path
   (grown to roughly 1,100 agencies nationally by 2026-07).
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.0.0

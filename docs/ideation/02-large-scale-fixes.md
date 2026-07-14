@@ -259,8 +259,10 @@ reader can attribute every historical grade discontinuity.
 **Status: Done (2026-07-02).** `overall.margin_to_next_band` and
 `overall.margin_to_lower_band` ride on every artifact
 (`score.py:grade_margins`); `scorecard sensitivity` publishes
-`data/artifacts/sensitivity.json` (first study: 1,449 agencies, at most 8.1%
-of letters change under any single ±20% renormalized weight perturbation); the
+`data/artifacts/sensitivity.json`. The original rubric 1.1 study covered 1,449
+feed records and found at most 8.1% letter churn under a single ±20%
+renormalized weight perturbation. It is historical, not a current-contract
+claim; rubric 1.2 publishes no headline until its guarded cohort is rescored. The
 `/how-to-read/` page explains both with the encouragement framing.
 
 **Pitch.** Publish how close each grade sits to its band boundary, and how
@@ -532,6 +534,12 @@ no bucket is configured, and the committed `web/agency/**` copies are frozen
 at the cutover date. Whether to prune those committed copies (and reclaim the
 git history size named below) stays a maintainer decision per ADR 0030's
 no-rewrite rule.
+
+**Update (2026-07-14):** the release tree is now bounded to the curated registry.
+The 322 orphan artifact directories and their generated pages were removed from
+the current tree; 1,128 scored feed records remain. The deploy also copies raw
+artifact directories only when `index.json` names them. Git history and the S3
+archive were not rewritten.
 
 **Pitch.** Decide, once and deliberately, what to do about the data already in
 git — 521 MB of `.git`, 382 MB of committed artifacts, 1,449 prerendered pages,

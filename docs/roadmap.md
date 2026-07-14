@@ -53,9 +53,9 @@ below is checked against them.
 
 > Status (2026-07): the registry passed this target ahead of plan and now
 > tracks ~1,149 configured feeds in the current worldwide coverage, still mostly
-> in the US and Canada (~1,449 scored latest rows with published pages in the
-> repository artifact index). The bounded live directory currently publishes
-> more than 1,100 scorecards. The Year
+> in the US and Canada (~1,128 scored latest rows with published pages in the
+> registry-bounded artifact index). Twenty-one configured feeds are awaiting a
+> current artifact. The Year
 > 1 work below is done; what remains is the storage/serving
 > move (see `docs/follow-ups.md`).
 
@@ -184,14 +184,16 @@ sits beside the JSON artifacts and powers the analytical tools below.
 
 What the dataset enables:
 
-- **Benchmarking and percentiles.** "Your correctness score is in the top
-  quartile for agencies your size." Framed as encouragement and context, never
-  as a ranked leaderboard.
+- **Verified remediation outcomes.** Join an alert to a named owner or vendor
+  request, then record the exact before-and-after feed hashes when a like-for-like
+  recheck clears the finding. The receipt proves what changed; a human-confirmed
+  request link supplies the intervention context rather than inferring causation
+  from score movement alone.
 - **Vendor-level signal.** Aggregate scores by the scheduling tool that
   produced the feed (inferred from `feed_info` and export fingerprints). Which
-  vendor exports tend to miss wheelchair fields, which produce stale calendars.
-  This is the kind of finding a statewide support program would act on, and it
-  is only visible at scale.
+  vendor exports repeat wheelchair gaps or stale calendars, and which documented
+  requests lead to verified fixes. This is the kind of evidence a statewide
+  support program would act on, and it is only visible at scale.
 - **Regression detection across the whole corpus.** Catch the day a vendor
   software update quietly breaks fare data for forty of its customers at once.
 
@@ -217,7 +219,7 @@ SQS (one message per agency)  ->  worker pool (Lambda JVM / Fargate Batch)
                               S3 raw snapshots          S3 JSON artifacts
                                       ^                       |
 Realtime sampler (Fargate,           |                       +--> Parquet / Athena
- scheduled windows) ----------------+                       |       (benchmarking,
+ scheduled windows) ----------------+                       |       (remediation outcomes,
    polls RT, writes protobuf                                |        vendor signal)
                                                             v
                                               CloudFront -> static web app
@@ -306,8 +308,9 @@ surface the plan builds toward, roughly in priority order:
    retention loop (Year 1).
 4. **Program rollup dashboards**: portfolio views for liaisons and statewide
    staff (Year 2).
-5. **Benchmarking and vendor signal**: percentile context and
-   export-tool-level findings from the corpus (Year 2).
+5. **Verified remediation and vendor signal**: owner-linked requests,
+   before-and-after feed evidence, and export-tool-level findings from the
+   corpus (Year 2).
 6. **Public read API and embeddable badge**: programmatic access and organic
    distribution (Year 3).
 7. **White-label deployments**: branded instances for statewide programs

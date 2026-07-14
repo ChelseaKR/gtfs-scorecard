@@ -1,10 +1,33 @@
 {
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "generated_fields": [
     "id",
     "name",
     "date",
     "grade",
     "score",
+    "rubric_version",
+    "scoring_profile_id",
+    "scoring_profile_rubric_version",
+    "validator_version",
+    "feed_sha256",
+    "comparison_eligible",
     "correctness",
     "freshness",
     "completeness",
@@ -15,44 +38,62 @@
   "pipeline_schema_version": "1.11",
   "rows": [
     {
+      "comparison_eligible": false,
       "completeness": 45.0,
       "correctness": 76.0,
       "date": "2026-07-02",
       "days_until_expiry": 121,
+      "feed_sha256": "6686dff3242825b42dfd412f6ad631ce8eea73e287ff967f937fbac16973de76",
       "freshness": 100.0,
       "grade": "C",
       "id": "barrie-transit",
       "name": "Barrie Transit (Ontario)",
       "realtime": null,
+      "rubric_version": "1.1",
       "score": 72.3,
-      "service_horizon_status": "within_review_threshold"
+      "scoring_profile_id": null,
+      "scoring_profile_rubric_version": null,
+      "service_horizon_status": "within_review_threshold",
+      "validator_version": "8.0.1"
     },
     {
+      "comparison_eligible": false,
       "completeness": 60.0,
       "correctness": 84.8,
       "date": "2026-07-02",
       "days_until_expiry": 82,
+      "feed_sha256": "3ddba2ca939679b1ba87d34babcd7f8715faab7f08c5241dc3f1d5277cf4f39d",
       "freshness": 100.0,
       "grade": "B",
       "id": "unitrans",
       "name": "Unitrans (ASUCD / City of Davis)",
       "realtime": null,
+      "rubric_version": "1.1",
       "score": 80.8,
-      "service_horizon_status": "within_review_threshold"
+      "scoring_profile_id": null,
+      "scoring_profile_rubric_version": null,
+      "service_horizon_status": "within_review_threshold",
+      "validator_version": "8.0.1"
     },
     {
+      "comparison_eligible": false,
       "completeness": 62.4,
       "correctness": 90.0,
       "date": "2026-07-02",
       "days_until_expiry": 67,
+      "feed_sha256": "946c49a1b1dae9b4788e9984a983b1a0c9105eecd337f65f60e5650256eca937",
       "freshness": 85.0,
       "grade": "B",
       "id": "yolobus",
       "name": "Yolobus (Yolo County Transportation District)",
       "realtime": 92.2,
+      "rubric_version": "1.1",
       "score": 82.5,
-      "service_horizon_status": "within_review_threshold"
+      "scoring_profile_id": null,
+      "scoring_profile_rubric_version": null,
+      "service_horizon_status": "within_review_threshold",
+      "validator_version": "8.0.1"
     }
   ],
-  "schema_version": "1.1"
+  "schema_version": "1.2"
 }

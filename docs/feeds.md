@@ -153,9 +153,9 @@ Notes:
 - A keyless mirror exists at the Mobility Database latest bucket
   (`us-california-unitrans-gtfs-82.zip`), refreshed by MobilityData rather
   than the agency. Use only as a fallback.
-- Realtime scoring for Unitrans (Phase 3) needs a UmoIQ API key. Until one is
-  granted, the Realtime category will show "Not yet published" wording with a
-  note that the agency does operate realtime tracking.
+- Realtime scoring for Unitrans needs a UmoIQ API key. Until one is granted, the
+  Realtime category shows "Access needed to measure" with a note that the
+  agency operates realtime tracking. Nothing is deducted from the grade.
 
 ## Yolobus (Yolo County Transportation District)
 

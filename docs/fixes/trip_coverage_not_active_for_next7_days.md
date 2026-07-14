@@ -21,8 +21,8 @@ a rider can actually take should dominate the feed, not the trips they cannot.
 ## How to fix it
 
 - **Trim past service periods** in your export settings ("only export active
-  service" or a service-window date range). This usually clears most of the
-  inactive trips at once.
+  service" or a service-window date range). Re-run validation to check whether
+  inactive trips still dominate the result.
 - **Confirm current service is published.** If little runs next week because the
   next pick or season has not been exported yet, publish the current schedule so
   the feed covers the coming weeks.

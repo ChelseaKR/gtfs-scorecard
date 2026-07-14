@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Status | GTFS Scorecard</title>
-  <meta name="description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and concrete evidence from today&#x27;s run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta name="description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and evidence from the latest recorded run: shard outcomes, unreachable feeds, and catalog freshness.">
   <link rel="canonical" href="https://gtfsscorecard.org/status/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Status | GTFS Scorecard">
-  <meta property="og:description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and concrete evidence from today&#x27;s run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta property="og:description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and evidence from the latest recorded run: shard outcomes, unreachable feeds, and catalog freshness.">
   <meta property="og:url" content="https://gtfsscorecard.org/status/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -32,7 +32,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -40,13 +40,13 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Status</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Status.</h1>
     <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
-    we commit to for refresh cadence and uptime; below is concrete evidence from today's run.
+    we commit to for refresh cadence and uptime; below is evidence from the latest recorded run.
     Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
@@ -59,20 +59,21 @@
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
     <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
-    <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
-    every feed runs daily regardless of tier.</p>
+    <p>Every feed is assigned to one of two cadence tiers (ADR&nbsp;0010); a full re-validation
+    of every feed is scheduled daily regardless of tier. The latest-run section below shows
+    when that work actually completed.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
     <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
-    <p>As of 2026-07-14T03:48:49+00:00, this pipeline is tracking liveness on
+    <p>As of 2026-07-02T03:10:02+00:00, this pipeline is tracking liveness on
         <strong>2</strong> feeds:
         <strong>2</strong> checking in clean (no failed check in a row),
         <strong>0</strong> with at least one recent failed check but not yet
         flagged, and <strong>0</strong> flagged unreachable
         (see the degradation policy below). Time since each feed's last liveness check ranges from
-        290.6 to 321.7 hours, with a median of
-        321.7 hours.</p>
+        2.0 to 33.0 hours, with a median of
+        33.0 hours.</p>
         <p>Overall clean-check rate: <strong>100.0%</strong>.</p></section>
 
     <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
@@ -84,68 +85,93 @@
     actually observe.</p>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
-    <h2 class="section-title" id="evidence-h">Today's evidence</h2>
-    <p>What the daily pipeline itself did, published the same way the scorecards are: shard
-    outcomes, feeds it could not reach, and how stale the catalog is right now. No part of this
-    page requires trusting the maintainer's word. Machine-readable at
+    <h2 class="section-title" id="evidence-h">Latest run evidence</h2>
+    <p>What the latest published run summary recorded, including when it ran: shard outcomes,
+    feeds it could not reach, and how stale the current catalog is now. No part of this page
+    requires trusting the maintainer's word. Machine-readable at
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
-    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
     <p>No run-health summary has been published yet. This page fills in the day after the
     first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>
 
     <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
-    <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
-    (not just this run -- an agency scored successfully days ago still counts here if nothing
+    <p>Age of the scored snapshot behind every tracked feed scorecard, right now
+    (not just this run -- a feed scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
-    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked agencies, grouped by age of their current scorecard.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">3</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
+    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked feed scorecards, grouped by snapshot age.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:50"><span class="bucket-value">1</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">2</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
     <details class="viz-data"><summary>Show the table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
-      <caption class="visually-hidden">Agency count by snapshot age</caption>
-      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
-      <tbody><tr><td>under 1 day</td><td>0</td></tr><tr><td>1-2 days</td><td>0</td></tr><tr><td>3-7 days</td><td>0</td></tr><tr><td>over 7 days</td><td>3</td></tr></tbody>
+      <caption class="visually-hidden">Feed scorecard count by snapshot age</caption>
+      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Feed scorecards</th></tr></thead>
+      <tbody><tr><td>under 1 day</td><td>0</td></tr><tr><td>1-2 days</td><td>1</td></tr><tr><td>3-7 days</td><td>2</td></tr><tr><td>over 7 days</td><td>0</td></tr></tbody>
     </table></div></details>
     </section>
 
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
-    refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
+    refreshed after each completed scoring run. See <a href="/how-to-read/">how to read a scorecard</a> for what
     the grades themselves mean.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Request a one-off score</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

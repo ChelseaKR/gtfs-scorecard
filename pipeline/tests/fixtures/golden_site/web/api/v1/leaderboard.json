@@ -1,12 +1,24 @@
 {
   "bottom": [],
   "comparison": {
-    "eligible_count": 3,
-    "excluded_count": 0,
-    "exclusion_counts": {},
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
     "minimum_cohort": 20,
-    "note": "Ranked comparisons include only dated feeds with the three required schedule categories measured and service data no more than one year expired.",
-    "suppressed": true
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1",
+    "suppressed": true,
+    "suppression_reason": "policy_no_absolute_rankings"
   },
   "most_declined": [],
   "most_improved": [],

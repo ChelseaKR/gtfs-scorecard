@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Status | GTFS Scorecard</title>
-  <meta name="description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and concrete evidence from today&#x27;s run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta name="description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and evidence from the latest recorded run: shard outcomes, unreachable feeds, and catalog freshness.">
   <link rel="canonical" href="https://gtfsscorecard.org/status/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Status | GTFS Scorecard">
-  <meta property="og:description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and concrete evidence from today&#x27;s run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta property="og:description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and evidence from the latest recorded run: shard outcomes, unreachable feeds, and catalog freshness.">
   <meta property="og:url" content="https://gtfsscorecard.org/status/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -46,7 +46,7 @@
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Status.</h1>
     <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
-    we commit to for refresh cadence and uptime; below is concrete evidence from today's run.
+    we commit to for refresh cadence and uptime; below is evidence from the latest recorded run.
     Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
@@ -59,8 +59,9 @@
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
     <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
-    <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
-    every feed runs daily regardless of tier.</p>
+    <p>Every feed is assigned to one of two cadence tiers (ADR&nbsp;0010); a full re-validation
+    of every feed is scheduled daily regardless of tier. The latest-run section below shows
+    when that work actually completed.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
     <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
 
@@ -84,31 +85,31 @@
     actually observe.</p>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
-    <h2 class="section-title" id="evidence-h">Today's evidence</h2>
-    <p>What the daily pipeline itself did, published the same way the scorecards are: shard
-    outcomes, feeds it could not reach, and how stale the catalog is right now. No part of this
-    page requires trusting the maintainer's word. Machine-readable at
+    <h2 class="section-title" id="evidence-h">Latest run evidence</h2>
+    <p>What the latest published run summary recorded, including when it ran: shard outcomes,
+    feeds it could not reach, and how stale the current catalog is now. No part of this page
+    requires trusting the maintainer's word. Machine-readable at
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
-    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
     <p>No run-health summary has been published yet. This page fills in the day after the
     first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>
 
     <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
-    <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
-    (not just this run -- an agency scored successfully days ago still counts here if nothing
+    <p>Age of the scored snapshot behind every tracked feed scorecard, right now
+    (not just this run -- a feed scored successfully days ago still counts here if nothing
     has re-triggered a fetch since).</p>
-    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked agencies, grouped by age of their current scorecard.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:50"><span class="bucket-value">1</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">2</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
+    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked feed scorecards, grouped by snapshot age.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:50"><span class="bucket-value">1</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">2</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
     <details class="viz-data"><summary>Show the table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
-      <caption class="visually-hidden">Agency count by snapshot age</caption>
-      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
+      <caption class="visually-hidden">Feed scorecard count by snapshot age</caption>
+      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Feed scorecards</th></tr></thead>
       <tbody><tr><td>under 1 day</td><td>0</td></tr><tr><td>1-2 days</td><td>1</td></tr><tr><td>3-7 days</td><td>2</td></tr><tr><td>over 7 days</td><td>0</td></tr></tbody>
     </table></div></details>
     </section>
 
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
-    refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
+    refreshed after each completed scoring run. See <a href="/how-to-read/">how to read a scorecard</a> for what
     the grades themselves mean.</p>
   </main>
   <footer class="site-footer">

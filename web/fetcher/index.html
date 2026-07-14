@@ -52,13 +52,14 @@
     <section aria-labelledby="what-h">
       <h2 class="section-title" id="what-h">What we request, and how often</h2>
       <ul>
-        <li><strong>Your GTFS Schedule zip, once a day.</strong> The daily scoring run
-        downloads each configured feed one time, in the early afternoon UTC.</li>
-        <li><strong>Cheap liveness checks in between.</strong> Hourly refreshes use
+        <li><strong>Your GTFS Schedule zip, scheduled once a day.</strong> Each scheduled
+        scoring run downloads a configured feed one time, in the early afternoon UTC. The
+        <a href="/status/">status page</a> records when that work actually completed.</li>
+        <li><strong>Cheap liveness checks in between.</strong> Scheduled hourly refreshes use
         conditional requests (<code>If-None-Match</code> / <code>If-Modified-Since</code>),
         so an unchanged feed answers with an empty 304 and transfers nothing.</li>
         <li><strong>GTFS-Realtime in short bursts.</strong> Realtime endpoints are sampled in
-        a brief burst every three hours, never faster than one request every 30 seconds per
+        a brief burst on a three-hour schedule, never faster than one request every 30 seconds per
         feed, matching the spec's own polling guidance.</li>
       </ul>
       <p>Requests come from GitHub Actions runners, so they do not arrive from a fixed set of

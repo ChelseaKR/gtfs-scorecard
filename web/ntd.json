@@ -1,5 +1,5 @@
 {
-  "at_risk": 156,
+  "at_risk": 140,
   "by_state": {
     "Alabama": {
       "at_risk": 0,
@@ -266,10 +266,10 @@
       "total": 15
     },
     "Unlocated": {
-      "at_risk": 26,
-      "not_ready": 183,
-      "ready": 180,
-      "total": 389
+      "at_risk": 10,
+      "not_ready": 20,
+      "ready": 38,
+      "total": 68
     },
     "Utah": {
       "at_risk": 2,
@@ -308,7 +308,7 @@
       "total": 15
     }
   },
-  "not_ready": 642,
+  "not_ready": 479,
   "one_fix_from_ready": [
     {
       "fix": "Service data expired 922 days ago, so FTA would find the link out of date.",
@@ -407,27 +407,11 @@
       "status": "not_ready"
     },
     {
-      "fix": "Service data expired 831 days ago, so FTA would find the link out of date.",
-      "id": "avalon-transit-12",
-      "name": "Avalon Transit",
-      "pillar": "current",
-      "state": "Unlocated",
-      "status": "not_ready"
-    },
-    {
       "fix": "Service data expired 453 days ago, so FTA would find the link out of date.",
       "id": "avon-transit",
       "name": "Avon Transit",
       "pillar": "current",
       "state": "Colorado",
-      "status": "not_ready"
-    },
-    {
-      "fix": "Service data expired 453 days ago, so FTA would find the link out of date.",
-      "id": "avon-transit-218",
-      "name": "Avon Transit",
-      "pillar": "current",
-      "state": "Unlocated",
       "status": "not_ready"
     },
     {
@@ -439,27 +423,11 @@
       "status": "not_ready"
     },
     {
-      "fix": "Service data expired 1644 days ago, so FTA would find the link out of date.",
-      "id": "bay-area-transportation-authority-223",
-      "name": "Bay Area Transportation Authority",
-      "pillar": "current",
-      "state": "Unlocated",
-      "status": "not_ready"
-    },
-    {
       "fix": "Service data expired 222 days ago, so FTA would find the link out of date.",
       "id": "bay-town-trolley",
       "name": "Bay Town Trolley",
       "pillar": "current",
       "state": "Florida",
-      "status": "not_ready"
-    },
-    {
-      "fix": "Service data expired 222 days ago, so FTA would find the link out of date.",
-      "id": "bay-town-trolley-337",
-      "name": "Bay Town Trolley",
-      "pillar": "current",
-      "state": "Unlocated",
       "status": "not_ready"
     },
     {
@@ -492,14 +460,6 @@
       "name": "Benson Area Transit",
       "pillar": "current",
       "state": "Arizona",
-      "status": "not_ready"
-    },
-    {
-      "fix": "Service data expired 191 days ago, so FTA would find the link out of date.",
-      "id": "benson-area-transit-229",
-      "name": "Benson Area Transit",
-      "pillar": "current",
-      "state": "Unlocated",
       "status": "not_ready"
     },
     {
@@ -567,14 +527,6 @@
       "status": "not_ready"
     },
     {
-      "fix": "Service data expired 89 days ago, so FTA would find the link out of date.",
-      "id": "breckenridge-free-ride-237",
-      "name": "Breckenridge Free Ride",
-      "pillar": "current",
-      "state": "Unlocated",
-      "status": "not_ready"
-    },
-    {
       "fix": "Service data expired 441 days ago, so FTA would find the link out of date.",
       "id": "breeze-transit",
       "name": "Breeze Transit",
@@ -615,25 +567,73 @@
       "status": "not_ready"
     },
     {
-      "fix": "Service data expired 14 days ago, so FTA would find the link out of date.",
-      "id": "cape-cod-regional-transportation-authority-cape-cod-rta-645",
-      "name": "Cape Cod Regional Transportation Authority (Cape Cod RTA)",
-      "pillar": "current",
-      "state": "Unlocated",
-      "status": "not_ready"
-    },
-    {
       "fix": "Service data expired 831 days ago, so FTA would find the link out of date.",
       "id": "capital-area-transit-goraleigh",
       "name": "Capital Area Transit (GoRaleigh)",
       "pillar": "current",
       "state": "North Carolina",
       "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 709 days ago, so FTA would find the link out of date.",
+      "id": "capital-area-transit-goraleigh-1983",
+      "name": "Capital Area Transit (GoRaleigh)",
+      "pillar": "current",
+      "state": "North Carolina",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 1106 days ago, so FTA would find the link out of date.",
+      "id": "capitol-corridor-joint-powers-authority-capitol-corridor",
+      "name": "Capitol Corridor Joint Powers Authority (Capitol Corridor)",
+      "pillar": "current",
+      "state": "Unlocated",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 191 days ago, so FTA would find the link out of date.",
+      "id": "carlsbad-municipal-transit-system-2284",
+      "name": "Carlsbad Municipal Transit System",
+      "pillar": "current",
+      "state": "New Mexico",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 808 days ago, so FTA would find the link out of date.",
+      "id": "cascades-east-transit-cet",
+      "name": "Cascades East Transit (CET)",
+      "pillar": "current",
+      "state": "Oregon",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 1404 days ago, so FTA would find the link out of date.",
+      "id": "casco-bay-lines",
+      "name": "Casco Bay Lines",
+      "pillar": "current",
+      "state": "Maine",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 574 days ago, so FTA would find the link out of date.",
+      "id": "cat-tran-shuttle-2206",
+      "name": "Cat Tran Shuttle",
+      "pillar": "current",
+      "state": "Arizona",
+      "status": "not_ready"
+    },
+    {
+      "fix": "Service data expired 1615 days ago, so FTA would find the link out of date.",
+      "id": "charlotte-area-transit-system-cats",
+      "name": "Charlotte Area Transit System (CATS)",
+      "pillar": "current",
+      "state": "North Carolina",
+      "status": "not_ready"
     }
   ],
-  "one_fix_total": 457,
-  "pct_ready": 44.8,
-  "ready": 648,
+  "one_fix_total": 372,
+  "pct_ready": 45.0,
+  "ready": 506,
   "shapes": {
     "at_risk": 12,
     "by_state": {
@@ -879,9 +879,9 @@
       },
       "Unlocated": {
         "at_risk": 1,
-        "not_ready": 4,
-        "ready": 57,
-        "total": 62
+        "not_ready": 0,
+        "ready": 15,
+        "total": 16
       },
       "Utah": {
         "at_risk": 0,
@@ -920,10 +920,10 @@
         "total": 4
       }
     },
-    "not_ready": 22,
-    "pct_ready": 90.6,
-    "ready": 327,
-    "total": 361
+    "not_ready": 18,
+    "pct_ready": 90.5,
+    "ready": 285,
+    "total": 315
   },
-  "total": 1446
+  "total": 1125
 }

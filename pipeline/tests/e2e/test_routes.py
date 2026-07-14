@@ -199,7 +199,9 @@ def test_program_route_renders_members(page: Page, app_url: str) -> None:
     rollup_id, rollup_name = _first_rollup()
     page.goto(f"{app_url}#/program/{rollup_id}")
     expect(page.locator("#main h1.page-title")).to_have_text(rollup_name)
-    expect(page.locator("#members-h")).to_have_text("Agencies, worst first")
+    expect(page.locator("#members-h")).to_have_text(
+        "Feed scorecards: attention first, then alphabetical"
+    )
     expect(page.locator(".program-list .program-row").first).to_be_visible()
     _assert_not_stuck_loading(page)
 
@@ -249,7 +251,7 @@ def test_empty_directory_state_recovers_to_search(page: Page, app_url: str) -> N
     search = page.locator("#agency-search")
     search.fill("zzzz no matching agency")
     expect(page.locator(".agency-count")).to_contain_text("0 of")
-    expect(page.locator(".agency-count")).to_contain_text("agencies")
+    expect(page.locator(".agency-count")).to_contain_text("scorecards")
     expect(page.locator(".no-match")).to_be_visible()
     expect(page.locator("#agency-list .agency-card")).to_have_count(0)
 
@@ -276,9 +278,9 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
 
     # Any user change writes the canonical, upper-case portable keys while
     # preserving the other active controls.
-    page.locator("#agency-sort").select_option("best")
+    page.locator("#agency-sort").select_option("za")
     params = _hash_params(page)
-    assert params == {"country": "CA", "subdivision": "CA-ON", "sort": "best"}
+    assert params == {"country": "CA", "subdivision": "CA-ON", "sort": "za"}
 
     page.locator('.location-subdivision[data-subdivision="CA-ON"]').first.click()
     page.locator('.location-country[data-country="CA"]').first.click()
@@ -337,11 +339,11 @@ def test_arbitrary_country_deep_link_filters_searches_and_canonicalizes(
 
     # The first user interaction rewrites portable location keys to their
     # canonical upper-case form while retaining the active sort.
-    page.locator("#agency-sort").select_option("best")
+    page.locator("#agency-sort").select_option("za")
     assert _hash_params(page) == {
         "country": "GB",
         "subdivision": "GB-ENG",
-        "sort": "best",
+        "sort": "za",
     }
 
     page.locator("#agency-search").fill("GB-ENG")
@@ -401,9 +403,9 @@ def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: s
     )
     assert page.evaluate("() => location.hash") == "#/?state=California"
 
-    page.locator("#agency-sort").select_option("worst")
+    page.locator("#agency-sort").select_option("za")
     params = _hash_params(page)
-    assert params == {"country": "US", "subdivision": "US-CA", "sort": "worst"}
+    assert params == {"country": "US", "subdivision": "US-CA", "sort": "za"}
 
 
 def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(

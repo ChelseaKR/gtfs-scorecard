@@ -161,6 +161,28 @@ jobs:
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           python-version: "3.12"
+      - name: Authenticate to AWS
+        if: ${{ vars.ARTIFACTS_BUCKET != '' || vars.SES_FROM != '' }}
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+      - name: Hydrate the authoritative current corpus and compact history
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        run: |
+          # Hydrate before overlaying this run's shard outputs. latest.json is
+          # the durable current artifact for a skipped feed; index.json proves
+          # which snapshot it must represent. Reindex uses that verified pair
+          # even when lifecycle retention removed its dated object, so it cannot
+          # roll current back to the older cutover files in the checkout.
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
+            data/artifacts/index.json --only-show-errors
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            --recursive --exclude "*" --include "*/latest.json" --only-show-errors
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            --exclude "*" --include "*/fixlog.json" \
+            --include "rollups/*.state.json" \
+            --include "coverage-baseline.json" --only-show-errors
       - name: Gather shard artifacts
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
@@ -176,21 +198,6 @@ jobs:
         # individual agency failing) simply has no run-summary-N artifact;
         # merge below tolerates that and undercounts rather than failing.
         continue-on-error: true
-      - name: Authenticate to AWS
-        if: ${{ vars.ARTIFACTS_BUCKET != '' || vars.SES_FROM != '' }}
-        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
-      - name: Hydrate the authoritative compact history and fix receipts
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
-        run: |
-          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
-            data/artifacts/index.json --only-show-errors
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-            --exclude "*" --include "*/fixlog.json" \
-            --include "rollups/*.state.json" \
-            --include "coverage-baseline.json" --only-show-errors
       - name: Fetch NTD annual ridership (rider-trips weighting, ADR 0021)
         working-directory: pipeline
         run: |
@@ -217,6 +224,10 @@ jobs:
         run: |
           uv run scorecard reindex
           uv run scorecard rollups
+          # Regenerate the guarded named-change payload before S3 publish. The
+          # renderer also prunes legacy change snapshots whose comparison
+          # contract cannot be audited.
+          uv run scorecard render-site
       - name: Vendor support report
         working-directory: pipeline
         run: |
@@ -272,6 +283,12 @@ jobs:
           # not carry. Pruning is handled by a bucket lifecycle policy, not here.
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
             --cache-control "max-age=300" --only-show-errors
+          # Named-change history is a bounded public claim surface, not the
+          # long-lived per-feed archive. Remove legacy objects that the current
+          # comparison-contract cleanup rejected locally.
+          aws s3 sync data/artifacts/changes \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
+            --delete --cache-control "max-age=300" --only-show-errors
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |

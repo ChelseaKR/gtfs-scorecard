@@ -6,6 +6,7 @@ from typing import Any
 
 import pytest
 
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.dataset import build_quality_dataset
 from scorecard_pipeline.location import COUNTRY_NAMES
@@ -19,13 +20,26 @@ from scorecard_pipeline.publicapi import (
     leaderboard,
     stats_endpoint,
 )
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 
-def _pt(date: str, score: float, grade: str) -> dict[str, Any]:
+def _pt(
+    date: str,
+    score: float,
+    grade: str,
+    *,
+    feed_sha256: str | None = None,
+    rubric_version: str = RUBRIC_VERSION,
+) -> dict[str, Any]:
     return {
         "date": date,
         "score": score,
         "grade": grade,
+        "rubric_version": rubric_version,
+        "scoring_profile_id": SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": rubric_version,
+        "validator_version": VALIDATOR_VERSION,
+        "feed_sha256": feed_sha256 or f"sha-{date}-{score}-{grade}",
         "categories": {"correctness": 80, "freshness": 80, "completeness": 80},
         "days_until_expiry": 100,
     }
@@ -52,13 +66,17 @@ def test_agencies_endpoint_is_the_flat_list() -> None:
     ep = agencies_endpoint(ds)
     assert ep["count"] == 3
     assert {a["id"] for a in ep["agencies"]} == {"alpha", "bravo", "charlie"}
+    assert ep["comparison"]["eligible_count"] == 3
+    assert all(row["comparison_eligible"] is True for row in ep["agencies"])
 
 
-def test_leaderboard_ranks_and_finds_movers() -> None:
+def test_leaderboard_suppresses_absolute_lists_but_keeps_guarded_movers() -> None:
     idx = _index()
     board = leaderboard(idx, build_quality_dataset(idx), min_cohort=1)
-    assert board["top"][0]["id"] == "alpha"  # 90 is highest
-    assert board["bottom"][0]["id"] == "charlie"  # 55 is lowest
+    assert board["top"] == []
+    assert board["bottom"] == []
+    assert board["comparison"]["suppression_reason"] == "policy_no_absolute_rankings"
+    assert board["comparison"]["absolute_rankings_published"] is False
     # Bravo rose 60 -> 80; Charlie fell 75 -> 55.
     assert board["most_improved"][0]["id"] == "bravo"
     assert board["most_improved"][0]["score_delta"] == 20.0
@@ -71,28 +89,38 @@ def test_leaderboard_ranks_and_finds_movers() -> None:
 def test_leaderboard_without_ridership_omits_trips_field() -> None:
     idx = _index()
     board = leaderboard(idx, build_quality_dataset(idx), min_cohort=1)
-    assert all("annual_trips" not in e for e in board["bottom"])
-    assert all("annual_trips" not in e for e in board["top"])
+    movers = board["most_improved"] + board["most_declined"]
+    assert movers
+    assert all("annual_trips" not in entry for entry in movers)
 
 
-def test_leaderboard_ridership_breaks_ties_and_carries_trips() -> None:
-    # Two feeds tied on the low end (both 55): the higher-ridership one sorts
-    # first once ridership weights the "bottom" list, and each matched row
-    # carries its rider count (ADR 0021).
+def test_leaderboard_ridership_context_applies_only_to_named_changes() -> None:
     idx = {
         "agencies": {
             "alpha": {"name": "Alpha", "history": [_pt("2026-06-10", 90.0, "A")]},
-            "big": {"name": "Big", "history": [_pt("2026-06-10", 55.0, "F")]},
-            "small": {"name": "Small", "history": [_pt("2026-06-10", 55.0, "F")]},
+            "big": {
+                "name": "Big",
+                "history": [
+                    _pt("2026-06-08", 75.0, "C", feed_sha256="sha-big-old"),
+                    _pt("2026-06-10", 55.0, "F", feed_sha256="sha-big"),
+                ],
+            },
+            "small": {
+                "name": "Small",
+                "history": [
+                    _pt("2026-06-08", 75.0, "C", feed_sha256="sha-small-old"),
+                    _pt("2026-06-10", 55.0, "F", feed_sha256="sha-small"),
+                ],
+            },
         }
     }
     trips = {"big": 5_000_000, "small": 10_000}
     board = leaderboard(idx, build_quality_dataset(idx), trips, min_cohort=1)
-    assert board["bottom"][0]["id"] == "big"
-    assert board["bottom"][0]["annual_trips"] == 5_000_000
-    assert board["bottom"][1]["id"] == "small"
-    # Alpha has no ridership record, so its entry omits the field.
-    assert all("annual_trips" not in e for e in board["top"] if e["id"] == "alpha")
+    assert board["top"] == []
+    assert board["bottom"] == []
+    assert [entry["id"] for entry in board["most_declined"]] == ["big", "small"]
+    assert board["most_declined"][0]["annual_trips"] == 5_000_000
+    assert board["most_declined"][1]["annual_trips"] == 10_000
 
 
 def test_leaderboard_suppresses_small_or_incomparable_cohort() -> None:
@@ -101,9 +129,21 @@ def test_leaderboard_suppresses_small_or_incomparable_cohort() -> None:
     dataset["rows"][0]["days_until_expiry"] = -500
     board = leaderboard(idx, dataset)
     assert board["comparison"]["suppressed"] is True
+    assert board["comparison"]["suppression_reason"] == "policy_no_absolute_rankings"
     assert board["comparison"]["eligible_count"] == 2
     assert board["comparison"]["exclusion_counts"]["service_data_long_expired"] == 1
     assert board["top"] == []
+    assert board["bottom"] == []
+
+
+def test_leaderboard_does_not_publish_a_cross_rubric_change() -> None:
+    idx = _index()
+    idx["agencies"]["bravo"]["history"][-2]["rubric_version"] = "1.1"
+
+    board = leaderboard(idx, build_quality_dataset(idx), min_cohort=1)
+
+    assert all(entry["id"] != "bravo" for entry in board["most_improved"])
+    assert board["comparison"]["eligible_count"] == 3
 
 
 def test_by_state_aggregates_with_unlocated_fallback() -> None:
@@ -111,6 +151,7 @@ def test_by_state_aggregates_with_unlocated_fallback() -> None:
     out = by_state(ds, {"alpha": "California", "bravo": "California"})
     states = {s["state"]: s for s in out["states"]}
     assert states["California"]["count"] == 2
+    assert states["California"]["comparison_eligible_count"] == 2
     assert states["California"]["median_score"] == 85.0  # median of 90, 80
     assert states["Unlocated"]["count"] == 1  # charlie has no state
     assert states["California"]["grade_distribution"]["A"] == 1
@@ -155,6 +196,7 @@ def test_by_location_groups_countries_and_nested_subdivisions() -> None:
     assert countries["US"]["country_name"] == "United States"
     assert countries["CA"]["country_name"] == "Canada"
     assert countries["US"]["count"] == 2
+    assert countries["US"]["comparison_eligible_count"] == 2
     us_subdivisions = {row["subdivision_code"]: row for row in countries["US"]["subdivisions"]}
     assert us_subdivisions["US-CA"]["subdivision_name"] == "California"
     assert countries["CA"]["subdivisions"][0]["subdivision_name"] == "Ontario"
@@ -183,6 +225,7 @@ def test_stats_has_median_and_grade_distribution() -> None:
     ds = build_quality_dataset(_index())
     st = stats_endpoint(ds)
     assert st["agency_count"] == 3
+    assert st["comparison_eligible_count"] == 3
     assert st["median_score"] == 80.0  # median of 90, 80, 55
     assert st["grade_distribution"]["A"] == 1
     assert st["grade_distribution"]["F"] == 1
@@ -251,3 +294,21 @@ def test_build_api_returns_every_endpoint() -> None:
         "stats.json",
         "coverage.json",
     }
+    # V1 count fields continue to describe all published rows. Score
+    # aggregates use only the guarded producer/identity cohort and publish that
+    # narrower denominator explicitly.
+    assert api["stats.json"]["agency_count"] == 3
+    assert api["stats.json"]["comparison_eligible_count"] == 1
+    assert api["stats.json"]["average_score"] == 90.0
+    states = {row["state"]: row for row in api["by-state.json"]["states"]}
+    assert states["California"]["count"] == 1
+    assert states["California"]["comparison_eligible_count"] == 1
+    assert states["Unlocated"]["count"] == 2
+    assert states["Unlocated"]["comparison_eligible_count"] == 0
+    (country,) = api["by-location.json"]["countries"]
+    assert country["count"] == 3
+    assert country["comparison_eligible_count"] == 1
+    api_rows = {row["id"]: row for row in api["agencies.json"]["agencies"]}
+    assert api_rows["alpha"]["comparison_eligible"] is True
+    assert api_rows["bravo"]["comparison_eligible"] is False
+    assert api["agencies.json"]["comparison"] == api["stats.json"]["comparison"]

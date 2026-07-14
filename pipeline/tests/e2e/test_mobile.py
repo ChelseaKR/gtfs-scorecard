@@ -10,6 +10,7 @@ names, making it the regression fixture for min-content horizontal overflow.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -51,7 +52,9 @@ def test_page_family_fits_mobile_viewport(page: Page, base_url: str, path: str) 
     if path.startswith("/app/"):
         expect(page.locator("#main .loading")).to_have_count(0)
     if path.startswith("/compare/?"):
-        expect(page.locator("#compare-status")).to_contain_text("Comparing")
+        expect(page.locator("#compare-status")).to_contain_text(
+            re.compile(r"Comparing|Scorecards kept separate")
+        )
 
     layout = page.evaluate(
         """() => ({
@@ -120,12 +123,14 @@ def test_page_family_fits_mobile_viewport(page: Page, base_url: str, path: str) 
 )
 def test_data_dense_pages_fit_320px(page: Page, base_url: str, path: str) -> None:
     """Regression for the report route, route table, history prose, and loaded
-    comparison table: each owns any sideways scrolling instead of widening the
+    comparison result state: each owns any sideways scrolling instead of widening the
     page at the WCAG reflow width."""
     page.set_viewport_size({"width": 320, "height": 720})
     page.goto(f"{base_url}{path}")
     if path.startswith("/compare/"):
-        expect(page.locator("#compare-status")).to_contain_text("Comparing")
+        expect(page.locator("#compare-status")).to_contain_text(
+            re.compile(r"Comparing|Scorecards kept separate")
+        )
     width = page.evaluate(
         "() => [document.documentElement.clientWidth, document.documentElement.scrollWidth]"
     )
@@ -160,8 +165,6 @@ def test_scorecard_shows_measured_grade_immediately(page: Page, base_url: str) -
 @pytest.mark.parametrize(
     ("path", "selector"),
     [
-        ("/agency/abq-ride/", ".percentile-strip"),
-        ("/pulse/", ".movement-chart"),
         ("/problems/", ".problems-chart"),
         ("/adoption/", ".adoption-chart"),
         ("/realtime/", ".reliability-chart"),
@@ -173,8 +176,17 @@ def test_visualization_patterns_stay_inside_phone_viewport(
 ) -> None:
     page.set_viewport_size({"width": 320, "height": 720})
     page.goto(f"{base_url}{path}")
-    expect(page.locator(selector)).to_have_count(1)
-    bounds = page.locator(selector).evaluate(
+    chart = page.locator(selector)
+    if chart.count() == 0:
+        # Cross-feed charts deliberately disappear during a methodology
+        # migration instead of visualizing stale rows as current evidence.
+        expect(page.locator("main")).to_contain_text("unavailable")
+        assert page.evaluate(
+            "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+        )
+        return
+    expect(chart).to_have_count(1)
+    bounds = chart.evaluate(
         """el => {
           const r = el.getBoundingClientRect();
           return {
@@ -182,10 +194,10 @@ def test_visualization_patterns_stay_inside_phone_viewport(
             right: r.right,
             viewport: document.documentElement.clientWidth,
             labels: Array.from(el.querySelectorAll(
-              '.service-bar-label, .bucket-label, .percentile-label, .movement-counts li'
+              '.service-bar-label, .bucket-label, .movement-counts li'
             )).map((node) => node.textContent.trim()),
             values: Array.from(el.querySelectorAll(
-              '.service-bar-value, .bucket-value, .percentile-value, .movement-counts strong'
+              '.service-bar-value, .bucket-value, .movement-counts strong'
             )).map((node) => node.textContent.trim()),
           };
         }"""

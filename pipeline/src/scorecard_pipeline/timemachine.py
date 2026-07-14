@@ -170,7 +170,9 @@ def grade_story(
         cleared = sorted(c for c in prev_codes if c not in finding_codes(curr))
         if cleared:
             labels = [_story_finding_label(code, prev_codes[code]) for code in cleared]
-            middle.append(f"On {_artifact_date(curr)} it cleared: {'; '.join(labels)}.")
+            middle.append(
+                f"On {_artifact_date(curr)} the check no longer reported: {'; '.join(labels)}."
+            )
 
     if not middle:
         # No band move, expiry crossing, or cleared finding. The grade held, but

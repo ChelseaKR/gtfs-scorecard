@@ -12,11 +12,10 @@ Choose the form from the relationship in the data:
 | How did a value change over time? | Line with a dot for every check | Agency and national score history |
 | How do percentages compare? | Zero-based horizontal route bars | Capability adoption and problem prevalence |
 | How are records distributed across ordered ranges? | Zero-based bucket columns | Current scorecard age |
-| Where does one agency sit in a distribution? | Marker on a fixed 0–100 strip | National and size-peer percentiles |
 | What is the composition of a whole? | Proportional labelled bands | Grade distribution |
 | Which direction did a selected set move? | Two-part movement band | Material national score changes |
 | Where is a condition concentrated? | Geographic map with a visible legend | Feed expiry and equity by state |
-| What are the exact records? | Table or semantic list | Rankings, state detail, findings, and chart data |
+| What are the exact records? | Table or semantic list | Named changes, state detail, findings, and chart data |
 
 Do not use pie charts, 3D effects, dual axes, area fills that imply volume, or
 gauges. Category score meters are zero-based bars and always print the score.
@@ -29,8 +28,6 @@ interactive app stay aligned:
 - `.service-chart` and `.service-bars` render ranked percentages. The line
   begins at a circular stop marker, a restrained transit reference that also
   makes the zero baseline visible.
-- `.percentile-strip` renders position. It uses a point because a percentile is
-  where an agency sits, not an amount it has accumulated.
 - `.bucket-chart` renders ordered ranges. It prints the count above every
   zero-based column and names every bucket below it.
 - `.movement-chart` summarizes the direction of material changes and states
@@ -62,9 +59,9 @@ introducing page-specific chart markup.
 
 ## Page-level intent
 
-- Agency: lead with grade and score, then show trend, category profile, and
-  percentile context. Findings remain an action list, not a chart.
-- Program: show grade composition before the worst-first worklist. The chart
+- Agency: lead with grade and score, then show trend and category profile.
+  Findings remain an action list, not a chart.
+- Program: show guarded grade composition before the attention-first worklist. The chart
   explains the group; the list tells a liaison whom to call.
 - National overview: use maps for location, grade bands for composition, lines
   for time, route bars for ranked adoption, prevalence, accessibility coverage,

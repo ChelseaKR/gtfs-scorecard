@@ -92,12 +92,16 @@ jobs:
         run: |
           uv run scorecard reindex
           uv run scorecard rollups
+          uv run scorecard render-site
 
       - name: Publish refreshed artifacts to S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
           aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
             --cache-control "max-age=300" --only-show-errors
+          aws s3 sync data/artifacts/changes \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
+            --delete --cache-control "max-age=300" --only-show-errors
           aws s3 cp data/liveness.json \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             --cache-control "max-age=300" --only-show-errors

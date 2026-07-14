@@ -87,7 +87,25 @@ jobs:
           cd ..
           mkdir -p _site/data
           cp -r web/. _site/
-          cp -r data/artifacts _site/data/artifacts
+          # Publish only root aggregate files, reserved aggregate directories,
+          # and feed directories named by the registry-bounded index. The S3
+          # hydrate is additive and may contain delisted history; copying the
+          # whole tree would make those raw scorecards publicly reachable even
+          # though render-site correctly removed their HTML pages.
+          mkdir -p _site/data/artifacts
+          find data/artifacts -maxdepth 1 -type f -exec cp {} _site/data/artifacts/ \;
+          # run/ is intentionally private input. Its public, catalog-scoped
+          # projection is web/api/v1/run-status.json.
+          for aggregate in changes rollups; do
+            if [ -d "data/artifacts/$aggregate" ]; then
+              cp -r "data/artifacts/$aggregate" _site/data/artifacts/
+            fi
+          done
+          jq -r '.agencies | keys[]' data/artifacts/index.json | while IFS= read -r id; do
+            if [ -d "data/artifacts/$id" ]; then
+              cp -r "data/artifacts/$id" _site/data/artifacts/
+            fi
+          done
       - name: Lighthouse CI (accessibility >= 95; performance per gate mode)
         env:
           PERF_GATE: ${{ inputs.perf_gate || 'block' }}

@@ -33,7 +33,7 @@ from .effort_calibration import (
     stats_from_episodes,
 )
 from .fetch import FetchResult
-from .fixlog import diff_receipts, load_fixlog, merge_receipts
+from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
 from .metrics import expiry_status, resolve_service_horizon_status
 from .score import Scorecard
 from .site_shell import CATEGORY_LABELS
@@ -242,8 +242,18 @@ def _read_artifact(path: Path) -> dict[str, Any] | None:
     naming the file so it can be found and fixed, and skip it.
     """
     try:
-        return json.loads(path.read_text())  # type: ignore[no-any-return]
-    except (json.JSONDecodeError, OSError) as exc:
+        artifact = json.loads(path.read_text())
+        if not isinstance(artifact, dict):
+            raise TypeError("artifact root must be an object")
+        # Legacy artifacts may use older additive schemas, but every scorecard
+        # must still expose the stable identity and history summary fields used
+        # by reindex and render. Valid JSON with the wrong shape is corruption,
+        # not a reason to abort the whole corpus build.
+        _history_entry(artifact)
+        str(artifact["agency"]["id"])
+        str(artifact["agency"]["name"])
+        return artifact
+    except (AttributeError, json.JSONDecodeError, KeyError, OSError, TypeError) as exc:
         print(f"::warning title=unreadable artifact::skipping {path}: {exc}", file=sys.stderr)
         return None
 
@@ -368,7 +378,12 @@ _CATEGORY_KEYS = ("correctness", "freshness", "completeness", "realtime")
 def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     """One trend point for index.json: overall score/grade plus the score of
     each measured category, so the web app can show per-category trends and
-    'since your last check' deltas without fetching every dated artifact."""
+    'since your last check' deltas without fetching every dated artifact.
+
+    Rubric version and feed hash make public change views safe to compare: a
+    methodology change is not presented as an agency regression, and duplicate
+    current feed records can be removed from named corpus views.
+    """
     categories = {
         key: cat["score"]
         for key in _CATEGORY_KEYS
@@ -378,16 +393,79 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     # population (recently lapsed vs long dead) without fetching every artifact.
     fresh_details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
     days = fresh_details.get("days_until_expiry")
+    profile = artifact.get("scoring_profile") or {}
     return {
         "date": artifact["snapshot_date"],
         "score": artifact["overall"]["score"],
         "grade": artifact["overall"]["grade"],
+        "rubric_version": artifact.get("rubric_version"),
+        "scoring_profile_id": profile.get("id"),
+        "scoring_profile_rubric_version": profile.get("rubric_version"),
+        "validator_version": artifact.get("validator_version"),
+        "feed_sha256": artifact.get("feed", {}).get("sha256"),
         "categories": categories,
         "days_until_expiry": days,
         "service_horizon_status": resolve_service_horizon_status(
             fresh_details, artifact.get("snapshot_date")
         ),
     }
+
+
+_HISTORY_PROVENANCE_FIELDS = (
+    "rubric_version",
+    "scoring_profile_id",
+    "scoring_profile_rubric_version",
+    "validator_version",
+    "feed_sha256",
+)
+
+
+def _history_provenance_for_point(
+    artifact_root: Path, agency_id: str, point: dict[str, Any]
+) -> dict[str, Any] | None:
+    snapshot_date = str(point.get("date") or "")
+    if not snapshot_date:
+        return None
+    artifact_path = artifact_root / agency_id / f"{snapshot_date}.json"
+    if not artifact_path.exists():
+        return None
+    artifact = _read_artifact(artifact_path)
+    if artifact is None:
+        return None
+    enriched = _history_entry(artifact)
+    if str(enriched.get("date")) != snapshot_date:
+        return None
+    return enriched
+
+
+def enrich_index_history_provenance(index: dict[str, Any], root: Path | None = None) -> int:
+    """Backfill rubric/hash on index points from locally available artifacts.
+
+    Index history predates these comparison-provenance fields. Deploy renders
+    hydrate recent dated artifacts without necessarily running ``rebuild_index``;
+    enriching in memory keeps the first deployment from suppressing every
+    aggregate and change. Missing historical files remain untouched and their
+    cross-rubric deltas remain safely suppressed.
+    """
+    artifact_root = root or artifacts_dir()
+    changed = 0
+    for agency_id, entry in (index.get("agencies") or {}).items():
+        for point in entry.get("history") or []:
+            if all(point.get(key) for key in _HISTORY_PROVENANCE_FIELDS):
+                continue
+            try:
+                enriched = _history_provenance_for_point(artifact_root, str(agency_id), point)
+            except (AttributeError, KeyError, TypeError) as exc:
+                log.warning("skipping malformed history artifact for %s: %s", agency_id, exc)
+                continue
+            if enriched is None:
+                continue
+            for key in _HISTORY_PROVENANCE_FIELDS:
+                value = enriched.get(key)
+                if value is not None and point.get(key) != value:
+                    point[key] = value
+                    changed += 1
+    return changed
 
 
 def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Path]:
@@ -418,18 +496,131 @@ def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Pat
     return [p for p in dirs if p.name in AGENCIES]
 
 
+def _dated_reindex_artifacts(
+    agency_dir: Path,
+) -> tuple[dict[str, dict[str, Any]], set[str]]:
+    """Readable local dated artifacts whose path and payload identity agree."""
+    paths = sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
+    present_dates = {path.stem for path in paths}
+    artifacts: dict[str, dict[str, Any]] = {}
+    for path in paths:
+        artifact = _read_artifact(path)
+        if artifact is None:
+            continue
+        try:
+            path_date = dt.date.fromisoformat(path.stem)
+            artifact_date = str(artifact["snapshot_date"])
+            parsed_artifact_date = dt.date.fromisoformat(artifact_date)
+            artifact_id = str(artifact["agency"]["id"])
+        except (KeyError, TypeError, ValueError) as exc:
+            log.warning("ignoring malformed dated artifact %s: %s", path, exc)
+            continue
+        if (
+            path_date.isoformat() != path.stem
+            or parsed_artifact_date.isoformat() != artifact_date
+            or artifact_date != path.stem
+            or artifact_id != agency_dir.name
+        ):
+            log.warning(
+                "ignoring mismatched dated artifact %s (id=%s, date=%s)",
+                path,
+                artifact_id,
+                artifact_date,
+            )
+            continue
+        artifacts[path.stem] = artifact
+    return artifacts, present_dates
+
+
+def _current_reindex_artifact(
+    agency_dir: Path,
+) -> tuple[dict[str, Any], str, dict[str, Any]] | None:
+    """A structurally valid latest artifact, its date, and compact summary."""
+    latest_path = agency_dir / "latest.json"
+    if not latest_path.exists():
+        return None
+    latest = _read_artifact(latest_path)
+    if latest is None:
+        return None
+    try:
+        latest_id = str(latest["agency"]["id"])
+        latest_date = str(latest["snapshot_date"])
+        parsed_date = dt.date.fromisoformat(latest_date)
+    except (KeyError, TypeError, ValueError) as exc:
+        log.warning("ignoring malformed current artifact %s: %s", latest_path, exc)
+        return None
+    if parsed_date.isoformat() != latest_date or latest_id != agency_dir.name:
+        log.warning(
+            "ignoring mismatched current artifact %s (id=%s, date=%s)",
+            latest_path,
+            latest_id,
+            latest_date,
+        )
+        return None
+    return latest, latest_date, _history_entry(latest)
+
+
+def _reindex_artifact_sequence(
+    agency_dir: Path, prior_current: dict[str, Any] | None
+) -> tuple[list[dict[str, Any]], set[str]]:
+    """Resolve local dated files plus the verified authoritative current.
+
+    A hydrated latest that matches the prior index tail preserves a skipped
+    feed when its dated object is absent locally. A matching latest/dated pair
+    may replace the prior tail on the same date after a methodology re-score.
+    """
+    artifacts, present_dates = _dated_reindex_artifacts(agency_dir)
+    prior_date = str((prior_current or {}).get("date") or "")
+    accepted_same_day_overlay = False
+    current = _current_reindex_artifact(agency_dir)
+    if current is not None:
+        latest, latest_date, latest_history = current
+        matches_prior = bool(
+            prior_current is not None
+            and latest_date == prior_date
+            and all(latest_history.get(field) == value for field, value in prior_current.items())
+        )
+        matches_dated = artifacts.get(latest_date) == latest
+        if latest_date >= max(artifacts, default="") and (
+            matches_prior or matches_dated or (prior_current is None and not artifacts)
+        ):
+            artifacts[latest_date] = latest
+            present_dates.add(latest_date)
+            accepted_same_day_overlay = bool(
+                matches_dated
+                and prior_current is not None
+                and latest_date == prior_date
+                and not matches_prior
+            )
+
+    newest_date = max(artifacts, default="")
+    if prior_date and newest_date < prior_date:
+        raise RuntimeError(
+            f"authoritative current artifact missing for {agency_dir.name}: "
+            f"index ends at {prior_date}, available artifacts end at {newest_date or 'none'}"
+        )
+    if prior_current is not None and newest_date == prior_date:
+        current_summary = _history_entry(artifacts[newest_date])
+        mismatch = any(
+            current_summary.get(field) != value for field, value in prior_current.items()
+        )
+        if mismatch and not accepted_same_day_overlay:
+            raise RuntimeError(f"authoritative latest/index summary mismatch for {agency_dir.name}")
+    return [artifacts[date] for date in sorted(artifacts)], present_dates
+
+
 def rebuild_index() -> Path:
     """Rebuild index.json, and reconcile each agency's latest.json + badge, from
     every dated artifact on disk.
 
     The sharded daily run (docs/roadmap.md) scores agencies in parallel jobs.
     Each shard checks out the whole repo and uploads its entire data/artifacts
-    tree, so when the shard artifacts are merged the dated files union cleanly
-    (unique paths) but the per-agency latest.json and badge.svg can be clobbered
-    by a stale copy from a shard that did not score that agency. The dated files
-    are the source of truth; this collect step derives latest.json and the badge
-    from the newest dated artifact per agency, making the result independent of
-    merge order.
+    tree, so when the shard artifacts are merged the dated files union cleanly.
+    The collect job first hydrates each durable current artifact and its compact
+    index from S3, then overlays newly scored shard files. This step verifies
+    that current pair, accepts a same-day latest/dated replacement from a shard,
+    and derives latest.json plus badges without letting bounded checkout history
+    roll an unchanged feed backward.
 
     Only registered agencies are indexed (see :func:`registered_agency_dirs`);
     indexing whatever is on disk let unlisted S3 directories resurface as live
@@ -446,32 +637,46 @@ def rebuild_index() -> Path:
         _write_json(root / "index.json", index)
         return root / "index.json"
 
-    # Runs-to-clear episodes accumulate across every agency in this one walk, so
-    # the corpus-level effort-calibration.json costs no extra artifact reads
-    # (effort_calibration.py).
+    # Finding-clearance episodes accumulate across every agency in this one walk,
+    # so the corpus-level effort-calibration.json costs no extra artifact reads
+    # (effort_calibration.py). The calibration itself requires a complete,
+    # unchanged producer contract and makes no claim about who changed a feed.
     all_episodes: list[Any] = []
     for agency_dir in registered_agency_dirs(root, log_skipped=True):
-        history = []
         name = agency_dir.name
         operating_note = ""
-        newest: dict[str, Any] | None = None
-        receipts: list[dict[str, str]] = []
-        agency_artifacts: list[dict[str, Any]] = []
-        dated_paths = sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
-        present_dates = {path.stem for path in dated_paths}
-        for dated in dated_paths:
-            artifact = _read_artifact(dated)
-            if artifact is None:
-                continue
-            name = artifact["agency"]["name"]
-            operating_note = artifact["agency"].get("operating_note", "")
-            history.append(_history_entry(artifact))
+        prior_history = (
+            previous_index.get("agencies", {}).get(agency_dir.name, {}).get("history", [])
+        )
+        prior_current = prior_history[-1] if prior_history else None
+        agency_artifacts, present_dates = _reindex_artifact_sequence(agency_dir, prior_current)
+        history = [_history_entry(artifact) for artifact in agency_artifacts]
+        receipts: list[dict[str, Any]] = []
+        previous_artifact: dict[str, Any] | None = None
+        for artifact in agency_artifacts:
             # A finding present one run and gone the next is a fix receipt
-            # (fixlog.py); this walk is already reading every dated artifact in
-            # order, so the diff costs nothing extra.
-            receipts.extend(diff_receipts(newest, artifact))
-            agency_artifacts.append(artifact)
-            newest = artifact
+            # (fixlog.py); this walk is already reading every available artifact
+            # in order, so the diff costs nothing extra.
+            receipts.extend(diff_receipts(previous_artifact, artifact))
+            previous_artifact = artifact
+        artifacts_by_date = {
+            str(artifact.get("snapshot_date") or ""): artifact for artifact in agency_artifacts
+        }
+        existing_receipts = reconcile_receipts(
+            load_fixlog_candidates(agency_dir), artifacts_by_date
+        )
+        all_receipts = merge_receipts(existing_receipts, receipts)
+        fixlog_path = agency_dir / "fixlog.json"
+        if all_receipts:
+            _write_json(fixlog_path, {"receipts": all_receipts})
+        elif fixlog_path.exists():
+            # A legacy or contradictory receipt must not remain public merely
+            # because there was nothing valid to overwrite it with this run.
+            fixlog_path.unlink()
+        newest = agency_artifacts[-1] if agency_artifacts else None
+        if newest is not None:
+            name = newest["agency"]["name"]
+            operating_note = newest["agency"].get("operating_note", "")
         # Episodes are derived per agency from its own dated sequence, then
         # pooled corpus-wide for the calibration stats.
         all_episodes.extend(agency_episodes(agency_artifacts))
@@ -480,19 +685,11 @@ def rebuild_index() -> Path:
             _write_json(agency_dir / "latest.json", newest)
             _write_badge(agency_dir, newest)
             _write_mark(agency_dir, newest)
-            # Merge, never replace: a receipt survives the dated artifacts it
-            # came from, and re-running collect duplicates nothing.
-            all_receipts = merge_receipts(load_fixlog(agency_dir), receipts)
-            if all_receipts:
-                _write_json(agency_dir / "fixlog.json", {"receipts": all_receipts})
             # S3 is the durable dated-history store. A clean CI checkout keeps
             # only the repository's cutover snapshot plus the newest two days,
             # while index.json carries the compact complete trend. Preserve
             # entries whose dated file is simply absent locally; an unreadable
             # file that is present is still dropped so corruption stays visible.
-            prior_history = (
-                previous_index.get("agencies", {}).get(agency_dir.name, {}).get("history", [])
-            )
             by_date = {
                 str(item.get("date")): item
                 for item in prior_history

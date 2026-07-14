@@ -83,41 +83,37 @@ after," not "improved because"); wants retained history (fine today, firmer afte
 FIX-02/EXP-13). **Excellence bar:** a first-time reader understands a year of a
 feed's history in four sentences, each traceable to a dated artifact.
 
-### EXP-03 — Fix-effort estimates calibrated from real outcomes
+### EXP-03 — Finding-clearance timing from compatible histories
 
-**Status: Done (2026-07-04).** `effort_calibration.py` derives per-notice-code
-runs-to-clear episodes from the same dated-artifact walk the fix log runs
-(`publish.rebuild_index`), pooling them corpus-wide into
-`data/effort-calibration.json`. An episode opens the run a code first appears
-and closes the run it is verified gone (its category measured), mirroring the
-fix log's rule (`fixlog.diff_receipts`); recurrences are separate episodes and
-never-cleared episodes are counted as "still open" but excluded from the
-median. Codes with at least `MIN_SAMPLES` (5) closed episodes earn a week-
-rounded empirical band shown beneath the hand-authored effort hint on the
-findings list, the agency top-fixes, and the brief/board "effort" lines. The
-band is additive and gated on the calibration file existing, so renders
-without it are unchanged.
+**Status: Done (2026-07-04; trust wording corrected 2026-07-14).**
+`effort_calibration.py` derives per-notice-code clearance episodes from the
+same dated-artifact walk the fix log runs (`publish.rebuild_index`), pooling
+them into `data/effort-calibration.json`. An episode opens when a code first
+appears and closes when a later compatible check measures the category and no
+longer finds the code. Producer metadata must be complete and unchanged across
+the episode. Recurrences are separate episodes; never-cleared episodes are
+counted but excluded from the median. Codes with at least `MIN_SAMPLES` (5)
+closed episodes earn a week-rounded timing band.
 
-**Pitch.** Replace hand-authored effort hints with empirical ones: how long
-agencies actually take to clear each finding, measured across the corpus.
+**Pitch.** Show how long a finding remained visible before it disappeared from
+a compatible feed history. Do not present that interval as staff effort or as
+proof that an agency or vendor made a fix.
 
-**Impact.** Every fix carries an effort hint today ("likely a one-line export
-setting"), authored by judgment. With history retained, the corpus can state the
-truth — the median feed clears `missing_feed_contact` in about two weeks;
-`route_color_contrast` lingers for months. Data-grounded effort estimates make
-the top-three list credible and help a liaison triage. Distinct from RR:R5, which
-names the export setting, not the duration.
+**Impact.** Every finding carries an authored effort hint about the likely work
+inside an export tool. Clearance timing adds a separate observation about feed
+state, with a sample size and causal caveat. It can help a liaison plan a
+follow-up cadence without pretending the monitor observed the work itself.
 
-**Shape.** A batch over the artifact history (needs FIX-02's archive or at least
-retained artifacts) measuring, per notice code, the distribution of runs-to-clear
-after a code first appears; surface an empirical effort band on each finding
-beside the hand-authored hint ("agencies usually clear this within N weeks").
-Recompute monthly with the dataset release (`dataset.py`).
+**Shape.** A batch over retained artifact history measures, per notice code,
+the distribution of compatible checks from first appearance to disappearance.
+The page states that the timing does not show who changed the feed or why.
+Intervention-linked effort belongs in the verified remediation workflow, where
+an owner action and exact-feed recheck can be connected explicitly.
 
-**Effort:** M. **Risks/deps:** hard-depends on retained history (FIX-02, EXP-13);
-low-sample codes need a confidence floor before display. **Excellence bar:** the
-effort hint on any common finding is backed by a measured clear-time distribution,
-not a guess, and refreshes monthly.
+**Effort:** M. **Risks/deps:** retained history and complete producer contracts
+are required; low-sample codes need a confidence floor. **Excellence bar:** no
+methodology transition creates a false clearance, and no public copy calls an
+unattributed feed change a fix.
 
 ### EXP-04 — Freshness that understands service calendars, not just expiry dates
 
@@ -324,22 +320,22 @@ honestly.
 bar:** a consumer can read the actual freshness track record before depending on
 the data, and the stated commitment matches measured reality.
 
-### EXP-11 — A closed-loop guided fix with a verification receipt
+### EXP-11 — A guided change with a comparable finding-clearance record
 
-**Status: Done (verified 2026-07-12).** `autofix.py` produces the
-conservative corrected feed, and `fixlog.py` mints a dated receipt only for
-findings verified gone between runs, persisted per agency in `fixlog.json`
-and rendered on the agency page.
+**Status: Done (reviewed 2026-07-14).** `autofix.py` produces a conservative
+changed feed, and `fixlog.py` records a dated clearance only when a finding is
+absent from a later run under the same complete producer contract. The record
+is persisted per agency in `fixlog.json` and makes no claim about who caused
+the change.
 
 **Pitch.** Walk a manager from a named finding, through the exact export setting
-and a safe auto-patch, to a dated receipt proving it cleared — one continuous
-loop.
+and a safe auto-patch, to a dated comparable-feed result, with action attribution
+kept in the participant's ticket or request.
 
 **Impact.** The pieces exist separately: `autofix.py` produces conservative
 patches for mechanically-certain cases; RR:R5/`tool_profiles.py` names the vendor
 export setting; RR:R4 shows cleared findings. The net-new value is stitching them
-into one guided session that ends in a linkable "fix receipt" (the
-`expansion-ideation-2026-07.md` "fix verification as a product" note). This is the
+into one guided session that ends in a linkable finding-clearance record. This is the
 retention moment the whole product is built around, made whole, while staying
 firmly on the safe side of the no-editor red line: the tool never publishes for
 the agency.
@@ -347,15 +343,16 @@ the agency.
 **Shape.** A guided flow on the agency page: (1) the finding in plain language,
 (2) the tool-specific setting (`tool_profiles.py`) or a downloadable `autofix.py`
 patch for the mechanically-safe cases only, (3) after the agency republishes, an
-auto-detected cleared-finding receipt (RR:R4) with a permalink for a board packet
-or NTD narrative (pairs with RR:E6 and EXP-09). Explicit boundary copy: the
-scorecard shows the fix; the agency owns the publish. The shipped `/check/`
-client-side page is the safe upload surface.
+auto-detected finding-clearance record (RR:R4) with a permalink for a board packet
+or NTD narrative (pairs with RR:E6 and EXP-09). Explicit boundary copy says the
+scorecard observes later feed state and a separate action record identifies who
+made the change. The shipped `/check/` client-side page is the safe upload surface.
 
 **Effort:** M. **Risks/deps:** brushes the "no feed editor" red line — the
 guardrail is that `autofix.py` stays conservative and the agency always publishes.
-**Excellence bar:** a manager goes from "what is wrong" to "proof it is fixed"
-without leaving the tool and without the tool ever touching their published feed.
+**Excellence bar:** a manager goes from "what is wrong" to a reproducible later
+feed-state check without the tool ever touching their published feed or claiming
+causality it cannot establish.
 
 ### EXP-12 — A scheduled portfolio digest for liaisons and state programs
 

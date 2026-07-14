@@ -260,8 +260,8 @@ def test_search_limit_zero_returns_none_and_catalog_is_cached() -> None:
 
 def test_search_rows_carry_the_documented_readiness_fields() -> None:
     # The MCP slim row must not lag the documented catalog contract (api.md):
-    # readiness and percentile fields ride along so an agent never has to
-    # refetch the raw catalog for them.
+    # readiness fields ride along so an agent does not have to refetch the raw
+    # catalog. Individual percentile fields are deliberately not published.
     row = call_tool("search_agencies", {"query": "davis"}, _fetch)["agencies"][0]
     for field in (
         "country",
@@ -269,9 +269,9 @@ def test_search_rows_carry_the_documented_readiness_fields() -> None:
         "subdivision_name",
         "expiry_status",
         "service_horizon_status",
-        "national_percentile",
-        "peer_percentile",
         "ntd_ready",
         "google_gate",
     ):
         assert field in row, field
+    assert row["national_percentile"] is None
+    assert row["peer_percentile"] is None

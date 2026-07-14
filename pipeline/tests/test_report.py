@@ -24,14 +24,19 @@ from scorecard_pipeline.report import (
 )
 
 FROZEN = dt.datetime(2026, 7, 10, 12, 0, tzinfo=dt.UTC)
+REPORT_RUBRIC_VERSION = "1.2"
+REPORT_SCORING_PROFILE_ID = "gtfs-scorecard-1.2"
+REPORT_VALIDATOR_VERSION = "7.0.0"
 
 
 def _artifact(**overrides: Any) -> dict[str, Any]:
     """A minimal published artifact with the fields the report reads."""
     base: dict[str, Any] = {
         "schema_version": "1.5",
-        "rubric_version": "1.2",
-        "validator_version": "7.0.0",
+        "rubric_version": REPORT_RUBRIC_VERSION,
+        "scoring_profile_id": REPORT_SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": REPORT_RUBRIC_VERSION,
+        "validator_version": REPORT_VALIDATOR_VERSION,
         "snapshot_date": "2026-07-10",
         "agency": {"id": "sampletown", "name": "Sampletown Transit"},
         "feed": {"static_url": "https://example.org/gtfs.zip", "reachable": True},
@@ -108,7 +113,23 @@ def _artifact(**overrides: Any) -> dict[str, Any]:
 
 
 def _history(*points: tuple[str, float, str]) -> list[dict[str, Any]]:
-    return [{"date": d, "score": s, "grade": g, "categories": {}} for d, s, g in points]
+    return [
+        {
+            "date": d,
+            "score": s,
+            "grade": g,
+            "rubric_version": REPORT_RUBRIC_VERSION,
+            "scoring_profile_id": REPORT_SCORING_PROFILE_ID,
+            "scoring_profile_rubric_version": REPORT_RUBRIC_VERSION,
+            "validator_version": REPORT_VALIDATOR_VERSION,
+            "categories": {
+                "correctness": 90.0,
+                "freshness": 100.0,
+                "completeness": 55.0,
+            },
+        }
+        for d, s, g in points
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -231,6 +252,16 @@ def test_build_report_data_history_change_words() -> None:
     changes = [row["change"] for row in data["history"]]
     assert changes == ["first check", "up 3.5", "no change"]
     assert data["trend_line"] == "Unchanged since 2026-07-09."
+
+
+def test_build_report_data_does_not_compare_across_producer_change() -> None:
+    hist = _history(("2026-07-09", 70.0, "C"), ("2026-07-10", 81.5, "B"))
+    hist[0]["validator_version"] = "6.0.0"
+
+    data = build_report_data(_artifact(), hist, generated_at=FROZEN)
+
+    assert "methodology changed" in data["trend_line"]
+    assert [row["change"] for row in data["history"]] == ["first check", "not compared"]
 
 
 def test_build_report_data_ntd_for_us_agency() -> None:

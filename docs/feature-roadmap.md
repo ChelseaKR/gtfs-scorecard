@@ -25,13 +25,13 @@ predictive freshness, and registry themes) has shipped and moved to
 | Liaison-ready outreach copy | outreach note block in `render_site.py` |
 | Expiry forecasting and lead-time alerts | tiered 60/30/14/7-day digest in `alerts.py` |
 | Expiry status in the API and badges | `expiry_status` in `docs/api.md`, status segment in `badge.py` |
-| Findings cleared between runs | "fixed since last check" diff in `render_site.py` |
+| Findings cleared between runs | Causal-neutral "no longer reported" diff in `render_site.py` |
 | Pin Mobility Database ids | `mdb_id` in `agencies.yaml`, exact-match discover |
 | Realtime freshness | lapsed-header framing in `rt.py` |
 | Vendor view of stale feeds | `vendors.py`, expiry aggregated by serving host |
 
 The competitive sequence from [ADR 0005](decisions/0005-competitive-positioning.md)
-also played out: fetching was hardened, coverage grew to about 1,450 published
+also played out: fetching was hardened, coverage grew to about 1,128 published
 scorecard pages and the location model became worldwide-capable, the crosswalk became an
 on-site page, and the vendor view exists as an operator surface.
 

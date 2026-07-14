@@ -27,9 +27,12 @@ def test_static_compare_search_filters_large_pickers(page: Page, base_url: str) 
     page.locator("#compare-b").select_option("yolobus")
     page.get_by_role("button", name="Compare").click()
 
-    expect(page.locator("#compare-status")).to_contain_text("Comparing Unitrans")
-    expect(page.locator(".table-scroll-hint")).to_be_visible()
-    expect(page.locator(".compare-static-table")).to_be_visible()
+    status = page.locator("#compare-status")
+    expect(status).to_contain_text(re.compile(r"Comparing Unitrans|Scorecards kept separate"))
+    assert "a=unitrans" in page.url and "b=yolobus" in page.url
+    if (status.text_content() or "").startswith("Comparing Unitrans"):
+        expect(page.locator(".table-scroll-hint")).to_be_visible()
+        expect(page.locator(".compare-static-table")).to_be_visible()
 
 
 def test_alert_form_identifies_and_focuses_invalid_fields(page: Page, base_url: str) -> None:

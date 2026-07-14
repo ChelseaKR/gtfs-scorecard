@@ -22,7 +22,13 @@ from unittest.mock import patch
 
 import pytest
 
-from scorecard_pipeline.cli import RunOutcome, _cmd_run, _liveness_unchanged
+from scorecard_pipeline import RUBRIC_VERSION, SCHEMA_VERSION, SCORING_PROFILE_ID
+from scorecard_pipeline.cli import (
+    RunOutcome,
+    _artifact_contract_current,
+    _cmd_run,
+    _liveness_unchanged,
+)
 from scorecard_pipeline.config import AGENCIES, Agency
 from scorecard_pipeline.liveness import (
     CHANGED,
@@ -31,6 +37,7 @@ from scorecard_pipeline.liveness import (
     LivenessRecord,
     load_state,
 )
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -67,6 +74,23 @@ def _run_args(**overrides: object) -> argparse.Namespace:
     return argparse.Namespace(**defaults)
 
 
+def _write_current_artifact(root: Path, **overrides: object) -> Path:
+    artifact: dict[str, object] = {
+        "schema_version": SCHEMA_VERSION,
+        "rubric_version": RUBRIC_VERSION,
+        "validator_version": VALIDATOR_VERSION,
+        "scoring_profile": {
+            "id": SCORING_PROFILE_ID,
+            "rubric_version": RUBRIC_VERSION,
+        },
+    }
+    artifact.update(overrides)
+    path = root / "data" / "artifacts" / _TEST_ID / "latest.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(artifact))
+    return path
+
+
 # ---------------------------------------------------------------------------
 # _cmd_run exit-code tests (mock _liveness_unchanged and run_agency)
 # ---------------------------------------------------------------------------
@@ -98,6 +122,29 @@ def test_skip_unchanged_proceeds_when_feed_changed(one_agency: str) -> None:
         result = _cmd_run(_run_args(), parser)
 
     assert result == 0
+
+
+def test_force_fetch_bypasses_liveness_skip(one_agency: str) -> None:
+    parser = argparse.ArgumentParser()
+    with (
+        patch("scorecard_pipeline.cli._liveness_unchanged") as liveness,
+        patch(
+            "scorecard_pipeline.cli.run_agency",
+            return_value=RunOutcome(path="/tmp/artifact.json", mirrored=False, cache_hit=False),
+        ) as score,
+    ):
+        result = _cmd_run(_run_args(force_fetch=True), parser)
+
+    assert result == 0
+    liveness.assert_not_called()
+    score.assert_called_once_with(
+        _TEST_ID,
+        datetime.date(2026, 6, 27),
+        force_fetch=True,
+        rt_samples=3,
+        rt_interval=30,
+        skip_rt=True,
+    )
 
 
 def test_skip_unchanged_proceeds_when_no_prior_record(one_agency: str) -> None:
@@ -138,8 +185,9 @@ def test_skip_unchanged_proceeds_when_feed_unreachable(one_agency: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_liveness_unchanged_returns_true_for_unchanged(one_agency: str) -> None:
+def test_liveness_unchanged_returns_true_for_unchanged(one_agency: str, tmp_path: Path) -> None:
     """When check_feed classifies the feed as UNCHANGED, _liveness_unchanged returns True."""
+    _write_current_artifact(tmp_path / "repo")
     sha = hashlib.sha256(b"same body").hexdigest()
 
     def _fake_check(url: str, record: object, **kwargs: object) -> tuple[LivenessRecord, str]:
@@ -151,8 +199,9 @@ def test_liveness_unchanged_returns_true_for_unchanged(one_agency: str) -> None:
     assert result is True
 
 
-def test_liveness_unchanged_returns_false_for_changed(one_agency: str) -> None:
+def test_liveness_unchanged_returns_false_for_changed(one_agency: str, tmp_path: Path) -> None:
     """When check_feed classifies the feed as CHANGED, _liveness_unchanged returns False."""
+    _write_current_artifact(tmp_path / "repo")
     new_sha = hashlib.sha256(b"new content").hexdigest()
 
     def _fake_check(url: str, record: object, **kwargs: object) -> tuple[LivenessRecord, str]:
@@ -164,8 +213,9 @@ def test_liveness_unchanged_returns_false_for_changed(one_agency: str) -> None:
     assert result is False
 
 
-def test_liveness_unchanged_returns_false_for_unreachable(one_agency: str) -> None:
+def test_liveness_unchanged_returns_false_for_unreachable(one_agency: str, tmp_path: Path) -> None:
     """When check_feed returns UNREACHABLE, _liveness_unchanged returns False."""
+    _write_current_artifact(tmp_path / "repo")
 
     def _fake_check(url: str, record: object, **kwargs: object) -> tuple[LivenessRecord, str]:
         return (LivenessRecord(url=url, consecutive_failures=1), UNREACHABLE)
@@ -255,6 +305,7 @@ def test_no_outcome_out_writes_nothing(one_agency: str, tmp_path: Path) -> None:
 
 def test_liveness_unchanged_persists_state(one_agency: str, tmp_path: Path) -> None:
     """The liveness record is written to data/liveness.json even on a skip."""
+    _write_current_artifact(tmp_path / "repo")
     sha = hashlib.sha256(b"content").hexdigest()
 
     def _fake_check(url: str, record: object, **kwargs: object) -> tuple[LivenessRecord, str]:
@@ -271,3 +322,46 @@ def test_liveness_unchanged_persists_state(one_agency: str, tmp_path: Path) -> N
     state = load_state(state_path)
     assert _TEST_ID in state
     assert state[_TEST_ID].checked_at == "2026-06-27T13:00:00+00:00"
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"schema_version": "0.9"},
+        {"rubric_version": "0.9"},
+        {"validator_version": "0.9.0"},
+        {"scoring_profile": "not-an-object"},
+        {"scoring_profile": {"id": "old-profile", "rubric_version": RUBRIC_VERSION}},
+        {"scoring_profile": {"id": SCORING_PROFILE_ID, "rubric_version": "0.9"}},
+    ],
+)
+def test_artifact_contract_rejects_stale_producer_inputs(
+    one_agency: str, tmp_path: Path, overrides: dict[str, object]
+) -> None:
+    _write_current_artifact(tmp_path / "repo", **overrides)
+    assert _artifact_contract_current(_TEST_ID) is False
+
+
+def test_artifact_contract_accepts_current_producer_inputs(one_agency: str, tmp_path: Path) -> None:
+    _write_current_artifact(tmp_path / "repo")
+    assert _artifact_contract_current(_TEST_ID) is True
+
+
+@pytest.mark.parametrize("contents", [None, "{", "[]"])
+def test_artifact_contract_rejects_missing_or_malformed_latest(
+    one_agency: str, tmp_path: Path, contents: str | None
+) -> None:
+    path = tmp_path / "repo" / "data" / "artifacts" / _TEST_ID / "latest.json"
+    if contents is not None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(contents)
+    assert _artifact_contract_current(_TEST_ID) is False
+
+
+def test_liveness_skips_network_when_artifact_contract_is_stale(
+    one_agency: str, tmp_path: Path
+) -> None:
+    _write_current_artifact(tmp_path / "repo", rubric_version="0.9")
+    with patch("scorecard_pipeline.liveness.check_feed") as check_feed:
+        assert _liveness_unchanged(_TEST_ID) is False
+    check_feed.assert_not_called()

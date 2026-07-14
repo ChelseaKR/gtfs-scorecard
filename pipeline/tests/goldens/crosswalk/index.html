@@ -45,18 +45,31 @@
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/how-to-read/"><span itemprop="name">How to read this</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Crosswalk</span><meta itemprop="position" content="3"></li></ol></nav>
     <article class="feed-details"><h1>How the grade maps to the standards</h1>
-<p>The scorecard's four categories are its own. This page shows how each one lines
-up with the two standards California small agencies are actually held to, so the
-grade is legible to someone who already knows those standards, and so a manager
-can move from &quot;scorecard says B&quot; to &quot;here is the official thing this relates to.&quot;</p>
+<p>The scorecard's four categories are its own. The grade and thresholds do not
+change by country. This page separates the universal GTFS references behind the
+quality lens from jurisdiction guidance that applies only in a particular place.</p>
 <p>This is a crosswalk, not a compliance determination. A category being strong here
 does not certify a feed against any guideline, and a weak one does not fail it.
 For the official assessment, use the sources linked below.</p>
 <h2 class="section-title">The standards</h2>
-<p>Three of these apply to every US agency; the fourth is the agency's own state
-guideline, shown only where one exists. On an agency page, the &quot;How this agency
-maps to the standards&quot; section shows the universal three plus the state guideline
-for that agency's state.</p>
+<p>The agency page builds its guidance in layers. Every agency receives the
+universal GTFS layer. A US agency also receives the FTA National Transit Database
+layer. California receives its published state guideline, while selected state
+programs are labelled as support resources rather than scoring authorities.</p>
+<h3 class="section-subtitle">Universal GTFS layer</h3>
+<ul>
+<li><strong><a href="https://gtfs.org/schedule/best-practices/">GTFS Schedule Best Practices</a></strong>
+and <strong><a href="https://gtfs.org/realtime/best-practices/">GTFS-Realtime Best Practices</a></strong>
+describe useful, interoperable rider information. They apply regardless of
+country.</li>
+<li>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a>
+is a qualitative check of rider-facing values against the real world. The
+scorecard automates narrower presence and plausibility proxies; it does not
+replace that human review.</li>
+<li>Trip-planner publication expectations explain why validation and current
+calendars matter to riders. They are operational context, not a legal standard.</li>
+</ul>
+<h3 class="section-subtitle">United States overlay</h3>
 <ul>
 <li><strong>The <a href="https://www.transit.dot.gov/ntd">FTA National Transit Database</a> GTFS
 requirement.</strong> Since Report Year 2023, every NTD reporter with fixed-route
@@ -65,8 +78,13 @@ annually. For RY2026, every submission must also provide a stable <code>agency_i
 value for each represented reporter, unique among those reporters, and
 crosswalk it to the reporter's NTD ID on P-50. The value does not have to equal
 the five-digit NTD ID. The scorecard treats presence as a readiness check and
-shows equality only as a neutral, zero-deduction comparison.</li>
-<li><strong>A state's own guideline or program, where it has one.</strong> California is
+shows equality only as a neutral, zero-deduction comparison. This nationwide
+layer tracks the scorecard's Correctness and Freshness categories but does not
+change their grades.</li>
+</ul>
+<h3 class="section-subtitle">State and provincial overlays</h3>
+<ul>
+<li><strong>A jurisdiction's own guideline, where one has been mapped.</strong> California is
 currently the only US state with a formal published GTFS quality <em>guideline</em>:
 the <a href="https://dot.ca.gov/cal-itp/california-transit-data-guidelines">California Transit Data Guidelines</a>
 and <a href="https://dot.ca.gov/cal-itp/california-minimum-general-transit-feed-specification-gtfs-guidelines-v2_0">Minimum GTFS Guidelines</a>,
@@ -74,20 +92,16 @@ which define &quot;Features&quot; under GTFS Schedule, Realtime, and Data Availa
 a ten-point checklist. This scorecard's rubric is anchored to them, so for
 California agencies it is shown as the guideline the score maps to.
 Other states (Colorado, Michigan, Minnesota, Oregon, Washington) run GTFS
-<em>programs</em> rather than a quality rubric; for agencies in those states the
-program is shown as a support resource, not as a standard the score maps to.
-The registry adds a state in one block.</li>
-<li>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a>:
-a qualitative check that rider-facing values match the real world (route names
-and colors, stop names and locations, trip headsigns). It deliberately does not
-cover accessibility, fares, or feed validity, which is where this scorecard adds
-to it.</li>
-<li><strong>Google Transit (Google Maps).</strong> Not a published rubric, but the de-facto
-gate beyond California: to appear and stay in Google Maps a feed has to pass
-Google's own validation and stay current. A feed that does not validate, or
-whose calendar has expired, is dropped. In practice this tracks the scorecard's
-Correctness and Freshness categories. Apple Maps applies a similar bar.</li>
+<em>programs</em> rather than a quality rubric. Their links are shown as support
+resources, explicitly not as authorities that set or certify the score.</li>
+<li>No Canadian federal or provincial compliance overlay is claimed yet. Canadian
+agencies receive the universal GTFS layer, and never the US NTD layer. A future
+Canadian overlay must cite the responsible authority before it is added.</li>
 </ul>
+<p>The source-of-truth records live in
+<code>pipeline/src/scorecard_pipeline/jurisdiction_guidance.py</code>. The browser constants
+are generated from that Python module, so static and interactive pages use the
+same applicability rules.</p>
 <h2 class="section-title">The Grading Scheme's seven fields, mapped</h2>
 <p>The <a href="https://github.com/MobilityData/gtfs-grading-scheme">MobilityData GTFS Grading Scheme</a>
 (v1.0.0) grades seven rider-facing fields by hand, comparing each against a source
@@ -190,9 +204,12 @@ accessibility and fare parts of this category go beyond the grading scheme,
 which does not assess them.</li>
 </ul>
 <h3 class="section-subtitle">Realtime quality (20%)</h3>
-<p>What it measures: the GTFS-Realtime feed reachable and fresh, the share of
-scheduled trips represented in TripUpdates, and plausible vehicle positions. Shown
-neutrally as &quot;Not yet published&quot; when an agency has no realtime feed.</p>
+<p>What it measures: each configured GTFS-Realtime feed reachable, header freshness
+for configured TripUpdates and VehiclePositions feeds, the share of scheduled
+trips represented when TripUpdates is configured, and plausible vehicle
+positions when VehiclePositions is configured. Unpublished feed kinds are
+neutral. Shown neutrally as &quot;Not yet published&quot; when an agency has no realtime
+feed.</p>
 <ul>
 <li><strong>California Guidelines:</strong> the GTFS Realtime Features — standard formats at a
 stable URL, with high uptime and update frequency.</li>
@@ -200,7 +217,8 @@ stable URL, with high uptime and update frequency.</li>
 </ul>
 <h2 class="section-title">Where the scorecard and the standards differ</h2>
 <ul>
-<li>The scorecard is automated and runs daily; the Grading Scheme's accuracy checks
+<li>The scorecard's automated run is scheduled daily, and its public status page
+records when each run actually completes. The Grading Scheme's accuracy checks
 are manual by design. The scorecard approximates them, it does not replace them.</li>
 <li>The scorecard weights and grades; the California Guidelines are pass/fail per
 Feature. A good grade is encouragement toward the Features, not a substitute for

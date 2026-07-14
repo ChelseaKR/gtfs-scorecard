@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agency map — GTFS Scorecard</title>
-  <meta name="description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
+  <meta name="description" content="A world map of the feed scorecards currently covered, labelled and coloured by GTFS data quality grade.">
   <link rel="canonical" href="https://gtfsscorecard.org/map/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Agency map — GTFS Scorecard">
-  <meta property="og:description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
+  <meta property="og:description" content="A world map of the feed scorecards currently covered, labelled and coloured by GTFS data quality grade.">
   <meta property="og:url" content="https://gtfsscorecard.org/map/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -32,7 +32,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -40,17 +40,17 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Agency map</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Agency map.</h1>
-    <p class="page-lede">Every tracked agency with a locatable
-    <abbr title="General Transit Feed Specification">GTFS</abbr> feed, placed at its
-    service area, labelled with its grade letter and coloured by grade. 3 agencies
+    <p class="page-lede">Every tracked feed scorecard with locatable
+    <abbr title="General Transit Feed Specification">GTFS</abbr> stops, placed at the feed's
+    service area, labelled with its grade letter and coloured by grade. 3 feed scorecards
     are on the map. Select a point for its grade and a link to the scorecard, or work
     the list below.</p>
-    <p class="page-lede">To see the actual route lines instead of one point per agency,
+    <p class="page-lede">To see the actual route lines instead of one point per feed scorecard,
     open <a href="/routes/">every route on one map</a>.</p>
     <a class="skip-link-inline" href="#agency-list">Skip to the agency list</a>
     <form class="map-filters" aria-label="Filter the map and list">
@@ -69,23 +69,23 @@
       <button type="button" class="button button-secondary" id="map-load">
         Load interactive map
       </button>
-      <p id="map-load-status" class="fineprint" role="status">The agency list is ready now.
+      <p id="map-load-status" class="fineprint" role="status">The scorecard list is ready now.
         Load the map only when you want the geographic view. It uses additional data.</p>
     </div>
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
-      The interactive map has not loaded. The agency list below carries the same agencies,
+      The interactive map has not loaded. The scorecard list below carries the same feed records,
       grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
-      <h2 class="section-title" id="agency-list-h">Every agency on the map</h2>
+      <h2 class="section-title" id="agency-list-h">Every feed scorecard on the map</h2>
       <p class="map-count" role="status"><span id="map-result-count">3</span> of 3
-        agencies shown.</p>
+        feed scorecards shown.</p>
       <table class="leaderboard map-table">
-        <caption class="visually-hidden">Agencies on the coverage map, with grade, location,
+        <caption class="visually-hidden">Feed scorecards on the coverage map, with grade, location,
           and score. Use the grade and location filters above to narrow the list.</caption>
-        <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
+        <thead><tr><th scope="col">Scorecard</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
         <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
       </table>
@@ -425,39 +425,64 @@
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Request a one-off score</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

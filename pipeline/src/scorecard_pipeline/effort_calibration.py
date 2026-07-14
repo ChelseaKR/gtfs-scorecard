@@ -1,11 +1,12 @@
-"""Empirical fix-effort bands, calibrated from observed runs-to-clear.
+"""Empirical clearance-timing bands, calibrated from observed feed checks.
 
 The hand-authored effort hint next to each fix ("about an hour in your export
 tool") is an editor's guess. Once the corpus has accumulated dated artifacts it
-can say something the guess cannot: how long agencies *actually* took to clear
-this exact notice code. This module derives that from the same dated-artifact
-walk the fix log already runs (publish.rebuild_index), turning the history into
-per-code runs-to-clear distributions.
+can say how long a finding remained visible before a later compatible check no
+longer found it. It cannot establish who changed the feed, whether the change
+was intentional, or how much staff effort it took. This module derives timing
+from the same dated-artifact walk the fix log already runs
+(publish.rebuild_index), turning history into per-code clearance distributions.
 
 An episode is one lifetime of a notice code on one feed: it opens the run the
 code first appears and closes the run it disappears *while its category is
@@ -14,8 +15,11 @@ uses (fixlog.diff_receipts). A code that clears, returns, and clears again is
 two episodes. An episode that never closes is "still open": it is honest to
 count it, but it is not a fix, so it is excluded from the median.
 
-Only codes with at least ``MIN_SAMPLES`` closed episodes earn a band; below that
-floor the sample is too thin to quote and the hand-authored hint stands alone.
+Producer metadata must be complete and unchanged throughout an episode. A
+methodology change resets open episodes instead of manufacturing a clearance.
+Only codes with at least ``MIN_SAMPLES`` closed episodes earn a band; below
+that floor the sample is too thin to quote and the hand-authored hint stands
+alone.
 """
 
 from __future__ import annotations
@@ -26,6 +30,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from .comparisons import producer_contract
 from .fixlog import _codes_with_category, _measured_keys
 
 # A code needs at least this many observed (closed) episodes before its
@@ -34,11 +39,12 @@ MIN_SAMPLES = 5
 
 # Rides along in the written data file so a future reader knows how to read it.
 CALIBRATION_SCHEMA_NOTE = (
-    "Per notice-code runs-to-clear stats derived from dated artifact history. "
-    "median_days/p25/p75 are over closed episodes (a code seen, then verified "
-    "gone while its category was measured); still_open counts never-cleared "
-    f"episodes and is excluded from the median. Codes with fewer than "
-    f"{MIN_SAMPLES} closed episodes get no effort band."
+    "Per notice-code clearance timing derived from dated artifact history under "
+    "one complete producer contract. median_days/p25/p75 are over closed episodes "
+    "(a code seen, then absent while its category was measured); still_open counts "
+    "never-cleared episodes and is excluded from the median. A disappearance does "
+    "not prove who acted, why it changed, or staff effort. Codes with fewer than "
+    f"{MIN_SAMPLES} closed episodes get no timing band."
 )
 
 
@@ -66,8 +72,26 @@ def agency_episodes(artifacts: Iterable[dict[str, Any]]) -> list[Episode]:
     open_first_seen: dict[str, str] = {}
     open_cat: dict[str, str] = {}
     episodes: list[Episode] = []
+    active_contract: tuple[str, str, str, str] | None = None
 
     for artifact in artifacts:
+        contract = producer_contract(artifact)[:4]
+        if not all(contract):
+            # Incomplete provenance cannot support a timing claim. Drop any
+            # open episode so a later complete artifact cannot appear to close
+            # a finding produced under an unknown contract.
+            open_first_seen.clear()
+            open_cat.clear()
+            active_contract = None
+            continue
+        if contract != active_contract:
+            # A scoring/validator contract change can add or remove findings by
+            # itself. Start observation fresh rather than calling that a feed
+            # clearance. Measured-category gaps do not reset the core contract;
+            # category-specific closure still requires a measured check below.
+            open_first_seen.clear()
+            open_cat.clear()
+            active_contract = contract
         date = str(artifact.get("snapshot_date", ""))
         present = _codes_with_category(artifact)
         measured = _measured_keys(artifact)
@@ -155,10 +179,11 @@ def _weeks(days: int) -> int:
 
 
 def band_text(stats: Mapping[str, int]) -> str | None:
-    """A plain-language empirical effort band, or ``None`` below the sample floor.
+    """A plain-language clearance-timing band, or ``None`` below the sample floor.
 
     Week-rounded from the median so the number reads like an estimate, not a
-    false precision, and names the sample size so the reader can weigh it.
+    false precision. The copy describes only observed feed state and explicitly
+    avoids inferring an intervention or amount of staff effort.
     """
     samples = int(stats.get("samples", 0))
     median = stats.get("median_days")
@@ -167,6 +192,6 @@ def band_text(stats: Mapping[str, int]) -> str | None:
     weeks = _weeks(int(median))
     unit = "week" if weeks == 1 else "weeks"
     return (
-        f"Agencies here usually clear this within about {weeks} {unit} "
-        f"(based on {samples} observed fixes)."
+        f"In {samples} compatible feed histories, this finding disappeared after "
+        f"about {weeks} {unit} (median). That does not show who changed it or why."
     )

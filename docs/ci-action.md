@@ -28,7 +28,7 @@ jobs:
   gtfs-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: ChelseaKR/gtfs-scorecard@v2
+      - uses: ChelseaKR/gtfs-scorecard@v1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           name: Example Transit
@@ -37,8 +37,8 @@ jobs:
           min-days-to-expiry: 14
 ```
 
-`@v2` follows the latest v2 release. Pin a full version tag (`@v2.0.0`) or a
-commit SHA when you want an exact, unchanging contract.
+`@v1` follows the latest compatible v1 release. Pin the current full version
+tag (`@v1.2.0`) or a commit SHA when you want an exact, unchanging contract.
 
 ## Inputs
 
@@ -52,7 +52,7 @@ commit SHA when you want an exact, unchanging contract.
 | `html` | no | _(skip)_ | Path to also write a standalone HTML scorecard, relative to the workspace. |
 | `json` | no | runner temporary file | Path for the complete machine-readable scorecard artifact. |
 | `summary` | no | `true` | Write a plain-language scorecard to the GitHub job summary. |
-| `ref` | no | _(action version)_ | Ref of gtfs-scorecard to install the scorer from. Defaults to the version the action was called as, so `@v2` installs the v2 scorer. |
+| `ref` | no | _(ignored)_ | Deprecated compatibility input. The scorer is bundled with the Action release and always matches the selected Action ref. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor
 `min-days-to-expiry` set, the action prints the scorecard and always passes,
@@ -66,7 +66,7 @@ later steps can upload or inspect it even when the gate fails.
 
 ```yaml
       - id: gtfs
-        uses: ChelseaKR/gtfs-scorecard@v2
+        uses: ChelseaKR/gtfs-scorecard@v1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: B
@@ -88,7 +88,7 @@ a concise workflow annotation while preserving the full result file.
 Set `html` to keep the rendered scorecard as a build artifact:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v2
+      - uses: ChelseaKR/gtfs-scorecard@v1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: C
@@ -106,10 +106,10 @@ most want to read it.
 ## How it runs
 
 The action is a composite that sets up Java 17 (the validator is a Java tool)
-and `uv`, then runs the published `scorecard` CLI straight from this
-repository with `uvx`. No separate install or container build is needed. The
-first run downloads the validator jar, so expect a slower cold start and faster
-warm runs.
+and `uv`, then runs the bundled `scorecard` CLI from the same immutable Action
+release. It does not clone the service repository a second time. Release tags
+carry a bounded Action distribution tree rather than the scored artifact corpus.
+The first run downloads the validator jar, so expect a slower cold start.
 
 ## Notes
 

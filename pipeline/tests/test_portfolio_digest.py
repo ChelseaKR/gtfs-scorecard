@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+from typing import Any
 
+import pytest
+
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.config import artifacts_dir
 from scorecard_pipeline.metrics import expiry_status
 from scorecard_pipeline.portfolio_digest import (
@@ -14,6 +18,7 @@ from scorecard_pipeline.portfolio_digest import (
     save_snapshot,
 )
 from scorecard_pipeline.rollups import Rollup
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 TODAY = dt.date(2026, 6, 19)
 
@@ -24,6 +29,12 @@ def write_latest(
     score: float,
     grade: str,
     days: int | None = None,
+    *,
+    rubric_version: str = RUBRIC_VERSION,
+    scoring_profile_id: str = SCORING_PROFILE_ID,
+    scoring_profile_rubric_version: str = RUBRIC_VERSION,
+    validator_version: str = VALIDATOR_VERSION,
+    measured_categories: tuple[str, ...] = ("correctness", "freshness", "completeness"),
 ) -> None:
     path = artifacts_dir() / agency_id
     path.mkdir(parents=True, exist_ok=True)
@@ -32,21 +43,66 @@ def write_latest(
             {
                 "agency": {"id": agency_id, "name": name},
                 "snapshot_date": "2026-06-19",
+                "rubric_version": rubric_version,
+                "scoring_profile": {
+                    "id": scoring_profile_id,
+                    "rubric_version": scoring_profile_rubric_version,
+                },
+                "validator_version": validator_version,
                 "overall": {"score": score, "grade": grade},
-                "categories": {"freshness": {"details": {"days_until_expiry": days}}},
+                "categories": {
+                    "correctness": {
+                        "status": (
+                            "measured" if "correctness" in measured_categories else "not_measured"
+                        )
+                    },
+                    "freshness": {
+                        "status": (
+                            "measured" if "freshness" in measured_categories else "not_measured"
+                        ),
+                        "details": {"days_until_expiry": days},
+                    },
+                    "completeness": {
+                        "status": (
+                            "measured" if "completeness" in measured_categories else "not_measured"
+                        )
+                    },
+                    "realtime": {
+                        "status": (
+                            "measured" if "realtime" in measured_categories else "not_yet_published"
+                        )
+                    },
+                },
                 "top_fixes": [],
             }
         )
     )
 
 
-def snap(score: float, grade: str, days: int | None) -> dict[str, object]:
+def snap(
+    score: float,
+    grade: str,
+    days: int | None,
+    *,
+    rubric_version: str = RUBRIC_VERSION,
+    scoring_profile_id: str = SCORING_PROFILE_ID,
+    scoring_profile_rubric_version: str = RUBRIC_VERSION,
+    validator_version: str = VALIDATOR_VERSION,
+    measured_categories: tuple[str, ...] = ("correctness", "freshness", "completeness"),
+) -> dict[str, Any]:
     """A prior-week member state in the shape the digest persists."""
     return {
         "score": score,
         "grade": grade,
         "days_until_expiry": days,
         "expiry_status": expiry_status(days),
+        "producer_contract": {
+            "rubric_version": rubric_version,
+            "scoring_profile_id": scoring_profile_id,
+            "scoring_profile_rubric_version": scoring_profile_rubric_version,
+            "validator_version": validator_version,
+            "measured_categories": list(measured_categories),
+        },
     }
 
 
@@ -159,5 +215,77 @@ def test_snapshot_round_trip_persists_members() -> None:
     assert path.exists()
     reloaded = load_snapshot(ALL)
     assert reloaded == digest.snapshot
+    assert reloaded["a"]["producer_contract"] == {
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile_id": SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": RUBRIC_VERSION,
+        "validator_version": VALIDATOR_VERSION,
+        "measured_categories": ["correctness", "freshness", "completeness"],
+    }
     # An absent state file is a first run, not an error.
     assert load_snapshot(Rollup(id="never", name="Never", member_ids=())) == {}
+
+
+def test_legacy_snapshot_restarts_baseline_without_claiming_movement() -> None:
+    write_latest("a", "A Transit", 90.0, "A", days=-5)
+    legacy = snap(40.0, "F", 120)
+    legacy.pop("producer_contract")
+
+    digest = build_portfolio_digest(ALL, today=TODAY, previous_snapshot={"a": legacy})
+
+    assert digest.first_run is False
+    assert digest.baseline_restarted is True
+    assert digest.baseline_reset_count == 1
+    assert digest.compared_member_count == 0
+    assert digest.movements == []
+    text = render_portfolio_digest(digest)
+    assert "Baseline restarted" in text
+    assert "No week-over-week changes are claimed" in text
+    assert "held steady" not in text
+    assert "expired this week" not in text.lower()
+
+
+@pytest.mark.parametrize(
+    ("field", "incompatible_value"),
+    [
+        ("rubric_version", "0.9"),
+        ("scoring_profile_id", "another-profile"),
+        ("scoring_profile_rubric_version", "0.9"),
+        ("validator_version", "7.0.0"),
+        ("measured_categories", ["correctness", "freshness"]),
+    ],
+)
+def test_changed_producer_contract_restarts_baseline(
+    field: str, incompatible_value: str | list[str]
+) -> None:
+    write_latest("a", "A Transit", 90.0, "A", days=120)
+    previous_state = snap(40.0, "F", -5)
+    previous_state["producer_contract"][field] = incompatible_value
+
+    digest = build_portfolio_digest(ALL, today=TODAY, previous_snapshot={"a": previous_state})
+
+    assert digest.baseline_restarted is True
+    assert digest.baseline_reset_count == 1
+    assert digest.movements == []
+
+
+def test_partial_contract_reset_only_claims_over_comparable_members() -> None:
+    write_latest("a", "A Transit", 80.0, "B", days=120)
+    write_latest("b", "B Transit", 90.0, "A", days=120)
+    legacy_b = snap(40.0, "F", -5)
+    legacy_b.pop("producer_contract")
+    previous = {
+        "a": snap(80.0, "B", 120),
+        "b": legacy_b,
+    }
+
+    digest = build_portfolio_digest(ALL, today=TODAY, previous_snapshot=previous)
+
+    assert digest.baseline_restarted is False
+    assert digest.compared_member_count == 1
+    assert digest.baseline_reset_count == 1
+    assert digest.movements == []
+    text = render_portfolio_digest(digest)
+    assert "All 1 comparable feed(s)" in text
+    assert "All 2 feed(s)" not in text
+    assert "1 other feed(s) started a new baseline" in text

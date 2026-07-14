@@ -26,13 +26,13 @@ from typing import Any
 import yaml
 
 from . import SCHEMA_VERSION
-from ._stats import _percentile
 from .alerts import build_digest
+from .comparisons import build_comparison_cohort
 from .config import artifacts_dir, repo_root
 from .metrics import expiry_status
 from .ntd import assess_shapes_readiness
 from .publish import RESERVED_ARTIFACT_DIRS, _write_json
-from .ridership import annual_trips_for
+from .ridership import annual_trips_for, duplicate_ntd_reporter_ids, normalize_ntd_id
 
 
 @dataclass(frozen=True)
@@ -163,8 +163,8 @@ def build_rollup(
 ) -> dict[str, Any]:
     """Aggregate member artifacts into one rollup payload.
 
-    Members are sorted worst-score-first so the agencies needing attention sit
-    at the top, which is the order a liaison reads them in. "Needs attention"
+    Members needing attention sit at the top, which is the order a liaison
+    reads them in. Other members are alphabetical. "Needs attention"
     means something is actually wrong or about to break — the feed is expiring
     or the grade regressed (the same signal that triggers an email digest) —
     not merely "below a B", so the flag points at the calls worth making first.
@@ -175,15 +175,15 @@ def build_rollup(
     docs/decisions/0021-ridership-weighting.md), the attention group is ordered
     by annual rider-trips first, so a high-ridership feed that is expiring ranks
     above a tiny one before falling back to score — the same call is worth making
-    first when more riders depend on it. This is a tiebreak on ordering only, not
-    a re-scoring: the framing stays "worst first, here to help", never a ranking
-    of agencies against each other. Non-attention members keep their plain
-    worst-score-first order, and with no ridership data the order is unchanged.
+    first when more riders depend on it. This is a worklist order only, not a
+    ranking of agencies against each other.
     """
     attention = attention or {}
     member_ids = resolve_member_ids(rollup)
     members: list[dict[str, Any]] = []
-    fix_counter: Counter[tuple[str, str]] = Counter()
+    comparison_records: list[dict[str, Any]] = []
+    fixes_by_id: dict[str, list[dict[str, Any]]] = {}
+    ntd_id_by_member: dict[str, str] = {}
 
     for agency_id in member_ids:
         latest = _load_latest(agency_id)
@@ -193,18 +193,20 @@ def build_rollup(
             continue
         overall = latest["overall"]
         fixes = latest.get("top_fixes", [])
-        for fix in fixes:
-            fix_counter[(fix.get("code", ""), fix.get("fix", ""))] += 1
+        fixes_by_id[str(latest["agency"]["id"])] = fixes
         days = (
             latest.get("categories", {})
             .get("freshness", {})
             .get("details", {})
             .get("days_until_expiry")
         )
-        ntd_id = (latest.get("ntd_id_alignment") or {}).get("ntd_id")
+        member_id = str(latest["agency"]["id"])
+        ntd_id = normalize_ntd_id((latest.get("ntd_id_alignment") or {}).get("ntd_id"))
+        if ntd_id:
+            ntd_id_by_member[member_id] = ntd_id
         members.append(
             {
-                "id": latest["agency"]["id"],
+                "id": member_id,
                 "name": latest["agency"]["name"],
                 "score": overall["score"],
                 "grade": overall["grade"],
@@ -215,23 +217,74 @@ def build_rollup(
                 "expiry_status": expiry_status(days),
                 "top_fix": fixes[0]["fix"] if fixes else None,
                 "shapes_status": _shapes_status(latest),
-                "annual_trips": annual_trips_for({"ntd_id": ntd_id}, ridership),
+                # Filled after every member is loaded, when duplicate reporter
+                # ids can be quarantined rather than double-attributed.
+                "annual_trips": None,
+            }
+        )
+        categories = latest.get("categories") or {}
+        comparison_records.append(
+            {
+                "id": latest["agency"]["id"],
+                "name": latest["agency"]["name"],
+                "score": overall["score"],
+                "grade": overall["grade"],
+                "date": latest.get("snapshot_date"),
+                "rubric_version": latest.get("rubric_version"),
+                "scoring_profile_id": (latest.get("scoring_profile") or {}).get("id"),
+                "scoring_profile_rubric_version": (latest.get("scoring_profile") or {}).get(
+                    "rubric_version"
+                ),
+                "validator_version": latest.get("validator_version"),
+                "feed_sha256": (latest.get("feed") or {}).get("sha256"),
+                "days_until_expiry": days,
+                **{
+                    key: (
+                        categories.get(key, {}).get("score")
+                        if categories.get(key, {}).get("status") == "measured"
+                        else None
+                    )
+                    for key in ("correctness", "freshness", "completeness", "realtime")
+                },
             }
         )
 
+    # NTD annual trips describe one reporter, not one GTFS feed. If more than
+    # one rollup member claims the same reporter id, every match is ambiguous:
+    # leave all of them unweighted rather than assigning the full rider count
+    # to each feed or guessing which record is canonical.
+    from .config import AGENCIES
+
+    ntd_id_counts = Counter(ntd_id_by_member.values())
+    ambiguous_ntd_ids = duplicate_ntd_reporter_ids(AGENCIES.values())
+    ambiguous_ntd_ids.update(
+        ntd_id for ntd_id, member_count in ntd_id_counts.items() if member_count > 1
+    )
+    for member in members:
+        member_ntd_id = ntd_id_by_member.get(str(member["id"]))
+        if member_ntd_id and member_ntd_id not in ambiguous_ntd_ids:
+            member["annual_trips"] = annual_trips_for({"ntd_id": member_ntd_id}, ridership)
+
     # Attention-needing agencies first (a call worth making). Within that group,
-    # order by annual rider-trips descending when ridership data is present (ADR
-    # 0021) so a high-ridership feed outranks a tiny one, then worst-score-first;
-    # non-attention members stay plain worst-score-first. With no ridership data
-    # every annual_trips is None (treated as 0), leaving the order unchanged.
-    def _sort_key(m: dict[str, Any]) -> tuple[int, int, float, str]:
+    # order by annual rider-trips descending when available, then name. Members
+    # without an attention signal are alphabetical, never score-ranked.
+    def _sort_key(m: dict[str, Any]) -> tuple[int, int, str, str]:
         if m["needs_attention"]:
-            return (0, -(m["annual_trips"] or 0), m["score"], m["id"])
-        return (1, 0, m["score"], m["id"])
+            return (0, -(m["annual_trips"] or 0), str(m["name"]).casefold(), m["id"])
+        return (1, 0, str(m["name"]).casefold(), m["id"])
 
     members.sort(key=_sort_key)
-    scores = [float(m["score"]) for m in members]
-    grades = Counter(str(m["grade"]) for m in members)
+    comparable_records, comparison = build_comparison_cohort(
+        comparison_records,
+        agencies=AGENCIES.values() if AGENCIES else None,
+    )
+    comparable_ids = {str(record["id"]) for record in comparable_records}
+    fix_counter: Counter[tuple[str, str]] = Counter()
+    for agency_id in comparable_ids:
+        for fix in fixes_by_id.get(agency_id, []):
+            fix_counter[(fix.get("code", ""), fix.get("fix", ""))] += 1
+    scores = [float(m["score"]) for m in comparable_records]
+    grades = Counter(str(m["grade"]) for m in comparable_records)
     common = [
         {"code": code, "fix": fix, "agencies": n}
         for (code, fix), n in fix_counter.most_common()
@@ -265,6 +318,8 @@ def build_rollup(
         "agency_count": len(members),
         "average_score": round(sum(scores) / len(scores), 1) if scores else None,
         "grade_distribution": {g: grades[g] for g in sorted(grades)},
+        "comparison": comparison,
+        "state_percentile": None,
         "needs_attention": sum(1 for m in members if m["needs_attention"]),
         "expired": {"lapsed": lapsed, "stale": stale, "total": lapsed + stale},
         "shapes_readiness": shapes_readiness,
@@ -301,7 +356,7 @@ def _csv_cell(value: Any) -> str:
 def rollup_csv(payload: dict[str, Any]) -> str:
     """Render a rollup's members as CSV for a liaison's report or spreadsheet.
 
-    Same order as the JSON (attention first, then worst score), so a program can
+    Same order as the JSON (attention first, then impact/name), so a program can
     work the list top to bottom. Deterministic, so re-running publish is a no-op.
     """
     buf = io.StringIO()
@@ -330,29 +385,9 @@ def publish_rollups(generated_at: dt.datetime | None = None) -> list[Path]:
 
     ridership = load_ridership(repo_root() / "data" / "ntd-ridership.csv")
 
-    # Pass 1: build every payload first. A cross-program percentile (below)
-    # needs every state's average_score before any one of them can be scored
-    # against the rest, the same reason directory.add_percentiles works in two
-    # passes over agencies.
+    # Build every payload before writing so the JSON and index share one
+    # generated timestamp and one guarded comparison policy.
     built = [(rollup, build_rollup(rollup, when, attention, ridership)) for rollup in rollups]
-
-    # A neutral "how this program compares" read (E12/03-A7), scoped to genuine
-    # per-state cohorts only (Rollup.state is set): "all tracked agencies" and a
-    # named cohort like a single county are not peers of a 50-state programme,
-    # so mixing them in would misstate what the percentile is against. Framed
-    # the same way the per-agency page already does ("ahead of N% of..."), never
-    # as a rank, per the standing no-shaming constraint on any distribution view.
-    state_scores = [
-        payload["average_score"]
-        for rollup, payload in built
-        if rollup.state and payload["average_score"] is not None
-    ]
-    for rollup, payload in built:
-        payload["state_percentile"] = (
-            _percentile(payload["average_score"], state_scores)
-            if rollup.state and payload["average_score"] is not None
-            else None
-        )
 
     written: list[Path] = []
     index: list[dict[str, Any]] = []
@@ -370,6 +405,7 @@ def publish_rollups(generated_at: dt.datetime | None = None) -> list[Path]:
                 "name": rollup.name,
                 "agency_count": payload["agency_count"],
                 "average_score": payload["average_score"],
+                "comparison_eligible": payload["comparison"]["eligible_count"],
                 "needs_attention": payload["needs_attention"],
                 "expired": payload["expired"]["total"],
             }

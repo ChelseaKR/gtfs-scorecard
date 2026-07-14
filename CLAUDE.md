@@ -3,7 +3,7 @@
 > Root instruction file for the `gtfs-scorecard` repo. Read fully before writing code.
 
 > **Status (2026-07):** the four build phases below have shipped, and the pilot
-> grew into a live service: ~1,450 published scorecards, still concentrated in
+> grew into a live service: ~1,128 published scorecards, still concentrated in
 > the US and Canada and now carrying official canaries in Japan, Australia, and
 > Ireland, scored daily at gtfsscorecard.org, with a versioned read API, a GitHub
 > Marketplace action, and an MCP server. This file remains the product spec
@@ -172,6 +172,6 @@ openings; do not over-polish.
 ## Open questions to resolve early (all resolved)
 
 1. Feed URLs and licenses for Unitrans and Yolobus — resolved in `docs/feeds.md`.
-2. Pilot GTFS-RT — Yolobus publishes all three RT feeds and the Realtime category scores them; Unitrans publishes none and is shown neutrally, per the rubric.
+2. Pilot GTFS-RT — Yolobus publishes three open RT feeds and the Realtime category scores them. Unitrans publishes key-gated UmoIQ feeds; they remain unmeasured until access is available, and nothing is deducted.
 3. Validator runtime — Actions-cron with a sharded matrix; see `docs/decisions/0001-validator-runtime.md`.
 4. Caltrans/Cal-ITP guidance — cited throughout `docs/rubric.md` and mapped in `docs/crosswalk.md`.

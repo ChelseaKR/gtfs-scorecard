@@ -167,7 +167,7 @@ jobs:
           aws s3 sync data/artifacts/rollups "${artifact_uri}/rollups" \
             --cache-control "max-age=300" --only-show-errors
           aws s3 sync data/artifacts/changes "${artifact_uri}/changes" \
-            --cache-control "max-age=300" --only-show-errors
+            --delete --cache-control "max-age=300" --only-show-errors
 
           # index.json is the commit pointer and goes last, only when its bytes
           # changed. If-Match makes the final write itself conditional on the

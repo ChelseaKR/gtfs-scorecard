@@ -16,10 +16,9 @@ from .instance import SITE_NAME as _SITE_NAME
 # 1.8: additive scoring_profile metadata on every per-agency artifact. The
 # profile identifies the project-authored scoring contract independently from
 # the artifact schema and states its provenance and limits explicitly.
-# 1.7: additive state_percentile on per-state rollup payloads (None on "all"
-# and named-cohort rollups, which are not peers of a 50-state comparison), so a
-# program page can say how its average score compares to other states'
-# programs -- framed as a neutral distribution read, never a rank.
+# 1.7 introduced state_percentile on per-state rollups. Public percentile
+# claims are now retired; current rollups retain that key as null for v1
+# compatibility and carry guarded comparison cohort metadata instead.
 # 1.6: additive measurement-confidence read on every artifact (a confidence
 # block: level, measured vs total categories, fetch source, realtime sampling
 # depth, snapshot age, plain-language notes), so a reader can tell a
