@@ -10,6 +10,10 @@ The site already offers a printable board one-pager at
 same published artifact fields, so the file and the live page can never tell
 different stories.
 
+See the [live Unitrans board one-pager](https://gtfsscorecard.org/agency/unitrans/board/)
+for a public example. The workshop package also includes a custom-branded,
+self-contained sample generated with this tool.
+
 ## What the report contains
 
 - The agency name, check date, overall grade, and trend since the last check.
@@ -19,8 +23,8 @@ different stories.
   never counts against the grade.
 - The top three things to fix, each with its estimated effort, framed so a
   board can see what it is approving.
-- NTD GTFS readiness for US agencies: the published, valid, and current
-  pillars, plus the shapes.txt line for the FTA requirement that reaches
+- NTD GTFS readiness for US agencies: the published, valid, current, and
+  agency_id-presence pillars, plus the shapes.txt line for the FTA requirement that reaches
   Reduced, Rural, and Tribal reporters in Report Year 2026. Grant reviewers
   and boards ask about this first, so it gets its own page.
 - Score history as a table, once the agency has been checked more than once.

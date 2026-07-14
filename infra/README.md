@@ -6,9 +6,9 @@ Pages can carry.
 
 Status: **partly applied.** The artifacts CDN (`artifacts/`) and the
 feed-health digest (`alerts/`, documented in the deploy runbook) are deployed
-and live on the maintainer's account; the fan-out compute (`compute/`), the
-self-serve submission form (`submit/`), and instant scoring (`instant-score/`)
-are written but not yet applied. None of this is needed to keep the site up:
+and live on the maintainer's account, as is the self-serve submission form
+(`submit/`). The fan-out compute (`compute/`) and instant scoring
+(`instant-score/`) are written but not yet applied. None of this is needed to keep the site up:
 the public scorecard runs on GitHub Actions plus Pages at zero cost (ADR 0001,
 ADR 0002). The unapplied modules are here so the move is a `terraform apply`
 and a secret, not a rewrite, the day the agency count (or, for instant-score,
@@ -31,8 +31,9 @@ reference.
   verified for `gtfsscorecard.org` and out of the sandbox** (see
   `docs/decisions/0004-opt-in-alerts.md` and the deploy runbook).
 - `submit/` — a Lambda the self-serve "add your agency" form posts to, which
-  opens a pull request on the repo. Written; not yet applied (the form falls
-  back to the manual pull-request walkthrough until it is).
+  opens a pull request on the repo. **Deployed** on the maintainer's account and
+  wired into `web/src/config.js`; forks fall back to the manual pull-request
+  walkthrough until their own endpoint is configured.
 - `compute/` — EventBridge schedule, SQS queue, and a container-image Lambda
   that runs the validator, for when the daily run outgrows the Actions matrix
   (Year 2). Scaffolding with the wiring and IAM; the worker image is built from

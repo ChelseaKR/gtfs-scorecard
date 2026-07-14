@@ -5,17 +5,38 @@
     "reliable": 1,
     "spotty": 0
   },
-  "generated_at": "2026-07-10T19:45:48+00:00",
+  "countries": [
+    {
+      "agencies": 1,
+      "country_code": "US",
+      "country_name": "United States",
+      "median_uptime_pct": 100.0,
+      "reliable": 1,
+      "subdivisions": [
+        {
+          "agencies": 1,
+          "median_uptime_pct": 100.0,
+          "reliable": 1,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-07-14T03:48:50+00:00",
   "license": "CC-BY-4.0",
   "median_lag_seconds": 10,
   "median_uptime_pct": 100.0,
   "monitored_count": 1,
   "most_reliable": [
     {
+      "country": "US",
       "id": "yolobus",
       "median_lag_seconds": 10,
       "name": "Yolobus (Yolo County Transportation District)",
       "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": "",
       "uptime_pct": 100.0
     }
   ],

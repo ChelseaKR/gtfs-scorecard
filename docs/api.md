@@ -313,9 +313,10 @@ Three readiness fields ride on every catalog and directory row and are worth
 consuming directly rather than re-deriving:
 
 - `ntd_ready` (string): readiness for the FTA NTD GTFS requirement, rolled up
-  from the published/valid/current pillars. One of `ready` (all three pillars
-  hold), `at_risk` (a recoverable gap: validator errors, or service running
-  out soon), `not_ready` (unreachable, lapsed, or no readable end date). A
+  from the published/valid/current/agency_id pillars. One of `ready` (all four
+  pillars hold), `at_risk` (a recoverable gap: validator errors, service running
+  out soon, or identity not checked), `not_ready` (unreachable, lapsed, no
+  readable end date, or no nonblank agency_id). A
   data-quality heads-up, never an official determination; the agency's own
   D-10 certification is the official one.
 - `google_gate` (string): whether the feed clears the Google/Apple Maps

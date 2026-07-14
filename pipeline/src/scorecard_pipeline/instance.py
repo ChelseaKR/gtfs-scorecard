@@ -52,7 +52,7 @@ DEFAULTS = InstanceConfig(
     base_url="https://gtfsscorecard.org",
     site_name="GTFS Scorecard",
     org_name="GTFS Scorecard",
-    contact_email="hello@gtfsscorecard.org",
+    contact_email="ckellyreif@gmail.com",
     tagline="An open-source GTFS quality scorecard for small transit agencies.",
 )
 

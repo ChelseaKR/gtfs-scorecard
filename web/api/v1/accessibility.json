@@ -8,260 +8,721 @@
     "none": 1080,
     "some": 231
   },
-  "generated_at": "2026-07-10T21:13:17+00:00",
+  "countries": [
+    {
+      "agencies": 3,
+      "average_boarding_pct": 0.0,
+      "country_code": "CA",
+      "country_name": "Canada",
+      "most": 0,
+      "none": 3,
+      "subdivisions": [
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    },
+    {
+      "agencies": 1446,
+      "average_boarding_pct": 13.7,
+      "country_code": "US",
+      "country_name": "United States",
+      "most": 138,
+      "none": 1077,
+      "subdivisions": [
+        {
+          "agencies": 6,
+          "average_boarding_pct": 18.1,
+          "most": 1,
+          "none": 4,
+          "subdivision_code": "US-AK",
+          "subdivision_name": "Alaska"
+        },
+        {
+          "agencies": 9,
+          "average_boarding_pct": 11.1,
+          "most": 1,
+          "none": 8,
+          "subdivision_code": "US-AL",
+          "subdivision_name": "Alabama"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-AR",
+          "subdivision_name": "Arkansas"
+        },
+        {
+          "agencies": 23,
+          "average_boarding_pct": 34.7,
+          "most": 8,
+          "none": 14,
+          "subdivision_code": "US-AZ",
+          "subdivision_name": "Arizona"
+        },
+        {
+          "agencies": 186,
+          "average_boarding_pct": 17.0,
+          "most": 20,
+          "none": 131,
+          "subdivision_code": "US-CA",
+          "subdivision_name": "California"
+        },
+        {
+          "agencies": 95,
+          "average_boarding_pct": 8.4,
+          "most": 6,
+          "none": 80,
+          "subdivision_code": "US-CO",
+          "subdivision_name": "Colorado"
+        },
+        {
+          "agencies": 11,
+          "average_boarding_pct": 19.0,
+          "most": 2,
+          "none": 6,
+          "subdivision_code": "US-CT",
+          "subdivision_name": "Connecticut"
+        },
+        {
+          "agencies": 5,
+          "average_boarding_pct": 20.0,
+          "most": 1,
+          "none": 4,
+          "subdivision_code": "US-DC",
+          "subdivision_name": "District of Columbia"
+        },
+        {
+          "agencies": 1,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 1,
+          "subdivision_code": "US-DE",
+          "subdivision_name": "Delaware"
+        },
+        {
+          "agencies": 43,
+          "average_boarding_pct": 18.1,
+          "most": 6,
+          "none": 31,
+          "subdivision_code": "US-FL",
+          "subdivision_name": "Florida"
+        },
+        {
+          "agencies": 16,
+          "average_boarding_pct": 10.0,
+          "most": 1,
+          "none": 14,
+          "subdivision_code": "US-GA",
+          "subdivision_name": "Georgia"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-HI",
+          "subdivision_name": "Hawaii"
+        },
+        {
+          "agencies": 21,
+          "average_boarding_pct": 9.8,
+          "most": 1,
+          "none": 16,
+          "subdivision_code": "US-IA",
+          "subdivision_name": "Iowa"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 31.9,
+          "most": 1,
+          "none": 2,
+          "subdivision_code": "US-ID",
+          "subdivision_name": "Idaho"
+        },
+        {
+          "agencies": 15,
+          "average_boarding_pct": 18.1,
+          "most": 2,
+          "none": 11,
+          "subdivision_code": "US-IL",
+          "subdivision_name": "Illinois"
+        },
+        {
+          "agencies": 11,
+          "average_boarding_pct": 9.8,
+          "most": 1,
+          "none": 7,
+          "subdivision_code": "US-IN",
+          "subdivision_name": "Indiana"
+        },
+        {
+          "agencies": 6,
+          "average_boarding_pct": 25.7,
+          "most": 1,
+          "none": 4,
+          "subdivision_code": "US-KS",
+          "subdivision_name": "Kansas"
+        },
+        {
+          "agencies": 7,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 7,
+          "subdivision_code": "US-KY",
+          "subdivision_name": "Kentucky"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-LA",
+          "subdivision_name": "Louisiana"
+        },
+        {
+          "agencies": 41,
+          "average_boarding_pct": 15.3,
+          "most": 2,
+          "none": 33,
+          "subdivision_code": "US-MA",
+          "subdivision_name": "Massachusetts"
+        },
+        {
+          "agencies": 34,
+          "average_boarding_pct": 20.0,
+          "most": 5,
+          "none": 19,
+          "subdivision_code": "US-MD",
+          "subdivision_name": "Maryland"
+        },
+        {
+          "agencies": 7,
+          "average_boarding_pct": 0.4,
+          "most": 0,
+          "none": 5,
+          "subdivision_code": "US-ME",
+          "subdivision_name": "Maine"
+        },
+        {
+          "agencies": 18,
+          "average_boarding_pct": 34.0,
+          "most": 3,
+          "none": 9,
+          "subdivision_code": "US-MI",
+          "subdivision_name": "Michigan"
+        },
+        {
+          "agencies": 9,
+          "average_boarding_pct": 22.2,
+          "most": 2,
+          "none": 7,
+          "subdivision_code": "US-MN",
+          "subdivision_name": "Minnesota"
+        },
+        {
+          "agencies": 5,
+          "average_boarding_pct": 40.0,
+          "most": 2,
+          "none": 3,
+          "subdivision_code": "US-MO",
+          "subdivision_name": "Missouri"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 33.4,
+          "most": 1,
+          "none": 1,
+          "subdivision_code": "US-MS",
+          "subdivision_name": "Mississippi"
+        },
+        {
+          "agencies": 6,
+          "average_boarding_pct": 6.4,
+          "most": 0,
+          "none": 5,
+          "subdivision_code": "US-MT",
+          "subdivision_name": "Montana"
+        },
+        {
+          "agencies": 24,
+          "average_boarding_pct": 2.5,
+          "most": 0,
+          "none": 16,
+          "subdivision_code": "US-NC",
+          "subdivision_name": "North Carolina"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-ND",
+          "subdivision_name": "North Dakota"
+        },
+        {
+          "agencies": 5,
+          "average_boarding_pct": 19.8,
+          "most": 1,
+          "none": 4,
+          "subdivision_code": "US-NE",
+          "subdivision_name": "Nebraska"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-NH",
+          "subdivision_name": "New Hampshire"
+        },
+        {
+          "agencies": 6,
+          "average_boarding_pct": 33.3,
+          "most": 2,
+          "none": 4,
+          "subdivision_code": "US-NJ",
+          "subdivision_name": "New Jersey"
+        },
+        {
+          "agencies": 14,
+          "average_boarding_pct": 15.0,
+          "most": 2,
+          "none": 9,
+          "subdivision_code": "US-NM",
+          "subdivision_name": "New Mexico"
+        },
+        {
+          "agencies": 6,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 6,
+          "subdivision_code": "US-NV",
+          "subdivision_name": "Nevada"
+        },
+        {
+          "agencies": 84,
+          "average_boarding_pct": 10.7,
+          "most": 9,
+          "none": 70,
+          "subdivision_code": "US-NY",
+          "subdivision_name": "New York"
+        },
+        {
+          "agencies": 19,
+          "average_boarding_pct": 28.7,
+          "most": 5,
+          "none": 12,
+          "subdivision_code": "US-OH",
+          "subdivision_name": "Ohio"
+        },
+        {
+          "agencies": 4,
+          "average_boarding_pct": 22.4,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-OK",
+          "subdivision_name": "Oklahoma"
+        },
+        {
+          "agencies": 78,
+          "average_boarding_pct": 1.8,
+          "most": 1,
+          "none": 75,
+          "subdivision_code": "US-OR",
+          "subdivision_name": "Oregon"
+        },
+        {
+          "agencies": 15,
+          "average_boarding_pct": 26.7,
+          "most": 4,
+          "none": 11,
+          "subdivision_code": "US-PA",
+          "subdivision_name": "Pennsylvania"
+        },
+        {
+          "agencies": 3,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 3,
+          "subdivision_code": "US-RI",
+          "subdivision_name": "Rhode Island"
+        },
+        {
+          "agencies": 4,
+          "average_boarding_pct": 33.0,
+          "most": 1,
+          "none": 1,
+          "subdivision_code": "US-SC",
+          "subdivision_name": "South Carolina"
+        },
+        {
+          "agencies": 1,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 1,
+          "subdivision_code": "US-SD",
+          "subdivision_name": "South Dakota"
+        },
+        {
+          "agencies": 10,
+          "average_boarding_pct": 38.4,
+          "most": 2,
+          "none": 5,
+          "subdivision_code": "US-TN",
+          "subdivision_name": "Tennessee"
+        },
+        {
+          "agencies": 15,
+          "average_boarding_pct": 7.1,
+          "most": 0,
+          "none": 11,
+          "subdivision_code": "US-TX",
+          "subdivision_name": "Texas"
+        },
+        {
+          "agencies": 5,
+          "average_boarding_pct": 26.9,
+          "most": 0,
+          "none": 2,
+          "subdivision_code": "US-UT",
+          "subdivision_name": "Utah"
+        },
+        {
+          "agencies": 58,
+          "average_boarding_pct": 0.3,
+          "most": 0,
+          "none": 49,
+          "subdivision_code": "US-VA",
+          "subdivision_name": "Virginia"
+        },
+        {
+          "agencies": 16,
+          "average_boarding_pct": 0.0,
+          "most": 0,
+          "none": 16,
+          "subdivision_code": "US-VT",
+          "subdivision_name": "Vermont"
+        },
+        {
+          "agencies": 78,
+          "average_boarding_pct": 23.8,
+          "most": 16,
+          "none": 55,
+          "subdivision_code": "US-WA",
+          "subdivision_name": "Washington"
+        },
+        {
+          "agencies": 15,
+          "average_boarding_pct": 12.6,
+          "most": 1,
+          "none": 10,
+          "subdivision_code": "US-WI",
+          "subdivision_name": "Wisconsin"
+        },
+        {
+          "agencies": 1,
+          "average_boarding_pct": 97.9,
+          "most": 1,
+          "none": 0,
+          "subdivision_code": "US-WV",
+          "subdivision_name": "West Virginia"
+        },
+        {
+          "agencies": 389,
+          "average_boarding_pct": 12.4,
+          "most": 26,
+          "none": 277,
+          "subdivision_code": null,
+          "subdivision_name": "Unlocated"
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-07-14T05:12:50+00:00",
   "license": "CC-BY-4.0",
   "most_complete": [
     {
+      "country": "US",
       "id": "altamont-corridor-express",
       "name": "Altamont Corridor Express",
       "pct": 100.0,
-      "state": "California"
+      "state": "California",
+      "subdivision_code": "US-CA",
+      "subdivision_name": "California"
     },
     {
+      "country": "US",
       "id": "ann-arbor-area-transportation-authority-theride",
       "name": "Ann Arbor Area Transportation Authority (TheRide)",
       "pct": 100.0,
-      "state": "Michigan"
+      "state": "Michigan",
+      "subdivision_code": "US-MI",
+      "subdivision_name": "Michigan"
     },
     {
+      "country": "US",
       "id": "annapolis-transit-2285",
       "name": "Annapolis Transit",
       "pct": 100.0,
-      "state": "Maryland"
+      "state": "Maryland",
+      "subdivision_code": "US-MD",
+      "subdivision_name": "Maryland"
     },
     {
+      "country": "US",
       "id": "avon-transit-2433",
       "name": "Avon Transit",
       "pct": 100.0,
-      "state": "Colorado"
+      "state": "Colorado",
+      "subdivision_code": "US-CO",
+      "subdivision_name": "Colorado"
     },
     {
+      "country": "US",
       "id": "bwi-thurgood-marshall-airport-bwi-shuttle",
       "name": "BWI Thurgood Marshall Airport (BWI) Shuttle",
       "pct": 100.0,
-      "state": "Maryland"
+      "state": "Maryland",
+      "subdivision_code": "US-MD",
+      "subdivision_name": "Maryland"
     },
     {
+      "country": "US",
       "id": "black-ball-ferry-line",
       "name": "Black Ball Ferry Line",
       "pct": 100.0,
-      "state": "Washington"
+      "state": "Washington",
+      "subdivision_code": "US-WA",
+      "subdivision_name": "Washington"
     },
     {
+      "country": "US",
       "id": "black-ball-ferry-line-286",
       "name": "Black Ball Ferry Line",
       "pct": 100.0,
-      "state": "Washington"
+      "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": ""
     },
     {
+      "country": "US",
       "id": "boston-harbor-islands-ferries-2073",
       "name": "Boston Harbor Islands Ferries",
       "pct": 100.0,
-      "state": "Massachusetts"
+      "state": "Massachusetts",
+      "subdivision_code": "US-MA",
+      "subdivision_name": "Massachusetts"
     },
     {
+      "country": "US",
       "id": "boston-harbor-islands-ferry",
       "name": "Boston Harbor Islands Ferry",
       "pct": 100.0,
-      "state": "New York"
+      "state": "New York",
+      "subdivision_code": "US-NY",
+      "subdivision_name": "New York"
     },
     {
+      "country": "US",
       "id": "brightline-trains-llc",
       "name": "Brightline Trains LLC",
       "pct": 100.0,
-      "state": "Florida"
+      "state": "Florida",
+      "subdivision_code": "US-FL",
+      "subdivision_name": "Florida"
     }
   ],
   "no_data_count": 1080,
   "states": [
     {
-      "agencies": 199,
-      "average_boarding_pct": 17.4,
-      "most": 21,
-      "none": 140,
-      "state": "California"
-    },
-    {
-      "agencies": 161,
-      "average_boarding_pct": 15.3,
-      "most": 14,
-      "none": 112,
+      "agencies": 389,
+      "average_boarding_pct": 12.4,
+      "most": 26,
+      "none": 277,
       "state": "Unlocated"
     },
     {
-      "agencies": 126,
-      "average_boarding_pct": 7.8,
-      "most": 7,
-      "none": 103,
-      "state": "Colorado"
+      "agencies": 186,
+      "average_boarding_pct": 17.0,
+      "most": 20,
+      "none": 131,
+      "state": "California"
     },
     {
       "agencies": 95,
-      "average_boarding_pct": 24.5,
-      "most": 20,
-      "none": 66,
-      "state": "Washington"
+      "average_boarding_pct": 8.4,
+      "most": 6,
+      "none": 80,
+      "state": "Colorado"
     },
     {
-      "agencies": 92,
-      "average_boarding_pct": 1.9,
-      "most": 1,
-      "none": 87,
-      "state": "Oregon"
-    },
-    {
-      "agencies": 87,
-      "average_boarding_pct": 11.5,
-      "most": 10,
-      "none": 71,
+      "agencies": 84,
+      "average_boarding_pct": 10.7,
+      "most": 9,
+      "none": 70,
       "state": "New York"
     },
     {
-      "agencies": 75,
+      "agencies": 78,
+      "average_boarding_pct": 1.8,
+      "most": 1,
+      "none": 75,
+      "state": "Oregon"
+    },
+    {
+      "agencies": 78,
+      "average_boarding_pct": 23.8,
+      "most": 16,
+      "none": 55,
+      "state": "Washington"
+    },
+    {
+      "agencies": 58,
       "average_boarding_pct": 0.3,
       "most": 0,
-      "none": 64,
+      "none": 49,
       "state": "Virginia"
     },
     {
-      "agencies": 67,
-      "average_boarding_pct": 10.7,
-      "most": 2,
-      "none": 57,
-      "state": "Massachusetts"
-    },
-    {
-      "agencies": 52,
-      "average_boarding_pct": 18.3,
+      "agencies": 43,
+      "average_boarding_pct": 18.1,
       "most": 6,
-      "none": 36,
+      "none": 31,
       "state": "Florida"
     },
     {
-      "agencies": 36,
-      "average_boarding_pct": 18.9,
-      "most": 5,
-      "none": 20,
-      "state": "Maryland"
-    },
-    {
-      "agencies": 36,
-      "average_boarding_pct": 3.3,
-      "most": 0,
-      "none": 21,
-      "state": "North Carolina"
+      "agencies": 41,
+      "average_boarding_pct": 15.3,
+      "most": 2,
+      "none": 33,
+      "state": "Massachusetts"
     },
     {
       "agencies": 34,
-      "average_boarding_pct": 8.7,
-      "most": 1,
-      "none": 27,
-      "state": "Iowa"
+      "average_boarding_pct": 20.0,
+      "most": 5,
+      "none": 19,
+      "state": "Maryland"
     },
     {
-      "agencies": 30,
-      "average_boarding_pct": 26.7,
+      "agencies": 24,
+      "average_boarding_pct": 2.5,
+      "most": 0,
+      "none": 16,
+      "state": "North Carolina"
+    },
+    {
+      "agencies": 23,
+      "average_boarding_pct": 34.7,
       "most": 8,
-      "none": 20,
+      "none": 14,
       "state": "Arizona"
     },
     {
-      "agencies": 28,
-      "average_boarding_pct": 0.0,
-      "most": 0,
-      "none": 28,
-      "state": "Vermont"
-    },
-    {
-      "agencies": 22,
-      "average_boarding_pct": 40.0,
-      "most": 4,
-      "none": 9,
-      "state": "Michigan"
-    },
-    {
-      "agencies": 22,
-      "average_boarding_pct": 8.7,
-      "most": 1,
-      "none": 14,
-      "state": "Wisconsin"
-    },
-    {
       "agencies": 21,
-      "average_boarding_pct": 35.4,
-      "most": 7,
+      "average_boarding_pct": 9.8,
+      "most": 1,
+      "none": 16,
+      "state": "Iowa"
+    },
+    {
+      "agencies": 19,
+      "average_boarding_pct": 28.7,
+      "most": 5,
       "none": 12,
       "state": "Ohio"
     },
     {
-      "agencies": 20,
-      "average_boarding_pct": 15.9,
+      "agencies": 18,
+      "average_boarding_pct": 34.0,
       "most": 3,
-      "none": 13,
-      "state": "New Mexico"
+      "none": 9,
+      "state": "Michigan"
     },
     {
-      "agencies": 18,
-      "average_boarding_pct": 8.9,
+      "agencies": 16,
+      "average_boarding_pct": 10.0,
       "most": 1,
-      "none": 16,
+      "none": 14,
       "state": "Georgia"
     },
     {
-      "agencies": 17,
-      "average_boarding_pct": 16.0,
+      "agencies": 16,
+      "average_boarding_pct": 0.0,
+      "most": 0,
+      "none": 16,
+      "state": "Vermont"
+    },
+    {
+      "agencies": 15,
+      "average_boarding_pct": 18.1,
       "most": 2,
-      "none": 12,
+      "none": 11,
       "state": "Illinois"
     },
     {
-      "agencies": 17,
-      "average_boarding_pct": 9.9,
+      "agencies": 15,
+      "average_boarding_pct": 26.7,
+      "most": 4,
+      "none": 11,
+      "state": "Pennsylvania"
+    },
+    {
+      "agencies": 15,
+      "average_boarding_pct": 7.1,
       "most": 0,
       "none": 11,
       "state": "Texas"
     },
     {
-      "agencies": 16,
-      "average_boarding_pct": 25.0,
-      "most": 4,
-      "none": 12,
-      "state": "Pennsylvania"
-    },
-    {
       "agencies": 15,
-      "average_boarding_pct": 14.5,
-      "most": 2,
-      "none": 8,
-      "state": "Connecticut"
+      "average_boarding_pct": 12.6,
+      "most": 1,
+      "none": 10,
+      "state": "Wisconsin"
     },
     {
-      "agencies": 13,
-      "average_boarding_pct": 8.3,
-      "most": 1,
+      "agencies": 14,
+      "average_boarding_pct": 15.0,
+      "most": 2,
       "none": 9,
-      "state": "Indiana"
+      "state": "New Mexico"
     },
     {
       "agencies": 11,
-      "average_boarding_pct": 34.9,
+      "average_boarding_pct": 19.0,
       "most": 2,
       "none": 6,
-      "state": "Tennessee"
+      "state": "Connecticut"
+    },
+    {
+      "agencies": 11,
+      "average_boarding_pct": 9.8,
+      "most": 1,
+      "none": 7,
+      "state": "Indiana"
     },
     {
       "agencies": 10,
-      "average_boarding_pct": 10.0,
-      "most": 1,
-      "none": 9,
-      "state": "Alabama"
+      "average_boarding_pct": 38.4,
+      "most": 2,
+      "none": 5,
+      "state": "Tennessee"
     },
     {
       "agencies": 9,
-      "average_boarding_pct": 24.1,
-      "most": 2,
-      "none": 5,
-      "state": "Alaska"
+      "average_boarding_pct": 11.1,
+      "most": 1,
+      "none": 8,
+      "state": "Alabama"
     },
     {
       "agencies": 9,
@@ -271,24 +732,10 @@
       "state": "Minnesota"
     },
     {
-      "agencies": 9,
-      "average_boarding_pct": 8.5,
+      "agencies": 7,
+      "average_boarding_pct": 0.0,
       "most": 0,
       "none": 7,
-      "state": "Montana"
-    },
-    {
-      "agencies": 9,
-      "average_boarding_pct": 0.0,
-      "most": 0,
-      "none": 9,
-      "state": "Nevada"
-    },
-    {
-      "agencies": 8,
-      "average_boarding_pct": 0.0,
-      "most": 0,
-      "none": 8,
       "state": "Kentucky"
     },
     {
@@ -299,25 +746,11 @@
       "state": "Maine"
     },
     {
-      "agencies": 7,
-      "average_boarding_pct": 28.6,
-      "most": 2,
-      "none": 5,
-      "state": "New Jersey"
-    },
-    {
-      "agencies": 7,
-      "average_boarding_pct": 23.4,
-      "most": 1,
-      "none": 2,
-      "state": "South Carolina"
-    },
-    {
       "agencies": 6,
-      "average_boarding_pct": 16.7,
+      "average_boarding_pct": 18.1,
       "most": 1,
-      "none": 5,
-      "state": "District of Columbia"
+      "none": 4,
+      "state": "Alaska"
     },
     {
       "agencies": 6,
@@ -328,9 +761,37 @@
     },
     {
       "agencies": 6,
+      "average_boarding_pct": 6.4,
+      "most": 0,
+      "none": 5,
+      "state": "Montana"
+    },
+    {
+      "agencies": 6,
+      "average_boarding_pct": 0.0,
+      "most": 0,
+      "none": 6,
+      "state": "Nevada"
+    },
+    {
+      "agencies": 6,
       "average_boarding_pct": 33.3,
       "most": 2,
       "none": 4,
+      "state": "New Jersey"
+    },
+    {
+      "agencies": 5,
+      "average_boarding_pct": 20.0,
+      "most": 1,
+      "none": 4,
+      "state": "District of Columbia"
+    },
+    {
+      "agencies": 5,
+      "average_boarding_pct": 40.0,
+      "most": 2,
+      "none": 3,
       "state": "Missouri"
     },
     {
@@ -342,13 +803,6 @@
     },
     {
       "agencies": 5,
-      "average_boarding_pct": 0.0,
-      "most": 0,
-      "none": 5,
-      "state": "Rhode Island"
-    },
-    {
-      "agencies": 5,
       "average_boarding_pct": 26.9,
       "most": 0,
       "none": 2,
@@ -356,24 +810,17 @@
     },
     {
       "agencies": 4,
-      "average_boarding_pct": 23.9,
-      "most": 1,
-      "none": 3,
-      "state": "Idaho"
-    },
-    {
-      "agencies": 4,
-      "average_boarding_pct": 25.1,
-      "most": 1,
-      "none": 1,
-      "state": "Mississippi"
-    },
-    {
-      "agencies": 4,
       "average_boarding_pct": 22.4,
       "most": 0,
       "none": 3,
       "state": "Oklahoma"
+    },
+    {
+      "agencies": 4,
+      "average_boarding_pct": 33.0,
+      "most": 1,
+      "none": 1,
+      "state": "South Carolina"
     },
     {
       "agencies": 3,
@@ -391,10 +838,24 @@
     },
     {
       "agencies": 3,
+      "average_boarding_pct": 31.9,
+      "most": 1,
+      "none": 2,
+      "state": "Idaho"
+    },
+    {
+      "agencies": 3,
       "average_boarding_pct": 0.0,
       "most": 0,
       "none": 3,
       "state": "Louisiana"
+    },
+    {
+      "agencies": 3,
+      "average_boarding_pct": 33.4,
+      "most": 1,
+      "none": 1,
+      "state": "Mississippi"
     },
     {
       "agencies": 3,
@@ -411,11 +872,11 @@
       "state": "North Dakota"
     },
     {
-      "agencies": 2,
+      "agencies": 3,
       "average_boarding_pct": 0.0,
       "most": 0,
-      "none": 2,
-      "state": "South Dakota"
+      "none": 3,
+      "state": "Rhode Island"
     },
     {
       "agencies": 1,
@@ -423,6 +884,13 @@
       "most": 0,
       "none": 1,
       "state": "Delaware"
+    },
+    {
+      "agencies": 1,
+      "average_boarding_pct": 0.0,
+      "most": 0,
+      "none": 1,
+      "state": "South Dakota"
     },
     {
       "agencies": 1,
@@ -434,54 +902,84 @@
   ],
   "to_improve_sample": [
     {
+      "country": "US",
       "id": "128-business-council",
       "name": "128 Business Council",
-      "state": "Massachusetts"
+      "state": "Massachusetts",
+      "subdivision_code": "US-MA",
+      "subdivision_name": "Massachusetts"
     },
     {
+      "country": "US",
       "id": "128-business-council-440",
       "name": "128 Business Council",
-      "state": "Massachusetts"
+      "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": ""
     },
     {
+      "country": "US",
       "id": "north-lake-tahoe-express",
       "name": "24 hour advance reservations required",
-      "state": "Nevada"
+      "state": "Nevada",
+      "subdivision_code": "US-NV",
+      "subdivision_name": "Nevada"
     },
     {
+      "country": "US",
       "id": "abq-ride",
       "name": "ABQ RIDE",
-      "state": "New Mexico"
+      "state": "New Mexico",
+      "subdivision_code": "US-NM",
+      "subdivision_name": "New Mexico"
     },
     {
+      "country": "US",
       "id": "access-allegany",
       "name": "Access Allegany",
-      "state": "New York"
+      "state": "New York",
+      "subdivision_code": "US-NY",
+      "subdivision_name": "New York"
     },
     {
+      "country": "US",
       "id": "addison-county-transit-actr",
       "name": "Addison County Transit (ACTR)",
-      "state": "Vermont"
+      "state": "Vermont",
+      "subdivision_code": "US-VT",
+      "subdivision_name": "Vermont"
     },
     {
+      "country": "US",
       "id": "addison-county-transit-actr-543",
       "name": "Addison County Transit (ACTR)",
-      "state": "Vermont"
+      "state": "Unlocated",
+      "subdivision_code": "",
+      "subdivision_name": ""
     },
     {
+      "country": "US",
       "id": "adirondack-trailways-adp",
       "name": "Adirondack Trailways ADP",
-      "state": "New York"
+      "state": "New York",
+      "subdivision_code": "US-NY",
+      "subdivision_name": "New York"
     },
     {
+      "country": "US",
       "id": "adirondack-trailways-nyp",
       "name": "Adirondack Trailways NYP",
-      "state": "New York"
+      "state": "New York",
+      "subdivision_code": "US-NY",
+      "subdivision_name": "New York"
     },
     {
+      "country": "US",
       "id": "adirondack-trailways-pine-hill-trailways",
       "name": "Adirondack Trailways Pine Hill Trailways",
-      "state": "New York"
+      "state": "New York",
+      "subdivision_code": "US-NY",
+      "subdivision_name": "New York"
     }
   ]
 }

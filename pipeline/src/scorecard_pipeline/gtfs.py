@@ -49,10 +49,13 @@ def read_tables(gtfs_zip_path: str, names: list[str]) -> dict[str, list[dict[str
 def read_agency_ids(gtfs_zip_path: str) -> list[str]:
     """The distinct, non-blank agency_id values declared in agency.txt.
 
-    Used by the NTD ID alignment check (ntd.assess_id_alignment). agency_id is
-    optional in GTFS when a feed has a single agency, so an empty list is normal
-    and means "no agency_id set", not an error. Order is preserved and
-    duplicates are dropped so the values can be shown back to the agency."""
+    Used by the RY2026 NTD presence and optional NTD-ID equality checks. The
+    base GTFS Schedule specification permits agency_id to be omitted from a
+    single-agency feed, but an NTD GTFS submission must provide a stable value
+    for every represented reporter and crosswalk it on P-50. An empty list
+    therefore means "no agency_id set"; the parser returns it normally and the
+    NTD assessment supplies the finding. Order is preserved and duplicates are
+    dropped so the values can be shown back to the agency."""
     with zipfile.ZipFile(gtfs_zip_path) as zf:
         rows = _read_table(zf, "agency.txt")
     seen: set[str] = set()

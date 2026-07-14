@@ -44,9 +44,10 @@ existing roadmap docs rather than restating them.
     care: FTA requires fixed-route NTD reporters to publish and maintain a public
     GTFS feed from Report Year 2023
     ([FTA, RY2023 final rule](https://www.federalregister.gov/documents/2023/03/03/2023-04379/national-transit-database-reporting-changes-and-clarifications)),
-    and the RY2025/2026 final rule aligns `agency_id` to the five-digit NTD ID
-    internally through the P-50 form rather than mandating an agency-side change
-    ([FTA, RY2025/2026 final rule](https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026)).
+    and the RY2026 policy requires a stable `agency_id` for every reporter
+    represented in the feed, crosswalked to the five-digit NTD ID on P-50; the
+    two values do not have to be equal
+    ([FTA, 2026 NTD Full Reporting Policy Manual](https://www.transit.dot.gov/sites/fta.dot.gov/files/2026-06/2026-NTD-Full-Policy-Manual_0.pdf)).
   - The concrete feared consequence behind freshness: an expired feed stops a
     trip from appearing in Google Maps
     ([Google Transit Partners, general errors](https://support.google.com/transitpartners/answer/10761734),
@@ -101,7 +102,7 @@ condition that flips them to adopting or walking away.
   and what to fix first, without becoming a GTFS expert.
 - **Values today.** The plain-language **letter grade** with four category scores
   and the **"top 3 things to fix"** framed as fixes with effort hints; the
-  **NTD certification-readiness** read (published, valid, current); the
+  **NTD certification-readiness** read (published, valid, current, agency_id present); the
   **notice-to-fix knowledge base** (`/fix/<code>/`) that turns a validator notice
   into one setting to change. "The state's monthly report lists `foreign_key_violation`
   and a 24-item checklist. This tells me my feed expires in 19 days and that's the
@@ -305,14 +306,14 @@ condition that flips them to adopting or walking away.
 - **Goal.** See, nationally, which fixed-route reporters actually meet the federal
   GTFS obligation, and where the known feed-identity gaps are.
 - **Values today.** The **`/ntd/` national certification-readiness page** reading
-  `ntd.json`; the per-agency **NTD readiness** section (published, valid, current)
-  and the **`agency_id`-to-NTD-ID match flag** populated nationally by
+  `ntd.json`; the per-agency **NTD readiness** section (published, valid, current,
+  agency_id present) and the **optional `agency_id`-to-NTD-ID equality flag** populated by
   **`scorecard ntd-crosswalk`** from the Transitland Atlas; the framing that the
-  match is a forward-looking flag, carrying no score. "This surfaces exactly the
+  equality result carries no score. "This surfaces exactly the
   feed-identity and freshness gaps the rulemaking documented."
-- **Gets stuck.** The RY2025/2026 final rule moved `agency_id` alignment to FTA's
-  internal P-50 crosswalk, so the readiness copy must not imply agencies are required
-  to change `agency_id`; agencies with multiple datasets, multiple brandings, or a
+- **Gets stuck.** RY2026 requires a stable `agency_id` and P-50 crosswalk, but
+  not equality to the NTD ID, so the copy must keep those two facts separate;
+  agencies with multiple datasets, multiple brandings, or a
   shared regional feed are the exact identity cases FTA flagged and the hardest to
   match cleanly.
 - **Wants next.** Readiness copy audited against final-rule (not proposed-rule)

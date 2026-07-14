@@ -107,7 +107,7 @@ def test_grade_story_is_stable_dated_and_within_bound() -> None:
         "On 2026-06-10 this feed started at grade B.",
         "On 2026-06-14 the grade moved from B to C.",
         "On 2026-06-18 the grade moved from C to A.",
-        "On 2026-06-18 it cleared missing_feed_contact.",
+        "On 2026-06-18 it cleared: missing_feed_contact detail.",
         "As of 2026-06-18 it holds grade A.",
     ]
     assert 3 <= len(story) <= 5

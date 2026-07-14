@@ -64,7 +64,9 @@ US_NTD_GUIDANCE: dict[str, Any] = {
     "url": "https://www.transit.dot.gov/ntd",
     "note": (
         "For US NTD reporters with qualifying service, the federal requirement "
-        "calls for a public, valid, current GTFS feed and annual certification."
+        "calls for a public, valid, current GTFS feed and annual certification. "
+        "For RY2026, the submission also needs a stable agency_id for each represented "
+        "reporter, crosswalked to its NTD ID on P-50."
     ),
     "category_notes": {
         "correctness": "FTA NTD readiness also checks that the published feed is valid.",

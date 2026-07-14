@@ -7,8 +7,10 @@ incorporate **WCAG 2.0 Level AA**. The product targets **WCAG 2.2 Level AAA** an
 enforces automated accessibility gates described in `docs/accessibility.md`.
 
 **Evaluation methods:** automated checks (`pipeline/scripts/check_contrast.py` for
-contrast across every theme; axe-core and Lighthouse in CI — `.github/workflows/a11y.yml`)
-plus manual keyboard review. The planned NVDA/Firefox and VoiceOver/Safari passes have
+contrast across every theme; axe-core on representative routes in
+`.github/workflows/a11y.yml`; Lighthouse on the landing page in
+`.github/workflows/pages.yml`) plus browser-based keyboard review. The planned
+NVDA/Firefox and VoiceOver/Safari passes have
 not yet been recorded; `docs/accessibility-testing.md` is the evidence log and must be
 completed before this report claims assistive-technology verification.
 
@@ -52,7 +54,7 @@ completed before this report claims assistive-technology verification.
 | --- | --- | --- | --- |
 | 1.2.4 / 1.2.5 Captions / Audio Description | AA | Not Applicable | No multimedia. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | All themes clear AAA 7:1; gated by `check_contrast.py`. Exceeds the AA 4.5:1 bar. |
-| 1.4.4 Resize Text | AA | Supports | Uses relative units and responsive layouts; the recorded human zoom/reflow pass is pending. |
+| 1.4.4 Resize Text | AA | Supports | Uses relative units and responsive layouts; browser QA covers 200% text resize and 320px reflow. |
 | 1.4.5 Images of Text | AA | Supports | Text is live text; no images of text. |
 | 2.4.5 Multiple Ways | AA | Supports | Primary nav, breadcrumbs, search, agency index, map, and footer links. |
 | 2.4.6 Headings and Labels | AA | Supports | Descriptive headings and labels throughout. |
@@ -145,5 +147,7 @@ Not Applicable. The product is web content and software; it ships no hardware.
 
 ## Revision history
 
+- 2026-07-13 — Corrected the evaluation-method description, recorded the 200%
+  text-resize check, and kept screen-reader testing explicitly pending.
 - 2026-06-22 — Initial 508-edition report. Companion to `docs/accessibility.md`
   (WCAG 2.2 AAA detail) and `docs/section-508-plan.md` (remaining work).

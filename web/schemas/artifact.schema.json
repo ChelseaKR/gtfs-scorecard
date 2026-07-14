@@ -334,11 +334,11 @@
     },
     "ntd_id_alignment": {
       "type": "object",
-      "description": "GTFS agency_id vs NTD ID alignment; US agencies only (ADR 0026)."
+      "description": "RY2026 agency_id presence plus optional equality comparison with the NTD ID; US agencies only (ADR 0016/0026)."
     },
     "ntd_readiness": {
       "type": "object",
-      "description": "NTD certification readiness (published / valid / current); US agencies only."
+      "description": "NTD certification readiness (published / valid / current / agency_id present); US agencies only."
     },
     "shapes_readiness": {
       "type": "object",

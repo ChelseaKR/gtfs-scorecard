@@ -68,7 +68,7 @@ cases below sit on top of artifacts the pipeline already produces.
 
 | Persona | Evidence | The hook |
 |---|---|---|
-| FTA / state-DOT policy staff | GTFS is a federal obligation: RY2023 requires a web-hosted feed for every fixed-route NTD reporter; RY2025 (full) and RY2026 (rural/tribal) phase in an `agency_id` that cross-walks to the NTD P-50 form; shapes.txt is phasing in; certified submissions are treated as definitive. FTA flagged unresolved feed-identity problems (agencies with multiple datasets or brandings, rural agencies sharing one regional feed). | A national, NTD-keyed readiness view that surfaces exactly the feed-identity and freshness gaps FTA documented in its own rulemaking. |
+| FTA / state-DOT policy staff | GTFS is a federal obligation: RY2023 requires a web-hosted feed for fixed-route NTD reporters; every RY2026 submission needs a stable `agency_id` per represented reporter and a P-50 crosswalk, though the value need not equal the NTD ID; shapes.txt phases in by reporter type; certified submissions are treated as definitive. FTA flagged unresolved feed-identity problems (agencies with multiple datasets or brandings, rural agencies sharing one regional feed). | A national, NTD-keyed readiness view that surfaces exactly the feed-identity and freshness gaps FTA documented in its own rulemaking. |
 | Disability / accessibility advocates | Peer-reviewed work (Journal of Transport Geography, 2023) finds powered and manual wheelchair users reach 59% and 75% fewer accessible stops. The open `gtfs-accessibility-validator` checks the exact fields (wheelchair_boarding, wheelchair_accessible, pathways, levels, tts_stop_name) the California guidelines require. | A national accessibility-coverage index built from the completeness category the pipeline already computes. |
 | App developers / trip-planner companies | Named demand for a "shared understanding of a dataset's quality before putting it into production." | Open machine-readable artifacts plus the live-grade badge already shipped. |
 | Academic transit researchers | A long-run national archive (Transitland versions; the scorecard's own dated artifacts) supports quality-over-time study. Note: Transitland historic versions need a paid or free-academic plan. | A citable, versioned national dataset with a stable reference. |
@@ -109,10 +109,10 @@ transparency, not a ranking to lose.
 
 ## Caveats
 
-- The FTA RY2025/RY2026 crosswalk and shapes.txt requirements are partly
-  prospective as of the July 2025 final rule. The stronger October 2024 proposal
-  (direct `agency_id`-to-NTD-ID alignment) was softened to the P-50 crosswalk after
-  15 of 18 commenters opposed; build to the final-rule language. Two FTA-related
+- For RY2026, agency_id presence and the P-50 crosswalk are required, while
+  equality to the five-digit NTD ID is not. Shapes.txt phases in by reporter
+  type. Build to that current-policy distinction, not the older shorthand that
+  called agency_id itself optional. Two FTA-related
   claims passed only 2-1 and rest on FTA's "can leverage / will enhance" intent
   language, not delivered capability.
 - Several primary sources (federalregister.gov, mobilitydatabase.org,

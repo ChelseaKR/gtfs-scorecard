@@ -68,7 +68,7 @@ Smallest viable pilot, buildable as one PR:
   and the `Agency` model, defaulting to `US` so every current entry is unchanged,
   and carry it into the published artifact's `agency` block.
 - **Gate the US-only per-agency surfaces on `country == "US"`:** NTD-readiness
-  and NTD-id alignment (both keyed to the FTA five-digit NTD ID) render only for
+  (including required agency_id presence) and optional NTD-ID equality render only for
   US agencies; a Canadian feed shows the GTFS-quality core (correctness,
   freshness, completeness, realtime) without a hollow NTD box.
 - **Subdivision:** carry ISO 3166-2 `subdivision_code` and a

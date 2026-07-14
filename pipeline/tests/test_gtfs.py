@@ -188,7 +188,8 @@ def test_read_agency_ids_distinct_and_ordered(make_gtfs_zip: Callable[..., Path]
 
 
 def test_read_agency_ids_empty_when_unset(make_gtfs_zip: Callable[..., Path]) -> None:
-    # agency_id is optional in single-agency feeds; absence is normal, not error.
+    # The parser reports absence without raising. The RY2026 NTD assessment,
+    # rather than the GTFS reader, turns this into a required-presence finding.
     path = make_gtfs_zip(
         {"agency.txt": "agency_name,agency_url,agency_timezone\nUnitrans,https://ex.org,UTC\n"}
     )

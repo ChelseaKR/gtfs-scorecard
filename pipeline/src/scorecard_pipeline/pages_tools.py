@@ -46,13 +46,19 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     scorecards.</p>
     <form class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
       <div class="map-filter-row">
-        <label for="compare-a">First agency</label>
+        <label for="compare-a-filter">First agency</label>
+        <input id="compare-a-filter" class="agency-search compare-filter" type="search"
+          autocomplete="off" aria-controls="compare-a" placeholder="Type a name to filter">
+        <label class="visually-hidden" for="compare-a">Choose the first agency from the matches</label>
         <select id="compare-a" name="a" required>
           <option value="">Choose an agency</option>{options}
         </select>
       </div>
       <div class="map-filter-row">
-        <label for="compare-b">Second agency</label>
+        <label for="compare-b-filter">Second agency</label>
+        <input id="compare-b-filter" class="agency-search compare-filter" type="search"
+          autocomplete="off" aria-controls="compare-b" placeholder="Type a name to filter">
+        <label class="visually-hidden" for="compare-b">Choose the second agency from the matches</label>
         <select id="compare-b" name="b" required>
           <option value="">Choose an agency</option>{options}
         </select>
@@ -76,6 +82,32 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
         var selB = document.getElementById("compare-b");
         var statusEl = document.getElementById("compare-status");
         var result = document.getElementById("compare-result");
+        function installFilter(inputId, select) {{
+          var input = document.getElementById(inputId);
+          var choices = Array.from(select.options).slice(1).map(function (option) {{
+            return {{ value: option.value, text: option.textContent || option.value }};
+          }});
+          input.addEventListener("input", function () {{
+            var query = input.value.trim().toLocaleLowerCase();
+            var selected = select.value;
+            var matches = query
+              ? choices.filter(function (choice) {{
+                  return (choice.text + " " + choice.value).toLocaleLowerCase().includes(query);
+                }}).slice(0, 100)
+              : choices;
+            select.textContent = "";
+            select.appendChild(new Option(
+              query && !matches.length ? "No matching agencies" : "Choose an agency", ""
+            ));
+            matches.forEach(function (choice) {{
+              select.appendChild(new Option(choice.text, choice.value));
+            }});
+            if (matches.some(function (choice) {{ return choice.value === selected; }}))
+              select.value = selected;
+          }});
+        }}
+        installFilter("compare-a-filter", selA);
+        installFilter("compare-b-filter", selB);
         var params = new URLSearchParams(window.location.search);
         var a = params.get("a"), b = params.get("b");
         if (!a || !b) return;
@@ -138,9 +170,10 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           var artA = arts[0], artB = arts[1];
           var nameA = artA.agency.name, nameB = artB.agency.name;
           var table = el("table");
-          table.className = "leaderboard";
+          table.className = "leaderboard compare-static-table";
           var caption = el("caption", "Side-by-side scorecard comparison of " +
             nameA + " and " + nameB + ".");
+          caption.className = "visually-hidden";
           table.appendChild(caption);
           var thead = el("thead"), hr = el("tr");
           hr.appendChild(el("th", "Measure")).setAttribute("scope", "col");
@@ -180,7 +213,13 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           row("Pathways (station wayfinding)", el("td", flag(dA.pathways)), el("td", flag(dB.pathways)));
           table.appendChild(tbody);
           result.textContent = "";
-          result.appendChild(table);
+          var scrollHint = el("p", "Swipe the table sideways to see both agencies.");
+          scrollHint.className = "table-scroll-hint";
+          result.appendChild(scrollHint);
+          var tableWrap = el("div");
+          tableWrap.className = "table-wrap";
+          tableWrap.appendChild(table);
+          result.appendChild(tableWrap);
           statusEl.textContent = "Comparing " + nameA + " and " + nameB + ".";
         }}).catch(function (err) {{
           statusEl.textContent = "We couldn't load a scorecard for \\"" + err.message +
@@ -660,10 +699,10 @@ def _render_check_page() -> str:
     <p id="check-status" role="status"></p>
     <div id="check-result"></div>
     <noscript><p>Reading a zip in the page needs JavaScript. You can run the full check
-    instead: <a href="/try.html">score a feed now</a>.</p></noscript>
+    instead: <a href="/try.html">request a full score</a>.</p></noscript>
     <p class="fineprint">A preview, not the full validation. The canonical
     <a href="https://github.com/MobilityData/gtfs-validator">MobilityData validator</a>
-    stays the authority; <a href="/try.html">score a feed now</a> runs it over the whole
+    stays the authority; <a href="/try.html">request a full score</a> to run it over the whole
     feed, and <a href="/subscribe.html">subscribe</a> to hear before a published feed
     expires.</p>
 {_CHECK_PAGE_SCRIPT.replace("__FFLATE__", _FFLATE_VERSION)}"""
@@ -698,8 +737,8 @@ _TOOLS = [
     ),
     (
         "/try.html",
-        "Score any feed now",
-        "Paste a published feed URL and get the full graded scorecard back.",
+        "Request a one-off score",
+        "Submit a published feed URL through the GitHub-backed request path, or run the scorer locally; hosted instant scoring is not enabled.",
     ),
     ("/query/", "Query the dataset", "Run SQL over the covered dataset, right in the page."),
     (
@@ -712,6 +751,11 @@ _TOOLS = [
         "/agency/unitrans/brief/",
         "Call-prep briefs",
         "Every agency has a printable one-page brief for a check-in call (this links an example; find yours from its scorecard).",
+    ),
+    (
+        "/agency/unitrans/board/",
+        "Board-ready one-pagers",
+        "Open a printable board summary for each agency (this links the Unitrans example).",
     ),
     (
         "/procurement/",
@@ -731,7 +775,8 @@ def _render_tools_page() -> str:
     each, so nothing depends on a visitor discovering the footer. Linked from
     the primary nav."""
     items = "".join(
-        f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a></p>'
+        f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a> '
+        f'<span class="availability">{"GitHub account" if href == "/try.html" else "No account"}</span></p>'
         f'<p class="why">{esc(what)}</p></li>'
         for href, name, what in _TOOLS
     )
@@ -739,8 +784,8 @@ def _render_tools_page() -> str:
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Tools.</h1>
     <p class="page-lede">Everything on this site you can act with, not just read: check a
-    feed, score a feed, compare agencies, query the data, and get alerts. Each tool works
-    without an account and most work without a backend at all.</p>
+    feed, request a full score, compare agencies, query the data, and get alerts. Most work
+    without an account; the one-off request is clearly marked because it uses GitHub.</p>
     <ul class="findings">{items}</ul>
     <p class="fineprint">All of it is open source; the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard">repository</a> has the CLI and

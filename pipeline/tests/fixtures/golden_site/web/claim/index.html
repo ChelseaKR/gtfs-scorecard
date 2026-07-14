@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Correct or claim a transit agency listing | GTFS Scorecard</title>
+  <meta name="description" content="Report a GTFS listing correction or verify an agency contact using public evidence, feed-host proof, or official-domain email.">
+  <link rel="canonical" href="https://gtfsscorecard.org/claim/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Correct or claim a transit agency listing | GTFS Scorecard">
+  <meta property="og:description" content="Report a GTFS listing correction or verify an agency contact using public evidence, feed-host proof, or official-domain email.">
+  <meta property="og:url" content="https://gtfsscorecard.org/claim/">
+  <meta property="og:image" content="https://gtfsscorecard.org/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <link rel="stylesheet" href="/src/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Correct or claim a transit agency listing","url":"https://gtfsscorecard.org/claim/","isPartOf":{"@type":"WebSite","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
+    try {
+      var t = localStorage.getItem("scorecard-theme");
+      if (t && ["light", "contrast", "dark"].indexOf(t) >= 0)
+        document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <script src="/src/theme.js" defer></script>
+  <script src="/src/nav.js" defer></script>
+  <script src="/analytics.js" defer></script>
+  <noscript><style>
+    /* Without JS the menu button cannot expand the collapsed nav, so show the
+       stacked nav permanently and hide the button (content stays operable
+       without scripting). nav.js never runs here, so nothing double-toggles. */
+    @media (max-width: 1400px) {
+      .nav-menu-btn { display: none !important; }
+      .nav-cluster { display: flex !important; position: static; }
+    }
+  </style></noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <main id="main" class="wrap" tabindex="-1">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Correct or claim a listing</span><meta itemprop="position" content="2"></li></ol></nav>
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <h1 class="page-title">Correct or claim an agency listing</h1>
+    <p class="page-lede">Tell us when a name, feed URL, service status, or other
+    listing detail is wrong. Agency staff can also ask to become the verified
+    contact for a listing. A request is not treated as proof by itself.</p>
+
+    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
+    <section aria-labelledby="correction-h"><h2 class="section-title" id="correction-h">Corrections do not require a claim</h2>
+    <p>Anyone can report a factual error. Link to the agency's official website,
+    public feed page, procurement record, or another source that lets a reviewer
+    confirm the change. We correct supported facts without requiring the agency
+    to create or maintain an account.</p></section>
+
+    <section aria-labelledby="proof-h"><h2 class="section-title" id="proof-h">How an agency claim is verified</h2>
+    <p>Use one of these proof paths. Do not put private email addresses, access
+    tokens, or credentials in a public issue.</p>
+    <ul>
+      <li><strong>Official webpage:</strong> publish a short confirmation or the
+      scorecard URL on an agency-controlled website.</li>
+      <li><strong>Feed-host proof:</strong> place the one-time text supplied by a
+      reviewer at the public feed host or in an adjacent public file.</li>
+      <li><strong>Official-domain email:</strong> send confirmation privately from
+      an agency-controlled domain after opening the issue.</li>
+    </ul>
+    <p>Until a reviewer checks one of those paths, the request remains
+    <strong>unverified</strong>. Verification confirms the contact's relationship
+    to the listing; it does not endorse the score or change the rubric.</p></section>
+
+    <section aria-labelledby="review-h"><h2 class="section-title" id="review-h">What happens next</h2>
+    <ol>
+      <li>Open a request and describe the exact correction or claim.</li>
+      <li>A maintainer checks the public evidence and may ask for one missing detail.</li>
+      <li>The underlying registry is changed in a reviewed pull request, leaving a public audit trail.</li>
+      <li>The next scoring run republishes the listing. Removal requests are handled under the same policy.</li>
+    </ol>
+    <p><a class="download-btn" id="claim-issue-link" href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?template=claim-agency.yml&labels=agency-claim">Open a correction or claim request</a></p>
+    <p class="fineprint">Public issues are appropriate for public facts only. For
+    private proof, open the issue without the private detail and use the maintainer
+    contact it provides.</p></section>
+
+    <script>
+    (function () {
+      var agency = new URLSearchParams(window.location.search).get("agency");
+      if (!agency || !/^[a-z0-9][a-z0-9-]{0,119}$/.test(agency)) return;
+      var link = document.getElementById("claim-issue-link");
+      link.href += "&title=" + encodeURIComponent("Correct or claim: " + agency);
+      var note = document.createElement("p");
+      note.className = "fineprint";
+      note.textContent = "Listing selected: " + agency;
+      link.parentNode.insertBefore(note, link);
+    })();
+    </script>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>An open-source data quality tool for small and rural transit agencies.</p>
+      <p><strong>Agencies:</strong>
+      <a href="/agencies/">Directory</a> ·
+      <a href="/app/">Interactive app</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
+      <a href="/problems/">Common problems</a> ·
+      <a href="/realtime/">Realtime</a> ·
+      <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
+      <p><strong>Tools:</strong>
+      <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
+      <a href="/check/">Check a feed before you publish</a> ·
+      <a href="/try.html">Request a one-off score</a> ·
+      <a href="/query/">Query the dataset</a> ·
+      <a href="/subscribe.html">Feed-health alerts</a> ·
+      <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
+      <a href="/procurement/">For agencies: procurement</a></p>
+      <p><a href="/about/">About</a> ·
+      <a href="/status/">Status</a> ·
+      <a href="/support/">Support this project</a> ·
+      <a href="/how-to-read/">How to read a scorecard</a> ·
+      <a href="/how-to-read/#glossary">Glossary</a> ·
+      <a href="/crosswalk/">Standards crosswalk</a> ·
+      <a href="/press/">For reporters</a> ·
+      <a href="/data/">Open data</a> ·
+      <a href="/accessibility/">Accessibility</a> ·
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+    </div>
+  </footer>
+</body>
+</html>

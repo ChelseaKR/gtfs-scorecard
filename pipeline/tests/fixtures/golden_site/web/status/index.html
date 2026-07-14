@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Status | GTFS Scorecard</title>
+  <meta name="description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and concrete evidence from today&#x27;s run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <link rel="canonical" href="https://gtfsscorecard.org/status/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Status | GTFS Scorecard">
+  <meta property="og:description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and concrete evidence from today&#x27;s run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta property="og:url" content="https://gtfsscorecard.org/status/">
+  <meta property="og:image" content="https://gtfsscorecard.org/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <link rel="stylesheet" href="/src/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
+    try {
+      var t = localStorage.getItem("scorecard-theme");
+      if (t && ["light", "contrast", "dark"].indexOf(t) >= 0)
+        document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <script src="/src/theme.js" defer></script>
+  <script src="/src/nav.js" defer></script>
+  <script src="/analytics.js" defer></script>
+  <noscript><style>
+    /* Without JS the menu button cannot expand the collapsed nav, so show the
+       stacked nav permanently and hide the button (content stays operable
+       without scripting). nav.js never runs here, so nothing double-toggles. */
+    @media (max-width: 1400px) {
+      .nav-menu-btn { display: none !important; }
+      .nav-cluster { display: flex !important; position: static; }
+    }
+  </style></noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <main id="main" class="wrap" tabindex="-1">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Status</span><meta itemprop="position" content="2"></li></ol></nav>
+    <a class="backlink" href="/">&larr; Home</a>
+    <h1 class="page-title">Status.</h1>
+    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
+    we commit to for refresh cadence and uptime; below is concrete evidence from today's run.
+    Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+
+    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
+    <h2 class="section-title" id="commitment-h">What we commit to</h2>
+    <p>"Refreshed daily" is a claim; this is the record. Here is how often we intend to
+    refresh each feed, how that has actually gone, and what happens when a feed cannot be
+    refreshed on schedule &mdash; so you can decide whether to depend on this data before you
+    build on it. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
+
+    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
+    <p>Every feed is checked on one of two cadence tiers (ADR&nbsp;0010); a full re-validation of
+    every feed runs daily regardless of tier.</p>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
+    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
+
+    <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
+    <p>As of 2026-07-14T03:48:49+00:00, this pipeline is tracking liveness on
+        <strong>2</strong> feeds:
+        <strong>2</strong> checking in clean (no failed check in a row),
+        <strong>0</strong> with at least one recent failed check but not yet
+        flagged, and <strong>0</strong> flagged unreachable
+        (see the degradation policy below). Time since each feed's last liveness check ranges from
+        290.6 to 321.7 hours, with a median of
+        321.7 hours.</p>
+        <p>Overall clean-check rate: <strong>100.0%</strong>.</p></section>
+
+    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
+    <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
+    <ul><li>A fetch failure never fabricates or silently drops data: the last successfully retrieved artifact is carried forward, and only its freshness/expiry read is recomputed from the calendar dates it already carries (ADR 0010&#x27;s freshness sweep). A past snapshot is never rewritten, so trend history stays accurate.</li><li>A feed whose calendar has been past its expiry date for more than 365 days is labeled &#x27;stale&#x27; rather than &#x27;lapsed&#x27;, which changes how it is described but not whether it is served.</li><li>A feed URL that fails 30 consecutive liveness checks (roughly a week at standard cadence) is separately labeled &#x27;unreachable&#x27;, so a dead host reads differently from a merely stale calendar.</li><li>None of this is a guarantee of upstream uptime -- an agency&#x27;s own GTFS host can go down regardless of what this pipeline does. It is a public, honest record of what was actually observed and when, published without deletion.</li></ul></section>
+
+    <p class="fineprint">This commitment is generated fresh with every site build from the same
+    liveness state the intraday refresh keeps, so it cannot say anything the pipeline did not
+    actually observe.</p>
+
+    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
+    <h2 class="section-title" id="evidence-h">Today's evidence</h2>
+    <p>What the daily pipeline itself did, published the same way the scorecards are: shard
+    outcomes, feeds it could not reach, and how stale the catalog is right now. No part of this
+    page requires trusting the maintainer's word. Machine-readable at
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+
+    <section class="feed-details"><h3 class="section-title">Last daily run</h3>
+    <p>No run-health summary has been published yet. This page fills in the day after the
+    first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>
+
+    <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
+    <p>Age of the scored snapshot behind every tracked agency's current scorecard, right now
+    (not just this run -- an agency scored successfully days ago still counts here if nothing
+    has re-triggered a fetch since).</p>
+    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked agencies, grouped by age of their current scorecard.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">3</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
+    <details class="viz-data"><summary>Show the table</summary>
+    <div style="overflow-x:auto"><table class="trend-table">
+      <caption class="visually-hidden">Agency count by snapshot age</caption>
+      <thead><tr><th scope="col">Snapshot age</th><th scope="col">Agencies</th></tr></thead>
+      <tbody><tr><td>under 1 day</td><td>0</td></tr><tr><td>1-2 days</td><td>0</td></tr><tr><td>3-7 days</td><td>0</td></tr><tr><td>over 7 days</td><td>3</td></tr></tbody>
+    </table></div></details>
+    </section>
+
+    <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
+    refreshed each daily run. See <a href="/how-to-read/">how to read a scorecard</a> for what
+    the grades themselves mean.</p>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>An open-source data quality tool for small and rural transit agencies.</p>
+      <p><strong>Agencies:</strong>
+      <a href="/agencies/">Directory</a> ·
+      <a href="/app/">Interactive app</a> ·
+      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
+      <p><strong>Coverage:</strong>
+      <a href="/pulse/">Coverage overview</a> ·
+      <a href="/problems/">Common problems</a> ·
+      <a href="/realtime/">Realtime</a> ·
+      <a href="/adoption/">What feeds publish</a></p>
+      <p><strong>United States tools:</strong>
+      <a href="/ntd/">NTD readiness</a> ·
+      <a href="/equity/">U.S. equity</a></p>
+      <p><strong>Tools:</strong>
+      <a href="/compare/">Compare two agencies</a> ·
+      <a href="/fix/">GTFS errors &amp; fixes</a> ·
+      <a href="/check/">Check a feed before you publish</a> ·
+      <a href="/try.html">Request a one-off score</a> ·
+      <a href="/query/">Query the dataset</a> ·
+      <a href="/subscribe.html">Feed-health alerts</a> ·
+      <a href="/submit.html">Add your agency</a> ·
+      <a href="/claim/">Correct or claim a listing</a> ·
+      <a href="/procurement/">For agencies: procurement</a></p>
+      <p><a href="/about/">About</a> ·
+      <a href="/status/">Status</a> ·
+      <a href="/support/">Support this project</a> ·
+      <a href="/how-to-read/">How to read a scorecard</a> ·
+      <a href="/how-to-read/#glossary">Glossary</a> ·
+      <a href="/crosswalk/">Standards crosswalk</a> ·
+      <a href="/press/">For reporters</a> ·
+      <a href="/data/">Open data</a> ·
+      <a href="/accessibility/">Accessibility</a> ·
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+    </div>
+  </footer>
+</body>
+</html>

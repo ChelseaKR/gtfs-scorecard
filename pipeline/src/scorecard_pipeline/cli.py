@@ -284,7 +284,7 @@ def run_agency(  # noqa: C901
         **routability.to_details(),
         "findings": [f.to_json() for f in routability.findings],
     }
-    # NTD GTFS readiness and agency_id alignment are US-only surfaces:
+    # NTD GTFS readiness and optional NTD-ID equality are US-only surfaces:
     # they map the feed onto the FTA National Transit Database, which has no
     # meaning abroad. A non-US agency is scored on the same rubric but skips both,
     # so no hollow NTD box appears (ADR 0026). Absent keys mean the SPA and API
@@ -294,9 +294,10 @@ def run_agency(  # noqa: C901
         from .ntd import assess as assess_ntd_readiness
         from .ntd import assess_id_alignment, assess_shapes_readiness
 
-        # NTD ID alignment: does the feed's agency_id match the agency's NTD ID?
-        # A forward-looking compliance flag (FTA RY2025/26), zero-deduction, shown
-        # as not-yet-checked when we have no NTD ID on file.
+        # RY2026 feed identity plus optional NTD-ID equality: agency_id presence
+        # is required and crosswalked on P-50, while equality to the five-digit
+        # NTD ID is only a neutral, zero-deduction convention. The comparison is
+        # shown as not-yet-checked when we have no NTD ID on file.
         artifact["ntd_id_alignment"] = assess_id_alignment(
             read_agency_ids(str(fetched.path)), agency.ntd_id
         ).to_dict()
@@ -307,7 +308,7 @@ def run_agency(  # noqa: C901
         artifact["shapes_readiness"] = assess_shapes_readiness(
             shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
-        # NTD GTFS readiness (published / valid / current), precomputed so
+        # NTD GTFS readiness (published / valid / current / agency_id), precomputed so
         # the web app and API render it without re-deriving the verdict.
         artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()
     # Corrected-feed offer: run the safe deterministic fixes over the feed we

@@ -49,13 +49,12 @@ class Agency:
     # default to active/unknown; sync proposals retain explicit catalog values.
     feed_status: str = "active"
     is_official: bool | None = None
-    # The agency's five-digit National Transit Database ID, when known. Aligning
-    # GTFS agency_id with the NTD ID lets a feed join cleanly to its NTD record;
-    # the July 2025 final rule did not require that feed change (it links the two
-    # on the P-50 form instead), so when this is set the scorecard checks the
-    # alignment and frames it as an optional convenience, never a penalty. Empty
-    # means no NTD ID on file and the check is shown as not-yet-checked. See
-    # ntd.assess_id_alignment.
+    # The agency's five-digit National Transit Database ID, when known. RY2026
+    # submissions must provide a stable agency_id for each represented reporter
+    # and crosswalk it to this NTD ID on P-50; the two values do not have to be
+    # equal. When this is set, the scorecard shows their optional equality as a
+    # neutral, zero-deduction comparison. Empty means no NTD ID on file and that
+    # comparison is shown as not-yet-checked. See ntd.assess_id_alignment.
     ntd_id: str = ""
     # Assigned ISO 3166-1 alpha-2 country code. It defaults to US only as a
     # compatibility behavior for registry entries that predate this field. A

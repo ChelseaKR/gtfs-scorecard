@@ -25,6 +25,7 @@ MOBILE_ROUTES = [
     "/",
     "/app/#/",
     "/agency/abq-ride/",
+    "/agency/unitrans/",
     "/program/california/",
     "/pulse/",
     "/problems/",
@@ -35,11 +36,11 @@ MOBILE_ROUTES = [
     "/fix/expired_calendar/",
     "/map/",
     "/routes/",
-    "/compare/",
+    "/compare/?a=unitrans&b=yolobus",
     "/query/",
     "/subscribe.html",
     "/check/",
-    "/concept/",
+    "/how-to-read/",
 ]
 
 
@@ -49,6 +50,8 @@ def test_page_family_fits_mobile_viewport(page: Page, base_url: str, path: str) 
     page.goto(f"{base_url}{path}")
     if path.startswith("/app/"):
         expect(page.locator("#main .loading")).to_have_count(0)
+    if path.startswith("/compare/?"):
+        expect(page.locator("#compare-status")).to_contain_text("Comparing")
 
     layout = page.evaluate(
         """() => ({
@@ -109,6 +112,24 @@ def test_page_family_fits_mobile_viewport(page: Page, base_url: str, path: str) 
     assert layout["headings"] == 1, f"{path}: expected one h1"
     assert layout["small"] == [], f"{path}: undersized standalone targets: {layout['small']}"
     assert layout["smallChoiceLabels"] == [], f"{path}: undersized checkbox/radio labels"
+
+
+@pytest.mark.parametrize(
+    "path",
+    ["/agency/unitrans/", "/compare/?a=unitrans&b=yolobus"],
+)
+def test_data_dense_pages_fit_320px(page: Page, base_url: str, path: str) -> None:
+    """Regression for the report route, route table, history prose, and loaded
+    comparison table: each owns any sideways scrolling instead of widening the
+    page at the WCAG reflow width."""
+    page.set_viewport_size({"width": 320, "height": 720})
+    page.goto(f"{base_url}{path}")
+    if path.startswith("/compare/"):
+        expect(page.locator("#compare-status")).to_contain_text("Comparing")
+    width = page.evaluate(
+        "() => [document.documentElement.clientWidth, document.documentElement.scrollWidth]"
+    )
+    assert width[1] <= width[0], f"{path}: viewport {width[0]}px, page {width[1]}px"
 
 
 def test_scorecard_shows_measured_grade_immediately(page: Page, base_url: str) -> None:
@@ -187,7 +208,7 @@ def test_key_pages_fit_tablet_and_desktop(page: Page, base_url: str, width: int)
         assert page_width <= viewport, f"{path} at {width}px: {page_width}px page"
 
 
-@pytest.mark.parametrize(("path", "grade"), [("/", "A"), ("/concept/", "B")])
+@pytest.mark.parametrize(("path", "grade"), [("/", "A"), ("/agency/unitrans/", "B")])
 def test_reduced_motion_keeps_grade_and_content_visible(
     page: Page, base_url: str, path: str, grade: str
 ) -> None:
@@ -210,3 +231,9 @@ def test_reduced_motion_keeps_grade_and_content_visible(
         "() => Array.from(document.querySelectorAll('.rise')).every((el) => "
         "getComputedStyle(el).opacity === '1')"
     )
+
+
+def test_retired_concept_routes_to_current_guide(page: Page, base_url: str) -> None:
+    page.goto(f"{base_url}/concept/")
+    page.wait_for_url(f"{base_url}/how-to-read/")
+    expect(page.get_by_role("heading", name="How to read your scorecard")).to_be_visible()

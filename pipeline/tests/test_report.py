@@ -34,6 +34,7 @@ def _artifact(**overrides: Any) -> dict[str, Any]:
         "validator_version": "7.0.0",
         "snapshot_date": "2026-07-10",
         "agency": {"id": "sampletown", "name": "Sampletown Transit"},
+        "feed": {"static_url": "https://example.org/gtfs.zip", "reachable": True},
         "overall": {"grade": "B", "score": 81.5},
         "categories": {
             "correctness": {
@@ -49,6 +50,7 @@ def _artifact(**overrides: Any) -> dict[str, Any]:
                 "score": 100.0,
                 "weight": 0.2,
                 "summary": "Service data covers the next 60 days.",
+                "details": {"days_until_expiry": 60},
             },
             "completeness": {
                 "name": "completeness",
@@ -86,6 +88,19 @@ def _artifact(**overrides: Any) -> dict[str, Any]:
                     "detail": "Service data covers the next 60 days.",
                 },
             ],
+        },
+        "ntd_id_alignment": {
+            "status": "mismatch",
+            "detail": "The feed value differs from the NTD ID; that is allowed.",
+            "fix": "",
+            "ntd_id": "12345",
+            "feed_agency_ids": ["sampletown"],
+        },
+        "shapes_readiness": {
+            "status": "ready",
+            "detail": "All 10 trips have a shape in shapes.txt.",
+            "total_trips": 10,
+            "trips_with_shape": 10,
         },
     }
     base.update(overrides)
@@ -222,7 +237,12 @@ def test_build_report_data_ntd_for_us_agency() -> None:
     data = build_report_data(_artifact(), [], generated_at=FROZEN)
     assert data["ntd"] is not None
     assert data["ntd"]["status_label"] == "Ready"
-    assert [p["name"] for p in data["ntd"]["pillars"]] == ["Published", "Valid", "Current"]
+    assert [p["name"] for p in data["ntd"]["pillars"]] == [
+        "Published",
+        "Valid",
+        "Current",
+        "agency_id provided",
+    ]
 
 
 def test_build_report_data_no_ntd_for_non_us_agency() -> None:
@@ -238,6 +258,23 @@ def test_build_report_data_shapes_row_recomputed_from_counts() -> None:
     assert shapes["label"] == "Needs attention"
     assert "4 of 10 trips" in shapes["detail"]
     assert "shapes.txt" in shapes["detail"]  # the fix sentence rides along
+
+
+def test_build_report_data_missing_shapes_check_is_not_fully_assessed() -> None:
+    artifact = _artifact()
+    artifact.pop("shapes_readiness")
+    data = build_report_data(artifact, [], generated_at=FROZEN)
+    assert data["ntd"]["status_label"] == "Not fully assessed"
+    assert data["ntd"]["shapes"]["label"] == "Not checked"
+    assert "cannot make a complete NTD readiness call" in data["ntd"]["summary"]
+
+
+def test_build_report_data_shapes_failure_downgrades_ready_label() -> None:
+    artifact = _artifact(shapes_readiness={"total_trips": 10, "trips_with_shape": 0})
+    data = build_report_data(artifact, [], generated_at=FROZEN)
+    assert data["ntd"]["status_label"] == "Not ready"
+    assert data["ntd"]["shapes"]["label"] == "Not ready"
+    assert "shapes.txt coverage check also needs attention" in data["ntd"]["summary"]
 
 
 def test_build_report_data_carries_ntd_note() -> None:

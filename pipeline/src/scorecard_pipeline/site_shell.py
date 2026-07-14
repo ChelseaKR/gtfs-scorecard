@@ -45,11 +45,11 @@ def esc(text: object) -> str:
 # learn how to read the thing, and who made it. The pages those groups absorb
 # stay reachable from each hub (and from _NAV_SECTION_PREFIXES for wayfinding).
 _NAV_ITEMS = [
-    ("Agencies", "/agencies/"),
+    ("Find an agency", "/agencies/"),
     ("Coverage", "/pulse/"),
     ("Focus areas", "/focus/"),
     ("Tools", "/tools/"),
-    ("How to read", "/how-to-read/"),
+    ("How it works", "/how-to-read/"),
     ("About", "/about/"),
 ]
 
@@ -158,44 +158,69 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
 
 # The one shared footer, single-sourced here so the generated pages and the
 # hand-authored static pages can never drift apart (same mechanism as the nav).
-_US_TOOLS_FOOTER_SECTION = """      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
+_US_TOOLS_FOOTER_SECTION = """          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
 """
 
 FOOTER_HTML = f"""<footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
 {_US_TOOLS_FOOTER_SECTION.rstrip()}
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>"""
 
@@ -282,6 +307,7 @@ def _page(
     wide: bool = False,
     lang: str = "en",
     country_code: str | None = None,
+    main_modifier: str = "",
 ) -> str:
     """Wrap body in the full HTML document with SEO head tags. CSS and the
     interactive app are linked by absolute path from the site root. ``head_extra``
@@ -290,7 +316,9 @@ def _page(
     keeps its own measure, tables get the screen (WCAG 1.4.8 line-length
     limits apply to prose, not data tables). On an agency-scoped page,
     ``country_code`` removes the labelled United States policy-tool links when
-    they cannot apply; shared global links and all U.S. pages stay unchanged."""
+    they cannot apply; shared global links and all U.S. pages stay unchanged.
+    ``main_modifier`` adds a page-family hook without replacing the shared
+    container classes."""
     ld = (
         f'\n  <script type="application/ld+json">{json.dumps(jsonld, separators=(",", ":"))}</script>'
         if jsonld
@@ -301,6 +329,8 @@ def _page(
     ld += f"\n  {head_extra}" if head_extra else ""
     nav = _nav_html(canonical, lang)
     main_class = "wrap wrap-wide" if wide else "wrap"
+    if main_modifier:
+        main_class += f" {esc(main_modifier)}"
     skip_label = "Saltar al contenido principal" if lang == "es" else "Skip to main content"
     if lang == "es":
         footer = FOOTER_HTML_ES
@@ -342,7 +372,7 @@ def _page(
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {{
+    @media (max-width: 1040px) {{
       .nav-menu-btn {{ display: none !important; }}
       .nav-cluster {{ display: flex !important; position: static; }}
     }}

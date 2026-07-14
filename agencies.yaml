@@ -26,13 +26,13 @@
 #                    feed discovery follow the catalog by id, so a moved URL is
 #                    caught exactly instead of by fuzzy name match.
 #   ntd_id           the agency's five-digit National Transit Database ID, when
-#                    known. Matching GTFS agency_id to the NTD ID is an optional
-#                    convenience (the July 2025 final rule links the two on the
-#                    P-50 form instead of requiring a feed change). When set,
-#                    the scorecard checks whether the feed's agency_id matches,
-#                    framed as optional and never as a penalty. Quote it so a
-#                    leading zero is kept. Omit if unknown; the check is then
-#                    shown as not-yet-checked.
+#                    known. RY2026 submissions must provide a stable agency_id
+#                    for every represented reporter and crosswalk it to this
+#                    value on P-50, but agency_id need not equal the NTD ID.
+#                    When set, the scorecard shows that optional equality as a
+#                    neutral, zero-deduction comparison. Quote it so a leading
+#                    zero is kept. Omit if unknown; the comparison is then shown
+#                    as not-yet-checked.
 #   ntd_note         curator-recorded NTD reporting context the feed cannot
 #                    express: a shared regional feed (several agencies, one
 #                    export), an FTA waiver, or another arrangement (e.g.

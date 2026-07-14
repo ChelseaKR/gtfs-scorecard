@@ -32,7 +32,7 @@ When a feed earns the mark, the pipeline writes two files next to its artifacts:
 - `conformance.json` — the machine-readable result (`awarded`, `status`, the
   three criteria with `met` and a plain-language detail). Always written.
 
-The agency page shows the mark, the three checks, and a copy-paste embed when
+The agency page shows the mark, its three checks, and a copy-paste embed when
 the mark is earned.
 
 ## Embedding
@@ -45,8 +45,7 @@ When earned, copy the snippet from the agency page, or build it directly:
 
 ## Why these three
 
-The mark extends the NTD readiness pillars (published, valid, current) with the
-accessibility floor that the rubric already treats as a values statement. It is
-the same shape a small agency is asked to meet for federal certification, plus
-the accessibility data riders depend on. The official check for certification is
-still the agency's own D-10.
+The mark combines published validity, currency, and the accessibility floor that
+the rubric treats as a values statement. It does not cover the separate RY2026
+agency_id/P-50 identity requirement or certify NTD compliance. The official
+check remains the agency's own D-10 and P-50 filing.

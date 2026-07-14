@@ -823,7 +823,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         '<div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div></div>'
     )
     return (
-        '<div class="board-hero"><div class="board-inner">'
+        '<div class="board-hero" id="report-overview"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
         '<p class="board-sub">Based on the feed this agency publishes</p>'
@@ -1478,11 +1478,11 @@ def _route_map_section(
             for r in routes
         )
         route_table = (
-            '<table class="route-table">'
+            '<div class="table-wrap"><table class="route-table">'
             f"<caption>Routes in {agency_name}'s feed</caption>"
             '<thead><tr><th scope="col">Route</th><th scope="col">Type</th>'
             '<th scope="col">Line color</th></tr></thead>'
-            f"<tbody>{rows}</tbody></table>"
+            f"<tbody>{rows}</tbody></table></div>"
         )
     else:
         route_table = '<p class="page-lede">This feed lists no routes.</p>'
@@ -1619,11 +1619,12 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
             f"{prove_link}</p></li>"
         )
     return (
-        '<div class="fixloop">'
+        '<details class="fixloop">'
+        "<summary>How to make and verify these fixes</summary>"
         '<p class="fixloop-lede"><strong>Close the loop on each fix.</strong> Read the guide, '
         "make the change in your tool, and let the next run verify it &mdash; the scorecard "
         "shows the fix; the agency publishes it.</p>"
-        f'<ol class="fixloop-list">{"".join(items)}</ol></div>'
+        f'<ol class="fixloop-list">{"".join(items)}</ol></details>'
     )
 
 
@@ -1834,7 +1835,7 @@ def _location_label(record: dict[str, Any] | None) -> str:
     return country_label or legacy_state
 
 
-def _render_agency(
+def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
     prev_artifact: dict[str, Any] | None = None,
@@ -1981,19 +1982,27 @@ def _render_agency(
             findings.extend(cat.get("findings", []))
     rank = {"ERROR": 0, "WARNING": 1, "INFO": 2}
     findings.sort(key=lambda f: (rank.get(f.get("severity"), 9), -f.get("count", 0)))
-    findings_html = (
-        "".join(
-            f'<li class="finding"><div class="finding-head">'
-            f"{_finding_severity_badge(f.get('severity'))}"
-            f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
-            f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
-            f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
-            f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
-            f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
-            for f in findings
-        )
-        or '<li class="finding"><p class="what">No findings.</p></li>'
+    findings_html = "".join(
+        f'<li class="finding"><div class="finding-head">'
+        f"{_finding_severity_badge(f.get('severity'))}"
+        f'<span class="count">{f.get("count", 0)} {"instance" if f.get("count", 0) == 1 else "instances"}</span></div>'
+        f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
+        f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
+        f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
+        f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
+        for f in findings
     )
+    if findings_html:
+        finding_word = "finding" if len(findings) == 1 else "findings"
+        findings_block = (
+            f'<p class="findings-count">{len(findings)} {finding_word}, ordered by severity.</p>'
+            '<details class="evidence-drawer"><summary>Show every finding</summary>'
+            f'<ul class="findings">{findings_html}</ul></details>'
+        )
+    else:
+        findings_block = (
+            '<p class="all-clear">No findings. This feed passed every measured check.</p>'
+        )
 
     op_note = artifact.get("agency", {}).get("operating_note")
     op_html = (
@@ -2010,6 +2019,53 @@ def _render_agency(
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name, str(overall["grade"]))
     _citation_block = _citation_section(artifact, agency_id, agency_name)
+    action_links = []
+    if _vendor_block:
+        action_links.append(
+            '<a class="report-action report-action-primary" href="#send-vendor">Send fixes</a>'
+        )
+    action_links.extend(
+        [
+            f'<a class="report-action" href="/agency/{esc(agency_id)}/board/">Board one-pager</a>',
+            f'<a class="report-action" href="/agency/{esc(agency_id)}/brief/">Call brief</a>',
+            f'<a class="report-action" href="/compare/?a={esc(agency_id)}">Compare</a>',
+            '<a class="report-action" href="/subscribe.html">Watch this feed</a>',
+            f'<a class="report-action" href="/claim/?agency={esc(agency_id)}">Correct listing</a>',
+        ]
+    )
+    if has_fixlog:
+        action_links.append(
+            f'<a class="report-action" href="/agency/{esc(agency_id)}/fixes/">Fix log</a>'
+        )
+    actions = (
+        '<nav class="report-actions" aria-label="Scorecard actions">'
+        + "".join(action_links)
+        + "</nav>"
+    )
+    report_stops = [
+        ("Overview", "#report-overview"),
+        ("Fixes", "#fixes-h"),
+        ("Scores", "#cats-h"),
+    ]
+    if map_section:
+        report_stops.append(("Routes", "#map-h"))
+    report_stops.extend(
+        [
+            ("History", "#trend-h"),
+            ("Evidence", "#findings-h"),
+            ("Standards", "#standards-h"),
+        ]
+    )
+    report_route = (
+        '<nav class="report-route" aria-label="On this scorecard">'
+        '<p class="report-route-kicker">Report route</p>'
+        '<p class="report-route-title">Stops on this page</p><ol>'
+        + "".join(
+            f'<li><a href="{href}"><span aria-hidden="true"></span>{label}</a></li>'
+            for label, href in report_stops
+        )
+        + "</ol></nav>"
+    )
     # The copy script is emitted once if any copyable block (outreach, vendor,
     # embed, citation) is present, so multiple buttons never double-bind.
     _copy_script = (
@@ -2018,14 +2074,10 @@ def _render_agency(
         else ""
     )
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (agency_name, None)])
-    body = f"""    {crumb}
+    body = f"""    <div class="report-head">
+    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    <p class="brief-link"><a href="/agency/{esc(agency_id)}/brief/">Prep for a call: printable one-page brief</a>
-      · <a href="/agency/{esc(agency_id)}/board/">For your board packet: printable one-pager</a>
-      {f'· <a href="/agency/{esc(agency_id)}/fixes/">Fix log: every issue this feed has cleared</a>' if has_fixlog else ""}
-      · <a href="/compare/?a={esc(agency_id)}">Compare with another agency</a>
-      · <a href="/subscribe.html">Watch this feed: get an email before it expires</a>
-      · <a href="/claim/?agency={esc(agency_id)}">Correct or claim this listing</a></p>
+    {actions}
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
     {op_html}
     {_anomaly_note(history)}
@@ -2035,6 +2087,9 @@ def _render_agency(
       <a href="/how-to-read/">New to this? How to read your scorecard.</a>
       <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
       Rubric v{esc(artifact.get("rubric_version", "—"))}, validator {esc(artifact.get("validator_version", "—"))}.</p>
+    </div>
+    {report_route}
+    <div class="report-content">
     {_liveness_note(liveness, now)}{confidence_block}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
@@ -2057,7 +2112,7 @@ def _render_agency(
     {_route_rule()}
     <section aria-labelledby="findings-h">
       <h2 class="section-title" id="findings-h">Everything we checked</h2>
-      <ul class="findings">{findings_html}</ul>
+      {findings_block}
     </section>
     {_recommendations_section(artifact)}
     {_autofix_section(artifact)}
@@ -2076,7 +2131,8 @@ def _render_agency(
     {_route_rule()}
     {_embed_block}
     {_citation_block}
-    {_copy_script}"""
+    {_copy_script}
+    </div>"""
 
     jsonld = {
         "@context": "https://schema.org",
@@ -2130,6 +2186,8 @@ def _render_agency(
         jsonld=jsonld,
         head_extra=atom,
         country_code=str(location_record.get("country") or "US"),
+        wide=True,
+        main_modifier="agency-report",
     )
 
 
@@ -2227,7 +2285,8 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     else:
         fixes_html = "<p>Nothing urgent. This feed passed every check we translate into a fix.</p>"
 
-    # NTD readiness verdict and pillars, precomputed at score time.
+    # NTD readiness verdict and pillars, recomputed from stored inputs so older
+    # artifacts gain the RY2026 agency_id presence check without a rescore.
     readiness = presented_ntd_readiness(artifact) or {}
     ntd_status = str(readiness.get("status", "unknown"))
     ntd_label = _NTD_LABELS.get(ntd_status, ntd_status)
@@ -2245,18 +2304,18 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             f'<dl class="brief-ntd">{pillar_rows}</dl>'
         )
 
-    # agency_id vs NTD ID alignment line, re-worded at render time so old
-    # artifacts never resurface pre-final-rule prescriptive copy.
+    # Optional agency_id-vs-NTD-ID equality line, re-worded at render time so
+    # old artifacts never conflate required presence with optional equality.
     align = _current_alignment(artifact) or {}
     align_html = ""
-    if align:
+    if align and align.get("status") != "missing":
         a_status = str(align.get("status", "unknown"))
         a_label = _NTD_ALIGN_LABELS.get(a_status, a_status)
         body = esc(str(align.get("detail", "")))
         if align.get("fix"):
             body += f" {esc(str(align.get('fix')))}"
         align_html = (
-            f'<p class="brief-align"><strong>agency_id and NTD ID:</strong> '
+            f'<p class="brief-align"><strong>agency_id equals NTD ID (optional):</strong> '
             f"{esc(a_label)}. {body}</p>"
         )
 
@@ -2364,7 +2423,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if country.upper() == "US"
         else "confirm the feed is current and the rider information is complete"
     )
-    body = f"""    <div class="brief">
+    body = f"""    <div class="brief brief-call">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
       <p class="brief-kicker">Call-prep brief &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
@@ -2395,6 +2454,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       Not an official compliance determination. Rubric v{esc(str(artifact.get("rubric_version", "—")))},
       validator {esc(str(artifact.get("validator_version", "—")))}.</p>
     </div>"""
+    body = "\n".join(line.rstrip() for line in body.splitlines())
     scope_detail = "NTD readiness" if country.upper() == "US" else "guidance"
     desc = (
         f"Call-prep brief for {agency_name}: grade {overall['grade']}, top fixes, "
@@ -2497,7 +2557,7 @@ def _render_board_page(
     if tool and fixes:
         who_makes = f'<p class="brief-fix-why">{esc(tool.fix_path)}</p>'
 
-    body = f"""    <div class="brief">
+    body = f"""    <div class="brief brief-board">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
@@ -2746,17 +2806,21 @@ def _google_gate_line(artifact: dict[str, Any], now: dt.datetime | None = None) 
 
 
 _NTD_LABELS = {"ready": "Ready", "at_risk": "Needs attention", "not_ready": "Not ready"}
-_NTD_PILLAR_NAMES = {"published": "Published", "valid": "Valid", "current": "Current"}
+_NTD_PILLAR_NAMES = {
+    "published": "Published",
+    "valid": "Valid",
+    "current": "Current",
+    "agency_id": "agency_id provided",
+}
 
-# NTD ID alignment is a forward-looking compliance flag, not part of the
-# readiness status, so it renders below the pillars with its own label. Reuses
-# the readiness status classes (text label carries the meaning; color does not).
-# Alignment is an optional convenience, not a graded requirement, so a feed that
-# is not aligned reads neutrally (the "unknown" class), never as a problem.
+# Equality between agency_id and the five-digit NTD ID is optional, separate
+# from the required agency_id presence pillar, and carries no score. A mismatch
+# therefore reads neutrally. A missing value is handled by the readiness pillar
+# and the equality row is omitted.
 _NTD_ALIGN_LABELS = {
-    "aligned": "Aligned",
-    "mismatch": "Not aligned",
-    "missing": "Not aligned",
+    "aligned": "Equal",
+    "mismatch": "Different (allowed)",
+    "missing": "Not available",
     "unknown": "Not checked yet",
 }
 _NTD_ALIGN_CLASSES = {
@@ -2768,14 +2832,15 @@ _NTD_ALIGN_CLASSES = {
 
 
 def _current_alignment(artifact: dict[str, Any]) -> dict[str, Any] | None:
-    """The NTD ID alignment block, re-worded at render time.
+    """The agency_id / NTD-ID equality block, re-worded at render time.
 
     Artifacts store the alignment verdict's prose at score time, so a feed not
     re-scored since the July 2025 final-rule copy fix can still carry the old
     prescriptive "should be your NTD ID by report year 2026" text. The stored
     inputs (feed_agency_ids, ntd_id) let us recompute the current wording here,
-    so every rendered page speaks final-rule language regardless of artifact
-    age; the stored block is the fallback when the inputs are absent."""
+    so every rendered page distinguishes required agency_id presence from
+    optional equality regardless of artifact age. The stored block is the
+    fallback when the inputs are absent."""
     align = artifact.get("ntd_id_alignment")
     if not align:
         return None
@@ -2788,15 +2853,14 @@ def _current_alignment(artifact: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _ntd_id_alignment_html(artifact: dict[str, Any]) -> str:
-    """Render the NTD ID alignment line, when the check ran for this feed.
+    """Render the optional NTD-ID equality line when it can be compared.
 
-    Whether the feed's agency_id matches the agency's NTD ID. Aligning the two
-    lets a feed join cleanly to its NTD record; the July 2025 final rule did not
-    require that feed change (FTA links them on the P-50 form), so this is shown
-    as an optional convenience carrying no score. Absent for artifacts that
-    predate the check."""
+    RY2026 requires agency_id presence and a P-50 crosswalk, but not equality to
+    the five-digit NTD ID. Missing presence is already shown as a readiness
+    pillar, so this neutral, zero-deduction row is omitted when there is no value
+    to compare. It is also absent for artifacts that predate the check."""
     align = _current_alignment(artifact)
-    if not align:
+    if not align or align.get("status") == "missing":
         return ""
     status = str(align.get("status", "unknown"))
     label = _NTD_ALIGN_LABELS.get(status, status)
@@ -2808,7 +2872,7 @@ def _ntd_id_alignment_html(artifact: dict[str, Any]) -> str:
         body += f" {esc(fix)}"
     return (
         '<dl class="standards-list">'
-        f'<dt>agency_id matches your NTD ID <span class="ntd-status {cls}">'
+        f'<dt>agency_id equals your NTD ID (optional) <span class="ntd-status {cls}">'
         f"{esc(label)}</span></dt><dd>{body}</dd></dl>"
     )
 
@@ -2895,8 +2959,8 @@ def _canada_equity_section(artifact: dict[str, Any]) -> str:
 def _ntd_section(artifact: dict[str, Any]) -> str:
     """Map this feed's scores onto the FTA National Transit Database GTFS
     requirement, so an agency facing annual D-10 certification gets a direct
-    'is my feed ready?' read. Three pillars (published, valid, current), each
-    labelled in text as well as color so the status never relies on color alone.
+    'is my feed ready?' read. Four pillars (published, valid, current, agency_id),
+    each labelled in text as well as color so status never relies on color alone.
 
     US-only: a non-US agency (agency.country != "US") has no FTA NTD, so this
     returns "" and the page shows just the GTFS-quality rubric. See ADR 0026."""
@@ -2932,19 +2996,17 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         f"{_ntd_id_alignment_html(artifact)}"
         f"{_shapes_readiness_html(artifact)}"
         '<p class="plain-summary"><strong>In plain words:</strong> if you report to the federal '
-        "transit database, you have to publish a working, up-to-date feed and confirm it once a "
-        "year. This box is a heads-up on whether yours looks ready; it is not the official "
-        "sign-off.</p>"
+        "transit database, you have to publish a working, up-to-date feed, provide a stable "
+        "agency_id for each represented reporter, and confirm the feed and P-50 crosswalk each "
+        "year. This box is a heads-up; your filings are the official check.</p>"
         '<p class="fineprint">A readiness signal mapping this feed to the '
         '<a href="https://www.transit.dot.gov/ntd">'
         '<abbr title="Federal Transit Administration">FTA</abbr> National Transit Database</a> GTFS '
         "requirement (Report Year 2023 onward: a public, valid, current feed, certified "
-        'annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). Aligning '
-        "agency_id with your NTD ID lets the feed line up with your NTD record; the "
-        '<a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/'
-        'national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">'
-        "July 2025 final rule</a> links the two on the P-50 form rather than requiring that "
-        "feed change, and requires shapes.txt in the published GTFS: Full Reporters from Report "
+        'annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). For RY2026, '
+        "each represented reporter needs a stable agency_id, unique within the feed and "
+        "crosswalked to its five-digit NTD ID on P-50; the values do not need to be equal. "
+        "FTA also requires shapes.txt in the published GTFS: Full Reporters from Report "
         "Year 2025, and Reduced, Rural, and Tribal Reporters from Report Year 2026. Not an "
         "official determination; your certification is the official check.</p></section>"
     )
@@ -4231,9 +4293,11 @@ def _render_accessibility() -> str:
 
     <section><h2 class="section-title">How we check</h2>
     <p>Every colour pair is verified to clear AAA contrast in all four themes by an
-    automated gate, and accessibility checks (axe and Lighthouse) run on each change.
-    On top of the automated checks we review the site by keyboard and with assistive
-    technology. You can read the full results in the
+    automated gate. Axe checks a representative set of page families in the accessibility
+    workflow, Lighthouse checks the landing page in the publishing workflow, and browser
+    tests exercise keyboard and form journeys. We also review with a keyboard. A recorded
+    screen-reader walkthrough is still pending, so automated results are not presented as
+    an assistive-technology attestation. You can read the full results in the
     <a href="{repo}/blob/main/docs/accessibility.md">conformance report</a> and the
     <a href="{repo}/blob/main/docs/vpat.md">508-edition <abbr title="Voluntary Product Accessibility Template">VPAT</abbr></a>.</p></section>
 
@@ -4252,7 +4316,7 @@ def _render_accessibility() -> str:
     through the contact link on <a href="https://chelseakr.com">chelseakr.com</a>.
     We aim to acknowledge accessibility reports within a few business days.</p></section>
 
-    <p class="page-lede" style="margin-top:2rem">Last reviewed: 22 June 2026.</p>"""
+    <p class="page-lede" style="margin-top:2rem">Last reviewed: 13 July 2026.</p>"""
     return _page(
         title="Accessibility | GTFS Scorecard",
         description="How the GTFS Scorecard meets WCAG 2.2 AAA and Section 508, its known limitations, and how to report an accessibility barrier.",
@@ -4564,7 +4628,7 @@ _SANDBOX_STYLE = """    <style>
       #sandbox .sandbox-controls { display: grid; gap: 0.9rem; margin: 1rem 0; }
       #sandbox .sandbox-slider { display: grid; grid-template-columns: 10rem 1fr 3.5rem; align-items: center; gap: 0.75rem; }
       #sandbox .sandbox-slider label { font-weight: 600; }
-      #sandbox .sandbox-slider input[type="range"] { width: 100%; accent-color: var(--green); }
+      #sandbox .sandbox-slider input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--green); }
       #sandbox .sandbox-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); }
       #sandbox .sandbox-buttons { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
       #sandbox .sandbox-headline { font-weight: 600; margin: 0.75rem 0; }
@@ -5021,8 +5085,8 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
             "/ntd/",
             "NTD GTFS readiness",
             f"{pct_ready}% of assessed U.S. feeds look ready to certify",
-            "Which U.S. feeds are published, valid, and current against the FTA "
-            "requirement, with a state breakdown.",
+            "Which U.S. feeds are published, valid, current, and identified with "
+            "agency_id against the FTA requirement, with a state breakdown.",
         ),
         (
             "/equity/",
@@ -6245,9 +6309,10 @@ def _render_ntd_page(
         )
         lead = (
             f"<strong>{esc(payload.get('pct_ready', 0))}% of {esc(total)} tracked feeds "
-            "look ready to certify</strong> against the three things the "
-            "Federal Transit Administration checks: the feed is published at a working "
-            "URL, it is valid, and its calendar has not lapsed."
+            "look ready to certify</strong> against four feed checks for RY2026: the "
+            "feed is published at a working "
+            "URL, it is valid, its calendar has not lapsed, and agency.txt provides "
+            "agency_id for the P-50 crosswalk."
         )
     else:
         state_table = ""
@@ -6281,10 +6346,11 @@ def _render_ntd_page(
     ry2026 = (
         '<section class="feed-details"><h2 class="section-title">Report year 2026: '
         "small and rural reporters join</h2>"
-        '<p class="page-lede">Full reporters have had to include valid GTFS in their NTD '
-        "report since report year 2025. Reduced, rural, and tribal reporters join in "
-        "report year 2026, which brings most of the small agencies this site tracks into "
-        "the requirement for the first time. An agency that cannot comply yet can request "
+        '<p class="page-lede">Since Report Year 2023, NTD reporters with fixed-route '
+        "service have had to publish and maintain GTFS. For RY2026, every submission must "
+        "provide a stable agency_id for each represented reporter and crosswalk it to the "
+        "reporter's NTD ID on P-50; agency_id does not need to equal that five-digit ID. "
+        "An agency that cannot comply yet can request "
         "a one-year waiver by showing it is pursuing technical assistance to establish "
         "its GTFS data. The same rule adds shapes.txt to the published feed: "
         '<a href="/ntd/shapes/">does your feed need shapes.txt, explained</a>.</p>'
@@ -6319,9 +6385,10 @@ def _render_ntd_page(
     {state_table}
     <p class="plain-summary"><strong>In plain words:</strong> since Report Year 2023, every
     NTD reporter with fixed-route or deviated-fixed-route service has to publish a valid,
-    current GTFS feed and certify it each year. This page reads the published, valid, and
-    current signals for every feed we track and rolls them up, so a program can see at a
-    glance how its agencies are doing.</p>
+    current GTFS feed and certify it each year. For RY2026, each represented reporter also
+    needs a stable agency_id crosswalked on P-50. This page reads those four feed signals
+    for every feed we track and rolls them up, so a program can see at a glance how its
+    agencies are doing.</p>
     <p class="fineprint">This is a data-quality heads-up, not an official compliance
     determination. Each agency's annual
     <a href="https://www.transit.dot.gov/ntd">D-10 certification</a> is the official one.
@@ -7159,7 +7226,7 @@ def _render_procurement() -> str:
     <p>You do not need to take the vendor's word for it. Find your agency on this site to see
     where the feed stands today, add a <a href="{repo}/blob/main/docs/ci-action.md">GTFS
     Scorecard check</a> to a build so a bad feed fails before it publishes, or
-    <a href="/try.html">paste a feed URL</a> to grade it right now.</p></section>
+    <a href="/try.html">request a one-off score</a> through the GitHub-backed path.</p></section>
 
     <p class="fineprint">This is sample language to adapt, not legal advice. Check it against
     your agency's procurement rules.</p>""",
@@ -7550,7 +7617,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/support/",
         f"{BASE_URL}/fetcher/",
         f"{BASE_URL}/data/",
-        f"{BASE_URL}/concept/",
         f"{BASE_URL}/submit.html",
         f"{BASE_URL}/try.html",
         f"{BASE_URL}/subscribe.html",
@@ -7600,6 +7666,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("fix/index.html", _render_fix_index(fix_guides), f"{BASE_URL}/fix/")
 
     write("how-to-read/index.html", _render_guide(), f"{BASE_URL}/how-to-read/")
+    # Retire the hand-built visual prototype now that its strongest ideas live
+    # in the shared system. Keep old links useful without presenting a third,
+    # stale design language or indexing duplicate guidance.
+    write("concept/index.html", _redirect_page("/how-to-read/", "Design concept"))
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
     write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
     validate_catalogs()
@@ -7708,7 +7778,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             ),
             "expiry_status": expiry_status(days),
             # Readiness for the FTA NTD GTFS requirement (published/valid/
-            # current), so a state program can filter its portfolio by who is
+            # current/agency_id), so a state program can filter its portfolio by who is
             # ready to certify without opening each scorecard. NTD is a
             # US-federal concept, so this is null for non-US feeds (ADR 0026):
             # the directory filter and national rollup never count them.

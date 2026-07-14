@@ -32,12 +32,7 @@ def _first_rollup() -> tuple[str, str]:
 
 
 def _portable_directory() -> dict[str, Any]:
-    """Current directory enriched with the additive portable location fields.
-
-    The committed production snapshot predates the generated contract. Keeping
-    this browser fixture local lets the SPA behavior be exercised without
-    changing the pipeline or checked-in operational data.
-    """
+    """Current directory normalized into stable portable-location test cases."""
     directory = json.loads((ARTIFACTS / "directory.json").read_text())
     canadian = {
         "barrie-transit": ("CA-ON", "Ontario"),
@@ -47,6 +42,11 @@ def _portable_directory() -> dict[str, Any]:
     for agency in directory["agencies"]:
         if agency["id"] in canadian:
             agency["subdivision_code"], agency["subdivision_name"] = canadian[agency["id"]]
+        elif agency["id"] == "whitehorse-transit":
+            # Keep one Canadian agency deliberately unlocated so the duplicate
+            # UNLOCATED sentinel can be tested independently in two countries.
+            agency["subdivision_code"] = None
+            agency["subdivision_name"] = ""
         elif agency.get("country") == "US" and agency.get("state") == "California":
             agency["subdivision_code"] = "US-CA"
             agency["subdivision_name"] = "California"
@@ -132,7 +132,7 @@ def _assert_not_stuck_loading(page: Page) -> None:
 
 def test_overview_route_renders_directory(page: Page, app_url: str) -> None:
     page.goto(f"{app_url}#/")
-    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
+    expect(page.locator("#main h1.page-title")).to_have_text("Find an agency scorecard.")
     expect(page.locator("#agency-search")).to_be_visible()
     _assert_not_stuck_loading(page)
 
@@ -207,11 +207,11 @@ def test_program_route_renders_members(page: Page, app_url: str) -> None:
 def test_hash_navigation_reroutes_without_reload(page: Page, app_url: str) -> None:
     """The hashchange listener re-renders in place, both forward and back."""
     page.goto(f"{app_url}#/")
-    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
+    expect(page.locator("#main h1.page-title")).to_have_text("Find an agency scorecard.")
     page.locator('#main a[href="#/programs"]').click()
     expect(page.locator("#main h1.page-title")).to_have_text("Program rollups.")
     page.go_back()
-    expect(page.locator("#main h1.page-title")).to_have_text("How is transit data doing?")
+    expect(page.locator("#main h1.page-title")).to_have_text("Find an agency scorecard.")
     _assert_not_stuck_loading(page)
 
 

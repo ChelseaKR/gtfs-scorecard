@@ -88,13 +88,14 @@
       <p>Three improvements, in priority order, each sized so a board can see what it is approving:</p><ol class="fixes"><li><p class="fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p>296 of 296 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="fix-effort">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li><p class="fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p>3071 of 3071 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="fix-effort">Estimated effort: Often one default setting in your export.</p></li><li><p class="fix-do">Enable &#x27;remove unused shapes&#x27; (or similar) in your export tool.</p><p>The feed contains route shapes no trip uses. Harmless to riders, but it bloats the feed and suggests stale export data.</p><p class="fix-effort">Estimated effort: One setting.</p></li></ol>
     </section>
     <section class="new-page" aria-labelledby="ntd-h">
-      <h2 id="ntd-h"><abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="status-chip">Ready</span></h2>
-      <p>This feed looks ready for your NTD certification: published at a public URL, valid, and current. The official check is still your D-10 certification.</p>
-      <dl class="pillars"><dt>Published <span class="status-chip">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="status-chip">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="status-chip">Ready</span></dt><dd>Service data covers the next 87 days.</dd></dl>
+      <h2 id="ntd-h"><abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="status-chip">Not fully assessed</span></h2>
+      <p>Published, valid, current, and agency_id are assessed here, but shapes.txt trip coverage was not checked in this legacy scorecard. This report therefore cannot make a complete NTD readiness call.</p>
+      <dl class="pillars"><dt>Published <span class="status-chip">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="status-chip">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="status-chip">Ready</span></dt><dd>Service data covers the next 82 days.</dd><dt>agency_id provided <span class="status-chip">Ready</span></dt><dd>agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.</dd><dt>shapes.txt covers your trips <span class="status-chip">Not checked</span></dt><dd>This scorecard artifact predates the shapes.txt trip-coverage check. Re-score the feed before relying on this report for NTD readiness.</dd></dl>
       <p><strong>In plain words:</strong> agencies that report to the federal National
       Transit Database certify once a year, on form D-10, that they publish a working,
-      up-to-date feed. This section is a heads-up on whether the feed looks ready; the
-      certification itself is the official check. The FTA's July 2025 final rule also
+      up-to-date feed. For RY2026, each represented reporter also needs a stable agency_id
+      crosswalked to its NTD ID on P-50; the two values need not be equal. This section is
+      a heads-up on whether the feed looks ready; the filings are the official check. FTA also
       requires shapes.txt in the published GTFS: Full Reporters from Report Year 2025,
       and Reduced, Rural, and Tribal Reporters from Report Year 2026.</p>
     </section>

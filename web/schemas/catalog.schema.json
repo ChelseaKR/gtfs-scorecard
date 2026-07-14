@@ -181,7 +181,7 @@
             "not_ready",
             null
           ],
-          "description": "Readiness for the FTA NTD GTFS requirement, rolled up from the published/valid/current pillars. A data-quality heads-up, never an official determination: ready = all three pillars hold; at_risk = a recoverable gap (validator errors, expiring soon); not_ready = unreachable or lapsed. NTD is a US-federal concept, so this is null for non-US agencies (ADR 0026)."
+          "description": "Readiness for the FTA NTD GTFS requirement, rolled up from the published/valid/current/agency_id pillars. A data-quality heads-up, never an official determination: ready = all four pillars hold; at_risk = a recoverable or unchecked gap; not_ready = unreachable, lapsed, or missing agency_id. NTD is a US-federal concept, so this is null for non-US agencies (ADR 0026)."
         },
         "google_gate": {
           "type": "string",

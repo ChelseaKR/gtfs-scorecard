@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Score a feed now — GTFS Scorecard</title>
+  <title>Request a one-off score — GTFS Scorecard</title>
   <meta name="description"
-        content="Paste a GTFS feed URL and get a graded scorecard back in a few minutes. No account, no YAML, no wait for review.">
+        content="Request a GTFS score through the GitHub-backed path, or run the open-source scorer locally. Hosted instant scoring is not enabled.">
   <link rel="canonical" href="https://gtfsscorecard.org/try.html">
-  <meta property="og:title" content="Score a feed now — GTFS Scorecard">
-  <meta property="og:description" content="Paste a GTFS feed URL and get a grade back in a few minutes.">
+  <meta property="og:title" content="Request a one-off score — GTFS Scorecard">
+  <meta property="og:description" content="Request a GTFS score through GitHub or run the scorer locally; hosted instant scoring is not enabled.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://gtfsscorecard.org/try.html">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
@@ -45,7 +45,7 @@
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a>
       <button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button>
       <div class="nav-cluster" id="nav-cluster">
-        <nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav>
+        <nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav>
         <div id="theme-control"></div>
       </div>
     </div>
@@ -53,17 +53,35 @@
 
   <main id="main" class="wrap" tabindex="-1">
     <a class="backlink" href="/app/">&larr; All agencies</a>
-    <h1 class="page-title">Score a feed now.</h1>
+    <h1 class="page-title">Request a one-off score.</h1>
     <p class="page-lede">Paste a link to any published
-    <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> Schedule feed and get a
-    graded scorecard back, usually within a minute. No account, no
-    <abbr title="YAML Ain't Markup Language, a plain-text config format">YAML</abbr>, and no waiting
-    for a review. This is a one-off check. To track a feed over time, <a href="submit.html">add
-    your agency</a> instead. Not published yet? <a href="/check/">Check the zip before you
-    publish</a>, right in your browser.</p>
+    <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> Schedule feed. Hosted
+    scoring is available through the GitHub-backed request below or by running the scorer
+    locally. To track a feed over time, <a href="submit.html">add your agency</a>
+    instead. Not published yet? <a href="/check/">Check the zip before you publish</a>, right in
+    your browser.</p>
 
-    <section aria-labelledby="form-h">
-      <h2 class="section-title" id="form-h">Score it now</h2>
+    <section class="action-panel" aria-labelledby="how-h">
+      <h2 class="section-title" id="how-h">Request a full score through GitHub</h2>
+      <p>This is the available hosted path. A scorer fetches the public feed, runs the
+      MobilityData validator, and returns the grade and top fixes as a comment.</p>
+      <ol class="how-list">
+        <li>Open the request and paste your GTFS Schedule URL.</li>
+        <li>The automated scorer validates and grades the feed.</li>
+        <li>The result returns as a comment on the issue, then the request closes.</li>
+      </ol>
+      <p class="field">
+        <a class="submit-button"
+           href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?template=score-a-feed.yml">
+          Request a full score
+        </a>
+      </p>
+      <p class="hint"><strong>GitHub account required.</strong> A free account is enough;
+      the submitted URL and result will be public on the issue.</p>
+    </section>
+
+    <section id="hosted-scorer" aria-labelledby="form-h" hidden>
+      <h2 class="section-title" id="form-h">Instant scorer</h2>
       <form id="try-form" class="submit-form" novalidate>
         <p class="field">
           <label for="try-url">GTFS Schedule URL <span class="req">(required)</span></label>
@@ -91,26 +109,6 @@
       <div id="try-result" hidden></div>
     </section>
 
-    <section aria-labelledby="how-h">
-      <h2 class="section-title" id="how-h">Prefer GitHub instead?</h2>
-      <ol class="how-list">
-        <li>Open the form and paste your GTFS Schedule URL.</li>
-        <li>A scorer downloads the feed, runs the MobilityData validator, and grades it
-        against the rubric.</li>
-        <li>It posts the grade, the category scores, and the top things to fix as a comment,
-        then closes the request.</li>
-      </ol>
-      <p class="field">
-        <a class="submit-button"
-           href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?template=score-a-feed.yml">
-          Open the form and score a feed
-        </a>
-      </p>
-      <p class="hint">The form lives on GitHub, so you will need a free GitHub account to
-      submit it. The grade comes back as a comment on the request you open, usually within a
-      few minutes. Use this if the form above is not enabled on this deployment.</p>
-    </section>
-
     <section aria-labelledby="cli-h">
       <h2 class="section-title" id="cli-h">Prefer the command line?</h2>
       <p class="page-lede">Score a feed locally with one command. It needs Java 17 and
@@ -126,39 +124,64 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Score any feed now</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 

@@ -112,15 +112,17 @@ one-time fixer into an advocate.
 ### Stage 5 — Realtime depth and the compliance hook
 
 Finish realtime scoring (scoped; gated on keyless or key-managed endpoints), and
-flag the [2025–26 NTD requirement to align `agency_id` to the NTD ID](https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026).
+flag the RY2026 NTD requirement to provide a stable `agency_id` for every
+represented reporter and crosswalk it to the NTD ID on P-50. The feed value does
+not have to equal the five-digit NTD ID.
 Rural agencies are struggling with it, it is federal, and it lives in a GTFS
 field — so it gives agencies a compliance reason to care, not only a quality one.
 
-**Built so far:** the `agency_id` flag. When an agency's five-digit NTD ID is on
-file (`ntd_id` in the registry), each scorecard's NTD readiness section checks
-whether the feed's `agency_id` matches it and names the fix when it does not. It
-carries no score and shows as not-yet-checked when we have no NTD ID, so an
-agency we cannot check is never penalized. See
+**Built so far:** the `agency_id` presence pillar and equality flag. Presence is
+checked for every US feed and affects only the NTD-readiness status. When an
+agency's five-digit NTD ID is on file (`ntd_id` in the registry), the scorecard
+also compares it with the feed value. A difference is allowed, carries no score,
+and points the reader to the required P-50 crosswalk. See
 [ADR 0016](decisions/0016-ntd-id-alignment.md).
 
 ### Stage 6 — Generalize beyond California, deliberately
