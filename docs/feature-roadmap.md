@@ -1,60 +1,119 @@
 # Feature roadmap
 
-A near-term, feature-level plan: the concrete things to build next and the order
-to build them in. This sits between the two longer-horizon documents and should
-be read with them:
+Last updated: 2026-07-14
 
-- [`product-roadmap.md`](product-roadmap.md) is the multiyear view of user value.
-- [`roadmap.md`](roadmap.md) is the multiyear infrastructure and scaling plan.
-- This file is what to ship over the next few iterations. When an item ships, it
-  moves out of this file and into the "where the product is today" paragraph in
-  `product-roadmap.md`.
+This is the ordered delivery list for the next 90 days. It implements the
+proof-first direction in [`product-roadmap.md`](product-roadmap.md) and uses the
+operating gates in [`roadmap.md`](roadmap.md). Earlier FIX, EXP, and RR lists are
+research history, not parallel queues.
 
-## Status: the 2026-06 list shipped in full
+## Status
 
-Every item from the previous version of this file (the expired-feed loop,
-predictive freshness, and registry themes) has shipped and moved to
-`product-roadmap.md` per the rule above. For the record, where each landed:
+The previous feature list shipped across about 1,128 published scorecard pages.
+Daily scorecards, program rollups, alerts, finding-clearance records,
+provenance, data contracts, the read API, MCP server, badges, and the reusable
+Action are available. They now support the work below.
 
-| Item | Where it landed |
-| --- | --- |
-| Resilient feed fetching | `net.py` (browser UA, backoff on 403/429), `fetch.py` Mobility Database mirror fallback, neutral "unreachable" state in `metrics.py` |
-| Recurring stale-feed report per program | `rollups.py` `expired` block, rendered on every `/program/<id>/` page |
-| `discover` on a schedule, replacements as PRs | `.github/workflows/discover.yml` (weekly) |
-| "Still operating?" signal | `operating_note` in `agencies.yaml`, rendered on scorecard and directory |
-| Liaison-ready outreach copy | outreach note block in `render_site.py` |
-| Expiry forecasting and lead-time alerts | tiered 60/30/14/7-day digest in `alerts.py` |
-| Expiry status in the API and badges | `expiry_status` in `docs/api.md`, status segment in `badge.py` |
-| Findings cleared between runs | Causal-neutral "no longer reported" diff in `render_site.py` |
-| Pin Mobility Database ids | `mdb_id` in `agencies.yaml`, exact-match discover |
-| Realtime freshness | lapsed-header framing in `rt.py` |
-| Vendor view of stale feeds | `vendors.py`, expiry aggregated by serving host |
+The active constraint is not missing dashboard surface. It is the lack of real
+evidence that an accepted request can be linked to a comparable change in the
+intended published feed.
 
-The competitive sequence from [ADR 0005](decisions/0005-competitive-positioning.md)
-also played out: fetching was hardened, coverage grew to about 1,128 published
-scorecard pages and the location model became worldwide-capable, the crosswalk became an
-on-site page, and the vendor view exists as an operator surface.
+## Active sequence
 
-## What comes next
+Work through this list in order. Do not start later product expansion to fill a
+participant or release dependency.
 
-The next ship-list is drawn from two places rather than restated here:
+### 1. Publish and verify `v1.2.0`
 
-- [`RESEARCH-ROADMAP.md`](RESEARCH-ROADMAP.md), the cross-referenced index of
-  research-derived items, tracks which of its R- and E-items remain open.
-- [`ideation/04-impact-and-sequencing.md`](ideation/04-impact-and-sequencing.md)
-  sequences the 2026-07 structural-fix and expansion candidates (FIX-01…13,
-  EXP-01…17), with its "do-first" quadrant as the standing recommendation.
+Status: release candidate verified; publication requires the
+maintainer-authenticated GitHub release and Marketplace flow.
 
-Items in those files are candidates for evaluation, not commitments. When one is
-picked up and shipped, record it in `product-roadmap.md`'s "today" paragraph as
-before.
+Done means:
 
-## How to use this list
+- immutable `v1.2.0` and signed floating `v1` tags point to the intended commit;
+- the release carries the manifest signature, certificate, SBOM, VEX, and
+  provenance assets;
+- the Marketplace listing is publicly visible in Code quality and Testing;
+- clean downstream runs succeed against both tags and produce JSON and HTML.
 
-Pick the top unstarted item from the do-first quadrant in
-`ideation/04-impact-and-sequencing.md` unless a pilot agency or liaison asks
-for something specific. Keep each feature shippable on its own: a finished pull
-request that renders, passes `make verify`, and updates the relevant doc.
+### 2. Recruit and contract the pilot
 
-Last verified: 2026-07-12 · Recheck cadence: when an item ships or monthly,
-whichever is first.
+Status: not started.
+
+Recruit one support-program liaison and two feed maintainers or vendors. Agree
+on feed identity, owner role, existing handoff channel, privacy boundary, and
+what a valid recheck means. Select recurring findings with a concrete export or
+data change.
+
+Done means at least two participants accept a named request and the project has
+six suitable requests available for the 90-day window.
+
+### 3. Produce the first closure receipt manually
+
+Status: depends on a participant request.
+
+Use shipped provenance and private evidence paths. Preserve before and after
+bytes, tool versions, feed identity, and the finding fingerprint. Link the
+accepted action privately. Count a closure only after the intended feed is
+rechecked under a comparable measurement contract.
+
+Done means an independent reviewer can reproduce the receipt. A finding that
+merely disappears is still a finding clearance.
+
+### 4. Remove the smallest repeated friction
+
+Status: evidence-gated.
+
+After the first manual cycle, automate only a step that repeatedly consumes
+time or creates evidence risk. Candidate work includes a private request
+manifest, a receipt schema, or one handoff adapter. Do not build a generic
+workflow UI before the pilot identifies the actual channel.
+
+Done means the change reduces hands-on support time without weakening the
+identity or comparability checks.
+
+### 5. Complete six requests and audit the outcome
+
+Status: depends on steps 2 through 4.
+
+Run three cycles, audit every claimed closure, interview participants, and
+measure time to owner and hands-on support. Apply the pass and stop conditions in
+[`roadmap.md`](roadmap.md#5-decide-at-day-90).
+
+Done means the project has a documented decision to automate, narrow, change,
+or stop the workflow. Marketplace installs and scorecard traffic do not decide
+this gate.
+
+## Queue after a passing pilot
+
+This queue is ordered but not active:
+
+1. Publish the open receipt schema and verifier.
+2. Build the agency-owned quality passport.
+3. Rank pilot notice playbooks by observed evidence.
+4. Productize one existing handoff integration.
+5. Add the procurement acceptance record.
+6. Extend program views with privacy-safe aggregate outcomes.
+
+Each item must remain independently shippable and must preserve the fail-closed
+receipt contract.
+
+## Maintenance lane
+
+Keep daily scoring, security, accessibility, source curation, and release health
+green. Complete renderer decomposition, registry sharding, queue-backed compute,
+or hosted scoring only when the measurable triggers in
+[`roadmap.md`](roadmap.md#maintenance-with-explicit-triggers) fire.
+
+## Not on the ship list
+
+- More general score, map, viewer, catalogue, or validation surfaces.
+- Public agency or vendor rankings.
+- A public raw-feed or continuous cross-agency realtime archive.
+- Broad international expansion without a local steward.
+- Consumer-app scraping, multimodal health scoring, or a replacement ticket
+  system.
+- AI-generated repair or automatic closure in the trusted path.
+
+Revisit this file when the Marketplace release ships, a pilot cycle finishes,
+or a maintenance trigger fires. Otherwise the order does not change.

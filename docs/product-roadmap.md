@@ -1,154 +1,136 @@
 # Product roadmap
 
-A multiyear view of what the scorecard does for its users and how that deepens
-over time. This is the product companion to [`roadmap.md`](roadmap.md), which is
-the infrastructure plan (how to scale the pipeline and hosting). That one is
-about capacity; this one is about user value. Revise both as the pilot teaches
-us what agencies actually need.
+Last updated: 2026-07-14
 
-For the staged plan to turn this from a tool you look at into a service agencies
-rely on — monitoring and alerts, the standards crosswalk, the supporter
-workspace, and how it sustains itself — see [`service-plan.md`](service-plan.md).
+This document describes the user value GTFS Scorecard will test next. The
+infrastructure and operating gates are in [`roadmap.md`](roadmap.md). The
+immediate delivery order is in [`feature-roadmap.md`](feature-roadmap.md).
 
-## Who it is for, and the one job
+## Who it is for
 
-Three users share the same evidence, with different entry points:
+The primary users remain:
 
-- The transit manager who inherited a GTFS export from a vendor and has no way
-  to know whether it is any good.
-- The program liaison (a Caltrans-district or Cal-ITP-style customer success
-  role) who needs one screen open during an agency check-in that says how the
-  data is doing and the three things to fix.
-- The rider or community advocate who needs a plain answer about whether the
-  published feed states accessibility, fares, current service, and live-arrival
-  information. Rider-facing summaries translate the same facts without exposing
-  the agency workflow or weakening it.
+- A transit manager who inherited a GTFS export and needs to know what to ask
+  their vendor or staff to change.
+- A program liaison preparing for an agency check-in who needs a short,
+  respectful action queue and evidence that an agreed change reached the feed.
 
-The job the product does is to turn a wall of validator output into a grade, a
-reason to care, and the next fix, written in plain language and framed as fixes
-rather than failures.
+Riders and community advocates can read the same published facts through the
+rider-facing summaries. Private workflow and owner information does not belong
+on those surfaces.
+
+## The job now
+
+The scorecard already turns validator output into a grade, plain-language
+findings, and prioritized fixes. The next job is narrower and more useful:
+
+> Carry one accepted action from an alert to a comparable recheck of the
+> intended published feed, then preserve a reproducible closure receipt.
+
+This is a claim about published-data change. It is not proof of a rider outcome,
+vendor causality, compliance, or certification.
 
 ## Principles that do not move
 
-Every item below is checked against these.
-
-- Findings are framed as fixes, not failures. Absence of realtime is shown
-  neutrally, never as a zero.
-- No public leaderboard or individual percentile. Cross-feed aggregates support
-  program planning only when the rubric, scoring profile, validator, measured
-  categories, and feed identities line up.
-- We score on top of the canonical MobilityData validator. We do not
-  re-validate GTFS and we do not become a GTFS editor.
-- Accessibility data gets prominent placement. It is a values statement and a
-  real gap.
-- Plain language, fast, mobile-first, open source.
+- Findings are framed as fixes. Absence of realtime is neutral, never a zero.
+- No public leaderboard or individual percentile. Cross-feed evidence requires
+  aligned feed identity and measurement contracts.
+- MobilityData's canonical validator remains the rule engine. The scorecard
+  does not become a validator, editor, or feed host.
+- Accessibility data stays prominent.
+- Owner and ticket details are private by default. Public evidence is limited
+  to what participants may share.
+- A closure fails closed when feed identity or comparability is uncertain.
+- Plain language, fast pages, mobile use, and open source remain baseline.
 
 ## Where the product is today
 
-About 1,128 scorecards have numeric latest scores in the registry-bounded
-artifact index; 21 configured feeds are awaiting a current artifact. Coverage
-is still concentrated in the United States and Canada, with official first
-canaries in Japan, Australia, Ireland, France, Malaysia, New Zealand, and Uruguay
-(piloted with Unitrans and Yolobus); per-agency scorecards with a
-grade, top-three fixes, a full findings list, and a named "no longer reported"
-diff between compatible checks; companion pages per agency for a board packet,
-call prep, and provenance-backed finding clearances when available; an "over
-time" trend with a per-category "what changed" summary;
-program rollups for 46 U.S. states plus DC and named cohorts; opt-in feed-health
-email digests and webhooks, with a weekly portfolio digest for liaisons;
-embeddable badges and conformance marks; a notice-to-fix knowledge base with
-per-vendor tool profiles; a country-first searchable directory; self-serve
-submission and on-the-spot feed scoring; a versioned read API with a Parquet
-table and a read-only MCP server; coverage views of problems, adoption, and
-realtime reliability; clearly scoped U.S. equity and NTD readiness modules;
-crawlable pages on its own
-domain; and a security-hardened pipeline. The next three years make it a
-habit, then a reference, then infrastructure.
+The service tracks 1,149 curated feed records. About 1,128 scorecards have numeric latest scores.
+It publishes per-agency grades, prioritized fixes, trends,
+provenance, finding clearances, board packets, and call-prep views. Program
+rollups cover most U.S. states and named cohorts. Alerts, webhooks, and liaison
+digests support repeat use.
 
-## Year 1: deepen and retain
+The distribution surface includes a versioned read API, Parquet data, a
+read-only MCP server, badges, and a reusable GitHub Action. The site also offers
+self-serve submission, local pre-publish checks, request-backed one-off scoring,
+notice-to-fix guidance, detected-tool profiles, and procurement language.
 
-The goal is the second visit. A scorecard checked once is a curiosity; one
-checked monthly is a tool.
+These capabilities support discovery, triage, and evidence. A cleared finding
+without accepted ownership still does not establish a verified remediation.
 
-- **The retention loop.** Expiry and regression email digests, and the trend and
-  "what changed" view on each scorecard, are the reasons someone comes back.
-  These are shipped; the work now is tuning what counts as worth an alert.
-- **Close the fix loop further.** Shipped: the scorecard names which findings
-  cleared between like-for-like runs. Next, attach a named owner or vendor
-  request to the alert, recheck the exact published bytes, and issue a
-  provenance-stamped closure receipt when the finding clears.
-- **The knowledge base toward the whole taxonomy.** Each validator notice gets a
-  plain-language page with the setting to change in the common scheduling tools.
-  It supports the handoff from finding to vendor-ready request and remains a
-  useful organic-search entry point. The highest-prevalence notices are covered;
-  the long tail remains open work.
-- **Per-vendor fix instructions.** Shipped as tool profiles: where the export
-  tool is detected, the fix names that tool.
-- **Two-minute onboarding.** Shipped: the self-serve form and the instant-score
-  funnel open a pull request without the submitter knowing what YAML is.
+## Now: prove the alert-to-closure workflow
 
-Signals of success: agencies returning month over month, alerts becoming named
-requests, and those requests ending in verified closures on newly published
-feed bytes.
+Run a 90-day concierge pilot with one support-program liaison and two feed
+maintainers or vendors. Create at least six requests and test the complete
+workflow:
 
-## Year 2: broaden and verify remediation
+1. Preserve exact before evidence for the intended feed and finding.
+2. Confirm an accepted owner or responsible role in the participant's existing
+   work channel.
+3. Send a concrete request with a recheck condition.
+4. Recheck newly published bytes from the same feed identity.
+5. Issue a receipt only when the evidence remains comparable.
 
-Coverage and context. As the corpus becomes geographically diverse, the product
-can tell a program where intervention is needed, who owns the next step, and
-whether the published fix actually landed without pretending the registry is a
-census of any country.
+Product work during the pilot is limited to gaps a real request exposes. Likely
+small additions include a private request manifest, a participant-safe receipt
+view, or a better handoff template. The pilot does not justify a new ticket
+system or a broad workflow dashboard.
 
-- **Worldwide coverage**, drawn from official/operator sources and global
-  catalogues. The scoring core generalizes; the hard work is curation,
-  licensing, local stewardship, and honest denominators.
-- **A verified remediation network.** Turn an alert into a vendor-ready request,
-  record the owner and external ticket, recheck the exact published feed, and
-  preserve the before-and-after evidence as a closure receipt.
-- **Vendor-level intelligence.** Aggregate by the scheduling tool that produced
-  the feed to see which exports repeat a finding and which remediation requests
-  lead to verified fixes. This is the evidence a statewide program can act on,
-  visible only at scale and reported without ranking individual agencies.
-- **The liaison workspace.** Saved cohorts, an attention-first queue,
-  and a report to bring to an agency call. The rollup view is the seed.
-- **Realtime maturity.** Sustained sampling, drift trends over time, and
-  vehicle-accessibility scoring alongside the stop.
+The pilot passes with three verified closures across two participant
+organizations, zero false closures, reproducible evidence, and no more than
+twenty minutes of hands-on support per request by the third cycle. The complete
+gate is in [`roadmap.md`](roadmap.md#5-decide-at-day-90).
 
-Signals of success: a program staffer planning their week from the cohort view,
-the first multi-feed vendor regression caught, and multiple requests closed by
-an independently verified recheck.
+## Next: turn proven practice into a product
 
-## Year 3: platform and ecosystem
+Only after the pilot passes:
 
-Let other tools and programs build on it, and let agencies own their place in it.
+- Publish an open closure-receipt schema and deterministic verifier.
+- Give agencies a portable quality passport for their verified feed identity
+  and permissioned closure history.
+- Rank repair guidance by observed results instead of author confidence.
+- Automate one existing handoff channel selected from pilot evidence.
+- Add a procurement acceptance record for contracted feed changes.
+- Extend program views with aggregate remediation evidence when cohorts are
+  comparable and privacy thresholds are met.
 
-- **A public read API and richer badges.** The artifacts are already public JSON;
-  make it a documented, versioned API so agency sites and dashboards can pull a
-  grade. Every badge links back, which is how the tool spreads without a
-  marketing budget.
-- **Verified self-management.** An agency proves control of its feed domain and
-  from then on manages its own entry, including supplying realtime keys through a
-  secure path rather than a pull request.
-- **Meet agencies where they work.** Optionally deliver findings as issues on a
-  feed's repository, a scheduled digest, or a webhook on a grade change.
-- **White-label for programs.** The same rubric and pipeline under a statewide
-  program's banner and agency list. Because the system is static artifacts plus a
-  stateless pipeline, an instance is a configuration and a deploy, not a fork.
-- **Localized regional guidance.** The shared GTFS core stays stable while
-  jurisdictions map it to their own rules and practitioner language.
-- **The dataset as a public good.** Years of daily scores is a record of how
-  transit data quality changes over time, useful to researchers and policy and
-  published openly.
+Success means a participant can repeat the workflow with less facilitation and
+still produce a valid receipt. Usage of the scorecard alone is not enough.
 
-Signals of success: a third-party tool embedding the grade, a program running
-its own branded instance, and the dataset cited in transit-data work.
+## Later: options with named gates
 
-## What we will not build
+- **Vendor and program learning:** after enough comparable closures exist to
+  report a pattern without ranking individual organizations.
+- **Verified self-management:** after manual claims and corrections create a
+  measured operating burden.
+- **Regional instances and guidance:** after a named program commits to local
+  review and ongoing operation.
+- **Localization and broader curation:** after a local steward owns source and
+  language quality.
+- **Deeper realtime maturity:** after a program names the support decision the
+  sampling will inform and funds a bounded collection plan.
+- **Research use of the longitudinal record:** after privacy, licensing, and
+  citation requirements are settled.
 
-Naming the off-ramps keeps the product honest.
+## Shipped, maintenance, gated, and cut
 
-- Not a GTFS editor or a feed host. We point at the fix; the agency makes it in
-  their own tool.
-- Not a re-implementation of the validator. We adopt MobilityData's notices and
-  add the scoring, trending, and plain language.
-- Not a public ranking or a compliance hammer. The grade serves the conversation
-  between an agency and the person helping it.
+| Disposition | Product work |
+| --- | --- |
+| Shipped baseline | Scorecards, finding clearances, alerts, program views, knowledge base, API, data exports, MCP, badges, Action, onboarding, and pre-publish checks. |
+| Active now | Marketplace release, participant recruitment, six concierge requests, exact-feed rechecks, and audited closure receipts. |
+| Maintenance | Alert tuning, source curation, accessibility, security, release health, and bounded reliability work. |
+| Demand-gated | Hosted one-off capacity, self-management, regional instances, localization, deeper realtime, and research products. |
+| Cut or parked | General editor or host, second validator, public rankings, public feed archive, cross-agency realtime archive, replacement ticketing, consumer-app scraping, and multimodal platform expansion. |
+
+## What the product will not claim
+
+- A grade is not a compliance determination or certification.
+- A finding that disappeared is not a verified remediation unless it is linked
+  to accepted work and a comparable recheck.
+- A published-data fix does not prove a rider outcome.
+- A small set of closures does not establish vendor performance.
+- Corpus size does not make the registry a census of a country or region.
+
+The product earns its next phase by proving closure, not by adding another
+surface to the existing scorecard.
