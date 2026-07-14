@@ -31,7 +31,7 @@ does a job the scorecard should reuse, link to, or complement.
 | [Transitland feed versions](https://www.transit.land/documentation/concepts/static-gtfs-feed-versions/) | Archives distinct static GTFS versions, records checksums, and derives version metadata. | Link to its archive where useful. The scorecard's dated artifacts should add remediation context, not duplicate a general archive. |
 | [MobilityData canonical GTFS Schedule validator](https://github.com/MobilityData/gtfs-validator) | Validates a local file or URL against GTFS Schedule rules and produces HTML and JSON reports. | Keep it as the rule engine and preserve its notice codes and version. Do not reimplement its taxonomy. |
 | [gtfs.guru](https://github.com/abasis-ltd/gtfs.guru) | Provides a fast Rust validator across desktop, CLI, Python, web, WebAssembly, and CI surfaces. | Validation speed, local processing, and CI portability are active areas of competition. They are not a credible moat for this project. |
-| [GTFS Analyzer](https://github.com/ttezer/gtfs-analyzer) | Runs locally in the browser and adds quality scores, operational analysis, maps, prioritization, and fix guidance. | A score and prioritized remediation list are no longer distinctive. Focus on what happens after a maintainer receives the list. |
+| [GTFS Analyzer](https://github.com/ttezer/gtfs-analyzer) | Runs locally in the browser and adds quality scores, operational analysis, maps, prioritization, fix guidance, and before-and-after run comparison that labels rules fixed, new, decreased, or increased. | A score, prioritized remediation list, and observational finding-clearance diff are no longer distinctive. Focus on what happens after a maintainer receives the list. |
 | [GTFS Lens](https://github.com/strada-360/gtfs-lens) | Gives agency staff visual calendar, timetable, map, stop, and plain-language views of public or private feeds. | Do not build another broad feed viewer. Link from a finding to the best inspection surface when that helps a maintainer diagnose it. |
 | [Ohtli](https://ohtli.codeandomexico.org/) | Offers browser-based static GTFS creation and editing for organizations with limited technical capacity. | Treat editing as an upstream partner job. Provide a precise handoff and verify the export after it is published. |
 | [National RTAP GTFS Builder and support](https://www.nationalrtap.org/Technology-Tools/GTFS-Builder/Support) | Helps rural and tribal providers create and manage GTFS, with office hours and technical-assistance resources. | Do not replace human support. Give support staff a short action queue and evidence that a requested change landed. |
@@ -41,6 +41,14 @@ The public materials reviewed above do not establish an uncontested market
 gap. Several projects already cover validation, scoring, visualization, and fix
 prioritization. The narrower opportunity is independent evidence that a request
 resulted in a comparable change to the intended published feed.
+
+The shipped finding-clearance log is therefore parity, not the moat. It records
+that a finding was present and then absent under a compatible measurement
+contract, and deliberately does not say who changed the feed or why. The moat
+begins only when an accepted action with accountable ownership is joined to
+exact before-and-after evidence for the intended published feed. Until that
+workflow is proven, call the shipped record a finding clearance, not a verified
+remediation or closure.
 
 ## What not to build
 
