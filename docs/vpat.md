@@ -103,8 +103,8 @@ completed before this report claims assistive-technology verification.
   The conformant equivalents exist elsewhere and are linked prominently at the top of
   the page, with a "Skip to the accessible agency list" bypass before the map: the
   sortable, screen-reader-friendly **agencies list (`/agencies/`)**, the
-  **leaderboard (`/leaderboard/`)**, and each **per-agency scorecard's route table**
-  (`/agency/<id>/`), which together carry the same route, type, grade, and agency
+  **coverage change view (`/pulse/#changes`)**, and each **per-agency scorecard's
+  route table** (`/agency/<id>/`), which together carry the same route, type, grade, and agency
   information in operable, semantic form. We report this page as **Partially Supports**:
   the page chrome conforms; the map widget's internal exploration does not, and is not
   the route to the data.

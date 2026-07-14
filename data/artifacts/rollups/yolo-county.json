@@ -1,22 +1,31 @@
 {
   "agency_count": 2,
-  "average_score": 81.5,
-  "common_fixes": [
-    {
-      "agencies": 2,
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
-    }
-  ],
+  "average_score": null,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 2,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 2,
+      "scoring_profile_missing": 2,
+      "scoring_profile_rubric_missing": 2
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "expired": {
     "lapsed": 0,
     "stale": 0,
     "total": 0
   },
-  "generated_at": "2026-07-10T21:00:41+00:00",
-  "grade_distribution": {
-    "B": 2
-  },
+  "generated_at": "2026-07-14T09:01:50+00:00",
+  "grade_distribution": {},
   "members": [
     {
       "annual_trips": null,
@@ -42,7 +51,7 @@
       "name": "Unitrans (ASUCD / City of Davis)",
       "needs_attention": false,
       "score": 80.8,
-      "shapes_status": null,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
     }
@@ -52,12 +61,12 @@
     "id": "yolo-county",
     "name": "Yolo County"
   },
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 2,
+    "not_measured": 1,
     "not_ready": 0,
-    "ready": 0,
+    "ready": 1,
     "total": 2
   },
   "state_percentile": null

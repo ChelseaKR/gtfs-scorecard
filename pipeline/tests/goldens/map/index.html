@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agency map — GTFS Scorecard</title>
-  <meta name="description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
+  <meta name="description" content="A world map of the feed scorecards currently covered, labelled and coloured by GTFS data quality grade.">
   <link rel="canonical" href="https://gtfsscorecard.org/map/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Agency map — GTFS Scorecard">
-  <meta property="og:description" content="A world map of the transit agencies currently covered, labelled and coloured by GTFS data quality grade.">
+  <meta property="og:description" content="A world map of the feed scorecards currently covered, labelled and coloured by GTFS data quality grade.">
   <meta property="og:url" content="https://gtfsscorecard.org/map/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -45,12 +45,12 @@
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Agency map</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Agency map.</h1>
-    <p class="page-lede">Every tracked agency with a locatable
-    <abbr title="General Transit Feed Specification">GTFS</abbr> feed, placed at its
-    service area, labelled with its grade letter and coloured by grade. 3 agencies
+    <p class="page-lede">Every tracked feed scorecard with locatable
+    <abbr title="General Transit Feed Specification">GTFS</abbr> stops, placed at the feed's
+    service area, labelled with its grade letter and coloured by grade. 3 feed scorecards
     are on the map. Select a point for its grade and a link to the scorecard, or work
     the list below.</p>
-    <p class="page-lede">To see the actual route lines instead of one point per agency,
+    <p class="page-lede">To see the actual route lines instead of one point per feed scorecard,
     open <a href="/routes/">every route on one map</a>.</p>
     <a class="skip-link-inline" href="#agency-list">Skip to the agency list</a>
     <form class="map-filters" aria-label="Filter the map and list">
@@ -69,23 +69,23 @@
       <button type="button" class="button button-secondary" id="map-load">
         Load interactive map
       </button>
-      <p id="map-load-status" class="fineprint" role="status">The agency list is ready now.
+      <p id="map-load-status" class="fineprint" role="status">The scorecard list is ready now.
         Load the map only when you want the geographic view. It uses additional data.</p>
     </div>
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
-      The interactive map has not loaded. The agency list below carries the same agencies,
+      The interactive map has not loaded. The scorecard list below carries the same feed records,
       grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
-      <h2 class="section-title" id="agency-list-h">Every agency on the map</h2>
+      <h2 class="section-title" id="agency-list-h">Every feed scorecard on the map</h2>
       <p class="map-count" role="status"><span id="map-result-count">3</span> of 3
-        agencies shown.</p>
+        feed scorecards shown.</p>
       <table class="leaderboard map-table">
-        <caption class="visually-hidden">Agencies on the coverage map, with grade, location,
+        <caption class="visually-hidden">Feed scorecards on the coverage map, with grade, location,
           and score. Use the grade and location filters above to narrow the list.</caption>
-        <thead><tr><th scope="col">Agency</th><th scope="col">Grade</th>
+        <thead><tr><th scope="col">Scorecard</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
         <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
       </table>

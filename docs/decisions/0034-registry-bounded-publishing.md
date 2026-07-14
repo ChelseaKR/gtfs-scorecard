@@ -33,10 +33,12 @@ radar, the national map — filters to registered ids via
 directories so drift stays visible. With no registry loaded (library callers,
 unit tests) the walkers behave as before.
 
-Unregistered directories in S3 are quarantined under `quarantine/<date>-.../`
-rather than deleted, keeping the durable-history promise while removing them
-from the sync the jobs hydrate from. Deletion remains a curator decision
-(`scorecard prune`).
+Unregistered directories may remain in the private additive S3 history store,
+but the Pages assembly copies only feed directories named by the bounded
+`index.json`. The renderer also removes generated HTML directories that are no
+longer in that index. This keeps durable history without leaving a delisted raw
+scorecard or stale HTML page publicly reachable. Permanent deletion remains a
+curator decision (`scorecard prune`).
 
 The duplicate registry entries were removed in the same change, keeping the
 established id in each pair and merging its twin's `mdb_id` pin, so feed
@@ -48,6 +50,6 @@ discovery still follows the catalog by id.
   directory can never re-enter the index, the map, or a rollup.
 - Removing an agency from the registry now delists it on the next rebuild,
   which is what the listing policy promises removal requesters.
-- Dated history for quarantined ids stays in S3 but has no public page; if one
+- Dated history for delisted ids stays in S3 but is not copied to the public site; if one
   of those agencies is ever re-added under the same id, its old history
   resurfaces from the store on the next hydrate.

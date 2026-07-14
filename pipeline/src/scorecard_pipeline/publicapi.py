@@ -1,8 +1,9 @@
 """A versioned static JSON API over the published data.
 
 The dashboard answers one agency at a time. A state program or an app developer
-wants to query across agencies: who ranks where, which feeds improved this week,
-how a state compares. The architecture decision tree (docs/expansion.md) says to
+wants to query across scorecards: which feeds changed this week and how a
+location's covered feeds are doing. The architecture decision tree
+(docs/expansion.md) says to
 serve that from precomputed artifacts before standing up a warehouse, so this
 builds a small, versioned, documented API from the same index the site trends
 from. Every endpoint is a flat JSON file served from object storage; there is no
@@ -10,8 +11,10 @@ query server until interactive multi-tenant queries actually appear (ADR 0013).
 
 All builders are pure over the index dict, so the API is reproducible and safe to
 re-run. Per-agency detail already lives at each agency's published artifact, so
-the API adds the cross-agency endpoints that do not exist yet: the agency list,
-a leaderboard, per-state aggregates, and national stats.
+the API adds the cross-feed endpoints that do not exist yet: the scorecard list,
+named changes, per-state aggregates, and covered-corpus stats. The historical
+``leaderboard.json`` path remains for v1 compatibility but publishes no
+absolute rankings.
 """
 
 from __future__ import annotations
@@ -22,8 +25,8 @@ from typing import Any
 from . import DATA_ATTRIBUTION, DATA_LICENSE
 from .comparisons import (
     MIN_PUBLIC_COMPARISON_COHORT,
-    comparison_eligible,
-    comparison_exclusions,
+    build_comparison_cohort,
+    same_producer_contract,
 )
 from .config import Agency
 from .dataset import build_quality_dataset, national_summary
@@ -32,8 +35,8 @@ from .location import country_name
 
 API_VERSION = "v1"
 
-# How many entries each leaderboard list carries. Enough to be useful on a page,
-# small enough to keep the endpoint light.
+# How many entries each named change list carries. Enough to be useful on a
+# page, small enough to keep the endpoint light.
 LEADERBOARD_SIZE = 25
 # A score move smaller than this is noise, not a trend; mirrors the movers feed.
 MIN_MOVE = 1.0
@@ -51,94 +54,34 @@ def _median(values: list[float]) -> float | None:
 
 
 def agencies_endpoint(dataset: dict[str, Any]) -> dict[str, Any]:
-    """The flat agency list: one compact record per agency, latest check."""
+    """The flat feed list plus the contract behind per-row eligibility."""
     return {
         "count": len(dataset.get("rows", [])),
         "fields": dataset.get("generated_fields", []),
+        "comparison": dataset.get("comparison", {}),
         "agencies": dataset.get("rows", []),
     }
 
 
-def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+def _eligible_movers(
     index: dict[str, Any],
-    dataset: dict[str, Any],
-    annual_trips: dict[str, int] | None = None,
-    *,
-    min_cohort: int = MIN_PUBLIC_COMPARISON_COHORT,
-) -> dict[str, Any]:
-    """Cross-agency standings: best and worst by score, and the biggest movers.
-
-    Best and worst rank the latest scores. Movers compare each agency's latest
-    score to its previous check, so a feed that just improved or regressed shows
-    up, with moves below the noise floor dropped. Names ride along so a consumer
-    can render the board without a second lookup.
-
-    When ``annual_trips`` (agency id -> NTD annual rider-trips, ADR 0021) is
-    given, the two "worst" lists — lowest scoring and biggest decliners — break
-    ties toward higher-ridership feeds, so a feed more riders depend on surfaces
-    first among equally-severe entries, and each matched entry carries its
-    ``annual_trips`` for a rider-count column. With no ridership data the field
-    is omitted and the ordering is unchanged.
-    """
-    trips_map = annual_trips or {}
-
-    def _trips(agency_id: str) -> int:
-        return trips_map.get(agency_id) or 0
-
-    rows = dataset.get("rows", [])
-    exclusion_counts: dict[str, int] = {}
-    for row in rows:
-        for reason in comparison_exclusions(row):
-            exclusion_counts[reason] = exclusion_counts.get(reason, 0) + 1
-    scored = [r for r in rows if comparison_eligible(r)]
-    comparison = {
-        "eligible_count": len(scored),
-        "excluded_count": len(rows) - len(scored),
-        "minimum_cohort": min_cohort,
-        "suppressed": len(scored) < min_cohort,
-        "exclusion_counts": exclusion_counts,
-        "note": (
-            "Ranked comparisons include only dated feeds with the three required schedule "
-            "categories measured and service data no more than one year expired."
-        ),
-    }
-    if comparison["suppressed"]:
-        return {
-            "comparison": comparison,
-            "top": [],
-            "bottom": [],
-            "most_improved": [],
-            "most_declined": [],
-        }
-    by_score = sorted(scored, key=lambda r: (-float(r["score"]), r["id"]))
-    eligible_ids = {str(row["id"]) for row in scored}
-    if annual_trips:
-        bottom_rows = sorted(scored, key=lambda r: (float(r["score"]), -_trips(r["id"]), r["id"]))[
-            :LEADERBOARD_SIZE
-        ]
-    else:
-        bottom_rows = by_score[-LEADERBOARD_SIZE:][::-1]
-
-    def _entry(row: dict[str, Any]) -> dict[str, Any]:
-        entry: dict[str, Any] = {
-            "id": row["id"],
-            "name": row.get("name"),
-            "grade": row.get("grade"),
-            "score": row.get("score"),
-        }
-        trips = trips_map.get(row["id"])
-        if trips is not None:
-            entry["annual_trips"] = trips
-        return entry
-
+    eligible_ids: set[str],
+    required_rubric: str,
+    trips_map: dict[str, int],
+) -> list[dict[str, Any]]:
+    """Named same-feed changes that cannot be explained by producer drift."""
     movers: list[dict[str, Any]] = []
     for agency_id, entry in (index.get("agencies") or {}).items():
-        if agency_id not in eligible_ids:
-            continue
         history = entry.get("history") or []
-        if len(history) < 2:
+        if agency_id not in eligible_ids or len(history) < 2:
             continue
         last, prev = history[-1], history[-2]
+        if (
+            str(last.get("rubric_version") or "") != required_rubric
+            or str(prev.get("rubric_version") or "") != required_rubric
+            or not same_producer_contract(prev, last)
+        ):
+            continue
         if not isinstance(last.get("score"), (int, float)) or not isinstance(
             prev.get("score"), (int, float)
         ):
@@ -158,6 +101,49 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if trips is not None:
             mover["annual_trips"] = trips
         movers.append(mover)
+    return movers
+
+
+def leaderboard(
+    index: dict[str, Any],
+    dataset: dict[str, Any],
+    annual_trips: dict[str, int] | None = None,
+    *,
+    agencies: Iterable[Agency] | None = None,
+    min_cohort: int = MIN_PUBLIC_COMPARISON_COHORT,
+) -> dict[str, Any]:
+    """V1-compatible change endpoint with absolute standings retired.
+
+    ``top`` and ``bottom`` are always empty. Named movers remain because they
+    describe a change in one feed, not its rank against another. They are
+    emitted only for current-rubric, fully measured, canonical records whose
+    current identity is unambiguous, and only when the two compared history
+    points use the same current rubric.
+
+    When ``annual_trips`` is provided, matched change rows carry it as context;
+    it does not change which records qualify.
+    """
+    trips_map = annual_trips or {}
+
+    def _trips(agency_id: str) -> int:
+        return trips_map.get(agency_id) or 0
+
+    rows = dataset.get("rows", [])
+    scored, comparison = build_comparison_cohort(rows, agencies=agencies)
+    comparison.update(
+        {
+            # Retained so v1 consumers that read the former guardrail metadata
+            # do not fail on a missing key. Policy, not cohort size, now keeps
+            # the absolute lists empty.
+            "minimum_cohort": min_cohort,
+            "suppressed": True,
+            "suppression_reason": "policy_no_absolute_rankings",
+        }
+    )
+    eligible_ids = {str(row["id"]) for row in scored}
+    required_rubric = str(comparison["required_rubric_version"])
+
+    movers = _eligible_movers(index, eligible_ids, required_rubric, trips_map)
     improved = sorted(movers, key=lambda m: (-m["score_delta"], m["id"]))
     if annual_trips:
         declined = sorted(movers, key=lambda m: (m["score_delta"], -_trips(m["id"]), m["id"]))
@@ -165,8 +151,8 @@ def leaderboard(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         declined = sorted(movers, key=lambda m: (m["score_delta"], m["id"]))
     return {
         "comparison": comparison,
-        "top": [_entry(r) for r in by_score[:LEADERBOARD_SIZE]],
-        "bottom": [_entry(r) for r in bottom_rows],
+        "top": [],
+        "bottom": [],
         "most_improved": [m for m in improved if m["score_delta"] > 0][:LEADERBOARD_SIZE],
         "most_declined": [m for m in declined if m["score_delta"] < 0][:LEADERBOARD_SIZE],
     }
@@ -176,6 +162,7 @@ def by_state(
     dataset: dict[str, Any],
     states: dict[str, str],
     locations: dict[str, dict[str, str]] | None = None,
+    comparable_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     """Legacy U.S.-state aggregates: count, median score, and grade distribution.
 
@@ -198,14 +185,18 @@ def by_state(
             {
                 "state": state,
                 "count": 0,
+                "comparison_eligible_count": 0,
                 "scores": [],
                 "grade_distribution": dict.fromkeys(grades, 0),
             },
         )
         b["count"] += 1
-        if isinstance(row.get("score"), (int, float)):
+        comparable = comparable_ids is None or agency_id in comparable_ids
+        if comparable:
+            b["comparison_eligible_count"] += 1
+        if comparable and isinstance(row.get("score"), (int, float)):
             b["scores"].append(float(row["score"]))
-        if row.get("grade") in b["grade_distribution"]:
+        if comparable and row.get("grade") in b["grade_distribution"]:
             b["grade_distribution"][row["grade"]] += 1
     out = []
     for state in sorted(buckets):
@@ -215,6 +206,7 @@ def by_state(
             {
                 "state": state,
                 "count": b["count"],
+                "comparison_eligible_count": b["comparison_eligible_count"],
                 "median_score": round(median, 1) if median is not None else None,
                 "grade_distribution": b["grade_distribution"],
             }
@@ -225,33 +217,44 @@ def by_state(
 def _location_summary(
     members: list[dict[str, Any]],
     *,
+    comparable_ids: set[str] | None,
     code_key: str,
     code: str | None,
     name_key: str,
     name: str,
 ) -> dict[str, Any]:
     grades = ("A", "B", "C", "D", "F")
+    comparable = [
+        member
+        for member in members
+        if comparable_ids is None or str(member.get("id")) in comparable_ids
+    ]
     scores = [
         float(member["score"])
-        for member in members
+        for member in comparable
         if isinstance(member.get("score"), (int, float))
         and not isinstance(member.get("score"), bool)
     ]
     median = _median(scores)
     distribution = dict.fromkeys(grades, 0)
-    for member in members:
+    for member in comparable:
         if member.get("grade") in distribution:
             distribution[member["grade"]] += 1
     return {
         code_key: code,
         name_key: name,
         "count": len(members),
+        "comparison_eligible_count": len(comparable),
         "median_score": round(median, 1) if median is not None else None,
         "grade_distribution": distribution,
     }
 
 
-def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -> dict[str, Any]:
+def by_location(
+    dataset: dict[str, Any],
+    locations: dict[str, dict[str, str]],
+    comparable_ids: set[str] | None = None,
+) -> dict[str, Any]:
     """Country aggregates with nested ISO 3166-2 subdivision aggregates."""
     by_country: dict[str, list[dict[str, Any]]] = {}
     for row in dataset.get("rows", []):
@@ -265,6 +268,7 @@ def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -
     for country_code, members in by_country.items():
         country_summary = _location_summary(
             members,
+            comparable_ids=comparable_ids,
             code_key="country_code",
             code=country_code or None,
             name_key="country_name",
@@ -281,6 +285,7 @@ def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -
         country_summary["subdivisions"] = [
             _location_summary(
                 subdivision_members,
+                comparable_ids=comparable_ids,
                 code_key="subdivision_code",
                 code=code or None,
                 name_key="subdivision_name",
@@ -293,13 +298,22 @@ def by_location(dataset: dict[str, Any], locations: dict[str, dict[str, str]]) -
     return {"countries": countries}
 
 
-def stats_endpoint(dataset: dict[str, Any]) -> dict[str, Any]:
-    """National headline statistics: count, average and median score, grade mix."""
+def stats_endpoint(
+    dataset: dict[str, Any], comparable_ids: set[str] | None = None
+) -> dict[str, Any]:
+    """Coverage counts plus guarded score statistics."""
     summary = national_summary(dataset)
+    comparable_rows = [
+        row
+        for row in dataset.get("rows", [])
+        if comparable_ids is None or str(row.get("id")) in comparable_ids
+    ]
+    comparable_summary = national_summary({**dataset, "rows": comparable_rows})
+    summary["average_score"] = comparable_summary["average_score"]
+    summary["grade_distribution"] = comparable_summary["grade_distribution"]
+    summary["comparison_eligible_count"] = len(comparable_rows)
     scores = [
-        float(r["score"])
-        for r in dataset.get("rows", [])
-        if isinstance(r.get("score"), (int, float))
+        float(r["score"]) for r in comparable_rows if isinstance(r.get("score"), (int, float))
     ]
     median = _median(scores)
     summary["median_score"] = round(median, 1) if median is not None else None
@@ -364,6 +378,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
         "endpoints": {
             "agencies": f"{base}/agencies.json",
             "leaderboard": f"{base}/leaderboard.json",
+            "changes": f"{base_url}/data/artifacts/changes/latest.json",
             "by_state": f"{base}/by-state.json",
             "by_location": f"{base}/by-location.json",
             "stats": f"{base}/stats.json",
@@ -381,8 +396,9 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
         },
         "notes": (
             "Static JSON over precomputed artifacts. Per-agency detail is each "
-            "agency's published artifact. Ranked comparisons apply documented "
-            "eligibility and minimum-cohort guardrails. CC BY 4.0; cite the attribution."
+            "feed record's published artifact. Absolute rankings and individual "
+            "percentiles are not published. Named changes and score aggregates apply "
+            "documented rubric and identity guardrails. CC BY 4.0; cite the attribution."
         ),
     }
 
@@ -397,13 +413,25 @@ def build_api(
     generated_at: str,
 ) -> dict[str, dict[str, Any]]:
     """Build every API endpoint as a {relative_path: payload} map for the writer."""
-    dataset = build_quality_dataset(index)
+    agency_list = list(agencies)
+    dataset = build_quality_dataset(index, agencies=agency_list)
+    comparable_rows = [
+        row for row in dataset.get("rows", []) if row.get("comparison_eligible") is True
+    ]
+    comparison = dataset["comparison"]
+    comparable_ids = {str(row["id"]) for row in comparable_rows}
+    state_payload = by_state(dataset, states, locations, comparable_ids)
+    state_payload["comparison"] = comparison
+    location_payload = by_location(dataset, locations, comparable_ids)
+    location_payload["comparison"] = comparison
+    stats_payload = stats_endpoint(dataset, comparable_ids)
+    stats_payload["comparison"] = comparison
     return {
         "index.json": api_index(base_url, generated_at),
         "agencies.json": agencies_endpoint(dataset),
-        "leaderboard.json": leaderboard(index, dataset),
-        "by-state.json": by_state(dataset, states, locations),
-        "by-location.json": by_location(dataset, locations),
-        "stats.json": stats_endpoint(dataset),
-        "coverage.json": coverage_endpoint(index, dataset, agencies),
+        "leaderboard.json": leaderboard(index, dataset, agencies=agency_list),
+        "by-state.json": state_payload,
+        "by-location.json": location_payload,
+        "stats.json": stats_payload,
+        "coverage.json": coverage_endpoint(index, dataset, agency_list),
     }

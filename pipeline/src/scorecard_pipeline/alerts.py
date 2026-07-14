@@ -28,6 +28,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .anomaly import detect_anomalies
+from .comparisons import current_producer_contract_suffix
 from .config import artifacts_dir
 from .instance import BASE_URL as SCORECARD_BASE
 from .lapse_risk import TIER_ELEVATED, TIER_HIGH
@@ -290,13 +291,13 @@ def build_digest(  # noqa: C901
             )
             if lapse_risk:
                 items.append(lapse_risk)
-        regression = _regression_item(
-            entry.get("history", []), entry.get("name", agency_id), agency_id
-        )
+        history = entry.get("history", [])
+        comparable_history = current_producer_contract_suffix(history)
+        regression = _regression_item(comparable_history, entry.get("name", agency_id), agency_id)
         if regression:
             items.append(regression)
         items.extend(
-            _anomaly_alert_items(entry.get("history", []), agency_id, entry.get("name", agency_id))
+            _anomaly_alert_items(comparable_history, agency_id, entry.get("name", agency_id))
         )
 
     def _urgency(item: AlertItem) -> tuple[int, int, str]:

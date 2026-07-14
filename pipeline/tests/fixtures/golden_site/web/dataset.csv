@@ -1,4 +1,4 @@
-id,name,date,grade,score,correctness,freshness,completeness,realtime,days_until_expiry,service_horizon_status
-barrie-transit,Barrie Transit (Ontario),2026-07-02,C,72.3,76.0,100.0,45.0,,121,within_review_threshold
-unitrans,Unitrans (ASUCD / City of Davis),2026-07-02,B,80.8,84.8,100.0,60.0,,82,within_review_threshold
-yolobus,Yolobus (Yolo County Transportation District),2026-07-02,B,82.5,90.0,85.0,62.4,92.2,67,within_review_threshold
+id,name,date,grade,score,rubric_version,scoring_profile_id,scoring_profile_rubric_version,validator_version,feed_sha256,comparison_eligible,correctness,freshness,completeness,realtime,days_until_expiry,service_horizon_status
+barrie-transit,Barrie Transit (Ontario),2026-07-02,C,72.3,1.1,,,8.0.1,6686dff3242825b42dfd412f6ad631ce8eea73e287ff967f937fbac16973de76,False,76.0,100.0,45.0,,121,within_review_threshold
+unitrans,Unitrans (ASUCD / City of Davis),2026-07-02,B,80.8,1.1,,,8.0.1,3ddba2ca939679b1ba87d34babcd7f8715faab7f08c5241dc3f1d5277cf4f39d,False,84.8,100.0,60.0,,82,within_review_threshold
+yolobus,Yolobus (Yolo County Transportation District),2026-07-02,B,82.5,1.1,,,8.0.1,946c49a1b1dae9b4788e9984a983b1a0c9105eecd337f65f60e5650256eca937,False,90.0,85.0,62.4,92.2,67,within_review_threshold

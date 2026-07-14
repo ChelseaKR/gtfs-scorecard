@@ -178,6 +178,27 @@ def test_empty_feed_is_valid() -> None:
     assert root.find(f"{_ATOM}updated") is not None
 
 
+def test_zero_comparison_change_feed_is_explicitly_unavailable() -> None:
+    xml = site_change_feed([], base_url=_BASE, comparison={"eligible_count": 0})
+    root = ET.fromstring(xml)
+    subtitle = root.find(f"{_ATOM}subtitle")
+    assert subtitle is not None
+    assert "unavailable until current-contract checks" in (subtitle.text or "")
+    assert "not a no-change claim" in (subtitle.text or "")
+
+
+def test_guarded_change_feed_names_its_feed_record_denominator() -> None:
+    xml = site_change_feed(
+        [_change("acme", "Acme Transit", "B", "C", regressed=True)],
+        base_url=_BASE,
+        comparison={"eligible_count": 12},
+    )
+    root = ET.fromstring(xml)
+    subtitle = root.find(f"{_ATOM}subtitle")
+    assert subtitle is not None
+    assert "12 current-contract, comparison-eligible feed records" in (subtitle.text or "")
+
+
 def test_feed_has_author_for_atom_validity() -> None:
     # RFC 4287 4.1.1: a feed whose entries carry no author MUST declare a
     # feed-level author, or it is not valid Atom.

@@ -84,11 +84,11 @@ def test_weight_sensitivity_counts_grade_churn() -> None:
     assert study["max_grade_change_pct"] == 50.0
 
 
-def test_weight_sensitivity_over_no_agencies_is_zero_churn() -> None:
+def test_weight_sensitivity_over_no_agencies_is_unavailable() -> None:
     study = weight_sensitivity({})
     assert study["agency_count"] == 0
-    assert study["max_grade_change_pct"] == 0.0
-    assert all(p["grade_change_pct"] == 0.0 for p in study["perturbations"])
+    assert study["max_grade_change_pct"] is None
+    assert study["perturbations"] == []
 
 
 def test_cli_sensitivity_publishes_the_study(isolated_repo_root: Path) -> None:
@@ -96,13 +96,40 @@ def test_cli_sensitivity_publishes_the_study(isolated_repo_root: Path) -> None:
     same provenance envelope the other national artifacts carry."""
     import argparse
 
-    from scorecard_pipeline import DATA_LICENSE, RUBRIC_VERSION, SCHEMA_VERSION
+    from scorecard_pipeline import (
+        DATA_LICENSE,
+        RUBRIC_VERSION,
+        SCHEMA_VERSION,
+        SCORING_PROFILE_ID,
+    )
     from scorecard_pipeline.cli import _cmd_sensitivity
+    from scorecard_pipeline.validate import VALIDATOR_VERSION
 
     art = isolated_repo_root / "data" / "artifacts"
     art.mkdir(parents=True)
-    history = [{"date": "2026-07-02", "categories": {"correctness": 100.0, "completeness": 50.0}}]
-    (art / "index.json").write_text(json.dumps({"agencies": {"edge": {"history": history}}}))
+    current = {
+        "date": "2026-07-02",
+        "score": 79.4,
+        "grade": "C",
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile_id": SCORING_PROFILE_ID,
+        "scoring_profile_rubric_version": RUBRIC_VERSION,
+        "validator_version": VALIDATOR_VERSION,
+        "feed_sha256": "sha-edge",
+        "categories": {"correctness": 100.0, "freshness": 80.0, "completeness": 50.0},
+        "days_until_expiry": 100,
+    }
+    stale = {**current, "rubric_version": "0.9", "feed_sha256": "sha-stale"}
+    (art / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    "edge": {"history": [current]},
+                    "stale": {"history": [stale]},
+                }
+            }
+        )
+    )
 
     args = argparse.Namespace(factor=0.2, out=None)
     assert _cmd_sensitivity(args, argparse.ArgumentParser()) == 0
@@ -112,15 +139,61 @@ def test_cli_sensitivity_publishes_the_study(isolated_repo_root: Path) -> None:
     assert payload["license"] == DATA_LICENSE
     assert payload["generated_at"]
     assert payload["agency_count"] == 1
+    assert payload["comparison"]["eligible_count"] == 1
+    assert payload["comparison"]["exclusion_counts"]["rubric_version_mismatch"] == 1
     # The lone near-boundary agency flips under the correctness-up perturbation.
     assert payload["max_grade_change_pct"] == 100.0
     assert len(payload["perturbations"]) == 8
+
+
+def test_cli_sensitivity_publishes_guarded_empty_study_without_current_cohort(
+    isolated_repo_root: Path,
+) -> None:
+    import argparse
+
+    from scorecard_pipeline.cli import _cmd_sensitivity
+
+    art = isolated_repo_root / "data" / "artifacts"
+    art.mkdir(parents=True)
+    (art / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    "legacy": {
+                        "history": [
+                            {
+                                "date": "2026-07-01",
+                                "score": 80,
+                                "grade": "B",
+                                "categories": {
+                                    "correctness": 80,
+                                    "freshness": 80,
+                                    "completeness": 80,
+                                },
+                            }
+                        ]
+                    }
+                }
+            }
+        )
+    )
+
+    assert (
+        _cmd_sensitivity(argparse.Namespace(factor=0.2, out=None), argparse.ArgumentParser()) == 0
+    )
+    payload = json.loads((art / "sensitivity.json").read_text())
+    assert payload["agency_count"] == 0
+    assert payload["comparison"]["eligible_count"] == 0
+    assert payload["comparison"]["excluded_count"] == 1
+    assert payload["max_grade_change_pct"] is None
+    assert payload["perturbations"] == []
 
 
 def test_guide_sensitivity_note_reads_the_published_study(isolated_repo_root: Path) -> None:
     """The how-to-read page's headline comes from the published sensitivity.json
     (same artifact base the other national data is served from) and degrades to a
     placeholder before the first study has run."""
+    from scorecard_pipeline import RUBRIC_VERSION
     from scorecard_pipeline.render_site import _sensitivity_note
 
     # No study published yet: the placeholder still links the artifact URL.
@@ -137,11 +210,20 @@ def test_guide_sensitivity_note_reads_the_published_study(isolated_repo_root: Pa
                 "factor": 0.2,
                 "max_grade_change_pct": 3.4,
                 "generated_at": "2026-07-02T00:00:00+00:00",
+                "comparison": {
+                    "eligible_count": 1200,
+                    "required_rubric_version": RUBRIC_VERSION,
+                    "required_measured_categories": [
+                        "correctness",
+                        "freshness",
+                        "completeness",
+                    ],
+                },
             }
         )
     )
     note = _sensitivity_note()
-    assert "1200 tracked agencies" in note
+    assert "1200 comparison-eligible feed records" in note
     assert "3.4% of letter grades move" in note
     assert "studied 2026-07-02" in note
     assert "/data/artifacts/sensitivity.json" in note

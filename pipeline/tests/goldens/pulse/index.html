@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Coverage overview — GTFS Scorecard</title>
-  <meta name="description" content="How the public GTFS feeds covered by this site are doing: agency comparisons, who improved or slipped, and the corpus trend over time.">
+  <meta name="description" content="How the public GTFS feeds covered by this site are changing, and the comparable corpus trend over time.">
   <link rel="canonical" href="https://gtfsscorecard.org/pulse/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Coverage overview — GTFS Scorecard">
-  <meta property="og:description" content="How the public GTFS feeds covered by this site are doing: agency comparisons, who improved or slipped, and the corpus trend over time.">
+  <meta property="og:description" content="How the public GTFS feeds covered by this site are changing, and the comparable corpus trend over time.">
   <meta property="og:url" content="https://gtfsscorecard.org/pulse/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -47,46 +47,24 @@
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Coverage overview.</h1>
     <p class="page-lede">How the public transit feeds in this site's current coverage
-    are doing: how agencies compare, who moved since their last check, and whether the
-    covered corpus is getting better. This is not a census of any country or of the
-    world. An agency that is absent is simply not covered yet, never failing.</p>
-    <nav class="grade-jump" aria-label="Jump to section">Jump to: <a href="#rankings">Rankings</a> · <a href="#changes">What changed</a> · <a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>
-    <section id="rankings" aria-labelledby="rankings-h" tabindex="-1">
-      <h2 class="section-title" id="rankings-h">Rankings</h2>
+    are changing and whether the comparable covered corpus is getting better. This is
+    not a census of any country or of the world. An absent scorecard is simply not
+    covered yet.</p>
+    <nav class="grade-jump" aria-label="Jump to section">Jump to: <a href="#changes">What changed</a> · <a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>
+    <p class="fineprint">Absolute score rankings and individual percentiles are not
+    published. Named changes compare a feed only with its own prior check when the rubric,
+    scoring profile, validator, and measured category set are unchanged. Corpus aggregates
+    use rubric 1.2, scoring profile gtfs-scorecard-1.2, MobilityData gtfs-validator 8.0.1, and measured categories one shared measured-category set; records with unresolved duplicate identities
+    are excluded.</p>
 
-      <section class="feed-details"><h2 class="section-title">Comparisons withheld</h2><p>Only 3 feeds meet the comparison rules. At least 20 are required before publishing a ranked list. Individual scorecards and the open dataset remain available.</p></section>
-    </section>
-    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="changes" aria-labelledby="changes-h" tabindex="-1">
       <h2 class="section-title" id="changes-h">What changed since the last check</h2>
-      <p class="page-lede">No material score or grade changes were detected.</p>
-    <div class="section-grid">
-    <section aria-labelledby="improved-h">
-      <h2 class="section-title" id="improved-h">Most improved</h2>
-      <ul class="delta-list"><li class="delta-row"><span class="delta-cat">No agencies improved since their last check.</span></li></ul>
-    </section>
-    <section aria-labelledby="attention-h">
-      <h2 class="section-title" id="attention-h">Needs attention</h2>
-      <ul class="delta-list"><li class="delta-row"><span class="delta-cat">No agencies slipped &mdash; a good day.</span></li></ul>
-    </section>
-    </div>
-    <p class="subscribe-line"><a href="/changes/feed.xml">Subscribe to changes (Atom)</a>
-    to get grade drops in a feed reader or a webhook, with no sign-up. Each agency
-    also has its own feed at <code>/agency/&lt;id&gt;/feed.xml</code>.</p>
+      <p class="page-lede">Named changes are unavailable until current-contract checks create a comparable cohort. No improvement or regression claim is made for this snapshot.</p>
     </section>
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="trend" aria-labelledby="trend-h" tabindex="-1">
       <h2 class="section-title" id="trend-h">Is transit data getting better?</h2>
-      <p class="page-lede">Across the feeds we track, the corpus average score held about steady between 2026-07-01 and 2026-07-02 (now 78.5).</p>
-    <section class="feed-details"><h2 class="section-title">Covered-corpus average score</h2><p><svg class="trend-spark" viewBox="0 0 640 120" preserveAspectRatio="none" role="img" aria-label="Covered-corpus average score by date (axis 78.5 to 78.5): 2026-07-01 78.5; 2026-07-02 78.5"><polyline points="12.0,108.0 628.0,108.0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle class="trend-dot" cx="12.0" cy="108.0" r="2.5" fill="currentColor"><title>2026-07-01: 78.5</title></circle><circle class="trend-dot" cx="628.0" cy="108.0" r="4" fill="currentColor"><title>2026-07-02: 78.5</title></circle></svg></p><p class="trend-axis" aria-hidden="true">Score axis 78 to 78. 2026-07-01 to 2026-07-02.</p></section>
-    <div class="section-grid">
-    <section class="feed-details"><h2 class="section-title">By date</h2><table class="leaderboard"><thead><tr><th>Date</th><th>Avg score</th><th>Feeds</th><th>Expired</th></tr></thead><tbody><tr><td>2026-07-02</td><td>78.5</td><td>3</td><td>0.0%</td></tr><tr><td>2026-07-01</td><td>78.5</td><td>3</td><td>0.0%</td></tr></tbody></table></section>
-    <section class="feed-details" aria-labelledby="improvers-heading"><h2 id="improvers-heading" class="section-title">Agencies that improved most (last 90 days)</h2><p class="fineprint">Feeds that moved up the most in this period, measured by overall score. Only agencies with at least three checks are included.</p><table class="leaderboard"><thead><tr><th>Agency</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>72.2</td><td>80.8</td><td>+8.6</td></tr></tbody></table></section>
-    </div>
-    <p class="fineprint">The series carries each agency's most recent score forward to each
-    date and averages, so it is smooth even though agencies are checked on different days. It
-    never changes a grade. The same data is at <a href="/api/v1/trend.json">the trend API
-    (trend.json)</a>.</p>
+      <p class="page-lede">The covered-corpus trend is unavailable until current-contract checks create a comparable cohort.</p>
     </section>
     <p class="plain-summary"><strong>In plain words:</strong> this page tracks the covered
     corpus at once, not any single agency. The <a href="/problems/">most common

@@ -2,50 +2,36 @@
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "bands": {
     "mostly": 0,
-    "reliable": 1,
+    "reliable": 0,
     "spotty": 0
   },
-  "countries": [
-    {
-      "agencies": 1,
-      "country_code": "US",
-      "country_name": "United States",
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "subdivisions": [
-        {
-          "agencies": 1,
-          "median_uptime_pct": 100.0,
-          "reliable": 1,
-          "subdivision_code": null,
-          "subdivision_name": "Unlocated"
-        }
-      ]
-    }
-  ],
-  "generated_at": "2026-07-14T03:48:50+00:00",
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
+  "comparison_eligible_count": 0,
+  "countries": [],
+  "feed_record_count": 3,
+  "generated_at": "2026-07-14T10:15:31+00:00",
   "license": "CC-BY-4.0",
-  "median_lag_seconds": 10,
-  "median_uptime_pct": 100.0,
-  "monitored_count": 1,
-  "most_reliable": [
-    {
-      "country": "US",
-      "id": "yolobus",
-      "median_lag_seconds": 10,
-      "name": "Yolobus (Yolo County Transportation District)",
-      "state": "Unlocated",
-      "subdivision_code": "",
-      "subdivision_name": "",
-      "uptime_pct": 100.0
-    }
-  ],
-  "states": [
-    {
-      "agencies": 1,
-      "median_uptime_pct": 100.0,
-      "reliable": 1,
-      "state": "Unlocated"
-    }
-  ]
+  "median_lag_seconds": null,
+  "median_uptime_pct": null,
+  "monitored_count": 0,
+  "monitored_feed_record_count": 0,
+  "most_reliable": [],
+  "raw_monitored_feed_record_count": 1,
+  "states": []
 }

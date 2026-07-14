@@ -72,10 +72,12 @@ is helping them do the change and prove it worked.
   the static-site model and keeps feeds private. Not the full Java validator;
   a deliberately small preview that names when the canonical validator will
   still be the authority. Effort M.
-- **Fix verification as a product.** R4's cleared-findings diff shipped. The
-  stronger version is a claimable "fix receipt": a dated, linkable record that
-  finding X cleared on date Y, suitable for a board packet or an NTD narrative.
-  Cheap render over existing history; pairs with E6's board one-pager.
+- **Comparable finding clearance as a product.** R4's finding diff shipped. The
+  stronger version is a dated, linkable record that finding X was present through
+  one check and absent from the next complete, compatible check. It is suitable
+  for a board packet or NTD narrative when it states that causal attribution
+  requires a separate action record. Cheap render over existing history; pairs
+  with E6's board one-pager.
 - **Vendor worklists (E4), with the procurement hook (E5).** The research
   roadmap already scopes these. The ideation-level point: together they change
   who the user is. Most small-agency feeds are vendor exports, so the shortest

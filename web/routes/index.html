@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Every route on one map — GTFS Scorecard</title>
-  <meta name="description" content="A world vector map of every tracked agency&#x27;s transit routes, coloured by route type or data-quality grade.">
+  <meta name="description" content="A world vector map of every tracked feed record&#x27;s transit routes, coloured by route type or data-quality grade.">
   <link rel="canonical" href="https://gtfsscorecard.org/routes/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Every route on one map — GTFS Scorecard">
-  <meta property="og:description" content="A world vector map of every tracked agency&#x27;s transit routes, coloured by route type or data-quality grade.">
+  <meta property="og:description" content="A world vector map of every tracked feed record&#x27;s transit routes, coloured by route type or data-quality grade.">
   <meta property="og:url" content="https://gtfsscorecard.org/routes/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -46,33 +46,33 @@
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">All routes</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Every route, one map.</h1>
-    <p class="page-lede">The route shapes of every tracked agency, drawn from each
+    <p class="page-lede">The route shapes of every tracked feed record, drawn from each
     feed's own <abbr title="General Transit Feed Specification">GTFS</abbr> and
-    combined on a single map. 8436 routes from 345 agencies are
-    on it. Recolour by route type or by the agency's data-quality grade, and select
-    a line for the agency and a link to its scorecard.</p>
+    combined on a single map. 8436 routes from 345 feed records are
+    on it. Recolour by route type or by the scorecard's data-quality grade, and select
+    a line for the named operator and a link to its scorecard.</p>
     <p class="page-lede"><strong>This map is a visual extra, not the accessible way
     to read the data.</strong> A map of this many route lines can't be a data table.
     For a screen-reader and keyboard friendly view, use
-    <a href="/agencies/">the grade-grouped agency list</a>; each agency's own scorecard
+    <a href="/agencies/">the alphabetical scorecard list</a>; each scorecard
     carries <a href="/agency/unitrans/">a route-by-route table</a> of its lines.</p>
     <section aria-labelledby="routes-map-h" class="route-map-section">
       <h2 id="routes-map-h" class="section-title">All tracked routes</h2>
-      <a class="skip-link-inline" href="#routes-after-map">Skip to the accessible agency list</a>
+      <a class="skip-link-inline" href="#routes-after-map">Skip to the accessible scorecard list</a>
       <fieldset class="map-colormode">
         <legend>Colour routes by</legend>
         <label><input type="radio" name="route-color-mode" value="type" checked> Route type</label>
-        <label><input type="radio" name="route-color-mode" value="grade"> Agency grade</label>
+        <label><input type="radio" name="route-color-mode" value="grade"> Scorecard grade</label>
       </fieldset>
       <div id="routes-map" class="national-map" aria-hidden="true"></div>
       <ul class="map-legend" id="legend-type" aria-label="Route type colours"><li><span class="map-dot" style="background:#1A7A46"></span>Bus</li><li><span class="map-dot" style="background:#8844AA"></span>Rail</li><li><span class="map-dot" style="background:#3344CC"></span>Subway / metro</li><li><span class="map-dot" style="background:#C03020"></span>Tram / light rail</li><li><span class="map-dot" style="background:#1B7FA8"></span>Ferry</li><li><span class="map-dot" style="background:#B5651D"></span>Trolleybus</li><li><span class="map-dot" style="background:#5a5a5a"></span>Other modes</li></ul>
-      <ul class="map-legend" id="legend-grade" aria-label="Agency grade colours" hidden><li><span class="map-dot" style="background:#1f7a4d"></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"></span>Grade D</li><li><span class="map-dot" style="background:#a32020"></span>Grade F</li></ul>
+      <ul class="map-legend" id="legend-grade" aria-label="Scorecard grade colours" hidden><li><span class="map-dot" style="background:#1f7a4d"></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"></span>Grade D</li><li><span class="map-dot" style="background:#a32020"></span>Grade F</li></ul>
     </section>
     <div id="routes-after-map" tabindex="-1"></div>
     <p class="page-lede">Read the data without the map:</p>
     <ul class="route-skip-targets">
-      <li><a href="/app/">All agencies</a>, searchable by name, country, subdivision, grade, and size.</li>
-      <li><a href="/pulse/#rankings">Coverage rankings</a> of the highest and lowest scoring feeds.</li>
+      <li><a href="/app/">All scorecards</a>, searchable by name, country, subdivision, grade, and size.</li>
+      <li><a href="/pulse/#changes">Coverage changes</a> since each feed's prior check.</li>
       <li>Each scorecard (for example <a href="/agency/unitrans/">Unitrans</a>) lists its
         routes and stops in a table.</li>
     </ul>

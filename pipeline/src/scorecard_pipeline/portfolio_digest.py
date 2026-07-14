@@ -7,7 +7,7 @@ carries the same fix-framed, no-shaming tone — it leads with what got fixed an
 on a quiet week, says so plainly rather than sending an alarming blank.
 
 The week-over-week diff needs a memory of last week. We keep a small snapshot of
-each member's score, grade, and expiry status per rollup in a
+each member's score, grade, expiry status, and complete producer contract per rollup in a
 `<rollup>.state.json` file under the artifacts `rollups/` directory, written the
 same atomic way as the other state files (liveness.py). Building the digest is
 pure and testable against fixture artifacts; advancing the snapshot is the
@@ -24,6 +24,7 @@ from typing import Any
 
 from . import SCHEMA_VERSION
 from .alerts import GRADE_ORDER, REGRESSION_POINTS
+from .comparisons import producer_contract, same_producer_contract
 from .config import artifacts_dir
 from .metrics import expiry_status
 from .rollups import Rollup, _load_latest, resolve_member_ids
@@ -61,9 +62,56 @@ class PortfolioDigest:
     as_of: dt.date
     first_run: bool
     member_count: int
+    # Only members with a complete, matching producer contract are compared.
+    compared_member_count: int = 0
+    # Existing member baselines rejected because their contract was absent or changed.
+    baseline_reset_count: int = 0
+    baseline_restarted: bool = False
     movements: list[PortfolioMovement] = field(default_factory=list)
     # The current week's member states, to persist as next week's baseline.
     snapshot: dict[str, dict[str, Any]] = field(default_factory=dict)
+
+
+def _producer_contract_evidence(record: dict[str, Any]) -> dict[str, Any] | None:
+    """Return the complete producer contract in a JSON-safe persisted shape."""
+    rubric, profile, profile_rubric, validator, measured = producer_contract(record)
+    if not all((rubric, profile, profile_rubric, validator)) or not measured:
+        return None
+    return {
+        "rubric_version": rubric,
+        "scoring_profile_id": profile,
+        "scoring_profile_rubric_version": profile_rubric,
+        "validator_version": validator,
+        "measured_categories": list(measured),
+    }
+
+
+def _contract_record(evidence: Any) -> dict[str, Any] | None:
+    """Convert persisted contract evidence to the shape used by comparisons."""
+    if not isinstance(evidence, dict):
+        return None
+    measured = evidence.get("measured_categories")
+    if (
+        not isinstance(measured, list)
+        or not measured
+        or not all(isinstance(category, str) and category for category in measured)
+    ):
+        return None
+    record = {
+        "rubric_version": evidence.get("rubric_version"),
+        "scoring_profile_id": evidence.get("scoring_profile_id"),
+        "scoring_profile_rubric_version": evidence.get("scoring_profile_rubric_version"),
+        "validator_version": evidence.get("validator_version"),
+        "categories": {category: {"status": "measured"} for category in measured},
+    }
+    return record if same_producer_contract(record, record) else None
+
+
+def _same_member_contract(was: dict[str, Any], now: dict[str, Any]) -> bool:
+    """Whether two persisted member states support a real feed-change claim."""
+    previous = _contract_record(was.get("producer_contract"))
+    current = _contract_record(now.get("producer_contract"))
+    return bool(previous and current and same_producer_contract(previous, current))
 
 
 def _member_state(latest: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -72,6 +120,9 @@ def _member_state(latest: dict[str, Any] | None) -> dict[str, Any] | None:
     A missing or malformed artifact (no overall block, non-numeric score) is
     dropped so one bad row never crashes the whole cohort digest."""
     if not latest or "overall" not in latest:
+        return None
+    contract = _producer_contract_evidence(latest)
+    if contract is None:
         return None
     overall = latest["overall"]
     try:
@@ -95,6 +146,7 @@ def _member_state(latest: dict[str, Any] | None) -> dict[str, Any] | None:
         "grade": grade,
         "days_until_expiry": days,
         "expiry_status": expiry_status(days),
+        "producer_contract": contract,
     }
 
 
@@ -204,8 +256,10 @@ def build_portfolio_digest(
     Loads each member's latest.json (reusing the rollup's member resolution),
     reads its score/grade/expiry status, and compares it to `previous_snapshot`.
     With no prior snapshot it is a first run: the current state is captured but
-    no movement is reported (there is nothing to diff against yet). The returned
-    digest carries the fresh snapshot for the caller to persist.
+    no movement is reported (there is nothing to diff against yet). A legacy or
+    incompatible member snapshot also establishes a new baseline for that member
+    and is never diffed. The returned digest carries the fresh snapshot for the
+    caller to persist.
     """
     as_of = today or dt.date.today()
     previous = previous_snapshot or {}
@@ -222,12 +276,20 @@ def build_portfolio_digest(
         names[agency_id] = str(latest["agency"].get("name", agency_id)) if latest else agency_id
 
     movements: list[PortfolioMovement] = []
+    compared_member_count = 0
+    baseline_reset_count = 0
     if not first_run:
         for agency_id in sorted(current):
             was = previous.get(agency_id)
             if not was:
                 continue  # a newly tracked member has no week-over-week history yet
+            if not _same_member_contract(was, current[agency_id]):
+                baseline_reset_count += 1
+                continue
+            compared_member_count += 1
             movements.extend(_diff_member(agency_id, names[agency_id], was, current[agency_id]))
+
+    baseline_restarted = bool(previous) and compared_member_count == 0
 
     return PortfolioDigest(
         rollup_id=rollup.id,
@@ -235,8 +297,37 @@ def build_portfolio_digest(
         as_of=as_of,
         first_run=first_run,
         member_count=len(current),
+        compared_member_count=compared_member_count,
+        baseline_reset_count=baseline_reset_count,
+        baseline_restarted=baseline_restarted,
         movements=movements,
         snapshot=current,
+    )
+
+
+def _baseline_only_message(digest: PortfolioDigest) -> str | None:
+    """Message for a run that cannot make any week-over-week comparison."""
+    if digest.first_run:
+        return (
+            f"First digest for {digest.rollup_name} ({digest.member_count} feed(s) tracked). "
+            "Next week's will show what changed."
+        )
+    if digest.baseline_restarted:
+        return (
+            f"Baseline restarted for {digest.rollup_name} ({digest.member_count} feed(s) "
+            "tracked). No week-over-week changes are claimed because no current feed has a "
+            "compatible prior baseline."
+        )
+    return None
+
+
+def _baseline_reset_note(digest: PortfolioDigest) -> str:
+    """Transparent note for members omitted from an otherwise comparable digest."""
+    if not digest.baseline_reset_count:
+        return ""
+    return (
+        f" {digest.baseline_reset_count} other feed(s) started a new baseline because "
+        "their scoring producer contract changed or was missing."
     )
 
 
@@ -251,18 +342,18 @@ def render_portfolio_digest(digest: PortfolioDigest) -> str:
         "",
     ]
 
-    if digest.first_run:
-        lines.append(
-            f"First digest for {digest.rollup_name} ({digest.member_count} feed(s) tracked). "
-            "Next week's will show what changed."
-        )
+    baseline_message = _baseline_only_message(digest)
+    if baseline_message is not None:
+        lines.append(baseline_message)
         lines.append("")
         return "\n".join(lines)
 
+    reset_note = _baseline_reset_note(digest)
+
     if not digest.movements:
         lines.append(
-            f"All {digest.member_count} feed(s) in {digest.rollup_name} held steady this week. "
-            "Nothing newly expired and no grades dropped."
+            f"All {digest.compared_member_count} comparable feed(s) in {digest.rollup_name} "
+            "held steady this week. Nothing newly expired and no grades dropped." + reset_note
         )
         lines.append("")
         return "\n".join(lines)
@@ -275,7 +366,12 @@ def render_portfolio_digest(digest: PortfolioDigest) -> str:
         summary_parts.append(f"{len(fixed)} improved")
     if attention:
         summary_parts.append(f"{len(attention)} worth a look")
-    lines.append(f"Across {digest.member_count} feed(s): " + ", ".join(summary_parts) + ".")
+    lines.append(
+        f"Across {digest.compared_member_count} comparable feed(s): "
+        + ", ".join(summary_parts)
+        + "."
+        + reset_note
+    )
     lines.append("")
 
     def _emit(item: PortfolioMovement) -> None:

@@ -1,14 +1,15 @@
 """Build the directory dataset the web app's covered-set view reads.
 
-At ~1,200 agencies the front door can't be a flat alphabetical list. This
+At more than 1,000 feed scorecards the front door can't be a flat alphabetical list. This
 turns the per-agency artifacts into one slim document the app loads once:
 
 - a corpus **summary** (grade distribution, how many feeds are expiring or
-  expired, the median score) so the landing screen leads with the picture,
+  expired, and the median among comparable records) so the landing screen leads
+  with the picture,
 - a **by-state** rollup so a manager can browse to their own state and a
   liaison can treat a state as a portfolio,
-- per-agency **size tier** and **percentile**, so a lone letter grade reads in
-  context ("better than 70% of agencies its size").
+- a per-feed **size tier** for filtering. Individual percentile claims are not
+  published.
 
 It is built at collect time from the artifacts already on disk, so it adds no
 per-agency or per-shard work. State comes from each agency's Mobility Database
@@ -18,10 +19,12 @@ which the completeness metric already records.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE, SCHEMA_VERSION
-from ._stats import _percentile
+from .comparisons import build_comparison_cohort
+from .config import Agency
 from .location import country_name
 
 # Size tiers by number of stops in the feed. The breakpoints sort the long tail
@@ -69,8 +72,8 @@ def _grade_distribution(records: list[dict[str, Any]]) -> dict[str, int]:
     return dist
 
 
-def _state_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """One row per state: agency count, average score, grade mix, expired count.
+def _state_rollup(records: list[dict[str, Any]], comparable_ids: set[str]) -> list[dict[str, Any]]:
+    """One row per state: feed count, comparable score mix, expired count.
 
     Sorted by agency count so the states a liaison is most likely to want sit at
     the top of the browse grid. Agencies with no resolved state collect under an
@@ -88,14 +91,17 @@ def _state_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     rows: list[dict[str, Any]] = []
     for state, members in by_state.items():
-        scores = [float(m["score"]) for m in members if m.get("score") is not None]
+        comparable = [m for m in members if str(m.get("id")) in comparable_ids]
+        scores = [float(m["score"]) for m in comparable if m.get("score") is not None]
         expired = sum(1 for m in members if m.get("expiry_status") in ("lapsed", "stale"))
         rows.append(
             {
                 "state": state,
                 "agencies": len(members),
+                "feed_records": len(members),
+                "comparison_eligible_count": len(comparable),
                 "average_score": round(sum(scores) / len(scores), 1) if scores else None,
-                "grade_distribution": _grade_distribution(members),
+                "grade_distribution": _grade_distribution(comparable),
                 "expired": expired,
             }
         )
@@ -105,26 +111,32 @@ def _state_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def _rollup_row(
     members: list[dict[str, Any]],
+    comparable_ids: set[str],
     *,
     code_key: str,
     code: str | None,
     name_key: str,
     name: str,
 ) -> dict[str, Any]:
-    scores = [float(member["score"]) for member in members if member.get("score") is not None]
+    comparable = [member for member in members if str(member.get("id")) in comparable_ids]
+    scores = [float(member["score"]) for member in comparable if member.get("score") is not None]
     return {
         code_key: code,
         name_key: name,
         "agencies": len(members),
+        "feed_records": len(members),
+        "comparison_eligible_count": len(comparable),
         "average_score": round(sum(scores) / len(scores), 1) if scores else None,
-        "grade_distribution": _grade_distribution(members),
+        "grade_distribution": _grade_distribution(comparable),
         "expired": sum(
             1 for member in members if member.get("expiry_status") in ("lapsed", "stale")
         ),
     }
 
 
-def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _country_rollup(
+    records: list[dict[str, Any]], comparable_ids: set[str]
+) -> list[dict[str, Any]]:
     """Portable country rows with nested first-level subdivision rows."""
     by_country: dict[str, list[dict[str, Any]]] = {}
     for record in records:
@@ -136,6 +148,7 @@ def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for country_code, members in by_country.items():
         country = _rollup_row(
             members,
+            comparable_ids,
             code_key="country_code",
             code=country_code or None,
             name_key="country_name",
@@ -149,6 +162,7 @@ def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         subdivisions = [
             _rollup_row(
                 subdivision_members,
+                comparable_ids,
                 code_key="subdivision_code",
                 code=code or None,
                 name_key="subdivision_name",
@@ -171,33 +185,38 @@ def _country_rollup(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return countries
 
 
-def build_directory(records: list[dict[str, Any]], generated_at: str) -> dict[str, Any]:
+def build_directory(
+    records: list[dict[str, Any]],
+    generated_at: str,
+    *,
+    agencies: Iterable[Agency] | None = None,
+) -> dict[str, Any]:
     """Assemble directory.json from per-agency records.
 
     Each input record carries at least id, name, grade, score, state,
     expiry_status, days_until_expiry, stops, top_fix, and scorecard_url. This
-    fills in each record's size_tier and percentiles (national, and within its
-    size tier) and prepends the national and per-state summary. Input order is
-    preserved for the agency list; callers sort in the UI.
+    fills in each record's size tier and prepends the national and per-state
+    summary. Score aggregates use the guarded comparison cohort, while coverage
+    and expiry counts continue to describe every published feed record. Input
+    order is preserved for the scorecard list; callers sort in the UI.
     """
-    national_scores = [float(r["score"]) for r in records if r.get("score") is not None]
-
-    # Peer scores grouped by size tier, so a small agency is ranked against
-    # other small agencies and not against a statewide rail operator.
-    tier_scores: dict[str, list[float]] = {}
     for r in records:
         r["size_tier"] = size_tier(r.get("stops"))
-        if r.get("score") is not None:
-            tier_scores.setdefault(r["size_tier"], []).append(float(r["score"]))
-
-    for r in records:
-        if r.get("score") is None:
-            r["national_percentile"] = None
-            r["peer_percentile"] = None
-            continue
-        score = float(r["score"])
-        r["national_percentile"] = _percentile(score, national_scores)
-        r["peer_percentile"] = _percentile(score, tier_scores.get(r["size_tier"], []))
+        # API/schema compatibility: the former public percentile fields remain
+        # present but intentionally carry no comparative claim.
+        r["national_percentile"] = None
+        r["peer_percentile"] = None
+    comparable, comparison = build_comparison_cohort(records, agencies=agencies)
+    comparable_ids = {str(record.get("id")) for record in comparable}
+    for record in records:
+        record["comparison_eligible"] = str(record.get("id") or "") in comparable_ids
+    comparable_scores = [
+        float(record["score"]) for record in comparable if record.get("score") is not None
+    ]
+    scored_feed_records = sum(
+        isinstance(record.get("score"), (int, float)) and not isinstance(record.get("score"), bool)
+        for record in records
+    )
 
     expiring_soon = sum(
         1
@@ -211,20 +230,25 @@ def build_directory(records: list[dict[str, Any]], generated_at: str) -> dict[st
 
     summary = {
         "agencies": len(records),
-        "average_score": round(sum(national_scores) / len(national_scores), 1)
-        if national_scores
+        "feed_records": len(records),
+        "scored_feed_records": scored_feed_records,
+        "comparison_eligible_count": len(comparable),
+        "average_score": round(sum(comparable_scores) / len(comparable_scores), 1)
+        if comparable_scores
         else None,
-        "median_score": _median(national_scores),
-        "grade_distribution": _grade_distribution(records),
+        "median_score": _median(comparable_scores),
+        "grade_distribution": _grade_distribution(comparable),
         "expiring_soon": expiring_soon,
         "expired": {"lapsed": lapsed, "stale": stale, "total": lapsed + stale},
-        "states": _state_rollup(records),
-        "countries": _country_rollup(records),
+        "states": _state_rollup(records, comparable_ids),
+        "countries": _country_rollup(records, comparable_ids),
+        "comparison": comparison,
         "size_tiers": [
             {
                 "key": key,
                 "label": label,
                 "agencies": sum(1 for r in records if r["size_tier"] == key),
+                "feed_records": sum(1 for r in records if r["size_tier"] == key),
             }
             for key, label, _ceiling in SIZE_TIERS
         ],

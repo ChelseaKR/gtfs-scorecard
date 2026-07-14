@@ -37,11 +37,14 @@ def test_guide_renders_sandbox_markup_and_script_hook() -> None:
     # The reset control and the live-summary regions the script writes into.
     assert 'id="sandbox-reset"' in html
     assert 'id="sandbox-summary"' in html
-    assert 'id="sandbox-sample"' in html
     # The script hook: it sources weights + bands from scoring.json and the
     # per-agency category scores from agencies.json at runtime (single source).
     assert "/api/v1/scoring.json" in html
     assert "/api/v1/agencies.json" in html
+    assert "a.comparison_eligible === true" in html
+    assert "Rise the most" not in html
+    assert "Fall the most" not in html
+    assert "never names hypothetical winners or losers" in html
     # Defaults are not hardcoded: the sliders start disabled at 0 and the JS
     # applies the fetched published weights.
     assert "applyDefaults" in html

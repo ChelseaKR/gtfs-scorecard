@@ -65,7 +65,7 @@ re-generate <code>shapes.txt</code> so it follows the real path.</li>
 <li><strong>The stop location</strong>: if <code>stop_lat</code> / <code>stop_lon</code> is wrong, correct it.</li>
 <li><strong>The <code>shape_dist_traveled</code> values</strong>: if the geometry is right but the distance
 measurements are off, regenerate them. Many tools compute <code>shape_dist_traveled</code>
-automatically; re-running that step usually clears this.</li>
+automatically; re-run validation afterward to check whether this finding remains.</li>
 </ul>
 <p>See <a href="/fix/stop_too_far_from_shape/">a stop far from the shape by raw geometric distance</a>
 for the related case where the shape and the stop simply disagree in space,
@@ -74,7 +74,7 @@ with no <code>shape_dist_traveled</code> measurement involved.</p>
 <p>Often a regeneration step in your scheduling tool rather than hand-editing. If a
 specific stop or shape is wrong, it is a targeted fix on the flagged trips.</p>
 <h2 class="section-title">Authoritative rule</h2>
-<p><code>stop_too_far_from_shape_using_user_distance</code> is a canonical MobilityData GTFS Validator notice used in validator reports across the GTFS ecosystem. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#stop_too_far_from_shape_using_user_distance-rule">Read the authoritative rule for stop_too_far_from_shape_using_user_distance in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the corrected feed is live at your published URL, the next scorecard run re-checks it automatically. When this finding is gone, it is recorded as a dated receipt on your agency's fix log &mdash; a citable, linkable record that the fix cleared. That closes the loop: the scorecard shows the fix; the agency publishes it.</p></section></article>
+<p><code>stop_too_far_from_shape_using_user_distance</code> is a canonical MobilityData GTFS Validator notice used in validator reports across the GTFS ecosystem. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#stop_too_far_from_shape_using_user_distance-rule">Read the authoritative rule for stop_too_far_from_shape_using_user_distance in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the changed feed is live at your published URL, the next scorecard run checks it again. When the same complete producer contract no longer reports this finding, it can be recorded as a dated finding clearance. That confirms the later feed state, not who changed the feed or why.</p></section></article>
   </main>
   <footer class="site-footer">
     <div class="wrap">

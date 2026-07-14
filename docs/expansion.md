@@ -68,8 +68,9 @@ budget.
   Bay Area operators) rather than per-agency plumbing.
   [511](https://511.org/open-data/transit)
 - **Cross-agency trends and a public API.** Serverless tier shipped (ADR 0013): a
-  versioned static API at `/api/v1/` (agencies list, leaderboard, per-state
-  aggregates, national stats) plus a human [/leaderboard/](https://gtfsscorecard.org/leaderboard/),
+  versioned static API at `/api/v1/` (scorecard list, guarded named changes,
+  per-state aggregates, covered-corpus stats) plus a human
+  [coverage overview](https://gtfsscorecard.org/pulse/),
   precomputed from the index and served as flat JSON, no query server. The
   warehouse (DuckDB or Athena over partitioned object storage, a keyed read API,
   or transit.land's Go + Postgres + GraphQL model) is the escalation once

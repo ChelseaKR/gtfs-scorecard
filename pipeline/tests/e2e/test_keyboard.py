@@ -97,6 +97,10 @@ def test_keyboard_compare_form(page: Page, app_url: str) -> None:
     _tab_to(page, "el.matches('#compare-pick button.compare-go')", max_tabs=5)
     page.keyboard.press("Enter")
 
-    expect(page.locator("table.compare-table")).to_be_visible()
-    expect(page.locator("#main h1.page-title")).to_contain_text(" vs ")
     assert page.evaluate("() => location.hash") == f"#/compare?a={a_id}&b={b_id}"
+    # The selected live records may be outside the current homogeneous
+    # comparison cohort. Keyboard submission must still navigate and render
+    # either the valid table or the explicit methodology/identity guard.
+    table = page.locator("table.compare-table")
+    guard = page.get_by_role("heading", name="These scorecards are not like-for-like.")
+    expect(table.or_(guard)).to_be_visible()

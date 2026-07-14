@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Coverage overview — GTFS Scorecard</title>
-  <meta name="description" content="How the public GTFS feeds covered by this site are doing: agency comparisons, who improved or slipped, and the corpus trend over time.">
+  <meta name="description" content="How the public GTFS feeds covered by this site are changing, and the comparable corpus trend over time.">
   <link rel="canonical" href="https://gtfsscorecard.org/pulse/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Coverage overview — GTFS Scorecard">
-  <meta property="og:description" content="How the public GTFS feeds covered by this site are doing: agency comparisons, who improved or slipped, and the corpus trend over time.">
+  <meta property="og:description" content="How the public GTFS feeds covered by this site are changing, and the comparable corpus trend over time.">
   <meta property="og:url" content="https://gtfsscorecard.org/pulse/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -33,7 +33,7 @@
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
        without scripting). nav.js never runs here, so nothing double-toggles. */
-    @media (max-width: 1400px) {
+    @media (max-width: 1040px) {
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
@@ -41,52 +41,30 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Agencies</a><a class="nav-stop" href="/pulse/" aria-current="page"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How to read</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/" aria-current="page"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Coverage overview</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Coverage overview.</h1>
     <p class="page-lede">How the public transit feeds in this site's current coverage
-    are doing: how agencies compare, who moved since their last check, and whether the
-    covered corpus is getting better. This is not a census of any country or of the
-    world. An agency that is absent is simply not covered yet, never failing.</p>
-    <nav class="grade-jump" aria-label="Jump to section">Jump to: <a href="#rankings">Rankings</a> · <a href="#changes">What changed</a> · <a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>
-    <section id="rankings" aria-labelledby="rankings-h" tabindex="-1">
-      <h2 class="section-title" id="rankings-h">Rankings</h2>
+    are changing and whether the comparable covered corpus is getting better. This is
+    not a census of any country or of the world. An absent scorecard is simply not
+    covered yet.</p>
+    <nav class="grade-jump" aria-label="Jump to section">Jump to: <a href="#changes">What changed</a> · <a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>
+    <p class="fineprint">Absolute score rankings and individual percentiles are not
+    published. Named changes compare a feed only with its own prior check when the rubric,
+    scoring profile, validator, and measured category set are unchanged. Corpus aggregates
+    use rubric 1.2, scoring profile gtfs-scorecard-1.2, MobilityData gtfs-validator 8.0.1, and measured categories one shared measured-category set; records with unresolved duplicate identities
+    are excluded.</p>
 
-      <section class="feed-details"><h2 class="section-title">Comparisons withheld</h2><p>Only 3 feeds meet the comparison rules. At least 20 are required before publishing a ranked list. Individual scorecards and the open dataset remain available.</p></section>
-    </section>
-    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="changes" aria-labelledby="changes-h" tabindex="-1">
       <h2 class="section-title" id="changes-h">What changed since the last check</h2>
-      <p class="page-lede">No material score or grade changes were detected.</p>
-    <div class="section-grid">
-    <section aria-labelledby="improved-h">
-      <h2 class="section-title" id="improved-h">Most improved</h2>
-      <ul class="delta-list"><li class="delta-row"><span class="delta-cat">No agencies improved since their last check.</span></li></ul>
-    </section>
-    <section aria-labelledby="attention-h">
-      <h2 class="section-title" id="attention-h">Needs attention</h2>
-      <ul class="delta-list"><li class="delta-row"><span class="delta-cat">No agencies slipped &mdash; a good day.</span></li></ul>
-    </section>
-    </div>
-    <p class="subscribe-line"><a href="/changes/feed.xml">Subscribe to changes (Atom)</a>
-    to get grade drops in a feed reader or a webhook, with no sign-up. Each agency
-    also has its own feed at <code>/agency/&lt;id&gt;/feed.xml</code>.</p>
+      <p class="page-lede">Named changes are unavailable until current-contract checks create a comparable cohort. No improvement or regression claim is made for this snapshot.</p>
     </section>
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="trend" aria-labelledby="trend-h" tabindex="-1">
       <h2 class="section-title" id="trend-h">Is transit data getting better?</h2>
-      <p class="page-lede">Across the feeds we track, the corpus average score held about steady between 2026-07-01 and 2026-07-02 (now 78.5).</p>
-    <section class="feed-details"><h2 class="section-title">Covered-corpus average score</h2><p><svg class="trend-spark" viewBox="0 0 640 120" preserveAspectRatio="none" role="img" aria-label="Covered-corpus average score by date (axis 78.5 to 78.5): 2026-07-01 78.5; 2026-07-02 78.5"><polyline points="12.0,108.0 628.0,108.0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle class="trend-dot" cx="12.0" cy="108.0" r="2.5" fill="currentColor"><title>2026-07-01: 78.5</title></circle><circle class="trend-dot" cx="628.0" cy="108.0" r="4" fill="currentColor"><title>2026-07-02: 78.5</title></circle></svg></p><p class="trend-axis" aria-hidden="true">Score axis 78 to 78. 2026-07-01 to 2026-07-02.</p></section>
-    <div class="section-grid">
-    <section class="feed-details"><h2 class="section-title">By date</h2><table class="leaderboard"><thead><tr><th>Date</th><th>Avg score</th><th>Feeds</th><th>Expired</th></tr></thead><tbody><tr><td>2026-07-02</td><td>78.5</td><td>3</td><td>0.0%</td></tr><tr><td>2026-07-01</td><td>78.5</td><td>3</td><td>0.0%</td></tr></tbody></table></section>
-    <section class="feed-details" aria-labelledby="improvers-heading"><h2 id="improvers-heading" class="section-title">Agencies that improved most (last 90 days)</h2><p class="fineprint">Feeds that moved up the most in this period, measured by overall score. Only agencies with at least three checks are included.</p><table class="leaderboard"><thead><tr><th>Agency</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>72.2</td><td>80.8</td><td>+8.6</td></tr></tbody></table></section>
-    </div>
-    <p class="fineprint">The series carries each agency's most recent score forward to each
-    date and averages, so it is smooth even though agencies are checked on different days. It
-    never changes a grade. The same data is at <a href="/api/v1/trend.json">the trend API
-    (trend.json)</a>.</p>
+      <p class="page-lede">The covered-corpus trend is unavailable until current-contract checks create a comparable cohort.</p>
     </section>
     <p class="plain-summary"><strong>In plain words:</strong> this page tracks the covered
     corpus at once, not any single agency. The <a href="/problems/">most common
@@ -95,39 +73,64 @@
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>An open-source data quality tool for small and rural transit agencies.</p>
-      <p><strong>Agencies:</strong>
-      <a href="/agencies/">Directory</a> ·
-      <a href="/app/">Interactive app</a> ·
-      <a href="/map/">Agency map</a> · <a href="/routes/">All routes</a></p>
-      <p><strong>Coverage:</strong>
-      <a href="/pulse/">Coverage overview</a> ·
-      <a href="/problems/">Common problems</a> ·
-      <a href="/realtime/">Realtime</a> ·
-      <a href="/adoption/">What feeds publish</a></p>
-      <p><strong>United States tools:</strong>
-      <a href="/ntd/">NTD readiness</a> ·
-      <a href="/equity/">U.S. equity</a></p>
-      <p><strong>Tools:</strong>
-      <a href="/compare/">Compare two agencies</a> ·
-      <a href="/fix/">GTFS errors &amp; fixes</a> ·
-      <a href="/check/">Check a feed before you publish</a> ·
-      <a href="/try.html">Request a one-off score</a> ·
-      <a href="/query/">Query the dataset</a> ·
-      <a href="/subscribe.html">Feed-health alerts</a> ·
-      <a href="/submit.html">Add your agency</a> ·
-      <a href="/claim/">Correct or claim a listing</a> ·
-      <a href="/procurement/">For agencies: procurement</a></p>
-      <p><a href="/about/">About</a> ·
-      <a href="/status/">Status</a> ·
-      <a href="/support/">Support this project</a> ·
-      <a href="/how-to-read/">How to read a scorecard</a> ·
-      <a href="/how-to-read/#glossary">Glossary</a> ·
-      <a href="/crosswalk/">Standards crosswalk</a> ·
-      <a href="/press/">For reporters</a> ·
-      <a href="/data/">Open data</a> ·
-      <a href="/accessibility/">Accessibility</a> ·
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></p>
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
   </footer>
 </body>

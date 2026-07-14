@@ -1,4 +1,4 @@
-"""Tests for empirical fix-effort calibration: runs-to-clear episodes and bands."""
+"""Tests for empirical finding-clearance timing and its provenance guards."""
 
 from __future__ import annotations
 
@@ -14,11 +14,20 @@ from scorecard_pipeline.effort_calibration import (
 )
 
 
-def _artifact(date: str, *codes: str, measured: bool = True) -> dict[str, Any]:
+def _artifact(
+    date: str,
+    *codes: str,
+    measured: bool = True,
+    rubric_version: str = "1.2",
+) -> dict[str, Any]:
     """One dated artifact with the given correctness codes present, or an
     unmeasured correctness category when ``measured`` is False."""
     return {
         "snapshot_date": date,
+        "rubric_version": rubric_version,
+        "scoring_profile_id": f"gtfs-scorecard-{rubric_version}",
+        "scoring_profile_rubric_version": rubric_version,
+        "validator_version": "8.0.1",
         "categories": {
             "correctness": {
                 "status": "measured" if measured else "skipped",
@@ -80,6 +89,21 @@ def test_recurrence_yields_two_episodes() -> None:
     assert stats["missing_timepoint"]["median_days"] == 4  # median of [2, 5] = 3.5 -> 4
 
 
+def test_producer_contract_change_does_not_manufacture_a_clearance() -> None:
+    artifacts = [
+        _artifact("2026-06-01", "expired_calendar", rubric_version="1.1"),
+        _artifact("2026-06-03", rubric_version="1.2"),
+    ]
+    assert agency_episodes(artifacts) == []
+
+
+def test_incomplete_producer_contract_fails_closed() -> None:
+    before = _artifact("2026-06-01", "expired_calendar")
+    del before["scoring_profile_id"]
+    artifacts = [before, _artifact("2026-06-03")]
+    assert agency_episodes(artifacts) == []
+
+
 def test_build_clear_stats_pools_multiple_agencies() -> None:
     # Two agencies, each contributing one episode for the same code.
     agency_a = [_artifact("2026-06-01", "x"), _artifact("2026-06-05")]  # 4 days
@@ -100,12 +124,14 @@ def test_band_wording_is_stable() -> None:
     # names the sample size.
     stats = {"samples": 12, "median_days": 14, "p25": 9, "p75": 21}
     assert band_text(stats) == (
-        "Agencies here usually clear this within about 2 weeks (based on 12 observed fixes)."
+        "In 12 compatible feed histories, this finding disappeared after about 2 weeks "
+        "(median). That does not show who changed it or why."
     )
 
 
 def test_band_wording_singular_week() -> None:
     stats = {"samples": 6, "median_days": 5, "p25": 3, "p75": 8}
     assert band_text(stats) == (
-        "Agencies here usually clear this within about 1 week (based on 6 observed fixes)."
+        "In 6 compatible feed histories, this finding disappeared after about 1 week "
+        "(median). That does not show who changed it or why."
     )

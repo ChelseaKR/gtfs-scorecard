@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gtfsscorecard.org/schemas/by-location.schema.json",
   "title": "GTFS Scorecard country and subdivision rollups",
-  "description": "Additive API v1 location rollups. Null codes collect scored rows whose curated location is unknown.",
+  "description": "Additive API v1 location rollups. Count fields cover all published feed records in a location; score aggregates use the guarded comparison cohort and expose its denominator. Null codes collect rows whose curated location is unknown.",
   "type": "object",
   "required": ["countries"],
   "properties": {
@@ -11,9 +11,53 @@
       "items": {
         "$ref": "#/$defs/country"
       }
+    },
+    "comparison": {
+      "$ref": "#/$defs/comparison"
     }
   },
   "$defs": {
+    "comparison": {
+      "type": "object",
+      "required": [
+        "eligible_count",
+        "excluded_count",
+        "required_rubric_version",
+        "required_scoring_profile_id",
+        "required_validator_version",
+        "required_measured_categories",
+        "measured_category_cohorts",
+        "exclusion_counts",
+        "absolute_rankings_published",
+        "individual_percentiles_published",
+        "note"
+      ],
+      "properties": {
+        "eligible_count": {"type": "integer", "minimum": 0},
+        "excluded_count": {"type": "integer", "minimum": 0},
+        "required_rubric_version": {"type": "string"},
+        "required_scoring_profile_id": {"type": "string"},
+        "required_validator_version": {"type": "string"},
+        "required_measured_categories": {
+          "type": "array",
+          "items": {
+            "enum": ["correctness", "freshness", "completeness", "realtime"]
+          },
+          "uniqueItems": true
+        },
+        "measured_category_cohorts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "exclusion_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "absolute_rankings_published": {"const": false},
+        "individual_percentiles_published": {"const": false},
+        "note": {"type": "string"}
+      }
+    },
     "gradeDistribution": {
       "type": "object",
       "required": ["A", "B", "C", "D", "F"],
@@ -31,6 +75,7 @@
       "required": ["count", "median_score", "grade_distribution"],
       "properties": {
         "count": {"type": "integer", "minimum": 0},
+        "comparison_eligible_count": {"type": "integer", "minimum": 0},
         "median_score": {"type": ["number", "null"]},
         "grade_distribution": {"$ref": "#/$defs/gradeDistribution"}
       }

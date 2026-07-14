@@ -54,6 +54,7 @@ def test_national_rt_bands_and_medians() -> None:
         _summary("c", uptime=80.0, lag=30, state="OR"),
     ]
     nat = national_rt(summaries)
+    assert nat["monitored_feed_record_count"] == 3
     assert nat["monitored_count"] == 3
     assert nat["bands"] == {"reliable": 1, "mostly": 1, "spotty": 1}
     assert nat["median_uptime_pct"] == 95.0
@@ -135,6 +136,7 @@ def test_portable_country_and_subdivision_realtime_rollups() -> None:
     nat = national_rt(summaries)
     assert [state["state"] for state in nat["states"]] == ["California"]
     countries = {row["country_code"]: row for row in nat["countries"]}
+    assert countries["CA"]["feed_records"] == 2
     assert countries["US"]["reliable"] == 1
     assert countries["CA"]["agencies"] == 2
     assert countries["CA"]["median_uptime_pct"] == 95.0

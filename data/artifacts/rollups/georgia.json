@@ -1,84 +1,33 @@
 {
-  "agency_count": 18,
-  "average_score": 43.8,
-  "common_fixes": [
-    {
-      "agencies": 13,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+  "agency_count": 16,
+  "average_score": null,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 16,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 16,
+      "scoring_profile_missing": 16,
+      "scoring_profile_rubric_missing": 16,
+      "service_data_long_expired": 10
     },
-    {
-      "agencies": 12,
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_no_expiry_date",
-      "fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
-    },
-    {
-      "agencies": 2,
-      "code": "missing_required_file",
-      "fix": "Review the rule documentation for 'missing_required_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 2,
-      "code": "invalid_input_files_in_subfolder",
-      "fix": "Review the rule documentation for 'invalid_input_files_in_subfolder' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_rt_service_alerts_unreachable",
-      "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
-    },
-    {
-      "agencies": 2,
-      "code": "missing_required_column",
-      "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_no_fare_data",
-      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead."
-    },
-    {
-      "agencies": 2,
-      "code": "invalid_email",
-      "fix": "Review the rule documentation for 'invalid_email' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    }
-  ],
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "expired": {
     "lapsed": 1,
-    "stale": 12,
-    "total": 13
+    "stale": 10,
+    "total": 11
   },
-  "generated_at": "2026-07-10T21:00:41+00:00",
-  "grade_distribution": {
-    "C": 1,
-    "D": 1,
-    "F": 16
-  },
+  "generated_at": "2026-07-14T09:01:50+00:00",
+  "grade_distribution": {},
   "members": [
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1706,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "chatham-area-transit-cat",
-      "name": "Chatham Area Transit (CAT)",
-      "needs_attention": true,
-      "score": 8.7,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
@@ -96,13 +45,13 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -4451,
+      "days_until_expiry": -3113,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "georgia-tech-trolley-stinger-shuttles",
-      "name": "Georgia Tech Trolley & Stinger Shuttles",
+      "id": "atlanta-streetcar",
+      "name": "Atlanta Streetcar",
       "needs_attention": true,
-      "score": 37.4,
+      "score": 55.7,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -138,56 +87,14 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -4574,
+      "days_until_expiry": -1706,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "emory-university-cliff-shuttles",
-      "name": "Emory University Cliff Shuttles",
+      "id": "chatham-area-transit-cat",
+      "name": "Chatham Area Transit (CAT)",
       "needs_attention": true,
-      "score": 39.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -2016,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "gwinnett-county-transit",
-      "name": "Gwinnett County Transit",
-      "needs_attention": true,
-      "score": 42.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -2016,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "gwinnett-county-transit-369",
-      "name": "Gwinnett County Transit",
-      "needs_attention": true,
-      "score": 42.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -4574,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "cherokee-area-transportation-system-cats",
-      "name": "Cherokee Area Transportation System (CATS)",
-      "needs_attention": true,
-      "score": 45.1,
-      "shapes_status": null,
+      "score": 8.7,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -208,13 +115,13 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3113,
+      "days_until_expiry": -4574,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "atlanta-streetcar",
-      "name": "Atlanta Streetcar",
+      "id": "cherokee-area-transportation-system-cats",
+      "name": "Cherokee Area Transportation System (CATS)",
       "needs_attention": true,
-      "score": 55.7,
+      "score": 45.1,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -222,28 +129,42 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1106,
+      "days_until_expiry": -4574,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "xpress",
-      "name": "Xpress",
+      "id": "emory-university-cliff-shuttles",
+      "name": "Emory University Cliff Shuttles",
       "needs_attention": true,
-      "score": 56.7,
-      "shapes_status": "ready",
+      "score": 39.8,
+      "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1106,
+      "days_until_expiry": -4451,
       "expiry_status": "stale",
       "grade": "F",
-      "id": "xpress-1118",
-      "name": "Xpress",
+      "id": "georgia-tech-trolley-stinger-shuttles",
+      "name": "Georgia Tech Trolley & Stinger Shuttles",
       "needs_attention": true,
-      "score": 56.7,
-      "shapes_status": "ready",
+      "score": 37.4,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -2016,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "gwinnett-county-transit",
+      "name": "Gwinnett County Transit",
+      "needs_attention": true,
+      "score": 42.4,
+      "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -263,17 +184,17 @@
     },
     {
       "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": null,
-      "expiry_status": "unknown",
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1106,
+      "expiry_status": "stale",
       "grade": "F",
-      "id": "cobb-community-transit-cct",
-      "name": "Cobb Community Transit (CCT)",
-      "needs_attention": false,
-      "score": 26.2,
-      "shapes_status": "not_ready",
+      "id": "xpress",
+      "name": "Xpress",
+      "needs_attention": true,
+      "score": 56.7,
+      "shapes_status": "ready",
       "snapshot_date": "2026-07-10",
-      "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
     {
       "annual_trips": null,
@@ -281,8 +202,8 @@
       "days_until_expiry": null,
       "expiry_status": "unknown",
       "grade": "F",
-      "id": "xpress-2355",
-      "name": "Xpress",
+      "id": "cobb-community-transit-cct",
+      "name": "Cobb Community Transit (CCT)",
       "needs_attention": false,
       "score": 26.2,
       "shapes_status": "not_ready",
@@ -316,20 +237,34 @@
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": null,
+      "expiry_status": "unknown",
+      "grade": "F",
+      "id": "xpress-2355",
+      "name": "Xpress",
+      "needs_attention": false,
+      "score": 26.2,
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export."
     }
   ],
-  "needs_attention": 14,
+  "needs_attention": 12,
   "rollup": {
     "id": "georgia",
     "name": "Georgia agencies"
   },
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 12,
+    "not_measured": 11,
     "not_ready": 2,
-    "ready": 4,
-    "total": 18
+    "ready": 3,
+    "total": 16
   },
-  "state_percentile": 9
+  "state_percentile": null
 }

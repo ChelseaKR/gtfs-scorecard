@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import csv
 import io
+from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -131,6 +133,42 @@ def load_ridership(csv_path: str | Path) -> dict[str, int] | None:
     return parse_ridership_csv(path.read_text())
 
 
+def normalize_ntd_id(value: object) -> str:
+    """Return the canonical join key used by the NTD ridership snapshot.
+
+    FTA exports commonly zero-pad reporter ids while the Socrata aggregate does
+    not.  Keeping one normalization at every join and duplicate check prevents a
+    registry value such as ``00007`` from either missing its ridership or evading
+    a duplicate-reporter quarantine.
+    """
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    if raw.endswith(".0"):
+        raw = raw[:-2]
+    digits = "".join(ch for ch in raw if ch.isdigit())
+    return digits.lstrip("0") or ("0" if digits else "")
+
+
+def duplicate_ntd_reporter_ids(records: Iterable[object]) -> set[str]:
+    """NTD reporter ids claimed by more than one row in the full source set.
+
+    ``records`` may be registry ``Agency`` objects or row dictionaries.  Callers
+    intentionally compute this over the unfiltered registry/corpus *before*
+    selecting a comparison cohort; otherwise an excluded sibling feed can make
+    the remaining row look like a unique reporter and receive the reporter's
+    entire annual UPT.
+    """
+    ids: list[str] = []
+    for record in records:
+        value = record.get("ntd_id") if isinstance(record, dict) else getattr(record, "ntd_id", "")
+        ntd_id = normalize_ntd_id(value)
+        if ntd_id:
+            ids.append(ntd_id)
+    counts = Counter(ids)
+    return {ntd_id for ntd_id, count in counts.items() if count > 1}
+
+
 def annual_trips_for(record: dict[str, Any], ridership: dict[str, int] | None) -> int | None:
     """Annual trips for one record's NTD ID, or ``None`` when unknown.
 
@@ -141,27 +179,47 @@ def annual_trips_for(record: dict[str, Any], ridership: dict[str, int] | None) -
     """
     if not ridership:
         return None
-    ntd = str(record.get("ntd_id") or "")
+    ntd = normalize_ntd_id(record.get("ntd_id"))
     if not ntd:
         return None
     return ridership.get(ntd)
 
 
-def weighted_impact(records: list[dict[str, Any]], ridership: dict[str, int]) -> dict[str, Any]:
-    """Weight the matched feeds' quality by annual ridership.
+def weighted_impact(
+    records: list[dict[str, Any]],
+    ridership: dict[str, int],
+    *,
+    quarantined_ntd_ids: Iterable[str] = (),
+) -> dict[str, Any]:
+    """Weight unambiguous NTD reporter matches by annual ridership.
 
-    ``records`` are per-agency rows carrying ntd_id, score, grade, and
-    expiry_status. ``ridership`` maps NTD ID to annual trips. Only agencies with
-    both an NTD ID and a ridership figure are weighted; the rest are reported as
-    coverage so the result never overstates how national it is. Returns the matched
-    agency count, total annual trips covered, trips on expired feeds and their
-    share, the ridership-weighted average score, and trips by grade.
+    ``records`` are per-feed rows carrying ntd_id, score, grade, and
+    expiry_status. ``ridership`` maps NTD ID to annual trips. One NTD reporter's
+    annual UPT must never be applied to several feed rows: when an NTD ID occurs
+    more than once, every row carrying that ID is quarantined from weighting
+    until the registry can identify a single authoritative feed. This is more
+    conservative than guessing among a reporter's regional, modal, or conflicting
+    feeds, and it prevents national trip totals from being multiplied by feed
+    count.
+
+    Only unique feed-to-reporter matches with a ridership figure are weighted.
+    Coverage and duplicate exclusions are returned alongside the totals. The
+    legacy ``matched_agencies`` and ``total_agencies`` keys remain as compatibility
+    aliases; their precise replacements are ``matched_ntd_reporters`` and
+    ``total_feed_records``.
     """
-    matched = []
+    ntd_counts = Counter(normalize_ntd_id(r.get("ntd_id")) for r in records)
+    ntd_counts.pop("", None)
+    duplicate_ids = {ntd for ntd, count in ntd_counts.items() if count > 1}
+    duplicate_ids.update(normalize_ntd_id(ntd) for ntd in quarantined_ntd_ids)
+    duplicate_ids.discard("")
+    present_duplicate_ids = duplicate_ids.intersection(ntd_counts)
+
+    matched: list[tuple[dict[str, Any], int]] = []
     for r in records:
-        ntd = str(r.get("ntd_id") or "")
+        ntd = normalize_ntd_id(r.get("ntd_id"))
         trips = ridership.get(ntd)
-        if ntd and trips:
+        if ntd and ntd not in duplicate_ids and trips is not None:
             matched.append((r, trips))
 
     total_trips = sum(t for _, t in matched)
@@ -177,9 +235,19 @@ def weighted_impact(records: list[dict[str, Any]], ridership: dict[str, int]) ->
         if isinstance(r.get("score"), int | float):
             weighted_score_num += float(r["score"]) * trips
 
+    duplicate_rows = sum(ntd_counts[ntd] for ntd in present_duplicate_ids)
+    matched_reporters = len(matched)
     return {
-        "matched_agencies": len(matched),
+        # Compatibility aliases retained for existing API consumers. The UI and
+        # new integrations use the accurately named fields below.
+        "matched_agencies": matched_reporters,
         "total_agencies": len(records),
+        "matched_ntd_reporters": matched_reporters,
+        "matched_feed_records": matched_reporters,
+        "total_feed_records": len(records),
+        "duplicate_ntd_reporter_count": len(present_duplicate_ids),
+        "duplicate_feed_records_excluded": duplicate_rows,
+        "duplicate_ntd_ids_excluded": sorted(present_duplicate_ids),
         "total_annual_trips": total_trips,
         "trips_on_expired_feeds": expired_trips,
         "expired_trips_pct": (round(expired_trips / total_trips * 100, 1) if total_trips else 0.0),

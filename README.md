@@ -22,14 +22,14 @@ Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
 District). Beyond the pilots, the registry contains ~1,149 curated feed records,
 mostly in the United States and Canada, plus official first canaries in Japan,
 Australia, Ireland, France, Malaysia, New Zealand, and Uruguay. The repository
-retains the generated corpus (~1,449 published scorecard pages); the bounded live
-directory currently exposes more than 1,100. Scores are refreshed daily. A feed record
-is not always a distinct transit agency: regional
+keeps the generated corpus registry-bounded (~1,128 published scorecard pages),
+with 21 configured feeds still awaiting a current artifact. Scoring is scheduled
+daily, and the public status page records when it actually completed. A feed record is not always a distinct transit agency: regional
 feeds, modal variants, and retired aliases are counted separately while the
 identity registry is reconciled.
 
-**Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — refreshed daily by
-a scheduled pipeline run.
+**Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
+completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).
 
 **Status:** Beta. The three schedule categories score for every published
 scorecard. Realtime quality is scored only when a usable realtime feed is
@@ -66,8 +66,8 @@ what the product becomes for its users is in
 
 Each agency gets a scorecard page, plus three companion pages written for the
 different seats at an agency check-in: a board one-pager
-(`/agency/<id>/board/`), a call-prep brief (`/brief/`), and a fix log
-(`/fixes/`). Around those sit:
+(`/agency/<id>/board/`), a call-prep brief (`/brief/`), and, when comparable
+finding-clearance records exist, a clearance log (`/fixes/`). Around those sit:
 
 - **Coverage views** — the coverage overview (`/pulse/`), most common problems
   (`/problems/`), realtime reliability (`/realtime/`), newer-capability
@@ -189,7 +189,7 @@ current deployment status.
 | Roadmap piece | In the repo | State |
 | --- | --- | --- |
 | Mobility Database sync | `scorecard sync` (`mobilitydb.py`) | run on demand |
-| Sharded daily run | `scorecard shards` + CI matrix | live in Actions |
+| Scheduled scoring run | `scorecard shards` + CI matrix | daily schedule live in Actions; observed completion is on `/status/` |
 | Expiry/regression alerts | `scorecard alerts`, `notify --send`, `infra/alerts` | applied and live; SES sender verified, digest sends daily |
 | Artifacts on S3 + CloudFront | `infra/artifacts` | applied and live; daily mirror on, site still serves from Pages |
 | Self-serve submission form | `web/submit.html`, `infra/submit` | applied and live; submissions open reviewable pull requests |
@@ -199,7 +199,7 @@ current deployment status.
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: [`agencies.yaml`](agencies.yaml) now carries ~1,140 curated
 agencies, mostly across the US and Canada and now with a geographically diverse
-official canary cohort, scored daily (a 2026-07 dedupe pass removed ~350 records
+official canary cohort, scheduled for daily scoring (a 2026-07 dedupe pass removed ~350 records
 that duplicated an already-listed feed).
 
 ## Add your agency
@@ -242,7 +242,7 @@ declared here; none is silently skipped.
 | AI-EVALUATION | **N/A** — no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
 | [QUALITY & METRICS](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [DOCUMENTATION](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [RELEASE & VERSIONING](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — marketplace action tags (`v1`/`v1.0.0`), monthly dataset releases, MCP registry entry |
+| [RELEASE & VERSIONING](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.2.0`), monthly dataset releases, MCP registry entry |
 | [RESPONSIBLE-TECH](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked

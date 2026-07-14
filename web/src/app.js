@@ -10,7 +10,7 @@
  */
 
 /* Presentation constants shared with the pipeline: grade bands and ranks,
- * category and severity labels, tier words, the fix-guide base URL, and the
+ * category and severity labels, the fix-guide base URL, and the
  * canonical validator rules page. Generated from the Python definitions
  * (pipeline/src/scorecard_pipeline/constants_export.py) by
  * `scorecard render-constants`, so the app cannot drift from the pipeline;
@@ -25,7 +25,6 @@ import {
   JURISDICTION_GUIDANCE,
   SERVICE_HORIZON_REVIEW_YEARS,
   SUPPORT_RESOURCES,
-  TIER_LABELS,
   UNIVERSAL_GUIDANCE,
   US_NTD_GUIDANCE,
   US_STATE_SUBDIVISION_CODES,
@@ -196,10 +195,29 @@ function routeRule() {
   </div>`;
 }
 
+/** Human-readable producer contract behind a cross-feed aggregate. @param {any} comparison */
+function comparisonContractText(comparison) {
+  const contract = comparison || {};
+  const categories = Array.isArray(contract.required_measured_categories)
+    ? contract.required_measured_categories.map(
+        (category) => CATEGORY_LABELS[category] || String(category),
+      )
+    : [];
+  const measured = categories.length
+    ? categories.map((category) => esc(category)).join(", ")
+    : "one shared measured-category set";
+  return (
+    `rubric ${esc(String(contract.required_rubric_version || "current"))}, ` +
+    `scoring profile ${esc(String(contract.required_scoring_profile_id || "current"))}, ` +
+    `MobilityData gtfs-validator ${esc(String(contract.required_validator_version || "current"))}, ` +
+    `and measured categories ${measured}`
+  );
+}
+
 /* ---------------- national overview + directory ---------------- */
 
-/** The directory document, fetched once and reused for the overview and for the
- *  per-agency peer line. @type {Promise<any> | null} */
+/** The directory document, fetched once and reused for the overview and for
+ *  per-scorecard location context. @type {Promise<any> | null} */
 let directoryPromise = null;
 
 /** @returns {Promise<any>} */
@@ -250,21 +268,11 @@ function placeLabel(row) {
   return subdivision ? `${subdivision}, ${countryLabel}` : countryLabel || row?.state || "";
 }
 
-/** Plain-language peer context for one directory card from its size-peer
- *  percentile. Reads the normalized card record (pct, tier).
- *  @param {{pct: number|null, tier: string}} a @returns {string} */
-function peerNote(a) {
-  const pct = a.pct;
-  if (pct == null || a.tier === "unknown") return "";
-  const tier = TIER_LABELS[a.tier] || a.tier;
-  return `Better than ${pct}% of ${tier} agencies`;
-}
-
 /** A grade-distribution bar: one labelled segment per grade, sized
  *  by share. Decorative fill, but each segment is a labelled list item so the
  *  same information is available without color. @param {any} dist @param {number} total
  *  @param {string} [label] */
-function gradeDistributionBar(dist, total, label = "Grade distribution across all agencies") {
+function gradeDistributionBar(dist, total, label = "Grade distribution across comparable scorecards") {
   const order = ["A", "B", "C", "D", "F"];
   const segs = order
     .map((g) => {
@@ -281,6 +289,28 @@ function gradeDistributionBar(dist, total, label = "Grade distribution across al
   return `<ul class="grade-distribution" aria-label="${escAttr(label)}">${segs}</ul>`;
 }
 
+/** Fail-closed validation for a guarded score aggregate. A stale payload must
+ *  not display an old median/average beside a zero or missing comparison cohort.
+ *  @param {any} payload @param {any} center */
+function guardedAggregateState(payload, center) {
+  const rawCount = payload?.comparison?.eligible_count;
+  const count = Number.isInteger(rawCount) && rawCount > 0 ? rawCount : 0;
+  const distribution = payload?.grade_distribution || {};
+  const distributionTotal = ["A", "B", "C", "D", "F"].reduce((total, grade) => {
+    const value = distribution[grade];
+    return total + (Number.isInteger(value) && value >= 0 ? value : 0);
+  }, 0);
+  return {
+    count,
+    distribution,
+    valid:
+      count > 0 &&
+      typeof center === "number" &&
+      Number.isFinite(center) &&
+      distributionTotal === count,
+  };
+}
+
 /** Five buckets of expired-feed share, for the choropleth's sequential fill.
  *  Color is reinforced by each state's title/aria text, never color alone.
  *  @param {number} share @returns {number} */
@@ -293,7 +323,7 @@ function expiredQuintile(share) {
 }
 
 /** Build the US choropleth SVG from the projected state paths and the per-state
- *  summary rows. States with no tracked agencies render faint and inert.
+ *  summary rows. States with no published feed records render faint and inert.
  *  @param {{viewBox: string, states: Record<string,string>}} mapData
  *  @param {Record<string, any>} byState @returns {string} */
 function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations = false) {
@@ -305,7 +335,7 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
       }
       const pct = Math.round((row.expired / row.agencies) * 100);
       const q = expiredQuintile(row.expired / row.agencies);
-      const noun = row.agencies === 1 ? "agency" : "agencies";
+      const noun = row.agencies === 1 ? "feed" : "feeds";
       const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
       const subdivision = subdivisionCodes[name] || "";
       if (portableLocations && !subdivision) {
@@ -354,7 +384,7 @@ function locationControlsHtml(countries, states) {
           data-state="Unlocated" aria-pressed="false">Unlocated
           <span class="state-n">${unlocated.agencies}</span></button>`
       : "";
-    return `<div class="state-grid" role="group" aria-label="Filter agencies by state">
+    return `<div class="state-grid" role="group" aria-label="Filter scorecards by state">
       ${chips}${unknown}</div><div class="us-map" id="us-map" hidden></div>`;
   }
 
@@ -365,7 +395,7 @@ function locationControlsHtml(countries, states) {
         <bdi>${esc(country.country_name)}</bdi> <span class="state-n">${country.agencies}</span></button>`
     )
     .join("");
-  return `<div class="country-grid" role="group" aria-label="Filter agencies by country">
+  return `<div class="country-grid" role="group" aria-label="Filter scorecards by country">
       ${countryChips}</div><div class="us-map" id="us-map" hidden></div>
       <div class="location-groups"></div>`;
 }
@@ -393,7 +423,6 @@ function renderOverview(directory) {
       subdivisionName: a.subdivision_name || a.state || "",
       tier: a.size_tier || "unknown",
       expiry: a.expiry_status || "unknown",
-      pct: a.peer_percentile,
       date: a.snapshot_date,
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
@@ -401,6 +430,16 @@ function renderOverview(directory) {
 
   const total = agencies.length;
   const expired = s.expired || { total: 0 };
+  const aggregate = guardedAggregateState(s, s.median_score);
+  const comparableCount = aggregate.count;
+  const comparisonContract = comparisonContractText(s.comparison);
+  const comparisonNote = aggregate.valid
+    ? `The median and grade distribution use ${formatNumber(comparableCount)} of
+      ${formatNumber(total)} feed scorecards: canonical, active, non-duplicate records under
+      one producer contract, ${comparisonContract}.`
+    : `The cross-feed median and grade distribution are unavailable until the directory has
+      a complete guarded summary under ${comparisonContract}. All ${formatNumber(total)}
+      feed scorecards remain searchable.`;
   const stat = (num, lab) => `<div class="stat"><span class="stat-num">${num}</span><span class="stat-lab">${lab}</span></div>`;
 
   const facet = (key, label) =>
@@ -410,12 +449,12 @@ function renderOverview(directory) {
     <h1 class="page-title reveal">Find an agency scorecard.</h1>
     <p class="page-lede reveal">Search every published
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed we track, read
-    daily and graded in plain language. Or browse a location to find the ones that need a call.
+    on a scheduled cadence and graded in plain language. Or browse a location to find the ones that need a call.
     The same directory exists as
     <a href="/agencies/">plain linkable pages</a>; this view adds live search and filters.</p>
 
     <div class="picker-controls reveal">
-      <label for="agency-search" class="visually-hidden">Search agencies by name, country, or subdivision</label>
+      <label for="agency-search" class="visually-hidden">Search scorecards by agency name, country, or subdivision</label>
       <input id="agency-search" class="agency-search" type="search" autocomplete="off"
         enterkeyhint="search" aria-controls="agency-list"
         placeholder="Find your agency among ${formatNumber(total)}…">
@@ -423,8 +462,7 @@ function renderOverview(directory) {
         <label for="agency-sort">Sort</label>
         <select id="agency-sort">
           <option value="az">Name (A–Z)</option>
-          <option value="worst">Lowest score first</option>
-          <option value="best">Highest score first</option>
+          <option value="za">Name (Z–A)</option>
         </select>
       </div>
     </div>
@@ -432,14 +470,15 @@ function renderOverview(directory) {
     <section class="overview-summary reveal" aria-labelledby="ov-h">
       <h2 class="visually-hidden" id="ov-h">Directory summary</h2>
       <div class="summary-stats">
-        ${stat(formatNumber(total), "agencies tracked")}
-        ${stat(s.median_score == null ? "—" : s.median_score, "median score")}
+        ${stat(formatNumber(total), "scorecards available")}
+        ${stat(aggregate.valid ? s.median_score : "—", "median score")}
         ${stat(s.expiring_soon || 0, "feeds expiring within 30 days")}
         ${stat(expired.total || 0, "feeds already expired")}
       </div>
-      ${gradeDistributionBar(s.grade_distribution || {}, total)}
+      ${aggregate.valid ? gradeDistributionBar(aggregate.distribution, comparableCount) : ""}
+      <p class="fineprint">${comparisonNote}</p>
     </section>
-    <div class="picker-facets reveal" role="group" aria-label="Filter agencies by grade, size, or feed status">
+    <div class="picker-facets reveal" role="group" aria-label="Filter scorecards by grade, size, or feed status">
       ${facet("all", "All")}
       ${facet("A", "A")}${facet("B", "B")}${facet("C", "C")}${facet("D", "D")}${facet("F", "F")}
       ${facet("small", "Small")}${facet("medium", "Mid-size")}${facet("large", "Large")}
@@ -454,8 +493,8 @@ function renderOverview(directory) {
     <p class="agency-count" role="status" aria-live="polite"></p>
     <ul class="agency-list" id="agency-list"></ul>
     <p class="results-hint" id="results-hint">Search by name, pick a grade or size, or choose a
-      location above to list agencies.</p>
-    <p class="no-match" hidden>No agencies match.
+      location above to list scorecards.</p>
+    <p class="no-match" hidden>No scorecards match.
       <button type="button" class="linklike" id="clear-search">Clear filters</button></p>
     <div class="show-more-wrap" hidden><button type="button" class="show-more" id="show-more">Show more</button></div>
 
@@ -603,14 +642,12 @@ function setupOverview(agencies, total, summary) {
   function cardHtml(a) {
     const cohort = getCohort();
     const followed = cohort.has(a.id);
-    const note = peerNote(a);
     const place = placeLabel(a);
     return `<li class="agency-card">
       <span class="grade-chip ${escAttr(gradeClass(a.grade))}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
       <div>
         <h2><a href="#/agency/${escAttr(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
         <p class="meta">Overall ${a.score} out of 100${place ? ` · <bdi>${esc(place)}</bdi>` : ""} · checked ${formatDate(a.date)}</p>
-        ${note ? `<p class="peer-note">${esc(note)}</p>` : ""}
       </div>
       <button type="button" class="follow" data-id="${escAttr(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
     </li>`;
@@ -619,7 +656,7 @@ function setupOverview(agencies, total, summary) {
   function sorted(rows) {
     const mode = sortSel.value;
     if (mode === "az") return rows;
-    return rows.slice().sort((a, b) => (mode === "best" ? b.score - a.score : a.score - b.score));
+    return rows.slice().sort((a, b) => compareText(b.name, a.name));
   }
 
   function paintMore() {
@@ -661,7 +698,7 @@ function setupOverview(agencies, total, summary) {
             (locationFilter.legacyState === "Canada" && a.country === "CA"))
       )
     );
-    const noun = matches.length === 1 ? "agency" : "agencies";
+    const noun = matches.length === 1 ? "scorecard" : "scorecards";
     count.textContent = `${formatNumber(matches.length)} of ${formatNumber(total)} ${noun}`;
     noMatch.hidden = matches.length !== 0;
     paintMore();
@@ -893,11 +930,15 @@ function renderPrograms(index) {
       const attention = r.needs_attention
         ? `<span class="pill-warn">${r.needs_attention} need attention</span>`
         : `<span class="pill-ok">all in good shape</span>`;
-      const avg = r.average_score == null ? "—" : `${r.average_score} avg`;
+      const sample = Number(r.comparison_eligible ?? 0);
+      const avg =
+        sample > 0 && typeof r.average_score === "number" && Number.isFinite(r.average_score)
+          ? `${r.average_score} avg`
+          : "average unavailable";
       return `<li class="agency-card reveal">
         <div>
           <h2><a href="#/program/${escAttr(r.id)}">${esc(r.name)}</a></h2>
-          <p class="meta">${r.agency_count} agencies · ${avg} · ${attention}</p>
+          <p class="meta">${r.agency_count} feed scorecards · ${avg} (${sample} comparable) · ${attention}</p>
         </div>
       </li>`;
     })
@@ -906,8 +947,8 @@ function renderPrograms(index) {
     <a class="backlink" href="#/">&larr; All agencies</a>
     <h1 class="page-title reveal">Program rollups.</h1>
     <p class="page-lede reveal">A view for the people who support many agencies at once.
-    Each rollup lists its agencies worst-first, so the ones that need a call are at the top,
-    and surfaces the fixes shared across several feeds.</p>
+    Each rollup puts attention work first, ordered by rider impact when known, then lists
+    other feed scorecards alphabetically. It also surfaces fixes shared across several feeds.</p>
     <ul class="agency-list">${cards}</ul>`;
 }
 
@@ -931,13 +972,17 @@ function renderProgram(rollup) {
     })
     .join("");
 
-  const dist = gradeDistributionBar(
-    rollup.grade_distribution || {},
-    rollup.agency_count,
-    "Grade distribution across this program",
-  );
+  const aggregate = guardedAggregateState(rollup, rollup.average_score);
+  const comparableCount = aggregate.count;
+  const dist = aggregate.valid
+    ? gradeDistributionBar(
+        aggregate.distribution,
+        comparableCount,
+        "Grade distribution across this program",
+      )
+    : "";
 
-  const common = (rollup.common_fixes || [])
+  const common = (aggregate.valid ? rollup.common_fixes || [] : [])
     .map(
       (c) => `<li class="fix-card">
         <p class="fix-action">${esc(c.fix)}</p>
@@ -954,7 +999,17 @@ function renderProgram(rollup) {
        </section>`
     : "";
 
-  const avg = rollup.average_score == null ? "—" : `${rollup.average_score} out of 100`;
+  const avg = aggregate.valid
+    ? `${rollup.average_score} out of 100 average`
+    : "average unavailable";
+  const comparisonContract = comparisonContractText(rollup.comparison);
+  const comparisonNote = aggregate.valid
+    ? `The average and grade distribution use ${comparableCount} canonical, non-duplicate
+      feed scorecards under one producer contract: ${comparisonContract}. Every member
+      remains listed below.`
+    : `The cross-feed average, grade distribution, and shared-fix counts are unavailable
+      until this rollup has a complete guarded summary under ${comparisonContract}. Every
+      member remains listed below.`;
   const shapes = rollup.shapes_readiness;
   const measured = shapes ? shapes.total - shapes.not_measured : 0;
   const shapesNote =
@@ -966,8 +1021,9 @@ function renderProgram(rollup) {
     <div class="score-hero reveal">
       <div>
         <h1 class="page-title">${esc(rollup.rollup.name)}</h1>
-        <p class="overall"><strong>${rollup.agency_count} agencies</strong> ·
-          ${avg} average · ${rollup.needs_attention} need attention</p>
+        <p class="overall"><strong>${rollup.agency_count} feed scorecards</strong> ·
+          ${avg} · ${rollup.needs_attention} need attention</p>
+        <p class="fineprint">${comparisonNote}</p>
         ${shapesNote}
       </div>
     </div>
@@ -976,7 +1032,7 @@ function renderProgram(rollup) {
       <h2 class="section-title visually-hidden" id="dist-h">Grade distribution</h2>${dist}
     </section>` : ""}
     <section aria-labelledby="members-h" class="reveal">
-      <h2 class="section-title" id="members-h">Agencies, worst first</h2>
+      <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">${rows}</ul>
     </section>
     ${commonSection}`;
@@ -984,8 +1040,8 @@ function renderProgram(rollup) {
 
 /* ---------------- my cohort (client-side) ---------------- */
 
-/** Render the follower's personal cohort, worst-first, the same way a program
- *  rollup reads. Membership comes from a shared URL or this browser's saved list.
+/** Render the follower's personal cohort as an attention-first worklist, then
+ *  alphabetically. Membership comes from a shared URL or this browser's saved list.
  *  @param {any} index @param {string[]|null} urlIds */
 async function renderCohort(index, urlIds) {
   document.title = "My agencies — GTFS Scorecard";
@@ -1016,7 +1072,8 @@ async function renderCohort(index, urlIds) {
     } catch {
       /* keep the row from index data even if the artifact is briefly unavailable */
     }
-    const prev = hist.length >= 2 ? hist[hist.length - 2] : null;
+    const comparableHist = currentProducerHistory(hist);
+    const prev = comparableHist.length >= 2 ? comparableHist[comparableHist.length - 2] : null;
     const regressed =
       prev &&
       (GRADE_RANK[last.grade] < GRADE_RANK[prev.grade] || prev.score - last.score >= 3);
@@ -1040,7 +1097,9 @@ async function renderCohort(index, urlIds) {
       gradeChanged: !!(prev && last.grade !== prev.grade),
     });
   }
-  members.sort((m, n) => (!!m.reason === !!n.reason ? m.score - n.score : m.reason ? -1 : 1));
+  members.sort((m, n) =>
+    !!m.reason === !!n.reason ? compareText(m.name, n.name) : m.reason ? -1 : 1
+  );
 
   const notes = getNotes();
   const changed = members.filter((m) => m.gradeChanged);
@@ -1131,7 +1190,7 @@ async function renderCohort(index, urlIds) {
     ${sharedHtml}
     ${routeRule()}
     <section aria-labelledby="cohort-h" class="reveal">
-      <h2 class="section-title" id="cohort-h">Agencies, worst first</h2>
+      <h2 class="section-title" id="cohort-h">Agencies: attention first, then alphabetical</h2>
       <ul class="program-list">${rows}</ul>
     </section>`;
 
@@ -1449,16 +1508,29 @@ function statusChips(artifact) {
   const comp = artifact.categories?.completeness;
   if (comp?.status === "measured" && comp.score < 70)
     chips.push('<span class="chip warn">Accessibility gaps</span>');
-  if (artifact.categories?.realtime?.status !== "measured")
-    chips.push('<span class="chip">No realtime feed</span>');
+  const realtime = artifact.categories?.realtime || {};
+  if (realtime.status !== "measured")
+    chips.push(`<span class="chip">${esc(realtimeUnmeasuredLabel(realtime))}</span>`);
   return chips.join("");
+}
+
+/** @param {any} category @returns {string} */
+function realtimeUnmeasuredLabel(category) {
+  const summary = String(category?.summary || "").toLowerCase();
+  if (summary.includes("access key") || summary.includes("api key") || summary.includes("authentication"))
+    return "Realtime access needed";
+  return "Realtime not yet published";
 }
 
 /** A clean trend line for the board (no leading separator). @param {any[]} history */
 function boardTrend(history) {
-  if (history.length < 2) return "First scorecard for this agency";
-  const prev = history[history.length - 2];
-  const cur = history[history.length - 1];
+  const comparable = currentProducerHistory(history);
+  if (comparable.length < 2)
+    return history.length >= 2
+      ? "Producer or measurement contract changed; trend restarts here"
+      : "First scorecard for this agency";
+  const prev = comparable[comparable.length - 2];
+  const cur = comparable[comparable.length - 1];
   const d = Math.round((cur.score - prev.score) * 10) / 10;
   if (d > 0)
     return `<span aria-hidden="true">▲</span> up ${d} since ${formatDate(prev.date)} · ${prev.grade} → ${cur.grade}`;
@@ -1466,44 +1538,44 @@ function boardTrend(history) {
   return `unchanged since ${formatDate(prev.date)}`;
 }
 
-/** Where this agency stands against the worldwide tracked set and its size peers.
- *  Empty when the directory record or its percentiles are unavailable.
- *  These are not country percentiles: early country cohorts can be tiny, while
- *  both values use the complete tracked set (grouped by size for the peer row).
+/** Full producer/measurement contract of one compact history point.
+ *  @param {any} point @returns {string[] | null} */
+function historyProducerContract(point) {
+  const rubric = String(point?.rubric_version || "");
+  const profile = String(point?.scoring_profile_id || point?.scoring_profile?.id || "");
+  const profileRubric = String(
+    point?.scoring_profile_rubric_version || point?.scoring_profile?.rubric_version || "",
+  );
+  const validator = String(point?.validator_version || "");
+  const categories = point?.categories || {};
+  const measured = CATEGORY_ORDER.filter(
+    (key) => typeof categories[key] === "number" && Number.isFinite(categories[key]),
+  );
+  if (!rubric || !profile || !profileRubric || !validator || !measured.length) return null;
+  return [rubric, profile, profileRubric, validator, measured.join(",")];
+}
+
+/** Contiguous suffix produced by one full producer and measurement contract.
+ *  Missing provenance restarts the trend at the latest point. @param {any[]} history */
+function currentProducerHistory(history) {
+  if (!history.length) return [];
+  const contract = historyProducerContract(history[history.length - 1]);
+  if (!contract) return history.slice(-1);
+  let start = history.length - 1;
+  while (start > 0) {
+    const previous = historyProducerContract(history[start - 1]);
+    if (!previous || previous.some((value, index) => value !== contract[index])) break;
+    start -= 1;
+  }
+  return history.slice(start);
+}
+
+/** Catalog location retained after public percentile claims were removed.
  *  @param {any} [dirRecord] */
 function peerContext(dirRecord) {
   if (!dirRecord) return "";
-  const nat = dirRecord.national_percentile;
-  const peer = dirRecord.peer_percentile;
-  const tier = TIER_LABELS[dirRecord.size_tier] || dirRecord.size_tier;
-  const nonUs = String(dirRecord.country || "US").toUpperCase() !== "US";
-  if (nat == null) return "";
-  const peerPart =
-    peer != null && tier && dirRecord.size_tier !== "unknown"
-      ? ` and ${peer}% of ${tier} agencies`
-      : "";
   const place = placeLabel(dirRecord);
-  const where = place ? ` Operates in <bdi>${esc(place)}</bdi>.` : "";
-  const percentileRow = (label, value) => {
-    const position = Math.max(0, Math.min(100, Number(value)));
-    return `<div class="percentile-row">
-      <span class="percentile-label">${esc(label)}</span>
-      <span class="percentile-value">${position}%</span>
-      <span class="percentile-track" style="--position:${position}" aria-hidden="true">
-        <span class="percentile-line"></span><span class="percentile-marker"></span>
-      </span>
-    </div>`;
-  };
-  const rows = [percentileRow("All agencies", nat)];
-  if (peer != null && tier && dirRecord.size_tier !== "unknown") {
-    rows.push(percentileRow(`${tier} peers`, peer));
-  }
-  const scope = nonUs ? " Comparisons use agencies currently tracked worldwide." : "";
-  return `<p class="peer-context">Ahead of ${nat}% of all tracked agencies${peerPart}.${where}${scope}</p>
-    <div class="percentile-strip" role="group" aria-label="Percentile position; higher is better">
-      ${rows.join("")}
-      <div class="percentile-scale" aria-hidden="true"><span>0</span><span>Ahead of more agencies</span><span>100</span></div>
-    </div>`;
+  return place ? `<p class="peer-context">Catalogued in <bdi>${esc(place)}</bdi>.</p>` : "";
 }
 
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
@@ -1529,9 +1601,13 @@ function boardHero(name, artifact, history, dirRecord) {
 
 /** @param {Array<{date: string, score: number, grade: string}>} history */
 function trendNote(history) {
-  if (history.length < 2) return " · first scorecard for this agency";
-  const prev = history[history.length - 2];
-  const cur = history[history.length - 1];
+  const comparable = currentProducerHistory(history);
+  if (comparable.length < 2)
+    return history.length >= 2
+      ? " · methodology changed; trend restarts here"
+      : " · first scorecard for this agency";
+  const prev = comparable[comparable.length - 2];
+  const cur = comparable[comparable.length - 1];
   const delta = Math.round((cur.score - prev.score) * 10) / 10;
   if (delta > 0) return ` · <span aria-hidden="true">▲</span> up ${delta} since ${formatDate(prev.date)}`;
   if (delta < 0) return ` · <span aria-hidden="true">▼</span> down ${Math.abs(delta)} since ${formatDate(prev.date)}`;
@@ -1622,13 +1698,17 @@ function sinceLastCheck(history) {
 /** The "Over time" section: trend line plus what changed since the last check.
  *  @param {any[]} history */
 function trendSection(history) {
-  if (history.length < 2) {
+  const comparable = currentProducerHistory(history);
+  if (comparable.length < 2) {
+    const message = history.length >= 2
+      ? "The producer or measurement contract changed since the prior check, so the trend restarts here. No improvement or regression is claimed across that boundary."
+      : 'This is the first scorecard for this agency. A trend and a "what changed" summary appear here once it has been checked more than once.';
     return `<section aria-labelledby="trend-h" class="reveal">
       <h2 class="section-title" id="trend-h">Over time</h2>
-      <p class="page-lede">This is the first scorecard for this agency. A trend and a
-      "what changed" summary appear here once it has been checked more than once.</p>
+      <p class="page-lede">${message}</p>
     </section>`;
   }
+  history = comparable;
   const cur = history[history.length - 1];
   const prev = history[history.length - 2];
   const delta = Math.round((cur.score - prev.score) * 10) / 10;
@@ -2133,7 +2213,7 @@ function badgeSection(agencyId) {
   return `<section aria-labelledby="badge-h" class="badge-section reveal">
     <h2 class="section-title" id="badge-h">Show your grade</h2>
     <p class="page-lede">Put the current grade on your own developer page. The badge
-    updates automatically each day and links back to this scorecard.</p>
+    updates after each completed scoring check and links back to this scorecard.</p>
     <p><img src="${escAttr(safeUrl(badgeUrl))}" alt="Current GTFS quality grade badge"></p>
     <label class="badge-embed-label" for="badge-embed">Markdown to embed</label>
     <input id="badge-embed" class="badge-embed" type="text" readonly
@@ -2179,7 +2259,7 @@ function showUsPolicyToolsForCountry(country = "US") {
   }
 }
 
-/** Two agencies side by side as an accessible comparison table, shareable via
+/** Two like-for-like scorecards side by side as an accessible comparison table, shareable via
  *  #/compare?a=<id>&b=<id>. No new dependency: a data table, not a map, so it
  *  works with a keyboard and a screen reader out of the box. When either id is
  *  missing or unknown, a picker chooses two agencies and navigates to the URL.
@@ -2204,13 +2284,16 @@ async function renderCompare(aId, bId) {
     main.innerHTML = `
       <a class="backlink" href="#/">&larr; All agencies</a>
       <h1 class="page-title">Compare two agencies</h1>
-      <p class="page-lede">Put two scorecards side by side to benchmark one feed against another. The result has a shareable link.</p>
+      <p class="page-lede">Choose two scorecards to check whether they use the same rubric,
+      scoring profile, validator, and measured category set, and come from distinct feed bytes.
+      Like-for-like results can appear side by side; otherwise this page keeps the scores
+      separate and links to each full scorecard.</p>
       <form id="compare-pick" class="compare-pick">
         <p><label for="cmp-a">First agency</label>
           <select id="cmp-a" name="a">${options(firstId)}</select></p>
         <p><label for="cmp-b">Second agency</label>
           <select id="cmp-b" name="b">${options(secondId)}</select></p>
-        <p><button type="submit" class="compare-go">Compare</button></p>
+        <p><button type="submit" class="compare-go">Check comparability</button></p>
         <p id="compare-pick-status" class="form-status form-status-err" role="alert" hidden></p>
       </form>`;
     const form = /** @type {HTMLFormElement} */ (main.querySelector("#compare-pick"));
@@ -2244,6 +2327,50 @@ async function renderCompare(aId, bId) {
     fetchJson(`${bId}/latest.json`),
   ]);
 
+  const comparisonContract = (art) => {
+    const profile = art.scoring_profile || {};
+    return {
+      rubric: String(art.rubric_version || ""),
+      profile: String(profile.id || ""),
+      profileRubric: String(profile.rubric_version || ""),
+      validator: String(art.validator_version || ""),
+      feedHash: String(art.feed?.sha256 || ""),
+      measured: CATEGORY_ORDER.filter((key) => art.categories?.[key]?.status === "measured"),
+    };
+  };
+  const aContract = comparisonContract(aArt);
+  const bContract = comparisonContract(bArt);
+  const likeForLike =
+    aContract.rubric !== "" &&
+    aContract.profile !== "" &&
+    aContract.validator !== "" &&
+    aContract.feedHash !== "" &&
+    bContract.feedHash !== "" &&
+    aContract.feedHash !== bContract.feedHash &&
+    aContract.profileRubric === aContract.rubric &&
+    bContract.profileRubric === bContract.rubric &&
+    aContract.rubric === bContract.rubric &&
+    aContract.profile === bContract.profile &&
+    aContract.validator === bContract.validator &&
+    JSON.stringify(aContract.measured) === JSON.stringify(bContract.measured);
+
+  const aName = aArt.agency.name;
+  const bName = bArt.agency.name;
+  if (!likeForLike) {
+    main.innerHTML = `
+      <a class="backlink" href="#/compare">&larr; Choose different agencies</a>
+      <h1 class="page-title">These scorecards are not like-for-like.</h1>
+      <div class="error-box" role="status">
+        <p>${esc(aName)} and ${esc(bName)} do not have distinct feed bytes under the same
+        verified scoring profile, rubric, validator, and measured category set. Showing their
+        grades side by side could make a duplicate record, methodology, or realtime-coverage
+        difference look like a feed-quality difference.</p>
+        <p><a href="#/agency/${escAttr(aId)}">Open ${esc(aName)}</a> &nbsp;·&nbsp;
+        <a href="#/agency/${escAttr(bId)}">Open ${esc(bName)}</a></p>
+      </div>`;
+    return;
+  }
+
   const gradeCell = (art) => {
     const o = art.overall || {};
     return `<span class="grade-chip ${escAttr(gradeClass(o.grade))}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>`;
@@ -2262,8 +2389,6 @@ async function renderCompare(aId, bId) {
     return `<ol class="cmp-fixes">${fixes.map((f) => `<li>${esc(f.fix)}</li>`).join("")}</ol>`;
   };
 
-  const aName = aArt.agency.name;
-  const bName = bArt.agency.name;
   const catRows = CATEGORY_ORDER.map(
     (key) =>
       `<tr><th scope="row">${esc(CATEGORY_LABELS[key])}</th><td>${catCell(aArt, key)}</td><td>${catCell(bArt, key)}</td></tr>`
@@ -2272,7 +2397,9 @@ async function renderCompare(aId, bId) {
   main.innerHTML = `
     <a class="backlink" href="#/compare">&larr; Choose different agencies</a>
     <h1 class="page-title">${esc(aName)} vs ${esc(bName)}</h1>
-    <p class="page-lede">Two scorecards side by side. Each column links to its full page.</p>
+    <p class="page-lede">These scorecards use the same verified rubric, scoring profile,
+    validator, and measured category set, and they come from distinct feed bytes. Each column
+    links to its full page.</p>
     <div class="table-wrap"><table class="compare-table">
       <caption class="visually-hidden">Data-quality comparison of ${esc(aName)} and ${esc(bName)}</caption>
       <thead><tr>

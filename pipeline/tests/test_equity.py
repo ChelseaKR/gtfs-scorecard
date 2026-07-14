@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.equity import (
     HIGH,
     LOWER,
@@ -15,6 +16,7 @@ from scorecard_pipeline.equity import (
     parse_acs,
     render_overlay,
 )
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 
 def test_need_tier_bands() -> None:
@@ -29,12 +31,29 @@ def test_need_tier_bands() -> None:
 
 
 def _rows() -> list[dict[str, Any]]:
+    def row(record_id: str, grade: str, score: float) -> dict[str, Any]:
+        return {
+            "id": record_id,
+            "grade": grade,
+            "score": score,
+            "date": "2026-07-14",
+            "rubric_version": RUBRIC_VERSION,
+            "scoring_profile_id": SCORING_PROFILE_ID,
+            "scoring_profile_rubric_version": RUBRIC_VERSION,
+            "validator_version": VALIDATOR_VERSION,
+            "feed_sha256": record_id * 64,
+            "correctness": score,
+            "freshness": score,
+            "completeness": score,
+            "realtime": None,
+        }
+
     return [
-        {"id": "a", "grade": "F", "score": 40.0},
-        {"id": "b", "grade": "D", "score": 62.0},
-        {"id": "c", "grade": "A", "score": 95.0},
-        {"id": "d", "grade": "B", "score": 84.0},
-        {"id": "e", "grade": "F", "score": 30.0},  # no state -> dropped
+        row("a", "F", 40.0),
+        row("b", "D", 62.0),
+        row("c", "A", 95.0),
+        row("d", "B", 84.0),
+        row("e", "F", 30.0),  # no state -> dropped
     ]
 
 
@@ -48,6 +67,8 @@ def test_build_overlay_joins_need_and_low_grade_share() -> None:
     by_state = {s["state"]: s for s in overlay["states"]}
     assert by_state["California"]["need_tier"] == HIGH
     assert by_state["California"]["agency_count"] == 3
+    assert by_state["California"]["feed_record_count"] == 3
+    assert by_state["California"]["comparison_eligible_count"] == 3
     # a (F) and b (D) of 3 are low grade.
     assert by_state["California"]["low_grade_share"] == round(2 / 3 * 100, 1)
     assert by_state["Vermont"]["need_tier"] == LOWER
@@ -55,6 +76,22 @@ def test_build_overlay_joins_need_and_low_grade_share() -> None:
     assert [s["state"] for s in overlay["priority"]] == ["California"]
     # Agency 'e' had no state and is excluded.
     assert "e" not in {r for s in overlay["states"] for r in [s["state"]]}
+    assert overlay["comparison"]["eligible_count"] == 5
+
+
+def test_build_overlay_keeps_coverage_but_suppresses_incompatible_scores() -> None:
+    rows = _rows()
+    for row in rows:
+        row["rubric_version"] = "old-rubric"
+    overlay = build_overlay(rows, {"a": "California", "b": "California"}, {})
+
+    california = overlay["states"][0]
+    assert california["feed_record_count"] == 2
+    assert california["comparison_eligible_count"] == 0
+    assert california["median_score"] is None
+    assert california["low_grade_share"] is None
+    assert overlay["priority"] == []
+    assert overlay["comparison"]["eligible_count"] == 0
 
 
 def test_build_overlay_without_indicators_is_unknown_and_no_priority() -> None:

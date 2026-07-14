@@ -1,105 +1,58 @@
 {
-  "agency_count": 3,
+  "agency_count": 0,
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "cemv": {
     "count": 0,
     "pct": 0.0
   },
-  "countries": [
-    {
-      "agencies": 1,
-      "cemv": 0,
-      "country_code": "CA",
-      "country_name": "Canada",
-      "fares": 0,
-      "fares_v2": 0,
-      "flex": 0,
-      "pathways": 0,
-      "step_free": 0,
-      "subdivisions": [
-        {
-          "agencies": 1,
-          "cemv": 0,
-          "fares": 0,
-          "fares_v2": 0,
-          "flex": 0,
-          "pathways": 0,
-          "step_free": 0,
-          "subdivision_code": null,
-          "subdivision_name": "Unlocated"
-        }
-      ]
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3
     },
-    {
-      "agencies": 2,
-      "cemv": 0,
-      "country_code": "US",
-      "country_name": "United States",
-      "fares": 1,
-      "fares_v2": 1,
-      "flex": 0,
-      "pathways": 0,
-      "step_free": 0,
-      "subdivisions": [
-        {
-          "agencies": 2,
-          "cemv": 0,
-          "fares": 1,
-          "fares_v2": 1,
-          "flex": 0,
-          "pathways": 0,
-          "step_free": 0,
-          "subdivision_code": null,
-          "subdivision_name": "Unlocated"
-        }
-      ]
-    }
-  ],
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
+  "comparison_eligible_count": 0,
+  "countries": [],
   "fare_models": {
     "legacy": 0,
-    "none": 2,
-    "v2": 1
+    "none": 0,
+    "v2": 0
   },
   "fares": {
-    "count": 1,
-    "pct": 33.3
+    "count": 0,
+    "pct": 0.0
   },
   "fares_v2": {
-    "count": 1,
-    "pct": 33.3
+    "count": 0,
+    "pct": 0.0
   },
-  "fares_v2_sample": [
-    {
-      "country": "US",
-      "id": "unitrans",
-      "name": "Unitrans (ASUCD / City of Davis)",
-      "state": "Unlocated",
-      "subdivision_code": "",
-      "subdivision_name": ""
-    }
-  ],
+  "fares_v2_sample": [],
+  "feed_record_count": 3,
   "flex": {
     "count": 0,
     "pct": 0.0
   },
   "flex_sample": [],
-  "generated_at": "2026-07-14T03:48:50+00:00",
+  "generated_at": "2026-07-14T10:15:31+00:00",
   "license": "CC-BY-4.0",
+  "measured_feed_record_count": 0,
   "pathways": {
     "count": 0,
     "pct": 0.0
   },
   "pathways_sample": [],
-  "states": [
-    {
-      "agencies": 2,
-      "fares": 1,
-      "fares_v2": 1,
-      "flex": 0,
-      "pathways": 0,
-      "state": "Unlocated"
-    }
-  ],
+  "states": [],
   "step_free": {
     "count": 0,
     "pct": 0.0

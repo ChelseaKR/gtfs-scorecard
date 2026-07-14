@@ -218,9 +218,8 @@ Never solve overflow by shrinking body text or interactive targets.
 
 ### Data and controls
 
-- `.service-chart`, `.bucket-chart`, `.movement-chart`, and
-  `.percentile-strip` reuse the route/stop visual grammar. Supply text and
-  numeric values alongside marks.
+- `.service-chart`, `.bucket-chart`, and `.movement-chart` reuse the route/stop
+  visual grammar. Supply text and numeric values alongside marks.
 - `.table-wrap` owns horizontal overflow for a genuinely wide table. Do not
   make the whole page scroll sideways.
 - Buttons, chips, inputs, selects, file controls, copy actions, and disclosure

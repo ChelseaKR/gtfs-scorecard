@@ -35,6 +35,7 @@ from typing import Any
 
 import yaml
 
+from .comparisons import same_producer_contract
 from .config import artifacts_dir
 from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, esc
 
@@ -141,6 +142,8 @@ def _history_rows(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for i, point in enumerate(history):
         if i == 0:
             change = "first check"
+        elif not same_producer_contract(history[i - 1], point):
+            change = "not compared"
         else:
             change = _change_words(round(float(point["score"]) - float(history[i - 1]["score"]), 1))
         rows.append(

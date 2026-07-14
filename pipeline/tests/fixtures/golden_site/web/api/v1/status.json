@@ -34,20 +34,26 @@
     "unreachable_after_consecutive_checks": 30
   },
   "description": "How fresh this data is meant to be, and how it has actually performed: the intended refresh cadence per tier, the historical refresh-success record, and what happens when a feed cannot be refreshed on schedule.",
-  "generated_at": "2026-07-14T03:48:49+00:00",
+  "generated_at": "2026-07-02T03:10:02+00:00",
   "human_readable": "https://gtfsscorecard.org/status/",
   "license": "CC-BY-4.0",
   "refresh_success_record": {
-    "as_of": "2026-07-14T03:48:49+00:00",
+    "as_of": "2026-07-02T03:10:02+00:00",
     "degraded": 0,
     "feeds_tracked": 2,
     "healthy": 2,
     "hours_since_last_check": {
-      "max": 321.7,
-      "median": 321.7,
-      "min": 290.6
+      "max": 33.0,
+      "median": 33.0,
+      "min": 2.0
     },
     "success_rate_pct": 100.0,
     "unreachable": 0
+  },
+  "scope": {
+    "liveness_records_in_scope": 2,
+    "liveness_records_outside_current_published_set": 0,
+    "note": "Refresh-success statistics are restricted to feed records in the current published artifact index. Older liveness records are excluded.",
+    "published_feed_record_count": 3
   }
 }

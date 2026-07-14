@@ -6,17 +6,27 @@ import json
 from pathlib import Path
 from typing import Any
 
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.fixlog import (
     diff_receipts,
     finding_codes,
     load_fixlog,
     merge_receipts,
+    reconcile_receipts,
 )
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 
 def _artifact(date: str, *codes: tuple[str, str], measured: bool = True) -> dict[str, Any]:
     return {
         "snapshot_date": date,
+        "agency": {"id": "demo", "name": "Demo Transit"},
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile": {
+            "id": SCORING_PROFILE_ID,
+            "rubric_version": RUBRIC_VERSION,
+        },
+        "validator_version": VALIDATOR_VERSION,
         "categories": {
             "correctness": {
                 "status": "measured" if measured else "skipped",
@@ -36,6 +46,13 @@ def test_receipt_records_both_dates_and_prior_wording() -> None:
             "what": "3 calendars expired.",
             "last_seen": "2026-06-30",
             "cleared": "2026-07-01",
+            "producer_contract": {
+                "rubric_version": RUBRIC_VERSION,
+                "scoring_profile_id": SCORING_PROFILE_ID,
+                "scoring_profile_rubric_version": RUBRIC_VERSION,
+                "validator_version": VALIDATOR_VERSION,
+                "measured_categories": ["correctness"],
+            },
         }
     ]
 
@@ -58,6 +75,13 @@ def test_unmeasured_category_never_yields_a_receipt() -> None:
     assert diff_receipts(prev, cur) == []
 
 
+def test_methodology_change_never_yields_a_receipt() -> None:
+    prev = _artifact("2026-06-30", ("x", "w"))
+    prev["rubric_version"] = "older"
+    cur = _artifact("2026-07-01")
+    assert diff_receipts(prev, cur) == []
+
+
 def test_merge_is_idempotent_and_keeps_history() -> None:
     old = [{"code": "a", "what": "w1", "last_seen": "2026-06-01", "cleared": "2026-06-02"}]
     new = [
@@ -72,11 +96,52 @@ def test_merge_is_idempotent_and_keeps_history() -> None:
     assert merged[0]["cleared"] == "2026-06-02"
 
 
-def test_merge_keeps_receipts_whose_dated_artifacts_are_gone() -> None:
-    # The durable property: a receipt already in the file survives even when
-    # the walk over dated artifacts no longer produces it.
+def test_legacy_receipt_without_dated_evidence_fails_closed() -> None:
     old = [{"code": "gone", "what": "w", "last_seen": "2025-01-01", "cleared": "2025-01-02"}]
-    assert merge_receipts(old, []) == old
+    assert reconcile_receipts(old, {}) == []
+
+
+def test_legacy_receipt_is_upgraded_only_when_artifacts_reproduce_it() -> None:
+    prev = _artifact("2026-06-30", ("x", "The original wording."))
+    cur = _artifact("2026-07-01")
+    legacy = [
+        {
+            "code": "x",
+            "what": "untrusted stale wording",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+    reconciled = reconcile_receipts(
+        legacy,
+        {"2026-06-30": prev, "2026-07-01": cur},
+    )
+    assert reconciled == diff_receipts(prev, cur)
+    assert reconciled[0]["what"] == "The original wording."
+    assert "producer_contract" in reconciled[0]
+
+
+def test_legacy_receipt_is_dropped_across_producer_change() -> None:
+    prev = _artifact("2026-06-30", ("x", "w"))
+    cur = _artifact("2026-07-01")
+    cur["validator_version"] = "different"
+    legacy = [{"code": "x", "what": "w", "last_seen": "2026-06-30", "cleared": "2026-07-01"}]
+    assert reconcile_receipts(legacy, {"2026-06-30": prev, "2026-07-01": cur}) == []
+
+
+def test_provenance_receipt_survives_pruned_dated_artifacts() -> None:
+    prev = _artifact("2026-06-30", ("x", "w"))
+    cur = _artifact("2026-07-01")
+    receipt = diff_receipts(prev, cur)
+    assert reconcile_receipts(receipt, {}) == receipt
+
+
+def test_available_artifact_must_match_persisted_receipt_contract() -> None:
+    prev = _artifact("2026-06-30", ("x", "w"))
+    cur = _artifact("2026-07-01")
+    receipt = diff_receipts(prev, cur)
+    cur["rubric_version"] = "new-rubric"
+    assert reconcile_receipts(receipt, {"2026-07-01": cur}) == []
 
 
 def test_load_fixlog_missing_or_bad_file(tmp_path: Path) -> None:
@@ -84,4 +149,41 @@ def test_load_fixlog_missing_or_bad_file(tmp_path: Path) -> None:
     (tmp_path / "fixlog.json").write_text("not json")
     assert load_fixlog(tmp_path) == []
     (tmp_path / "fixlog.json").write_text(json.dumps({"receipts": [{"code": "a"}, "junk"]}))
-    assert load_fixlog(tmp_path) == [{"code": "a"}]
+    assert load_fixlog(tmp_path) == []
+
+
+def test_load_fixlog_reconciles_legacy_receipt_from_local_evidence(tmp_path: Path) -> None:
+    agency_dir = tmp_path / "demo"
+    agency_dir.mkdir()
+    prev = _artifact("2026-06-30", ("x", "The original wording."))
+    cur = _artifact("2026-07-01")
+    (agency_dir / "2026-06-30.json").write_text(json.dumps(prev))
+    (agency_dir / "2026-07-01.json").write_text(json.dumps(cur))
+    (agency_dir / "fixlog.json").write_text(
+        json.dumps(
+            {
+                "receipts": [
+                    {
+                        "code": "x",
+                        "what": "untrusted stale wording",
+                        "last_seen": "2026-06-30",
+                        "cleared": "2026-07-01",
+                    }
+                ]
+            }
+        )
+    )
+    assert load_fixlog(agency_dir) == diff_receipts(prev, cur)
+
+
+def test_load_fixlog_keeps_provenance_receipt_after_dated_evidence_is_pruned(
+    tmp_path: Path,
+) -> None:
+    agency_dir = tmp_path / "demo"
+    agency_dir.mkdir()
+    receipts = diff_receipts(
+        _artifact("2026-06-30", ("x", "The original wording.")),
+        _artifact("2026-07-01"),
+    )
+    (agency_dir / "fixlog.json").write_text(json.dumps({"receipts": receipts}))
+    assert load_fixlog(agency_dir) == receipts

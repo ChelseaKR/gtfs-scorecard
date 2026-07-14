@@ -20,8 +20,9 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     """The side-by-side compare page (/compare/?a=<id>&b=<id>).
 
     Two agencies' latest artifacts, loaded client-side and rendered as one
-    accessible table: overall grade, each rubric category, days of service
-    left, and the adoption flags (fares, flex, pathways). The pickers are
+    accessible table only when rubric, scoring profile, validator, and measured
+    category set match and the feed hashes are distinct. Otherwise the page explains why the grades are kept separate
+    and links to both scorecards. The pickers are
     plain selects submitted as a GET form, so choosing agencies works with
     JavaScript off and every comparison has a shareable URL; only the result
     table itself needs JS, and the noscript path says so. An unmeasured
@@ -39,11 +40,10 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("Compare agencies", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Compare two agencies.</h1>
-    <p class="page-lede">Put two scorecards side by side: overall grade, each category,
-    days of service left, and which optional
-    <abbr title="General Transit Feed Specification">GTFS</abbr> features each feed has
-    adopted. Pick two agencies and the page builds one table from their latest
-    scorecards.</p>
+    <p class="page-lede">Choose two scorecards to check whether they use the same rubric,
+    scoring profile, validator, and measured category set, and come from distinct feed bytes.
+    Like-for-like results can appear in one table; otherwise the page keeps the grades
+    separate and links to both full scorecards.</p>
     <form class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
       <div class="map-filter-row">
         <label for="compare-a-filter">First agency</label>
@@ -166,9 +166,56 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             pathways: !!(comp.pathways && comp.pathways.has_pathways)
           }};
         }}
+        function comparisonContract(art) {{
+          var profile = art.scoring_profile || {{}};
+          return {{
+            rubric: String(art.rubric_version || ""),
+            profile: String(profile.id || ""),
+            profileRubric: String(profile.rubric_version || ""),
+            validator: String(art.validator_version || ""),
+            feedHash: String(((art.feed || {{}}).sha256) || ""),
+            measured: CATS.filter(function (c) {{
+              return ((art.categories || {{}})[c[0]] || {{}}).status === "measured";
+            }}).map(function (c) {{ return c[0]; }})
+          }};
+        }}
         Promise.all([fetchArtifact(a), fetchArtifact(b)]).then(function (arts) {{
           var artA = arts[0], artB = arts[1];
           var nameA = artA.agency.name, nameB = artB.agency.name;
+          var contractA = comparisonContract(artA), contractB = comparisonContract(artB);
+          var likeForLike = contractA.rubric && contractA.profile && contractA.validator &&
+            contractA.feedHash && contractB.feedHash &&
+            contractA.feedHash !== contractB.feedHash &&
+            contractA.profileRubric === contractA.rubric &&
+            contractB.profileRubric === contractB.rubric &&
+            contractA.rubric === contractB.rubric &&
+            contractA.profile === contractB.profile &&
+            contractA.validator === contractB.validator &&
+            JSON.stringify(contractA.measured) === JSON.stringify(contractB.measured);
+          if (!likeForLike) {{
+            result.textContent = "";
+            var warning = el("div");
+            warning.className = "error-box";
+            warning.setAttribute("role", "status");
+            warning.appendChild(el("h2", "These scorecards are not like-for-like."));
+            warning.appendChild(el("p", nameA + " and " + nameB +
+              " do not have distinct feed bytes under the same verified scoring profile, " +
+              "rubric, validator, and measured category set. Their grades stay separate so " +
+              "a duplicate record, methodology, or realtime-coverage difference is not " +
+              "presented as a feed-quality difference."));
+            var links = el("p");
+            [[nameA, a], [nameB, b]].forEach(function (pair, index) {{
+              if (index) links.appendChild(document.createTextNode(" \u00b7 "));
+              var link = el("a", "Open " + pair[0]);
+              link.href = "/agency/" + encodeURIComponent(pair[1]) + "/";
+              links.appendChild(link);
+            }});
+            warning.appendChild(links);
+            result.appendChild(warning);
+            statusEl.textContent = "Scorecards kept separate: " + nameA + " and " + nameB +
+              " are not like-for-like.";
+            return;
+          }}
           var table = el("table");
           table.className = "leaderboard compare-static-table";
           var caption = el("caption", "Side-by-side scorecard comparison of " +
@@ -230,8 +277,8 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     return _page(
         title="Compare two agencies side by side — GTFS Scorecard",
         description=(
-            "Put two transit agencies' GTFS scorecards side by side: overall grade, "
-            "category scores, days of service left, and adopted features."
+            "Check whether two transit agencies' GTFS scorecards are like-for-like "
+            "before showing their grades and category scores side by side."
         ),
         canonical=f"{BASE_URL}/compare/",
         body=body,
@@ -242,20 +289,22 @@ _DUCKDB_WASM_VERSION = "1.29.0"
 
 _QUERY_EXAMPLES = [
     (
-        "Grade distribution",
-        "SELECT grade, count(*) AS agencies\nFROM agencies\nGROUP BY grade\nORDER BY grade",
+        "Expiry support worklist",
+        "SELECT id, name, date, days_until_expiry\nFROM agencies\n"
+        "WHERE days_until_expiry BETWEEN -365 AND 60\n"
+        "ORDER BY days_until_expiry, name\nLIMIT 50",
     ),
     (
-        "Feeds closest to expiry",
-        "SELECT name, days_until_expiry\nFROM agencies\n"
-        "WHERE days_until_expiry BETWEEN 0 AND 60\n"
-        "ORDER BY days_until_expiry\nLIMIT 15",
+        "Rows outside the comparison cohort",
+        "SELECT id, name, date, rubric_version, scoring_profile_id, validator_version\n"
+        "FROM agencies\nWHERE comparison_eligible = false\nORDER BY name\nLIMIT 50",
     ),
     (
-        "Covered-set category averages",
-        "SELECT round(avg(correctness), 1) AS correctness,\n"
-        "       round(avg(freshness), 1) AS freshness,\n"
-        "       round(avg(completeness), 1) AS completeness\nFROM agencies",
+        "Producer provenance",
+        "SELECT rubric_version, scoring_profile_id, validator_version,\n"
+        "       count(*) AS feed_records\nFROM agencies\n"
+        "GROUP BY rubric_version, scoring_profile_id, validator_version\n"
+        "ORDER BY rubric_version, scoring_profile_id, validator_version",
     ),
 ]
 
@@ -281,9 +330,10 @@ def _render_query_page() -> str:
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Query the dataset.</h1>
     <p class="page-lede">Run SQL against the covered scorecard dataset, right here in your
-    browser. One table, <code>agencies</code>, holds every tracked agency's latest snapshot:
+    browser. One table, <code>agencies</code>, holds every published feed record's latest snapshot:
     <code>id</code>, <code>name</code>, <code>date</code>, <code>grade</code>,
-    <code>score</code>, <code>days_until_expiry</code>, and the
+    <code>score</code>, <code>days_until_expiry</code>, producer-version fields,
+    <code>comparison_eligible</code>, and the
     <code>correctness</code>, <code>freshness</code>, <code>completeness</code>, and
     <code>realtime</code> category scores. Nothing is sent to a server: the engine
     (DuckDB) and the data load into the page and the query runs on your machine.</p>
@@ -292,6 +342,12 @@ def _render_query_page() -> str:
     <a href="/catalog.csv">catalog.csv</a>, and the JSON described in the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/api.md">data
     dictionary</a>.</p>
+    <p><strong>Comparison warning:</strong> the table includes old-methodology,
+    duplicate-identity, and otherwise non-comparable rows so the public record stays complete.
+    Do not compare or average scores unless you filter
+    <code>comparison_eligible = true</code> and inspect the current contract in
+    <a href="/api/v1/agencies.json">agencies.json</a>. The examples below are support
+    worklists and provenance checks, not rankings.</p>
     <form aria-label="SQL query" class="query-form">
       <label for="query-sql">SQL to run against the <code>agencies</code> table</label>
       <textarea id="query-sql" class="outreach-text" rows="6"
@@ -392,7 +448,7 @@ def _render_query_page() -> str:
         title="Query the dataset in your browser — GTFS Scorecard",
         description=(
             "Run SQL against the covered GTFS quality dataset in your browser with "
-            "DuckDB: grades, category scores, and freshness for every tracked agency."
+            "DuckDB: grades, category scores, and freshness for every tracked feed record."
         ),
         canonical=f"{BASE_URL}/query/",
         body=body,
@@ -728,7 +784,7 @@ _TOOLS = [
     (
         "/compare/",
         "Compare two agencies",
-        "Two scorecards side by side: grades, categories, and adopted features.",
+        "Check whether two scorecards are like-for-like before showing them side by side.",
     ),
     (
         "/check/",

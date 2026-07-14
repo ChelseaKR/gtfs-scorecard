@@ -9,7 +9,7 @@ The public version of this page is [gtfsscorecard.org/support](https://gtfsscore
 Running the service costs roughly $75 to $200 a month, all of it infrastructure:
 
 - Hosting and bandwidth for the static site, the read API, and the grade badges agencies embed.
-- The daily data refresh: fetching about 1,140 configured feeds in the current worldwide coverage, still mostly in the US and Canada, and scoring them every day.
+- The scheduled daily data refresh: fetching about 1,140 configured feeds in the current worldwide coverage, still mostly in the US and Canada. The public status page records when each run actually completed.
 - Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator. A capped hosted one-off scorer is planned but is not enabled today; the site currently offers a local pre-publish check and a GitHub-backed request path.
 - Realtime sampling around the clock, the largest planned line item and the first thing new sponsorship unlocks.
 

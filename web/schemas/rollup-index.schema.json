@@ -28,6 +28,7 @@
           "name": { "type": "string" },
           "agency_count": { "type": "integer", "minimum": 0 },
           "average_score": { "type": ["number", "null"] },
+          "comparison_eligible": { "type": "integer", "minimum": 0 },
           "needs_attention": { "type": "integer", "minimum": 0 },
           "expired": { "type": "integer", "minimum": 0 }
         }

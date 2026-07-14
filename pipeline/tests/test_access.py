@@ -126,6 +126,7 @@ def test_per_state_rollup_sorted_by_count() -> None:
 
 def test_empty_input_is_safe() -> None:
     cov = national_coverage([])
+    assert cov["measured_feed_record_count"] == 0
     assert cov["agency_count"] == 0
     assert cov["bands"] == {"none": 0, "some": 0, "most": 0}
     assert cov["average_boarding_pct"] is None
@@ -152,6 +153,7 @@ def test_portable_country_and_subdivision_accessibility_rollups() -> None:
     cov = national_coverage(records)
     assert [state["state"] for state in cov["states"]] == ["California"]
     countries = {row["country_code"]: row for row in cov["countries"]}
+    assert countries["CA"]["feed_records"] == 2
     assert countries["US"]["most"] == 1
     assert countries["US"]["subdivisions"][0]["subdivision_code"] == "US-CA"
     assert countries["CA"]["agencies"] == 2

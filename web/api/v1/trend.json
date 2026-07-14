@@ -1,264 +1,32 @@
 {
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
-  "generated_at": "2026-07-14T05:12:50+00:00",
-  "license": "CC-BY-4.0",
-  "points": [
-    {
-      "agency_count": 1446,
-      "average_score": 61.0,
-      "date": "2026-06-30",
-      "expired_pct": 42.7,
-      "grade_distribution": {
-        "A": 53,
-        "B": 247,
-        "C": 269,
-        "D": 165,
-        "F": 712
-      }
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
     },
-    {
-      "agency_count": 1449,
-      "average_score": 61.0,
-      "date": "2026-07-01",
-      "expired_pct": 42.7,
-      "grade_distribution": {
-        "A": 53,
-        "B": 245,
-        "C": 274,
-        "D": 168,
-        "F": 709
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 61.0,
-      "date": "2026-07-02",
-      "expired_pct": 42.6,
-      "grade_distribution": {
-        "A": 52,
-        "B": 247,
-        "C": 271,
-        "D": 171,
-        "F": 708
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 61.0,
-      "date": "2026-07-03",
-      "expired_pct": 42.6,
-      "grade_distribution": {
-        "A": 51,
-        "B": 248,
-        "C": 269,
-        "D": 173,
-        "F": 708
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.8,
-      "date": "2026-07-04",
-      "expired_pct": 42.6,
-      "grade_distribution": {
-        "A": 52,
-        "B": 243,
-        "C": 269,
-        "D": 170,
-        "F": 715
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.8,
-      "date": "2026-07-05",
-      "expired_pct": 42.6,
-      "grade_distribution": {
-        "A": 50,
-        "B": 243,
-        "C": 268,
-        "D": 170,
-        "F": 718
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.7,
-      "date": "2026-07-06",
-      "expired_pct": 42.7,
-      "grade_distribution": {
-        "A": 50,
-        "B": 240,
-        "C": 263,
-        "D": 174,
-        "F": 722
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.6,
-      "date": "2026-07-07",
-      "expired_pct": 42.8,
-      "grade_distribution": {
-        "A": 51,
-        "B": 234,
-        "C": 269,
-        "D": 173,
-        "F": 722
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.7,
-      "date": "2026-07-08",
-      "expired_pct": 42.8,
-      "grade_distribution": {
-        "A": 50,
-        "B": 240,
-        "C": 276,
-        "D": 163,
-        "F": 720
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.8,
-      "date": "2026-07-09",
-      "expired_pct": 42.7,
-      "grade_distribution": {
-        "A": 50,
-        "B": 242,
-        "C": 280,
-        "D": 159,
-        "F": 718
-      }
-    },
-    {
-      "agency_count": 1449,
-      "average_score": 60.9,
-      "date": "2026-07-10",
-      "expired_pct": 42.4,
-      "grade_distribution": {
-        "A": 52,
-        "B": 246,
-        "C": 283,
-        "D": 146,
-        "F": 722
-      }
-    }
-  ],
-  "summary": {
-    "first": {
-      "average_score": 61.0,
-      "date": "2026-06-30"
-    },
-    "last": {
-      "average_score": 60.9,
-      "date": "2026-07-10"
-    },
-    "points": 11,
-    "score_delta": -0.1
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
   },
-  "top_improvers": [
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-16",
-      "delta": 34.9,
-      "grade_end": "B",
-      "id": "devils-postpile-national-monument",
-      "name": "Reds Meadow Shuttle",
-      "score_end": 85.6,
-      "score_start": 50.7
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 34.5,
-      "grade_end": "B",
-      "id": "roaring-fork-transportation-authority",
-      "name": "Roaring Fork Transportation Authority",
-      "score_end": 83.7,
-      "score_start": 49.2
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 31.7,
-      "grade_end": "C",
-      "id": "detroit-department-of-transportation-ddot",
-      "name": "Detroit Department of Transportation (DDOT)",
-      "score_end": 73.5,
-      "score_start": 41.8
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 30.1,
-      "grade_end": "D",
-      "id": "metropolitan-transit-authority-mta-513",
-      "name": "Manhattan Bus",
-      "score_end": 69.2,
-      "score_start": 39.1
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 28.6,
-      "grade_end": "B",
-      "id": "rocky-mountain-national-park",
-      "name": "Rocky Mountain National Park Shuttles",
-      "score_end": 81.3,
-      "score_start": 52.7
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-16",
-      "delta": 27.7,
-      "grade_end": "B",
-      "id": "laguna-beach-transit-lbt",
-      "name": "Laguna Beach Transit (LBT)",
-      "score_end": 81.9,
-      "score_start": 54.2
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 26.5,
-      "grade_end": "D",
-      "id": "metropolitan-transit-authority-mta-512",
-      "name": "Brooklyn Bus",
-      "score_end": 67.9,
-      "score_start": 41.4
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-30",
-      "delta": 25.6,
-      "grade_end": "B",
-      "id": "regional-transportation-agency-of-central-maryland-rta-489",
-      "name": "Regional Transportation Agency of Central Maryland (RTA)",
-      "score_end": 81.4,
-      "score_start": 55.8
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 25.1,
-      "grade_end": "D",
-      "id": "metropolitan-transit-authority-mta-510",
-      "name": "NYC Bus Company",
-      "score_end": 62.2,
-      "score_start": 37.1
-    },
-    {
-      "date_end": "2026-07-10",
-      "date_start": "2026-06-19",
-      "delta": 24.8,
-      "grade_end": "B",
-      "id": "chittenden-county-transportation-authority-ccta",
-      "name": "Chittenden County Transportation Authority (CCTA)",
-      "score_end": 81.1,
-      "score_start": 56.3
-    }
-  ]
+  "generated_at": "2026-07-14T10:23:30+00:00",
+  "license": "CC-BY-4.0",
+  "points": [],
+  "summary": {
+    "first": null,
+    "last": null,
+    "points": 0,
+    "score_delta": null
+  },
+  "top_improvers": []
 }

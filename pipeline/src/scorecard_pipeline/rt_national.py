@@ -82,6 +82,9 @@ def _location_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     uptimes = [float(record["uptime_pct"]) for record in records]
     median = _median(uptimes)
     return {
+        "feed_records": len(records),
+        # v1 compatibility alias. These rows count feed records, not distinct
+        # operating organizations.
         "agencies": len(records),
         "median_uptime_pct": round(median, 1) if median is not None else None,
         "reliable": sum(reliability_band(value) == "reliable" for value in uptimes),
@@ -133,6 +136,7 @@ def national_rt(summaries: list[dict[str, Any]], *, top: int = 10) -> dict[str, 
         states.append(
             {
                 "state": state,
+                "feed_records": b["agencies"],
                 "agencies": b["agencies"],
                 "median_uptime_pct": round(med, 1) if med is not None else None,
                 "reliable": b["reliable"],
@@ -152,6 +156,8 @@ def national_rt(summaries: list[dict[str, Any]], *, top: int = 10) -> dict[str, 
     median_uptime = _median(uptimes)
     median_lag = _median(lags)
     return {
+        "monitored_feed_record_count": len(monitored),
+        # v1 compatibility alias. The metric denominator is feed records.
         "monitored_count": len(monitored),
         "bands": bands,
         "median_uptime_pct": round(median_uptime, 1) if median_uptime is not None else None,

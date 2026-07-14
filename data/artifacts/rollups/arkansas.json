@@ -1,43 +1,43 @@
 {
   "agency_count": 3,
-  "average_score": 40.2,
-  "common_fixes": [
-    {
-      "agencies": 3,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+  "average_score": null,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3,
+      "service_data_long_expired": 2
     },
-    {
-      "agencies": 3,
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
-    },
-    {
-      "agencies": 2,
-      "code": "scorecard_wheelchair_accessible_unknown",
-      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
-    }
-  ],
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "expired": {
     "lapsed": 1,
     "stale": 2,
     "total": 3
   },
-  "generated_at": "2026-07-10T21:00:41+00:00",
-  "grade_distribution": {
-    "F": 3
-  },
+  "generated_at": "2026-07-14T09:01:50+00:00",
+  "grade_distribution": {},
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -264,
-      "expiry_status": "lapsed",
+      "days_until_expiry": -3113,
+      "expiry_status": "stale",
       "grade": "F",
-      "id": "rock-region-metro-2264",
-      "name": "Rock Region Metro",
+      "id": "jonesboro-economical-transportation-jet",
+      "name": "Jonesboro Economical Transportation (JET)",
       "needs_attention": true,
-      "score": 36.9,
+      "score": 44.1,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -59,13 +59,13 @@
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3113,
-      "expiry_status": "stale",
+      "days_until_expiry": -264,
+      "expiry_status": "lapsed",
       "grade": "F",
-      "id": "jonesboro-economical-transportation-jet",
-      "name": "Jonesboro Economical Transportation (JET)",
+      "id": "rock-region-metro-2264",
+      "name": "Rock Region Metro",
       "needs_attention": true,
-      "score": 44.1,
+      "score": 36.9,
       "shapes_status": null,
       "snapshot_date": "2026-07-10",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
@@ -76,7 +76,7 @@
     "id": "arkansas",
     "name": "Arkansas agencies"
   },
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "shapes_readiness": {
     "at_risk": 0,
     "not_measured": 2,
@@ -84,5 +84,5 @@
     "ready": 1,
     "total": 3
   },
-  "state_percentile": 4
+  "state_percentile": null
 }

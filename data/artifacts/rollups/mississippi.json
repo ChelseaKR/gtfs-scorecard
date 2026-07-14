@@ -1,63 +1,33 @@
 {
-  "agency_count": 4,
-  "average_score": 65.0,
-  "common_fixes": [
-    {
-      "agencies": 3,
-      "code": "scorecard_wheelchair_boarding_unknown",
-      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+  "agency_count": 3,
+  "average_score": null,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 3,
+    "exclusion_counts": {
+      "rubric_version_mismatch": 3,
+      "scoring_profile_missing": 3,
+      "scoring_profile_rubric_missing": 3,
+      "service_data_long_expired": 1
     },
-    {
-      "agencies": 2,
-      "code": "scorecard_feed_expired",
-      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "agencies": 2,
-      "code": "missing_required_column",
-      "fix": "Review the rule documentation for 'missing_required_column' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
-    }
-  ],
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "expired": {
     "lapsed": 0,
-    "stale": 2,
-    "total": 2
+    "stale": 1,
+    "total": 1
   },
-  "generated_at": "2026-07-10T21:00:41+00:00",
-  "grade_distribution": {
-    "A": 1,
-    "C": 1,
-    "F": 2
-  },
+  "generated_at": "2026-07-14T09:01:50+00:00",
+  "grade_distribution": {},
   "members": [
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1652,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "jtran",
-      "name": "JTRAN",
-      "needs_attention": true,
-      "score": 45.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -1652,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "jtran-155",
-      "name": "JTRAN",
-      "needs_attention": true,
-      "score": 45.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
     {
       "annual_trips": null,
       "attention_reason": "Service data expires in 30 day(s)",
@@ -74,6 +44,20 @@
     },
     {
       "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -1652,
+      "expiry_status": "stale",
+      "grade": "F",
+      "id": "jtran",
+      "name": "JTRAN",
+      "needs_attention": true,
+      "score": 45.4,
+      "shapes_status": null,
+      "snapshot_date": "2026-07-10",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "annual_trips": null,
       "attention_reason": null,
       "days_until_expiry": 114,
       "expiry_status": "current",
@@ -87,18 +71,18 @@
       "top_fix": "Remove past service periods the next time you export the feed."
     }
   ],
-  "needs_attention": 3,
+  "needs_attention": 2,
   "rollup": {
     "id": "mississippi",
     "name": "Mississippi agencies"
   },
-  "schema_version": "1.7",
+  "schema_version": "1.11",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 3,
+    "not_measured": 2,
     "not_ready": 0,
     "ready": 1,
-    "total": 4
+    "total": 3
   },
-  "state_percentile": 83
+  "state_percentile": null
 }

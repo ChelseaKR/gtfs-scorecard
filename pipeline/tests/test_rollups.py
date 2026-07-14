@@ -6,7 +6,8 @@ import datetime as dt
 import json
 from pathlib import Path
 
-from scorecard_pipeline.config import artifacts_dir, repo_root
+from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
+from scorecard_pipeline.config import Agency, artifacts_dir, register, repo_root
 from scorecard_pipeline.rollups import (
     Rollup,
     build_rollup,
@@ -14,6 +15,7 @@ from scorecard_pipeline.rollups import (
     publish_rollups,
     rollup_csv,
 )
+from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 WHEN = dt.datetime(2026, 6, 12, 12, 0, tzinfo=dt.UTC)
 
@@ -29,6 +31,8 @@ def write_latest(
     country: str | None = None,
     shapes: tuple[int, int] | None = None,
     ntd_id: str | None = None,
+    scoring_profile_id: str = SCORING_PROFILE_ID,
+    validator_version: str = VALIDATOR_VERSION,
 ) -> None:
     agency: dict[str, object] = {"id": agency_id, "name": name}
     if state:
@@ -36,10 +40,26 @@ def write_latest(
     if country:
         agency["country"] = country
     payload: dict[str, object] = {
+        "rubric_version": RUBRIC_VERSION,
+        "scoring_profile": {
+            "id": scoring_profile_id,
+            "rubric_version": RUBRIC_VERSION,
+        },
+        "validator_version": validator_version,
         "agency": agency,
         "snapshot_date": "2026-06-12",
         "overall": {"score": score, "grade": grade},
-        "categories": {"freshness": {"details": {"days_until_expiry": days}}},
+        "feed": {"sha256": f"sha-{agency_id}"},
+        "categories": {
+            "correctness": {"status": "measured", "score": score},
+            "freshness": {
+                "status": "measured",
+                "score": score,
+                "details": {"days_until_expiry": days},
+            },
+            "completeness": {"status": "measured", "score": score},
+            "realtime": {"status": "not_yet_measured"},
+        },
         "top_fixes": fixes or [],
     }
     if shapes is not None:
@@ -181,13 +201,12 @@ def test_ridership_weights_attention_order_high_ridership_first() -> None:
 
 
 def test_ridership_none_leaves_order_unchanged() -> None:
-    # Same feeds, no ridership map: falls back to worst-score-first, so the
-    # lower-scoring "tiny" leads despite carrying fewer riders.
+    # Same feeds, no ridership map: falls back to alphabetical attention order.
     write_latest("big", "Big Transit", 66.0, "D", ntd_id="90001")
     write_latest("tiny", "Tiny Transit", 64.0, "D", ntd_id="90002")
     attention = {"big": "Feed expires in 5 days", "tiny": "Feed expires in 3 days"}
     payload = build_rollup(Rollup("all", "All", ()), WHEN, attention, None)
-    assert [m["id"] for m in payload["members"]] == ["tiny", "big"]
+    assert [m["id"] for m in payload["members"]] == ["big", "tiny"]
     # With no snapshot the trips field is present but None, never a guessed 0.
     assert payload["members"][0]["annual_trips"] is None
 
@@ -205,6 +224,39 @@ def test_ridership_only_reorders_within_attention_group() -> None:
     assert payload["members"][1]["id"] == "huge-ok"
 
 
+def test_duplicate_ntd_reporter_ids_are_quarantined_from_ridership_ordering() -> None:
+    write_latest("first", "First", 70.0, "C", ntd_id="90001")
+    write_latest("second", "Second", 72.0, "C", ntd_id="90001")
+    write_latest("unique", "Unique", 74.0, "C", ntd_id="90002")
+    attention = {member: "Feed expires soon" for member in ("first", "second", "unique")}
+    payload = build_rollup(
+        Rollup("all", "All", ()),
+        WHEN,
+        attention,
+        {"90001": 9_000_000, "90002": 1_000},
+    )
+
+    members = {member["id"]: member for member in payload["members"]}
+    assert members["first"]["annual_trips"] is None
+    assert members["second"]["annual_trips"] is None
+    assert members["unique"]["annual_trips"] == 1_000
+
+
+def test_registry_duplicate_is_quarantined_when_sibling_has_no_rollup_artifact() -> None:
+    register(Agency("visible", "Visible", "https://example.com/visible.zip", ntd_id="00007"))
+    register(Agency("hidden", "Hidden", "https://example.com/hidden.zip", ntd_id="00007"))
+    write_latest("visible", "Visible", 90.0, "A", ntd_id="00007")
+
+    payload = build_rollup(
+        Rollup("all", "All", ()),
+        WHEN,
+        {"visible": "Feed expires soon"},
+        {"7": 1_000_000},
+    )
+
+    assert payload["members"][0]["annual_trips"] is None
+
+
 def test_common_fixes_counts_shared_codes() -> None:
     shared = {
         "code": "scorecard_wheelchair_boarding_unknown",
@@ -212,12 +264,21 @@ def test_common_fixes_counts_shared_codes() -> None:
     }
     write_latest("a", "A", 70.0, "C", fixes=[shared])
     write_latest("b", "B", 72.0, "C", fixes=[shared])
+    write_latest(
+        "old-validator",
+        "Old validator",
+        74.0,
+        "C",
+        fixes=[shared],
+        validator_version="7.0.0",
+    )
     write_latest("c", "C", 75.0, "C", fixes=[{"code": "other", "fix": "Other fix."}])
     payload = build_rollup(Rollup("all", "All", ()), WHEN)
     common = payload["common_fixes"]
     assert len(common) == 1
     assert common[0]["agencies"] == 2
     assert common[0]["code"] == "scorecard_wheelchair_boarding_unknown"
+    assert payload["comparison"]["exclusion_counts"]["validator_version_mismatch"] == 1
 
 
 def test_explicit_membership_limits_the_rollup() -> None:
@@ -238,9 +299,7 @@ def test_publish_rollups_writes_index_and_files() -> None:
     assert index["rollups"][0]["id"] == "all"
 
 
-def test_state_percentile_compares_states_only() -> None:
-    # Three states, cleanly ordered by average score, plus one non-state named
-    # cohort ("all") that must not be treated as a fourth peer.
+def test_state_rollups_do_not_publish_percentiles() -> None:
     write_latest("hi1", "HI One", 95.0, "A", state="HI")
     write_latest("mid1", "MID One", 60.0, "D", state="MID")
     write_latest("lo1", "LO One", 20.0, "F", state="LO")
@@ -258,13 +317,9 @@ def test_state_percentile_compares_states_only() -> None:
     mid = json.loads((out / "mid.json").read_text())
     lo = json.loads((out / "lo.json").read_text())
     all_ = json.loads((out / "all.json").read_text())
-    # Best of three states reads 100; worst is only ahead of itself (33%);
-    # a non-state rollup ("all", which also spans every agency here) is not a
-    # peer of a state-to-state comparison and carries no percentile at all.
-    assert hi["state_percentile"] == 100
-    assert mid["state_percentile"] == 67
-    assert lo["state_percentile"] == 33
-    assert all_["state_percentile"] is None
+    for payload in (hi, mid, lo, all_):
+        assert payload["state_percentile"] is None
+        assert payload["comparison"]["individual_percentiles_published"] is False
 
 
 def test_state_percentile_absent_with_no_state_rollups() -> None:

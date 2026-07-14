@@ -51,9 +51,10 @@
     <section><h2 class="section-title">What this checks</h2>
     <p>Transit apps and trip planners read a file your agency publishes, called a
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed.
-    It lists your stops, routes, and schedule. This tool downloads that feed every day, runs the
-    canonical validator used across the GTFS ecosystem, and turns the result into a grade and a short list
-    of fixes. It does not look at your buses or your service, only the data file.
+    It lists your stops, routes, and schedule. This tool is scheduled to download that feed once a day,
+    run the canonical validator used across the GTFS ecosystem, and turn the result into a grade and a
+    short list of fixes. The <a href="/status/">status page</a> shows when that work actually completed.
+    It does not look at your buses or your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
     <strong>Freshness</strong> (is the feed about to expire), <strong>Rider experience</strong>
@@ -78,18 +79,19 @@
     band. A small upward margin is encouragement, not a warning: it means the next letter is
     within reach, often with a single fix.</p>
     <p>The category weights behind the score are documented judgment calls, so we also measure
-    their consequences the same way: the first study has not been published yet. When it runs, its headline lands here and the full numbers are published at <a href="/data/artifacts/sensitivity.json">sensitivity.json</a>.</p></section>
+    their consequences the same way: a current-contract study has not been published yet. When it runs, its headline lands here and the full numbers are published at <a href="/data/artifacts/sensitivity.json">sensitivity.json</a>.</p></section>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section id="sandbox" aria-labelledby="sandbox-h">
     <h2 class="section-title" id="sandbox-h">Methodology sandbox</h2>
     <p>The grade blends the four categories with fixed weights. Curious how much those
-    weights matter? Move the sliders to reweight the rubric and watch how many of the
-    agencies we track would change letter grade. Nothing is saved and no grade on the
-    site changes; this is a what-if you run in your own browser. Agencies without
+    weights matter? Move the sliders to reweight the rubric and watch how the aggregate
+    grade distribution changes for the current comparison-eligible cohort. The sandbox
+    never names hypothetical winners or losers. Nothing is saved and no grade on the
+    site changes; this is a what-if you run in your own browser. Feed records without
     realtime data have that weight spread across the categories they do have, exactly
     as the published score does.</p>
-    <p id="sandbox-status" role="status">Loading the live weights and agency scores…</p>
+    <p id="sandbox-status" role="status">Loading the live weights and eligible feed scores…</p>
     <div class="sandbox-controls" hidden>
       <div class="sandbox-slider"><label for="w-correctness">Correctness</label><input type="range" id="w-correctness" data-cat="correctness" min="0" max="100" step="1" value="0" disabled aria-describedby="w-correctness-out"><output id="w-correctness-out" data-cat="correctness" for="w-correctness">—</output></div>      <div class="sandbox-slider"><label for="w-freshness">Freshness</label><input type="range" id="w-freshness" data-cat="freshness" min="0" max="100" step="1" value="0" disabled aria-describedby="w-freshness-out"><output id="w-freshness-out" data-cat="freshness" for="w-freshness">—</output></div>      <div class="sandbox-slider"><label for="w-completeness">Rider experience</label><input type="range" id="w-completeness" data-cat="completeness" min="0" max="100" step="1" value="0" disabled aria-describedby="w-completeness-out"><output id="w-completeness-out" data-cat="completeness" for="w-completeness">—</output></div>      <div class="sandbox-slider"><label for="w-realtime">Realtime quality</label><input type="range" id="w-realtime" data-cat="realtime" min="0" max="100" step="1" value="0" disabled aria-describedby="w-realtime-out"><output id="w-realtime-out" data-cat="realtime" for="w-realtime">—</output></div>
       <div class="sandbox-buttons">
@@ -97,7 +99,6 @@
       </div>
     </div>
     <div id="sandbox-summary" aria-live="polite"></div>
-    <div id="sandbox-sample"></div>
     </section>
     <style>
       #sandbox .sandbox-controls { display: grid; gap: 0.9rem; margin: 1rem 0; }
@@ -110,10 +111,6 @@
       #sandbox .sandbox-table-scroll { overflow-x: auto; }
       #sandbox table.sandbox-table { border-collapse: collapse; width: 100%; max-width: 34rem; }
       #sandbox table.sandbox-table th, #sandbox table.sandbox-table td { text-align: left; padding: 0.35rem 0.75rem; border-bottom: 1.5px solid var(--line); font-variant-numeric: tabular-nums; }
-      #sandbox .sandbox-sub { font-size: 1rem; margin: 1rem 0 0.4rem; }
-      #sandbox .sandbox-movers { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
-      #sandbox .sandbox-movers li { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-      #sandbox .sandbox-delta { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
       @media (max-width: 40rem) { #sandbox .sandbox-slider { grid-template-columns: 1fr; gap: 0.25rem; } #sandbox .sandbox-slider output { text-align: left; } }
     </style>
 
@@ -135,11 +132,12 @@
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="methodology-h"><h2 class="section-title" id="methodology-h">Methodology and versions</h2>
-    <p>Every grade is computed by scorecard rubric <strong>v1.2</strong> on top of the
+    <p>New checks use scorecard rubric <strong>v1.2</strong> on top of the
     MobilityData <abbr title="GTFS Schedule Validator">gtfs-validator</abbr> <strong>8.0.1</strong>,
     using portable GTFS fields and published weights. California guidance informed the first profile and
     remains a local authority for California, not a worldwide compliance standard. The same validator and
-    rubric version are stamped on each agency's scorecard, so any grade is traceable to what produced it. The full method,
+    methodology version used for each stored grade is stamped on its scorecard, so older and current
+    results remain traceable without implying they are directly comparable. The full method,
     with citations, is in the <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">scoring rubric</a>.</p>
     <p>When the rubric changes we log it here with the date it took effect, so a score change is never a
     silent rule change:</p>
@@ -190,7 +188,6 @@
         var GRADES = ["A", "B", "C", "D", "F"];
         var status = document.getElementById("sandbox-status");
         var summary = document.getElementById("sandbox-summary");
-        var sample = document.getElementById("sandbox-sample");
         var resetBtn = document.getElementById("sandbox-reset");
         var sliders = {}, outputs = {};
         CATS.forEach(function (c) {
@@ -218,12 +215,6 @@
           return den > 0 ? num / den : 0;
         }
 
-        function esc(s) {
-          return String(s).replace(/[&<>"]/g, function (ch) {
-            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch];
-          });
-        }
-
         function currentWeights() {
           var w = {};
           CATS.forEach(function (c) { w[c] = Number(sliders[c].value) / 100; });
@@ -237,7 +228,7 @@
           });
           var userCounts = {}, pubCounts = {};
           GRADES.forEach(function (g) { userCounts[g] = 0; pubCounts[g] = 0; });
-          var moved = [], changed = 0;
+          var changed = 0;
           agencies.forEach(function (a) {
             // Baseline: the same formula run at the published weights, so any
             // difference below is attributable to the user's weights alone, not
@@ -253,10 +244,6 @@
             userCounts[ug]++;
             if (ug !== pub) {
               changed++;
-              moved.push({
-                id: a.id, name: a.name, from: pub, to: ug,
-                delta: uo - bo,
-              });
             }
           });
 
@@ -270,41 +257,15 @@
           summary.innerHTML =
             '<p class="sandbox-headline">' +
             (changed === 0
-              ? "These are the published weights: no agency changes band."
+              ? "These are the published weights: no eligible feed record changes band."
               : changed + " of " + agencies.length +
-                " agencies change letter grade under these weights.") +
+                " eligible feed records change letter grade under these weights.") +
             "</p>" +
             '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
-            "<caption class=\"visually-hidden\">Agencies per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            "<caption class=\"visually-hidden\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
             "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
             "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
             "<tbody>" + rows + "</tbody></table></div>";
-
-          if (!moved.length) {
-            sample.innerHTML = "";
-            return;
-          }
-          var up = moved.filter(function (m) { return m.delta > 0; })
-            .sort(function (a, b) { return b.delta - a.delta; }).slice(0, 5);
-          var down = moved.filter(function (m) { return m.delta < 0; })
-            .sort(function (a, b) { return a.delta - b.delta; }).slice(0, 5);
-          function li(m) {
-            return "<li><span>" + esc(m.name) + "</span> " +
-              '<span class="grade-chip grade-' + m.from.toLowerCase() + '">' + m.from +
-              '</span> &rarr; <span class="grade-chip grade-' + m.to.toLowerCase() +
-              '">' + m.to + "</span> <span class=\"sandbox-delta\">(" +
-              (m.delta > 0 ? "+" : "") + m.delta.toFixed(1) + ")</span></li>";
-          }
-          var html = "";
-          if (up.length) {
-            html += "<h3 class=\"sandbox-sub\">Rise the most</h3><ul class=\"sandbox-movers\">" +
-              up.map(li).join("") + "</ul>";
-          }
-          if (down.length) {
-            html += "<h3 class=\"sandbox-sub\">Fall the most</h3><ul class=\"sandbox-movers\">" +
-              down.map(li).join("") + "</ul>";
-          }
-          sample.innerHTML = html;
         }
 
         function applyDefaults() {
@@ -324,8 +285,15 @@
           });
           defaults = scoring.category_weights || {};
           agencies = (agenciesDoc.agencies || []).filter(function (a) {
-            return typeof a.score === "number";
+            return a.comparison_eligible === true && typeof a.score === "number";
           });
+          if (!agencies.length) {
+            if (status) {
+              status.textContent =
+                "No current-contract comparison cohort is available for the sandbox yet.";
+            }
+            return;
+          }
           CATS.forEach(function (c) {
             sliders[c].disabled = false;
             sliders[c].addEventListener("input", recompute);

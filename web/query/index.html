@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Query the dataset in your browser — GTFS Scorecard</title>
-  <meta name="description" content="Run SQL against the covered GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked agency.">
+  <meta name="description" content="Run SQL against the covered GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked feed record.">
   <link rel="canonical" href="https://gtfsscorecard.org/query/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Query the dataset in your browser — GTFS Scorecard">
-  <meta property="og:description" content="Run SQL against the covered GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked agency.">
+  <meta property="og:description" content="Run SQL against the covered GTFS quality dataset in your browser with DuckDB: grades, category scores, and freshness for every tracked feed record.">
   <meta property="og:url" content="https://gtfsscorecard.org/query/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -46,9 +46,10 @@
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Query the dataset.</h1>
     <p class="page-lede">Run SQL against the covered scorecard dataset, right here in your
-    browser. One table, <code>agencies</code>, holds every tracked agency's latest snapshot:
+    browser. One table, <code>agencies</code>, holds every published feed record's latest snapshot:
     <code>id</code>, <code>name</code>, <code>date</code>, <code>grade</code>,
-    <code>score</code>, <code>days_until_expiry</code>, and the
+    <code>score</code>, <code>days_until_expiry</code>, producer-version fields,
+    <code>comparison_eligible</code>, and the
     <code>correctness</code>, <code>freshness</code>, <code>completeness</code>, and
     <code>realtime</code> category scores. Nothing is sent to a server: the engine
     (DuckDB) and the data load into the page and the query runs on your machine.</p>
@@ -57,26 +58,35 @@
     <a href="/catalog.csv">catalog.csv</a>, and the JSON described in the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/api.md">data
     dictionary</a>.</p>
+    <p><strong>Comparison warning:</strong> the table includes old-methodology,
+    duplicate-identity, and otherwise non-comparable rows so the public record stays complete.
+    Do not compare or average scores unless you filter
+    <code>comparison_eligible = true</code> and inspect the current contract in
+    <a href="/api/v1/agencies.json">agencies.json</a>. The examples below are support
+    worklists and provenance checks, not rankings.</p>
     <form aria-label="SQL query" class="query-form">
       <label for="query-sql">SQL to run against the <code>agencies</code> table</label>
       <textarea id="query-sql" class="outreach-text" rows="6"
-        spellcheck="false">SELECT grade, count(*) AS agencies
+        spellcheck="false">SELECT id, name, date, days_until_expiry
 FROM agencies
-GROUP BY grade
-ORDER BY grade</textarea>
+WHERE days_until_expiry BETWEEN -365 AND 60
+ORDER BY days_until_expiry, name
+LIMIT 50</textarea>
       <div class="map-filter-row">
         <button type="submit" class="copy-btn" id="query-run">Run</button>
-        <button type="button" class="copy-btn query-example" data-sql="SELECT grade, count(*) AS agencies
+        <button type="button" class="copy-btn query-example" data-sql="SELECT id, name, date, days_until_expiry
 FROM agencies
-GROUP BY grade
-ORDER BY grade">Grade distribution</button><button type="button" class="copy-btn query-example" data-sql="SELECT name, days_until_expiry
+WHERE days_until_expiry BETWEEN -365 AND 60
+ORDER BY days_until_expiry, name
+LIMIT 50">Expiry support worklist</button><button type="button" class="copy-btn query-example" data-sql="SELECT id, name, date, rubric_version, scoring_profile_id, validator_version
 FROM agencies
-WHERE days_until_expiry BETWEEN 0 AND 60
-ORDER BY days_until_expiry
-LIMIT 15">Feeds closest to expiry</button><button type="button" class="copy-btn query-example" data-sql="SELECT round(avg(correctness), 1) AS correctness,
-       round(avg(freshness), 1) AS freshness,
-       round(avg(completeness), 1) AS completeness
-FROM agencies">Covered-set category averages</button>
+WHERE comparison_eligible = false
+ORDER BY name
+LIMIT 50">Rows outside the comparison cohort</button><button type="button" class="copy-btn query-example" data-sql="SELECT rubric_version, scoring_profile_id, validator_version,
+       count(*) AS feed_records
+FROM agencies
+GROUP BY rubric_version, scoring_profile_id, validator_version
+ORDER BY rubric_version, scoring_profile_id, validator_version">Producer provenance</button>
       </div>
     </form>
     <p id="query-status" role="status">The query engine (about 6&nbsp;MB) downloads the

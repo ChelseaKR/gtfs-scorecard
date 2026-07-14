@@ -31,3 +31,11 @@ def test_spa_has_no_hand_maintained_state_guidance_table() -> None:
 def test_spa_fix_points_name_the_category_scale() -> None:
     app = (ROOT / "web" / "src" / "app.js").read_text()
     assert "worth about +${Math.round(f.points)} points in its category</span>" in app
+
+
+def test_spa_comparisons_disclose_the_full_producer_contract() -> None:
+    app = (ROOT / "web" / "src" / "app.js").read_text()
+    assert "required_scoring_profile_id" in app
+    assert "required_validator_version" in app
+    assert "required_measured_categories" in app
+    assert "come from distinct feed bytes" in app

@@ -88,6 +88,7 @@ def test_national_adoption_counts_shares_and_state_split() -> None:
 
 def test_empty_input() -> None:
     nat = national_adoption([])
+    assert nat["measured_feed_record_count"] == 0
     assert nat["agency_count"] == 0 and nat["flex"]["pct"] == 0.0
 
 
@@ -111,6 +112,7 @@ def test_portable_country_and_subdivision_adoption_rollups() -> None:
     nat = national_adoption(records)
     assert [state["state"] for state in nat["states"]] == ["California"]
     countries = {row["country_code"]: row for row in nat["countries"]}
+    assert countries["CA"]["feed_records"] == 2
     assert countries["US"]["flex"] == 1
     assert countries["CA"]["agencies"] == 2
     assert countries["CA"]["fares_v2"] == 1

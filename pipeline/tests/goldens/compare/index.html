@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Compare two agencies side by side — GTFS Scorecard</title>
-  <meta name="description" content="Put two transit agencies&#x27; GTFS scorecards side by side: overall grade, category scores, days of service left, and adopted features.">
+  <meta name="description" content="Check whether two transit agencies&#x27; GTFS scorecards are like-for-like before showing their grades and category scores side by side.">
   <link rel="canonical" href="https://gtfsscorecard.org/compare/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Compare two agencies side by side — GTFS Scorecard">
-  <meta property="og:description" content="Put two transit agencies&#x27; GTFS scorecards side by side: overall grade, category scores, days of service left, and adopted features.">
+  <meta property="og:description" content="Check whether two transit agencies&#x27; GTFS scorecards are like-for-like before showing their grades and category scores side by side.">
   <meta property="og:url" content="https://gtfsscorecard.org/compare/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -45,11 +45,10 @@
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Compare agencies</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Compare two agencies.</h1>
-    <p class="page-lede">Put two scorecards side by side: overall grade, each category,
-    days of service left, and which optional
-    <abbr title="General Transit Feed Specification">GTFS</abbr> features each feed has
-    adopted. Pick two agencies and the page builds one table from their latest
-    scorecards.</p>
+    <p class="page-lede">Choose two scorecards to check whether they use the same rubric,
+    scoring profile, validator, and measured category set, and come from distinct feed bytes.
+    Like-for-like results can appear in one table; otherwise the page keeps the grades
+    separate and links to both full scorecards.</p>
     <form class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
       <div class="map-filter-row">
         <label for="compare-a-filter">First agency</label>
@@ -172,9 +171,56 @@
             pathways: !!(comp.pathways && comp.pathways.has_pathways)
           };
         }
+        function comparisonContract(art) {
+          var profile = art.scoring_profile || {};
+          return {
+            rubric: String(art.rubric_version || ""),
+            profile: String(profile.id || ""),
+            profileRubric: String(profile.rubric_version || ""),
+            validator: String(art.validator_version || ""),
+            feedHash: String(((art.feed || {}).sha256) || ""),
+            measured: CATS.filter(function (c) {
+              return ((art.categories || {})[c[0]] || {}).status === "measured";
+            }).map(function (c) { return c[0]; })
+          };
+        }
         Promise.all([fetchArtifact(a), fetchArtifact(b)]).then(function (arts) {
           var artA = arts[0], artB = arts[1];
           var nameA = artA.agency.name, nameB = artB.agency.name;
+          var contractA = comparisonContract(artA), contractB = comparisonContract(artB);
+          var likeForLike = contractA.rubric && contractA.profile && contractA.validator &&
+            contractA.feedHash && contractB.feedHash &&
+            contractA.feedHash !== contractB.feedHash &&
+            contractA.profileRubric === contractA.rubric &&
+            contractB.profileRubric === contractB.rubric &&
+            contractA.rubric === contractB.rubric &&
+            contractA.profile === contractB.profile &&
+            contractA.validator === contractB.validator &&
+            JSON.stringify(contractA.measured) === JSON.stringify(contractB.measured);
+          if (!likeForLike) {
+            result.textContent = "";
+            var warning = el("div");
+            warning.className = "error-box";
+            warning.setAttribute("role", "status");
+            warning.appendChild(el("h2", "These scorecards are not like-for-like."));
+            warning.appendChild(el("p", nameA + " and " + nameB +
+              " do not have distinct feed bytes under the same verified scoring profile, " +
+              "rubric, validator, and measured category set. Their grades stay separate so " +
+              "a duplicate record, methodology, or realtime-coverage difference is not " +
+              "presented as a feed-quality difference."));
+            var links = el("p");
+            [[nameA, a], [nameB, b]].forEach(function (pair, index) {
+              if (index) links.appendChild(document.createTextNode(" · "));
+              var link = el("a", "Open " + pair[0]);
+              link.href = "/agency/" + encodeURIComponent(pair[1]) + "/";
+              links.appendChild(link);
+            });
+            warning.appendChild(links);
+            result.appendChild(warning);
+            statusEl.textContent = "Scorecards kept separate: " + nameA + " and " + nameB +
+              " are not like-for-like.";
+            return;
+          }
           var table = el("table");
           table.className = "leaderboard compare-static-table";
           var caption = el("caption", "Side-by-side scorecard comparison of " +

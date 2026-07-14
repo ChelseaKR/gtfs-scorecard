@@ -1,13 +1,33 @@
 {
-  "agency_count": 1449,
-  "average_score": 60.9,
-  "grade_distribution": {
-    "A": 52,
-    "B": 246,
-    "C": 283,
-    "D": 146,
-    "F": 722
+  "agency_count": 1128,
+  "average_score": null,
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
   },
-  "median_score": 60.2,
-  "pct_current": 56.1
+  "comparison_eligible_count": 0,
+  "grade_distribution": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 0,
+    "F": 0
+  },
+  "median_score": null,
+  "pct_current": 58.1
 }

@@ -46,6 +46,9 @@ def test_weighted_impact_math() -> None:
     imp = weighted_impact(records, ridership)
     assert imp["matched_agencies"] == 2
     assert imp["total_agencies"] == 4
+    assert imp["matched_ntd_reporters"] == 2
+    assert imp["total_feed_records"] == 4
+    assert imp["duplicate_ntd_ids_excluded"] == []
     assert imp["total_annual_trips"] == 1_100_000
     # Only the lapsed feed's trips count as expired.
     assert imp["trips_on_expired_feeds"] == 100_000
@@ -63,6 +66,66 @@ def test_weighted_impact_empty_when_no_matches() -> None:
     assert imp["total_annual_trips"] == 0
     assert imp["weighted_average_score"] is None
     assert imp["expired_trips_pct"] == 0.0
+
+
+def test_weighted_impact_quarantines_duplicate_ntd_reporters() -> None:
+    records = [
+        {
+            "id": "alpha_local",
+            "ntd_id": "90001",
+            "score": 90.0,
+            "grade": "A",
+            "expiry_status": "current",
+        },
+        {
+            "id": "alpha_regional",
+            "ntd_id": "90001",
+            "score": 50.0,
+            "grade": "F",
+            "expiry_status": "lapsed",
+        },
+        {
+            "id": "beta",
+            "ntd_id": "90002",
+            "score": 80.0,
+            "grade": "B",
+            "expiry_status": "current",
+        },
+    ]
+
+    impact = weighted_impact(records, {"90001": 1_000_000, "90002": 25_000})
+
+    # Alpha's UPT is not guessed onto either of its two feed rows and therefore
+    # cannot be counted twice. Only the unique Beta match contributes.
+    assert impact["total_annual_trips"] == 25_000
+    assert impact["matched_ntd_reporters"] == 1
+    assert impact["duplicate_ntd_reporter_count"] == 1
+    assert impact["duplicate_feed_records_excluded"] == 2
+    assert impact["duplicate_ntd_ids_excluded"] == ["90001"]
+    assert impact["trips_by_grade"]["B"] == 25_000
+    assert impact["trips_by_grade"]["A"] == 0
+    assert impact["trips_by_grade"]["F"] == 0
+
+
+def test_weighted_impact_honors_duplicates_found_before_cohort_filtering() -> None:
+    records = [
+        {
+            "id": "eligible-sibling",
+            "ntd_id": "00007",
+            "score": 90.0,
+            "grade": "A",
+            "expiry_status": "current",
+        }
+    ]
+
+    impact = weighted_impact(records, {"7": 1_000_000}, quarantined_ntd_ids={"00007"})
+
+    # A second registry sibling was filtered out before this call. Its reporter
+    # id still quarantines the surviving row, and zero-padding cannot evade it.
+    assert impact["matched_ntd_reporters"] == 0
+    assert impact["duplicate_ntd_ids_excluded"] == ["7"]
+    assert impact["duplicate_feed_records_excluded"] == 1
+    assert impact["total_annual_trips"] == 0
 
 
 def test_load_ridership_returns_none_when_file_absent(tmp_path: Path) -> None:
@@ -91,3 +154,4 @@ def test_annual_trips_for_resolves_matches_and_gaps() -> None:
     assert annual_trips_for({}, ridership) is None
     assert annual_trips_for({"ntd_id": "90001"}, None) is None
     assert annual_trips_for({"ntd_id": "90001"}, {}) is None
+    assert annual_trips_for({"ntd_id": "00007"}, {"7": 123}) == 123

@@ -1,108 +1,30 @@
 {
-  "agency_count": 1449,
+  "agency_count": 0,
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 0,
+    "excluded_count": 1128,
+    "exclusion_counts": {
+      "duplicate_feed_identity": 28,
+      "rubric_version_mismatch": 1128,
+      "scoring_profile_missing": 1128,
+      "scoring_profile_rubric_missing": 1128,
+      "service_data_long_expired": 358
+    },
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {},
+    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [],
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1"
+  },
   "factor": 0.2,
-  "generated_at": "2026-07-02T22:15:16+00:00",
+  "generated_at": "2026-07-14T09:28:19+00:00",
   "license": "CC-BY-4.0",
-  "max_grade_change_pct": 8.1,
-  "perturbations": [
-    {
-      "agencies_changed": 74,
-      "category": "correctness",
-      "direction": "up",
-      "grade_change_pct": 5.1,
-      "weights": {
-        "completeness": 0.2336,
-        "correctness": 0.3925,
-        "freshness": 0.1869,
-        "realtime": 0.1869
-      }
-    },
-    {
-      "agencies_changed": 85,
-      "category": "correctness",
-      "direction": "down",
-      "grade_change_pct": 5.9,
-      "weights": {
-        "completeness": 0.2688,
-        "correctness": 0.3011,
-        "freshness": 0.2151,
-        "realtime": 0.2151
-      }
-    },
-    {
-      "agencies_changed": 73,
-      "category": "freshness",
-      "direction": "up",
-      "grade_change_pct": 5.0,
-      "weights": {
-        "completeness": 0.2404,
-        "correctness": 0.3365,
-        "freshness": 0.2308,
-        "realtime": 0.1923
-      }
-    },
-    {
-      "agencies_changed": 103,
-      "category": "freshness",
-      "direction": "down",
-      "grade_change_pct": 7.1,
-      "weights": {
-        "completeness": 0.2604,
-        "correctness": 0.3646,
-        "freshness": 0.1667,
-        "realtime": 0.2083
-      }
-    },
-    {
-      "agencies_changed": 118,
-      "category": "completeness",
-      "direction": "up",
-      "grade_change_pct": 8.1,
-      "weights": {
-        "completeness": 0.2857,
-        "correctness": 0.3333,
-        "freshness": 0.1905,
-        "realtime": 0.1905
-      }
-    },
-    {
-      "agencies_changed": 107,
-      "category": "completeness",
-      "direction": "down",
-      "grade_change_pct": 7.4,
-      "weights": {
-        "completeness": 0.2105,
-        "correctness": 0.3684,
-        "freshness": 0.2105,
-        "realtime": 0.2105
-      }
-    },
-    {
-      "agencies_changed": 4,
-      "category": "realtime",
-      "direction": "up",
-      "grade_change_pct": 0.3,
-      "weights": {
-        "completeness": 0.2404,
-        "correctness": 0.3365,
-        "freshness": 0.1923,
-        "realtime": 0.2308
-      }
-    },
-    {
-      "agencies_changed": 10,
-      "category": "realtime",
-      "direction": "down",
-      "grade_change_pct": 0.7,
-      "weights": {
-        "completeness": 0.2604,
-        "correctness": 0.3646,
-        "freshness": 0.2083,
-        "realtime": 0.1667
-      }
-    }
-  ],
-  "rubric_version": "1.1",
-  "schema_version": "1.4"
+  "max_grade_change_pct": null,
+  "perturbations": [],
+  "rubric_version": "1.2",
+  "schema_version": "1.11"
 }

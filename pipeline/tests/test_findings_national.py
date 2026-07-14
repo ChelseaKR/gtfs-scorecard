@@ -40,15 +40,17 @@ def test_national_problems_counts_and_prevalence() -> None:
         agency_findings(_artifact("common")),
         agency_findings(_artifact("scorecard_thing")),
     ]
-    nat = national_problems(per_agency, total_agencies=4)
+    nat = national_problems(per_agency, total_feed_records=4)
     by_code = {p["code"]: p for p in nat["problems"]}
     assert by_code["common"]["agencies"] == 3
+    assert by_code["common"]["feed_records"] == 3
     assert by_code["common"]["prevalence_pct"] == 75.0
     assert by_code["common"]["instances"] == 15  # 5 per agency x 3
     assert by_code["rare"]["agencies"] == 1
     # Most widespread ranks first.
     assert nat["problems"][0]["code"] == "common"
     assert nat["distinct_problems"] == 3
+    assert nat["comparison_feed_record_count"] == 4
 
 
 def test_source_classification() -> None:

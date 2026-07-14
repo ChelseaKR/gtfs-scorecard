@@ -1,7 +1,7 @@
 name: Sign release
 
-# Keyless-signs a manifest binding the tag name to the exact commit it points
-# at, so `v1.0.0`/`v1` (or any future tag) is verifiable, not just a label.
+# Verifies the maintainer-signed full SemVer tag, then keyless-signs a manifest
+# binding that tag name to the exact commit it points at.
 # Same pattern as tods-validate's docker.yml image signing: Sigstore/cosign
 # via the runner's OIDC identity, no long-lived key material to manage or
 # leak. Runs on tag push, or manually (workflow_dispatch) for a tag that
@@ -30,6 +30,30 @@ jobs:
         with:
           ref: ${{ inputs.tag || github.ref_name }}
           persist-credentials: false
+
+      - name: Validate release tag
+        id: release_tag
+        env:
+          RESOLVED_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RESOLVED_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Refusing unexpected release tag: $RESOLVED_TAG" >&2
+            exit 1
+          fi
+          if ! git show-ref --verify --quiet "refs/tags/$RESOLVED_TAG"; then
+            echo "Refusing non-tag ref: $RESOLVED_TAG" >&2
+            exit 1
+          fi
+          tag_commit="$(git rev-parse "refs/tags/${RESOLVED_TAG}^{commit}")"
+          head_commit="$(git rev-parse HEAD)"
+          if [[ "$tag_commit" != "$head_commit" ]]; then
+            echo "Checked-out commit does not match tag $RESOLVED_TAG." >&2
+            exit 1
+          fi
+          git config gpg.ssh.allowedSignersFile "$GITHUB_WORKSPACE/.github/release-signers"
+          git tag -v "$RESOLVED_TAG"
+          printf 'tag=%s\n' "$RESOLVED_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
@@ -61,14 +85,12 @@ jobs:
           jq -e '.bomFormat == "CycloneDX" and .specVersion == "1.7" and (.vulnerabilities | length > 0)' vex.json >/dev/null
 
       - name: Build the release manifest
-        id: manifest
         env:
-          RESOLVED_TAG: ${{ inputs.tag || github.ref_name }}
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
         run: |
-          echo "tag=$RESOLVED_TAG" >> "$GITHUB_OUTPUT"
           {
             echo "repo=${GITHUB_REPOSITORY}"
-            echo "tag=${RESOLVED_TAG}"
+            echo "tag=${RELEASE_TAG}"
             echo "commit=$(git rev-parse HEAD)"
             echo "sbom_sha256=$(sha256sum sbom.cdx.json | cut -d' ' -f1)"
             echo "vex_sha256=$(sha256sum vex.json | cut -d' ' -f1)"
@@ -99,11 +121,26 @@ jobs:
             sbom.cdx.json
             vex.json
 
-      - name: Attach signature + cert to the release
+      - name: Wait for the release and attach verification assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
         run: |
-          tag="${{ steps.manifest.outputs.tag }}"
+          tag="$RELEASE_TAG"
+          # Marketplace publication starts from an already-pushed protected
+          # tag, so the tag event can reach this job before the release form is
+          # published. Give the release a bounded window to appear instead of
+          # turning that normal ordering into a failed signing run.
+          for attempt in $(seq 1 60); do
+            if gh release view "$tag" --json id --jq .id >/dev/null 2>&1; then
+              break
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              echo "Release $tag did not appear within 10 minutes." >&2
+              exit 1
+            fi
+            sleep 10
+          done
           gh release upload "$tag" \
             release-manifest.txt release-manifest.txt.sig release-manifest.txt.pem \
             sbom.cdx.json vex.json \

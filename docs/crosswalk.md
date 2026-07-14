@@ -148,7 +148,8 @@ feed.
 
 ## Where the scorecard and the standards differ
 
-- The scorecard is automated and runs daily; the Grading Scheme's accuracy checks
+- The scorecard's automated run is scheduled daily, and its public status page
+  records when each run actually completes. The Grading Scheme's accuracy checks
   are manual by design. The scorecard approximates them, it does not replace them.
 - The scorecard weights and grades; the California Guidelines are pass/fail per
   Feature. A good grade is encouragement toward the Features, not a substitute for

@@ -14,9 +14,9 @@ domain. Every path below is relative to that base.
 
 | Path | What it is |
 | --- | --- |
-| `index.json` | Every agency with its score/grade history. Powers the picker and trends. |
-| `directory.json` | Slim covered-set directory: per-agency grade, portable location, size tier, percentiles, plus corpus-wide, country/subdivision, and legacy place summaries. |
-| `changes/latest.json` | Agencies whose grade or score moved since their last check (a daily transition feed). Immutable dated copy at `changes/<date>.json`. |
+| `index.json` | Every published feed record with its score/grade history. Powers the picker and trends. |
+| `directory.json` | Slim covered-set directory: per-scorecard grade, portable location, size tier, plus guarded corpus-wide, country/subdivision, and legacy place summaries. Individual percentiles are not published. |
+| `changes/latest.json` | Canonical feed records whose grade or score moved under the same current producer contract since their last check. Auditable dated copies are retained at `changes/<date>.json`. |
 | `<agency>/latest.json` | The most recent full scorecard for one agency. |
 | `<agency>/<date>.json` | The scorecard for one agency on one date (`YYYY-MM-DD`). |
 | `<agency>/badge.svg` | Embeddable grade badge (see below). |
@@ -55,8 +55,11 @@ curation. `published_scorecard_pages` counts entries retained in the artifact
 index, while `scored_latest_rows` counts latest rows with a numeric score.
 These values can differ because removing a feed from the registry does not
 erase its published history. The older `/api/v1/stats.json` `agency_count`
-field remains unchanged for API v1 consumers and means rows in that endpoint's
-published score dataset.
+field remains for API v1 consumers and counts every row in that endpoint's
+published score dataset. `comparison_eligible_count` names the narrower
+producer-, methodology-, category-, and identity-safe denominator used for
+score aggregates. Use `coverage.json` for registry, organization, and rendered
+page counts.
 
 ## Versioning
 
@@ -94,6 +97,12 @@ version of the flat export's own shape, and `pipeline_schema_version` is the
 artifact schema (the `1.x` documented here) the export was derived from. A
 citation should pin the release tag, which fixes both.
 
+Flat export schema `1.2` adds `rubric_version`, `scoring_profile_id`,
+`scoring_profile_rubric_version`, `validator_version`, and `feed_sha256`.
+Together with the category columns, these fields let consumers build the same
+single-producer, single-category-set, deduplicated comparison cohort as the
+public summaries.
+
 For citation, do not cite the live site: it changes daily. A monthly
 `dataset-YYYY-MM` release (the `Dataset release` workflow) pins the flat
 exports, the parquet file, the NTD rollup, this data dictionary, and
@@ -114,7 +123,7 @@ Changelog:
   or score deduction. Readers derive the same status for legacy rows when the
   field is absent but snapshot date and expiry evidence are present, so an
   existing artifact is safe on the first deployment.
-  The downloadable dataset shape is `1.1` with the added status column.
+  The downloadable dataset shape was `1.1` with the added status column.
   Additive.
 - `1.9` broadens portable country fields from the initial US/Canada values to
   every assigned ISO 3166-1 alpha-2 country. Published schemas validate the
@@ -130,10 +139,10 @@ Changelog:
   `subdivision_code`, and practitioner-facing `subdivision_name`. The legacy
   `state` field remains available for existing US consumers. The initial
   published values were `US` and `CA`. Additive.
-- `1.7` adds `state_percentile` to per-state rollup payloads (`null` on the
-  "all" rollup and named cohorts, which are not peers of a 50-state
-  comparison), so a program page can say how its average compares to other
-  states' programs. A neutral distribution read, never a rank. Additive.
+- `1.7` introduced `state_percentile` on per-state rollups. Public percentile
+  claims were subsequently retired. Current rollup payloads retain the field as
+  `null` for compatibility and expose guarded comparison-cohort metadata
+  instead. Historical 1.x documents may still contain the former integer.
 - `1.6` adds a `confidence` block to every scorecard: a `level`
   (`provisional`, `medium`, or `high`) reading how much of the grade this run
   could measure, plus the measured category count, fetch source, realtime
@@ -279,8 +288,8 @@ fields are surfaced for consumers:
 
 ## Catalog (`catalog.json`)
 
-One document listing every agency, for consumers that want the whole picture in
-a single request rather than fetching each `latest.json`.
+One document listing every published feed record, for consumers that want the
+whole picture in a single request rather than fetching each `latest.json`.
 
 ```jsonc
 {
@@ -293,11 +302,15 @@ a single request rather than fetching each `latest.json`.
     { "id": "yolobus", "name": "Yolobus (...)", "country": "US",
       "subdivision_code": "US-CA", "subdivision_name": "California",
       "state": "California", "grade": "B", "score": 84.1,
-      "size_tier": "small", "national_percentile": 72, "peer_percentile": 80,
+      "correctness": 90, "freshness": 85, "completeness": 72,
+      "realtime": 88, "size_tier": "small",
+      "national_percentile": null, "peer_percentile": null,
       "snapshot_date": "2026-06-12", "days_until_expiry": 120,
       "service_horizon_status": "within_review_threshold", "expiry_status": "current",
       "ntd_ready": "ready", "google_gate": "pass", "stops": 312,
       "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.2",
+      "scoring_profile_id": "gtfs-scorecard-1.2",
+      "scoring_profile_rubric_version": "1.2",
       "retrieved_at": "2026-06-12T13:25:01+00:00", "feed_sha256": "...",
       "feed_url": "...", "top_fix": "...", "scorecard_url": "https://..." }
   ]
@@ -340,13 +353,20 @@ consuming directly rather than re-deriving:
 
 ## Directory (`directory.json`)
 
-The covered-set document the web app's overview reads: one record per agency with
+The covered-set document the web app's overview reads: one record per published feed with
 the same fields as a catalog row (identity, grade, freshness, readiness,
-provenance, size tier, and percentiles) plus a `summary` block with the
-corpus grade distribution, expiring and expired counts, median score, a portable
-country/subdivision rollup, the legacy state/place rollup, and size-tier counts. It carries the same `license` and
+provenance, and size tier) plus a `summary` block with expiring and expired
+counts, size-tier counts, and guarded score aggregates. The `comparison` object
+states the required rubric, scoring profile, validator, measured category set,
+and exclusions; unresolved duplicate feed identities do not influence medians
+or grade distributions. `feed_records` counts every published row,
+`scored_feed_records` counts the subset with a numeric score, and
+`comparison_eligible_count` states the still-narrower score-aggregate
+denominator. The legacy
+`national_percentile` and `peer_percentile` keys remain present as `null`; no
+individual percentile is published. It carries the same `license` and
 `attribution` as the catalog. Prefer it over `index.json` when you want the
-current coverage picture without the full per-agency history.
+current coverage picture without the full per-feed history.
 
 ## Versioned cross-agency API (`api/v1/`)
 
@@ -359,25 +379,35 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | Path | What it is |
 | --- | --- |
 | `api/v1/index.json` | The API's self-description: version, endpoint list, license, attribution. |
-| `api/v1/agencies.json` | Every agency's latest check in one list (id, name, date, grade, score, the four category scores, days to expiry, and service-horizon review status). `realtime` is null when not published. |
-| `api/v1/leaderboard.json` | `top` and `bottom` by score, and `most_improved` / `most_declined` by the change since each agency's previous check. |
-| `api/v1/by-state.json` | Legacy U.S.-state agency count, median score, and grade distribution. U.S. agencies without a known state group under `Unlocated`. |
-| `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivision counts, median scores, and grade distributions. Null codes collect rows whose curated location is unknown. `by-state.json` remains unchanged for existing US consumers. |
-| `api/v1/stats.json` | Covered-feed count, average and median score, grade distribution, and the share of feeds not expired. |
+| `api/v1/agencies.json` | Every published feed record's latest check in one list (id, name, date, grade, score, rubric and scoring-profile fields, validator version, feed hash, category scores, days to expiry, and service-horizon review status). `realtime` is null when not measured. |
+| `api/v1/leaderboard.json` | Compatibility path for named changes. `top` and `bottom` are always empty; `most_improved` and `most_declined` compare a canonical feed only with its own prior check under the same rubric, scoring profile, validator, and measured category set. |
+| `api/v1/by-state.json` | Legacy U.S.-state rollups. `count` covers every U.S. published row in the state; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. U.S. feeds without a known state group under `Unlocated`. |
+| `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivisions. Each `count` covers every published row in that location; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. Null codes collect rows whose curated location is unknown. |
+| `api/v1/stats.json` | Covered-row count and current-feed share over every published row, plus average score, median score, and grade distribution over the guarded cohort. `comparison_eligible_count` and the `comparison` block state that narrower denominator and its exclusions. |
 | `api/v1/equity.json` | United States-only state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades. Refreshed weekly from U.S. Census ACS. |
 | `api/v1/ids.json` | Identity crosswalk: every agency's scorecard slug joined to its Mobility Database id, NTD id, and feed URL, so grades join to either registry (or FTA data) without fuzzy matching. |
-| `api/v1/ridership-impact.json` | United States-only quality context weighted by NTD annual rider-trips (ADR 0021): trips covered, trips by grade, and the share on expired feeds, with matched coverage stated. Present when the daily run's NTD fetch succeeded. |
+| `api/v1/ridership-impact.json` | United States-only quality context weighted by NTD annual rider-trips (ADR 0021). Weighting uses the guarded comparison cohort and only unique, unambiguous NTD reporter matches. `matched_ntd_reporters`, `total_feed_records`, and the duplicate-reporter exclusion fields disclose coverage; legacy `matched_agencies` and `total_agencies` keys remain as aliases. Present when the daily NTD fetch succeeded. |
 | `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
 | `api/v1/accessibility.json` | Covered-set accessibility-data completeness: how many feeds populate wheelchair fields, overall and by portable country/subdivision. Backs the coverage section at `/adoption/#access`. |
 | `api/v1/adoption.json` | Which newer GTFS capabilities (Flex, Fares v2, pathways, cEMV) feeds publish, overall and by portable country/subdivision. Backs `/adoption/`. |
 | `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. |
 | `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
 | `api/v1/trend.json` | The covered-set quality time series. Backs the trend section at `/pulse/#trend`. |
+| `api/v1/status.json` | Intended cadence plus liveness outcomes restricted to the current published artifact index. Its `scope` block discloses included and excluded liveness records. |
+| `api/v1/run-status.json` | Latest completed-run evidence. Aggregate counts retain that run's historical attempted set; named unreachable records are restricted to the current published catalog, with older records counted but not named. |
 | `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run. |
 
 Per-agency detail stays the published artifact (`<agency>/latest.json`); the API
-does not duplicate it. The human standings render on
-[the coverage overview](https://gtfsscorecard.org/pulse/).
+does not duplicate it. Human-readable named changes and the corpus trend render
+on [the coverage overview](https://gtfsscorecard.org/pulse/). Absolute score
+rankings and individual percentiles are not published.
+
+The `comparison` block on aggregate endpoints pins the required rubric,
+scoring-profile id, validator version, and measured category set. Overall scores
+that use three categories are not mixed with scores that also measure Realtime.
+The block also reports exclusion counts and the selected category-set cohort, so
+consumers can audit why `comparison_eligible_count` is smaller than `count` or
+`agency_count`.
 
 ### Portable geography on aggregate endpoints
 
@@ -426,15 +456,29 @@ queries genuinely appear. The decision and trigger are in
 ## Change feed (`changes/latest.json`)
 
 For consumers that ingest transitions rather than diffing the whole catalog each
-day. Lists every agency whose grade or score moved between its two most recent
-checks, regressions first, then largest move. `changes/<date>.json` is an
-immutable dated copy.
+day. Lists active canonical feed records whose grade or score moved between two
+checks under the same rubric, scoring profile, validator, and measured category
+set. Records with unresolved duplicate identities are omitted. Regressions come
+first, then the largest move.
+`changes/<date>.json` is an immutable dated copy only when it carries the full
+comparison contract. Pre-contract snapshots were withdrawn because their named
+moves could not be audited against rubric, scoring-profile, validator, measured-
+category, and canonical-identity boundaries.
 
 ```jsonc
 {
   "schema_version": "1.11",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
+  "feed_record_count": 1128,
+  "comparison_eligible_count": 1000,
+  "comparison": {
+    "eligible_count": 1000,
+    "required_rubric_version": "1.2",
+    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_validator_version": "8.0.1",
+    "required_measured_categories": ["correctness", "freshness", "completeness"]
+  },
   "count": 2,
   "changes": [
     { "id": "...", "name": "...", "from_grade": "B", "to_grade": "D",
@@ -452,8 +496,14 @@ immutable dated copy.
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
-  "state_percentile": 64,             // per-state rollups only (schema 1.7); null on "all" and named cohorts
   "grade_distribution": { "B": 1, "C": 1 },
+  "comparison": { "eligible_count": 2, "excluded_count": 0,
+                  "required_rubric_version": "1.2",
+                  "required_scoring_profile_id": "gtfs-scorecard-1.2",
+                  "required_validator_version": "8.0.1",
+                  "required_measured_categories":
+                    ["correctness", "freshness", "completeness"] },
+  "state_percentile": null,
   "needs_attention": 1,
   "expired": { "lapsed": 1, "stale": 0, "total": 1 },
   "members": [ { "id": "...", "name": "...", "score": 0, "grade": "C",
@@ -463,10 +513,18 @@ immutable dated copy.
 }
 ```
 
-Members are sorted worst-score-first. `expired` counts the members whose feed
+Members needing attention come first, ordered by rider impact when known and
+then by name; other members are alphabetical. `average_score` and
+`grade_distribution` use only the canonical, non-duplicate cohort under the
+single rubric, scoring profile, validator, and measured-category set described
+by `comparison`. `state_percentile` is retained as null for v1 compatibility.
+`expired` counts the members whose feed
 has run out, split into recently lapsed and long stale. `common_fixes` lists
-fixes shared by more than one member, so a program can see the one change that
-lifts several feeds.
+fixes shared by more than one comparison-eligible member, so excluded legacy or
+duplicate records cannot inflate a program-wide fix count.
+`annual_trips` is `null` for every member when multiple feed records claim the
+same NTD reporter id, so a reporter's rider count is never assigned twice or
+used to break the worklist order ambiguously.
 
 ## Badge
 
@@ -517,12 +575,15 @@ optional; with neither, it just reports.
   so the artifacts are fetchable directly from a browser or an edge function.
 - Dated artifacts (`<agency>/<date>.json`) are immutable once written and are
   retained, so a consumer can pin a specific date as a stable reference.
-  `latest.json`, `catalog.json`, and `directory.json` are rewritten daily.
+  `latest.json`, `catalog.json`, and `directory.json` are rewritten when a
+  scoring run completes; `/api/v1/status.json` and `/api/v1/run-status.json`
+  disclose the observed freshness and latest completed run.
 - Each row's `retrieved_at` (and a scorecard's `generated_at`) is the authority
   on freshness; read it rather than re-fetching on a loop.
 
 ## Etiquette
 
-The data refreshes once a day. There is no value in polling it more often than
-that, and the CDN caches for a few minutes regardless. Consumers should read
-`generated_at`/`retrieved_at` rather than re-fetching on a tight loop.
+The data is scheduled to refresh once a day. There is no value in polling it
+more often than that, and the CDN caches for a few minutes regardless.
+Consumers should read `generated_at`/`retrieved_at` and the status endpoints
+rather than assuming the schedule completed or re-fetching on a tight loop.

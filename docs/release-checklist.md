@@ -25,12 +25,22 @@ dataset tag. Routine data refreshes use their existing automated workflow.
 - [ ] Smoke-test `/`, `/agencies/`, one agency page, `/status/`, and `/api/v1/index.json`.
 - [ ] For a SemVer tag, confirm `release-sign.yml` attaches the signed manifest,
   CycloneDX SBOM, VEX, and GitHub provenance attestations.
+- [ ] For an Action release, publish the SemVer tag from GitHub's release form with
+  **Publish this Action to the GitHub Marketplace** selected, choose the action's
+  categories, and move the floating major tag only after the protected release tag
+  is published.
+- [ ] Before tagging an Action release, inspect the `export-ignore`-bounded source archive.
+  It should contain only `action.yml`, `action/`, the runtime `pipeline/` package, and
+  license/security files, and compress below 10 MB. Never make every Action consumer
+  download the scored artifact corpus.
 - [ ] For a dataset tag, confirm the flat exports, data dictionary, methodology version,
   and citation metadata are attached.
 
 ## Post-release
 
 - [ ] Record material user-facing changes in `CHANGELOG.md`.
+- [ ] For an Action release, open the Marketplace listing and run one workflow against
+  both the protected patch tag and the floating major tag.
 - [ ] Confirm the watchdog and next scheduled refresh remain healthy.
 - [ ] Revert immediately if the primary agency lookup, scorecard, form submission,
   accessibility gate, or public API fails in production.

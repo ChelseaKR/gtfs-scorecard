@@ -34,8 +34,9 @@ Every item below is checked against these.
 
 - Findings are framed as fixes, not failures. Absence of realtime is shown
   neutrally, never as a zero.
-- No leaderboard that shames small agencies. Benchmarking, when it arrives, is
-  context and encouragement.
+- No public leaderboard or individual percentile. Cross-feed aggregates support
+  program planning only when the rubric, scoring profile, validator, measured
+  categories, and feed identities line up.
 - We score on top of the canonical MobilityData validator. We do not
   re-validate GTFS and we do not become a GTFS editor.
 - Accessibility data gets prominent placement. It is a values statement and a
@@ -44,14 +45,15 @@ Every item below is checked against these.
 
 ## Where the product is today
 
-About 1,449 scorecards have numeric latest scores in the repository artifact
-index; the bounded live directory currently publishes more than 1,100. Coverage
+About 1,128 scorecards have numeric latest scores in the registry-bounded
+artifact index; 21 configured feeds are awaiting a current artifact. Coverage
 is still concentrated in the United States and Canada, with official first
 canaries in Japan, Australia, Ireland, France, Malaysia, New Zealand, and Uruguay
 (piloted with Unitrans and Yolobus); per-agency scorecards with a
-grade, top-three fixes, a full findings list, and a named "fixed since last
-check" diff; companion pages per agency for a board packet, call prep, and the
-fix log; an "over time" trend with a per-category "what changed" summary;
+grade, top-three fixes, a full findings list, and a named "no longer reported"
+diff between compatible checks; companion pages per agency for a board packet,
+call prep, and provenance-backed finding clearances when available; an "over
+time" trend with a per-category "what changed" summary;
 program rollups for 46 U.S. states plus DC and named cohorts; opt-in feed-health
 email digests and webhooks, with a weekly portfolio digest for liaisons;
 embeddable badges and conformance marks; a notice-to-fix knowledge base with
@@ -72,40 +74,48 @@ checked monthly is a tool.
   "what changed" view on each scorecard, are the reasons someone comes back.
   These are shipped; the work now is tuning what counts as worth an alert.
 - **Close the fix loop further.** Shipped: the scorecard names which findings
-  cleared between runs, so a manager sees a specific fix land.
+  cleared between like-for-like runs. Next, attach a named owner or vendor
+  request to the alert, recheck the exact published bytes, and issue a
+  provenance-stamped closure receipt when the finding clears.
 - **The knowledge base toward the whole taxonomy.** Each validator notice gets a
   plain-language page with the setting to change in the common scheduling tools.
-  This is the durable differentiator and the main organic-search entry point.
-  The highest-prevalence notices are covered; the long tail remains open work.
+  It supports the handoff from finding to vendor-ready request and remains a
+  useful organic-search entry point. The highest-prevalence notices are covered;
+  the long tail remains open work.
 - **Per-vendor fix instructions.** Shipped as tool profiles: where the export
   tool is detected, the fix names that tool.
 - **Two-minute onboarding.** Shipped: the self-serve form and the instant-score
   funnel open a pull request without the submitter knowing what YAML is.
 
-Signals of success: agencies returning month over month, fix pages as the top
-organic entry points, and the first agencies that visibly raise their grade.
+Signals of success: agencies returning month over month, alerts becoming named
+requests, and those requests ending in verified closures on newly published
+feed bytes.
 
-## Year 2: broaden and benchmark
+## Year 2: broaden and verify remediation
 
 Coverage and context. As the corpus becomes geographically diverse, the product
-can tell each agency where it stands and tell a program where to spend its time
-without pretending the registry is a census of any country.
+can tell a program where intervention is needed, who owns the next step, and
+whether the published fix actually landed without pretending the registry is a
+census of any country.
 
 - **Worldwide coverage**, drawn from official/operator sources and global
   catalogues. The scoring core generalizes; the hard work is curation,
   licensing, local stewardship, and honest denominators.
-- **Benchmarking with care.** Percentile context for an agency's own size band,
-  shown privately on its page and framed as encouragement, never as a ranking.
+- **A verified remediation network.** Turn an alert into a vendor-ready request,
+  record the owner and external ticket, recheck the exact published feed, and
+  preserve the before-and-after evidence as a closure receipt.
 - **Vendor-level intelligence.** Aggregate by the scheduling tool that produced
-  the feed, to see which exports tend to drop fare data or ship stale calendars.
-  This is the finding a statewide program acts on, visible only at scale.
-- **The liaison workspace.** Saved cohorts, an attention queue sorted worst-first,
+  the feed to see which exports repeat a finding and which remediation requests
+  lead to verified fixes. This is the evidence a statewide program can act on,
+  visible only at scale and reported without ranking individual agencies.
+- **The liaison workspace.** Saved cohorts, an attention-first queue,
   and a report to bring to an agency call. The rollup view is the seed.
 - **Realtime maturity.** Sustained sampling, drift trends over time, and
   vehicle-accessibility scoring alongside the stop.
 
 Signals of success: a program staffer planning their week from the cohort view,
-and the first catch of a vendor update that broke one field across many feeds.
+the first multi-feed vendor regression caught, and multiple requests closed by
+an independently verified recheck.
 
 ## Year 3: platform and ecosystem
 
