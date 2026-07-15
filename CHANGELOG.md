@@ -27,26 +27,18 @@ the declared public surface).
 
 ## [Unreleased]
 
-### Changed
-- Replaced parallel expansion queues with one proof-gated 90-day sequence:
-  Marketplace release, participant recruitment, six concierge remediation
-  requests, audited exact-feed closure receipts, and a pass-or-stop decision.
-- Kept deterministic autofix as an explicit local command; scheduled scoring no
-  longer generates, hosts, or advertises modified agency feed copies.
-
-### Security
-- Moved validator results, structural fingerprints, and raw finding-clearance
-  state behind private storage paths. Pages and CloudFront now publish from
-  positive filename allowlists, and publishers retire legacy public cache,
-  structure, fixlog, and corrected-feed objects.
-
-## [1.2.0] - 2026-07-14
+## [1.2.0] - 2026-07-15
 
 ### Added
 - Marketplace release metadata and a publication runbook for the composite GTFS
   quality gate, prepared for a protected `v1.2.0` tag and the floating `v1` tag.
 
 ### Changed
+- Replaced parallel expansion queues with one proof-gated 90-day sequence:
+  Marketplace release, participant recruitment, six concierge remediation
+  requests, audited exact-feed closure receipts, and a pass-or-stop decision.
+- Kept deterministic autofix as an explicit local command; scheduled scoring no
+  longer generates, hosts, or advertises modified agency feed copies.
 - Public coverage pages now focus on feeds that need attention and recent changes
   instead of ranking agencies from best to worst.
 - Cross-feed comparisons exclude incompatible scoring profiles and duplicate feed
@@ -62,6 +54,12 @@ the declared public surface).
 ### Fixed
 - Rubric-version copy no longer implies that every historical scorecard was computed
   with the current methodology.
+
+### Security
+- Moved validator results, structural fingerprints, and raw finding-clearance
+  state behind private storage paths. Pages and CloudFront now publish from
+  positive filename allowlists, and publishers retire legacy public cache,
+  structure, fixlog, and corrected-feed objects.
 
 ## [1.1.0] - 2026-07-11
 

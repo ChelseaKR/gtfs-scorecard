@@ -45,7 +45,9 @@ vendor causality, compliance, or certification.
 
 ## Where the product is today
 
-The service tracks 1,149 curated feed records. About 1,128 scorecards have numeric latest scores.
+The service tracks more than 1,100 curated feed records, with numeric latest
+scores published for more than 1,100 of them. The public status page reports
+the exact current configured and published counts.
 It publishes per-agency grades, prioritized fixes, trends,
 provenance, finding clearances, board packets, and call-prep views. Program
 rollups cover most U.S. states and named cohorts. Alerts, webhooks, and liaison

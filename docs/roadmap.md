@@ -30,10 +30,10 @@ goal. The full competitive decision and its evidence are in
 The old regional and national scale plans landed ahead of their original
 sequence. Treat these capabilities as baseline:
 
-- The registry has ~1,149 configured feeds in the current worldwide coverage,
-  still concentrated in the United States and Canada. The artifact index has
-  numeric current scores for most of them (~1,128 scored latest rows with published
-  agency pages).
+- The registry has more than 1,100 configured feed records in the current worldwide
+  coverage, still concentrated in the United States and Canada. The artifact index
+  has numeric current scores for more than 1,100 of them. The public status page
+  reports the exact current configured and published counts.
 - Sharded GitHub Actions validation, S3 artifacts, static Pages delivery, and
   public run health.
 - A versioned read API, Parquet dataset, read-only MCP server, badges, and a

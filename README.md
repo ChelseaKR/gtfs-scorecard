@@ -19,12 +19,13 @@ manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains ~1,149 curated feed records,
-mostly in the United States and Canada, plus official first canaries in Japan,
+District). Beyond the pilots, the registry contains more than 1,100 curated
+feed records, mostly in the United States and Canada, plus official first canaries in Japan,
 Australia, Ireland, France, Malaysia, New Zealand, and Uruguay. The repository
-keeps the generated corpus registry-bounded (~1,128 published scorecard pages),
-with 21 configured feeds still awaiting a current artifact. Scoring is scheduled
-daily, and the public status page records when it actually completed. A feed record is not always a distinct transit agency: regional
+keeps the generated corpus registry-bounded, with more than 1,100 numeric
+scorecards published. Scoring is scheduled daily, and the public status
+page reports the exact current configured and published counts along with when
+the latest run completed. A feed record is not always a distinct transit agency: regional
 feeds, modal variants, and retired aliases are counted separately while the
 identity registry is reconciled.
 
@@ -198,8 +199,8 @@ current deployment status.
 
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: the manifest-backed [`registry`](registry/README.md) now
-carries ~1,140 curated agencies, mostly across the US and Canada and now with a
-geographically diverse official canary cohort, scored daily (a 2026-07 dedupe
+carries more than 1,100 curated feed records, mostly across the US and Canada.
+It now includes a geographically diverse official canary cohort, scored daily (a 2026-07 dedupe
 pass removed ~350 records that duplicated an already-listed feed).
 
 ## Add your agency

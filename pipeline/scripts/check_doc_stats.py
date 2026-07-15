@@ -7,11 +7,11 @@ between those populations hides drift instead of explaining it. Each prose
 rule therefore names whether it means configured feed records or published
 scorecards with numeric latest scores.
 
-Each rule names the file and the exact phrase pattern that carries the figure.
-A missing pattern fails too: rewording a sentence must not silently drop the
-figure out of this check. When the check fails, either refresh the quoted
-number from the count it prints, or update the rule here if the sentence
-moved.
+Narrative pages use a stable hundred-record floor such as "more than 1,100" and
+link to generated status output for the exact current count. Historical planning
+notes may still use an approximate exact figure. Each rule names the file, exact
+phrase pattern, denominator, and comparison mode. A missing pattern fails too,
+so rewording a sentence cannot silently drop the figure out of this check.
 
 Run before committing doc edits that quote corpus figures:
 
@@ -30,40 +30,82 @@ sys.path.insert(0, str(REPO_ROOT / "pipeline" / "src"))
 
 from scorecard_pipeline.agencies import read_agencies  # noqa: E402
 
-# Prose uses "about" or a rounded ``~`` figure. One percent allows that rounding
-# while still catching a meaningful change in either independent population.
+# Approximate prose uses "about" or a rounded ``~`` figure. One percent allows
+# that rounding while still catching a meaningful change in either independent
+# population. Floor claims advance in hundred-record steps.
 TOLERANCE = 0.01
+FLOOR_BUCKET = 100
 
-# (file, pattern, denominator). A missing pattern fails so rewording cannot
-# silently drop the check.
-RULES: list[tuple[str, str, str]] = [
-    (r"README.md", r"registry contains\s+~([\d,]+)\s+curated feed\s+records", "registry"),
-    (r"README.md", r"\(~([\d,]+)\s+published\s+scorecard pages\)", "pages"),
-    (r"README.md", r"carries\s+~([\d,]+)\s+curated", "registry"),
-    (r"docs/feeds.md", r"full registry has ~([\d,]+)\s+feed records", "registry"),
+# (file, pattern, denominator, mode). A missing pattern fails so rewording
+# cannot silently drop the check.
+RULES: list[tuple[str, str, str, str]] = [
+    (
+        r"README.md",
+        r"registry contains\s+more than ([\d,]+)\s+curated\s+feed\s+records",
+        "registry",
+        "floor",
+    ),
+    (
+        r"README.md",
+        r"with more than ([\d,]+)\s+numeric\s+scorecards published",
+        "scored",
+        "floor",
+    ),
+    (r"README.md", r"carries\s+more than ([\d,]+)\s+curated", "registry", "floor"),
+    (
+        r"docs/feeds.md",
+        r"full registry has more than ([\d,]+)\s+feed records",
+        "registry",
+        "floor",
+    ),
     (
         r"docs/support.md",
-        r"about ([\d,]+)\s+configured feeds in the current worldwide coverage",
+        r"more than ([\d,]+)\s+configured feed records\s+in the current worldwide coverage",
         "registry",
+        "floor",
     ),
-    (r"docs/follow-ups.md", r"At ~([\d,]+)\s+configured feeds", "registry"),
+    (r"docs/follow-ups.md", r"At ~([\d,]+)\s+configured feeds", "registry", "approx"),
     (
         r"docs/roadmap.md",
-        r"~([\d,]+)\s+configured feeds in the current worldwide coverage",
+        r"more than ([\d,]+)\s+configured feed records in the current worldwide",
         "registry",
+        "floor",
     ),
-    (r"docs/roadmap.md", r"\(~([\d,]+)\s+scored latest rows with published", "scored"),
+    (
+        r"docs/roadmap.md",
+        r"numeric current scores for more than ([\d,]+) of them",
+        "scored",
+        "floor",
+    ),
     (
         r"docs/product-roadmap.md",
-        r"About ([\d,]+)\s+scorecards have numeric latest scores",
-        "scored",
+        r"tracks more than ([\d,]+)\s+curated feed records",
+        "registry",
+        "floor",
     ),
-    (r"docs/feature-roadmap.md", r"about ([\d,]+)\s+published\s+scorecard pages", "pages"),
-    (r"CLAUDE.md", r"~([\d,]+)\s+published scorecards, still concentrated", "pages"),
+    (
+        r"docs/product-roadmap.md",
+        r"scores published for more than ([\d,]+) of them",
+        "scored",
+        "floor",
+    ),
+    (
+        r"docs/feature-roadmap.md",
+        r"about ([\d,]+)\s+published\s+scorecard pages",
+        "pages",
+        "approx",
+    ),
+    (
+        r"CLAUDE.md",
+        r"~([\d,]+)\s+published scorecards, still concentrated",
+        "pages",
+        "approx",
+    ),
     (
         r"web/support/index.html",
-        r"about\s+([\d,]+)\s+configured feeds in the current worldwide coverage",
+        r"more than\s+([\d,]+)\s+configured feed records in the current worldwide coverage",
         "registry",
+        "floor",
     ),
 ]
 
@@ -88,7 +130,7 @@ def main() -> int:
     pages, scored = published_counts()
     counts = {"registry": registry_count(), "pages": pages, "scored": scored}
     failures: list[str] = []
-    for rel_path, pattern, denominator in RULES:
+    for rel_path, pattern, denominator, mode in RULES:
         text = (REPO_ROOT / rel_path).read_text()
         match = re.search(pattern, text)
         if match is None:
@@ -99,17 +141,23 @@ def main() -> int:
             continue
         quoted = int(match.group(1).replace(",", ""))
         count = counts[denominator]
-        low = count * (1 - TOLERANCE)
-        high = count * (1 + TOLERANCE)
-        if not low <= quoted <= high:
+        if mode == "floor":
+            valid = quoted < count < quoted + FLOOR_BUCKET
+            allowed = f"more than {quoted:,} and fewer than {quoted + FLOOR_BUCKET:,}"
+        else:
+            low = count * (1 - TOLERANCE)
+            high = count * (1 + TOLERANCE)
+            valid = low <= quoted <= high
+            allowed = f"{low:,.0f}–{high:,.0f}"
+        if not valid:
             failures.append(
                 f"{rel_path}: quotes {quoted:,} but {denominator} has {count:,} "
-                f"entries (allowed {low:,.0f}–{high:,.0f}); refresh the figure"
+                f"entries (allowed {allowed}); refresh the figure"
             )
     if not failures:
         print(
-            f"OK  {len(RULES)} quoted corpus figures within {TOLERANCE:.0%} of "
-            f"their denominators (registry {counts['registry']:,}; "
+            f"OK  {len(RULES)} corpus claims match their denominator policy "
+            f"(registry {counts['registry']:,}; "
             f"published pages {counts['pages']:,}; scored latest {counts['scored']:,})"
         )
         return 0
