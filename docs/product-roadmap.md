@@ -119,8 +119,8 @@ still produce a valid receipt. Usage of the scorecard alone is not enough.
 
 | Disposition | Product work |
 | --- | --- |
-| Shipped baseline | Scorecards, finding clearances, alerts, program views, knowledge base, API, data exports, MCP, badges, Action, onboarding, and pre-publish checks. |
-| Active now | Marketplace release, participant recruitment, six concierge requests, exact-feed rechecks, and audited closure receipts. |
+| Shipped baseline | Scorecards, finding clearances, alerts, program views, knowledge base, API, data exports, MCP, badges, Marketplace Action, onboarding, and pre-publish checks. |
+| Active now | Participant recruitment, six concierge requests, exact-feed rechecks, and audited closure receipts. |
 | Maintenance | Alert tuning, source curation, accessibility, security, release health, and bounded reliability work. |
 | Demand-gated | Hosted one-off capacity, self-management, regional instances, localization, deeper realtime, and research products. |
 | Cut or parked | General editor or host, second validator, public rankings, public feed archive, cross-agency realtime archive, replacement ticketing, consumer-app scraping, and multimodal platform expansion. |
