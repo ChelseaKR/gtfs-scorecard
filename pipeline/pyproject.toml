@@ -4,7 +4,7 @@ name = "scorecard-pipeline"
 # in CITATION.cff and server.json; a `make verify` check (scripts/check_versions.py)
 # fails CI if they drift. A protected release tag is cut only after these
 # declarations and CI agree; this file never treats an uncut tag as published.
-version = "1.2.0"
+version = "1.2.1"
 description = "Ingestion and scoring pipeline for the small-agency GTFS quality scorecard"
 license = "Apache-2.0"
 requires-python = ">=3.12"

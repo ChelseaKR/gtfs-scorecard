@@ -414,6 +414,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         # page renders correctly opened straight from disk (file://).
         page = re.sub(r'(href|src)="/', rf'\1="{BASE_URL}/', _render_agency(artifact, []))
         out = Path(args.html)
+        out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(page)
         print(f"  Standalone scorecard written to {out}\n")
 
@@ -421,6 +422,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         from .onboard import render_comment
 
         out = Path(args.comment)
+        out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render_comment(artifact, page_url=getattr(args, "page_url", None)))
         print(f"  Comment markdown written to {out}\n")
 
