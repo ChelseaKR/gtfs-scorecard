@@ -27,6 +27,10 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+- Recorded the public `v1.2.1` Marketplace listing and moved the 90-day roadmap
+  from release preparation to participant recruitment.
+
 ## [1.2.1] - 2026-07-15
 
 ### Changed

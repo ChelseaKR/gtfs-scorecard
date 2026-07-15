@@ -48,23 +48,26 @@ sequence. Treat these capabilities as baseline:
 These features need maintenance, but none is a reason to defer the remediation
 pilot.
 
-## Now: release and run the 90-day proof
+## Now: run the 90-day proof
 
-### 1. Publish the reusable release
+### 1. Reusable release shipped
 
-Publish Marketplace release `v1.2.1` from the vetted release candidate. Verify
-the immutable tag, signed release evidence, floating `v1` tag, public
-Marketplace listing, and a downstream consumer run. This is the distribution
-prerequisite for asking the GTFS community to test the workflow.
+Completed 2026-07-15. Marketplace release `v1.2.1` is public. The immutable
+tag, signed release evidence, floating `v1` tag, public
+[Marketplace listing](https://github.com/marketplace/actions/gtfs-scorecard-gate),
+and downstream consumer runs are verified. The distribution prerequisite for
+asking the GTFS community to test the workflow is satisfied.
 
-Dependency: the maintainer-authenticated GitHub release and Marketplace flow.
+Evidence: the public
+[downstream smoke run](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29454018351)
+passed against both `v1.2.1` and `v1`.
 
 ### 2. Recruit the pilot
 
-Recruit one support-program liaison and two feed maintainers or vendors. Share
-the project in MobilityData Slack `#gtfs` as a request to test the
-alert-to-closure workflow, after the Marketplace listing is verifiably public.
-Do not frame the post as another validator launch.
+Recruit one support-program liaison and two feed maintainers or vendors. The
+Marketplace listing is verifiably public, so share the project in MobilityData
+Slack `#gtfs` as a request to test the alert-to-closure workflow. Do not frame
+the post as another validator launch.
 
 Before a request is sent, confirm:
 
