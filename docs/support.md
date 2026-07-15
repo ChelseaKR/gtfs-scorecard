@@ -10,7 +10,9 @@ The core service costs single-digit dollars a month today. A $75 to $200 monthly
 operating envelope would add bounded capacity while keeping hard spending caps:
 
 - Hosting and bandwidth for the static site, the read API, and the grade badges agencies embed.
-- The scheduled daily data refresh: fetching about 1,140 configured feeds in the current worldwide coverage, still mostly in the US and Canada. The public status page records when each run actually completed.
+- The scheduled daily data refresh: fetching more than 1,100 configured feed records
+  in the current worldwide coverage, still mostly in the US and Canada. The public
+  status page reports the exact current count and records when each run completed.
 - Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator.
 - Release monitoring and private evidence retention needed to reproduce published checks and audit participant-approved remediation receipts.
 
