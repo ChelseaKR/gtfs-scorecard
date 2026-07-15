@@ -52,7 +52,7 @@ pilot.
 
 ### 1. Publish the reusable release
 
-Publish Marketplace release `v1.2.0` from the vetted release candidate. Verify
+Publish Marketplace release `v1.2.1` from the vetted release candidate. Verify
 the immutable tag, signed release evidence, floating `v1` tag, public
 Marketplace listing, and a downstream consumer run. This is the distribution
 prerequisite for asking the GTFS community to test the workflow.

@@ -76,6 +76,13 @@ def test_action_declares_stable_outputs_and_json_input() -> None:
     assert "uvx" not in run
     assert 'exit "$gate_rc"' in run
 
+    uv_setup = action["runs"]["steps"][-2]
+    assert uv_setup["with"] == {
+        "version": "0.11.29",
+        "enable-cache": False,
+        "ignore-empty-workdir": True,
+    }
+
 
 def test_action_source_archive_is_runtime_bounded() -> None:
     git = shutil.which("git")
@@ -161,13 +168,23 @@ def test_cli_json_output_is_written_before_gate_result(
         "top_fixes": [],
     }
     monkeypatch.setattr(cli, "run_adhoc", lambda *_args, **_kwargs: artifact)
+    monkeypatch.setattr(
+        "scorecard_pipeline.render_site._render_agency",
+        lambda *_args, **_kwargs: '<link href="/app.css">',
+    )
+    monkeypatch.setattr(
+        "scorecard_pipeline.onboard.render_comment",
+        lambda *_args, **_kwargs: "Scorecard comment\n",
+    )
     output = tmp_path / "nested/result.json"
+    html_output = tmp_path / "nested/report/scorecard.html"
+    comment_output = tmp_path / "nested/comment/scorecard.md"
     args = argparse.Namespace(
         url="https://example.org/gtfs.zip",
         name=None,
         date=None,
-        html=None,
-        comment=None,
+        html=str(html_output),
+        comment=str(comment_output),
         page_url=None,
         json_out=str(output),
         min_grade="B",
@@ -175,6 +192,8 @@ def test_cli_json_output_is_written_before_gate_result(
     )
     assert cli._cmd_try(args, argparse.ArgumentParser()) == 1
     assert json.loads(output.read_text())["overall"]["grade"] == "C"
+    assert html_output.read_text().startswith('<link href="https://gtfsscorecard.org/')
+    assert comment_output.read_text() == "Scorecard comment\n"
 
 
 def test_installed_action_command_does_not_require_an_agency_registry(

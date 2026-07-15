@@ -27,7 +27,21 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-07-15
+
+### Changed
+- Pinned the Action's uv runtime and disabled its workspace cache. A consuming
+  repository no longer receives empty-workspace or missing-cache-input warnings.
+
+### Fixed
+- Create parent directories before writing standalone HTML or comment output.
+  The first clean downstream `v1.2.0` run exposed this when
+  `html: output/scorecard.html` failed after scoring the feed successfully.
+
 ## [1.2.0] - 2026-07-15
+
+Superseded by `v1.2.1`: the first clean downstream run found that nested HTML
+output paths were not created before writing the report.
 
 ### Added
 - Marketplace release metadata and a publication runbook for the composite GTFS
@@ -141,7 +155,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.0.0

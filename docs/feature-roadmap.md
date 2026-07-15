@@ -23,14 +23,14 @@ intended published feed.
 Work through this list in order. Do not start later product expansion to fill a
 participant or release dependency.
 
-### 1. Publish and verify `v1.2.0`
+### 1. Publish and verify `v1.2.1`
 
 Status: release candidate verified; publication requires the
 maintainer-authenticated GitHub release and Marketplace flow.
 
 Done means:
 
-- immutable `v1.2.0` and signed floating `v1` tags point to the intended commit;
+- immutable `v1.2.1` and signed floating `v1` tags point to the intended commit;
 - the release carries the manifest signature, certificate, SBOM, VEX, and
   provenance assets;
 - the Marketplace listing is publicly visible in Code quality and Testing;
