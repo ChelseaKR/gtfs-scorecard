@@ -9,9 +9,9 @@ commitment they can check the pipeline against:
 - the *intended* refresh cadence per tier, sourced from the same tiering the
   intraday refresh actually runs on (`cadence.py`, ADR 0010) rather than a
   separately maintained claim that can drift from reality;
-- the *historical* refresh-success record, computed from the liveness state
-  (`data/liveness.json`) the intraday refresh already keeps — how many tracked
-  feeds are currently checking clean, how stale the checks are, how many have
+- the current feed-URL liveness record, computed from the state
+  (`data/liveness.json`) the intraday refresh already keeps: how many tracked
+  feeds are checking clean, how old the latest checks are, and how many have
   been flagged unreachable;
 - a stated degradation policy: what happens, and what a consumer sees, when a
   feed cannot be refreshed on schedule. No promise the static architecture
@@ -46,25 +46,25 @@ def cadence_commitment() -> list[dict[str, Any]]:
         {
             "tier": "priority",
             "applies_to": (
-                "feeds with a measured realtime publisher, and any feed in the "
+                "feeds with measured realtime data, and any feed in the "
                 "expiry danger or recovery window (expiring soon, or recently "
                 "lapsed)"
             ),
-            "cadence": "every intraday refresh cycle (hourly)",
+            "cadence": "one direct liveness check every hour",
             "schedule_cron": INTRADAY_REFRESH_CRON,
         },
         {
             "tier": "standard",
             "applies_to": "every other tracked feed",
-            "cadence": f"once per {STANDARD_PERIOD}-hour period, on a stable "
-            "per-feed schedule so load spreads evenly instead of checking every "
-            "host at once",
+            "cadence": f"one direct liveness check in each {STANDARD_PERIOD}-hour "
+            "period, on a stable per-feed schedule that spreads requests across "
+            "the period",
             "schedule_cron": INTRADAY_REFRESH_CRON,
         },
         {
             "tier": "full_validation",
             "applies_to": "every registered feed",
-            "cadence": "once daily (re-validates every feed; the correctness floor)",
+            "cadence": "one full validation each day",
             "schedule_cron": DAILY_FULL_SCORE_CRON,
         },
     ]
@@ -78,30 +78,29 @@ def degradation_policy() -> dict[str, Any]:
         "unreachable_after_consecutive_checks": UNREACHABLE_STREAK_CHECKS,
         "stale_after_days_past_expiry": STALE_FEED_DAYS,
         "statements": [
-            "A fetch failure never fabricates or silently drops data: the last "
-            "successfully retrieved artifact is carried forward, and only its "
-            "freshness/expiry read is recomputed from the calendar dates it "
-            "already carries (ADR 0010's freshness sweep). A past snapshot is "
-            "never rewritten, so trend history stays accurate.",
+            "If a fetch fails, the last successful scorecard remains available. "
+            "The pipeline recalculates only its calendar-based freshness and "
+            "expiry fields. It never rewrites an older snapshot.",
             "A feed whose calendar has been past its expiry date for more than "
             f"{STALE_FEED_DAYS} days is labeled 'stale' rather than 'lapsed', "
             "which changes how it is described but not whether it is served.",
-            "A feed URL that fails "
-            f"{UNREACHABLE_STREAK_CHECKS} consecutive liveness checks (roughly a "
-            "week at standard cadence) is separately labeled 'unreachable', so a "
-            "dead host reads differently from a merely stale calendar.",
-            "None of this is a guarantee of upstream uptime -- an agency's own "
-            "GTFS host can go down regardless of what this pipeline does. It is a "
-            "public, honest record of what was actually observed and when, "
-            "published without deletion.",
+            "A configured feed URL is labeled 'unreachable' after "
+            f"{UNREACHABLE_STREAK_CHECKS} consecutive direct checks fail (roughly "
+            "a week at standard cadence). This is separate from an expired "
+            "calendar.",
+            "These observations do not guarantee an agency's GTFS host will stay "
+            "online. The status page records what the pipeline observed and when.",
         ],
     }
 
 
 def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -> dict[str, Any]:
-    """The historical refresh-success record, computed from the liveness state
-    every intraday refresh already keeps. `feeds` is `data/liveness.json`'s
-    `"feeds"` map: agency id -> {"checked_at", "consecutive_failures", ...}."""
+    """The current direct-URL liveness record computed from intraday state.
+
+    ``success_rate_pct`` is retained as the v1 compatibility name for the
+    current clean-feed share. It is not a historical request-success rate;
+    ``currently_clean_pct`` is the accurately named additive field.
+    """
     total = len(feeds)
     if total == 0:
         return {
@@ -110,7 +109,12 @@ def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -
             "healthy": 0,
             "degraded": 0,
             "unreachable": 0,
+            "currently_clean_pct": None,
             "success_rate_pct": None,
+            "measurement_note": (
+                "Current share of feed records with no consecutive failed direct check; "
+                "not a historical request-success rate."
+            ),
             "hours_since_last_check": {"min": None, "median": None, "max": None},
         }
 
@@ -143,13 +147,19 @@ def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -
         idx = min(n - 1, int(fraction * n))
         return round(hours_since[idx], 1)
 
+    currently_clean_pct = round(100 * healthy / total, 1)
     return {
         "as_of": now.isoformat(timespec="seconds"),
         "feeds_tracked": total,
         "healthy": healthy,
         "degraded": degraded,
         "unreachable": unreachable,
-        "success_rate_pct": round(100 * healthy / total, 1),
+        "currently_clean_pct": currently_clean_pct,
+        "success_rate_pct": currently_clean_pct,
+        "measurement_note": (
+            "Current share of feed records with no consecutive failed direct check; "
+            "not a historical request-success rate."
+        ),
         "hours_since_last_check": {
             "min": _pick(0.0),
             "median": _pick(0.5),
@@ -170,10 +180,8 @@ def build_status_commitment(
         "license": DATA_LICENSE,
         "attribution": DATA_ATTRIBUTION,
         "description": (
-            "How fresh this data is meant to be, and how it has actually "
-            "performed: the intended refresh cadence per tier, the historical "
-            "refresh-success record, and what happens when a feed cannot be "
-            "refreshed on schedule."
+            "The intended refresh cadence, current direct feed-URL liveness, "
+            "and what happens when a feed cannot be refreshed on schedule."
         ),
         "human_readable": f"{base_url}/status/",
         "commitment": {

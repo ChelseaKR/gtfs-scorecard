@@ -39,6 +39,7 @@ def test_degradation_policy_uses_the_real_code_thresholds() -> None:
 def test_refresh_success_record_empty_feeds_degrades_cleanly() -> None:
     record = refresh_success_record({}, NOW)
     assert record["feeds_tracked"] == 0
+    assert record["currently_clean_pct"] is None
     assert record["success_rate_pct"] is None
 
 
@@ -54,7 +55,9 @@ def test_refresh_success_record_classifies_healthy_degraded_unreachable() -> Non
     assert record["healthy"] == 2
     assert record["degraded"] == 1
     assert record["unreachable"] == 1
+    assert record["currently_clean_pct"] == 50.0
     assert record["success_rate_pct"] == 50.0
+    assert "not a historical request-success rate" in record["measurement_note"]
     # The dead feed hasn't checked in a week; max staleness reflects that.
     assert record["hours_since_last_check"]["max"] > 24
 
