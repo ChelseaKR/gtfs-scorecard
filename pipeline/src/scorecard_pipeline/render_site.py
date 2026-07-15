@@ -383,7 +383,12 @@ def _service_bar_chart(
 
 
 def _bucket_chart(
-    rows: list[tuple[str, int]], *, title: str, note: str, css_class: str = ""
+    rows: list[tuple[str, int]],
+    *,
+    title: str,
+    note: str,
+    css_class: str = "",
+    accessible_unit: str | None = None,
 ) -> str:
     """Ordered count buckets as zero-based columns with visible exact values.
 
@@ -397,11 +402,17 @@ def _bucket_chart(
     items = []
     for label, count in rows:
         height = round((count / maximum) * 100, 1) if maximum else 0
+        aria_label = ""
+        aria_hidden = ""
+        if accessible_unit:
+            unit = accessible_unit if count == 1 else f"{accessible_unit}s"
+            aria_label = f' aria-label="{esc(f"{count} {unit}, {label}")}"'
+            aria_hidden = ' aria-hidden="true"'
         items.append(
-            f'<li class="bucket-bar" style="--height:{height:g}">'
-            f'<span class="bucket-value">{count}</span>'
+            f'<li class="bucket-bar" style="--height:{height:g}"{aria_label}>'
+            f'<span class="bucket-value"{aria_hidden}>{count}</span>'
             '<span class="bucket-column" aria-hidden="true"><span></span></span>'
-            f'<span class="bucket-label">{esc(label)}</span></li>'
+            f'<span class="bucket-label"{aria_hidden}>{esc(label)}</span></li>'
         )
     extra = f" {css_class}" if css_class else ""
     return (
@@ -4381,16 +4392,25 @@ def _render_accessibility() -> str:
 
 
 def _status_commitment_section(doc: dict[str, Any]) -> str:
-    """The "what we commit to" half of /status/ (EXP-10): what
+    """The monitoring commitment half of /status/ (EXP-10): what
     `api/v1/status.json` says, in prose, so a consumer does not have to parse
-    JSON to decide whether to depend on this feed -- the cadence tiers, the
-    historical refresh-success record, and the degradation policy. Extends
+    JSON to decide whether to depend on this feed: the cadence tiers, current
+    direct-URL liveness, and the degradation policy. Extends
     FIX-11's internal run-summary outward as a stated, checkable commitment.
     Returns a fragment (no page chrome); composed into the combined /status/
     page by `_render_status` alongside `_status_evidence_section`."""
     record = doc["refresh_success_record"]
     policy = doc["degradation_policy"]
     hours = record["hours_since_last_check"]
+    unreachable_after = int(policy["unreachable_after_consecutive_checks"])
+    clean_pct = record.get("currently_clean_pct", record.get("success_rate_pct"))
+
+    as_of = str(record["as_of"])
+    try:
+        as_of_label = dt.datetime.fromisoformat(as_of).strftime("%Y-%m-%d %H:%M UTC")
+    except ValueError:
+        as_of_label = as_of
+    as_of_html = f'<time datetime="{esc(as_of)}">{esc(as_of_label)}</time>'
 
     tier_rows = "".join(
         f"<tr><td>{esc(t['tier'].replace('_', ' ').title())}</td>"
@@ -4400,47 +4420,54 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     )
 
     if record["feeds_tracked"]:
-        record_section = f"""<p>As of {esc(record["as_of"])}, this pipeline is tracking liveness on
-        <strong>{record["feeds_tracked"]}</strong> feeds:
-        <strong>{record["healthy"]}</strong> checking in clean (no failed check in a row),
-        <strong>{record["degraded"]}</strong> with at least one recent failed check but not yet
-        flagged, and <strong>{record["unreachable"]}</strong> flagged unreachable
-        (see the degradation policy below). Time since each feed's last liveness check ranges from
-        {esc(str(hours["min"]))} to {esc(str(hours["max"]))} hours, with a median of
-        {esc(str(hours["median"]))} hours.</p>
-        <p>Overall clean-check rate: <strong>{esc(str(record["success_rate_pct"]))}%</strong>.</p>"""
+        if all(hours.get(key) is not None for key in ("min", "median", "max")):
+            check_age = f"""<p>The latest direct checks range from
+        <strong>{esc(str(hours["min"]))}</strong> to
+        <strong>{esc(str(hours["max"]))}</strong> hours old. The median is
+        <strong>{esc(str(hours["median"]))}</strong> hours.</p>"""
+        else:
+            check_age = "<p>No valid direct-check timestamps are available yet.</p>"
+        record_section = f"""<p>As of {as_of_html}, direct liveness state covers
+        <strong>{record["feeds_tracked"]}</strong> current feed records.</p>
+        <dl>
+          <dt>Checking clean</dt><dd><strong>{record["healthy"]}</strong> (latest direct check succeeded)</dd>
+          <dt>Recent check failure</dt><dd><strong>{record["degraded"]}</strong> (1&ndash;{unreachable_after - 1} consecutive direct checks failed)</dd>
+          <dt>Flagged unreachable</dt><dd><strong>{record["unreachable"]}</strong> ({unreachable_after} or more consecutive direct checks failed)</dd>
+        </dl>
+        <p>Currently checking clean: <strong>{esc(str(clean_pct))}%</strong> of tracked feed records.</p>
+        {check_age}
+        <p class="fineprint">Direct liveness calls each configured feed URL without a mirror.
+        The daily full scoring run can use the Mobility Database mirror, so the liveness counts
+        here and the run totals below answer different questions.</p>"""
     else:
         record_section = (
-            "<p>No liveness history has been recorded yet on this deployment "
+            "<p>No direct liveness state has been recorded yet on this deployment "
             "(the intraday refresh has not run). This section fills in once it has.</p>"
         )
 
     policy_items = "".join(f"<li>{esc(s)}</li>" for s in policy["statements"])
 
-    return f"""    <h2 class="section-title" id="commitment-h">What we commit to</h2>
-    <p>"Refreshed daily" is a claim; this is the record. Here is how often we intend to
-    refresh each feed, how that has actually gone, and what happens when a feed cannot be
-    refreshed on schedule &mdash; so you can decide whether to depend on this data before you
-    build on it. Machine-readable at
+    return f"""    <h2 class="section-title" id="commitment-h">Monitoring status and schedule</h2>
+    <p>The schedule is the service commitment. The liveness record shows what the pipeline
+    observed at each configured feed URL. Machine-readable at
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
-    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
-    <p>Every feed is assigned to one of two cadence tiers (ADR&nbsp;0010); a full re-validation
-    of every feed is scheduled daily regardless of tier. The latest-run section below shows
-    when that work actually completed.</p>
-    <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
-    <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
-
-    <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
+    <section class="feed-details" aria-labelledby="record-h"><h3 class="section-title" id="record-h">Current feed URL liveness</h3>
     {record_section}</section>
 
-    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
-    <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
+    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Scheduled checks</h3>
+    <p>Each feed belongs to one of two direct-liveness tiers. A separate full validation is
+    scheduled once daily for every registered feed. The latest-run section below records what
+    that daily work completed.</p>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Check</th><th scope="col">Cadence</th>
+    <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
+
+    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">When a check fails</h3>
+    <p>The scorecard keeps the last successful evidence available and makes the degraded state visible:</p>
     <ul>{policy_items}</ul></section>
 
-    <p class="fineprint">This commitment is generated fresh with every site build from the same
-    liveness state the intraday refresh keeps, so it cannot say anything the pipeline did not
-    actually observe.</p>"""
+    <p class="fineprint">This section is generated from the same liveness state used by the
+    intraday refresh. It reports only observations the pipeline recorded.</p>"""
 
 
 def _methodology_versions_section() -> str:
@@ -7144,7 +7171,7 @@ def _scope_run_summary(
             "scope_note": (
                 "Aggregate counts describe the feed-record set attempted by that run. "
                 "Named unreachable records are restricted to the current published catalog; "
-                "older out-of-scope records are counted but not named or linked."
+                "records outside that catalog are counted but not named or linked."
             ),
         }
     )
@@ -7176,10 +7203,11 @@ def _status_evidence_section(
         title="Snapshot age distribution",
         note=f"All {len(catalog)} tracked feed scorecards, grouped by snapshot age.",
         css_class="staleness-chart",
+        accessible_unit="feed scorecard",
     )
 
     if run_summary is None:
-        run_section = """    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
+        run_section = """    <section class="feed-details"><h3 class="section-title">Run summary</h3>
     <p>No run-health summary has been published yet. This page fills in the day after the
     first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>"""
     else:
@@ -7187,7 +7215,7 @@ def _status_evidence_section(
         degraded = bool(run_summary.get("degraded"))
         threshold_pct = round(run_summary.get("degraded_threshold", 0) * 100)
         badge_class = "pill-warn" if degraded else "pill-ok"
-        badge_text = "Degraded" if degraded else "Healthy"
+        badge_text = "Run completed with warnings" if degraded else "Run completed"
         unreachable_agencies = run_summary.get("unreachable_agencies", [])
         omitted_unreachable = int(run_summary.get("unreachable_outside_current_published_set", 0))
         names_by_id = {row["id"]: row["name"] for row in catalog}
@@ -7203,40 +7231,42 @@ def _status_evidence_section(
         )
         omitted_note = (
             f'<p class="fineprint">{omitted_unreachable} additional '
-            f"{'record was' if omitted_unreachable == 1 else 'records were'} in the prior "
-            "run but are outside the current published catalog, so they are counted in the "
-            "historical run totals without being named or linked here.</p>"
+            f"{'record was' if omitted_unreachable == 1 else 'records were'} part of this "
+            "run's attempted set but are outside the current published catalog. They remain "
+            "in the run totals without being named or linked here.</p>"
             if omitted_unreachable
             else ""
         )
         unreachable_list = current_unreachable_list + omitted_note
         degraded_note = (
-            f"""<p><span class="{badge_class}">Degraded run</span>. More than
-        {threshold_pct}% of that run's attempted feed records could not be refreshed. Currently
-        published records from that unreachable set are listed below.</p>"""
+            f"""<p>More than {threshold_pct}% of attempted feed records could not be
+        refreshed, so this run exceeded the warning threshold. Records from that set that
+        remain in the current catalog are listed below.</p>"""
             if degraded
             else ""
         )
         shard_count = run_summary.get("shard_count", 0)
         shard_word = "shard" if shard_count == 1 else "shards"
-        run_section = f"""    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
-    <p><span class="{badge_class}">{badge_text}</span>
-    Generated {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}),
-    across {shard_count} {shard_word}, {run_summary.get("agency_count", 0)}
-    feed records attempted. The current published catalog has
+        run_section = f"""    <section class="feed-details"><h3 class="section-title">Run summary</h3>
+    <p><span class="{badge_class}">{badge_text}</span> Recorded
+    {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}).
+    The run attempted {run_summary.get("agency_count", 0)} feed records across
+    {shard_count} {shard_word}. The current catalog contains
     {run_summary.get("published_feed_record_count", len(catalog))} feed records.</p>
+    <p class="fineprint">The badge describes this scoring run, not agency feed availability.
+    Current direct-URL liveness is reported above.</p>
     {degraded_note}
     <dl>
       <dt>Scored (fresh data this run)</dt><dd>{run_summary.get("scored", 0)}</dd>
       <dt>Reused (feed unchanged since last check)</dt><dd>{run_summary.get("reused", 0)}</dd>
-      <dt>Unreachable in that run (all attempted records)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
-      <dt>Currently published and unreachable in that run</dt><dd>{run_summary.get("current_published_unreachable_count", 0)}</dd>
+      <dt>Unreachable (all attempted records)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
+      <dt>Unreachable records still in the current catalog</dt><dd>{run_summary.get("current_published_unreachable_count", 0)}</dd>
       <dt>Fell back to the Mobility Database mirror</dt><dd>{run_summary.get("mirrored", 0)}</dd>
       <dt>Validator cache hits</dt><dd>{run_summary.get("cache_hit", 0)}</dd>
     </dl>
     </section>
 
-    <section class="feed-details"><h3 class="section-title">Per-shard breakdown</h3>
+    <details class="viz-data"><summary>Show per-shard breakdown</summary>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Outcome counts by CI shard</caption>
       <thead><tr><th scope="col">Shard</th><th scope="col">Scored</th>
@@ -7244,7 +7274,7 @@ def _status_evidence_section(
       <th scope="col">Cache hit</th><th scope="col">Wall clock</th></tr></thead>
       <tbody>{_status_shard_rows(run_summary.get("shards", []))}</tbody>
     </table></div>
-    </section>
+    </details>
 
     <section class="feed-details"><h3 class="section-title">Feed records unreachable this run</h3>
     <p>The pipeline could not fetch or validate these currently published feeds in that run;
@@ -7253,20 +7283,19 @@ def _status_evidence_section(
     {unreachable_list}
     </section>"""
 
-    return f"""    <h2 class="section-title" id="evidence-h">Latest run evidence</h2>
-    <p>What the latest published run summary recorded, including when it ran: shard outcomes,
-    feeds it could not reach, and how stale the current catalog is now. No part of this page
-    requires trusting the maintainer's word. Machine-readable at
+    return f"""    <h2 class="section-title" id="evidence-h">Latest full scoring run</h2>
+    <p>This section reports one completed scoring run. It separates all attempted records from
+    records that remain in the current catalog and shows the age of each published score.
+    Machine-readable at
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
 {run_section}
 
     <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
-    <p>Age of the scored snapshot behind every tracked feed scorecard, right now
-    (not just this run -- a feed scored successfully days ago still counts here if nothing
-    has re-triggered a fetch since).</p>
+    <p>Age of the most recent successful score behind each current scorecard. A score can be
+    older than this run when its source was unchanged or could not be fetched.</p>
     {staleness_chart}
-    <details class="viz-data"><summary>Show the table</summary>
+    <details class="viz-data"><summary>Show snapshot-age table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Feed scorecard count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Feed scorecards</th></tr></thead>
@@ -7285,7 +7314,7 @@ def _render_status(
     catalog: list[dict[str, Any]],
     now: dt.datetime,
 ) -> str:
-    """The one public /status/ page. EXP-10 (the freshness/uptime commitment)
+    """The one public /status/ page. EXP-10 (the refresh/liveness commitment)
     and FIX-11 (latest-run evidence) both used to render their own
     full page to this same URL, so whichever `write()` ran last silently
     clobbered the other's file on disk. This composes both instead: the
@@ -7298,10 +7327,11 @@ def _render_status(
     canonical = f"{BASE_URL}/status/"
     body = f"""    {_breadcrumb([("Home", "/"), ("Status", None)])}
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">Status.</h1>
-    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
-    we commit to for refresh cadence and uptime; below is evidence from the latest recorded run.
-    Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
+    <h1 class="page-title">Service status</h1>
+    <p class="page-lede">This page shows whether configured feed URLs are responding and whether
+    scheduled scoring completed. Direct liveness checks and the mirror-assisted daily run are
+    reported separately because they measure different things. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a> and
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
     {_route_rule()}
@@ -7312,9 +7342,8 @@ def _render_status(
     return _page(
         title="Status | GTFS Scorecard",
         description=(
-            "What this pipeline commits to for refresh cadence and uptime, the historical "
-            "refresh-success record, and evidence from the latest recorded run: shard outcomes, "
-            "unreachable feeds, and catalog freshness."
+            "The scorecard's monitoring schedule, current direct feed-URL liveness, latest full "
+            "scoring run, unreachable records, and catalog freshness."
         ),
         canonical=canonical,
         body=body,
@@ -8038,8 +8067,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             len(raw_liveness_state) - len(liveness_state)
         ),
         "note": (
-            "Refresh-success statistics are restricted to feed records in the current "
-            "published artifact index. Older liveness records are excluded."
+            "Liveness statistics are restricted to feed records in the current published "
+            "artifact index. Records outside that index are excluded."
         ),
     }
     write(

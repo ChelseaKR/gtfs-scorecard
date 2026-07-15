@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Status | GTFS Scorecard</title>
-  <meta name="description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and evidence from the latest recorded run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta name="description" content="The scorecard&#x27;s monitoring schedule, current direct feed-URL liveness, latest full scoring run, unreachable records, and catalog freshness.">
   <link rel="canonical" href="https://gtfsscorecard.org/status/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Status | GTFS Scorecard">
-  <meta property="og:description" content="What this pipeline commits to for refresh cadence and uptime, the historical refresh-success record, and evidence from the latest recorded run: shard outcomes, unreachable feeds, and catalog freshness.">
+  <meta property="og:description" content="The scorecard&#x27;s monitoring schedule, current direct feed-URL liveness, latest full scoring run, unreachable records, and catalog freshness.">
   <meta property="og:url" content="https://gtfsscorecard.org/status/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -44,63 +44,66 @@
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Status</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
-    <h1 class="page-title">Status.</h1>
-    <p class="page-lede">"Refreshed daily" is a claim; this page is the record. Above is what
-    we commit to for refresh cadence and uptime; below is evidence from the latest recorded run.
-    Machine-readable at <a href="/api/v1/status.json">/api/v1/status.json</a> and
+    <h1 class="page-title">Service status</h1>
+    <p class="page-lede">This page shows whether configured feed URLs are responding and whether
+    scheduled scoring completed. Direct liveness checks and the mirror-assisted daily run are
+    reported separately because they measure different things. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a> and
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
-    <h2 class="section-title" id="commitment-h">What we commit to</h2>
-    <p>"Refreshed daily" is a claim; this is the record. Here is how often we intend to
-    refresh each feed, how that has actually gone, and what happens when a feed cannot be
-    refreshed on schedule &mdash; so you can decide whether to depend on this data before you
-    build on it. Machine-readable at
+    <h2 class="section-title" id="commitment-h">Monitoring status and schedule</h2>
+    <p>The schedule is the service commitment. The liveness record shows what the pipeline
+    observed at each configured feed URL. Machine-readable at
     <a href="/api/v1/status.json">/api/v1/status.json</a>.</p>
 
-    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Intended refresh cadence</h3>
-    <p>Every feed is assigned to one of two cadence tiers (ADR&nbsp;0010); a full re-validation
-    of every feed is scheduled daily regardless of tier. The latest-run section below shows
-    when that work actually completed.</p>
-    <div class="table-wrap"><table><thead><tr><th scope="col">Tier</th><th scope="col">Cadence</th>
-    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>every intraday refresh cycle (hourly)</td><td>feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>once daily (re-validates every feed; the correctness floor)</td><td>every registered feed</td></tr></tbody></table></div></section>
+    <section class="feed-details" aria-labelledby="record-h"><h3 class="section-title" id="record-h">Current feed URL liveness</h3>
+    <p>As of <time datetime="2026-07-02T03:10:02+00:00">2026-07-02 03:10 UTC</time>, direct liveness state covers
+        <strong>2</strong> current feed records.</p>
+        <dl>
+          <dt>Checking clean</dt><dd><strong>2</strong> (latest direct check succeeded)</dd>
+          <dt>Recent check failure</dt><dd><strong>0</strong> (1&ndash;29 consecutive direct checks failed)</dd>
+          <dt>Flagged unreachable</dt><dd><strong>0</strong> (30 or more consecutive direct checks failed)</dd>
+        </dl>
+        <p>Currently checking clean: <strong>100.0%</strong> of tracked feed records.</p>
+        <p>The latest direct checks range from
+        <strong>2.0</strong> to
+        <strong>33.0</strong> hours old. The median is
+        <strong>33.0</strong> hours.</p>
+        <p class="fineprint">Direct liveness calls each configured feed URL without a mirror.
+        The daily full scoring run can use the Mobility Database mirror, so the liveness counts
+        here and the run totals below answer different questions.</p></section>
 
-    <section aria-labelledby="record-h"><h3 class="section-title" id="record-h">Historical refresh-success record</h3>
-    <p>As of 2026-07-02T03:10:02+00:00, this pipeline is tracking liveness on
-        <strong>2</strong> feeds:
-        <strong>2</strong> checking in clean (no failed check in a row),
-        <strong>0</strong> with at least one recent failed check but not yet
-        flagged, and <strong>0</strong> flagged unreachable
-        (see the degradation policy below). Time since each feed's last liveness check ranges from
-        2.0 to 33.0 hours, with a median of
-        33.0 hours.</p>
-        <p>Overall clean-check rate: <strong>100.0%</strong>.</p></section>
+    <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Scheduled checks</h3>
+    <p>Each feed belongs to one of two direct-liveness tiers. A separate full validation is
+    scheduled once daily for every registered feed. The latest-run section below records what
+    that daily work completed.</p>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Check</th><th scope="col">Cadence</th>
+    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>one direct liveness check every hour</td><td>feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>one direct liveness check in each 6-hour period, on a stable per-feed schedule that spreads requests across the period</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>one full validation each day</td><td>every registered feed</td></tr></tbody></table></div></section>
 
-    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">Degradation policy</h3>
-    <p>What happens, and what you see, when a feed cannot be refreshed on schedule:</p>
-    <ul><li>A fetch failure never fabricates or silently drops data: the last successfully retrieved artifact is carried forward, and only its freshness/expiry read is recomputed from the calendar dates it already carries (ADR 0010&#x27;s freshness sweep). A past snapshot is never rewritten, so trend history stays accurate.</li><li>A feed whose calendar has been past its expiry date for more than 365 days is labeled &#x27;stale&#x27; rather than &#x27;lapsed&#x27;, which changes how it is described but not whether it is served.</li><li>A feed URL that fails 30 consecutive liveness checks (roughly a week at standard cadence) is separately labeled &#x27;unreachable&#x27;, so a dead host reads differently from a merely stale calendar.</li><li>None of this is a guarantee of upstream uptime -- an agency&#x27;s own GTFS host can go down regardless of what this pipeline does. It is a public, honest record of what was actually observed and when, published without deletion.</li></ul></section>
+    <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">When a check fails</h3>
+    <p>The scorecard keeps the last successful evidence available and makes the degraded state visible:</p>
+    <ul><li>If a fetch fails, the last successful scorecard remains available. The pipeline recalculates only its calendar-based freshness and expiry fields. It never rewrites an older snapshot.</li><li>A feed whose calendar has been past its expiry date for more than 365 days is labeled &#x27;stale&#x27; rather than &#x27;lapsed&#x27;, which changes how it is described but not whether it is served.</li><li>A configured feed URL is labeled &#x27;unreachable&#x27; after 30 consecutive direct checks fail (roughly a week at standard cadence). This is separate from an expired calendar.</li><li>These observations do not guarantee an agency&#x27;s GTFS host will stay online. The status page records what the pipeline observed and when.</li></ul></section>
 
-    <p class="fineprint">This commitment is generated fresh with every site build from the same
-    liveness state the intraday refresh keeps, so it cannot say anything the pipeline did not
-    actually observe.</p>
+    <p class="fineprint">This section is generated from the same liveness state used by the
+    intraday refresh. It reports only observations the pipeline recorded.</p>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
-    <h2 class="section-title" id="evidence-h">Latest run evidence</h2>
-    <p>What the latest published run summary recorded, including when it ran: shard outcomes,
-    feeds it could not reach, and how stale the current catalog is now. No part of this page
-    requires trusting the maintainer's word. Machine-readable at
+    <h2 class="section-title" id="evidence-h">Latest full scoring run</h2>
+    <p>This section reports one completed scoring run. It separates all attempted records from
+    records that remain in the current catalog and shows the age of each published score.
+    Machine-readable at
     <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
 
-    <section class="feed-details"><h3 class="section-title">Latest recorded run</h3>
+    <section class="feed-details"><h3 class="section-title">Run summary</h3>
     <p>No run-health summary has been published yet. This page fills in the day after the
     first run that writes <code>data/artifacts/run/latest.json</code>.</p></section>
 
     <section class="feed-details"><h3 class="section-title">Catalog freshness</h3>
-    <p>Age of the scored snapshot behind every tracked feed scorecard, right now
-    (not just this run -- a feed scored successfully days ago still counts here if nothing
-    has re-triggered a fetch since).</p>
-    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked feed scorecards, grouped by snapshot age.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">under 1 day</span></li><li class="bucket-bar" style="--height:50"><span class="bucket-value">1</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">1-2 days</span></li><li class="bucket-bar" style="--height:100"><span class="bucket-value">2</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">3-7 days</span></li><li class="bucket-bar" style="--height:0"><span class="bucket-value">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label">over 7 days</span></li></ol></figure>
-    <details class="viz-data"><summary>Show the table</summary>
+    <p>Age of the most recent successful score behind each current scorecard. A score can be
+    older than this run when its source was unchanged or could not be fetched.</p>
+    <figure class="bucket-chart staleness-chart" style="--bins:4"><figcaption><span class="service-chart-title">Snapshot age distribution</span><span class="service-chart-note">All 3 tracked feed scorecards, grouped by snapshot age.</span></figcaption><ol class="bucket-bars"><li class="bucket-bar" style="--height:0" aria-label="0 feed scorecards, under 1 day"><span class="bucket-value" aria-hidden="true">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label" aria-hidden="true">under 1 day</span></li><li class="bucket-bar" style="--height:50" aria-label="1 feed scorecard, 1-2 days"><span class="bucket-value" aria-hidden="true">1</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label" aria-hidden="true">1-2 days</span></li><li class="bucket-bar" style="--height:100" aria-label="2 feed scorecards, 3-7 days"><span class="bucket-value" aria-hidden="true">2</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label" aria-hidden="true">3-7 days</span></li><li class="bucket-bar" style="--height:0" aria-label="0 feed scorecards, over 7 days"><span class="bucket-value" aria-hidden="true">0</span><span class="bucket-column" aria-hidden="true"><span></span></span><span class="bucket-label" aria-hidden="true">over 7 days</span></li></ol></figure>
+    <details class="viz-data"><summary>Show snapshot-age table</summary>
     <div style="overflow-x:auto"><table class="trend-table">
       <caption class="visually-hidden">Feed scorecard count by snapshot age</caption>
       <thead><tr><th scope="col">Snapshot age</th><th scope="col">Feed scorecards</th></tr></thead>

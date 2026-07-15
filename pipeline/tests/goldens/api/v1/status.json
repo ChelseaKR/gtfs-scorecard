@@ -4,20 +4,20 @@
     "source": "ADR 0010 (docs/decisions/0010-update-cadence.md); tiering logic in pipeline/src/scorecard_pipeline/cadence.py",
     "tiers": [
       {
-        "applies_to": "feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)",
-        "cadence": "every intraday refresh cycle (hourly)",
+        "applies_to": "feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)",
+        "cadence": "one direct liveness check every hour",
         "schedule_cron": "23 * * * *",
         "tier": "priority"
       },
       {
         "applies_to": "every other tracked feed",
-        "cadence": "once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once",
+        "cadence": "one direct liveness check in each 6-hour period, on a stable per-feed schedule that spreads requests across the period",
         "schedule_cron": "23 * * * *",
         "tier": "standard"
       },
       {
         "applies_to": "every registered feed",
-        "cadence": "once daily (re-validates every feed; the correctness floor)",
+        "cadence": "one full validation each day",
         "schedule_cron": "23 13 * * *",
         "tier": "full_validation"
       }
@@ -26,19 +26,20 @@
   "degradation_policy": {
     "stale_after_days_past_expiry": 365,
     "statements": [
-      "A fetch failure never fabricates or silently drops data: the last successfully retrieved artifact is carried forward, and only its freshness/expiry read is recomputed from the calendar dates it already carries (ADR 0010's freshness sweep). A past snapshot is never rewritten, so trend history stays accurate.",
+      "If a fetch fails, the last successful scorecard remains available. The pipeline recalculates only its calendar-based freshness and expiry fields. It never rewrites an older snapshot.",
       "A feed whose calendar has been past its expiry date for more than 365 days is labeled 'stale' rather than 'lapsed', which changes how it is described but not whether it is served.",
-      "A feed URL that fails 30 consecutive liveness checks (roughly a week at standard cadence) is separately labeled 'unreachable', so a dead host reads differently from a merely stale calendar.",
-      "None of this is a guarantee of upstream uptime -- an agency's own GTFS host can go down regardless of what this pipeline does. It is a public, honest record of what was actually observed and when, published without deletion."
+      "A configured feed URL is labeled 'unreachable' after 30 consecutive direct checks fail (roughly a week at standard cadence). This is separate from an expired calendar.",
+      "These observations do not guarantee an agency's GTFS host will stay online. The status page records what the pipeline observed and when."
     ],
     "unreachable_after_consecutive_checks": 30
   },
-  "description": "How fresh this data is meant to be, and how it has actually performed: the intended refresh cadence per tier, the historical refresh-success record, and what happens when a feed cannot be refreshed on schedule.",
+  "description": "The intended refresh cadence, current direct feed-URL liveness, and what happens when a feed cannot be refreshed on schedule.",
   "generated_at": "2026-07-02T03:10:02+00:00",
   "human_readable": "https://gtfsscorecard.org/status/",
   "license": "CC-BY-4.0",
   "refresh_success_record": {
     "as_of": "2026-07-02T03:10:02+00:00",
+    "currently_clean_pct": 100.0,
     "degraded": 0,
     "feeds_tracked": 2,
     "healthy": 2,
@@ -47,13 +48,14 @@
       "median": 33.0,
       "min": 2.0
     },
+    "measurement_note": "Current share of feed records with no consecutive failed direct check; not a historical request-success rate.",
     "success_rate_pct": 100.0,
     "unreachable": 0
   },
   "scope": {
     "liveness_records_in_scope": 2,
     "liveness_records_outside_current_published_set": 0,
-    "note": "Refresh-success statistics are restricted to feed records in the current published artifact index. Older liveness records are excluded.",
+    "note": "Liveness statistics are restricted to feed records in the current published artifact index. Records outside that index are excluded.",
     "published_feed_record_count": 3
   }
 }

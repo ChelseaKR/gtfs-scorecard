@@ -397,6 +397,12 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/run-status.json` | Latest completed-run evidence. Aggregate counts retain that run's historical attempted set; named unreachable records are restricted to the current published catalog, with older records counted but not named. |
 | `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run. |
 
+In `api/v1/status.json`, `currently_clean_pct` is the current share of feed
+records with no consecutive failed direct check. The legacy
+`success_rate_pct` field remains as an equal-valued compatibility alias; it is
+not a historical request-success rate. Direct liveness never uses a mirror,
+while the daily scoring run may use the Mobility Database mirror.
+
 Per-agency detail stays the published artifact (`<agency>/latest.json`); the API
 does not duplicate it. Human-readable named changes and the corpus trend render
 on [the coverage overview](https://gtfsscorecard.org/pulse/). Absolute score

@@ -3842,7 +3842,44 @@ def test_status_page_with_no_run_summary_says_not_published_yet() -> None:
 
     html = _status_evidence_section(None, [], dt.datetime(2026, 7, 8, tzinfo=dt.UTC))
     assert "No run-health summary has been published yet" in html
-    assert "Latest run evidence" in html
+    assert "Latest full scoring run" in html
+
+
+def test_status_commitment_labels_current_liveness_and_explains_mirror_difference() -> None:
+    import datetime as dt
+
+    from scorecard_pipeline.metrics import UNREACHABLE_STREAK_CHECKS
+    from scorecard_pipeline.render_site import _status_commitment_section
+    from scorecard_pipeline.status_commitment import build_status_commitment
+
+    now = dt.datetime(2026, 7, 8, 14, 0, tzinfo=dt.UTC)
+    doc = build_status_commitment(
+        {
+            "clean": {
+                "checked_at": "2026-07-08T13:00:00+00:00",
+                "consecutive_failures": 0,
+            },
+            "recent-failure": {
+                "checked_at": "2026-07-08T12:00:00+00:00",
+                "consecutive_failures": 2,
+            },
+            "unreachable": {
+                "checked_at": "2026-07-08T11:00:00+00:00",
+                "consecutive_failures": UNREACHABLE_STREAK_CHECKS,
+            },
+        },
+        now,
+        "https://gtfsscorecard.org",
+    )
+
+    html = _status_commitment_section(doc)
+
+    assert "Current feed URL liveness" in html
+    assert "Currently checking clean: <strong>33.3%</strong>" in html
+    assert "Overall clean-check rate" not in html
+    assert "without a mirror" in html
+    assert "daily full scoring run can use the Mobility Database mirror" in html
+    assert '<time datetime="2026-07-08T14:00:00+00:00">2026-07-08 14:00 UTC</time>' in html
 
 
 def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
@@ -3877,13 +3914,17 @@ def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:
     }
     catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
     html = _status_evidence_section(run_summary, catalog, now)
-    assert "Healthy" in html
-    assert "Degraded run" not in html
+    assert "Run completed" in html
+    assert "Healthy" not in html
+    assert "warning threshold" not in html
     assert ">95<" in html  # scored count
     assert "No currently published feed record was unreachable" in html
     assert 'class="bucket-chart staleness-chart"' in html
     assert "Snapshot age distribution" in html
     assert "All 1 tracked feed scorecards" in html
+    assert 'aria-label="1 feed scorecard, under 1 day"' in html
+    assert "Show per-shard breakdown" in html
+    assert "Show snapshot-age table" in html
 
 
 def test_status_page_degraded_run_names_unreachable_agencies() -> None:
@@ -3908,7 +3949,8 @@ def test_status_page_degraded_run_names_unreachable_agencies() -> None:
     }
     catalog = [{"id": "unitrans", "name": "Unitrans"}]
     html = _status_evidence_section(run_summary, catalog, now)
-    assert "Degraded run" in html
+    assert "Run completed with warnings" in html
+    assert "exceeded the warning threshold" in html
     assert 'href="/agency/unitrans/"' in html
     assert "Unitrans" in html
 
@@ -3960,7 +4002,7 @@ def test_run_status_scopes_names_to_current_catalog_without_rewriting_history() 
     html = _status_evidence_section(scoped, catalog, dt.datetime(2026, 7, 8, tzinfo=dt.UTC))
     assert 'href="/agency/unitrans/"' in html
     assert "removed-feed" not in html
-    assert "1 additional record was" in html
+    assert "1 additional record was part of this run's attempted set" in html
 
 
 def test_render_status_combines_commitment_and_evidence_sections() -> None:
@@ -3993,12 +4035,16 @@ def test_render_status_combines_commitment_and_evidence_sections() -> None:
     catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
     html = _render_status(status_doc, run_summary, catalog, now)
     # The commitment half (EXP-10).
-    assert "What we commit to" in html
-    assert "Intended refresh cadence" in html
-    assert "Degradation policy" in html
+    assert "Service status" in html
+    assert "Monitoring status and schedule" in html
+    assert "Current feed URL liveness" in html
+    assert "Scheduled checks" in html
+    assert "When a check fails" in html
+    assert 'class="page-lede">"Refreshed daily"' not in html
+    assert "Direct liveness checks and the mirror-assisted daily run" in html
     # The run-evidence half (FIX-11).
-    assert "Latest run evidence" in html
-    assert "Per-shard breakdown" in html
+    assert "Latest full scoring run" in html
+    assert "Show per-shard breakdown" in html
     assert "Catalog freshness" in html
     # Both JSON twins stay cross-linked, and only one page-level title exists.
     assert 'href="/api/v1/status.json"' in html

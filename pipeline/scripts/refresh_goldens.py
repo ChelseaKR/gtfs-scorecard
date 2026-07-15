@@ -39,10 +39,15 @@ def main() -> None:
         shutil.rmtree(goldens)
         goldens.mkdir(parents=True)
         web = scratch / "web"
+        fixture_web = fixture / "web"
         for source in written:
-            target = goldens / source.relative_to(web)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, target)
+            relative = source.relative_to(web)
+            golden_target = goldens / relative
+            fixture_target = fixture_web / relative
+            golden_target.parent.mkdir(parents=True, exist_ok=True)
+            fixture_target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, golden_target)
+            shutil.copy2(source, fixture_target)
         if preserved_reports is not None:
             shutil.copytree(preserved_reports, report_goldens)
 
