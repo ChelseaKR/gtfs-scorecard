@@ -63,7 +63,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.11`). The rule for
+Every artifact carries a `schema_version` (currently `1.12`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -112,6 +112,11 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.12` adds the `translations` detail block to measured rider-experience
+  completeness artifacts. The version bump makes unchanged-feed reuse rebuild
+  each current artifact once, so translation availability does not remain
+  unknown after deployment. Additive; grades and the scoring profile are
+  unchanged.
 - `1.11` adds `configured_kinds` and `kinds_configured` to Realtime category
   details. Together with `kinds_reachable`, they state the exact denominator
   behind capability-aware reachability scoring for partial GTFS-Realtime
@@ -163,7 +168,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.11",
+  "schema_version": "1.12",
   "rubric_version": "1.2",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.2",
@@ -294,7 +299,7 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.11",
+  "schema_version": "1.12",
   "rubric_version": "1.2",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -490,7 +495,7 @@ category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.11",
+  "schema_version": "1.12",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
@@ -515,7 +520,7 @@ category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.11",
+  "schema_version": "1.12",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
