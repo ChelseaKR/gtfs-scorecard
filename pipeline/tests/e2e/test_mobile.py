@@ -220,6 +220,35 @@ def test_key_pages_fit_tablet_and_desktop(page: Page, base_url: str, width: int)
         assert page_width <= viewport, f"{path} at {width}px: {page_width}px page"
 
 
+def test_feature_shortlist_keeps_a_readable_tablet_layout(page: Page, base_url: str) -> None:
+    """The action row must not consume the prose-width board and collapse the
+    empty-state message to a zero-width grid track."""
+    page.set_viewport_size({"width": 720, "height": 900})
+    page.goto(f"{base_url}/app/#/")
+    expect(page.locator("#main .loading")).to_have_count(0)
+
+    layout = page.locator(".feature-match-board").evaluate(
+        """el => {
+          const board = el.getBoundingClientRect();
+          const count = el.querySelector('.agency-count').getBoundingClientRect();
+          const actions = el.querySelector('.feature-match-actions').getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(el.querySelector('.agency-count'));
+          return {
+            boardHeight: board.height,
+            countWidth: count.width,
+            countLines: range.getClientRects().length,
+            actionsBelowCount: actions.top >= count.bottom - 1,
+          };
+        }"""
+    )
+    assert layout["countWidth"] >= 300, layout
+    assert layout["countLines"] <= 2, layout
+    assert layout["actionsBelowCount"], layout
+    assert layout["boardHeight"] < 180, layout
+    expect(page.get_by_role("button", name="Download matching feeds (CSV)")).to_be_hidden()
+
+
 @pytest.mark.parametrize(("path", "grade"), [("/", "A"), ("/agency/unitrans/", "B")])
 def test_reduced_motion_keeps_grade_and_content_visible(
     page: Page, base_url: str, path: str, grade: str

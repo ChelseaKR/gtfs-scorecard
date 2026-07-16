@@ -630,13 +630,13 @@ function renderOverview(directory) {
       ${locationControlsHtml(countries, s.states || [])}
     </section>
 
-    <section class="feature-match-board reveal" aria-labelledby="feature-match-h">
+    <section class="feature-match-board reveal" aria-labelledby="feature-match-h" data-active="false">
       <h2 class="feature-match-kicker" id="feature-match-h">Consumer shortlist</h2>
       <p class="agency-count" role="status" aria-live="polite">Choose a filter to build a shortlist.</p>
       <div class="feature-match-actions">
         <button type="button" class="feature-download-btn" id="download-feature-results" disabled>Download matching feeds (CSV)</button>
         <button type="button" class="feature-clear-btn" id="clear-feature-results" disabled>Clear shortlist</button>
-        <a href="/api/v1/features.json">Use the complete feature API</a>
+        <a href="/api/v1/features.json">Open the feature API</a>
       </div>
     </section>
     <ul class="agency-list" id="agency-list"></ul>
@@ -683,6 +683,9 @@ function setupOverview(agencies, total, summary) {
   );
   const resetBtn = /** @type {HTMLButtonElement} */ (
     main.querySelector("#clear-feature-results")
+  );
+  const matchBoard = /** @type {HTMLElement} */ (
+    main.querySelector(".feature-match-board")
   );
   const moreWrap = /** @type {HTMLElement} */ (main.querySelector(".show-more-wrap"));
   const moreBtn = /** @type {HTMLElement} */ (main.querySelector("#show-more"));
@@ -905,7 +908,7 @@ function setupOverview(agencies, total, summary) {
   function apply() {
     syncUrl();
     const tokens = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const active =
+    const active = Boolean(
       tokens.length ||
       facet !== "all" ||
       selectedFeatures.size ||
@@ -913,7 +916,9 @@ function setupOverview(agencies, total, summary) {
       tripsMin.value ||
       locationFilter.country !== "all" ||
       locationFilter.subdivision !== "all" ||
-      locationFilter.legacyState !== "all";
+      locationFilter.legacyState !== "all"
+    );
+    matchBoard.dataset.active = String(active);
     hint.hidden = active;
     list.innerHTML = "";
     shown = 0;
