@@ -766,10 +766,13 @@ def _accessibility_substat(comp_cat: dict[str, Any], artifact: dict[str, Any] | 
     acc = details.get("accessibility") if isinstance(details.get("accessibility"), dict) else {}
     stated = acc.get("stops_stated_pct", details.get("wheelchair_boarding_pct"))
     marked = acc.get("stops_marked_accessible_pct", details.get("wheelchair_marked_accessible_pct"))
+    from .mode_language import boarding_place_noun
+
+    place_plural = boarding_place_noun(artifact or {}, plural=True)
     note = "States accessibility, not verified physical usability."
     if isinstance(stated, (int, float)) and isinstance(marked, (int, float)):
         note = (
-            f"{round(stated)}% of stops state accessibility "
+            f"{round(stated)}% of {place_plural} state accessibility "
             f"({round(marked)}% marked accessible). "
             "Reflects what the feed states, not verified physical usability."
         )
@@ -1669,7 +1672,14 @@ def _rider_impact_section(artifact: dict[str, Any]) -> str:
         _artifact_category(artifact, "freshness"), artifact.get("snapshot_date")
     )
     completeness = _artifact_category(artifact, "completeness")
-    accessibility = _rider_accessibility_text(completeness)
+    from .mode_language import boarding_place_noun
+
+    accessibility = _rider_accessibility_text(
+        completeness,
+        boarding_place_noun(artifact),
+        boarding_place_noun(artifact, plural=True),
+        "vessels" if boarding_place_noun(artifact) == "terminal" else "vehicles",
+    )
     fare = _rider_fare_text(completeness)
     live = _rider_live_text(_artifact_category(artifact, "realtime"))
     rows = (
@@ -1724,7 +1734,12 @@ def _rider_schedule_text(freshness: dict[str, Any], snapshot_date: Any = None) -
     return f"The feed's last published service date was {_plain_number(abs(days))} days ago."
 
 
-def _rider_accessibility_text(completeness: dict[str, Any]) -> str:
+def _rider_accessibility_text(
+    completeness: dict[str, Any],
+    place: str = "stop",
+    places: str = "stops",
+    vehicles: str = "vehicles",
+) -> str:
     comp_details = _measured_details(completeness)
     access = comp_details.get("accessibility", {})
     access = access if isinstance(access, dict) else {}
@@ -1736,23 +1751,23 @@ def _rider_accessibility_text(completeness: dict[str, Any]) -> str:
     )
     if stops is not None and trips is not None:
         text = (
-            f"Accessibility information is stated for {_plain_number(stops)}% of stops and "
+            f"Accessibility information is stated for {_plain_number(stops)}% of {places} and "
             f"{_plain_number(trips)}% of trips."
         )
     elif stops is not None:
         text = (
-            f"Accessibility information is stated for {_plain_number(stops)}% of stops; "
+            f"Accessibility information is stated for {_plain_number(stops)}% of {places}; "
             "trip coverage is not known."
         )
     elif trips is not None:
         text = (
             f"Accessibility information is stated for {_plain_number(trips)}% of trips; "
-            "stop coverage is not known."
+            f"{place.capitalize()} coverage is not known."
         )
     else:
         text = "Published accessibility-data coverage is not known from this scorecard."
     return text + (
-        " This measures published data, not whether stops or vehicles are physically usable."
+        f" This measures published data, not whether {places} or {vehicles} are physically usable."
     )
 
 
@@ -2092,7 +2107,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     report_route = (
         '<nav class="report-route" aria-label="On this scorecard">'
         '<p class="report-route-kicker">Report route</p>'
-        '<p class="report-route-title">Stops on this page</p><ol>'
+        '<p class="report-route-title">Sections on this page</p><ol>'
         + "".join(
             f'<li><a href="{href}"><span aria-hidden="true"></span>{label}</a></li>'
             for label, href in report_stops
@@ -3186,6 +3201,10 @@ def _conformance_section(artifact: dict[str, Any], agency_id: str, agency_name: 
     the criteria show what is left, framed as a mark to earn rather than a failure.
     Each criterion is labelled in text, never by color alone."""
     mark = conformance_assess(artifact)
+    from .mode_language import adapt_text, boarding_place_noun, language_kind
+
+    kind = language_kind(artifact)
+    place = boarding_place_noun(artifact)
     rows = []
     for crit in mark.criteria:
         name = _CONFORMANCE_NAMES.get(crit.key, crit.key)
@@ -3193,7 +3212,7 @@ def _conformance_section(artifact: dict[str, Any], agency_id: str, agency_name: 
         label = "Met" if crit.met else "Not yet"
         rows.append(
             f'<dt>{name} <span class="ntd-status {status}">{label}</span></dt>'
-            f"<dd>{esc(crit.detail)}</dd>"
+            f"<dd>{esc(adapt_text(crit.detail, kind))}</dd>"
         )
     head_status = "ntd-ready" if mark.awarded else "ntd-not_ready"
     head_label = "Awarded" if mark.awarded else "Not yet"
@@ -3214,15 +3233,15 @@ def _conformance_section(artifact: dict[str, Any], agency_id: str, agency_name: 
         '<section aria-labelledby="mark-h" class="feed-details">'
         '<h2 class="section-title" id="mark-h">Conformance mark '
         f'<span class="ntd-status {head_status}">{head_label}</span></h2>'
-        f'<p class="page-lede">{esc(mark.summary)}</p>'
+        f'<p class="page-lede">{esc(adapt_text(mark.summary, kind))}</p>'
         f"{seal}"
         f'<dl class="standards-list">{"".join(rows)}</dl>'
         '<p class="plain-summary"><strong>In plain words:</strong> earn this mark when your feed '
-        "passes validation, has not expired, and says whether nearly every stop and trip is "
+        f"passes validation, has not expired, and says whether nearly every {place} and trip is "
         "wheelchair accessible.</p>"
         '<p class="fineprint">A pass credential for a feed that is valid, current, and states '
-        "wheelchair access on nearly every stop and trip. Accessibility here measures what the "
-        "feed publishes, not whether a stop is physically usable. "
+        f"wheelchair access on nearly every {place} and trip. Accessibility here measures what the "
+        f"feed publishes, not whether a {place} is physically usable. "
         '<a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/conformance.md">'
         "How the conformance mark works.</a></p></section>"
     )
@@ -3277,7 +3296,8 @@ def _california_guideline_checklist(artifact: dict[str, Any]) -> list[dict[str, 
     if stops_num is not None and trips_num is not None:
         wheelchair_met = stops_num >= 90 and trips_num >= 90
         wheelchair_detail = (
-            f"States wheelchair access on {round(stops_num)}% of stops and "
+            f"States wheelchair access on {round(stops_num)}% of "
+            f"{('terminals' if artifact.get('mode_profile', {}).get('ferry_only') is True else 'stops')} and "
             f"{round(trips_num)}% of trips."
         )
 

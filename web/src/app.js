@@ -1728,6 +1728,10 @@ function adaptModeText(text, kind) {
     [/\bwalk to a stop\b/gi, "go to a terminal"],
     [/(\b\d+(?:\.\d+)?%? of (?:\d+ )?)stops\b/gi, "$1terminals"],
     [/\bSome stops sit\b/gi, "Some terminals sit"],
+    [/\bstops or vehicles\b/gi, "terminals or vessels"],
+    [/\bstop coverage\b/gi, "terminal coverage"],
+    [/\bwhether a stop is\b/gi, "whether a terminal is"],
+    [/\bnearly every stop\b/gi, "nearly every terminal"],
     [/\bper flagged stop\b/gi, "per flagged terminal"],
     [/\bno trip ever stops at them\b/gi, "no trip serves them"],
     [/\bwhat the vessel displays\b/gi, "the published sailing destination"],
@@ -1756,6 +1760,7 @@ function adaptArtifactLanguage(artifact) {
   if (result.categories) result.categories = adaptModeContainer(result.categories, kind);
   for (const key of ["top_fixes", "recommendations"])
     if (Array.isArray(result[key])) result[key] = adaptModeContainer(result[key], kind);
+  if (result.conformance) result.conformance = adaptModeContainer(result.conformance, kind);
   if (Array.isArray(result.routability?.findings))
     result.routability = { ...result.routability, findings: adaptModeContainer(result.routability.findings, kind) };
   return result;
@@ -1884,15 +1889,19 @@ function riderImpactSection(artifact) {
   const access = compDetails.accessibility || {};
   const stops = numericValue(access.stops_stated_pct ?? compDetails.wheelchair_boarding_pct);
   const trips = numericValue(access.trips_stated_pct ?? compDetails.wheelchair_accessible_pct);
+  const ferryOnly = modeLanguageKind(artifact) === "ferry";
+  const places = ferryOnly ? "terminals" : "stops";
+  const placeCoverage = ferryOnly ? "Terminal coverage" : "Stop coverage";
+  const vehicles = ferryOnly ? "vessels" : "vehicles";
   let accessibility;
   if (stops !== null && trips !== null)
-    accessibility = `Accessibility information is stated for ${plainNumber(stops)}% of stops and ${plainNumber(trips)}% of trips.`;
+    accessibility = `Accessibility information is stated for ${plainNumber(stops)}% of ${places} and ${plainNumber(trips)}% of trips.`;
   else if (stops !== null)
-    accessibility = `Accessibility information is stated for ${plainNumber(stops)}% of stops; trip coverage is not known.`;
+    accessibility = `Accessibility information is stated for ${plainNumber(stops)}% of ${places}; trip coverage is not known.`;
   else if (trips !== null)
-    accessibility = `Accessibility information is stated for ${plainNumber(trips)}% of trips; stop coverage is not known.`;
+    accessibility = `Accessibility information is stated for ${plainNumber(trips)}% of trips; ${placeCoverage.toLowerCase()} is not known.`;
   else accessibility = "Published accessibility-data coverage is not known from this scorecard.";
-  accessibility += " This measures published data, not whether stops or vehicles are physically usable.";
+  accessibility += ` This measures published data, not whether ${places} or ${vehicles} are physically usable.`;
 
   let fare;
   if (compDetails.fare_free === true) fare = "The feed marks this service as fare-free.";
@@ -2645,17 +2654,19 @@ function conformanceSection(artifact, agencyId, agencyName) {
   const seal = mark.awarded
     ? `<p><img src="${escAttr(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="GTFS conformance mark for ${escAttr(agencyName)}"></p>`
     : "";
+  const ferryOnly = modeLanguageKind(artifact) === "ferry";
+  const place = ferryOnly ? "terminal" : "stop";
   return `<section aria-labelledby="mark-h" class="feed-details reveal">
     <h2 class="section-title" id="mark-h">Conformance mark <span class="ntd-status ${headStatus}">${headLabel}</span></h2>
     ${mark.summary ? `<p class="page-lede">${esc(String(mark.summary))}</p>` : ""}
     ${seal}
     <dl class="standards-list">${rows}</dl>
     <p class="plain-summary"><strong>In plain words:</strong> earn this mark when your feed passes
-      validation, has not expired, and says whether nearly every stop and trip is wheelchair
+      validation, has not expired, and says whether nearly every ${place} and trip is wheelchair
       accessible.</p>
     <p class="fineprint">A pass credential for a feed that is valid, current, and states
-      wheelchair access on nearly every stop and trip. Accessibility here measures what the
-      feed publishes, not whether a stop is physically usable.
+      wheelchair access on nearly every ${place} and trip. Accessibility here measures what the
+      feed publishes, not whether a ${place} is physically usable.
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/conformance.md">How the conformance mark works.</a></p>
   </section>`;
 }

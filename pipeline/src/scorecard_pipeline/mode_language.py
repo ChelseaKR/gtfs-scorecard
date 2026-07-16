@@ -71,6 +71,13 @@ def mode_label(artifact: dict[str, Any]) -> str | None:
     return f"{' + '.join(labels[:2])} + {len(labels) - 2} more"
 
 
+def boarding_place_noun(artifact: dict[str, Any], *, plural: bool = False) -> str:
+    """Presentation noun for a GTFS stop without changing the GTFS field name."""
+    if language_kind(artifact) == "ferry":
+        return "terminals" if plural else "terminal"
+    return "stops" if plural else "stop"
+
+
 def _preserve_case(original: str, replacement: str) -> str:
     if original.isupper():
         return replacement.upper()
@@ -123,6 +130,10 @@ def adapt_text(text: str, kind: str) -> str:
         (r"\bwalk to a stop\b", "go to a terminal"),
         (r"(\b\d+(?:\.\d+)?%? of (?:\d+ )?)stops\b", r"\1terminals"),
         (r"\bSome stops sit\b", "Some terminals sit"),
+        (r"\bstops or vehicles\b", "terminals or vessels"),
+        (r"\bstop coverage\b", "terminal coverage"),
+        (r"\bwhether a stop is\b", "whether a terminal is"),
+        (r"\bnearly every stop\b", "nearly every terminal"),
         (r"\bper flagged stop\b", "per flagged terminal"),
         (r"\bno trip ever stops at them\b", "no trip serves them"),
         (r"\bwhat the vessel displays\b", "the published sailing destination"),
@@ -159,6 +170,8 @@ def adapt_artifact_language(artifact: dict[str, Any]) -> dict[str, Any]:
     for key in ("top_fixes", "recommendations"):
         if isinstance(result.get(key), list):
             result[key] = _adapt_container(result[key], kind)
+    if isinstance(result.get("conformance"), dict):
+        result["conformance"] = _adapt_container(result["conformance"], kind)
     routability = result.get("routability")
     if isinstance(routability, dict) and isinstance(routability.get("findings"), list):
         routability["findings"] = _adapt_container(routability["findings"], kind)

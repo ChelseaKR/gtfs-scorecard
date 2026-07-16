@@ -265,6 +265,12 @@ def test_ferry_scorecard_uses_mode_aware_language(page: Page, app_url: str) -> N
     expect(fixes).to_contain_text("accessible terminals")
     expect(fixes).to_contain_text("vessel")
     expect(fixes).not_to_contain_text("bus itself")
+    rider = page.locator("#rider-impact")
+    expect(rider).to_contain_text("terminals")
+    expect(rider).to_contain_text("vessels")
+    mark = page.locator("section[aria-labelledby='mark-h']")
+    expect(mark).to_contain_text("terminal")
+    expect(mark).not_to_contain_text("nearly every stop")
 
 
 def test_agency_route_allowlists_hostile_artifact_severity(page: Page, app_url: str) -> None:

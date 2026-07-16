@@ -250,7 +250,7 @@ def test_ferry_route_map_uses_terminal_language() -> None:
 
 
 def test_status_board_identifies_ungraded_ferry_mode() -> None:
-    artifact = {
+    artifact: dict[str, Any] = {
         "overall": {"grade": "B", "score": 84.0},
         "snapshot_date": "2026-07-16",
         "categories": {
@@ -546,6 +546,29 @@ def test_rider_impact_disclosure_uses_measured_fields_without_rating_service() -
     assert "covered 77.8% of scheduled trips" in html
     assert "does not rate service reliability" in html
     assert "confirm current service alerts, fares, and accessibility accommodations" in html
+
+
+def test_ferry_rider_impact_uses_terminal_and_vessel_language() -> None:
+    artifact = {
+        "mode_profile": {
+            "measured": True,
+            "ferry_only": True,
+            "is_multimodal": False,
+            "primary_mode": "ferry",
+        },
+        "categories": {
+            "completeness": {
+                "status": "measured",
+                "details": {"accessibility": {"stops_stated_pct": 80, "trips_stated_pct": 90}},
+            }
+        },
+    }
+
+    html = _rider_impact_section(artifact)
+
+    assert "80% of terminals" in html
+    assert "whether terminals or vessels are physically usable" in html
+    assert "% of stops" not in html
 
 
 def test_rider_impact_disclosure_keeps_unknowns_neutral_and_escapes_model() -> None:
@@ -870,6 +893,43 @@ def test_accessibility_substat_renders_meter_and_caveat() -> None:
     assert 'role="meter"' in html and 'aria-valuenow="40"' in html
     assert "not verified physical usability" in html
     assert _accessibility_substat({"status": "not_yet_measured"}) == ""
+
+
+def test_ferry_accessibility_substat_and_conformance_use_terminal_language() -> None:
+    from scorecard_pipeline.render_site import _conformance_section
+
+    artifact: dict[str, Any] = {
+        "mode_profile": {
+            "measured": True,
+            "ferry_only": True,
+            "is_multimodal": False,
+            "primary_mode": "ferry",
+        },
+        "feed": {"reachable": True},
+        "categories": {
+            "correctness": {"status": "measured", "findings": []},
+            "freshness": {"status": "measured", "details": {"days_until_expiry": 52}},
+            "completeness": {
+                "status": "measured",
+                "details": {
+                    "accessibility": {
+                        "score": 40.0,
+                        "stops_stated_pct": 40.0,
+                        "stops_marked_accessible_pct": 35.0,
+                        "trips_stated_pct": 50.0,
+                    }
+                },
+            },
+        },
+    }
+
+    substat = _accessibility_substat(artifact["categories"]["completeness"], artifact)
+    conformance = _conformance_section(artifact, "demo-ferry", "Demo Ferry")
+
+    assert "40% of terminals state accessibility" in substat
+    assert "40% of terminals and 50% of trips" in conformance
+    assert "nearly every terminal and trip" in conformance
+    assert "whether a terminal is physically usable" in conformance
 
 
 def test_accessibility_depth_signals_lists_the_second_lens_checks() -> None:

@@ -48,6 +48,9 @@ the declared public surface).
   European GTFS beta gate separately from full interface localization and NeTEx.
 
 ### Fixed
+- Complete ferry-only terminology in generated rider summaries, accessibility
+  sub-scores, conformance copy, and scorecard section navigation while keeping
+  GTFS field and file names exact.
 - Close the mobile primary menu after following a navigation link and rebalance
   the feature controls across desktop and narrow layouts.
 
