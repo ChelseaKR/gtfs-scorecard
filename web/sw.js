@@ -15,7 +15,7 @@
  */
 (function () {
   "use strict";
-  var CACHE = "scorecard-offline-v1";
+  var CACHE = "scorecard-offline-v2";
   var SHELL = ["/src/styles.css", "/src/theme.js", "/src/nav.js"];
   var sw = /** @type {any} */ (self);
 

@@ -109,6 +109,66 @@ def _portable_directory() -> dict[str, Any]:
     return cast(dict[str, Any], directory)
 
 
+def _feature_directory() -> dict[str, Any]:
+    """Portable directory with a small, deterministic feature cohort."""
+    directory = _portable_directory()
+    feature_defaults = {
+        "comparison_eligible": False,
+        "capabilities_measured": False,
+        "accessibility_measured": False,
+        "has_accessibility": None,
+        "wheelchair_boarding_pct": None,
+        "wheelchair_accessible_pct": None,
+        "accessibility_band": None,
+        "has_flex": None,
+        "has_fares": None,
+        "has_fares_v2": None,
+        "fare_model": None,
+        "has_pathways": None,
+        "has_step_free": None,
+        "has_cemv": None,
+    }
+    for agency in directory["agencies"]:
+        agency.update(feature_defaults)
+        if agency["id"] == "barrie-transit":
+            agency.update(
+                {
+                    "capabilities_measured": True,
+                    "accessibility_measured": True,
+                    "has_accessibility": True,
+                    "wheelchair_boarding_pct": 100.0,
+                    "wheelchair_accessible_pct": 96.0,
+                    "accessibility_band": "most",
+                    "has_flex": False,
+                    "has_fares": True,
+                    "has_fares_v2": True,
+                    "fare_model": "v2",
+                    "has_pathways": True,
+                    "has_step_free": True,
+                    "has_cemv": False,
+                }
+            )
+        elif agency["id"] == "london-transit-commission":
+            agency.update(
+                {
+                    "capabilities_measured": True,
+                    "accessibility_measured": True,
+                    "has_accessibility": True,
+                    "wheelchair_boarding_pct": 80.0,
+                    "wheelchair_accessible_pct": 40.0,
+                    "accessibility_band": "some",
+                    "has_flex": True,
+                    "has_fares": True,
+                    "has_fares_v2": False,
+                    "fare_model": "legacy",
+                    "has_pathways": False,
+                    "has_step_free": False,
+                    "has_cemv": False,
+                }
+            )
+    return directory
+
+
 def _serve_directory(page: Page, directory: dict[str, Any]) -> None:
     page.route(
         "**/data/artifacts/directory.json",
@@ -298,6 +358,65 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     ).to_be_visible()
     expect(page.locator("[onmouseover]")).to_have_count(0)
     assert page.evaluate("() => window.__pwned") is None
+
+
+def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url: str) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(
+        f"{app_url}#/?country=ca&subdivision=ca-on"
+        "&features=accessibility,fares_v2&stops=95&trips=95"
+    )
+
+    expect(page.locator('input[value="accessibility"]')).to_be_checked()
+    expect(page.locator('input[value="fares_v2"]')).to_be_checked()
+    expect(page.locator("#wheelchair-stops-min")).to_have_value("95")
+    expect(page.locator("#wheelchair-trips-min")).to_have_value("95")
+    # Feature evidence remains filterable during a score-rubric rollout; every
+    # synthetic row is deliberately ineligible for score comparison.
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.get_by_role("link", name="London Transit Commission")).to_have_count(0)
+    expect(page.locator(".feature-evidence")).to_contain_text(
+        "Accessibility: 100% stops, 96% trips · Fares v2"
+    )
+    expect(page.get_by_role("link", name="Use the complete feature API")).to_have_attribute(
+        "href", "/api/v1/features.json"
+    )
+
+    # A user interaction canonicalizes the portable location keys while
+    # retaining every feature condition in the shareable URL.
+    page.locator("#agency-sort").select_option("za")
+    assert _hash_params(page) == {
+        "country": "CA",
+        "subdivision": "CA-ON",
+        "sort": "za",
+        "features": "accessibility,fares_v2",
+        "stops": "95",
+        "trips": "95",
+    }
+
+    with page.expect_download() as download_info:
+        page.get_by_role("button", name="Download 1 matching feed (CSV)").click()
+    download = download_info.value
+    assert download.suggested_filename.startswith("gtfs-scorecard-feature-matches-")
+    csv = Path(download.path()).read_text()
+    assert len(csv.splitlines()) == 2
+    assert '"capabilities_measured"' in csv.splitlines()[0]
+    assert '"accessibility_fields"' in csv.splitlines()[0]
+    assert '"barrie-transit"' in csv
+    assert '"london-transit-commission"' not in csv
+    assert '"100"' in csv and '"96"' in csv
+
+    page.get_by_role("button", name="Clear shortlist").click()
+    expect(page.locator(".results-hint")).to_be_visible()
+    expect(page.locator(".agency-count")).to_have_text("Choose a filter to build a shortlist.")
+    expect(page.locator('input[value="accessibility"]')).not_to_be_checked()
+    expect(page.locator("#wheelchair-stops-min")).to_have_value("")
+    expect(page.get_by_role("button", name="Download matching feeds (CSV)")).to_be_disabled()
+    assert _hash_params(page) == {"sort": "za"}
 
 
 def test_cohort_agency_name_cannot_inject_attributes(page: Page, app_url: str) -> None:

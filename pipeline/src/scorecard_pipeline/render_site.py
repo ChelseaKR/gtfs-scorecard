@@ -8116,9 +8116,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # Pass 1: read each scorecard once to build the catalog records the
     # directory needs (grade, score, location, size, and comparison provenance).
     catalog: list[dict[str, Any]] = []
+    directory_catalog: list[dict[str, Any]] = []
     ntd_artifacts: list[dict[str, Any]] = []
     artifacts_by_id: dict[str, dict[str, Any]] = {}
     problem_findings_by_id: dict[str, list[dict[str, Any]]] = {}
+    from .features import feature_measurements
+
     for agency_id in sorted(index["agencies"]):
         latest = art / agency_id / "latest.json"
         if not latest.exists():
@@ -8206,6 +8209,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if location.subdivision_name:
             catalog_record["subdivision_name"] = location.subdivision_name
         catalog.append(catalog_record)
+        directory_record = dict(catalog_record)
+        directory_record.update(feature_measurements(artifact))
+        directory_catalog.append(directory_record)
 
     # The directory dataset the coverage view reads: per-feed size tier plus
     # national and location summaries. Score aggregates use a current-rubric,
@@ -8216,12 +8222,24 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # for index.json and per-agency artifacts, and so the existing
     # `git add data/artifacts` publishes it.
     directory = build_directory(
-        catalog,
+        directory_catalog,
         dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         agencies=registry_by_id.values(),
     )
     (art / "directory.json").write_text(json.dumps(directory, indent=2, sort_keys=True) + "\n")
     by_id = {r["id"]: r for r in directory["agencies"]}
+    # build_directory adds the existing catalog's size and comparison fields.
+    # Copy only those established fields back; feature measurements belong to
+    # directory.json and features.json, not the older flat catalog contract.
+    for catalog_record in catalog:
+        directory_record = by_id[catalog_record["id"]]
+        for key in (
+            "size_tier",
+            "national_percentile",
+            "peer_percentile",
+            "comparison_eligible",
+        ):
+            catalog_record[key] = directory_record[key]
     from . import RUBRIC_VERSION
     from .comparisons import build_comparison_cohort
 
@@ -8239,6 +8257,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "comparison_eligible_count": len(comparable_ids),
         "comparison": _comparison_metadata,
     }
+
+    # Row-level consumer feature data: every current feed record, with unknown
+    # measurements kept distinct from a measured feature absence. The live
+    # directory reads the same enriched records, while this stable v1 endpoint
+    # lets other consumers build their own capability, completeness, and
+    # geography filters without opening ~1,200 per-agency artifacts.
+    from .features import build_feature_dataset
+
+    feature_payload = build_feature_dataset(
+        directory["agencies"], directory["generated_at"], _comparison_metadata
+    )
+    write(
+        "api/v1/features.json",
+        json.dumps(feature_payload, indent=2, sort_keys=True) + "\n",
+    )
 
     # Daily change feed: agencies whose grade or score moved since their last
     # check, so a consumer ingests transitions instead of diffing the whole

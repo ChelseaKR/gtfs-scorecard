@@ -266,6 +266,7 @@ def test_api_index_lists_endpoints_and_license() -> None:
     assert idx["endpoints"]["agencies"].endswith("/api/v1/agencies.json")
     assert idx["endpoints"]["coverage"].endswith("/api/v1/coverage.json")
     assert idx["endpoints"]["by_location"].endswith("/api/v1/by-location.json")
+    assert idx["endpoints"]["features"].endswith("/api/v1/features.json")
     assert "{agency_id}" in idx["endpoints"]["agency_detail"]
     assert idx["license"]
 
