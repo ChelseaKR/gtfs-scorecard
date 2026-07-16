@@ -327,7 +327,7 @@ def test_liveness_unchanged_persists_state(one_agency: str, tmp_path: Path) -> N
 @pytest.mark.parametrize(
     "overrides",
     [
-        {"schema_version": "0.9"},
+        {"schema_version": "1.11"},
         {"rubric_version": "0.9"},
         {"validator_version": "0.9.0"},
         {"scoring_profile": "not-an-object"},
