@@ -2876,6 +2876,36 @@ main p,
 .rider-impact dd { margin: 0.1rem 0 0; }
 .rider-impact-boundary { margin: 0.9rem 0 0; padding-top: 0.7rem; border-top: 1px solid var(--line); }
 
+/* Ferry capability profile: a data sheet, visually separate from scored rows. */
+.ferry-profile { max-width: none; }
+.ferry-profile-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ferry-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 0.75rem;
+  margin: 1.1rem 0;
+}
+.ferry-profile-grid > div {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-deep);
+}
+.ferry-profile-grid dt {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+.ferry-profile-grid dd { margin: 0; color: var(--ink-soft); }
+
 /* ===================================================================
    Call-prep brief: a calm one-pager a liaison can print or screen-share.
    Black-on-white, one page, no site chrome (see the print block below).

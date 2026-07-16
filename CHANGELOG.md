@@ -28,6 +28,10 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add an ungraded ferry data profile for ferry-serving feeds. It reports the
+  ferry subset's terminal hierarchy, `stop_access`, published accessibility,
+  bicycle and car carriage, plus clearly labelled whole-feed fare and realtime
+  facts in agency pages, artifacts, and the feature API.
 - Publish an ungraded service-mode contract from GTFS `route_type` and trip
   counts. Mode membership and primary mode now flow through artifacts, the
   feature API, finder deep links, and CSV shortlists, including a direct Ferry

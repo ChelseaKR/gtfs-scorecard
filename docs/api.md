@@ -63,7 +63,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.13`). The rule for
+Every artifact carries a `schema_version` (currently `1.14`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -112,6 +112,12 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.14` adds `ferry_profile` to every ferry-serving feed. The ungraded block
+  measures the ferry subset's terminal hierarchy, `stop_access`, published
+  wheelchair fields, and bicycle and car carriage fields. It labels fare and
+  configured realtime facts as whole-feed. Blank enum values remain unknown.
+  Selected fields are also flattened into `api/v1/features.json`. Additive;
+  grades and the scoring profile are unchanged.
 - `1.13` adds a descriptive `mode_profile` to every current artifact. It
   reports route and trip counts by GTFS `route_type`, the trip-weighted primary
   mode, mixed-mode status, and ferry membership. The block is explicitly
@@ -174,7 +180,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.13",
+  "schema_version": "1.14",
   "rubric_version": "1.2",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.2",
@@ -198,6 +204,35 @@ Changelog:
     ],
     "route_count": 2, "trip_count": 38, "is_multimodal": false,
     "has_ferry": true, "ferry_only": true
+  },
+  "ferry_profile": {
+    "measured": true, "graded": false, "scope": "ferry_routes_and_trips",
+    "route_count": 2, "trip_count": 38,
+    "terminal_hierarchy": {
+      "boarding_location_count": 8,
+      "parented_boarding_location_count": 6,
+      "parented_boarding_location_pct": 75.0,
+      "referenced_station_count": 3
+    },
+    "stop_access": {
+      "eligible_terminal_count": 6, "stated_count": 4, "stated_pct": 66.7,
+      "direct_count": 2, "through_station_count": 2
+    },
+    "accessibility": {
+      "terminals": { "total_count": 8, "stated_count": 6, "stated_pct": 75.0,
+                     "allowed_count": 5, "allowed_pct": 62.5,
+                     "not_allowed_count": 1, "not_allowed_pct": 12.5 },
+      "trips": { "total_count": 38, "stated_count": 30, "stated_pct": 78.9,
+                 "allowed_count": 28, "allowed_pct": 73.7,
+                 "not_allowed_count": 2, "not_allowed_pct": 5.3 },
+      "measures": "published_values_not_physical_usability"
+    },
+    "bikes": { "...": "same yes/no/unknown coverage shape over ferry trips" },
+    "cars": { "...": "same yes/no/unknown coverage shape over ferry trips" },
+    "fares": { "scope": "whole_feed", "fare_free": false,
+               "model": "legacy", "applied": true },
+    "realtime": { "scope": "whole_feed", "configured_kinds": ["trip_updates"],
+                  "kinds_configured": 1 }
   },
   "overall": { "score": 84.1, "grade": "B",
                // distance to the grade-band edges: points up to the next letter's
@@ -315,7 +350,7 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.13",
+  "schema_version": "1.14",
   "rubric_version": "1.2",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -411,7 +446,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
 | `api/v1/accessibility.json` | Covered-set accessibility-data completeness: how many feeds populate wheelchair fields, overall and by portable country/subdivision. Backs the coverage section at `/adoption/#access`. |
 | `api/v1/adoption.json` | Which optional GTFS capabilities (Flex, Fares v2, pathways, cEMV, and rider-facing translations) feeds publish, overall and by portable country/subdivision. Backs `/adoption/`. |
-| `api/v1/features.json` | Every current feed record with filterable service modes, capability flags, translation languages, stop- and trip-level wheelchair-field completeness, portable location, identity, scorecard URL, and comparison eligibility. Unknown measurements are `null`, never `false`. Backs the consumer filters and CSV export in `/app/`. |
+| `api/v1/features.json` | Every current feed record with filterable service modes, capability flags, translation languages, stop- and trip-level wheelchair-field completeness, ferry-subset capability measurements, portable location, identity, scorecard URL, and comparison eligibility. Unknown measurements are `null`, never `false`. Backs the consumer filters and CSV export in `/app/`. |
 | `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. |
 | `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
 | `api/v1/trend.json` | The covered-set quality time series. Backs the trend section at `/pulse/#trend`. |
@@ -427,6 +462,12 @@ translation detector; older rows keep `has_translations`, `translation_count`,
 `translation_languages`, and `translated_tables` null. `mode_measured_count`
 counts rows with the ungraded `route_type` profile; older rows keep
 `primary_mode`, `modes`, `has_ferry`, and `ferry_only` null.
+`ferry_profile_measured_count` counts ferry-serving rows carrying the ungraded
+ferry profile. Its flat fields include ferry route, trip, and terminal counts;
+`stop_access`, wheelchair, bicycle, and car completeness percentages; explicit
+allowed percentages; the feed-level fare model; and configured realtime kinds.
+Schedule fields use ferry routes and trips only. Fare and realtime fields
+describe the whole feed, matching the scope labels in the artifact.
 `comparison_eligible_count` only describes whether scores share
 the current producer contract; it does not control feature filtering. Combine
 feature flags with AND logic. A wheelchair completeness threshold is inclusive,
@@ -514,7 +555,7 @@ category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.13",
+  "schema_version": "1.14",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
@@ -539,7 +580,7 @@ category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.13",
+  "schema_version": "1.14",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

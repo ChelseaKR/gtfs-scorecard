@@ -356,6 +356,111 @@
         "ferry_only": { "type": "boolean" }
       }
     },
+    "ferry_profile": {
+      "type": "object",
+      "description": "Descriptive, ungraded capability measurements for the ferry routes and trips in a feed. Fare and realtime facts are explicitly whole-feed scope.",
+      "required": [
+        "measured",
+        "graded",
+        "scope",
+        "route_count",
+        "trip_count",
+        "terminal_hierarchy",
+        "stop_access",
+        "accessibility",
+        "bikes",
+        "cars",
+        "fares",
+        "realtime"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "measured": { "const": true },
+        "graded": { "const": false },
+        "scope": { "const": "ferry_routes_and_trips" },
+        "route_count": { "type": "integer", "minimum": 1 },
+        "trip_count": { "type": "integer", "minimum": 0 },
+        "terminal_hierarchy": {
+          "type": "object",
+          "required": [
+            "boarding_location_count",
+            "parented_boarding_location_count",
+            "parented_boarding_location_pct",
+            "referenced_station_count"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "boarding_location_count": { "type": "integer", "minimum": 0 },
+            "parented_boarding_location_count": { "type": "integer", "minimum": 0 },
+            "parented_boarding_location_pct": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "referenced_station_count": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "stop_access": {
+          "type": "object",
+          "required": [
+            "eligible_terminal_count",
+            "stated_count",
+            "stated_pct",
+            "direct_count",
+            "through_station_count"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "eligible_terminal_count": { "type": "integer", "minimum": 0 },
+            "stated_count": { "type": "integer", "minimum": 0 },
+            "stated_pct": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "direct_count": { "type": "integer", "minimum": 0 },
+            "through_station_count": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "accessibility": {
+          "type": "object",
+          "required": ["terminals", "trips", "measures"],
+          "additionalProperties": false,
+          "properties": {
+            "terminals": { "$ref": "#/$defs/enumCoverage" },
+            "trips": { "$ref": "#/$defs/enumCoverage" },
+            "measures": { "const": "published_values_not_physical_usability" }
+          }
+        },
+        "bikes": { "$ref": "#/$defs/enumCoverage" },
+        "cars": { "$ref": "#/$defs/enumCoverage" },
+        "fares": {
+          "type": "object",
+          "required": ["scope", "fare_free", "model", "applied"],
+          "additionalProperties": false,
+          "properties": {
+            "scope": { "const": "whole_feed" },
+            "fare_free": { "type": "boolean" },
+            "model": { "enum": ["none", "legacy", "v2"] },
+            "applied": { "type": "boolean" }
+          }
+        },
+        "realtime": {
+          "type": "object",
+          "required": ["scope", "configured_kinds", "kinds_configured"],
+          "additionalProperties": false,
+          "properties": {
+            "scope": { "const": "whole_feed" },
+            "configured_kinds": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "kinds_configured": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
     "routability": {
       "type": "object",
       "description": "Zero-deduction routing usability checks (single-stop trips, orphan stops)."
@@ -398,6 +503,28 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "enumCoverage": {
+      "type": "object",
+      "required": [
+        "total_count",
+        "stated_count",
+        "stated_pct",
+        "allowed_count",
+        "allowed_pct",
+        "not_allowed_count",
+        "not_allowed_pct"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_count": { "type": "integer", "minimum": 0 },
+        "stated_count": { "type": "integer", "minimum": 0 },
+        "stated_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "allowed_count": { "type": "integer", "minimum": 0 },
+        "allowed_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "not_allowed_count": { "type": "integer", "minimum": 0 },
+        "not_allowed_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 }
+      }
+    },
     "category": {
       "type": "object",
       "required": [
