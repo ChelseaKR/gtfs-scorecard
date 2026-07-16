@@ -382,7 +382,8 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     expect(page.locator(".feature-evidence")).to_contain_text(
         "Accessibility: 100% stops, 96% trips · Fares v2"
     )
-    expect(page.get_by_role("link", name="Use the complete feature API")).to_have_attribute(
+    expect(page.locator(".feature-match-board")).to_have_attribute("data-active", "true")
+    expect(page.get_by_role("link", name="Open the feature API")).to_have_attribute(
         "href", "/api/v1/features.json"
     )
 
@@ -413,9 +414,11 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     page.get_by_role("button", name="Clear shortlist").click()
     expect(page.locator(".results-hint")).to_be_visible()
     expect(page.locator(".agency-count")).to_have_text("Choose a filter to build a shortlist.")
+    expect(page.locator(".feature-match-board")).to_have_attribute("data-active", "false")
     expect(page.locator('input[value="accessibility"]')).not_to_be_checked()
     expect(page.locator("#wheelchair-stops-min")).to_have_value("")
-    expect(page.get_by_role("button", name="Download matching feeds (CSV)")).to_be_disabled()
+    expect(page.locator("#download-feature-results")).to_be_disabled()
+    expect(page.locator("#download-feature-results")).to_be_hidden()
     assert _hash_params(page) == {"sort": "za"}
 
 

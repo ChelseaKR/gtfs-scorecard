@@ -1179,9 +1179,9 @@ main:focus { outline: none; }
 
 .feature-match-board {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.45rem 1.25rem;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: start;
   margin: 0 0 1.2rem;
   padding: 1rem 1.15rem 1.1rem;
   border-top: 5px solid var(--amber);
@@ -1190,7 +1190,6 @@ main:focus { outline: none; }
   box-shadow: var(--shadow);
 }
 .feature-match-kicker {
-  grid-column: 1;
   margin: 0;
   color: var(--amber);
   font-family: var(--font-mono);
@@ -1200,7 +1199,6 @@ main:focus { outline: none; }
   text-transform: uppercase;
 }
 .feature-match-board .agency-count {
-  grid-column: 1;
   color: #f2f3ee;
   font-family: var(--font-display);
   font-size: clamp(1.2rem, 3vw, 1.65rem);
@@ -1208,17 +1206,31 @@ main:focus { outline: none; }
   line-height: 1.25;
   white-space: normal;
 }
+.feature-match-board[data-active="false"] .agency-count {
+  max-width: 34ch;
+  color: var(--board-soft);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
 .feature-match-actions {
-  grid-column: 2;
-  grid-row: 1 / span 2;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
+  margin-top: 0.15rem;
   gap: 0.65rem 1rem;
 }
-.feature-match-actions a { color: var(--amber); font-weight: 700; }
+.feature-match-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--amber);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
 .feature-match-actions a:hover { color: #f2f3ee; }
+.feature-match-board[data-active="false"] .feature-download-btn,
+.feature-match-board[data-active="false"] .feature-clear-btn { display: none; }
 .feature-download-btn {
   min-height: 44px;
   padding: 0.55rem 0.9rem;
@@ -1261,12 +1273,6 @@ main:focus { outline: none; }
 }
 
 @media (max-width: 44rem) {
-  .feature-match-board { grid-template-columns: 1fr; }
-  .feature-match-actions {
-    grid-column: 1;
-    grid-row: auto;
-    justify-content: flex-start;
-  }
   .feature-download-btn { width: 100%; }
 }
 
