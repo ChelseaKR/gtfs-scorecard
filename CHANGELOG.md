@@ -37,6 +37,10 @@ the declared public surface).
   through the adoption rollup, feature API, interactive filters, and CSV export.
 
 ### Changed
+- Make scorecard language follow the measured service mode. Ferry-only feeds
+  use vessel and terminal language, mixed feeds use neutral vehicle language,
+  and every measured feed identifies its ungraded service mode in the status
+  board without changing any score.
 - Recorded the public `v1.2.1` Marketplace listing and moved the 90-day roadmap
   from release preparation to participant recruitment.
 - Put the consumer feature finder in primary navigation, disclose the current

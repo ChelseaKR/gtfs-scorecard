@@ -316,6 +316,9 @@ def run_agency(  # noqa: C901
         # NTD GTFS readiness (published / valid / current / agency_id), precomputed so
         # the web app and API render it without re-deriving the verdict.
         artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()
+    from .mode_language import adapt_artifact_language
+
+    artifact = adapt_artifact_language(artifact)
     path = publish(artifact)
     log.info(
         "%s: %s (%s) -> %s",
@@ -365,7 +368,9 @@ def run_adhoc(
     from .modes import mode_profile_from_zip
 
     artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
-    return artifact
+    from .mode_language import adapt_artifact_language
+
+    return adapt_artifact_language(artifact)
 
 
 _SUMMARY_LABELS = {

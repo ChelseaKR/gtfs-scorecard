@@ -126,7 +126,7 @@ def _expiry_item(latest: dict[str, Any], expiry_days: int) -> AlertItem | None:
         headline = f"Service data expires in {days} day(s)"
         detail = (
             "When the calendar runs out, trip planners stop showing this "
-            "agency's service even though buses are still running."
+            "agency's service even while service is still running."
         )
     return AlertItem(
         agency_id=agency["id"],

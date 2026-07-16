@@ -239,6 +239,34 @@ def test_agency_route_renders_scorecard(page: Page, app_url: str) -> None:
     _assert_not_stuck_loading(page)
 
 
+def test_ferry_scorecard_uses_mode_aware_language(page: Page, app_url: str) -> None:
+    artifact = json.loads((ARTIFACTS / AGENCY_ID / "latest.json").read_text())
+    artifact["mode_profile"] = {
+        "measured": True,
+        "graded": False,
+        "primary_mode": "ferry",
+        "is_multimodal": False,
+        "has_ferry": True,
+        "ferry_only": True,
+        "modes": [{"key": "ferry", "label": "Ferry"}],
+    }
+    artifact["top_fixes"][0]["why"] = (
+        "Even with accessible stops, riders need to know the bus itself can take them."
+    )
+    page.route(
+        f"**/data/artifacts/{AGENCY_ID}/latest.json",
+        lambda route: route.fulfill(json=artifact),
+    )
+
+    page.goto(f"{app_url}#/agency/{AGENCY_ID}")
+
+    expect(page.locator(".board-mode")).to_have_text("Service mode Ferry")
+    fixes = page.locator("section[aria-labelledby='fixes-h']")
+    expect(fixes).to_contain_text("accessible terminals")
+    expect(fixes).to_contain_text("vessel")
+    expect(fixes).not_to_contain_text("bus itself")
+
+
 def test_agency_route_allowlists_hostile_artifact_severity(page: Page, app_url: str) -> None:
     artifact = json.loads((ARTIFACTS / AGENCY_ID / "latest.json").read_text())
     hostile = 'ERROR" onmouseover="window.__pwned=1'

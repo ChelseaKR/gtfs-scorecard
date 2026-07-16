@@ -882,11 +882,20 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'style="--flap-end: calc(var(--reel-h) * -{idx})">'
         '<div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div></div>'
     )
+    from .mode_language import mode_label
+
+    service_mode = mode_label(artifact)
+    mode_html = (
+        f'<p class="board-mode"><span>Service mode</span> {esc(service_mode)}</p>'
+        if service_mode
+        else ""
+    )
     return (
         '<div class="board-hero" id="report-overview"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
         '<p class="board-sub">Based on the feed this agency publishes</p>'
+        f"{mode_html}"
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
         f'<p class="score-trend">{trend}</p>{_peer_context(peer_record)}'
@@ -1479,6 +1488,10 @@ def _route_map_section(
     if not routes and stop_count == 0:
         return ""
 
+    ferry_only = artifact.get("mode_profile", {}).get("ferry_only") is True
+    stop_noun = "terminal" if ferry_only else "stop"
+    stop_noun_plural = "terminals" if ferry_only else "stops"
+
     agency_name = esc(artifact.get("agency", {}).get("name", agency_id))
 
     # The accessible route table: route, type, and the line color described in
@@ -1531,16 +1544,16 @@ def _route_map_section(
         )
         stop_block = (
             f'<p class="map-stopcount">This feed has <strong>{stop_count}</strong> '
-            f"stop{'s' if stop_count != 1 else ''}.</p>"
+            f"{stop_noun if stop_count == 1 else stop_noun_plural}.</p>"
             + (
-                '<details class="stop-list-wrap"><summary>List every stop</summary>'
+                f'<details class="stop-list-wrap"><summary>List every {stop_noun}</summary>'
                 f'<ul class="stop-list">{stop_items}{remainder}</ul></details>'
                 if stop_items
                 else ""
             )
         )
     else:
-        stop_block = '<p class="page-lede">This feed has no located stops.</p>'
+        stop_block = f'<p class="page-lede">This feed has no located {stop_noun_plural}.</p>'
 
     # Legend: a swatch plus the route label and color word, so the legend reads
     # without relying on color. Only drawn routes carry a line on the map.
@@ -1557,10 +1570,10 @@ def _route_map_section(
     if has_shapes:
         intro = (
             "Each route is drawn once, using the longest shape its trips follow; "
-            "stops are the dots."
+            f"{stop_noun_plural} are the dots."
         )
     elif stop_count:
-        intro = "This feed has no route shapes, so the map shows its stops only."
+        intro = f"This feed has no route shapes, so the map shows its {stop_noun_plural} only."
     else:
         intro = ""
 
@@ -1568,17 +1581,17 @@ def _route_map_section(
     script = ""
     if geo_path:
         map_html = (
-            '<a class="skip-link-inline" href="#route-data">Skip to route and stop data</a>'
+            f'<a class="skip-link-inline" href="#route-data">Skip to route and {stop_noun} data</a>'
             '<div id="route-map" class="agency-map" aria-hidden="true"></div>'
             '<p class="fineprint">Basemap: OpenFreeMap, &copy; OpenStreetMap contributors. '
-            "Routes and stops: this "
+            f"Routes and {stop_noun_plural}: this "
             "agency's GTFS feed.</p>"
         )
         script = _agency_map_script(f"/{geo_path}")
 
     return (
         '<section aria-labelledby="map-h" class="route-map-section">'
-        '<h2 class="section-title" id="map-h">Routes and stops</h2>'
+        f'<h2 class="section-title" id="map-h">Routes and {stop_noun_plural}</h2>'
         + (f'<p class="page-lede">{intro}</p>' if intro else "")
         + map_html
         + legend
@@ -1879,6 +1892,11 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         **artifact,
         "agency": {**artifact.get("agency", {}), "country": effective_country},
     }
+    # Older artifacts predate mode-aware copy. Adapt a deep copy at render time
+    # so ferry and mixed-mode pages are correct before their next scoring run.
+    from .mode_language import adapt_artifact_language
+
+    artifact = adapt_artifact_language(artifact)
     title_qualifier = f" ({location_label})" if location_label else ""
     title_suffix = f"{title_qualifier} GTFS quality report"
     max_name = max(18, 60 - len(title_suffix))
@@ -3642,7 +3660,7 @@ def _render_agency_index(index: dict[str, Any], liveness: dict[str, dict[str, An
             f'<span class="grade-count">{len(lapsed) + stale_total} '
             f"{'feed' if len(lapsed) + stale_total == 1 else 'feeds'}</span></h2>"
             '<p class="page-lede">A feed whose calendar has run out is invisible to trip '
-            "planners even when the buses keep running. These are pulled out of the grade list "
+            "planners even while service continues. These are pulled out of the grade list "
             "below so the fixable ones are easy to find.</p>"
             f"{''.join(groups)}</section>"
         )
@@ -4777,7 +4795,7 @@ def _render_guide() -> str:
     It lists your stops, routes, and schedule. This tool is scheduled to download that feed once a day,
     run the canonical validator used across the GTFS ecosystem, and turn the result into a grade and a
     short list of fixes. The <a href="/status/">status page</a> shows when that work actually completed.
-    It does not look at your buses or your service, only the data file.
+    It does not inspect your vehicles or judge your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
     <strong>Freshness</strong> (is the feed about to expire), <strong>Rider experience</strong>
@@ -4810,7 +4828,7 @@ def _render_guide() -> str:
     <section><h2 class="section-title">What to do</h2>
     <p>Start at the top of "Top things to fix." We put the most rider-affecting fix first. If your
     feed has expired, that will be fix number one, because an expired feed is invisible to riders
-    even while your buses run. Each fix says roughly how long it takes. You do not have to do them
+    even while service continues. Each fix says roughly how long it takes. You do not have to do them
     all; doing the first one and re-publishing is a real win.</p>
     <p>If you did not make the feed yourself, the agency or vendor that exports your GTFS is who
     makes these changes. Hand them the top fix.</p></section>
@@ -7422,7 +7440,7 @@ def _render_press_page() -> str:
       <li><strong>"The worst transit agency in [country]."</strong> The scorecard covers a
       curated set of feeds, not every agency in any country; absence means not covered,
       never failing, and a position here is not a national rank.</li>
-      <li><strong>"Agency X's buses are inaccessible."</strong> The accessibility number
+      <li><strong>"Agency X's vehicles are inaccessible."</strong> The accessibility number
       measures whether the data is published, never whether a stop or vehicle is usable.</li>
       <li><strong>"Agency X is out of compliance."</strong> Nothing here is an official
       determination; the readiness signals map data quality onto requirements, and the
@@ -8442,6 +8460,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             artifact = json.loads(latest.read_text())
         except (json.JSONDecodeError, OSError):
             continue  # already warned in pass 1
+        # Feed every public narrative surface the same mode-aware copy. This
+        # covers the full scorecard, call brief, and board one-pager together.
+        from .mode_language import adapt_artifact_language
+
+        artifact = adapt_artifact_language(artifact)
         artifact["canada_equity"] = canada_equity.get(agency_id)
         feature = _map_feature(
             agency_id,
