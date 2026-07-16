@@ -15,6 +15,7 @@ from .flex import detect_flex, flex_findings
 from .gtfs import read_tables
 from .metrics import CategoryResult, Finding
 from .pathways import detect_pathways, pathways_findings
+from .translations import detect_translations
 
 # Component weights, summing to 100. Accessibility totals 40.
 WEIGHTS = {
@@ -328,6 +329,9 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
             "flex": flex.to_details(),
             "pathways": pathways.to_details(),
             "cemv": detect_cemv(gtfs_zip_path).to_details(),
+            # Optional rider-facing translations are an adoption signal, not a
+            # score component. Their absence never lowers this category.
+            "translations": detect_translations(gtfs_zip_path).to_details(),
             "headsign_pct": round(hs * 100, 1),
             "mixed_case_stop_name_pct": round(mixed * 100, 1),
         },

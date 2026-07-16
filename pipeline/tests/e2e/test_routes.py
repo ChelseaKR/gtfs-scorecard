@@ -127,6 +127,12 @@ def _feature_directory() -> dict[str, Any]:
         "has_pathways": None,
         "has_step_free": None,
         "has_cemv": None,
+        "translations_measured": False,
+        "has_translations": None,
+        "translation_count": None,
+        "translation_languages": None,
+        "translated_tables": None,
+        "feed_lang": None,
     }
     for agency in directory["agencies"]:
         agency.update(feature_defaults)
@@ -146,6 +152,12 @@ def _feature_directory() -> dict[str, Any]:
                     "has_pathways": True,
                     "has_step_free": True,
                     "has_cemv": False,
+                    "translations_measured": True,
+                    "has_translations": True,
+                    "translation_count": 12,
+                    "translation_languages": ["fr", "nl"],
+                    "translated_tables": ["routes", "stops"],
+                    "feed_lang": "mul",
                 }
             )
         elif agency["id"] == "london-transit-commission":
@@ -164,6 +176,12 @@ def _feature_directory() -> dict[str, Any]:
                     "has_pathways": False,
                     "has_step_free": False,
                     "has_cemv": False,
+                    "translations_measured": True,
+                    "has_translations": False,
+                    "translation_count": 0,
+                    "translation_languages": [],
+                    "translated_tables": [],
+                    "feed_lang": "en",
                 }
             )
     return directory
@@ -395,6 +413,7 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
         "subdivision": "CA-ON",
         "sort": "za",
         "features": "accessibility,fares_v2",
+        "view": "features",
         "stops": "95",
         "trips": "95",
     }
@@ -407,6 +426,7 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert len(csv.splitlines()) == 2
     assert '"capabilities_measured"' in csv.splitlines()[0]
     assert '"accessibility_fields"' in csv.splitlines()[0]
+    assert '"translation_languages"' in csv.splitlines()[0]
     assert '"barrie-transit"' in csv
     assert '"london-transit-commission"' not in csv
     assert '"100"' in csv and '"96"' in csv
@@ -420,6 +440,48 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     expect(page.locator("#download-feature-results")).to_be_disabled()
     expect(page.locator("#download-feature-results")).to_be_hidden()
     assert _hash_params(page) == {"sort": "za"}
+
+
+def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/")
+
+    page.get_by_role("link", name="Feed features").click()
+    page.wait_for_url(f"{app_url}#/?view=features")
+    expect(page.locator("#feature-finder")).to_be_focused()
+    expect(page.get_by_role("link", name="Feed features")).to_have_attribute("aria-current", "page")
+
+    page.locator('input[value="translations"]').check()
+    page.locator("#translation-language").select_option("fr")
+
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.get_by_role("link", name="London Transit Commission")).to_have_count(0)
+    expect(page.locator(".feature-evidence")).to_contain_text("Translations: French (fr)")
+    assert _hash_params(page) == {
+        "features": "translations",
+        "view": "features",
+        "lang": "fr",
+    }
+
+
+def test_feature_nav_is_available_from_mobile_menu(page: Page, app_url: str) -> None:
+    _serve_directory(page, _feature_directory())
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(f"{app_url}#/")
+
+    page.get_by_role("button", name="Menu").click()
+    page.get_by_role("link", name="Feed features").click()
+
+    page.wait_for_url(f"{app_url}#/?view=features")
+    expect(page.locator("#feature-finder")).to_be_focused()
+    expect(page.get_by_role("button", name="Menu")).to_have_attribute("aria-expanded", "false")
+    expect(page.locator('.nav-stops a[href="/app/#/?view=features"]')).to_have_attribute(
+        "aria-current", "page"
+    )
 
 
 def test_cohort_agency_name_cannot_inject_attributes(page: Page, app_url: str) -> None:

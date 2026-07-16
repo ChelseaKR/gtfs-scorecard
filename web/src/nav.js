@@ -24,6 +24,9 @@
   btn.addEventListener("click", function () {
     isOpen() ? close() : open();
   });
+  header.addEventListener("click", function (e) {
+    if (isOpen() && e.target instanceof Element && e.target.closest("a")) close();
+  });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && isOpen()) {
       close();

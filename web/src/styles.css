@@ -1102,7 +1102,13 @@ main:focus { outline: none; }
   font-size: 1.05rem;
   font-weight: 800;
 }
-.feature-fieldset > label:not([for]) {
+.required-feature-filters { grid-column: 1 / -1; }
+.required-feature-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.5rem;
+}
+.required-feature-options label {
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -1120,12 +1126,14 @@ main:focus { outline: none; }
   outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
-.accessibility-thresholds > label {
+.accessibility-thresholds > label,
+.translation-filters > label {
   display: block;
   margin: 0.65rem 0 0.25rem;
   font-weight: 600;
 }
-.accessibility-thresholds select {
+.accessibility-thresholds select,
+.translation-filters select {
   width: 100%;
   min-height: 44px;
   padding: 0.5rem 0.7rem;
@@ -1136,9 +1144,26 @@ main:focus { outline: none; }
   font: inherit;
   cursor: pointer;
 }
-.accessibility-thresholds select:focus-visible {
+.accessibility-thresholds select:focus-visible,
+.translation-filters select:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+}
+.translation-filters select:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+.coverage-limit {
+  max-width: 52rem;
+  margin: 0.85rem 0 0;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid var(--amber);
+  background: var(--card);
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+@media (max-width: 40rem) {
+  .required-feature-options { grid-template-columns: 1fr; }
 }
 
 /* browse by location */

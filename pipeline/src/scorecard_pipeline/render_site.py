@@ -5166,7 +5166,8 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
     (NTD readiness, realtime reliability, equity, what feeds publish), each with
     its headline number and a one-line reason to open it. These pages share a
     skeleton but serve different audiences, so they stay separate destinations;
-    this hub is the front door the primary nav points at."""
+    this hub remains a coverage subpage even though feature discovery now has a
+    direct primary-nav entry."""
     pct_ready = ntd_payload.get("pct_ready", 0)
     monitored = rt_rollup.get("monitored_count", 0)
     universal_areas = [
@@ -5179,9 +5180,8 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
         (
             "/adoption/",
             "What feeds publish",
-            "Flexible service, fares, pathways, and accessibility data",
-            "Adoption of the newer, optional parts of GTFS, and how complete "
-            "wheelchair-access data is.",
+            "Flex, fares, pathways, translations, and accessibility data",
+            "Adoption of optional parts of GTFS, and how complete wheelchair-access data is.",
         ),
     ]
     us_areas = [
@@ -6887,7 +6887,7 @@ def _access_sections(coverage: dict[str, Any]) -> str:
 
 def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) -> str:
     """What feeds publish (/adoption/): the capability-adoption view (flexible
-    service, fares and Fares v2, station pathways) and the accessibility-data
+    service, fares and Fares v2, station pathways, translations) and the accessibility-data
     coverage view, one page instead of two with identical skeletons. Reads the
     the corpus adoption and accessibility-coverage rollups.
     Changes no grade; a lens on where the spec is spreading, framed as adoption
@@ -6903,12 +6903,14 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             ("Station accessibility (pathways)", adoption.get("pathways") or {}),
             ("Step-free station paths", adoption.get("step_free") or {}),
             ("Contactless payment declared (cEMV)", adoption.get("cemv") or {}),
+            ("Translated rider information", adoption.get("translations") or {}),
         ]
 
         def cap_row(label: str, share: dict[str, Any] | None) -> str:
             s = share or {}
             return (
                 f"<tr><td>{esc(label)}</td><td>{esc(s.get('count', 0))}</td>"
+                f"<td>{esc(s.get('measured_feed_record_count', count))}</td>"
                 f"<td>{esc(s.get('pct', 0))}%</td></tr>"
             )
 
@@ -6918,7 +6920,8 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
                 (
                     label,
                     float(share.get("pct", 0)),
-                    f"{share.get('count', 0)} of {count} feeds",
+                    f"{share.get('count', 0)} of "
+                    f"{share.get('measured_feed_record_count', count)} measured feeds",
                 )
                 for label, share in sorted(
                     capabilities, key=lambda row: float(row[1].get("pct", 0)), reverse=True
@@ -6932,6 +6935,7 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             '<section class="feed-details"><h2 class="section-title">What feeds publish</h2>'
             f'{cap_chart}<details class="viz-data"><summary>Show the table</summary>'
             '<table class="leaderboard"><thead><tr><th>Capability</th><th>Feeds</th>'
+            "<th>Measured feeds</th>"
             f"<th>Share</th></tr></thead><tbody>{cap_rows}</tbody></table></details></section>"
         )
         flex_sample = adoption.get("flex_sample", [])
@@ -6951,17 +6955,40 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
             if flex_sample
             else ""
         )
+        translation_sample = adoption.get("translations_sample", [])
+        translation_rows = "".join(
+            f'<tr><td><a href="/agency/{esc(m["id"])}/"><bdi>{esc(m["name"])}</bdi></a></td>'
+            f"<td><bdi>{esc(_location_label(m))}</bdi></td>"
+            f"<td>{esc(', '.join(m.get('languages') or []))}</td>"
+            f"<td>{esc(m.get('translation_count', 0))}</td></tr>"
+            for m in translation_sample
+        )
+        translation_table = (
+            (
+                '<section class="feed-details"><h2 class="section-title">Publishing translations</h2>'
+                '<p class="page-lede">Feeds with usable rider-facing text in '
+                "<code>translations.txt</code>.</p>"
+                '<table class="leaderboard"><thead><tr><th>Feed record</th><th>Location</th>'
+                "<th>Language tags</th><th>Rows</th></tr></thead>"
+                f"<tbody>{translation_rows}</tbody></table></section>"
+            )
+            if translation_sample
+            else ""
+        )
         state_rows = "".join(
             f"<tr><td>{esc(s['state'])}</td>"
             f"<td>{esc(s.get('feed_records', s.get('agencies', 0)))}</td>"
             f"<td>{esc(s['flex'])}</td><td>{esc(s['fares'])}</td>"
-            f"<td>{esc(s['fares_v2'])}</td><td>{esc(s['pathways'])}</td></tr>"
+            f"<td>{esc(s['fares_v2'])}</td><td>{esc(s['pathways'])}</td>"
+            f"<td>{esc(s.get('translations', 0))} of "
+            f"{esc(s.get('translations_measured', 0))}</td></tr>"
             for s in adoption.get("states", [])
         )
         state_table = (
             '<section class="feed-details"><h2 class="section-title">United States by state</h2>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Feed records</th>'
-            "<th>Flex</th><th>Fares</th><th>Fares v2</th><th>Pathways</th></tr></thead>"
+            "<th>Flex</th><th>Fares</th><th>Fares v2</th><th>Pathways</th>"
+            "<th>Translations (of measured)</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table></section>"
         )
         location_table = _portable_rollup_table(
@@ -6972,28 +6999,39 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
                 ("fares", "Fares", ""),
                 ("fares_v2", "Fares v2", ""),
                 ("pathways", "Pathways", ""),
+                ("translations", "Translations", ""),
+                ("translations_measured", "Translation measured", ""),
             ],
         )
         flex_s = adoption.get("flex", {})
         fares = adoption.get("fares", {})
         v2 = adoption.get("fares_v2", {})
         paths = adoption.get("pathways", {})
+        translations = adoption.get("translations", {})
+        translation_denominator = translations.get("measured_feed_record_count", 0)
+        translation_sentence = (
+            f" Among {esc(translation_denominator)} feeds measured for translations, "
+            f"<strong>{esc(translations.get('pct', 0))}%</strong> publish rider-facing translations."
+            if translation_denominator
+            else " Translation adoption will appear after current feeds are measured."
+        )
         lead = (
             f"Across {esc(count)} feeds, <strong>{esc(flex_s.get('pct', 0))}%</strong> publish "
             f"flexible (demand-responsive) service, <strong>{esc(fares.get('pct', 0))}%</strong> "
             f"publish fare data ({esc(v2.get('pct', 0))}% using the newer Fares v2), and "
             f"<strong>{esc(paths.get('pct', 0))}%</strong> model stations with accessible paths. "
-            "These are the newer, optional parts of GTFS; adoption shows where the spec is spreading."
+            "These are optional parts of GTFS; adoption shows where the spec is spreading."
+            f"{translation_sentence}"
         )
     elif comparable_count <= 0:
-        cap_table = flex_table = state_table = location_table = ""
+        cap_table = flex_table = translation_table = state_table = location_table = ""
         lead = (
             "Cross-feed capability adoption is unavailable until current-contract checks "
             "create a comparable feed-record cohort. This snapshot makes no adoption-rate "
             "or named-feed claim."
         )
     else:
-        cap_table = flex_table = state_table = location_table = ""
+        cap_table = flex_table = translation_table = state_table = location_table = ""
         lead = (
             f"{comparable_count} feed records meet the comparison contract, but none has "
             "a readable capability-detail block yet."
@@ -7018,12 +7056,14 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     <p class="page-lede"><strong>What this measures:</strong> adoption of optional
     parts of the spec, never quality. None of these counts changes a grade, and a
     feed without them is early, not failing.</p>
+    <p><a class="button-link" href="/app/#/?view=features">Build a feature shortlist</a></p>
     {jump}
     <section id="features" aria-labelledby="features-h" tabindex="-1">
-      <h2 class="section-title" id="features-h">The newer, optional parts of GTFS</h2>
+      <h2 class="section-title" id="features-h">Optional parts of GTFS</h2>
       <div class="section-grid">
       {cap_table}
       {flex_table}
+      {translation_table}
       </div>
       {location_table}
       {state_table}
@@ -7034,20 +7074,21 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
       {_access_sections(coverage)}
     </section>
     <p class="plain-summary"><strong>In plain words:</strong> a feed does not need any of these to
-    earn a good grade. This tracks where the newer, optional parts of GTFS are catching on, so an
+    earn a good grade. This tracks where optional parts of GTFS are catching on, so an
     agency can see what peers publish and a program can see where to help next.</p>
     <p class="fineprint">Adoption is read from each feed's own files: GTFS-Flex
     (<code>locations.geojson</code>, <code>booking_rules.txt</code>), fare data
     (<code>fare_attributes.txt</code> for the legacy model, <code>fare_products.txt</code> and
     <code>fare_leg_rules.txt</code> for Fares v2), and GTFS-Pathways (<code>pathways.txt</code>,
-    <code>levels.txt</code>). It never changes a grade. The same data is at
+    <code>levels.txt</code>), plus rider-facing translations (<code>translations.txt</code>).
+    It never changes a grade. The same data is at
     <a href="/api/v1/adoption.json">the adoption API (adoption.json)</a>.
     {comparison_note}</p>"""
     return _page(
         title="What feeds publish — GTFS Scorecard",
         description=(
             "Which GTFS features covered transit feeds publish (flexible service, fares and "
-            "Fares v2, station pathways) and how complete their accessibility data is."
+            "Fares v2, station pathways, translations) and how complete their accessibility data is."
         ),
         canonical=f"{BASE_URL}/adoption/",
         body=_strip_blank_line_whitespace(body),

@@ -52,6 +52,12 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
         "has_pathways": adoption.get("has_pathways") if adoption else None,
         "has_step_free": adoption.get("has_step_free") if adoption else None,
         "has_cemv": adoption.get("has_cemv") if adoption else None,
+        "translations_measured": (adoption.get("translations_measured") if adoption else False),
+        "has_translations": adoption.get("has_translations") if adoption else None,
+        "translation_count": adoption.get("translation_count") if adoption else None,
+        "translation_languages": (adoption.get("translation_languages") if adoption else None),
+        "translated_tables": adoption.get("translated_tables") if adoption else None,
+        "feed_lang": adoption.get("feed_lang") if adoption else None,
     }
 
 
@@ -81,6 +87,12 @@ _PUBLIC_KEYS = (
     "has_pathways",
     "has_step_free",
     "has_cemv",
+    "translations_measured",
+    "has_translations",
+    "translation_count",
+    "translation_languages",
+    "translated_tables",
+    "feed_lang",
 )
 
 
@@ -108,9 +120,13 @@ def build_feature_dataset(
         "accessibility_measured_count": sum(
             row.get("accessibility_measured") is True for row in feeds
         ),
+        "translation_measured_count": sum(
+            row.get("translations_measured") is True for row in feeds
+        ),
         "comparison": comparison,
         "filter_semantics": {
             "selected_features": "all selected features must be published",
+            "translation_language": ("exact case-insensitive BCP 47 tag in translation_languages"),
             "accessibility_thresholds": (
                 "minimum share of stops or trips with a stated wheelchair field"
             ),

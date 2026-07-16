@@ -41,13 +41,13 @@ def esc(text: object) -> str:
 
 
 # Six stops, one per question, instead of a flat list of every page: find an
-# agency, review coverage, open a dimensional lens, act with a tool,
+# agency, review coverage, find feeds by rider-facing feature, act with a tool,
 # learn how to read the thing, and who made it. The pages those groups absorb
 # stay reachable from each hub (and from _NAV_SECTION_PREFIXES for wayfinding).
 _NAV_ITEMS = [
     ("Find an agency", "/agencies/"),
     ("Coverage", "/pulse/"),
-    ("Focus areas", "/focus/"),
+    ("Feed features", "/app/#/?view=features"),
     ("Tools", "/tools/"),
     ("How it works", "/how-to-read/"),
     ("About", "/about/"),
@@ -56,7 +56,7 @@ _NAV_ITEMS = [
 _NAV_ITEMS_ES = [
     ("Agencias", "/agencies/"),
     ("Cobertura", "/pulse/"),
-    ("Temas", "/focus/"),
+    ("Funciones GTFS", "/app/#/?view=features"),
     ("Herramientas", "/tools/"),
     ("Cómo leer", "/how-to-read/"),
     ("Acerca de", "/about/"),
@@ -72,10 +72,11 @@ _NAV_SECTION_PREFIXES = {
     "/map/": "/agencies/",
     "/routes/": "/agencies/",
     "/problems/": "/pulse/",
-    "/ntd/": "/focus/",
-    "/realtime/": "/focus/",
-    "/equity/": "/focus/",
-    "/adoption/": "/focus/",
+    "/focus/": "/pulse/",
+    "/ntd/": "/pulse/",
+    "/realtime/": "/pulse/",
+    "/equity/": "/pulse/",
+    "/adoption/": "/app/#/?view=features",
     "/compare/": "/tools/",
     "/check/": "/tools/",
     "/query/": "/tools/",

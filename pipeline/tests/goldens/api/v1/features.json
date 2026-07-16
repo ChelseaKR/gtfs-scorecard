@@ -30,6 +30,7 @@
       "country": "CA",
       "country_name": "Canada",
       "fare_model": "none",
+      "feed_lang": null,
       "feed_url": "http://www.myridebarrie.ca/gtfs/Google_transit.zip",
       "grade": "C",
       "has_accessibility": false,
@@ -39,6 +40,7 @@
       "has_flex": false,
       "has_pathways": false,
       "has_step_free": false,
+      "has_translations": null,
       "id": "barrie-transit",
       "mdb_id": "3",
       "name": "Barrie Transit (Ontario)",
@@ -47,6 +49,10 @@
       "snapshot_date": "2026-07-02",
       "subdivision_code": "CA-ON",
       "subdivision_name": "Ontario",
+      "translated_tables": null,
+      "translation_count": null,
+      "translation_languages": null,
+      "translations_measured": false,
       "wheelchair_accessible_pct": 0.0,
       "wheelchair_boarding_pct": 0.0
     },
@@ -58,6 +64,7 @@
       "country": "US",
       "country_name": "United States",
       "fare_model": "v2",
+      "feed_lang": null,
       "feed_url": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
       "grade": "B",
       "has_accessibility": false,
@@ -67,6 +74,7 @@
       "has_flex": false,
       "has_pathways": false,
       "has_step_free": false,
+      "has_translations": null,
       "id": "unitrans",
       "mdb_id": "",
       "name": "Unitrans (ASUCD / City of Davis)",
@@ -75,6 +83,10 @@
       "snapshot_date": "2026-07-02",
       "subdivision_code": null,
       "subdivision_name": null,
+      "translated_tables": null,
+      "translation_count": null,
+      "translation_languages": null,
+      "translations_measured": false,
       "wheelchair_accessible_pct": 0.0,
       "wheelchair_boarding_pct": 0.0
     },
@@ -86,6 +98,7 @@
       "country": "US",
       "country_name": "United States",
       "fare_model": "none",
+      "feed_lang": null,
       "feed_url": "https://avl.yctd.org/RealTime/google_transit.zip",
       "grade": "B",
       "has_accessibility": true,
@@ -95,6 +108,7 @@
       "has_flex": false,
       "has_pathways": false,
       "has_step_free": false,
+      "has_translations": null,
       "id": "yolobus",
       "mdb_id": "",
       "name": "Yolobus (Yolo County Transportation District)",
@@ -103,6 +117,10 @@
       "snapshot_date": "2026-07-02",
       "subdivision_code": null,
       "subdivision_name": null,
+      "translated_tables": null,
+      "translation_count": null,
+      "translation_languages": null,
+      "translations_measured": false,
       "wheelchair_accessible_pct": 0.0,
       "wheelchair_boarding_pct": 99.5
     }
@@ -110,9 +128,11 @@
   "filter_semantics": {
     "accessibility_thresholds": "minimum share of stops or trips with a stated wheelchair field",
     "selected_features": "all selected features must be published",
+    "translation_language": "exact case-insensitive BCP 47 tag in translation_languages",
     "unknown_values": "excluded when their field is used as a filter"
   },
   "generated_at": "2026-07-15T23:52:32+00:00",
   "license": "CC-BY-4.0",
-  "schema_version": "1.11"
+  "schema_version": "1.11",
+  "translation_measured_count": 0
 }

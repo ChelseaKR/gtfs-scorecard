@@ -18,6 +18,13 @@ def _artifact(*, measured: bool = True) -> dict[str, Any]:
             "fares": {"model": "v2"},
             "pathways": {"has_pathways": True, "has_step_free": False},
             "cemv": {"supported": False},
+            "translations": {
+                "has_translations": True,
+                "translation_count": 3,
+                "languages": ["fr", "nl"],
+                "translated_tables": ["routes", "stops"],
+                "feed_lang": "mul",
+            },
         }
         if measured
         else {}
@@ -49,6 +56,12 @@ def test_feature_measurements_preserve_capabilities_and_accessibility_depth() ->
     assert row["has_pathways"] is True
     assert row["has_step_free"] is False
     assert row["has_cemv"] is False
+    assert row["translations_measured"] is True
+    assert row["has_translations"] is True
+    assert row["translation_count"] == 3
+    assert row["translation_languages"] == ["fr", "nl"]
+    assert row["translated_tables"] == ["routes", "stops"]
+    assert row["feed_lang"] == "mul"
 
 
 def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
@@ -60,6 +73,8 @@ def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
     assert row["wheelchair_boarding_pct"] is None
     assert row["has_fares"] is None
     assert row["has_flex"] is None
+    assert row["translations_measured"] is False
+    assert row["has_translations"] is None
 
 
 def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
@@ -90,6 +105,11 @@ def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
     assert payload["comparison_eligible_count"] == 0
     assert payload["capability_measured_count"] == 1
     assert payload["accessibility_measured_count"] == 1
+    assert payload["translation_measured_count"] == 1
     assert [row["id"] for row in payload["feeds"]] == ["a", "b"]
     assert payload["feeds"][1]["country_name"] == "Canada"
     assert payload["feeds"][0]["has_fares"] is None
+    assert payload["feeds"][1]["translation_languages"] == ["fr", "nl"]
+    assert payload["filter_semantics"]["translation_language"] == (
+        "exact case-insensitive BCP 47 tag in translation_languages"
+    )

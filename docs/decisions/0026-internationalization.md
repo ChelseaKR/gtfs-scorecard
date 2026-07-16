@@ -206,3 +206,22 @@ coverage does not change weights, thresholds, grades, or the shared
 ADR 0015 (equity, state-level first), 0016 (NTD id alignment), 0025
 (access-to-opportunity scope). All three are US-anchored surfaces this decision
 makes conditional abroad.
+
+## Update (2026-07-15): consumer feature discovery and European GTFS boundary
+
+Direct consumer feedback separated two kinds of translation work. GTFS
+publishers can provide rider-facing values through `translations.txt`; the
+scorecard now measures that file and its BCP 47 language tags as an optional
+feature, without moving a grade. Translating the scorecard interface remains a
+separate, steward-reviewed project.
+
+The feature finder is now a primary navigation stop because the participant
+looked there first and did not find the existing footer link. The same surface
+states its U.S.-heavy denominator so portable country controls are not mistaken
+for representative regional coverage.
+
+Europe is split once more: a reviewed **European GTFS beta** can proceed without
+NeTEx conversion when it passes the explicit cohort gate in
+[`../global-expansion.md`](../global-expansion.md). It must be labeled as GTFS
+coverage only. NeTEx ingestion remains the heavier Tier 3 decision described
+above.

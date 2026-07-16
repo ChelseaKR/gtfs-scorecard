@@ -27,9 +27,21 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Added
+- Measure rider-facing `translations.txt` adoption, language tags, row counts,
+  and translated tables without changing feed grades. Publish the measurements
+  through the adoption rollup, feature API, interactive filters, and CSV export.
+
 ### Changed
 - Recorded the public `v1.2.1` Marketplace listing and moved the 90-day roadmap
   from release preparation to participant recruitment.
+- Put the consumer feature finder in primary navigation, disclose the current
+  U.S.-heavy coverage denominator beside its filters, and document the reviewed
+  European GTFS beta gate separately from full interface localization and NeTEx.
+
+### Fixed
+- Close the mobile primary menu after following a navigation link and rebalance
+  the feature controls across desktop and narrow layouts.
 
 ## [1.2.1] - 2026-07-15
 
