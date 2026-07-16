@@ -40,7 +40,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/app/#/?view=features"><span class="pip" aria-hidden="true"></span>Feed features</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/" aria-current="page"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/agencies/"><span itemprop="name">All agencies</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">How to read your scorecard</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -54,7 +54,7 @@
     It lists your stops, routes, and schedule. This tool is scheduled to download that feed once a day,
     run the canonical validator used across the GTFS ecosystem, and turn the result into a grade and a
     short list of fixes. The <a href="/status/">status page</a> shows when that work actually completed.
-    It does not look at your buses or your service, only the data file.
+    It does not inspect your vehicles or judge your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
     <strong>Freshness</strong> (is the feed about to expire), <strong>Rider experience</strong>
@@ -118,7 +118,7 @@
     <section><h2 class="section-title">What to do</h2>
     <p>Start at the top of "Top things to fix." We put the most rider-affecting fix first. If your
     feed has expired, that will be fix number one, because an expired feed is invisible to riders
-    even while your buses run. Each fix says roughly how long it takes. You do not have to do them
+    even while service continues. Each fix says roughly how long it takes. You do not have to do them
     all; doing the first one and re-publishing is a real win.</p>
     <p>If you did not make the feed yourself, the agency or vendor that exports your GTFS is who
     makes these changes. Hand them the top fix.</p></section>

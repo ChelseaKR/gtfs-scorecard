@@ -222,6 +222,55 @@ def test_route_map_section_empty_when_no_geometry() -> None:
     assert _route_map_section(_artifact_with_route_map(routes=[], stop_count=0), "x") == ""
 
 
+def test_ferry_route_map_uses_terminal_language() -> None:
+    artifact = _artifact_with_route_map(
+        routes=[
+            {
+                "id": "F1",
+                "label": "F1",
+                "type_label": "Ferry",
+                "color": "0E6734",
+                "color_name": "green",
+                "has_shape": True,
+            }
+        ],
+        stop_count=2,
+        has_shapes=True,
+        path="data/artifacts/demo/geometry.geojson",
+    )
+    artifact["mode_profile"] = {"ferry_only": True}
+
+    html = _route_map_section(artifact, "demo", stop_names=["Pier One", "Island Terminal"])
+
+    assert "Routes and terminals" in html
+    assert "terminals are the dots" in html
+    assert "List every terminal" in html
+    assert "Skip to route and terminal data" in html
+    assert "Routes and stops" not in html
+
+
+def test_status_board_identifies_ungraded_ferry_mode() -> None:
+    artifact = {
+        "overall": {"grade": "B", "score": 84.0},
+        "snapshot_date": "2026-07-16",
+        "categories": {
+            "freshness": {"details": {}},
+            "completeness": {"details": {}},
+            "realtime": {"status": "not_measured", "summary": "Not measured."},
+        },
+        "mode_profile": {
+            "measured": True,
+            "graded": False,
+            "modes": [{"key": "ferry", "label": "Ferry"}],
+        },
+    }
+
+    html = _board_hero("Demo Ferry", "demo-ferry", artifact, [])
+
+    assert '<p class="board-mode"><span>Service mode</span> Ferry</p>' in html
+    assert "Overall grade B" in html
+
+
 def test_ntd_section_is_us_only() -> None:
     from scorecard_pipeline.render_site import _ntd_section
 

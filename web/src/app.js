@@ -1682,12 +1682,110 @@ async function renderCohort(index, urlIds) {
 
 /* ---------------- scorecard page ---------------- */
 
+const MODE_TEXT_KEYS = new Set([
+  "summary", "what", "why", "fix", "effort", "description", "detail", "note",
+  "title", "action", "impact", "label",
+]);
+
+/** @param {any} artifact */
+function modeLanguageKind(artifact) {
+  const profile = artifact?.mode_profile;
+  if (!profile || profile.measured !== true) return "generic";
+  if (profile.ferry_only === true) return "ferry";
+  if (profile.is_multimodal !== true && profile.primary_mode === "bus") return "bus";
+  return "generic";
+}
+
+/** @param {string} original @param {string} replacement */
+function preserveWordCase(original, replacement) {
+  if (original === original.toUpperCase()) return replacement.toUpperCase();
+  if (original[0] === original[0].toUpperCase())
+    return replacement[0].toUpperCase() + replacement.slice(1);
+  return replacement;
+}
+
+/** @param {string} text @param {string} source @param {string} replacement */
+function replaceModeWord(text, source, replacement) {
+  return text.replace(new RegExp(`\\b${source}\\b`, "gi"), (word) => preserveWordCase(word, replacement));
+}
+
+/** @param {string} text @param {string} kind */
+function adaptModeText(text, kind) {
+  if (kind === "bus") return text;
+  const singular = kind === "ferry" ? "vessel" : "transit vehicle";
+  const plural = kind === "ferry" ? "vessels" : "transit vehicles";
+  let result = replaceModeWord(replaceModeWord(text, "buses", plural), "bus", singular)
+    .replace(/\bwrong streets\b/gi, "wrong path")
+    .replace(/\bwrong corner\b/gi, kind === "ferry" ? "wrong terminal" : "wrong boarding location");
+  if (kind !== "ferry") return result;
+  const phrases = [
+    [/\baccessible stops\b/gi, "accessible terminals"],
+    [/\bflagged stops\b/gi, "flagged terminals"],
+    [/\bbusiest stops\b/gi, "busiest terminals"],
+    [/\bevery stop\b/gi, "every terminal"],
+    [/\bSome stops exist\b/gi, "Some terminals exist"],
+    [/\bRiders at the stop\b/gi, "Riders at the terminal"],
+    [/\bwalk to a stop\b/gi, "go to a terminal"],
+    [/(\b\d+(?:\.\d+)?%? of (?:\d+ )?)stops\b/gi, "$1terminals"],
+    [/\bSome stops sit\b/gi, "Some terminals sit"],
+    [/\bper flagged stop\b/gi, "per flagged terminal"],
+    [/\bno trip ever stops at them\b/gi, "no trip serves them"],
+    [/\bwhat the vessel displays\b/gi, "the published sailing destination"],
+    [/\bwhich direction a vessel is going\b/gi, "which destination a sailing serves"],
+  ];
+  for (const [source, replacement] of phrases) result = result.replace(source, String(replacement));
+  return result;
+}
+
+/** @param {any} value @param {string} kind */
+function adaptModeContainer(value, kind) {
+  if (Array.isArray(value)) return value.map((item) => adaptModeContainer(item, kind));
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => {
+    if (MODE_TEXT_KEYS.has(key) && typeof item === "string") return [key, adaptModeText(item, kind)];
+    if (Array.isArray(item) || (item && typeof item === "object"))
+      return [key, adaptModeContainer(item, kind)];
+    return [key, item];
+  }));
+}
+
+/** @param {any} artifact */
+function adaptArtifactLanguage(artifact) {
+  const result = { ...artifact };
+  const kind = modeLanguageKind(result);
+  if (result.categories) result.categories = adaptModeContainer(result.categories, kind);
+  for (const key of ["top_fixes", "recommendations"])
+    if (Array.isArray(result[key])) result[key] = adaptModeContainer(result[key], kind);
+  if (Array.isArray(result.routability?.findings))
+    result.routability = { ...result.routability, findings: adaptModeContainer(result.routability.findings, kind) };
+  return result;
+}
+
+const SHORT_MODE_LABELS = {
+  tram: "Tram", subway: "Metro", rail: "Rail", bus: "Bus", ferry: "Ferry",
+  cable_tram: "Cable tram", aerial_lift: "Aerial lift", funicular: "Funicular",
+  trolleybus: "Trolleybus", monorail: "Monorail", other: "Other",
+};
+
+/** @param {any} artifact */
+function serviceModeLabel(artifact) {
+  const profile = artifact?.mode_profile;
+  if (!profile || profile.measured !== true || !Array.isArray(profile.modes)) return "";
+  const labels = profile.modes
+    .filter((mode) => mode && mode.key)
+    .map((mode) => SHORT_MODE_LABELS[mode.key] || "Other");
+  if (!labels.length) return "";
+  if (labels.length <= 3) return labels.join(" + ");
+  return `${labels.slice(0, 2).join(" + ")} + ${labels.length - 2} more`;
+}
+
 /** @param {any} artifact @param {any} history @param {any} [dirRecord] */
 function renderScorecard(artifact, history, dirRecord) {
   // The directory carries the portable location contract. Enrich old artifacts
   // locally so every country-gated section uses the same effective country.
   const effectiveCountry = String(dirRecord?.country || artifact.agency?.country || "US").toUpperCase();
   artifact = { ...artifact, agency: { ...artifact.agency, country: effectiveCountry } };
+  artifact = adaptArtifactLanguage(artifact);
   const name = artifact.agency.name;
   document.title = `${name} — GTFS Scorecard`;
   const overall = artifact.overall;
@@ -2034,11 +2132,13 @@ function peerContext(dirRecord) {
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
 function boardHero(name, artifact, history, dirRecord) {
   const o = artifact.overall;
+  const mode = serviceModeLabel(artifact);
   return `<div class="board-hero reveal">
     <div class="board-inner">
       <p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status · checked ${formatDate(artifact.snapshot_date)}</p>
       <h1 class="board-title"><bdi>${esc(name)}</bdi></h1>
       <p class="board-sub">Based on the feed this agency publishes</p>
+      ${mode ? `<p class="board-mode"><span>Service mode</span> ${esc(mode)}</p>` : ""}
       <div class="grade-block">
         ${gradeReel(o.grade)}
         <div class="score-block">
