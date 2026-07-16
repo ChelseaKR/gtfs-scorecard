@@ -1822,6 +1822,7 @@ function renderScorecard(artifact, history, dirRecord) {
       ${fixes}
     </section>
     ${riderImpactSection(artifact)}
+    ${ferryProfileSection(artifact)}
 
     ${routeRule()}
     <section aria-labelledby="cats-h" class="reveal">
@@ -1941,6 +1942,104 @@ function riderImpactSection(artifact) {
       reliability. Riders should confirm current service alerts, fares, and accessibility
       accommodations with the transit operator before traveling.</p>
   </details>`;
+}
+
+/** Explain a ferry enum while keeping blank/0 values explicitly unknown.
+ * @param {any} profile @param {string} subject @param {string} field */
+function ferryEnumText(profile, subject, field) {
+  const total = Number(profile?.total_count || 0);
+  const stated = Number(profile?.stated_count || 0);
+  const allowed = Number(profile?.allowed_count || 0);
+  if (!total) return `No ${subject} were available to measure in this snapshot.`;
+  if (!stated) return `Unknown: none of the ${formatNumber(total)} ${subject} publish ${field}.`;
+  return `${plainNumber(profile.stated_pct)}% of ${subject} publish a value; ` +
+    `${plainNumber(profile.allowed_pct)}% of all ${subject} explicitly say allowed ` +
+    `(${formatNumber(allowed)} of ${formatNumber(total)}). Unstated values remain unknown.`;
+}
+
+/** Descriptive ferry subset. It never changes the score.
+ * @param {any} artifact @returns {string} */
+function ferryProfileSection(artifact) {
+  const profile = artifact?.ferry_profile;
+  if (!profile || profile.measured !== true) return "";
+
+  const hierarchy = profile.terminal_hierarchy || {};
+  const boarding = Number(hierarchy.boarding_location_count || 0);
+  const parented = Number(hierarchy.parented_boarding_location_count || 0);
+  const stations = Number(hierarchy.referenced_station_count || 0);
+  let hierarchyText;
+  if (!boarding) hierarchyText = "No ferry boarding locations were available to measure.";
+  else if (!parented)
+    hierarchyText = `${formatNumber(boarding)} ferry boarding locations; no parent-station hierarchy is published.`;
+  else
+    hierarchyText = `${formatNumber(boarding)} ferry boarding locations; ${formatNumber(parented)} link to ` +
+      `${formatNumber(stations)} referenced station record${stations === 1 ? "" : "s"}.`;
+
+  const access = profile.stop_access || {};
+  const eligible = Number(access.eligible_terminal_count || 0);
+  const accessStated = Number(access.stated_count || 0);
+  let accessText;
+  if (!eligible)
+    accessText = "Not applicable: no ferry boarding location is linked to a parent station, so stop_access is not permitted here.";
+  else if (!accessStated)
+    accessText = `Unknown: none of the ${formatNumber(eligible)} eligible child terminal locations publish stop_access.`;
+  else
+    accessText = `${plainNumber(access.stated_pct)}% of eligible child terminal locations publish access: ` +
+      `${formatNumber(Number(access.direct_count || 0))} direct from the street network and ` +
+      `${formatNumber(Number(access.through_station_count || 0))} through the station or its pathways.`;
+
+  const accessibility = profile.accessibility || {};
+  const accessibilityText =
+    `${ferryEnumText(accessibility.terminals, "ferry boarding locations", "wheelchair_boarding")} ` +
+    `${ferryEnumText(accessibility.trips, "ferry trips", "wheelchair_accessible")} ` +
+    "This reports published values, not verified physical usability.";
+
+  const fares = profile.fares || {};
+  const model = String(fares.model || "none");
+  let faresText;
+  if (fares.fare_free === true) faresText = "Whole feed: the service is curated as fare-free.";
+  else if (fares.applied === true) {
+    const label = { legacy: "GTFS Fares v1", v2: "GTFS Fares v2" }[model] || model;
+    faresText = `Whole feed: applied fare data is published using ${label}.`;
+  } else if (model === "v2")
+    faresText = "Whole feed: Fares v2 products are present, but no leg rules apply them to trips.";
+  else
+    faresText = "Whole feed: no applied fare data is published. This is not evidence that ferry service is free.";
+
+  const kindLabels = {
+    trip_updates: "Trip Updates",
+    vehicle_positions: "Vehicle Positions",
+    service_alerts: "Service Alerts",
+  };
+  const kinds = Array.isArray(profile.realtime?.configured_kinds)
+    ? profile.realtime.configured_kinds
+    : [];
+  const realtimeText = kinds.length
+    ? `Whole feed: configured GTFS-Realtime endpoints are ${kinds.map((kind) => kindLabels[kind] || String(kind).replaceAll("_", " ")).join(", ")}.`
+    : "Whole feed: no GTFS-Realtime endpoints are configured in this scorecard.";
+
+  const rows = [
+    ["Ferry service", `${formatNumber(Number(profile.route_count || 0))} routes · ${formatNumber(Number(profile.trip_count || 0))} trips`],
+    ["Terminal structure", hierarchyText],
+    ["Terminal access", accessText],
+    ["Published accessibility", accessibilityText],
+    ["Bicycles", ferryEnumText(profile.bikes, "ferry trips", "bikes_allowed")],
+    ["Cars", ferryEnumText(profile.cars, "ferry trips", "cars_allowed")],
+    ["Fares", faresText],
+    ["Realtime", realtimeText],
+  ];
+  return `<section class="feed-details ferry-profile reveal" aria-labelledby="ferry-profile-h">
+    <p class="ferry-profile-kicker">Ungraded capability read</p>
+    <h2 class="section-title" id="ferry-profile-h">Ferry data profile</h2>
+    <p class="page-lede">A ferry-specific view of what this GTFS feed publishes. Schedule
+      measurements use ferry routes and trips only; fare and realtime facts are labelled as
+      whole-feed. Unknown values are not treated as no.</p>
+    <dl class="ferry-profile-grid">${rows.map(([label, value]) =>
+      `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
+    <p class="fineprint">Descriptive only. This profile does not change the grade or verify
+      vessels, terminal facilities, vehicle carriage, fares, or accessibility in the real world.
+      Field meanings follow the <a href="https://gtfs.org/documentation/schedule/reference/">GTFS Schedule reference</a>.</p>
+  </section>`;
 }
 
 /** @param {unknown} value @returns {number|null} */

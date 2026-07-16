@@ -253,6 +253,56 @@ def test_ferry_scorecard_uses_mode_aware_language(page: Page, app_url: str) -> N
     artifact["top_fixes"][0]["why"] = (
         "Even with accessible stops, riders need to know the bus itself can take them."
     )
+    artifact["ferry_profile"] = {
+        "measured": True,
+        "graded": False,
+        "route_count": 2,
+        "trip_count": 80,
+        "terminal_hierarchy": {
+            "boarding_location_count": 4,
+            "parented_boarding_location_count": 2,
+            "referenced_station_count": 1,
+        },
+        "stop_access": {
+            "eligible_terminal_count": 2,
+            "stated_count": 1,
+            "stated_pct": 50.0,
+            "direct_count": 1,
+            "through_station_count": 0,
+        },
+        "accessibility": {
+            "terminals": {
+                "total_count": 4,
+                "stated_count": 2,
+                "stated_pct": 50.0,
+                "allowed_count": 2,
+                "allowed_pct": 50.0,
+            },
+            "trips": {
+                "total_count": 80,
+                "stated_count": 40,
+                "stated_pct": 50.0,
+                "allowed_count": 40,
+                "allowed_pct": 50.0,
+            },
+        },
+        "bikes": {
+            "total_count": 80,
+            "stated_count": 60,
+            "stated_pct": 75.0,
+            "allowed_count": 50,
+            "allowed_pct": 62.5,
+        },
+        "cars": {
+            "total_count": 80,
+            "stated_count": 0,
+            "stated_pct": 0.0,
+            "allowed_count": 0,
+            "allowed_pct": 0.0,
+        },
+        "fares": {"fare_free": False, "model": "legacy", "applied": True},
+        "realtime": {"configured_kinds": ["trip_updates", "service_alerts"]},
+    }
     page.route(
         f"**/data/artifacts/{AGENCY_ID}/latest.json",
         lambda route: route.fulfill(json=artifact),
@@ -271,6 +321,12 @@ def test_ferry_scorecard_uses_mode_aware_language(page: Page, app_url: str) -> N
     mark = page.locator("section[aria-labelledby='mark-h']")
     expect(mark).to_contain_text("terminal")
     expect(mark).not_to_contain_text("nearly every stop")
+    profile = page.locator("section[aria-labelledby='ferry-profile-h']")
+    expect(profile).to_contain_text("Ungraded capability read")
+    expect(profile).to_contain_text("2 routes · 80 trips")
+    expect(profile).to_contain_text("50% of eligible child terminal locations")
+    expect(profile).to_contain_text("Unknown: none of the 80 ferry trips publish cars_allowed")
+    expect(profile).to_contain_text("Trip Updates, Service Alerts")
 
 
 def test_agency_route_allowlists_hostile_artifact_severity(page: Page, app_url: str) -> None:

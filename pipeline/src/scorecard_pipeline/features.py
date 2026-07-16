@@ -44,6 +44,25 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
         if isinstance(mode_rows, list)
         else None
     )
+    raw_ferry_profile = artifact.get("ferry_profile")
+    ferry_profile = (
+        raw_ferry_profile
+        if isinstance(raw_ferry_profile, dict) and raw_ferry_profile.get("measured") is True
+        else None
+    )
+    ferry_hierarchy = ferry_profile.get("terminal_hierarchy", {}) if ferry_profile else {}
+    ferry_stop_access = ferry_profile.get("stop_access", {}) if ferry_profile else {}
+    ferry_accessibility = ferry_profile.get("accessibility", {}) if ferry_profile else {}
+    ferry_terminals = (
+        ferry_accessibility.get("terminals", {}) if isinstance(ferry_accessibility, dict) else {}
+    )
+    ferry_trips = (
+        ferry_accessibility.get("trips", {}) if isinstance(ferry_accessibility, dict) else {}
+    )
+    ferry_bikes = ferry_profile.get("bikes", {}) if ferry_profile else {}
+    ferry_cars = ferry_profile.get("cars", {}) if ferry_profile else {}
+    ferry_fares = ferry_profile.get("fares", {}) if ferry_profile else {}
+    ferry_realtime = ferry_profile.get("realtime", {}) if ferry_profile else {}
 
     boarding = coverage.get("wheelchair_boarding_pct") if coverage else None
     accessible = coverage.get("wheelchair_accessible_pct") if coverage else None
@@ -79,6 +98,39 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
         "modes": modes,
         "has_ferry": mode_profile.get("has_ferry") if mode_profile else None,
         "ferry_only": mode_profile.get("ferry_only") if mode_profile else None,
+        "ferry_profile_measured": ferry_profile is not None,
+        "ferry_route_count": ferry_profile.get("route_count") if ferry_profile else None,
+        "ferry_trip_count": ferry_profile.get("trip_count") if ferry_profile else None,
+        "ferry_terminal_count": (
+            ferry_hierarchy.get("boarding_location_count")
+            if isinstance(ferry_hierarchy, dict)
+            else None
+        ),
+        "ferry_stop_access_stated_pct": (
+            ferry_stop_access.get("stated_pct") if isinstance(ferry_stop_access, dict) else None
+        ),
+        "ferry_terminal_accessibility_stated_pct": (
+            ferry_terminals.get("stated_pct") if isinstance(ferry_terminals, dict) else None
+        ),
+        "ferry_trip_accessibility_stated_pct": (
+            ferry_trips.get("stated_pct") if isinstance(ferry_trips, dict) else None
+        ),
+        "ferry_bikes_stated_pct": (
+            ferry_bikes.get("stated_pct") if isinstance(ferry_bikes, dict) else None
+        ),
+        "ferry_bikes_allowed_pct": (
+            ferry_bikes.get("allowed_pct") if isinstance(ferry_bikes, dict) else None
+        ),
+        "ferry_cars_stated_pct": (
+            ferry_cars.get("stated_pct") if isinstance(ferry_cars, dict) else None
+        ),
+        "ferry_cars_allowed_pct": (
+            ferry_cars.get("allowed_pct") if isinstance(ferry_cars, dict) else None
+        ),
+        "ferry_fare_model": (ferry_fares.get("model") if isinstance(ferry_fares, dict) else None),
+        "ferry_realtime_kinds": (
+            ferry_realtime.get("configured_kinds") if isinstance(ferry_realtime, dict) else None
+        ),
     }
 
 
@@ -119,6 +171,19 @@ _PUBLIC_KEYS = (
     "modes",
     "has_ferry",
     "ferry_only",
+    "ferry_profile_measured",
+    "ferry_route_count",
+    "ferry_trip_count",
+    "ferry_terminal_count",
+    "ferry_stop_access_stated_pct",
+    "ferry_terminal_accessibility_stated_pct",
+    "ferry_trip_accessibility_stated_pct",
+    "ferry_bikes_stated_pct",
+    "ferry_bikes_allowed_pct",
+    "ferry_cars_stated_pct",
+    "ferry_cars_allowed_pct",
+    "ferry_fare_model",
+    "ferry_realtime_kinds",
 )
 
 
@@ -150,11 +215,18 @@ def build_feature_dataset(
             row.get("translations_measured") is True for row in feeds
         ),
         "mode_measured_count": sum(row.get("modes_measured") is True for row in feeds),
+        "ferry_profile_measured_count": sum(
+            row.get("ferry_profile_measured") is True for row in feeds
+        ),
         "comparison": comparison,
         "filter_semantics": {
             "selected_features": "all selected features must be published",
             "translation_language": ("exact case-insensitive BCP 47 tag in translation_languages"),
             "mode": "selected mode key must be present in modes",
+            "ferry_profile": (
+                "ferry schedule fields use ferry routes and trips only; fare and realtime "
+                "fields describe the whole feed"
+            ),
             "accessibility_thresholds": (
                 "minimum share of stops or trips with a stated wheelchair field"
             ),

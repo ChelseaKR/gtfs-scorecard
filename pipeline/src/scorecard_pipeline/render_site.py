@@ -1699,6 +1699,155 @@ def _rider_impact_section(artifact: dict[str, Any]) -> str:
     )
 
 
+def _ferry_enum_text(profile: dict[str, Any], subject: str, field: str) -> str:
+    """Explain a ferry enum while keeping blank/0 values explicitly unknown."""
+    total = int(profile.get("total_count") or 0)
+    stated = int(profile.get("stated_count") or 0)
+    allowed = int(profile.get("allowed_count") or 0)
+    if total == 0:
+        return f"No {subject} were available to measure in this snapshot."
+    if stated == 0:
+        return f"Unknown: none of the {total:,} {subject} publish {field}."
+    stated_label = _numeric_percent(profile.get("stated_pct"))
+    allowed_label = _numeric_percent(profile.get("allowed_pct"))
+    return (
+        f"{_plain_number(stated_label or 0.0)}% of {subject} publish a value; "
+        f"{_plain_number(allowed_label or 0.0)}% of all {subject} explicitly say allowed "
+        f"({allowed:,} of {total:,}). Unstated values remain unknown."
+    )
+
+
+def _ferry_profile_section(artifact: dict[str, Any]) -> str:
+    """Render the ungraded ferry subset without extending the scoring rubric."""
+    profile = artifact.get("ferry_profile")
+    if not isinstance(profile, dict) or profile.get("measured") is not True:
+        return ""
+
+    hierarchy = profile.get("terminal_hierarchy", {})
+    hierarchy = hierarchy if isinstance(hierarchy, dict) else {}
+    boarding = int(hierarchy.get("boarding_location_count") or 0)
+    parented = int(hierarchy.get("parented_boarding_location_count") or 0)
+    stations = int(hierarchy.get("referenced_station_count") or 0)
+    if boarding == 0:
+        hierarchy_text = "No ferry boarding locations were available to measure."
+    elif parented == 0:
+        hierarchy_text = (
+            f"{boarding:,} ferry boarding locations; no parent-station hierarchy is published."
+        )
+    else:
+        hierarchy_text = (
+            f"{boarding:,} ferry boarding locations; {parented:,} link to "
+            f"{stations:,} referenced station record{'s' if stations != 1 else ''}."
+        )
+
+    stop_access = profile.get("stop_access", {})
+    stop_access = stop_access if isinstance(stop_access, dict) else {}
+    eligible = int(stop_access.get("eligible_terminal_count") or 0)
+    access_stated = int(stop_access.get("stated_count") or 0)
+    if eligible == 0:
+        access_text = (
+            "Not applicable: no ferry boarding location is linked to a parent station, "
+            "so stop_access is not permitted here."
+        )
+    elif access_stated == 0:
+        access_text = (
+            f"Unknown: none of the {eligible:,} eligible child terminal locations publish "
+            "stop_access."
+        )
+    else:
+        direct = int(stop_access.get("direct_count") or 0)
+        through = int(stop_access.get("through_station_count") or 0)
+        access_pct = _numeric_percent(stop_access.get("stated_pct"))
+        access_text = (
+            f"{_plain_number(access_pct or 0.0)}% of eligible child terminal "
+            f"locations publish access: {direct:,} direct from the street network and "
+            f"{through:,} through the station or its pathways."
+        )
+
+    accessibility = profile.get("accessibility", {})
+    accessibility = accessibility if isinstance(accessibility, dict) else {}
+    terminal_access = accessibility.get("terminals", {})
+    trip_access = accessibility.get("trips", {})
+    terminal_access = terminal_access if isinstance(terminal_access, dict) else {}
+    trip_access = trip_access if isinstance(trip_access, dict) else {}
+    accessibility_text = (
+        _ferry_enum_text(terminal_access, "ferry boarding locations", "wheelchair_boarding")
+        + " "
+        + _ferry_enum_text(trip_access, "ferry trips", "wheelchair_accessible")
+        + " This reports published values, not verified physical usability."
+    )
+
+    bikes = profile.get("bikes", {})
+    cars = profile.get("cars", {})
+    bikes = bikes if isinstance(bikes, dict) else {}
+    cars = cars if isinstance(cars, dict) else {}
+
+    fares = profile.get("fares", {})
+    fares = fares if isinstance(fares, dict) else {}
+    model = str(fares.get("model") or "none")
+    if fares.get("fare_free") is True:
+        fares_text = "Whole feed: the service is curated as fare-free."
+    elif fares.get("applied") is True:
+        label = {"legacy": "GTFS Fares v1", "v2": "GTFS Fares v2"}.get(model, model)
+        fares_text = f"Whole feed: applied fare data is published using {label}."
+    elif model == "v2":
+        fares_text = (
+            "Whole feed: Fares v2 products are present, but no leg rules apply them to trips."
+        )
+    else:
+        fares_text = (
+            "Whole feed: no applied fare data is published. This is not evidence that ferry "
+            "service is free."
+        )
+
+    realtime = profile.get("realtime", {})
+    realtime = realtime if isinstance(realtime, dict) else {}
+    kinds = realtime.get("configured_kinds", [])
+    kinds = kinds if isinstance(kinds, list) else []
+    kind_labels = {
+        "trip_updates": "Trip Updates",
+        "vehicle_positions": "Vehicle Positions",
+        "service_alerts": "Service Alerts",
+    }
+    realtime_text = (
+        "Whole feed: configured GTFS-Realtime endpoints are "
+        + ", ".join(kind_labels.get(str(kind), str(kind).replace("_", " ")) for kind in kinds)
+        + "."
+        if kinds
+        else "Whole feed: no GTFS-Realtime endpoints are configured in this scorecard."
+    )
+
+    items = [
+        (
+            "Ferry service",
+            f"{int(profile.get('route_count') or 0):,} routes · {int(profile.get('trip_count') or 0):,} trips",
+        ),
+        ("Terminal structure", hierarchy_text),
+        ("Terminal access", access_text),
+        ("Published accessibility", accessibility_text),
+        ("Bicycles", _ferry_enum_text(bikes, "ferry trips", "bikes_allowed")),
+        ("Cars", _ferry_enum_text(cars, "ferry trips", "cars_allowed")),
+        ("Fares", fares_text),
+        ("Realtime", realtime_text),
+    ]
+    cards = "".join(
+        f"<div><dt>{esc(label)}</dt><dd>{esc(value)}</dd></div>" for label, value in items
+    )
+    return (
+        '<section class="feed-details ferry-profile" aria-labelledby="ferry-profile-h">'
+        '<p class="ferry-profile-kicker">Ungraded capability read</p>'
+        '<h2 class="section-title" id="ferry-profile-h">Ferry data profile</h2>'
+        '<p class="page-lede">A ferry-specific view of what this GTFS feed publishes. '
+        "Schedule measurements use ferry routes and trips only; fare and realtime facts are "
+        "labelled as whole-feed. Unknown values are not treated as no.</p>"
+        f'<dl class="ferry-profile-grid">{cards}</dl>'
+        '<p class="fineprint">Descriptive only. This profile does not change the grade or '
+        "verify vessels, terminal facilities, vehicle carriage, fares, or accessibility in "
+        'the real world. Field meanings follow the <a href="https://gtfs.org/documentation/'
+        'schedule/reference/">GTFS Schedule reference</a>.</p></section>'
+    )
+
+
 def _artifact_category(artifact: dict[str, Any], name: str) -> dict[str, Any]:
     categories = artifact.get("categories", {})
     category = categories.get(name, {}) if isinstance(categories, dict) else {}
@@ -2063,6 +2212,8 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # did before this feature.
     confidence = _confidence_section(artifact)
     confidence_block = f"\n    {confidence}" if confidence else ""
+    ferry_profile = _ferry_profile_section(artifact)
+    ferry_profile_block = f"\n    {ferry_profile}" if ferry_profile else ""
     _outreach_block = _outreach_section(artifact, canonical)
     _vendor_block = _vendor_section(artifact, canonical)
     _embed_block = _embed_section(agency_id, agency_name, str(overall["grade"]))
@@ -2093,8 +2244,10 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     report_stops = [
         ("Overview", "#report-overview"),
         ("Fixes", "#fixes-h"),
-        ("Scores", "#cats-h"),
     ]
+    if artifact.get("ferry_profile"):
+        report_stops.append(("Ferry profile", "#ferry-profile-h"))
+    report_stops.append(("Scores", "#cats-h"))
     if map_section:
         report_stops.append(("Routes", "#map-h"))
     report_stops.extend(
@@ -2145,7 +2298,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       {fixes_html}
       {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
-    {_rider_impact_section(artifact)}
+    {_rider_impact_section(artifact)}{ferry_profile_block}
     {_vendor_block}
     {_outreach_block}
     {_route_rule()}

@@ -23,6 +23,7 @@ from scorecard_pipeline.render_site import (
     _changes_sections,
     _equity_choropleth,
     _fares_substat,
+    _ferry_profile_section,
     _grade_distribution_bar,
     _map_feature,
     _numeric_percent,
@@ -569,6 +570,81 @@ def test_ferry_rider_impact_uses_terminal_and_vessel_language() -> None:
     assert "80% of terminals" in html
     assert "whether terminals or vessels are physically usable" in html
     assert "% of stops" not in html
+
+
+def test_ferry_profile_is_ungraded_scoped_and_preserves_unknowns() -> None:
+    artifact = {
+        "ferry_profile": {
+            "measured": True,
+            "graded": False,
+            "route_count": 3,
+            "trip_count": 120,
+            "terminal_hierarchy": {
+                "boarding_location_count": 6,
+                "parented_boarding_location_count": 4,
+                "referenced_station_count": 2,
+            },
+            "stop_access": {
+                "eligible_terminal_count": 4,
+                "stated_count": 2,
+                "stated_pct": 50.0,
+                "direct_count": 1,
+                "through_station_count": 1,
+            },
+            "accessibility": {
+                "terminals": {
+                    "total_count": 6,
+                    "stated_count": 3,
+                    "stated_pct": 50.0,
+                    "allowed_count": 2,
+                    "allowed_pct": 33.3,
+                },
+                "trips": {
+                    "total_count": 120,
+                    "stated_count": 0,
+                    "stated_pct": 0.0,
+                    "allowed_count": 0,
+                    "allowed_pct": 0.0,
+                },
+            },
+            "bikes": {
+                "total_count": 120,
+                "stated_count": 90,
+                "stated_pct": 75.0,
+                "allowed_count": 60,
+                "allowed_pct": 50.0,
+            },
+            "cars": {
+                "total_count": 120,
+                "stated_count": 0,
+                "stated_pct": 0.0,
+                "allowed_count": 0,
+                "allowed_pct": 0.0,
+            },
+            "fares": {"scope": "whole_feed", "fare_free": False, "model": "none"},
+            "realtime": {
+                "scope": "whole_feed",
+                "configured_kinds": ["trip_updates", "service_alerts"],
+            },
+        }
+    }
+
+    html = _ferry_profile_section(artifact)
+
+    assert 'id="ferry-profile-h"' in html
+    assert "Ungraded capability read" in html
+    assert "3 routes · 120 trips" in html
+    assert "50% of eligible child terminal locations" in html
+    assert "Unknown: none of the 120 ferry trips publish wheelchair_accessible" in html
+    assert "75% of ferry trips publish a value" in html
+    assert "Unknown: none of the 120 ferry trips publish cars_allowed" in html
+    assert "not evidence that ferry service is free" in html
+    assert "Trip Updates, Service Alerts" in html
+    assert "does not change the grade" in html
+
+
+def test_ferry_profile_is_absent_when_not_measured() -> None:
+    assert _ferry_profile_section({}) == ""
 
 
 def test_rider_impact_disclosure_keeps_unknowns_neutral_and_escapes_model() -> None:

@@ -259,7 +259,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.13"
+    assert SCHEMA_VERSION == "1.14"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 
@@ -321,6 +321,41 @@ def test_artifact_with_ungraded_mode_profile_conforms() -> None:
         [{"route_id": "ferry", "route_type": "4"}],
         [{"route_id": "ferry", "trip_id": "sailing"}],
     )
+
+    validate_artifact(artifact)
+
+
+def test_artifact_with_ungraded_ferry_profile_conforms() -> None:
+    from scorecard_pipeline.ferry_profile import build_ferry_profile
+
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    profile = build_ferry_profile(
+        [{"route_id": "ferry", "route_type": "4"}],
+        [
+            {
+                "route_id": "ferry",
+                "trip_id": "sailing",
+                "wheelchair_accessible": "1",
+                "bikes_allowed": "1",
+                "cars_allowed": "0",
+            }
+        ],
+        [{"trip_id": "sailing", "stop_id": "pier"}],
+        [
+            {
+                "stop_id": "pier",
+                "location_type": "0",
+                "parent_station": "terminal",
+                "stop_access": "1",
+                "wheelchair_boarding": "1",
+            },
+            {"stop_id": "terminal", "location_type": "1"},
+        ],
+        fare_profile={"model": "legacy", "applied": True},
+        configured_realtime_kinds={"trip_updates"},
+    )
+    assert profile is not None
+    artifact["ferry_profile"] = profile
 
     validate_artifact(artifact)
 

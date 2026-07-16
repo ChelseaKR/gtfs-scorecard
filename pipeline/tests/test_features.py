@@ -51,6 +51,25 @@ def _artifact(*, measured: bool = True) -> dict[str, Any]:
             if measured
             else None
         ),
+        "ferry_profile": (
+            {
+                "measured": True,
+                "route_count": 2,
+                "trip_count": 40,
+                "terminal_hierarchy": {"boarding_location_count": 8},
+                "stop_access": {"stated_pct": 50.0},
+                "accessibility": {
+                    "terminals": {"stated_pct": 75.0},
+                    "trips": {"stated_pct": 60.0},
+                },
+                "bikes": {"stated_pct": 80.0, "allowed_pct": 70.0},
+                "cars": {"stated_pct": 40.0, "allowed_pct": 20.0},
+                "fares": {"model": "v2"},
+                "realtime": {"configured_kinds": ["trip_updates"]},
+            }
+            if measured
+            else None
+        ),
     }
 
 
@@ -81,6 +100,19 @@ def test_feature_measurements_preserve_capabilities_and_accessibility_depth() ->
     assert row["modes"] == ["bus", "ferry"]
     assert row["has_ferry"] is True
     assert row["ferry_only"] is False
+    assert row["ferry_profile_measured"] is True
+    assert row["ferry_route_count"] == 2
+    assert row["ferry_trip_count"] == 40
+    assert row["ferry_terminal_count"] == 8
+    assert row["ferry_stop_access_stated_pct"] == 50.0
+    assert row["ferry_terminal_accessibility_stated_pct"] == 75.0
+    assert row["ferry_trip_accessibility_stated_pct"] == 60.0
+    assert row["ferry_bikes_stated_pct"] == 80.0
+    assert row["ferry_bikes_allowed_pct"] == 70.0
+    assert row["ferry_cars_stated_pct"] == 40.0
+    assert row["ferry_cars_allowed_pct"] == 20.0
+    assert row["ferry_fare_model"] == "v2"
+    assert row["ferry_realtime_kinds"] == ["trip_updates"]
 
 
 def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
@@ -98,6 +130,8 @@ def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
     assert row["primary_mode"] is None
     assert row["modes"] is None
     assert row["has_ferry"] is None
+    assert row["ferry_profile_measured"] is False
+    assert row["ferry_route_count"] is None
 
 
 def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
@@ -130,6 +164,7 @@ def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
     assert payload["accessibility_measured_count"] == 1
     assert payload["translation_measured_count"] == 1
     assert payload["mode_measured_count"] == 1
+    assert payload["ferry_profile_measured_count"] == 1
     assert [row["id"] for row in payload["feeds"]] == ["a", "b"]
     assert payload["feeds"][1]["country_name"] == "Canada"
     assert payload["feeds"][0]["has_fares"] is None

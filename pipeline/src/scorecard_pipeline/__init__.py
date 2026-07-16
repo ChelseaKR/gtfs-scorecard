@@ -3,6 +3,9 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.14: additive ungraded ferry capability profile for ferry-serving feeds,
+# including terminal hierarchy, stop_access, accessibility, vehicle carriage,
+# fare publication, and configured realtime kinds.
 # 1.13: additive ungraded route-mode profile, so unchanged feeds are rebuilt
 # once to populate mode filters and establish a shared presentation contract.
 # 1.12: additive translations detail in completeness artifacts, so unchanged
@@ -36,7 +39,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.13"
+SCHEMA_VERSION = "1.14"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)

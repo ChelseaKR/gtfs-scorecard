@@ -223,6 +223,17 @@ def run_agency(  # noqa: C901
     from .modes import mode_profile_from_zip
 
     artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
+    # Ferry-specific schedule capabilities remain descriptive and ungraded.
+    # Empty enum values stay unknown, matching the GTFS specification.
+    from .ferry_profile import ferry_profile_from_zip
+
+    ferry_profile = ferry_profile_from_zip(
+        str(fetched.path),
+        fare_free=agency.fare_free,
+        configured_realtime_kinds=agency.rt_urls,
+    )
+    if ferry_profile is not None:
+        artifact["ferry_profile"] = ferry_profile
     # Beyond-the-grade opportunities (Fares v2, Flex completeness, accessibility):
     # attached as a separate block so they show as recommendations without moving
     # any category score.
@@ -368,6 +379,11 @@ def run_adhoc(
     from .modes import mode_profile_from_zip
 
     artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
+    from .ferry_profile import ferry_profile_from_zip
+
+    ferry_profile = ferry_profile_from_zip(str(fetched.path))
+    if ferry_profile is not None:
+        artifact["ferry_profile"] = ferry_profile
     from .mode_language import adapt_artifact_language
 
     return adapt_artifact_language(artifact)
