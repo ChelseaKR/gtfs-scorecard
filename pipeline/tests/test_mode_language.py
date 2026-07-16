@@ -52,6 +52,10 @@ def _artifact(*, ferry_only: bool, multimodal: bool = False) -> dict[str, Any]:
                 "fix": "Set wheelchair_boarding for every stop in stops.txt.",
             }
         ],
+        "conformance": {
+            "summary": "States wheelchair access on 0% of stops.",
+            "criteria": [{"key": "accessible", "detail": "Nearly every stop is described."}],
+        },
     }
 
 
@@ -72,6 +76,8 @@ def test_ferry_copy_uses_vessels_and_terminals_without_touching_scores_or_codes(
     assert "19 of 19 terminals" in fix["what"]
     assert "accessible terminals" in fix["why"] and "vessel" in fix["why"]
     assert "every terminal" in fix["fix"] and "stops.txt" in fix["fix"]
+    assert "0% of terminals" in result["conformance"]["summary"]
+    assert "Nearly every terminal" in result["conformance"]["criteria"][0]["detail"]
     assert artifact["categories"]["correctness"]["summary"] == "The bus data was checked."
 
 
