@@ -1,6 +1,6 @@
 # Roadmap: prove remediation before expanding
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 This is the infrastructure and delivery roadmap for GTFS Scorecard. The
 product counterpart is [`product-roadmap.md`](product-roadmap.md), and the
@@ -47,6 +47,31 @@ sequence. Treat these capabilities as baseline:
 
 These features need maintenance, but none is a reason to defer the remediation
 pilot.
+
+## Parallel maintenance: consumer decision support
+
+A MobilityData Slack consumer exposed a bounded problem in an already-shipped
+surface: they looked in primary navigation and could not find the feature
+finder. Once they found it, they said the accessibility detail supported their
+decision, then named rider-facing translations and European coverage as the
+remaining blockers.
+
+This is one qualitative source. It justifies a small maintenance slice, not a
+general expansion program:
+
+- Put **Feed features** in primary navigation and deep-link to the focused
+  finder.
+- Measure `translations.txt`, including languages and translated tables, without
+  changing grades.
+- Keep old artifacts unknown until rescored and state the U.S.-heavy coverage
+  denominator beside the filters.
+- Use the evidence and thresholds in
+  [`global-expansion.md`](global-expansion.md) before describing a European
+  cohort as useful for decisions.
+
+The translation detector and navigation change share the existing scoring and
+static-render paths. They do not add a new service or compete with a participant
+remediation cycle.
 
 ## Now: run the 90-day proof
 
@@ -150,7 +175,9 @@ These are valid options, not commitments:
 | --- | --- |
 | Verified agency self-management | Repeated claim or correction volume makes manual review a measured burden. |
 | White-label and regional guidance | A named program agrees to operate an instance and provide local review. |
-| Localization and broader worldwide curation | A local steward owns translation, licensing, and source verification. |
+| European GTFS beta curation | The reviewed cohort can meet the 250-feed, 12-country, freshness, identity, and licensing gate in `global-expansion.md`. |
+| Full interface localization | A named language steward owns translation review, pseudolocale and RTL checks, and ongoing copy quality. |
+| Broader worldwide curation | A local steward owns licensing, source verification, and the regional consent or partnership requirements. |
 | Deeper realtime sampling | A named program needs the result, grants endpoint access, and funds a bounded sampling plan. |
 | Research dataset expansion | Retention, privacy, licence, and citation requirements are settled. |
 | Vendor or program intelligence | Enough comparable verified closures exist to report a pattern without ranking or blame. |

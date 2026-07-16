@@ -21,6 +21,8 @@ def _art(
     country: str | None = None,
     subdivision_code: str = "",
     subdivision_name: str = "",
+    translations: bool | None = None,
+    translation_languages: list[str] | None = None,
 ) -> dict[str, Any]:
     comp: dict[str, Any] = {"status": "measured" if measured else "not_measured", "details": {}}
     if measured and not no_details:
@@ -29,6 +31,14 @@ def _art(
             "flex": {"has_flex": flex},
             "pathways": {"has_pathways": pathways, "has_step_free": step_free},
         }
+        if translations is not None:
+            comp["details"]["translations"] = {
+                "has_translations": translations,
+                "translation_count": 2 if translations else 0,
+                "languages": translation_languages or (["fr"] if translations else []),
+                "translated_tables": ["stops"] if translations else [],
+                "feed_lang": "mul" if translations else "en",
+            }
     agency = {
         "id": aid,
         "name": name,
@@ -45,12 +55,57 @@ def _art(
 
 
 def test_record_extracts_capabilities() -> None:
-    r = adoption_record(_art("a", "A", "CA", fares="v2", flex=True, pathways=True, step_free=True))
+    r = adoption_record(
+        _art(
+            "a",
+            "A",
+            "CA",
+            fares="v2",
+            flex=True,
+            pathways=True,
+            step_free=True,
+            translations=True,
+            translation_languages=["es", "fr"],
+        )
+    )
     assert r is not None
     assert r["has_flex"] and r["has_fares"] and r["has_fares_v2"]
     assert r["has_pathways"] and r["has_step_free"]
     assert r["fare_model"] == "v2" and r["state"] == "CA"
     assert r["country"] == "US"  # omitted historical country keeps the API default
+    assert r["translations_measured"] is True
+    assert r["has_translations"] is True
+    assert r["translation_languages"] == ["es", "fr"]
+
+
+def test_record_keeps_older_translation_measurement_unknown() -> None:
+    r = adoption_record(_art("a", "A", "CA"))
+
+    assert r is not None
+    assert r["translations_measured"] is False
+    assert r["has_translations"] is None
+    assert r["translation_count"] is None
+
+
+def test_record_fails_closed_on_malformed_translation_detail() -> None:
+    artifact = _art("a", "A", "CA", translations=False)
+    artifact["categories"]["completeness"]["details"]["translations"] = {
+        "has_translations": "true",
+        "translation_count": "many",
+        "languages": "fr",
+        "translated_tables": {"stops": True},
+        "feed_lang": 7,
+    }
+
+    record = adoption_record(artifact)
+
+    assert record is not None
+    assert record["translations_measured"] is True
+    assert record["has_translations"] is False
+    assert record["translation_count"] == 0
+    assert record["translation_languages"] == []
+    assert record["translated_tables"] == []
+    assert record["feed_lang"] is None
 
 
 def test_record_skips_unmeasured_or_missing_details() -> None:
@@ -78,6 +133,11 @@ def test_national_adoption_counts_shares_and_state_split() -> None:
     assert nat["fares"]["count"] == 2  # v2 + legacy
     assert nat["fares_v2"]["count"] == 1
     assert nat["pathways"]["count"] == 1
+    assert nat["translations"] == {
+        "count": 0,
+        "pct": 0.0,
+        "measured_feed_record_count": 0,
+    }
     assert nat["fare_models"] == {"none": 2, "legacy": 1, "v2": 1}
     ca = next(s for s in nat["states"] if s["state"] == "CA")
     assert ca["agencies"] == 2 and ca["flex"] == 1 and ca["fares"] == 2 and ca["fares_v2"] == 1
@@ -106,7 +166,17 @@ def test_portable_country_and_subdivision_adoption_rollups() -> None:
                 fares="v2",
             )
         ),
-        adoption_record(_art("ca-any", "Canada", "", country="CA", pathways=True)),
+        adoption_record(
+            _art(
+                "ca-any",
+                "Canada",
+                "",
+                country="CA",
+                pathways=True,
+                translations=True,
+                translation_languages=["fr"],
+            )
+        ),
     ]
     records = [record for record in raw if record is not None]
     nat = national_adoption(records)
@@ -116,6 +186,26 @@ def test_portable_country_and_subdivision_adoption_rollups() -> None:
     assert countries["US"]["flex"] == 1
     assert countries["CA"]["agencies"] == 2
     assert countries["CA"]["fares_v2"] == 1
+    assert countries["CA"]["translations"] == 1
+    assert countries["CA"]["translations_measured"] == 1
     subdivisions = {row["subdivision_code"]: row for row in countries["CA"]["subdivisions"]}
     assert subdivisions["CA-ON"]["subdivision_name"] == "Ontario"
     assert subdivisions[None]["subdivision_name"] == "Unlocated"
+
+
+def test_translation_share_uses_only_measured_translation_profiles() -> None:
+    raw = [
+        adoption_record(_art("old", "Old", "CA")),
+        adoption_record(_art("yes", "Yes", "CA", translations=True)),
+        adoption_record(_art("no", "No", "CA", translations=False)),
+    ]
+    records = [record for record in raw if record is not None]
+
+    nat = national_adoption(records)
+
+    assert nat["translations"] == {
+        "count": 1,
+        "pct": 50.0,
+        "measured_feed_record_count": 2,
+    }
+    assert nat["translations_sample"][0]["languages"] == ["fr"]

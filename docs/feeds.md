@@ -8,6 +8,11 @@ the United States and Canada, and lives in the explicit shards listed by
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
 the date stamped at the bottom of this page.
 
+The next European cohort is not selected by feed count alone. Its current
+discovery audit, source hierarchy, license-review rule, and public beta gate are
+in [global-expansion.md](global-expansion.md). The present France and Ireland
+records remain canaries until that gate passes.
+
 ## First worldwide canaries
 
 These feeds are official, openly reusable, and deliberately span three

@@ -21,6 +21,7 @@ def test_locale_primitives_format_and_fallback(page: Page, base_url: str) -> Non
             spanishNumber: locale.formatNumber(12345, 'es'),
             malformedDate: locale.formatDate('not-a-date', 'es'),
             invalidDirection: locale.localeDirection('not_a_locale'),
+            frenchName: locale.formatLanguageName('fr', 'en'),
           };
         }"""
     )
@@ -29,6 +30,7 @@ def test_locale_primitives_format_and_fallback(page: Page, base_url: str) -> Non
     assert result["spanishNumber"] != "12345"
     assert result["malformedDate"] == "not-a-date"
     assert result["invalidDirection"] == "ltr"
+    assert result["frenchName"] == "French (fr)"
 
 
 def test_document_direction_follows_declared_language(page: Page, base_url: str) -> None:

@@ -34,6 +34,7 @@ def test_complete_feed_scores_100(make_gtfs_zip: Callable[..., Path]) -> None:
     result = completeness(str(make_gtfs_zip(COMPLETE_FEED)))
     assert result.score == 100.0
     assert result.findings == []
+    assert result.details["translations"]["has_translations"] is False
 
 
 def test_bare_feed_scores_low_with_findings(make_gtfs_zip: Callable[..., Path]) -> None:
@@ -147,6 +148,25 @@ def test_flex_is_surfaced_without_changing_the_score(
     # Representation, not a penalty: the same feed plus flex files scores the same.
     assert flex.score == plain.score
     assert any(f.code == "scorecard_flex_service" for f in flex.findings)
+
+
+def test_translations_are_surfaced_without_changing_the_score(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    plain = completeness(str(make_gtfs_zip(COMPLETE_FEED)))
+    translated_feed = {
+        **COMPLETE_FEED,
+        "translations.txt": (
+            "table_name,field_name,language,translation,record_id\n"
+            "stops,stop_name,es,Estación principal,S1\n"
+        ),
+    }
+    translated = completeness(str(make_gtfs_zip(translated_feed)))
+
+    assert translated.details["translations"]["has_translations"] is True
+    assert translated.details["translations"]["languages"] == ["es"]
+    assert translated.score == plain.score
+    assert translated.findings == plain.findings
 
 
 def test_fare_free_credits_fares_and_drops_the_penalty(

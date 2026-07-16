@@ -1,6 +1,6 @@
 # Product roadmap
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 This document describes the user value GTFS Scorecard will test next. The
 infrastructure and operating gates are in [`roadmap.md`](roadmap.md). The
@@ -14,6 +14,11 @@ The primary users remain:
   their vendor or staff to change.
 - A program liaison preparing for an agency check-in who needs a short,
   respectful action queue and evidence that an agreed change reached the feed.
+
+A secondary user is a GTFS consumer deciding whether enough feeds publish a
+feature, such as wheelchair information or rider-facing translations, to justify
+product work. That decision needs row-level evidence and an honest geographic
+denominator; it does not need a new grade.
 
 Riders and community advocates can read the same published facts through the
 rider-facing summaries. Private workflow and owner information does not belong
@@ -61,6 +66,12 @@ notice-to-fix guidance, detected-tool profiles, and procurement language.
 These capabilities support discovery, triage, and evidence. A cleared finding
 without accepted ownership still does not establish a verified remediation.
 
+The consumer feature finder now has a primary-navigation entry, language-aware
+`translations.txt` filters, CSV export, and the same row contract in
+`api/v1/features.json`. The interface states that the corpus is not a census.
+The European GTFS evidence and beta gate are in
+[`global-expansion.md`](global-expansion.md).
+
 ## Now: prove the alert-to-closure workflow
 
 Run a 90-day concierge pilot with one support-program liaison and two feed
@@ -78,6 +89,10 @@ Product work during the pilot is limited to gaps a real request exposes. Likely
 small additions include a private request manifest, a participant-safe receipt
 view, or a better handoff template. The pilot does not justify a new ticket
 system or a broad workflow dashboard.
+
+Consumer feedback may trigger bounded maintenance on the existing finder when
+the response is additive, ungraded, and uses the current artifact pipeline. It
+does not waive the identity, license, localization, or regional-coverage gates.
 
 The pilot passes with three verified closures across two participant
 organizations, zero false closures, reproducible evidence, and no more than
@@ -108,8 +123,11 @@ still produce a valid receipt. Usage of the scorecard alone is not enough.
   measured operating burden.
 - **Regional instances and guidance:** after a named program commits to local
   review and ongoing operation.
-- **Localization and broader curation:** after a local steward owns source and
-  language quality.
+- **European GTFS beta:** after the reviewed cohort meets the source, license,
+  identity, freshness, and country-spread gate in `global-expansion.md`.
+- **Full interface localization:** after a named language steward owns human
+  review and the pseudolocale, RTL, and locale-acceptance gates.
+- **Broader curation:** after a local steward owns source and regional context.
 - **Deeper realtime maturity:** after a program names the support decision the
   sampling will inform and funds a bounded collection plan.
 - **Research use of the longitudinal record:** after privacy, licensing, and
@@ -121,8 +139,8 @@ still produce a valid receipt. Usage of the scorecard alone is not enough.
 | --- | --- |
 | Shipped baseline | Scorecards, finding clearances, alerts, program views, knowledge base, API, data exports, MCP, badges, Marketplace Action, onboarding, and pre-publish checks. |
 | Active now | Participant recruitment, six concierge requests, exact-feed rechecks, and audited closure receipts. |
-| Maintenance | Alert tuning, source curation, accessibility, security, release health, and bounded reliability work. |
-| Demand-gated | Hosted one-off capacity, self-management, regional instances, localization, deeper realtime, and research products. |
+| Maintenance | Alert tuning, source curation, consumer feature measurement, accessibility, security, release health, and bounded reliability work. |
+| Demand-gated | Hosted one-off capacity, self-management, regional instances, European GTFS curation, full localization, deeper realtime, and research products. |
 | Cut or parked | General editor or host, second validator, public rankings, public feed archive, cross-agency realtime archive, replacement ticketing, consumer-app scraping, and multimodal platform expansion. |
 
 ## What the product will not claim
@@ -133,6 +151,8 @@ still produce a valid receipt. Usage of the scorecard alone is not enough.
 - A published-data fix does not prove a rider outcome.
 - A small set of closures does not establish vendor performance.
 - Corpus size does not make the registry a census of a country or region.
+- A European GTFS beta would not cover NeTEx-only transport data or all European
+  public transport.
 
 The product earns its next phase by proving closure, not by adding another
 surface to the existing scorecard.

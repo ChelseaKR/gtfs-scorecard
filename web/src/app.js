@@ -30,7 +30,7 @@ import {
   US_STATE_SUBDIVISION_CODES,
   VALIDATOR_RULES_PAGE,
 } from "./generated/constants.js";
-import { compareText, formatDate, formatNumber } from "./locale.js";
+import { compareText, formatDate, formatLanguageName, formatNumber } from "./locale.js";
 
 /** Candidate locations for published artifacts. A configured CDN base
  *  (web/src/config.js) is tried first, then the deployed-site and repo
@@ -280,6 +280,38 @@ function optionalBoolean(value) {
   return typeof value === "boolean" ? value : null;
 }
 
+/** Clean string-array values at the public JSON boundary.
+ * @param {unknown} value @returns {string[]} */
+function stringArray(value) {
+  return Array.isArray(value)
+    ? [
+        ...new Set(
+          value
+            .filter((item) => typeof item === "string" && item.trim())
+            .map((item) => item.trim())
+        ),
+      ]
+    : [];
+}
+
+/** Keep the persistent app-shell navigation aligned with the current hash view.
+ * @param {boolean} featureMode */
+function setAppNav(featureMode) {
+  const featureNav = /** @type {HTMLAnchorElement | null} */ (
+    document.querySelector('.nav-stop[href="/app/#/?view=features"]')
+  );
+  const agencyNav = /** @type {HTMLAnchorElement | null} */ (
+    document.querySelector('.nav-stop[href="/agencies/"]')
+  );
+  if (featureMode) {
+    agencyNav?.removeAttribute("aria-current");
+    featureNav?.setAttribute("aria-current", "page");
+  } else {
+    featureNav?.removeAttribute("aria-current");
+    agencyNav?.setAttribute("aria-current", "page");
+  }
+}
+
 /** RFC 4180-safe CSV cell. Null represents unknown and stays blank.
  * @param {unknown} value @returns {string} */
 function csvCell(value) {
@@ -317,6 +349,12 @@ function featureCsv(rows) {
     ["pathways", (row) => row.hasPathways],
     ["step_free_paths", (row) => row.hasStepFree],
     ["cemv", (row) => row.hasCemv],
+    ["translations_measured", (row) => row.translationsMeasured],
+    ["translations", (row) => row.hasTranslations],
+    ["translation_count", (row) => row.translationCount],
+    ["translation_languages", (row) => row.translationLanguages.join("|")],
+    ["translated_tables", (row) => row.translatedTables.join("|")],
+    ["feed_language", (row) => row.feedLang],
     ["scorecard_url", (row) => row.scorecardUrl],
     ["feed_url", (row) => row.feedUrl],
   ];
@@ -513,6 +551,12 @@ function renderOverview(directory) {
       hasPathways: optionalBoolean(a.has_pathways),
       hasStepFree: optionalBoolean(a.has_step_free),
       hasCemv: optionalBoolean(a.has_cemv),
+      translationsMeasured: a.translations_measured === true,
+      hasTranslations: optionalBoolean(a.has_translations),
+      translationCount: optionalNumber(a.translation_count),
+      translationLanguages: stringArray(a.translation_languages),
+      translatedTables: stringArray(a.translated_tables),
+      feedLang: typeof a.feed_lang === "string" ? a.feed_lang : "",
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
     .sort((x, y) => compareText(x.name, y.name));
@@ -525,6 +569,23 @@ function renderOverview(directory) {
   const accessibilityMeasuredCount = agencies.filter(
     (agency) => agency.accessibilityMeasured
   ).length;
+  const translationMeasuredCount = agencies.filter(
+    (agency) => agency.translationsMeasured
+  ).length;
+  const translationLanguages = [...new Set(agencies.flatMap((agency) => agency.translationLanguages))]
+    .map((code) => ({ code, label: formatLanguageName(code) }))
+    .sort((left, right) => compareText(left.label, right.label));
+  const translationLanguageOptions = translationLanguages
+    .map(({ code, label }) => `<option value="${escAttr(code)}">${esc(label)}</option>`)
+    .join("");
+  const usCoverage = countries.find((country) => country.country_code === "US");
+  const usFeedCount = Number(usCoverage?.feed_records ?? usCoverage?.agencies ?? 0);
+  const coverageLimit = usFeedCount > 0
+    ? `Coverage is not a census of any country or region. The United States currently represents
+      ${formatNumber(usFeedCount)} of ${formatNumber(total)} tracked feed records; other countries are
+      small canary sets while regional source and licence review continues.`
+    : `Coverage is not a census of any country or region. Country counts describe only the feeds
+      currently tracked here.`;
   const comparisonContract = comparisonContractText(s.comparison);
   const comparisonNote = aggregate.valid
     ? `The median and grade distribution use ${formatNumber(comparableCount)} of
@@ -578,7 +639,7 @@ function renderOverview(directory) {
       ${facet("lapsed", "Recently lapsed")}${facet("stale", "Long expired")}
     </div>
 
-    <section class="feature-explorer reveal" aria-labelledby="feature-filter-h">
+    <section class="feature-explorer reveal" id="feature-finder" aria-labelledby="feature-filter-h" tabindex="-1">
       <div class="feature-explorer-head">
         <p class="feature-eyebrow">Consumer feature finder</p>
         <h2 class="section-title" id="feature-filter-h">Filter by what feeds publish</h2>
@@ -587,16 +648,29 @@ function renderOverview(directory) {
         Location controls below narrow the same shortlist.</p>
       </div>
       <div class="feature-filter-grid">
-        <fieldset class="feature-fieldset">
+        <fieldset class="feature-fieldset required-feature-filters">
           <legend>Required features</legend>
           <p class="fineprint">Unknown measurements do not match a selected feature.</p>
-          <label><input class="feature-check" type="checkbox" value="accessibility"> Accessibility fields</label>
-          <label><input class="feature-check" type="checkbox" value="fares"> Fare data</label>
-          <label><input class="feature-check" type="checkbox" value="fares_v2"> Fares v2</label>
-          <label><input class="feature-check" type="checkbox" value="flex"> Flexible service</label>
-          <label><input class="feature-check" type="checkbox" value="pathways"> Station pathways</label>
-          <label><input class="feature-check" type="checkbox" value="step_free"> Step-free paths</label>
-          <label><input class="feature-check" type="checkbox" value="cemv"> Contactless fare payments</label>
+          <div class="required-feature-options">
+            <label><input class="feature-check" type="checkbox" value="accessibility"> Accessibility fields</label>
+            <label><input class="feature-check" type="checkbox" value="fares"> Fare data</label>
+            <label><input class="feature-check" type="checkbox" value="fares_v2"> Fares v2</label>
+            <label><input class="feature-check" type="checkbox" value="flex"> Flexible service</label>
+            <label><input class="feature-check" type="checkbox" value="pathways"> Station pathways</label>
+            <label><input class="feature-check" type="checkbox" value="step_free"> Step-free paths</label>
+            <label><input class="feature-check" type="checkbox" value="cemv"> Contactless fare payments</label>
+            <label><input class="feature-check" type="checkbox" value="translations"> Translated rider information</label>
+          </div>
+        </fieldset>
+        <fieldset class="feature-fieldset translation-filters">
+          <legend>Translation language</legend>
+          <p class="fineprint">Choose a language to require it in <code>translations.txt</code>.</p>
+          <label for="translation-language">Published language</label>
+          <select id="translation-language"${translationLanguages.length ? "" : " disabled"}>
+            <option value="">Any translated language</option>
+            ${translationLanguageOptions}
+          </select>
+          ${translationLanguages.length ? "" : '<p class="fineprint">Language choices will appear after current feeds have been measured.</p>'}
         </fieldset>
         <fieldset class="feature-fieldset accessibility-thresholds">
           <legend>Accessibility completeness</legend>
@@ -621,8 +695,10 @@ function renderOverview(directory) {
       </div>
       <p class="fineprint">Capability flags are measured for ${formatNumber(capabilityMeasuredCount)} of
       ${formatNumber(total)} feed records; wheelchair completeness is measured for
-      ${formatNumber(accessibilityMeasuredCount)}. Selecting a field excludes records where that field is unknown.
+      ${formatNumber(accessibilityMeasuredCount)}; translations are measured for
+      ${formatNumber(translationMeasuredCount)}. Selecting a field excludes records where that field is unknown.
       The score-comparison cohort above is a separate contract.</p>
+      <p class="coverage-limit">${coverageLimit}</p>
     </section>
 
     <section class="state-browse reveal" aria-labelledby="locations-h">
@@ -677,6 +753,9 @@ function setupOverview(agencies, total, summary) {
   );
   const tripsMin = /** @type {HTMLSelectElement} */ (
     main.querySelector("#wheelchair-trips-min")
+  );
+  const translationLanguage = /** @type {HTMLSelectElement} */ (
+    main.querySelector("#translation-language")
   );
   const exportBtn = /** @type {HTMLButtonElement} */ (
     main.querySelector("#download-feature-results")
@@ -776,6 +855,7 @@ function setupOverview(agencies, total, summary) {
     pathways: "hasPathways",
     step_free: "hasStepFree",
     cemv: "hasCemv",
+    translations: "hasTranslations",
   };
   const featureLabels = {
     fares: "Fare data",
@@ -784,6 +864,7 @@ function setupOverview(agencies, total, summary) {
     pathways: "Station pathways",
     step_free: "Step-free paths",
     cemv: "Contactless fare payments",
+    translations: "Translated rider information",
   };
   const featureValues = new Set(featureChecks.map((control) => control.value));
   const thresholdValues = new Set(["any", "50", "95", "100"]);
@@ -797,6 +878,10 @@ function setupOverview(agencies, total, summary) {
   const wantedTrips = urlParams.get("trips") || "";
   stopsMin.value = thresholdValues.has(wantedStops) ? wantedStops : "";
   tripsMin.value = thresholdValues.has(wantedTrips) ? wantedTrips : "";
+  const languageValues = new Set(Array.from(translationLanguage.options).map((option) => option.value));
+  const wantedLanguage = (urlParams.get("lang") || "").toLocaleLowerCase();
+  translationLanguage.value = languageValues.has(wantedLanguage) ? wantedLanguage : "";
+  const featureView = urlParams.get("view") === "features";
   for (const b of facetBtns) b.setAttribute("aria-pressed", String(b.dataset.facet === facet));
 
   // Reflect the live filter state in the URL without reloading the route:
@@ -816,6 +901,10 @@ function setupOverview(agencies, total, summary) {
     if (q) p.set("q", q);
     if (sortSel.value !== defaultSort) p.set("sort", sortSel.value);
     if (selectedFeatures.size) p.set("features", [...selectedFeatures].join(","));
+    if (featureView || selectedFeatures.size || translationLanguage.value || stopsMin.value || tripsMin.value) {
+      p.set("view", "features");
+    }
+    if (translationLanguage.value) p.set("lang", translationLanguage.value);
     if (stopsMin.value) p.set("stops", stopsMin.value);
     if (tripsMin.value) p.set("trips", tripsMin.value);
     const qs = p.toString();
@@ -845,10 +934,16 @@ function setupOverview(agencies, total, summary) {
   }
 
   function matchesFeatures(a) {
-    if (!selectedFeatures.size && !stopsMin.value && !tripsMin.value) return true;
+    if (!selectedFeatures.size && !translationLanguage.value && !stopsMin.value && !tripsMin.value) return true;
     for (const feature of selectedFeatures) {
       if (a[featureProperties[feature]] !== true) return false;
     }
+    if (
+      translationLanguage.value &&
+      !a.translationLanguages.some(
+        (language) => language.toLocaleLowerCase() === translationLanguage.value
+      )
+    ) return false;
     if ((stopsMin.value || tripsMin.value) && !a.accessibilityMeasured) return false;
     return (
       meetsMinimum(a.wheelchairStops, stopsMin.value) &&
@@ -867,9 +962,16 @@ function setupOverview(agencies, total, summary) {
       evidence.push(`Accessibility: ${stops}, ${trips}`);
     }
     for (const feature of selectedFeatures) {
-      if (feature !== "accessibility" && featureLabels[feature]) {
+      if (feature === "translations") {
+        const languages = a.translationLanguages.slice(0, 3).map((code) => formatLanguageName(code));
+        const remaining = a.translationLanguages.length - languages.length;
+        evidence.push(`Translations: ${languages.join(", ")}${remaining > 0 ? `, plus ${remaining} more` : ""}`);
+      } else if (feature !== "accessibility" && featureLabels[feature]) {
         evidence.push(featureLabels[feature]);
       }
+    }
+    if (translationLanguage.value && !selectedFeatures.has("translations")) {
+      evidence.push(`Translations: ${formatLanguageName(translationLanguage.value)}`);
     }
     return evidence.length
       ? `<p class="feature-evidence"><span class="visually-hidden">Matched features: </span>${evidence.map(esc).join(" · ")}</p>`
@@ -912,11 +1014,16 @@ function setupOverview(agencies, total, summary) {
       tokens.length ||
       facet !== "all" ||
       selectedFeatures.size ||
+      translationLanguage.value ||
       stopsMin.value ||
       tripsMin.value ||
       locationFilter.country !== "all" ||
       locationFilter.subdivision !== "all" ||
       locationFilter.legacyState !== "all"
+    );
+    setAppNav(
+      featureView ||
+      Boolean(selectedFeatures.size || translationLanguage.value || stopsMin.value || tripsMin.value)
     );
     matchBoard.dataset.active = String(active);
     hint.hidden = active;
@@ -977,6 +1084,10 @@ function setupOverview(agencies, total, summary) {
       apply();
     });
   }
+  translationLanguage.addEventListener("change", () => {
+    userInteracted = true;
+    apply();
+  });
   exportBtn.addEventListener("click", () => {
     if (matches.length) downloadFeatureCsv(matches);
   });
@@ -1119,6 +1230,7 @@ function setupOverview(agencies, total, summary) {
     for (const control of featureChecks) control.checked = false;
     stopsMin.value = "";
     tripsMin.value = "";
+    translationLanguage.value = "";
     locationFilter.country = "all";
     locationFilter.subdivision = "all";
     locationFilter.legacyState = "all";
@@ -1191,6 +1303,13 @@ function setupOverview(agencies, total, summary) {
 
   syncLocationUI();
   apply();
+  if (featureView) {
+    requestAnimationFrame(() => {
+      const section = /** @type {HTMLElement | null} */ (main.querySelector("#feature-finder"));
+      section?.focus({ preventScroll: true });
+      section?.scrollIntoView({ block: "start" });
+    });
+  }
 }
 
 /* ---------------- program rollups ---------------- */
@@ -2688,6 +2807,7 @@ async function renderCompare(aId, bId) {
 
 async function route() {
   const hash = location.hash || "#/";
+  setAppNav(false);
   // Every non-agency route is global. Reset first so navigating away from a
   // non-U.S. scorecard never leaves its country-specific footer state behind.
   showUsPolicyToolsForCountry();

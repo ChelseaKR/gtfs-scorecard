@@ -71,8 +71,10 @@ different seats at an agency check-in: a board one-pager
 finding-clearance records exist, a clearance log (`/fixes/`). Around those sit:
 
 - **Coverage views** — the coverage overview (`/pulse/`), most common problems
-  (`/problems/`), realtime reliability (`/realtime/`), newer-capability
-  adoption and accessibility data coverage (`/adoption/`), and worldwide
+  (`/problems/`), realtime reliability (`/realtime/`), optional-feature
+  adoption and accessibility data coverage (`/adoption/`), a consumer feature
+  finder with translation-language and accessibility filters
+  (`/app/#/?view=features`), and worldwide
   agency and route maps (`/map/`, `/routes/`). U.S.-specific NTD readiness
   (`/ntd/`) and equity (`/equity/`) stay available as regional modules.
 - **Program pages** (`/program/<state>/`) for 46 states plus DC and named
@@ -92,6 +94,11 @@ finding-clearance records exist, a clearance log (`/fixes/`). Around those sit:
   ([docs/api.md](docs/api.md)), a Parquet table for bulk SQL, per-agency
   badges and conformance marks, Atom change feeds, monthly citable dataset
   releases, and a read-only MCP server ([docs/mcp.md](docs/mcp.md)).
+
+The country controls describe only the current covered set. They are not a
+census of a country or region. The evidence and release gate for a useful
+European GTFS cohort are in
+[docs/global-expansion.md](docs/global-expansion.md).
 
 ## Quickstart
 

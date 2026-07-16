@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>What feeds publish — GTFS Scorecard</title>
-  <meta name="description" content="Which GTFS features covered transit feeds publish (flexible service, fares and Fares v2, station pathways) and how complete their accessibility data is.">
+  <meta name="description" content="Which GTFS features covered transit feeds publish (flexible service, fares and Fares v2, station pathways, translations) and how complete their accessibility data is.">
   <link rel="canonical" href="https://gtfsscorecard.org/adoption/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="What feeds publish — GTFS Scorecard">
-  <meta property="og:description" content="Which GTFS features covered transit feeds publish (flexible service, fares and Fares v2, station pathways) and how complete their accessibility data is.">
+  <meta property="og:description" content="Which GTFS features covered transit feeds publish (flexible service, fares and Fares v2, station pathways, translations) and how complete their accessibility data is.">
   <meta property="og:url" content="https://gtfsscorecard.org/adoption/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -40,7 +40,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/focus/" aria-current="page"><span class="pip" aria-hidden="true"></span>Focus areas</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/app/#/?view=features" aria-current="page"><span class="pip" aria-hidden="true"></span>Feed features</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">What feeds publish</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
@@ -49,10 +49,12 @@
     <p class="page-lede"><strong>What this measures:</strong> adoption of optional
     parts of the spec, never quality. None of these counts changes a grade, and a
     feed without them is early, not failing.</p>
+    <p><a class="button-link" href="/app/#/?view=features">Build a feature shortlist</a></p>
     <nav class="grade-jump" aria-label="Jump to section">Jump to: <a href="#features">Optional features</a> · <a href="#access">Accessibility data coverage</a></nav>
     <section id="features" aria-labelledby="features-h" tabindex="-1">
-      <h2 class="section-title" id="features-h">The newer, optional parts of GTFS</h2>
+      <h2 class="section-title" id="features-h">Optional parts of GTFS</h2>
       <div class="section-grid">
+
 
 
       </div>
@@ -82,13 +84,14 @@
     <a href="/accessibility/">Accessibility</a>. The directory contains 3 published feed records. No cross-feed denominator is published for this snapshot.</p>
     </section>
     <p class="plain-summary"><strong>In plain words:</strong> a feed does not need any of these to
-    earn a good grade. This tracks where the newer, optional parts of GTFS are catching on, so an
+    earn a good grade. This tracks where optional parts of GTFS are catching on, so an
     agency can see what peers publish and a program can see where to help next.</p>
     <p class="fineprint">Adoption is read from each feed's own files: GTFS-Flex
     (<code>locations.geojson</code>, <code>booking_rules.txt</code>), fare data
     (<code>fare_attributes.txt</code> for the legacy model, <code>fare_products.txt</code> and
     <code>fare_leg_rules.txt</code> for Fares v2), and GTFS-Pathways (<code>pathways.txt</code>,
-    <code>levels.txt</code>). It never changes a grade. The same data is at
+    <code>levels.txt</code>), plus rider-facing translations (<code>translations.txt</code>).
+    It never changes a grade. The same data is at
     <a href="/api/v1/adoption.json">the adoption API (adoption.json)</a>.
     The directory contains 3 published feed records. No cross-feed denominator is published for this snapshot.</p>
   </main>

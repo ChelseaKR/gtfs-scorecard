@@ -108,12 +108,24 @@ green. Complete renderer decomposition, registry sharding, queue-backed compute,
 or hosted scoring only when the measurable triggers in
 [`roadmap.md`](roadmap.md#maintenance-with-explicit-triggers) fire.
 
+One direct consumer-feedback slice is also in this lane because it repairs an
+existing surface without changing a grade or adding a service:
+
+- **Shipped in the next site build:** primary navigation to the feature finder,
+  `translations.txt` detection and language filtering, aligned API and CSV
+  fields, and a visible coverage limitation.
+- **Next only through curation:** work the European candidate queue toward the
+  beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
+  does not pass source, license, identity, freshness, or country-spread review.
+- **Still steward-gated:** full interface localization and any NeTEx ingestion.
+
 ## Not on the ship list
 
 - More general score, map, viewer, catalogue, or validation surfaces.
 - Public agency or vendor rankings.
 - A public raw-feed or continuous cross-agency realtime archive.
-- Broad international expansion without a local steward.
+- Broad international expansion without the source, license, identity, and
+  local-steward gates.
 - Consumer-app scraping, multimodal health scoring, or a replacement ticket
   system.
 - AI-generated repair or automatic closure in the trusted path.

@@ -9,6 +9,8 @@ const DATE_FORMATTERS = new Map();
 const NUMBER_FORMATTERS = new Map();
 /** @type {Map<string, Intl.Collator>} */
 const COLLATORS = new Map();
+/** @type {Map<string, Intl.DisplayNames>} */
+const LANGUAGE_NAMES = new Map();
 
 /** Return a valid BCP 47 locale, preferring the language declared by the page. */
 export function pageLocale() {
@@ -76,6 +78,26 @@ export function compareText(left, right, locale = pageLocale()) {
     COLLATORS.set(locale, collator);
   }
   return collator.compare(left, right);
+}
+
+/** A localized language name with the published tag retained for precision.
+ * @param {string} code @param {string} [locale] @returns {string} */
+export function formatLanguageName(code, locale = pageLocale()) {
+  const tag = String(code || "").trim();
+  if (!tag) return "";
+  try {
+    let formatter = LANGUAGE_NAMES.get(locale);
+    if (!formatter) {
+      formatter = new Intl.DisplayNames([locale], { type: "language" });
+      LANGUAGE_NAMES.set(locale, formatter);
+    }
+    const label = formatter.of(tag);
+    return label && label.toLocaleLowerCase(locale) !== tag.toLocaleLowerCase(locale)
+      ? `${label} (${tag})`
+      : tag;
+  } catch {
+    return tag;
+  }
 }
 
 applyDocumentDirection();

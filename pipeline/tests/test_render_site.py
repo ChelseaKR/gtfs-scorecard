@@ -2957,16 +2957,24 @@ def test_tools_page_lists_every_self_serve_tool() -> None:
 
 def test_nav_is_six_hubs_and_sections_light_their_hub() -> None:
     # Design audit: the nav is six question-shaped hubs, not a flat list of
-    # every page. Absorbed pages still light up their hub's stop, and the app
-    # stays one click away inside the Agencies hub (plus the footer).
+    # every page. Absorbed pages still light up their hub's stop, and the
+    # feature finder has a direct primary-nav destination.
     from scorecard_pipeline.site_shell import _NAV_ITEMS, _nav_active
 
     hrefs = [href for _, href in _NAV_ITEMS]
     assert len(hrefs) == 6
-    assert hrefs == ["/agencies/", "/pulse/", "/focus/", "/tools/", "/how-to-read/", "/about/"]
+    assert hrefs == [
+        "/agencies/",
+        "/pulse/",
+        "/app/#/?view=features",
+        "/tools/",
+        "/how-to-read/",
+        "/about/",
+    ]
     assert _nav_active("/app/") == "/agencies/"
     assert _nav_active("/map/") == "/agencies/"
-    assert _nav_active("/ntd/") == "/focus/"
+    assert _nav_active("/ntd/") == "/pulse/"
+    assert _nav_active("/adoption/") == "/app/#/?view=features"
     assert _nav_active("/problems/") == "/pulse/"
     assert _nav_active("/check/") == "/tools/"
     assert _nav_active("/agency/unitrans/") == "/agencies/"
@@ -3120,6 +3128,8 @@ def test_adoption_page_absorbs_access_coverage() -> None:
         "fares_v2": {"count": 2, "pct": 20.0},
         "pathways": {"count": 1, "pct": 10.0},
         "step_free": {"count": 1, "pct": 10.0},
+        "translations": {"count": 2, "pct": 25.0, "measured_feed_record_count": 8},
+        "translations_sample": [],
         "flex_sample": [],
         "states": [],
     }
@@ -3146,7 +3156,9 @@ def test_adoption_page_absorbs_access_coverage() -> None:
     # table remains available as the detail layer.
     assert 'class="service-chart adoption-chart"' in html
     assert 'class="service-bars"' in html
-    assert "6 of 10 feeds" in html
+    assert "6 of 10 measured feeds" in html
+    assert "2 of 8 measured feeds" in html
+    assert "Build a feature shortlist" in html
     assert "Show the table" in html
     assert 'class="service-chart access-coverage-chart"' in html
     assert "5 of 10 feeds" in html
