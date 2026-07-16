@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,100 feed records, still mostly in
+reference; the full registry has more than 1,150 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -122,6 +122,72 @@ area. It is scored last and in isolation during activation because its
 roughly 795,000 stop times make it the largest and most structurally varied
 member of this cohort.
 
+## Reviewed ferry cohort
+
+These five records were selected to exercise the ferry profile on current,
+official feeds outside its U.S.-heavy baseline. A catalog listing alone did not
+qualify a feed. Each source URL, service calendar, ferry route type, publisher,
+and reuse terms was checked on 2026-07-16. The locations below are primary
+catalog locations; several services cross borders.
+
+### Magnetic Island Ferry, Translink (Australia)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://gtfsrt.api.translink.com.au/GTFS/MIF_GTFS.zip` |
+| Location | Australia (`AU`), Queensland (`AU-QLD`) |
+| Status | Verified as a direct ZIP with 1 ferry route, 2 terminals, and 92 trips; published service runs through 2026-09-15 |
+| License and source | [CC BY 4.0 through Queensland's official dataset record](https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink/resource/a7a3282c-ce87-4b4e-8b7b-70a4cc081ed6); attribute the State of Queensland and Department of Transport and Main Roads/Translink |
+| Update cadence | The stable Translink URL serves the current release; the scorecard checks it no more than daily. |
+
+### Brittany Ferries (France and international routes)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://transport.data.gouv.fr/resources/83427/download` |
+| Primary location | France (`FR`), Bretagne (`FR-BRE`) |
+| Status | Verified as a direct ZIP with 27 ferry routes, 12 boarding terminal locations, and 6,219 trips; published service runs through 2027-07-20 |
+| License and source | [Licence Ouverte 2.0 through France's National Access Point](https://transport.data.gouv.fr/datasets/horaires-des-traversees-brittany-ferries), published by Brittany Ferries |
+| Service area | Routes connect France, Spain, the United Kingdom, and Ireland. The primary location does not describe the complete service area. |
+
+### Transmanche Ferries (France and United Kingdom)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://transport.data.gouv.fr/resources/83981/download` |
+| Primary location | France (`FR`), Normandie (`FR-NOR`) |
+| Status | Verified as a direct ZIP with the Dieppe–Newhaven ferry route, 2 terminals, and 1,409 trips; published service runs through 2027-01-03 |
+| License and source | [Licence Ouverte 2.0 through France's National Access Point](https://transport.data.gouv.fr/datasets/transmanche-ferries), published by Syndicat mixte Atoumod for Transmanche Ferries |
+| Update cadence | No fixed cadence is stated; the scorecard checks the stable resource no more than daily. |
+
+### Sardegna–Corsica maritime services (Italy and France)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://www.sardegnamobilita.it/opendata/R_SARDEGTRASP_00010_1_dati_mare_corsica.zip` |
+| Primary location | Italy (`IT`), Sardegna (`IT-88`) |
+| Status | Verified as a direct ZIP with 4 ferry routes, 2 served boarding terminal locations, and 96 trips; published service runs through 2026-10-31 |
+| Operators | Genova Trasporti Marittimi/Ichnusa Lines and Moby |
+| License and source | [CC BY 4.0 under Sardegna Mobilità's open-data terms](https://www.sardegnamobilita.it/open-data); official dataset `R_SARDEG:TRASP_00010` is listed in the [maritime lines catalog](https://www.sardegnamobilita.it/open-data/linee) |
+
+### Sardegna minor-island maritime services (Italy)
+
+| | |
+|---|---|
+| GTFS Schedule | `https://www.sardegnamobilita.it/opendata/R_SARDEGTRASP_00006_1_dati_mare.zip` |
+| Location | Italy (`IT`), Sardegna (`IT-88`) |
+| Status | Verified as a direct ZIP with 7 ferry routes, 7 terminals, and 388 trips; published service runs through 2027-03-28 |
+| Operators | Delcomar and Ensamar |
+| License and source | [CC BY 4.0 under Sardegna Mobilità's open-data terms](https://www.sardegnamobilita.it/open-data); official dataset `R_SARDEG:TRASP_00006` has its own [minor-islands record](https://www.sardegnamobilita.it/open-data/isole-minori) |
+
+The audit also rejected or deferred plausible-looking records. Sardinia
+Ferries' live ZIP contains service dates from 2023 and is not current. The
+Bizkaia Bridge feed uses the GTFS funicular route type, so it is not a ferry
+profile candidate. Fred. Olsen Express and Baleària are legally reusable but
+their official Spanish National Access Point downloads require authenticated
+ingestion, which this pipeline does not yet implement. None is represented by
+an unofficial mirror merely to increase the count.
+
 ### Africa licensing hold
 
 Lagos remains outside the registry. Its ferry GTFS is current and the
@@ -207,4 +273,4 @@ Feed quirks the pipeline must tolerate:
 - transit.land feed pages for the two Onestop IDs above.
 - unitrans.ucdavis.edu/gtfs (agency GTFS page).
 
-Last verified: 2026-07-12 · Recheck cadence: monthly, and before any demo.
+Last verified: 2026-07-16 · Recheck cadence: monthly, and before any demo.

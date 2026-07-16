@@ -28,6 +28,9 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add a five-record, source- and reuse-reviewed ferry cohort covering Magnetic
+  Island, Brittany Ferries, Transmanche, Sardegna–Corsica, and Sardegna's minor
+  islands. Each feed is official, current, and explicitly open for reuse.
 - Add an ungraded ferry data profile for ferry-serving feeds. It reports the
   ferry subset's terminal hierarchy, `stop_access`, published accessibility,
   bicycle and car carriage, plus clearly labelled whole-feed fare and realtime
