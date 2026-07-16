@@ -390,12 +390,23 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
 | `api/v1/accessibility.json` | Covered-set accessibility-data completeness: how many feeds populate wheelchair fields, overall and by portable country/subdivision. Backs the coverage section at `/adoption/#access`. |
 | `api/v1/adoption.json` | Which newer GTFS capabilities (Flex, Fares v2, pathways, cEMV) feeds publish, overall and by portable country/subdivision. Backs `/adoption/`. |
+| `api/v1/features.json` | Every current feed record with filterable capability flags, stop- and trip-level wheelchair-field completeness, portable location, identity, scorecard URL, and comparison eligibility. Unknown measurements are `null`, never `false`. Backs the consumer filters and CSV export in `/app/`. |
 | `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. |
 | `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
 | `api/v1/trend.json` | The covered-set quality time series. Backs the trend section at `/pulse/#trend`. |
 | `api/v1/status.json` | Intended cadence plus liveness outcomes restricted to the current published artifact index. Its `scope` block discloses included and excluded liveness records. |
 | `api/v1/run-status.json` | Latest completed-run evidence. Aggregate counts retain that run's historical attempted set; named unreachable records are restricted to the current published catalog, with older records counted but not named. |
 | `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run. |
+
+`features.json` keeps the feature-measurement denominator separate from the
+score-comparison denominator. `capability_measured_count` and
+`accessibility_measured_count` cover every current feed record with those
+measurements. `comparison_eligible_count` only describes whether scores share
+the current producer contract; it does not control feature filtering. Combine
+feature flags with AND logic. A wheelchair completeness threshold is inclusive,
+except the `any` option in the web app, which means greater than zero. A null
+value does not match a filter. Published accessibility metadata describes the
+GTFS feed, not verified physical accessibility.
 
 In `api/v1/status.json`, `currently_clean_pct` is the current share of feed
 records with no consecutive failed direct check. The legacy

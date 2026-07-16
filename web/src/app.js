@@ -268,6 +268,79 @@ function placeLabel(row) {
   return subdivision ? `${subdivision}, ${countryLabel}` : countryLabel || row?.state || "";
 }
 
+/** A finite public-JSON number, or null without coercing null to zero.
+ * @param {unknown} value @returns {number|null} */
+function optionalNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+/** A public-JSON boolean, or null when the producer did not measure it.
+ * @param {unknown} value @returns {boolean|null} */
+function optionalBoolean(value) {
+  return typeof value === "boolean" ? value : null;
+}
+
+/** RFC 4180-safe CSV cell. Null represents unknown and stays blank.
+ * @param {unknown} value @returns {string} */
+function csvCell(value) {
+  if (value === null || value === undefined) return "";
+  const raw = String(value);
+  // Quoting does not stop spreadsheet formula execution. Treat public names,
+  // ids, and URLs as text when a spreadsheet would parse their first byte.
+  const text = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+/** The exact consumer-facing rows behind the current shortlist.
+ * @param {Array<any>} rows @returns {string} */
+function featureCsv(rows) {
+  const columns = [
+    ["feed_id", (row) => row.id],
+    ["feed_name", (row) => row.name],
+    ["country_code", (row) => row.country],
+    ["country_name", (row) => row.countryName],
+    ["subdivision_code", (row) => row.subdivision === UNLOCATED_SUBDIVISION ? "" : row.subdivision],
+    ["subdivision_name", (row) => row.subdivisionName],
+    ["grade", (row) => row.grade],
+    ["score", (row) => row.score],
+    ["comparison_eligible", (row) => row.featureComparable],
+    ["capabilities_measured", (row) => row.capabilitiesMeasured],
+    ["accessibility_measured", (row) => row.accessibilityMeasured],
+    ["accessibility_fields", (row) => row.hasAccessibility],
+    ["wheelchair_stops_pct", (row) => row.wheelchairStops],
+    ["wheelchair_trips_pct", (row) => row.wheelchairTrips],
+    ["accessibility_band", (row) => row.accessibilityBand],
+    ["flex", (row) => row.hasFlex],
+    ["fares", (row) => row.hasFares],
+    ["fare_model", (row) => row.fareModel],
+    ["fares_v2", (row) => row.hasFaresV2],
+    ["pathways", (row) => row.hasPathways],
+    ["step_free_paths", (row) => row.hasStepFree],
+    ["cemv", (row) => row.hasCemv],
+    ["scorecard_url", (row) => row.scorecardUrl],
+    ["feed_url", (row) => row.feedUrl],
+  ];
+  const lines = [columns.map(([label]) => csvCell(label)).join(",")];
+  for (const row of rows) {
+    lines.push(columns.map(([, read]) => csvCell(read(row))).join(","));
+  }
+  return `${lines.join("\r\n")}\r\n`;
+}
+
+/** Download the current client-side shortlist without sending it anywhere.
+ * @param {Array<any>} rows */
+function downloadFeatureCsv(rows) {
+  const blob = new Blob([featureCsv(rows)], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `gtfs-scorecard-feature-matches-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 /** A grade-distribution bar: one labelled segment per grade, sized
  *  by share. Decorative fill, but each segment is a labelled list item so the
  *  same information is available without color. @param {any} dist @param {number} total
@@ -424,6 +497,22 @@ function renderOverview(directory) {
       tier: a.size_tier || "unknown",
       expiry: a.expiry_status || "unknown",
       date: a.snapshot_date,
+      scorecardUrl: a.scorecard_url || new URL(`../agency/${encodeURIComponent(a.id)}/`, location.href).href,
+      feedUrl: a.feed_url || "",
+      featureComparable: a.comparison_eligible === true,
+      capabilitiesMeasured: a.capabilities_measured === true,
+      accessibilityMeasured: a.accessibility_measured === true,
+      hasAccessibility: optionalBoolean(a.has_accessibility),
+      wheelchairStops: optionalNumber(a.wheelchair_boarding_pct),
+      wheelchairTrips: optionalNumber(a.wheelchair_accessible_pct),
+      accessibilityBand: a.accessibility_band || "",
+      hasFlex: optionalBoolean(a.has_flex),
+      hasFares: optionalBoolean(a.has_fares),
+      hasFaresV2: optionalBoolean(a.has_fares_v2),
+      fareModel: a.fare_model || "",
+      hasPathways: optionalBoolean(a.has_pathways),
+      hasStepFree: optionalBoolean(a.has_step_free),
+      hasCemv: optionalBoolean(a.has_cemv),
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
     .sort((x, y) => compareText(x.name, y.name));
@@ -432,6 +521,10 @@ function renderOverview(directory) {
   const expired = s.expired || { total: 0 };
   const aggregate = guardedAggregateState(s, s.median_score);
   const comparableCount = aggregate.count;
+  const capabilityMeasuredCount = agencies.filter((agency) => agency.capabilitiesMeasured).length;
+  const accessibilityMeasuredCount = agencies.filter(
+    (agency) => agency.accessibilityMeasured
+  ).length;
   const comparisonContract = comparisonContractText(s.comparison);
   const comparisonNote = aggregate.valid
     ? `The median and grade distribution use ${formatNumber(comparableCount)} of
@@ -485,15 +578,70 @@ function renderOverview(directory) {
       ${facet("lapsed", "Recently lapsed")}${facet("stale", "Long expired")}
     </div>
 
+    <section class="feature-explorer reveal" aria-labelledby="feature-filter-h">
+      <div class="feature-explorer-head">
+        <p class="feature-eyebrow">Consumer feature finder</p>
+        <h2 class="section-title" id="feature-filter-h">Filter by what feeds publish</h2>
+        <p>Select every feature your product needs. A feed must meet all selected conditions.
+        Accessibility percentages describe published GTFS fields, not verified physical access.
+        Location controls below narrow the same shortlist.</p>
+      </div>
+      <div class="feature-filter-grid">
+        <fieldset class="feature-fieldset">
+          <legend>Required features</legend>
+          <p class="fineprint">Unknown measurements do not match a selected feature.</p>
+          <label><input class="feature-check" type="checkbox" value="accessibility"> Accessibility fields</label>
+          <label><input class="feature-check" type="checkbox" value="fares"> Fare data</label>
+          <label><input class="feature-check" type="checkbox" value="fares_v2"> Fares v2</label>
+          <label><input class="feature-check" type="checkbox" value="flex"> Flexible service</label>
+          <label><input class="feature-check" type="checkbox" value="pathways"> Station pathways</label>
+          <label><input class="feature-check" type="checkbox" value="step_free"> Step-free paths</label>
+          <label><input class="feature-check" type="checkbox" value="cemv"> Contactless fare payments</label>
+        </fieldset>
+        <fieldset class="feature-fieldset accessibility-thresholds">
+          <legend>Accessibility completeness</legend>
+          <p class="fineprint">Set either minimum, or use both to require complete trip-planning data.</p>
+          <label for="wheelchair-stops-min">Stops stating wheelchair access</label>
+          <select id="wheelchair-stops-min">
+            <option value="">No minimum</option>
+            <option value="any">More than 0%</option>
+            <option value="50">At least 50%</option>
+            <option value="95">At least 95%</option>
+            <option value="100">100%</option>
+          </select>
+          <label for="wheelchair-trips-min">Trips stating wheelchair access</label>
+          <select id="wheelchair-trips-min">
+            <option value="">No minimum</option>
+            <option value="any">More than 0%</option>
+            <option value="50">At least 50%</option>
+            <option value="95">At least 95%</option>
+            <option value="100">100%</option>
+          </select>
+        </fieldset>
+      </div>
+      <p class="fineprint">Capability flags are measured for ${formatNumber(capabilityMeasuredCount)} of
+      ${formatNumber(total)} feed records; wheelchair completeness is measured for
+      ${formatNumber(accessibilityMeasuredCount)}. Selecting a field excludes records where that field is unknown.
+      The score-comparison cohort above is a separate contract.</p>
+    </section>
+
     <section class="state-browse reveal" aria-labelledby="locations-h">
       <h2 class="section-title" id="locations-h">Browse by location</h2>
       ${locationControlsHtml(countries, s.states || [])}
     </section>
 
-    <p class="agency-count" role="status" aria-live="polite"></p>
+    <section class="feature-match-board reveal" aria-labelledby="feature-match-h">
+      <h2 class="feature-match-kicker" id="feature-match-h">Consumer shortlist</h2>
+      <p class="agency-count" role="status" aria-live="polite">Choose a filter to build a shortlist.</p>
+      <div class="feature-match-actions">
+        <button type="button" class="feature-download-btn" id="download-feature-results" disabled>Download matching feeds (CSV)</button>
+        <button type="button" class="feature-clear-btn" id="clear-feature-results" disabled>Clear shortlist</button>
+        <a href="/api/v1/features.json">Use the complete feature API</a>
+      </div>
+    </section>
     <ul class="agency-list" id="agency-list"></ul>
-    <p class="results-hint" id="results-hint">Search by name, pick a grade or size, or choose a
-      location above to list scorecards.</p>
+    <p class="results-hint" id="results-hint">Search by name, select a feature or completeness
+      threshold, pick a grade or size, or choose a location above to list scorecards.</p>
     <p class="no-match" hidden>No scorecards match.
       <button type="button" class="linklike" id="clear-search">Clear filters</button></p>
     <div class="show-more-wrap" hidden><button type="button" class="show-more" id="show-more">Show more</button></div>
@@ -521,6 +669,21 @@ function setupOverview(agencies, total, summary) {
   const noMatch = /** @type {HTMLElement} */ (main.querySelector(".no-match"));
   const clear = /** @type {HTMLElement} */ (main.querySelector("#clear-search"));
   const sortSel = /** @type {HTMLSelectElement} */ (main.querySelector("#agency-sort"));
+  const featureChecks = /** @type {HTMLInputElement[]} */ (
+    Array.from(main.querySelectorAll(".feature-check"))
+  );
+  const stopsMin = /** @type {HTMLSelectElement} */ (
+    main.querySelector("#wheelchair-stops-min")
+  );
+  const tripsMin = /** @type {HTMLSelectElement} */ (
+    main.querySelector("#wheelchair-trips-min")
+  );
+  const exportBtn = /** @type {HTMLButtonElement} */ (
+    main.querySelector("#download-feature-results")
+  );
+  const resetBtn = /** @type {HTMLButtonElement} */ (
+    main.querySelector("#clear-feature-results")
+  );
   const moreWrap = /** @type {HTMLElement} */ (main.querySelector(".show-more-wrap"));
   const moreBtn = /** @type {HTMLElement} */ (main.querySelector("#show-more"));
   const facetBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".facet-chip")));
@@ -601,6 +764,36 @@ function setupOverview(agencies, total, summary) {
   if (sortParam && Array.from(sortSel.options).some((o) => o.value === sortParam)) {
     sortSel.value = sortParam;
   }
+  /** @type {Record<string, string>} */
+  const featureProperties = {
+    accessibility: "hasAccessibility",
+    fares: "hasFares",
+    fares_v2: "hasFaresV2",
+    flex: "hasFlex",
+    pathways: "hasPathways",
+    step_free: "hasStepFree",
+    cemv: "hasCemv",
+  };
+  const featureLabels = {
+    fares: "Fare data",
+    fares_v2: "Fares v2",
+    flex: "Flexible service",
+    pathways: "Station pathways",
+    step_free: "Step-free paths",
+    cemv: "Contactless fare payments",
+  };
+  const featureValues = new Set(featureChecks.map((control) => control.value));
+  const thresholdValues = new Set(["any", "50", "95", "100"]);
+  const selectedFeatures = new Set(
+    (urlParams.get("features") || "")
+      .split(",")
+      .filter((value) => featureValues.has(value))
+  );
+  for (const control of featureChecks) control.checked = selectedFeatures.has(control.value);
+  const wantedStops = urlParams.get("stops") || "";
+  const wantedTrips = urlParams.get("trips") || "";
+  stopsMin.value = thresholdValues.has(wantedStops) ? wantedStops : "";
+  tripsMin.value = thresholdValues.has(wantedTrips) ? wantedTrips : "";
   for (const b of facetBtns) b.setAttribute("aria-pressed", String(b.dataset.facet === facet));
 
   // Reflect the live filter state in the URL without reloading the route:
@@ -619,6 +812,9 @@ function setupOverview(agencies, total, summary) {
     const q = input.value.trim();
     if (q) p.set("q", q);
     if (sortSel.value !== defaultSort) p.set("sort", sortSel.value);
+    if (selectedFeatures.size) p.set("features", [...selectedFeatures].join(","));
+    if (stopsMin.value) p.set("stops", stopsMin.value);
+    if (tripsMin.value) p.set("trips", tripsMin.value);
     const qs = p.toString();
     const next = qs ? `#/?${qs}` : "#/";
     // Some browsers (Safari) throttle replaceState and throw; a failed URL sync
@@ -639,6 +835,44 @@ function setupOverview(agencies, total, summary) {
     return a.grade === facet;
   }
 
+  function meetsMinimum(value, minimum) {
+    if (!minimum) return true;
+    if (value === null) return false;
+    return minimum === "any" ? value > 0 : value >= Number(minimum);
+  }
+
+  function matchesFeatures(a) {
+    if (!selectedFeatures.size && !stopsMin.value && !tripsMin.value) return true;
+    for (const feature of selectedFeatures) {
+      if (a[featureProperties[feature]] !== true) return false;
+    }
+    if ((stopsMin.value || tripsMin.value) && !a.accessibilityMeasured) return false;
+    return (
+      meetsMinimum(a.wheelchairStops, stopsMin.value) &&
+      meetsMinimum(a.wheelchairTrips, tripsMin.value)
+    );
+  }
+
+  function featureEvidence(a) {
+    const evidence = [];
+    if (
+      (selectedFeatures.has("accessibility") || stopsMin.value || tripsMin.value) &&
+      a.accessibilityMeasured
+    ) {
+      const stops = a.wheelchairStops === null ? "unknown stops" : `${a.wheelchairStops}% stops`;
+      const trips = a.wheelchairTrips === null ? "unknown trips" : `${a.wheelchairTrips}% trips`;
+      evidence.push(`Accessibility: ${stops}, ${trips}`);
+    }
+    for (const feature of selectedFeatures) {
+      if (feature !== "accessibility" && featureLabels[feature]) {
+        evidence.push(featureLabels[feature]);
+      }
+    }
+    return evidence.length
+      ? `<p class="feature-evidence"><span class="visually-hidden">Matched features: </span>${evidence.map(esc).join(" · ")}</p>`
+      : "";
+  }
+
   function cardHtml(a) {
     const cohort = getCohort();
     const followed = cohort.has(a.id);
@@ -648,6 +882,7 @@ function setupOverview(agencies, total, summary) {
       <div>
         <h2><a href="#/agency/${escAttr(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
         <p class="meta">Overall ${a.score} out of 100${place ? ` · <bdi>${esc(place)}</bdi>` : ""} · checked ${formatDate(a.date)}</p>
+        ${featureEvidence(a)}
       </div>
       <button type="button" class="follow" data-id="${escAttr(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
     </li>`;
@@ -673,6 +908,9 @@ function setupOverview(agencies, total, summary) {
     const active =
       tokens.length ||
       facet !== "all" ||
+      selectedFeatures.size ||
+      stopsMin.value ||
+      tripsMin.value ||
       locationFilter.country !== "all" ||
       locationFilter.subdivision !== "all" ||
       locationFilter.legacyState !== "all";
@@ -681,7 +919,10 @@ function setupOverview(agencies, total, summary) {
     shown = 0;
     if (!active) {
       matches = [];
-      count.textContent = "";
+      count.textContent = "Choose a filter to build a shortlist.";
+      exportBtn.disabled = true;
+      exportBtn.textContent = "Download matching feeds (CSV)";
+      resetBtn.disabled = true;
       noMatch.hidden = true;
       moreWrap.hidden = true;
       return;
@@ -691,6 +932,7 @@ function setupOverview(agencies, total, summary) {
         (a) =>
           tokens.every((t) => a.search.includes(t)) &&
           matchesFacet(a) &&
+          matchesFeatures(a) &&
           (locationFilter.country === "all" || a.country === locationFilter.country) &&
           (locationFilter.subdivision === "all" || a.subdivision === locationFilter.subdivision) &&
           (locationFilter.legacyState === "all" ||
@@ -700,6 +942,10 @@ function setupOverview(agencies, total, summary) {
     );
     const noun = matches.length === 1 ? "scorecard" : "scorecards";
     count.textContent = `${formatNumber(matches.length)} of ${formatNumber(total)} ${noun}`;
+    exportBtn.disabled = matches.length === 0;
+    resetBtn.disabled = false;
+    const feedNoun = matches.length === 1 ? "feed" : "feeds";
+    exportBtn.textContent = `Download ${formatNumber(matches.length)} matching ${feedNoun} (CSV)`;
     noMatch.hidden = matches.length !== 0;
     paintMore();
   }
@@ -711,6 +957,23 @@ function setupOverview(agencies, total, summary) {
   sortSel.addEventListener("change", () => {
     userInteracted = true;
     apply();
+  });
+  for (const control of featureChecks) {
+    control.addEventListener("change", () => {
+      userInteracted = true;
+      if (control.checked) selectedFeatures.add(control.value);
+      else selectedFeatures.delete(control.value);
+      apply();
+    });
+  }
+  for (const control of [stopsMin, tripsMin]) {
+    control.addEventListener("change", () => {
+      userInteracted = true;
+      apply();
+    });
+  }
+  exportBtn.addEventListener("click", () => {
+    if (matches.length) downloadFeatureCsv(matches);
   });
   moreBtn.addEventListener("click", paintMore);
   for (const btn of facetBtns) {
@@ -843,10 +1106,14 @@ function setupOverview(agencies, total, summary) {
   for (const button of legacyStateBtns) {
     button.addEventListener("click", () => selectLegacyState(button.dataset.state || "all"));
   }
-  clear.addEventListener("click", () => {
+  function resetFilters() {
     userInteracted = true;
     input.value = "";
     facet = "all";
+    selectedFeatures.clear();
+    for (const control of featureChecks) control.checked = false;
+    stopsMin.value = "";
+    tripsMin.value = "";
     locationFilter.country = "all";
     locationFilter.subdivision = "all";
     locationFilter.legacyState = "all";
@@ -854,7 +1121,9 @@ function setupOverview(agencies, total, summary) {
     syncLocationUI();
     apply();
     input.focus();
-  });
+  }
+  clear.addEventListener("click", resetFilters);
+  resetBtn.addEventListener("click", resetFilters);
 
   // Mount the choropleth as progressive enhancement: the chip grid already
   // covers browse-by-state, so if the geometry asset can't load the map is just
