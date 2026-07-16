@@ -37,6 +37,20 @@ def _artifact(*, measured: bool = True) -> dict[str, Any]:
                 "details": details,
             }
         },
+        "mode_profile": (
+            {
+                "measured": True,
+                "primary_mode": "ferry",
+                "modes": [
+                    {"key": "bus", "label": "Bus"},
+                    {"key": "ferry", "label": "Ferry"},
+                ],
+                "has_ferry": True,
+                "ferry_only": False,
+            }
+            if measured
+            else None
+        ),
     }
 
 
@@ -62,6 +76,11 @@ def test_feature_measurements_preserve_capabilities_and_accessibility_depth() ->
     assert row["translation_languages"] == ["fr", "nl"]
     assert row["translated_tables"] == ["routes", "stops"]
     assert row["feed_lang"] == "mul"
+    assert row["modes_measured"] is True
+    assert row["primary_mode"] == "ferry"
+    assert row["modes"] == ["bus", "ferry"]
+    assert row["has_ferry"] is True
+    assert row["ferry_only"] is False
 
 
 def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
@@ -75,6 +94,10 @@ def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
     assert row["has_flex"] is None
     assert row["translations_measured"] is False
     assert row["has_translations"] is None
+    assert row["modes_measured"] is False
+    assert row["primary_mode"] is None
+    assert row["modes"] is None
+    assert row["has_ferry"] is None
 
 
 def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
@@ -106,10 +129,13 @@ def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
     assert payload["capability_measured_count"] == 1
     assert payload["accessibility_measured_count"] == 1
     assert payload["translation_measured_count"] == 1
+    assert payload["mode_measured_count"] == 1
     assert [row["id"] for row in payload["feeds"]] == ["a", "b"]
     assert payload["feeds"][1]["country_name"] == "Canada"
     assert payload["feeds"][0]["has_fares"] is None
     assert payload["feeds"][1]["translation_languages"] == ["fr", "nl"]
+    assert payload["feeds"][1]["modes"] == ["bus", "ferry"]
     assert payload["filter_semantics"]["translation_language"] == (
         "exact case-insensitive BCP 47 tag in translation_languages"
     )
+    assert payload["filter_semantics"]["mode"] == "selected mode key must be present in modes"

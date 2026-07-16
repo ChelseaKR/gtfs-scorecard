@@ -447,6 +447,24 @@
             "type": "string",
             "pattern": "^[A-Z]{2}$",
             "description": "ISO 3166-1 alpha-2 country code. Registry configuration determines which well-formed country codes this deployment activates."
+          },
+          "modes_measured": {
+            "type": "boolean",
+            "description": "Whether the route-mode contract was measured for this feed."
+          },
+          "primary_mode": {
+            "type": ["string", "null"]
+          },
+          "modes": {
+            "type": ["array", "null"],
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "has_ferry": {
+            "type": ["boolean", "null"]
+          },
+          "ferry_only": {
+            "type": ["boolean", "null"]
           }
         }
       }

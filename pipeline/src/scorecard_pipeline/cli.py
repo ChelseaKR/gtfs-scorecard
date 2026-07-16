@@ -218,6 +218,11 @@ def run_agency(  # noqa: C901
     # given date reproduces the artifact byte-for-byte (publish.py contract).
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)
     artifact = build_artifact(agency, fetched, scorecard, generated_at=generated_at)
+    # Descriptive route modes are an ungraded contract. They power consumer
+    # filtering and presentation without changing any category or overall score.
+    from .modes import mode_profile_from_zip
+
+    artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
     # Beyond-the-grade opportunities (Fares v2, Flex completeness, accessibility):
     # attached as a separate block so they show as recommendations without moving
     # any category score.
@@ -356,7 +361,11 @@ def run_adhoc(
     ]
     scorecard = build_scorecard(cats)
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)
-    return build_artifact(agency, fetched, scorecard, generated_at=generated_at)
+    artifact = build_artifact(agency, fetched, scorecard, generated_at=generated_at)
+    from .modes import mode_profile_from_zip
+
+    artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
+    return artifact
 
 
 _SUMMARY_LABELS = {

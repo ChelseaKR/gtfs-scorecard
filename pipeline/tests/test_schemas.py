@@ -259,7 +259,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.12"
+    assert SCHEMA_VERSION == "1.13"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 
@@ -311,6 +311,18 @@ def test_artifact_with_every_optional_agency_field_conforms() -> None:
         ntd_note="Shared regional feed.",
     )
     validate_artifact(make_artifact(dt.date(2026, 6, 11), agency=agency))
+
+
+def test_artifact_with_ungraded_mode_profile_conforms() -> None:
+    from scorecard_pipeline.modes import build_mode_profile
+
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["mode_profile"] = build_mode_profile(
+        [{"route_id": "ferry", "route_type": "4"}],
+        [{"route_id": "ferry", "trip_id": "sailing"}],
+    )
+
+    validate_artifact(artifact)
 
 
 def test_artifact_with_the_us_only_ntd_block_conforms() -> None:

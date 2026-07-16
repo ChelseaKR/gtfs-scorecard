@@ -294,6 +294,25 @@ function stringArray(value) {
     : [];
 }
 
+const MODE_LABELS = {
+  tram: "Tram / light rail",
+  subway: "Subway / metro",
+  rail: "Rail",
+  bus: "Bus",
+  ferry: "Ferry",
+  cable_tram: "Cable tram",
+  aerial_lift: "Aerial lift",
+  funicular: "Funicular",
+  trolleybus: "Trolleybus",
+  monorail: "Monorail",
+  other: "Other / unclassified",
+};
+
+/** Public mode key to a stable rider-facing label. @param {string} value */
+function formatModeName(value) {
+  return MODE_LABELS[value] || value.replaceAll("_", " ");
+}
+
 /** Keep the persistent app-shell navigation aligned with the current hash view.
  * @param {boolean} featureMode */
 function setAppNav(featureMode) {
@@ -355,6 +374,11 @@ function featureCsv(rows) {
     ["translation_languages", (row) => row.translationLanguages.join("|")],
     ["translated_tables", (row) => row.translatedTables.join("|")],
     ["feed_language", (row) => row.feedLang],
+    ["modes_measured", (row) => row.modesMeasured],
+    ["primary_mode", (row) => row.primaryMode],
+    ["modes", (row) => row.modes.join("|")],
+    ["has_ferry", (row) => row.hasFerry],
+    ["ferry_only", (row) => row.ferryOnly],
     ["scorecard_url", (row) => row.scorecardUrl],
     ["feed_url", (row) => row.feedUrl],
   ];
@@ -557,6 +581,11 @@ function renderOverview(directory) {
       translationLanguages: stringArray(a.translation_languages),
       translatedTables: stringArray(a.translated_tables),
       feedLang: typeof a.feed_lang === "string" ? a.feed_lang : "",
+      modesMeasured: a.modes_measured === true,
+      primaryMode: typeof a.primary_mode === "string" ? a.primary_mode : "",
+      modes: stringArray(a.modes),
+      hasFerry: optionalBoolean(a.has_ferry),
+      ferryOnly: optionalBoolean(a.ferry_only),
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
     .sort((x, y) => compareText(x.name, y.name));
@@ -572,6 +601,12 @@ function renderOverview(directory) {
   const translationMeasuredCount = agencies.filter(
     (agency) => agency.translationsMeasured
   ).length;
+  const modeMeasuredCount = agencies.filter((agency) => agency.modesMeasured).length;
+  const availableModes = [...new Set(agencies.flatMap((agency) => agency.modes))]
+    .sort((left, right) => compareText(formatModeName(left), formatModeName(right)));
+  const modeOptions = availableModes
+    .map((mode) => `<option value="${escAttr(mode)}">${esc(formatModeName(mode))}</option>`)
+    .join("");
   const translationLanguages = [...new Set(agencies.flatMap((agency) => agency.translationLanguages))]
     .map((code) => ({ code, label: formatLanguageName(code) }))
     .sort((left, right) => compareText(left.label, right.label));
@@ -662,6 +697,15 @@ function renderOverview(directory) {
             <label><input class="feature-check" type="checkbox" value="translations"> Translated rider information</label>
           </div>
         </fieldset>
+        <fieldset class="feature-fieldset mode-filters">
+          <legend>Service mode</legend>
+          <p class="fineprint">Require at least one route of this type. Mixed-mode feeds can match more than one mode.</p>
+          <label for="service-mode">Published mode</label>
+          <select id="service-mode"${availableModes.length ? "" : " disabled"}>
+            <option value="">Any service mode</option>
+            ${modeOptions}
+          </select>
+        </fieldset>
         <fieldset class="feature-fieldset translation-filters">
           <legend>Translation language</legend>
           <p class="fineprint">Choose a language to require it in <code>translations.txt</code>.</p>
@@ -696,7 +740,8 @@ function renderOverview(directory) {
       <p class="fineprint">Capability flags are measured for ${formatNumber(capabilityMeasuredCount)} of
       ${formatNumber(total)} feed records; wheelchair completeness is measured for
       ${formatNumber(accessibilityMeasuredCount)}; translations are measured for
-      ${formatNumber(translationMeasuredCount)}. Selecting a field excludes records where that field is unknown.
+      ${formatNumber(translationMeasuredCount)}; service modes are measured for
+      ${formatNumber(modeMeasuredCount)}. Selecting a field excludes records where that field is unknown.
       The score-comparison cohort above is a separate contract.</p>
       <p class="coverage-limit">${coverageLimit}</p>
     </section>
@@ -757,6 +802,7 @@ function setupOverview(agencies, total, summary) {
   const translationLanguage = /** @type {HTMLSelectElement} */ (
     main.querySelector("#translation-language")
   );
+  const serviceMode = /** @type {HTMLSelectElement} */ (main.querySelector("#service-mode"));
   const exportBtn = /** @type {HTMLButtonElement} */ (
     main.querySelector("#download-feature-results")
   );
@@ -881,6 +927,9 @@ function setupOverview(agencies, total, summary) {
   const languageValues = new Set(Array.from(translationLanguage.options).map((option) => option.value));
   const wantedLanguage = (urlParams.get("lang") || "").toLocaleLowerCase();
   translationLanguage.value = languageValues.has(wantedLanguage) ? wantedLanguage : "";
+  const modeValues = new Set(Array.from(serviceMode.options).map((option) => option.value));
+  const wantedMode = (urlParams.get("mode") || "").toLocaleLowerCase();
+  serviceMode.value = modeValues.has(wantedMode) ? wantedMode : "";
   const featureView = urlParams.get("view") === "features";
   for (const b of facetBtns) b.setAttribute("aria-pressed", String(b.dataset.facet === facet));
 
@@ -901,9 +950,10 @@ function setupOverview(agencies, total, summary) {
     if (q) p.set("q", q);
     if (sortSel.value !== defaultSort) p.set("sort", sortSel.value);
     if (selectedFeatures.size) p.set("features", [...selectedFeatures].join(","));
-    if (featureView || selectedFeatures.size || translationLanguage.value || stopsMin.value || tripsMin.value) {
+    if (featureView || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value) {
       p.set("view", "features");
     }
+    if (serviceMode.value) p.set("mode", serviceMode.value);
     if (translationLanguage.value) p.set("lang", translationLanguage.value);
     if (stopsMin.value) p.set("stops", stopsMin.value);
     if (tripsMin.value) p.set("trips", tripsMin.value);
@@ -934,9 +984,12 @@ function setupOverview(agencies, total, summary) {
   }
 
   function matchesFeatures(a) {
-    if (!selectedFeatures.size && !translationLanguage.value && !stopsMin.value && !tripsMin.value) return true;
+    if (!selectedFeatures.size && !serviceMode.value && !translationLanguage.value && !stopsMin.value && !tripsMin.value) return true;
     for (const feature of selectedFeatures) {
       if (a[featureProperties[feature]] !== true) return false;
+    }
+    if (serviceMode.value && (!a.modesMeasured || !a.modes.includes(serviceMode.value))) {
+      return false;
     }
     if (
       translationLanguage.value &&
@@ -953,6 +1006,7 @@ function setupOverview(agencies, total, summary) {
 
   function featureEvidence(a) {
     const evidence = [];
+    if (serviceMode.value) evidence.push(`Mode: ${formatModeName(serviceMode.value)}`);
     if (
       (selectedFeatures.has("accessibility") || stopsMin.value || tripsMin.value) &&
       a.accessibilityMeasured
@@ -1014,6 +1068,7 @@ function setupOverview(agencies, total, summary) {
       tokens.length ||
       facet !== "all" ||
       selectedFeatures.size ||
+      serviceMode.value ||
       translationLanguage.value ||
       stopsMin.value ||
       tripsMin.value ||
@@ -1023,7 +1078,7 @@ function setupOverview(agencies, total, summary) {
     );
     setAppNav(
       featureView ||
-      Boolean(selectedFeatures.size || translationLanguage.value || stopsMin.value || tripsMin.value)
+      Boolean(selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value)
     );
     matchBoard.dataset.active = String(active);
     hint.hidden = active;
@@ -1085,6 +1140,10 @@ function setupOverview(agencies, total, summary) {
     });
   }
   translationLanguage.addEventListener("change", () => {
+    userInteracted = true;
+    apply();
+  });
+  serviceMode.addEventListener("change", () => {
     userInteracted = true;
     apply();
   });
@@ -1231,6 +1290,7 @@ function setupOverview(agencies, total, summary) {
     stopsMin.value = "";
     tripsMin.value = "";
     translationLanguage.value = "";
+    serviceMode.value = "";
     locationFilter.country = "all";
     locationFilter.subdivision = "all";
     locationFilter.legacyState = "all";
