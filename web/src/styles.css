@@ -1127,13 +1127,15 @@ main:focus { outline: none; }
   outline-offset: 3px;
 }
 .accessibility-thresholds > label,
-.translation-filters > label {
+.translation-filters > label,
+.mode-filters > label {
   display: block;
   margin: 0.65rem 0 0.25rem;
   font-weight: 600;
 }
 .accessibility-thresholds select,
-.translation-filters select {
+.translation-filters select,
+.mode-filters select {
   width: 100%;
   min-height: 44px;
   padding: 0.5rem 0.7rem;
@@ -1145,11 +1147,13 @@ main:focus { outline: none; }
   cursor: pointer;
 }
 .accessibility-thresholds select:focus-visible,
-.translation-filters select:focus-visible {
+.translation-filters select:focus-visible,
+.mode-filters select:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
-.translation-filters select:disabled {
+.translation-filters select:disabled,
+.mode-filters select:disabled {
   cursor: not-allowed;
   opacity: 0.72;
 }

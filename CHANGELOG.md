@@ -28,6 +28,10 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Publish an ungraded service-mode contract from GTFS `route_type` and trip
+  counts. Mode membership and primary mode now flow through artifacts, the
+  feature API, finder deep links, and CSV shortlists, including a direct Ferry
+  filter and explicit unknown handling.
 - Measure rider-facing `translations.txt` adoption, language tags, row counts,
   and translated tables without changing feed grades. Publish the measurements
   through the adoption rollup, feature API, interactive filters, and CSV export.

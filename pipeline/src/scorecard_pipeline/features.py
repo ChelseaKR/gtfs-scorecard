@@ -28,6 +28,22 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
     """
     adoption = adoption_record(artifact)
     coverage = coverage_record(artifact)
+    raw_profile = artifact.get("mode_profile")
+    mode_profile = (
+        raw_profile
+        if isinstance(raw_profile, dict) and raw_profile.get("measured") is True
+        else None
+    )
+    mode_rows = mode_profile.get("modes") if mode_profile else None
+    modes = (
+        [
+            row["key"]
+            for row in mode_rows
+            if isinstance(row, dict) and isinstance(row.get("key"), str)
+        ]
+        if isinstance(mode_rows, list)
+        else None
+    )
 
     boarding = coverage.get("wheelchair_boarding_pct") if coverage else None
     accessible = coverage.get("wheelchair_accessible_pct") if coverage else None
@@ -58,6 +74,11 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
         "translation_languages": (adoption.get("translation_languages") if adoption else None),
         "translated_tables": adoption.get("translated_tables") if adoption else None,
         "feed_lang": adoption.get("feed_lang") if adoption else None,
+        "modes_measured": mode_profile is not None,
+        "primary_mode": mode_profile.get("primary_mode") if mode_profile else None,
+        "modes": modes,
+        "has_ferry": mode_profile.get("has_ferry") if mode_profile else None,
+        "ferry_only": mode_profile.get("ferry_only") if mode_profile else None,
     }
 
 
@@ -93,6 +114,11 @@ _PUBLIC_KEYS = (
     "translation_languages",
     "translated_tables",
     "feed_lang",
+    "modes_measured",
+    "primary_mode",
+    "modes",
+    "has_ferry",
+    "ferry_only",
 )
 
 
@@ -123,10 +149,12 @@ def build_feature_dataset(
         "translation_measured_count": sum(
             row.get("translations_measured") is True for row in feeds
         ),
+        "mode_measured_count": sum(row.get("modes_measured") is True for row in feeds),
         "comparison": comparison,
         "filter_semantics": {
             "selected_features": "all selected features must be published",
             "translation_language": ("exact case-insensitive BCP 47 tag in translation_languages"),
+            "mode": "selected mode key must be present in modes",
             "accessibility_thresholds": (
                 "minimum share of stops or trips with a stated wheelchair field"
             ),

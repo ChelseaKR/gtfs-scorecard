@@ -313,6 +313,49 @@
       "type": "object",
       "description": "Compact route/stop geometry summary; the drawable GeoJSON lives in geometry.geojson."
     },
+    "mode_profile": {
+      "type": "object",
+      "description": "Descriptive, ungraded service modes derived from routes.txt and weighted by trips.txt.",
+      "required": [
+        "measured",
+        "graded",
+        "primary_mode",
+        "primary_mode_label",
+        "modes",
+        "route_count",
+        "trip_count",
+        "is_multimodal",
+        "has_ferry",
+        "ferry_only"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "measured": { "const": true },
+        "graded": { "const": false },
+        "primary_mode": { "type": ["string", "null"] },
+        "primary_mode_label": { "type": ["string", "null"] },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "label", "route_count", "trip_count", "trip_share_pct"],
+            "additionalProperties": false,
+            "properties": {
+              "key": { "type": "string" },
+              "label": { "type": "string" },
+              "route_count": { "type": "integer", "minimum": 1 },
+              "trip_count": { "type": "integer", "minimum": 0 },
+              "trip_share_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 }
+            }
+          }
+        },
+        "route_count": { "type": "integer", "minimum": 0 },
+        "trip_count": { "type": "integer", "minimum": 0 },
+        "is_multimodal": { "type": "boolean" },
+        "has_ferry": { "type": "boolean" },
+        "ferry_only": { "type": "boolean" }
+      }
+    },
     "routability": {
       "type": "object",
       "description": "Zero-deduction routing usability checks (single-stop trips, orphan stops)."

@@ -133,6 +133,11 @@ def _feature_directory() -> dict[str, Any]:
         "translation_languages": None,
         "translated_tables": None,
         "feed_lang": None,
+        "modes_measured": False,
+        "primary_mode": None,
+        "modes": None,
+        "has_ferry": None,
+        "ferry_only": None,
     }
     for agency in directory["agencies"]:
         agency.update(feature_defaults)
@@ -158,6 +163,11 @@ def _feature_directory() -> dict[str, Any]:
                     "translation_languages": ["fr", "nl"],
                     "translated_tables": ["routes", "stops"],
                     "feed_lang": "mul",
+                    "modes_measured": True,
+                    "primary_mode": "ferry",
+                    "modes": ["bus", "ferry"],
+                    "has_ferry": True,
+                    "ferry_only": False,
                 }
             )
         elif agency["id"] == "london-transit-commission":
@@ -182,6 +192,11 @@ def _feature_directory() -> dict[str, Any]:
                     "translation_languages": [],
                     "translated_tables": [],
                     "feed_lang": "en",
+                    "modes_measured": True,
+                    "primary_mode": "bus",
+                    "modes": ["bus"],
+                    "has_ferry": False,
+                    "ferry_only": False,
                 }
             )
     return directory
@@ -466,6 +481,32 @@ def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str
         "view": "features",
         "lang": "fr",
     }
+
+
+def test_service_mode_filter_is_deep_linkable_and_exports_evidence(
+    page: Page, app_url: str
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features&mode=ferry")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.get_by_role("link", name="London Transit Commission")).to_have_count(0)
+    expect(page.locator(".feature-evidence")).to_contain_text("Mode: Ferry")
+
+    page.locator("#agency-sort").select_option("za")
+    assert _hash_params(page) == {"sort": "za", "view": "features", "mode": "ferry"}
+
+    with page.expect_download() as download_info:
+        page.get_by_role("button", name="Download 1 matching feed (CSV)").click()
+    csv = Path(download_info.value.path()).read_text()
+    assert '"modes_measured"' in csv.splitlines()[0]
+    assert '"primary_mode"' in csv.splitlines()[0]
+    assert '"bus|ferry"' in csv
 
 
 def test_feature_nav_is_available_from_mobile_menu(page: Page, app_url: str) -> None:

@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .gtfs import read_tables
+from .modes import route_type_family, route_type_label
 
 # Coordinates are rounded to five decimals (~1.1 m) and lines simplified with a
 # tolerance a touch finer than that, so simplification never coarsens a feature
@@ -46,22 +47,6 @@ _SIMPLIFY_TOLERANCE_DEG = 0.00012
 # id) so the artifact and the on-page list stay bounded. summary.stop_count always
 # reports the true total.
 _STOP_POINT_CAP = 2000
-
-# Basic GTFS route_type values (GTFS Schedule reference). Extended route types are
-# folded to these families by range below. route_color in the feed always wins for
-# drawing; this label is what the accessible table says in words.
-_ROUTE_TYPE_LABEL: dict[int, str] = {
-    0: "Tram / light rail",
-    1: "Subway / metro",
-    2: "Rail",
-    3: "Bus",
-    4: "Ferry",
-    5: "Cable tram",
-    6: "Aerial lift",
-    7: "Funicular",
-    11: "Trolleybus",
-    12: "Monorail",
-}
 
 # Fallback line color when a route sets no route_color, keyed by the same families.
 # Chosen to stay distinguishable from one another; the table never relies on color
@@ -80,6 +65,17 @@ _ROUTE_TYPE_COLOR: dict[int, str] = {
 }
 _DEFAULT_COLOR = "4A4A4A"
 
+
+def _route_type_family(raw: str) -> int | None:
+    """Compatibility wrapper around the shared mode contract."""
+    return route_type_family(raw)
+
+
+def _route_type_label(raw: str) -> str:
+    """Compatibility wrapper around the shared mode contract."""
+    return route_type_label(raw)
+
+
 # Coarse named colors for the text description of each route's color, so the
 # table conveys color without relying on the swatch (WCAG 1.4.1). Nearest match
 # in sRGB; precision is not the point, a readable word is.
@@ -97,53 +93,6 @@ _NAMED_COLORS: list[tuple[str, tuple[int, int, int]]] = [
     ("black", (0x10, 0x10, 0x10)),
     ("white", (0xF0, 0xF0, 0xF0)),
 ]
-
-
-def _route_type_family(raw: str) -> int | None:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
-    """Map a route_type string to a basic family int, folding extended types.
-
-    Extended route types (GTFS spec, the 100-1700 ranges) collapse to the closest
-    basic family so the label and fallback color stay meaningful. Returns None for
-    a blank or unparseable value.
-    """
-    raw = raw.strip()
-    if not raw:
-        return None
-    try:
-        value = int(raw)
-    except ValueError:
-        return None
-    if value in _ROUTE_TYPE_LABEL:
-        return value
-    # Extended types: fold by documented range to a basic family.
-    if 100 <= value <= 117:
-        return 2  # rail
-    if 200 <= value <= 299:
-        return 3  # coach -> bus family
-    if 400 <= value <= 405:
-        return 1  # urban rail / metro
-    if 700 <= value <= 716:
-        return 3  # bus
-    if value == 800:
-        return 11  # trolleybus
-    if 900 <= value <= 906:
-        return 0  # tram
-    if 1000 <= value <= 1021:
-        return 4  # water / ferry
-    if 1200 <= value <= 1207:
-        return 4  # ferry
-    if 1300 <= value <= 1307:
-        return 6  # aerial lift
-    if 1400 <= value <= 1405:
-        return 7  # funicular
-    return None
-
-
-def _route_type_label(raw: str) -> str:
-    family = _route_type_family(raw)
-    if family is None:
-        return "Transit line"
-    return _ROUTE_TYPE_LABEL[family]
 
 
 def _normalize_color(raw: str) -> str | None:
