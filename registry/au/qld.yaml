@@ -1,0 +1,16 @@
+# Queensland (AU) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: magnetic-island-ferry
+    name: Magnetic Island Ferry (Translink)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "679"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/MIF_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.

@@ -1,0 +1,15 @@
+# Bretagne (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: brittany-ferries
+    name: Brittany Ferries
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83427/download
+    license_note: >-
+      Licence Ouverte 2.0; source Brittany Ferries through France's National
+      Access Point. Derived measurements by GTFS Scorecard.

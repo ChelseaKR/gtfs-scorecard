@@ -1,6 +1,6 @@
 # Global expansion and European GTFS beta gate
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 This plan separates four jobs that are easy to collapse into “go global”:
 measuring multilingual GTFS, curating representative coverage, localizing the
@@ -31,11 +31,13 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The registry snapshot on 2026-07-15 contains 1,149 feed records: 1,139 in the
-United States, three in Canada, and one each in Australia, France, Ireland,
-Japan, Malaysia, New Zealand, and Uruguay. France and Ireland are the only
-European canaries. The country controls prove that the data model and interface
-can carry worldwide locations; they are not country or regional samples.
+The registry snapshot after the reviewed ferry wave contains 1,154 feed
+records: 1,139 in the United States, three in Canada, two in Australia, three in
+France, one in Ireland, two in Italy, and one each in Japan, Malaysia, New
+Zealand, and Uruguay. The six records whose primary catalog location is in
+France, Ireland, or Italy are European canaries. The country controls prove that
+the data model and interface can carry worldwide locations; they are not country
+or regional samples.
 
 The portable core already supports:
 
@@ -162,6 +164,11 @@ a bounded product decision.
 - Add country waves only after the existing worldwide canary checklist in
   [ADR 0026](decisions/0026-internationalization.md) passes.
 - Publish progress against the beta gate, not a launch date.
+
+The first ferry-focused wave added four European records after direct source,
+calendar, identity, route-type, and reuse review, plus one Australian ferry
+record. It is a product and ingestion canary, not the European beta. The wave
+also documented four exclusions where access, mode, or freshness did not pass.
 
 ### Later: full interface localization
 

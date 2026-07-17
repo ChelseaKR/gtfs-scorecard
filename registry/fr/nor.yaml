@@ -23,3 +23,14 @@ agencies:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
       vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
       service_alerts: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+  - id: transmanche-ferries
+    name: Transmanche Ferries
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83981/download
+    license_note: >-
+      Licence Ouverte 2.0; source Syndicat mixte Atoumod and Transmanche
+      Ferries through France's National Access Point. Derived measurements by
+      GTFS Scorecard.
