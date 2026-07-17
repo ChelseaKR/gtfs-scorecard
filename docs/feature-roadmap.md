@@ -9,7 +9,7 @@ research history, not parallel queues.
 
 ## Status
 
-The previous feature list shipped across about 1,128 published scorecard pages.
+The previous feature list shipped across more than 1,100 published scorecard pages.
 Daily scorecards, program rollups, alerts, finding-clearance records,
 provenance, data contracts, the read API, MCP server, badges, and the reusable
 Action and its Marketplace listing are available. They now support the work
@@ -24,16 +24,16 @@ intended published feed.
 Work through this list in order. Do not start later product expansion to fill a
 participant or release dependency.
 
-### 1. Publish and verify `v1.2.1`
+### 1. Publish and verify `v1.3.0`
 
-Status: completed 2026-07-15. The signed release and public
+Status: completed 2026-07-16. The signed release and public
 [Marketplace listing](https://github.com/marketplace/actions/gtfs-scorecard-gate)
 are live, and both supported refs passed the
-[downstream consumer check](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29454018351).
+[downstream consumer check](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29551173480).
 
 Done means:
 
-- immutable `v1.2.1` and signed floating `v1` tags point to the intended commit;
+- immutable `v1.3.0` and signed floating `v1` tags point to the intended commit;
 - the release carries the manifest signature, certificate, SBOM, VEX, and
   provenance assets;
 - the Marketplace listing is publicly visible in Code quality and Testing;
@@ -47,6 +47,10 @@ Recruit one support-program liaison and two feed maintainers or vendors. Agree
 on feed identity, owner role, existing handoff channel, privacy boundary, and
 what a valid recheck means. Select recurring findings with a concrete export or
 data change.
+
+Wasco Dial-a-Ride is one evidence-backed recruitment lead because its official
+Caltrans DDS archive is still the January 2022 upload and scores as expired.
+Participation and feed identity still require explicit confirmation.
 
 Done means at least two participants accept a named request and the project has
 six suitable requests available for the 90-day window.

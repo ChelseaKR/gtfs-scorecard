@@ -33,6 +33,7 @@ def write_latest(
     ntd_id: str | None = None,
     scoring_profile_id: str = SCORING_PROFILE_ID,
     validator_version: str = VALIDATOR_VERSION,
+    reader_archive_profile: str | None = None,
 ) -> None:
     agency: dict[str, object] = {"id": agency_id, "name": name}
     if state:
@@ -62,6 +63,8 @@ def write_latest(
         },
         "top_fixes": fixes or [],
     }
+    if reader_archive_profile is not None:
+        payload["fetch"] = {"reader_archive_profile": reader_archive_profile}
     if shapes is not None:
         total_trips, trips_with_shape = shapes
         payload["shapes_readiness"] = {
@@ -279,6 +282,25 @@ def test_common_fixes_counts_shared_codes() -> None:
     assert common[0]["agencies"] == 2
     assert common[0]["code"] == "scorecard_wheelchair_boarding_unknown"
     assert payload["comparison"]["exclusion_counts"]["validator_version_mismatch"] == 1
+
+
+def test_rollup_excludes_a_normalized_reader_profile_from_aggregates() -> None:
+    write_latest("raw", "Raw", 80.0, "B")
+    write_latest(
+        "normalized",
+        "Normalized",
+        100.0,
+        "A",
+        reader_archive_profile="flat-single-root-v1",
+    )
+
+    payload = build_rollup(Rollup("all", "All", ()), WHEN)
+
+    assert payload["agency_count"] == 2
+    assert payload["average_score"] == 80.0
+    assert payload["comparison"]["eligible_count"] == 1
+    assert payload["comparison"]["required_reader_archive_profile"] == "raw-v1"
+    assert payload["comparison"]["exclusion_counts"] == {"reader_archive_profile_mismatch": 1}
 
 
 def test_explicit_membership_limits_the_rollup() -> None:

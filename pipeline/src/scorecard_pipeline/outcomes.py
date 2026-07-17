@@ -14,6 +14,7 @@ from collections.abc import Iterable, Mapping
 from statistics import median
 from typing import Any, cast
 
+from .comparisons import producer_contract
 from .effort_calibration import Episode, agency_episodes
 
 OUTCOME_SCHEMA_VERSION = "1.0"
@@ -24,49 +25,78 @@ def _days(ep: Episode) -> int:
     return (dt.date.fromisoformat(cleared) - dt.date.fromisoformat(ep.first_seen)).days
 
 
+def _valid_agency_artifacts(
+    agency_id: str, artifacts_iter: Iterable[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Return this agency's well-formed, chronologically sorted artifacts."""
+    artifacts: list[dict[str, Any]] = []
+    for artifact in artifacts_iter:
+        try:
+            artifact_id = str(artifact["agency"]["id"])
+            date = str(artifact["snapshot_date"])
+            parsed_date = dt.date.fromisoformat(date)
+        except (KeyError, TypeError, ValueError):
+            continue
+        if artifact_id == agency_id and parsed_date.isoformat() == date:
+            artifacts.append(artifact)
+    return sorted(artifacts, key=lambda artifact: str(artifact["snapshot_date"]))
+
+
+def _contract_scope_by_date(artifacts: Iterable[dict[str, Any]]) -> dict[str, int]:
+    """Number each contiguous complete core producer contract."""
+    scope_by_date: dict[str, int] = {}
+    active_contract: tuple[str, str, str, str, str] | None = None
+    scope = 0
+    for artifact in artifacts:
+        contract = producer_contract(artifact)[:5]
+        if not all(contract):
+            active_contract = None
+            continue
+        if contract != active_contract:
+            scope += 1
+            active_contract = contract
+        scope_by_date[str(artifact["snapshot_date"])] = scope
+    return scope_by_date
+
+
 def build_fix_outcomes(
     histories: Mapping[str, Iterable[dict[str, Any]]],
 ) -> dict[str, Any]:
     """Aggregate resolution outcomes by finding code across agency histories.
 
-    Recurrence is agency-scoped: an agency contributes once when a code opens
-    in more than one episode. Resolution rate is closed episodes divided by all
+    Recurrence is agency-scoped within one contiguous complete producer
+    contract: an agency contributes once when a code opens in more than one
+    episode without a rubric, validator, scoring-profile, or reader-profile
+    boundary between them. Resolution rate is closed episodes divided by all
     observed episodes, with still-open episodes reported separately so readers
     can account for right-censoring.
     """
-    by_code: dict[str, list[tuple[str, Episode]]] = defaultdict(list)
+    by_code: dict[str, list[tuple[str, int, Episode]]] = defaultdict(list)
     observation_start: str | None = None
     observation_end: str | None = None
     for agency_id, artifacts_iter in histories.items():
-        artifacts: list[dict[str, Any]] = []
-        for artifact in artifacts_iter:
-            try:
-                artifact_id = str(artifact["agency"]["id"])
-                date = str(artifact["snapshot_date"])
-                parsed_date = dt.date.fromisoformat(date)
-            except (KeyError, TypeError, ValueError):
-                continue
-            if artifact_id != agency_id or parsed_date.isoformat() != date:
-                continue
-            artifacts.append(artifact)
-        artifacts.sort(key=lambda a: str(a["snapshot_date"]))
+        artifacts = _valid_agency_artifacts(agency_id, artifacts_iter)
+        scope_by_date = _contract_scope_by_date(artifacts)
         dates = [str(a.get("snapshot_date", "")) for a in artifacts if a.get("snapshot_date")]
         if dates:
             observation_start = min([observation_start, *dates] if observation_start else dates)
             observation_end = max([observation_end, *dates] if observation_end else dates)
         for episode in agency_episodes(artifacts):
-            by_code[episode.code].append((agency_id, episode))
+            by_code[episode.code].append((agency_id, scope_by_date[episode.first_seen], episode))
 
     codes: dict[str, dict[str, Any]] = {}
     total_episodes = total_resolved = 0
     for code in sorted(by_code):
         entries = by_code[code]
-        resolved = [ep for _, ep in entries if ep.cleared is not None]
-        agencies = {agency_id for agency_id, _ in entries}
-        episodes_by_agency: dict[str, int] = defaultdict(int)
-        for agency_id, _ in entries:
-            episodes_by_agency[agency_id] += 1
-        recurrence_agencies = sum(count > 1 for count in episodes_by_agency.values())
+        resolved = [ep for _, _, ep in entries if ep.cleared is not None]
+        agencies = {agency_id for agency_id, _, _ in entries}
+        episodes_by_scope: dict[tuple[str, int], int] = defaultdict(int)
+        for agency_id, scope, _ in entries:
+            episodes_by_scope[(agency_id, scope)] += 1
+        recurring_agencies = {
+            agency_id for (agency_id, _), count in episodes_by_scope.items() if count > 1
+        }
+        recurrence_agencies = len(recurring_agencies)
         days = sorted(_days(ep) for ep in resolved)
         total_episodes += len(entries)
         total_resolved += len(resolved)
@@ -94,6 +124,8 @@ def build_fix_outcomes(
         "method": (
             "A finding opens when its code appears and clears only when it is absent in a later "
             "check under the same complete producer contract where the category was measured. "
+            "Recurrence is counted only within a contiguous producer contract; a contract "
+            "change resets the recurrence observation. "
             "A clearance does not establish who acted or why. Open episodes are right-censored."
         ),
         "observation_window": {"start": observation_start, "end": observation_end},

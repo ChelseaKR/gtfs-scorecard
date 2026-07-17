@@ -13,6 +13,8 @@ cohort. A feed record is included only when:
 - correctness, freshness, and rider-experience completeness were measured;
 - it uses the current rubric version;
 - it uses the current scoring profile and canonical validator version;
+- it uses the `raw-v1` reader archive profile, so a normalized reader view
+  cannot be mixed into raw-feed aggregates;
 - it belongs to the selected homogeneous measured-category set, so a
   three-category overall score is never mixed with a four-category score;
 - its published service data is not more than one year expired;
@@ -25,7 +27,8 @@ without realtime is never excluded for that reason.
 
 Named changes compare a feed only with its own prior check, and only when both
 checks use the same current rubric, scoring profile, validator, and measured
-category set. The historical `api/v1/leaderboard.json` path is retained for v1
+category set, including the same reader archive profile. The historical
+`api/v1/leaderboard.json` path is retained for v1
 consumers, but its `top` and `bottom` arrays are always empty. It carries guarded
 `most_improved` and `most_declined` change rows plus a `comparison` object
 explaining exclusions.

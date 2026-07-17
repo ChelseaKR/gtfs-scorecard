@@ -10,6 +10,7 @@ import datetime as dt
 import hashlib
 import json
 import logging
+import shutil
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -43,6 +44,11 @@ TIMEOUT = (CONNECT_TIMEOUT, READ_TIMEOUT)
 # A flaky WAF often serves the next request; a few backed-off retries clear most
 # transient 403/429/5xx. Connection timeouts are not retried (see net.py).
 FETCH_RETRIES = 3
+
+# Versioned contract for the archive view consumed by Scorecard-owned readers.
+# The canonical validator always receives raw producer bytes regardless.
+RAW_READER_ARCHIVE_PROFILE = "raw-v1"
+FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE = "flat-single-root-v1"
 
 # Archive-level limits are intentionally tighter than net.safe_get's generic
 # download ceiling. GTFS feeds are text-heavy and normally compress well, so a
@@ -100,6 +106,33 @@ class FetchResult:
     user_agent: str = USER_AGENT
     max_attempts: int | None = None
     origin_error: str | None = None
+    # The canonical validator always receives ``path``. Scorecard's table
+    # readers receive this deterministic view when a producer wrapped every
+    # file in one directory or added surrounding filename whitespace.
+    reader_path: Path | None = None
+    reader_archive_normalized: bool = False
+
+    @property
+    def reader_view_path(self) -> Path:
+        """Archive path for Scorecard-owned table readers, never validation."""
+        return self.reader_path or self.path
+
+    @property
+    def reader_archive_profile(self) -> str:
+        """Versioned reader-view contract carried into comparison evidence."""
+        return (
+            FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE
+            if self.reader_archive_normalized
+            else RAW_READER_ARCHIVE_PROFILE
+        )
+
+
+@dataclass(frozen=True)
+class ReaderArchive:
+    """A safe archive view for Scorecard's own GTFS table readers."""
+
+    path: Path
+    normalized: bool
 
 
 def _sha256(path: Path) -> str:
@@ -148,6 +181,112 @@ def _validate_gtfs_archive(path: Path) -> None:
             raise ValueError(
                 f"GTFS archive entry {entry.filename!r} has an unsafe compression ratio"
             )
+
+
+ReaderMember = tuple[zipfile.ZipInfo, tuple[str, ...]]
+ReaderMapping = list[tuple[zipfile.ZipInfo, str]]
+
+
+def _reader_members(archive: zipfile.ZipFile) -> list[ReaderMember]:
+    """Non-directory members with safe, unambiguous path components."""
+    parsed: list[ReaderMember] = []
+    for entry in archive.infolist():
+        if entry.is_dir():
+            continue
+        name = entry.filename
+        if not name or "\x00" in name or "\\" in name or name.startswith("/"):
+            raise ValueError(f"GTFS archive has an unsafe member path: {name!r}")
+        parts = tuple(name.split("/"))
+        if any(part in {"", ".", ".."} for part in parts):
+            raise ValueError(f"GTFS archive has an unsafe member path: {name!r}")
+        parsed.append((entry, parts))
+    return parsed
+
+
+def _reader_mapping(parsed: list[ReaderMember]) -> ReaderMapping | None:
+    """The one allowed filename mapping, or None when no view is needed."""
+    root_files = [item for item in parsed if len(item[1]) == 1]
+    nested_files = [item for item in parsed if len(item[1]) > 1]
+    if root_files:
+        if not any(parts[0].strip() != parts[0] for _, parts in root_files):
+            return None
+        if nested_files:
+            raise ValueError(
+                "GTFS archive mixes root and nested files; filename normalization "
+                "would be ambiguous"
+            )
+        return [(entry, parts[0].strip()) for entry, parts in root_files]
+    if not nested_files:
+        return None
+    if len({parts[0] for _, parts in nested_files}) != 1:
+        raise ValueError("GTFS archive has multiple possible root folders")
+    if any(len(parts) != 2 for _, parts in nested_files):
+        raise ValueError("GTFS archive is nested deeper than one common root folder")
+    return [(entry, parts[1].strip()) for entry, parts in nested_files]
+
+
+def _validate_reader_targets(mapping: ReaderMapping) -> None:
+    targets: set[str] = set()
+    for _entry, target in mapping:
+        if not target or target in {".", ".."}:
+            raise ValueError("GTFS archive has an empty filename after normalization")
+        if target in targets:
+            raise ValueError(f"GTFS archive member paths collide after normalization: {target!r}")
+        targets.add(target)
+
+
+def _write_reader_archive(archive: zipfile.ZipFile, mapping: ReaderMapping, output: Path) -> None:
+    tmp = output.with_suffix(f"{output.suffix}.part")
+    tmp.unlink(missing_ok=True)
+    try:
+        with zipfile.ZipFile(tmp, "w", allowZip64=True) as normalized:
+            for source, target in sorted(mapping, key=lambda item: item[1]):
+                info = zipfile.ZipInfo(target, date_time=(1980, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 3
+                info.external_attr = 0o600 << 16
+                with (
+                    archive.open(source) as src,
+                    normalized.open(info, "w", force_zip64=True) as dst,
+                ):
+                    shutil.copyfileobj(src, dst, length=1 << 20)
+        tmp.replace(output)
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise
+
+
+def prepare_reader_archive(path: Path) -> ReaderArchive:
+    """Return a deterministic flat view for Scorecard-owned table readers.
+
+    GTFS requires its text files at the archive root, but a small class of
+    producer exports wraps every file in one directory or adds surrounding
+    whitespace to filenames. The canonical validator must still see those raw
+    packaging errors. Our readers use a separate view so freshness,
+    completeness, and descriptive features do not all become falsely empty.
+
+    Only two unambiguous transforms are allowed: strip one common root folder,
+    and trim surrounding whitespace from a root filename. Mixed roots, deeper
+    trees, unsafe components, and names that collide after trimming are rejected
+    instead of guessing. A canonical root feed with harmless nested extras needs
+    no transform and conservatively stays on ``raw-v1``; a transformable wrapped
+    root mixed with another root is rejected. ``path`` itself is never modified.
+    """
+    # Reproduce and any future direct caller get the same zip-bomb boundary as
+    # fetch_static before we stream a single member into the reader view.
+    _validate_gtfs_archive(path)
+    output = path.with_name(f"{path.stem}.reader{path.suffix or '.zip'}")
+    try:
+        with zipfile.ZipFile(path) as archive:
+            mapping = _reader_mapping(_reader_members(archive))
+            if mapping is None:
+                output.unlink(missing_ok=True)
+                return ReaderArchive(path=path, normalized=False)
+            _validate_reader_targets(mapping)
+            _write_reader_archive(archive, mapping, output)
+    except (OSError, zipfile.BadZipFile) as exc:
+        raise ValueError("response is not a readable zip archive") from exc
+    return ReaderArchive(path=output, normalized=True)
 
 
 def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenance]:
@@ -259,6 +398,7 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
     if dest.exists() and not force:
         log.info("%s: reusing snapshot %s", agency.id, dest)
         _validate_gtfs_archive(dest)
+        reader_archive = prepare_reader_archive(dest)
         recorded = _read_provenance_sidecar(dest)
         max_attempts = recorded.get("max_attempts")
         return FetchResult(
@@ -274,6 +414,8 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
             user_agent=str(recorded.get("user_agent", USER_AGENT)),
             max_attempts=max_attempts if isinstance(max_attempts, int) else None,
             origin_error=str(recorded["origin_error"]) if recorded.get("origin_error") else None,
+            reader_path=reader_archive.path,
+            reader_archive_normalized=reader_archive.normalized,
         )
 
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -292,6 +434,7 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
         raise
     tmp.replace(dest)
     _write_provenance_sidecar(dest, prov)
+    reader_archive = prepare_reader_archive(dest)
 
     return FetchResult(
         agency_id=agency.id,
@@ -306,4 +449,6 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
         user_agent=USER_AGENT,
         max_attempts=prov.max_attempts,
         origin_error=prov.origin_error,
+        reader_path=reader_archive.path,
+        reader_archive_normalized=reader_archive.normalized,
     )

@@ -1,0 +1,30 @@
+# Kymenlaakso (FI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: waltti-kotka
+    name: Waltti (Kotka)
+    country: FI
+    subdivision_code: FI-09
+    subdivision_name: Kymenlaakso
+    mdb_id: "1127"
+    is_official: true
+    static_gtfs_url: https://tvv.fra1.digitaloceanspaces.com/217.zip
+    license_note: >-
+      CC BY 4.0; credit Waltti, link the licence, and indicate any changes made
+      to the source data.
+    operating_note: >-
+      One regional feed with five operator rows and 151 bus routes. Counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.waltti.fi/docs
+      terms_url: https://opendata.waltti.fi/docs
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: Waltti open data (Kotka), licensed CC BY 4.0; indicate changes.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

@@ -1,0 +1,31 @@
+# Harjumaa (EE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tallinn-public-transport-tlt
+    name: Tallinn public transport (TLT)
+    country: EE
+    subdivision_code: EE-37
+    subdivision_name: Harjumaa
+    mdb_id: "3047"
+    is_official: true
+    static_gtfs_url: https://eu-gtfs.remix.com/tallinn.zip
+    license_note: >-
+      Estonia's public-transport open-data terms permit reuse with the data
+      origin cited; rider-facing data must be no more than seven days old.
+    operating_note: >-
+      This is the reviewed Tallinn city feed. Alternate municipal exports are
+      treated as variants, not separate coverage, unless identity is re-reviewed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://peatus.ee/content/Veebilehest%20ja%20%C3%BChistranspordi%20avaandmetest
+      terms_url: https://www.agri.ee/sites/default/files/documents/2023-07/%C3%BChistranspordiregister-avaandmed-spetsifikatsioon-v1_4.pdf
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tallinna Linn / TLT via Estonia's Public Transport Register; cite the
+        data origin and use data no more than seven days old.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

@@ -1,6 +1,6 @@
 # Product roadmap
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 This document describes the user value GTFS Scorecard will test next. The
 infrastructure and operating gates are in [`roadmap.md`](roadmap.md). The
@@ -50,7 +50,7 @@ vendor causality, compliance, or certification.
 
 ## Where the product is today
 
-The service tracks more than 1,100 curated feed records, with numeric latest
+The service tracks more than 1,150 curated feed records, with numeric latest
 scores published for more than 1,100 of them. The public status page reports
 the exact current configured and published counts.
 It publishes per-agency grades, prioritized fixes, trends,

@@ -13,7 +13,13 @@ from scorecard_pipeline import (
     SCORING_PROFILE_PROVENANCE,
 )
 from scorecard_pipeline.config import Agency, artifacts_dir
-from scorecard_pipeline.fetch import USER_AGENT, FetchResult
+from scorecard_pipeline.dataset import build_quality_dataset
+from scorecard_pipeline.fetch import (
+    FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
+    RAW_READER_ARCHIVE_PROFILE,
+    USER_AGENT,
+    FetchResult,
+)
 from scorecard_pipeline.metrics import CategoryResult
 from scorecard_pipeline.publish import (
     _history_entry,
@@ -30,6 +36,7 @@ AGENCY = Agency(
     license_note="test",
 )
 GENERATED_AT = dt.datetime(2026, 6, 11, 12, 0, tzinfo=dt.UTC)
+FEED_SHA = "a" * 64
 
 
 def make_fetch(date: dt.date, source: str = "unknown") -> FetchResult:
@@ -38,7 +45,7 @@ def make_fetch(date: dt.date, source: str = "unknown") -> FetchResult:
         path=Path("/tmp/gtfs.zip"),
         url=AGENCY.static_gtfs_url,
         fetched_date=date,
-        sha256="abc123",
+        sha256=FEED_SHA,
         size_bytes=1024,
         reused=False,
         source=source,
@@ -63,7 +70,7 @@ def test_artifact_schema_essentials() -> None:
     }
     assert artifact["agency"] == {"id": "unitrans", "name": "Unitrans"}
     assert artifact["snapshot_date"] == "2026-06-11"
-    assert artifact["feed"]["sha256"] == "abc123"
+    assert artifact["feed"]["sha256"] == FEED_SHA
     assert artifact["overall"]["grade"] == "B"
     assert artifact["categories"]["realtime"]["status"] == "not_yet_measured"
     assert len(artifact["top_fixes"]) <= 3
@@ -74,6 +81,7 @@ def test_artifact_schema_essentials() -> None:
         "source": "unknown",
         "final_url": AGENCY.static_gtfs_url,
         "user_agent": USER_AGENT,
+        "reader_archive_profile": RAW_READER_ARCHIVE_PROFILE,
     }
 
 
@@ -111,7 +119,7 @@ def test_fetch_provenance_block_carries_mirror_details() -> None:
         path=Path("/tmp/gtfs.zip"),
         url=AGENCY.static_gtfs_url,
         fetched_date=dt.date(2026, 6, 11),
-        sha256="abc123",
+        sha256=FEED_SHA,
         size_bytes=1024,
         reused=False,
         source="mirror",
@@ -125,11 +133,53 @@ def test_fetch_provenance_block_carries_mirror_details() -> None:
         "source": "mirror",
         "final_url": "https://storage.googleapis.com/mdb-latest/x.zip",
         "user_agent": USER_AGENT,
+        "reader_archive_profile": RAW_READER_ARCHIVE_PROFILE,
         "max_attempts": 1,
         "origin_error": "ConnectTimeout",
     }
     # feed.static_url still records the configured origin URL, unchanged.
     assert artifact["feed"]["static_url"] == AGENCY.static_gtfs_url
+
+
+def test_fetch_provenance_discloses_reader_archive_normalization() -> None:
+    raw_path = Path("/tmp/gtfs.zip")
+    fetch = FetchResult(
+        agency_id=AGENCY.id,
+        path=raw_path,
+        url=AGENCY.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256=FEED_SHA,
+        size_bytes=1024,
+        reused=False,
+        reader_path=Path("/tmp/gtfs.reader.zip"),
+        reader_archive_normalized=True,
+    )
+    card = build_scorecard([CategoryResult(name="correctness", score=88.0, summary="s")])
+
+    artifact = build_artifact(AGENCY, fetch, card, GENERATED_AT)
+
+    assert artifact["feed"]["sha256"] == FEED_SHA
+    assert artifact["fetch"]["reader_archive_normalized"] is True
+    assert artifact["fetch"]["reader_archive_profile"] == FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE
+    assert _history_entry(artifact)["reader_archive_profile"] == (
+        FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE
+    )
+
+
+def test_unknown_reader_profile_fails_closed_through_history_and_dataset() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["fetch"]["reader_archive_profile"] = ""
+
+    history = _history_entry(artifact)
+    dataset = build_quality_dataset(
+        {"agencies": {AGENCY.id: {"name": AGENCY.name, "history": [history]}}}
+    )
+    row = dataset["rows"][0]
+
+    assert history["reader_archive_profile"] == ""
+    assert row["reader_archive_profile"] == ""
+    assert row["comparison_eligible"] is False
+    assert dataset["comparison"]["exclusion_counts"]["reader_archive_profile_mismatch"] == 1
 
 
 def test_confidence_high_when_all_measured_from_origin() -> None:
@@ -216,7 +266,7 @@ def test_publish_writes_dated_latest_and_index() -> None:
     assert entry["score"] == 88.0
     assert entry["grade"] == "B"
     assert entry["rubric_version"] == RUBRIC_VERSION
-    assert entry["feed_sha256"] == "abc123"
+    assert entry["feed_sha256"] == FEED_SHA
     # History carries per-category scores for trend rendering.
     assert "correctness" in entry["categories"]
 
@@ -235,7 +285,7 @@ def test_enrich_index_history_provenance_backfills_local_dated_artifact() -> Non
 
     assert changed == 2
     assert point["rubric_version"] == RUBRIC_VERSION
-    assert point["feed_sha256"] == "abc123"
+    assert point["feed_sha256"] == FEED_SHA
 
 
 def test_publish_writes_shields_badge_json() -> None:
@@ -278,7 +328,7 @@ def test_operating_note_rides_on_artifact_and_index_when_set() -> None:
         path=Path("/tmp/gtfs.zip"),
         url=agency.static_gtfs_url,
         fetched_date=dt.date(2026, 6, 11),
-        sha256="abc123",
+        sha256=FEED_SHA,
         size_bytes=1024,
         reused=False,
     )
@@ -303,7 +353,7 @@ def test_state_is_persisted_in_the_artifact_when_set() -> None:
         path=Path("/tmp/gtfs.zip"),
         url=agency.static_gtfs_url,
         fetched_date=dt.date(2026, 6, 11),
-        sha256="abc123",
+        sha256=FEED_SHA,
         size_bytes=1024,
         reused=False,
     )
@@ -326,7 +376,7 @@ def test_country_is_persisted_only_when_not_us() -> None:
         path=Path("/tmp/gtfs.zip"),
         url=agency.static_gtfs_url,
         fetched_date=dt.date(2026, 6, 11),
-        sha256="abc123",
+        sha256=FEED_SHA,
         size_bytes=1024,
         reused=False,
     )
@@ -351,7 +401,7 @@ def test_iso_subdivision_is_persisted_without_changing_legacy_state() -> None:
         path=Path("/tmp/gtfs.zip"),
         url=agency.static_gtfs_url,
         fetched_date=dt.date(2026, 6, 11),
-        sha256="abc123",
+        sha256=FEED_SHA,
         size_bytes=1024,
         reused=False,
     )

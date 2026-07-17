@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
+from scorecard_pipeline.fetch import (
+    FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
+    RAW_READER_ARCHIVE_PROFILE,
+)
 from scorecard_pipeline.fixlog import (
     diff_receipts,
     finding_codes,
@@ -51,6 +55,7 @@ def test_receipt_records_both_dates_and_prior_wording() -> None:
                 "scoring_profile_id": SCORING_PROFILE_ID,
                 "scoring_profile_rubric_version": RUBRIC_VERSION,
                 "validator_version": VALIDATOR_VERSION,
+                "reader_archive_profile": RAW_READER_ARCHIVE_PROFILE,
                 "measured_categories": ["correctness"],
             },
         }
@@ -79,6 +84,13 @@ def test_methodology_change_never_yields_a_receipt() -> None:
     prev = _artifact("2026-06-30", ("x", "w"))
     prev["rubric_version"] = "older"
     cur = _artifact("2026-07-01")
+    assert diff_receipts(prev, cur) == []
+
+
+def test_reader_archive_profile_change_never_yields_a_receipt() -> None:
+    prev = _artifact("2026-06-30", ("x", "w"))
+    cur = _artifact("2026-07-01")
+    cur["fetch"] = {"reader_archive_profile": FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE}
     assert diff_receipts(prev, cur) == []
 
 

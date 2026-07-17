@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from scorecard_pipeline import cli
+import scorecard_pipeline.cli as cli
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.metrics import CategoryResult
 from scorecard_pipeline.rt import RT_KINDS, RtSample, RtWindow

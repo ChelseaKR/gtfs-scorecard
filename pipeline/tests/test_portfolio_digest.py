@@ -10,6 +10,7 @@ import pytest
 
 from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.config import artifacts_dir
+from scorecard_pipeline.fetch import RAW_READER_ARCHIVE_PROFILE
 from scorecard_pipeline.metrics import expiry_status
 from scorecard_pipeline.portfolio_digest import (
     build_portfolio_digest,
@@ -34,6 +35,7 @@ def write_latest(
     scoring_profile_id: str = SCORING_PROFILE_ID,
     scoring_profile_rubric_version: str = RUBRIC_VERSION,
     validator_version: str = VALIDATOR_VERSION,
+    reader_archive_profile: str = RAW_READER_ARCHIVE_PROFILE,
     measured_categories: tuple[str, ...] = ("correctness", "freshness", "completeness"),
 ) -> None:
     path = artifacts_dir() / agency_id
@@ -88,6 +90,7 @@ def snap(
     scoring_profile_id: str = SCORING_PROFILE_ID,
     scoring_profile_rubric_version: str = RUBRIC_VERSION,
     validator_version: str = VALIDATOR_VERSION,
+    reader_archive_profile: str = RAW_READER_ARCHIVE_PROFILE,
     measured_categories: tuple[str, ...] = ("correctness", "freshness", "completeness"),
 ) -> dict[str, Any]:
     """A prior-week member state in the shape the digest persists."""
@@ -101,6 +104,7 @@ def snap(
             "scoring_profile_id": scoring_profile_id,
             "scoring_profile_rubric_version": scoring_profile_rubric_version,
             "validator_version": validator_version,
+            "reader_archive_profile": reader_archive_profile,
             "measured_categories": list(measured_categories),
         },
     }
@@ -220,6 +224,7 @@ def test_snapshot_round_trip_persists_members() -> None:
         "scoring_profile_id": SCORING_PROFILE_ID,
         "scoring_profile_rubric_version": RUBRIC_VERSION,
         "validator_version": VALIDATOR_VERSION,
+        "reader_archive_profile": RAW_READER_ARCHIVE_PROFILE,
         "measured_categories": ["correctness", "freshness", "completeness"],
     }
     # An absent state file is a first run, not an error.
@@ -252,6 +257,7 @@ def test_legacy_snapshot_restarts_baseline_without_claiming_movement() -> None:
         ("scoring_profile_id", "another-profile"),
         ("scoring_profile_rubric_version", "0.9"),
         ("validator_version", "7.0.0"),
+        ("reader_archive_profile", "flat-single-root-v1"),
         ("measured_categories", ["correctness", "freshness"]),
     ],
 )

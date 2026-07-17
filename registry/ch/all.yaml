@@ -1,0 +1,30 @@
+# Switzerland (CH) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: swiss-demand-responsive-ski-plus
+    name: Swiss demand-responsive services (SKI+)
+    country: CH
+    mdb_id: "2053"
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://data.opentransportdata.swiss/de/dataset/gtfsflex/permalink
+    license_note: >-
+      ODMCH terms permit processing, analysis, and publication. Cite
+      opentransportdata.swiss, update raw data on the source cadence, and publish
+      processed analysis under GTFS Scorecard's name.
+    operating_note: >-
+      This is the national SKI+ GTFS-Flex collection of demand-responsive
+      services, not Switzerland's fixed-route national timetable. Five operator
+      rows and twelve Flex routes count as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.opentransportdata.swiss/en/dataset/gtfsflex
+      terms_url: https://opentransportdata.swiss/en/terms-of-use/
+      scope: [gtfs_schedule]
+      attribution: "Source: opentransportdata.swiss. Analysis: GTFS Scorecard."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

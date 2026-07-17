@@ -53,13 +53,62 @@ def _validator(schema_name: str) -> Draft202012Validator:
     return Draft202012Validator(_load(SCHEMA_DIR / schema_name))
 
 
+def _legacy_comparison() -> dict[str, Any]:
+    """API v1 comparison metadata from before reader archive profiles shipped."""
+    return {
+        "eligible_count": 0,
+        "excluded_count": 0,
+        "required_rubric_version": RUBRIC_VERSION,
+        "required_scoring_profile_id": SCORING_PROFILE_ID,
+        "required_validator_version": VALIDATOR_VERSION,
+        "required_measured_categories": [],
+        "measured_category_cohorts": {},
+        "exclusion_counts": {},
+        "absolute_rankings_published": False,
+        "individual_percentiles_published": False,
+        "note": "No comparable records.",
+    }
+
+
+def _legacy_aggregate_documents() -> dict[str, dict[str, Any]]:
+    comparison = _legacy_comparison()
+    return {
+        "directory.schema.json": {
+            "schema_version": "1.14",
+            "summary": {
+                "agencies": 0,
+                "grade_distribution": {},
+                "comparison": comparison.copy(),
+            },
+            "agencies": [],
+        },
+        "rollup.schema.json": {
+            "schema_version": "1.14",
+            "rollup": {"id": "legacy", "name": "Legacy cohort"},
+            "generated_at": "2026-07-01T00:00:00+00:00",
+            "agency_count": 0,
+            "average_score": None,
+            "grade_distribution": {},
+            "needs_attention": 0,
+            "expired": {"lapsed": 0, "stale": 0, "total": 0},
+            "members": [],
+            "common_fixes": [],
+            "comparison": comparison.copy(),
+        },
+        "by-location.schema.json": {
+            "countries": [],
+            "comparison": comparison.copy(),
+        },
+    }
+
+
 def make_artifact(date: dt.date, agency: Agency = AGENCY) -> dict:  # type: ignore[type-arg]
     fetch = FetchResult(
         agency_id=agency.id,
         path=Path("/tmp/gtfs.zip"),
         url=agency.static_gtfs_url,
         fetched_date=date,
-        sha256="abc123",
+        sha256="a" * 64,
         size_bytes=1024,
         reused=False,
     )
@@ -100,6 +149,35 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "by-location.schema.json",
         "global-coverage.schema.json",
     } <= names
+
+
+@pytest.mark.parametrize(
+    ("schema_name", "document"),
+    _legacy_aggregate_documents().items(),
+)
+def test_legacy_aggregate_comparison_without_reader_archive_profile_remains_valid(
+    schema_name: str,
+    document: dict[str, Any],
+) -> None:
+    _validator(schema_name).validate(document)
+
+
+@pytest.mark.parametrize(
+    ("schema_name", "document"),
+    _legacy_aggregate_documents().items(),
+)
+def test_aggregate_comparison_rejects_malformed_reader_archive_profile_when_present(
+    schema_name: str,
+    document: dict[str, Any],
+) -> None:
+    if schema_name == "directory.schema.json":
+        comparison = document["summary"]["comparison"]
+    else:
+        comparison = document["comparison"]
+    comparison["required_reader_archive_profile"] = {"unexpected": "object"}
+
+    with pytest.raises(ValidationError, match="is not of type 'string'"):
+        _validator(schema_name).validate(document)
 
 
 def test_coverage_api_conforms_to_its_schema() -> None:
@@ -333,7 +411,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.14"
+    assert SCHEMA_VERSION == "1.15"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 
@@ -491,6 +569,30 @@ def test_publish_refuses_an_artifact_missing_feed_provenance() -> None:
     del artifact["feed"]["sha256"]
     with pytest.raises(ValidationError, match="sha256"):
         publish(artifact)
+
+
+def test_artifact_feed_hash_must_be_lowercase_sha256() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["feed"]["sha256"] = "../not-a-content-address"
+    with pytest.raises(ValidationError, match="does not match"):
+        validate_artifact(artifact)
+
+
+def test_artifact_rejects_contradictory_reader_archive_provenance() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    assert artifact["fetch"]["reader_archive_profile"] == "raw-v1"
+    artifact["fetch"]["reader_archive_normalized"] = True
+
+    with pytest.raises(ValidationError):
+        validate_artifact(artifact)
+
+
+def test_artifact_accepts_legacy_normalized_reader_without_explicit_profile() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    del artifact["fetch"]["reader_archive_profile"]
+    artifact["fetch"]["reader_archive_normalized"] = True
+
+    validate_artifact(artifact)
 
 
 def test_current_artifact_requires_scoring_profile() -> None:

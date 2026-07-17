@@ -101,6 +101,22 @@ def test_outcomes_fail_closed_on_missing_or_changed_producer_contract() -> None:
     assert report["codes"] == {}
 
 
+def test_recurrence_resets_across_reader_archive_profiles() -> None:
+    raw_seen = _artifact("2026-01-01", ["x"])
+    raw_clear = _artifact("2026-01-02", [])
+    flat_seen = _artifact("2026-01-03", ["x"])
+    flat_clear = _artifact("2026-01-04", [])
+    for artifact in (flat_seen, flat_clear):
+        artifact["fetch"] = {"reader_archive_profile": "flat-single-root-v1"}
+
+    stats = build_fix_outcomes({"one": [raw_seen, raw_clear, flat_seen, flat_clear]})["codes"]["x"]
+
+    assert stats["episodes"] == 2
+    assert stats["resolved_episodes"] == 2
+    assert stats["agencies_with_recurrence"] == 0
+    assert stats["observed_recurrence_rate_pct"] == 0.0
+
+
 def test_empty_histories_have_no_division_error() -> None:
     report = build_fix_outcomes({})
     assert report["overall"]["observed_resolution_rate_pct"] is None

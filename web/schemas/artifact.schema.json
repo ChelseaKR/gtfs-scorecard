@@ -136,7 +136,8 @@
           "type": "string"
         },
         "sha256": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
         },
         "size_bytes": {
           "type": "integer",
@@ -153,6 +154,24 @@
     },
     "fetch": {
       "type": "object",
+      "allOf": [
+        {
+          "not": {
+            "properties": {
+              "reader_archive_profile": {
+                "const": "raw-v1"
+              },
+              "reader_archive_normalized": {
+                "const": true
+              }
+            },
+            "required": [
+              "reader_archive_profile",
+              "reader_archive_normalized"
+            ]
+          }
+        }
+      ],
       "required": [
         "source",
         "final_url",
@@ -173,6 +192,14 @@
         },
         "origin_error": {
           "type": "string"
+        },
+        "reader_archive_normalized": {
+          "type": "boolean",
+          "const": true
+        },
+        "reader_archive_profile": {
+          "type": "string",
+          "enum": ["raw-v1", "flat-single-root-v1"]
         }
       },
       "additionalProperties": false

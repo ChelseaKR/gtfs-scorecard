@@ -25,10 +25,12 @@ testable without disk.
 
 from __future__ import annotations
 
+import datetime as dt
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
 
+from .comparisons import same_producer_contract
 from .tool_profiles import ToolProfile, detect_tool
 
 # The "freshness" category carries calendar-countdown findings (e.g. "expires
@@ -148,6 +150,24 @@ def _cohorts(runs: list[AgencyRun]) -> dict[str, tuple[ToolProfile, list[AgencyR
     return grouped
 
 
+def _comparable_runs_by_date(members: list[AgencyRun]) -> dict[str, list[AgencyRun]]:
+    """Comparable runs grouped by a validated current snapshot date."""
+    by_date: dict[str, list[AgencyRun]] = defaultdict(list)
+    for run in members:
+        if run.prev_artifact is None or not same_producer_contract(
+            run.prev_artifact, run.curr_artifact
+        ):
+            continue
+        date = str(run.curr_artifact.get("snapshot_date", ""))
+        try:
+            if dt.date.fromisoformat(date).isoformat() != date:
+                continue
+        except ValueError:
+            continue
+        by_date[date].append(run)
+    return by_date
+
+
 def detect_regressions(
     runs: list[AgencyRun],
     *,
@@ -178,39 +198,37 @@ def detect_regressions(
     """
     out: list[VendorRegression] = []
     for tool_key, (profile, members) in _cohorts(runs).items():
-        comparable = [r for r in members if r.prev_artifact is not None]
-        if len(comparable) < min_cohort:
-            continue
-        by_code: dict[str, list[AgencyRun]] = defaultdict(list)
-        what_by_code: dict[str, str] = {}
-        date = ""
-        for run in comparable:
-            prev_codes = set(_regression_codes(run.prev_artifact))  # type: ignore[arg-type]
-            curr_codes = _regression_codes(run.curr_artifact)
-            date = str(run.curr_artifact.get("snapshot_date", "")) or date
-            for code in set(curr_codes) - prev_codes:
-                by_code[code].append(run)
-                what_by_code.setdefault(code, curr_codes[code])
-        cohort_size = len(comparable)
-        for code, affected in by_code.items():
-            share = len(affected) / cohort_size
-            if len(affected) < min_spike_agencies or share < min_spike_share:
+        for date, date_members in _comparable_runs_by_date(members).items():
+            if len(date_members) < min_cohort:
                 continue
-            out.append(
-                VendorRegression(
-                    tool_key=tool_key,
-                    tool_name=profile.name,
-                    code=code,
-                    what=what_by_code[code],
-                    date=date,
-                    cohort_size=cohort_size,
-                    new_agencies=len(affected),
-                    affected_ids=tuple(sorted(r.agency_id for r in affected)),
-                    affected_names=tuple(sorted(r.agency_name for r in affected)),
-                    fix_path=profile.fix_path,
-                    request_lede=profile.request_lede,
+            by_code: dict[str, list[AgencyRun]] = defaultdict(list)
+            what_by_code: dict[str, str] = {}
+            for run in date_members:
+                prev_codes = set(_regression_codes(run.prev_artifact))  # type: ignore[arg-type]
+                curr_codes = _regression_codes(run.curr_artifact)
+                for code in set(curr_codes) - prev_codes:
+                    by_code[code].append(run)
+                    what_by_code.setdefault(code, curr_codes[code])
+            cohort_size = len(date_members)
+            for code, affected in by_code.items():
+                share = len(affected) / cohort_size
+                if len(affected) < min_spike_agencies or share < min_spike_share:
+                    continue
+                out.append(
+                    VendorRegression(
+                        tool_key=tool_key,
+                        tool_name=profile.name,
+                        code=code,
+                        what=what_by_code[code],
+                        date=date,
+                        cohort_size=cohort_size,
+                        new_agencies=len(affected),
+                        affected_ids=tuple(sorted(r.agency_id for r in affected)),
+                        affected_names=tuple(sorted(r.agency_name for r in affected)),
+                        fix_path=profile.fix_path,
+                        request_lede=profile.request_lede,
+                    )
                 )
-            )
     out.sort(key=lambda r: (-r.new_agencies, r.tool_key, r.code))
     return out
 

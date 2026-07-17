@@ -63,7 +63,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.14`). The rule for
+Every artifact carries a `schema_version` (currently `1.15`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -103,6 +103,11 @@ Together with the category columns, these fields let consumers build the same
 single-producer, single-category-set, deduplicated comparison cohort as the
 public summaries.
 
+Flat export schema `1.3` adds `reader_archive_profile`. Legacy or absent values
+resolve to `raw-v1`. Rows scored through `flat-single-root-v1` remain public
+and filterable, but the default cross-feed aggregate cohort requires `raw-v1`
+so a reader-view change cannot manufacture a trend or clearance claim.
+
 For citation, do not cite the live site: it changes daily. A monthly
 `dataset-YYYY-MM` release (the `Dataset release` workflow) pins the flat
 exports, the parquet file, the NTD rollup, this data dictionary, and
@@ -112,6 +117,13 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.15` adds the versioned `fetch.reader_archive_profile` contract. `raw-v1`
+  means Scorecard readers used the producer archive directly;
+  `flat-single-root-v1` means they flattened one common root folder and trimmed
+  surrounding filename whitespace. The optional
+  `fetch.reader_archive_normalized` flag remains a simple disclosure for the
+  latter. The feed hash, raw archive, and canonical validator input remain the
+  producer's exact bytes.
 - `1.14` adds `ferry_profile` to every ferry-serving feed. The ungraded block
   measures the ferry subset's terminal hierarchy, `stop_access`, published
   wheelchair fields, and bicycle and car carriage fields. It labels fare and
@@ -180,7 +192,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.14",
+  "schema_version": "1.15",
   "rubric_version": "1.2",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.2",
@@ -244,7 +256,10 @@ Changelog:
              "final_url": "...",      // the URL that actually served the graded bytes
              "user_agent": "...",     // the User-Agent presented to that server
              "max_attempts": 4,       // configured attempt ceiling; omitted when unknown
-             "origin_error": "..." }, // exception that forced the mirror; only on mirror fetches
+             "origin_error": "...",  // exception that forced the mirror; only on mirror fetches
+             "reader_archive_profile": "flat-single-root-v1",
+             "reader_archive_normalized": true }, // optional; Scorecard readers flattened one
+                                                   // root folder/trimmed filename whitespace
   "confidence": { "level": "high",          // "provisional", "medium", or "high" — a word, never a letter or a number
                   "measured_categories": 4, "total_categories": 4,
                   "fetch_source": "origin", "rt_windows": 1, "feed_age_days": 0,
@@ -350,7 +365,7 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.14",
+  "schema_version": "1.15",
   "rubric_version": "1.2",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -413,8 +428,8 @@ The covered-set document the web app's overview reads: one record per published 
 the same fields as a catalog row (identity, grade, freshness, readiness,
 provenance, and size tier) plus a `summary` block with expiring and expired
 counts, size-tier counts, and guarded score aggregates. The `comparison` object
-states the required rubric, scoring profile, validator, measured category set,
-and exclusions; unresolved duplicate feed identities do not influence medians
+states the required rubric, scoring profile, validator, `raw-v1` reader archive
+profile, measured category set, and exclusions; unresolved duplicate feed identities do not influence medians
 or grade distributions. `feed_records` counts every published row,
 `scored_feed_records` counts the subset with a numeric score, and
 `comparison_eligible_count` states the still-narrower score-aggregate
@@ -435,8 +450,8 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | Path | What it is |
 | --- | --- |
 | `api/v1/index.json` | The API's self-description: version, endpoint list, license, attribution. |
-| `api/v1/agencies.json` | Every published feed record's latest check in one list (id, name, date, grade, score, rubric and scoring-profile fields, validator version, feed hash, category scores, days to expiry, and service-horizon review status). `realtime` is null when not measured. |
-| `api/v1/leaderboard.json` | Compatibility path for named changes. `top` and `bottom` are always empty; `most_improved` and `most_declined` compare a canonical feed only with its own prior check under the same rubric, scoring profile, validator, and measured category set. |
+| `api/v1/agencies.json` | Every published feed record's latest check in one list (id, name, date, grade, score, rubric and scoring-profile fields, validator version, reader archive profile, feed hash, category scores, days to expiry, and service-horizon review status). `realtime` is null when not measured. |
+| `api/v1/leaderboard.json` | Compatibility path for named changes. `top` and `bottom` are always empty; `most_improved` and `most_declined` compare a canonical feed only with its own prior check under the same rubric, scoring profile, validator, reader archive profile, and measured category set. |
 | `api/v1/by-state.json` | Legacy U.S.-state rollups. `count` covers every U.S. published row in the state; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. U.S. feeds without a known state group under `Unlocated`. |
 | `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivisions. Each `count` covers every published row in that location; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. Null codes collect rows whose curated location is unknown. |
 | `api/v1/stats.json` | Covered-row count and current-feed share over every published row, plus average score, median score, and grade distribution over the guarded cohort. `comparison_eligible_count` and the `comparison` block state that narrower denominator and its exclusions. |
@@ -470,7 +485,8 @@ allowed percentages; the feed-level fare model; and configured realtime kinds.
 Schedule fields use ferry routes and trips only. Fare and realtime fields
 describe the whole feed, matching the scope labels in the artifact.
 `comparison_eligible_count` only describes whether scores share
-the current producer contract; it does not control feature filtering. Combine
+the current producer contract, including the required `raw-v1` reader archive
+profile; it does not control feature filtering. Combine
 feature flags with AND logic. A wheelchair completeness threshold is inclusive,
 except the `any` option in the web app, which means greater than zero. A null
 value does not match a filter. Published accessibility metadata describes the
@@ -504,7 +520,8 @@ on [the coverage overview](https://gtfsscorecard.org/pulse/). Absolute score
 rankings and individual percentiles are not published.
 
 The `comparison` block on aggregate endpoints pins the required rubric,
-scoring-profile id, validator version, and measured category set. Overall scores
+scoring-profile id, validator version, `raw-v1` reader archive profile, and
+measured category set. Overall scores
 that use three categories are not mixed with scores that also measure Realtime.
 The block also reports exclusion counts and the selected category-set cohort, so
 consumers can audit why `comparison_eligible_count` is smaller than `count` or
@@ -558,17 +575,17 @@ queries genuinely appear. The decision and trigger are in
 
 For consumers that ingest transitions rather than diffing the whole catalog each
 day. Lists active canonical feed records whose grade or score moved between two
-checks under the same rubric, scoring profile, validator, and measured category
-set. Records with unresolved duplicate identities are omitted. Regressions come
+checks under the same rubric, scoring profile, validator, reader archive
+profile, and measured category set. Records with unresolved duplicate identities are omitted. Regressions come
 first, then the largest move.
 `changes/<date>.json` is an immutable dated copy only when it carries the full
 comparison contract. Pre-contract snapshots were withdrawn because their named
-moves could not be audited against rubric, scoring-profile, validator, measured-
-category, and canonical-identity boundaries.
+moves could not be audited against rubric, scoring-profile, validator, reader-
+archive-profile, measured-category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.14",
+  "schema_version": "1.15",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
@@ -578,6 +595,7 @@ category, and canonical-identity boundaries.
     "required_rubric_version": "1.2",
     "required_scoring_profile_id": "gtfs-scorecard-1.2",
     "required_validator_version": "8.0.1",
+    "required_reader_archive_profile": "raw-v1",
     "required_measured_categories": ["correctness", "freshness", "completeness"]
   },
   "count": 2,
@@ -593,7 +611,7 @@ category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.14",
+  "schema_version": "1.15",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
@@ -602,6 +620,7 @@ category, and canonical-identity boundaries.
                   "required_rubric_version": "1.2",
                   "required_scoring_profile_id": "gtfs-scorecard-1.2",
                   "required_validator_version": "8.0.1",
+                  "required_reader_archive_profile": "raw-v1",
                   "required_measured_categories":
                     ["correctness", "freshness", "completeness"] },
   "state_percentile": null,
@@ -618,7 +637,8 @@ Members needing attention come first, ordered by rider impact when known and
 then by name; other members are alphabetical. `average_score` and
 `grade_distribution` use only the canonical, non-duplicate cohort under the
 single rubric, scoring profile, validator, and measured-category set described
-by `comparison`. `state_percentile` is retained as null for v1 compatibility.
+by `comparison`, including its required `raw-v1` reader archive profile.
+`state_percentile` is retained as null for v1 compatibility.
 `expired` counts the members whose feed
 has run out, split into recently lapsed and long stale. `common_fixes` lists
 fixes shared by more than one comparison-eligible member, so excluded legacy or

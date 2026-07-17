@@ -210,8 +210,36 @@ function comparisonContractText(comparison) {
     `rubric ${esc(String(contract.required_rubric_version || "current"))}, ` +
     `scoring profile ${esc(String(contract.required_scoring_profile_id || "current"))}, ` +
     `MobilityData gtfs-validator ${esc(String(contract.required_validator_version || "current"))}, ` +
+    `reader archive profile ${esc(String(contract.required_reader_archive_profile || "raw-v1"))}, ` +
     `and measured categories ${measured}`
   );
+}
+
+/** Resolve the versioned reader view without treating an explicit unknown as legacy raw.
+ *  @param {any} record @returns {string} */
+function readerArchiveProfile(record) {
+  const value = record && typeof record === "object" ? record : {};
+  const fetchBlock = value.fetch && typeof value.fetch === "object" ? value.fetch : {};
+  const direct = Object.prototype.hasOwnProperty.call(value, "reader_archive_profile");
+  const embedded = Object.prototype.hasOwnProperty.call(fetchBlock, "reader_archive_profile");
+  const directProfile = value.reader_archive_profile;
+  const embeddedProfile = fetchBlock.reader_archive_profile;
+  const valid = (profile) => profile === "raw-v1" || profile === "flat-single-root-v1";
+  if ((direct && !valid(directProfile)) || (embedded && !valid(embeddedProfile))) return "";
+  if (direct && embedded && directProfile !== embeddedProfile) return "";
+
+  const normalizedPresent = Object.prototype.hasOwnProperty.call(
+    fetchBlock,
+    "reader_archive_normalized",
+  );
+  const normalized = fetchBlock.reader_archive_normalized;
+  if (normalizedPresent && typeof normalized !== "boolean") return "";
+  const implied = normalized === true ? "flat-single-root-v1" : "raw-v1";
+  if (direct || embedded) {
+    const profile = direct ? directProfile : embeddedProfile;
+    return normalizedPresent && profile !== implied ? "" : profile;
+  }
+  return implied;
 }
 
 /* ---------------- national overview + directory ---------------- */
@@ -2255,12 +2283,14 @@ function historyProducerContract(point) {
     point?.scoring_profile_rubric_version || point?.scoring_profile?.rubric_version || "",
   );
   const validator = String(point?.validator_version || "");
+  const readerProfile = readerArchiveProfile(point);
   const categories = point?.categories || {};
   const measured = CATEGORY_ORDER.filter(
     (key) => typeof categories[key] === "number" && Number.isFinite(categories[key]),
   );
-  if (!rubric || !profile || !profileRubric || !validator || !measured.length) return null;
-  return [rubric, profile, profileRubric, validator, measured.join(",")];
+  if (!rubric || !profile || !profileRubric || !validator || !readerProfile || !measured.length)
+    return null;
+  return [rubric, profile, profileRubric, validator, readerProfile, measured.join(",")];
 }
 
 /** Contiguous suffix produced by one full producer and measurement contract.
@@ -2994,7 +3024,8 @@ async function renderCompare(aId, bId) {
       <a class="backlink" href="#/">&larr; All agencies</a>
       <h1 class="page-title">Compare two agencies</h1>
       <p class="page-lede">Choose two scorecards to check whether they use the same rubric,
-      scoring profile, validator, and measured category set, and come from distinct feed bytes.
+      scoring profile, validator, reader archive profile, and measured category set, and
+      come from distinct feed bytes.
       Like-for-like results can appear side by side; otherwise this page keeps the scores
       separate and links to each full scorecard.</p>
       <form id="compare-pick" class="compare-pick">
@@ -3043,6 +3074,7 @@ async function renderCompare(aId, bId) {
       profile: String(profile.id || ""),
       profileRubric: String(profile.rubric_version || ""),
       validator: String(art.validator_version || ""),
+      readerArchive: readerArchiveProfile(art),
       feedHash: String(art.feed?.sha256 || ""),
       measured: CATEGORY_ORDER.filter((key) => art.categories?.[key]?.status === "measured"),
     };
@@ -3053,6 +3085,8 @@ async function renderCompare(aId, bId) {
     aContract.rubric !== "" &&
     aContract.profile !== "" &&
     aContract.validator !== "" &&
+    aContract.readerArchive !== "" &&
+    bContract.readerArchive !== "" &&
     aContract.feedHash !== "" &&
     bContract.feedHash !== "" &&
     aContract.feedHash !== bContract.feedHash &&
@@ -3061,6 +3095,7 @@ async function renderCompare(aId, bId) {
     aContract.rubric === bContract.rubric &&
     aContract.profile === bContract.profile &&
     aContract.validator === bContract.validator &&
+    aContract.readerArchive === bContract.readerArchive &&
     JSON.stringify(aContract.measured) === JSON.stringify(bContract.measured);
 
   const aName = aArt.agency.name;
@@ -3071,9 +3106,9 @@ async function renderCompare(aId, bId) {
       <h1 class="page-title">These scorecards are not like-for-like.</h1>
       <div class="error-box" role="status">
         <p>${esc(aName)} and ${esc(bName)} do not have distinct feed bytes under the same
-        verified scoring profile, rubric, validator, and measured category set. Showing their
-        grades side by side could make a duplicate record, methodology, or realtime-coverage
-        difference look like a feed-quality difference.</p>
+        verified scoring profile, rubric, validator, reader archive profile, and measured
+        category set. Showing their grades side by side could make a duplicate record,
+        methodology, or realtime-coverage difference look like a feed-quality difference.</p>
         <p><a href="#/agency/${escAttr(aId)}">Open ${esc(aName)}</a> &nbsp;·&nbsp;
         <a href="#/agency/${escAttr(bId)}">Open ${esc(bName)}</a></p>
       </div>`;
@@ -3107,8 +3142,8 @@ async function renderCompare(aId, bId) {
     <a class="backlink" href="#/compare">&larr; Choose different agencies</a>
     <h1 class="page-title">${esc(aName)} vs ${esc(bName)}</h1>
     <p class="page-lede">These scorecards use the same verified rubric, scoring profile,
-    validator, and measured category set, and they come from distinct feed bytes. Each column
-    links to its full page.</p>
+    validator, reader archive profile, and measured category set, and they come from distinct
+    feed bytes. Each column links to its full page.</p>
     <div class="table-wrap"><table class="compare-table">
       <caption class="visually-hidden">Data-quality comparison of ${esc(aName)} and ${esc(bName)}</caption>
       <thead><tr>

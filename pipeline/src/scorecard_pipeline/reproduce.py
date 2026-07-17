@@ -20,14 +20,24 @@ treating a realtime-driven mismatch as a correctness regression.
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import json
+import re
 import tempfile
 from pathlib import Path
 from typing import Any
 
 from . import archive
+from .comparisons import reader_archive_profile
 from .completeness import completeness
 from .config import Agency, artifacts_dir
+from .fetch import (
+    FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
+    RAW_READER_ARCHIVE_PROFILE,
+    ReaderArchive,
+    _validate_gtfs_archive,
+    prepare_reader_archive,
+)
 from .gtfs import read_feed_dates
 from .metrics import correctness, freshness
 from .score import build_scorecard
@@ -41,9 +51,25 @@ class ReproduceError(RuntimeError):
     path for context)."""
 
 
+_AGENCY_ID_RE = re.compile(r"[a-z0-9][a-z0-9_-]*\Z")
+
+
+def _canonical_date(date: str) -> dt.date:
+    try:
+        parsed = dt.date.fromisoformat(date)
+    except (TypeError, ValueError) as exc:
+        raise ReproduceError(f"date must be canonical YYYY-MM-DD, got {date!r}") from exc
+    if parsed.isoformat() != date:
+        raise ReproduceError(f"date must be canonical YYYY-MM-DD, got {date!r}")
+    return parsed
+
+
 def load_published_artifact(agency_id: str, date: str) -> dict[str, Any]:
     """The published dated artifact for one agency/date, or raise
     ReproduceError naming the path that was missing or unreadable."""
+    if not isinstance(agency_id, str) or _AGENCY_ID_RE.fullmatch(agency_id) is None:
+        raise ReproduceError(f"agency id must be a lowercase registry slug, got {agency_id!r}")
+    _canonical_date(date)
     path = artifacts_dir() / agency_id / f"{date}.json"
     try:
         text = path.read_text()
@@ -62,6 +88,50 @@ def _round(value: Any) -> Any:
     return round(value, 1) if isinstance(value, int | float) else value
 
 
+def _fetch_archived_body(agency_id: str, date: str, sha256: str) -> bytes:
+    try:
+        body = archive.fetch(sha256)
+    except archive.ArchiveMiss as exc:
+        raise ReproduceError(
+            f"cannot reproduce {agency_id}/{date}: {exc}. Grades published before this "
+            "feed's bytes were archived (or scored on a checkout with no archive bucket "
+            "configured) cannot be reproduced from the raw archive."
+        ) from exc
+    except archive.ArchiveIntegrityError as exc:
+        raise ReproduceError(f"cannot reproduce {agency_id}/{date}: {exc}") from exc
+    actual_sha256 = hashlib.sha256(body).hexdigest()
+    if actual_sha256 != sha256:
+        raise ReproduceError(
+            f"cannot reproduce {agency_id}/{date}: archived bytes hash to {actual_sha256}, "
+            f"not the artifact's feed.sha256 {sha256}"
+        )
+    return body
+
+
+def _reader_archive_for_artifact(
+    artifact: dict[str, Any], zip_path: Path, agency_id: str, date: str
+) -> ReaderArchive:
+    profile = reader_archive_profile(artifact)
+    if profile == RAW_READER_ARCHIVE_PROFILE:
+        return ReaderArchive(path=zip_path, normalized=False)
+    if profile != FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE:
+        raise ReproduceError(
+            f"cannot reproduce {agency_id}/{date}: unknown reader archive profile {profile!r}"
+        )
+    try:
+        reader_archive = prepare_reader_archive(zip_path)
+    except ValueError as exc:
+        raise ReproduceError(
+            f"cannot reproduce {agency_id}/{date}: reader archive normalization failed: {exc}"
+        ) from exc
+    if not reader_archive.normalized:
+        raise ReproduceError(
+            f"cannot reproduce {agency_id}/{date}: artifact records reader archive "
+            "normalization, but the archived bytes do not produce a normalized view"
+        )
+    return reader_archive
+
+
 def reproduce(agency: Agency, date: str) -> dict[str, Any]:
     """Re-run the pinned validator against the archived bytes for one
     published grade and diff the result against what was published.
@@ -77,22 +147,23 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
     if not sha256:
         raise ReproduceError(f"published artifact for {agency.id}/{date} has no feed.sha256")
     validator_version = artifact.get("validator_version") or None
-
-    try:
-        body = archive.fetch(sha256)
-    except archive.ArchiveMiss as exc:
-        raise ReproduceError(
-            f"cannot reproduce {agency.id}/{date}: {exc}. Grades published before this "
-            "feed's bytes were archived (or scored on a checkout with no archive bucket "
-            "configured) cannot be reproduced from the raw archive."
-        ) from exc
+    body = _fetch_archived_body(agency.id, date, sha256)
 
     with tempfile.TemporaryDirectory(prefix=f"scorecard-reproduce-{agency.id}-") as tmp:
         tmp_dir = Path(tmp)
         zip_path = tmp_dir / "gtfs.zip"
         zip_path.write_bytes(body)
+        try:
+            _validate_gtfs_archive(zip_path)
+        except ValueError as exc:
+            raise ReproduceError(
+                f"cannot reproduce {agency.id}/{date}: archived GTFS is unsafe or unreadable: {exc}"
+            ) from exc
+        reader_archive = _reader_archive_for_artifact(artifact, zip_path, agency.id, date)
 
         version_kwargs = {"version": validator_version} if validator_version else {}
+        # Validation intentionally sees the archived producer bytes. Only the
+        # Scorecard-owned readers use the deterministic flat view.
         report_path = run_validator(
             zip_path,
             tmp_dir / "validator",
@@ -101,13 +172,15 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
         )
         report = parse_report(report_path)
 
-        as_of = dt.date.fromisoformat(date)
+        as_of = _canonical_date(date)
         cats = [
             correctness(report),
             freshness(
-                read_feed_dates(str(zip_path)), today=as_of, service_type=agency.service_type
+                read_feed_dates(str(reader_archive.path)),
+                today=as_of,
+                service_type=agency.service_type,
             ),
-            completeness(str(zip_path), fare_free=agency.fare_free),
+            completeness(str(reader_archive.path), fare_free=agency.fare_free),
         ]
         scorecard = build_scorecard(cats)
 
@@ -139,6 +212,7 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
         "agency_id": agency.id,
         "date": date,
         "sha256": sha256,
+        "reader_archive_normalized": reader_archive.normalized,
         "validator_version": validator_version or "unknown (artifact predates version recording)",
         "identical": not diffs,
         "differences": diffs,

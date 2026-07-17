@@ -10,8 +10,8 @@ the date stamped at the bottom of this page.
 
 The next European cohort is not selected by feed count alone. Its current
 discovery audit, source hierarchy, license-review rule, and public beta gate are
-in [global-expansion.md](global-expansion.md). The present France and Ireland
-records remain canaries until that gate passes.
+in [global-expansion.md](global-expansion.md). The reviewed European records
+remain canaries until that gate passes.
 
 ## First worldwide canaries
 
@@ -121,6 +121,79 @@ is its primary catalog location, not a boundary around its complete service
 area. It is scored last and in isolation during activation because its
 roughly 795,000 stop times make it the largest and most structurally varied
 member of this cohort.
+
+## Reviewed European breadth wave
+
+These nine records add one evidence-reviewed feed in each new country. They
+were selected for geographic and modal breadth, not to make a representative
+European sample. Provider source, reuse terms, current download, service
+calendar, mode, and feed identity were checked on 2026-07-16. A regional or
+national aggregate still counts as one feed record.
+
+- **Transtejo Soflusa, Portugal (`PT-11`)** publishes five ferry routes across
+  the Tagus through one TTSL agency row. Portugal's
+  [public-administration open-data catalog](https://dados.gov.pt/pt/organizations/transtejo-soflusa/)
+  lists the Transtejo and Soflusa schedule datasets under CC0. The primary
+  Lisboa subdivision is not a service boundary because the routes connect both
+  sides of the river, including terminals in Setúbal.
+
+- **Transport en Commun, Belgium (`BE-WAL`)** is one Wallonia aggregate with
+  five TEC agency rows, tram, metro, bus, and some cross-border stops. Belgium's
+  [National Access Point resource](https://transportdata.be/dataset/tec-gtfs/resource/ecd983c4-e48c-4078-85af-835640881dba)
+  publishes it under CC0 1.0 Universal; the scorecard still credits SRWT/TEC.
+
+- **Swiss demand-responsive services (`CH`)** is the official SKI+ GTFS-Flex
+  collection: five operator rows, 12 demand-responsive bus routes, booking
+  rules, and service through 2026-12-12. The
+  [official dataset](https://data.opentransportdata.swiss/en/dataset/gtfsflex)
+  and [ODMCH terms](https://opentransportdata.swiss/en/terms-of-use/) require
+  source citation and current raw data. It is distinct from the fixed-route
+  national archive, whose roughly 3.0 GB expanded size exceeds the pipeline's
+  2 GiB security limit.
+
+- **Morebus, Great Britain (`GB-BCP`)** is a bus feed with four GoSouthCoast
+  agency rows and service beyond its primary Bournemouth, Christchurch and
+  Poole location. The operator's
+  [open-data page](https://www.morebus.co.uk/open-data) publishes it under the
+  [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+
+- **Zarząd Transportu Miejskiego w Gdańsku, Poland (`PL-22`)** publishes a
+  rolling, roughly 14-day bus and tram export through the
+  [official TRISTAR dataset](https://ckan.multimediagdansk.pl/pl/dataset/tristar).
+  Its [provider terms](https://ckan.multimediagdansk.pl/dataset/c24aa637-3619-4dc2-a171-a23eec8f2172/resource/09cafa1b-604b-4408-ac48-5720319b72b7/download/regulamin-korzystania-z-danych.pdf)
+  require source and date attribution. The catalog's conflicting CC0 label was
+  not used as reuse evidence.
+
+- **Tallinn public transport, Estonia (`EE-37`)** publishes bus and tram service
+  through the reviewed TLT feed. Estonia's
+  [public-transport open-data page](https://peatus.ee/content/Veebilehest%20ja%20%C3%BChistranspordi%20avaandmetest)
+  permits reuse with the data origin cited and requires rider-facing data to be
+  no more than seven days old. Alternate Tallinn exports are variants, not
+  additional coverage.
+
+- **Metro Bilbao, Spain (`ES-BI`)** publishes its subway timetable through the
+  [official Bizkaia catalog](https://data.ctb.eus/en/dataset/horario-metro-bilbao)
+  under [CC BY 4.0 terms](https://data.ctb.eus/en/pages/legal-notice). Active
+  Mobility Database record 3052 replaces deprecated records 2683 and 1200;
+  those predecessors are not separate feeds.
+
+- **Waltti Kotka, Finland (`FI-09`)** is one regional bus feed with five
+  operator rows and 151 routes. The
+  [Waltti open-data terms](https://opendata.waltti.fi/docs) apply CC BY 4.0 and
+  require source credit, a licence link, and disclosure of changes.
+
+- **Rejseplanen, Denmark (`DK`)** is one national aggregate with 26 agency rows
+  and bus, flex-bus, rail, metro, tram, and ferry service. The
+  [official feed page](https://labs.rejseplanen.dk/hc/en-us/articles/21639730766877-Om-GTFS-Schedule-Static)
+  and [Labs terms](https://labs.rejseplanen.dk/hc/en-us/articles/21553298043165-Retningslinjer-for-Labs)
+  apply CC BY 4.0. Cross-border rows remain part of this one Danish feed record;
+  the current legacy download is also monitored because newer access copy
+  describes a request-based process.
+
+The wave raises the reviewed European registry cohort from six to 15 feed
+records across 12 countries. It clears the country-count and concentration
+checks, but it remains well below the 250-record beta gate in
+[global-expansion.md](global-expansion.md).
 
 ## Reviewed ferry cohort
 

@@ -3,6 +3,9 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.15: additive versioned reader_archive_profile fetch provenance. raw-v1 is
+# the legacy/default producer archive; flat-single-root-v1 is the bounded view
+# for one noncanonical root. Raw hash/archive/validator input stay unchanged.
 # 1.14: additive ungraded ferry capability profile for ferry-serving feeds,
 # including terminal hierarchy, stop_access, accessibility, vehicle carriage,
 # fare publication, and configured realtime kinds.
@@ -39,7 +42,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.14"
+SCHEMA_VERSION = "1.15"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)

@@ -1284,11 +1284,18 @@ agencies:
 
   - id: city-of-wasco
     name: City of Wasco
+    service_type: demand_response
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
+    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip
     mdb_id: 1788
-    license_note: No stated data license in the Mobility Database; verify before publishing.
+    license_note: >-
+      CC BY 4.0 through the Caltrans DDS GTFS index:
+      https://gtfs.dds.dot.ca.gov/
+    operating_note: >-
+      The official DDS ZIP is stale and noncanonical as packaged. The validator
+      sees the raw subfolder and filename findings; Scorecard's reader view adds
+      context for the remaining tables and does not repair the producer feed.
 
   - id: ucsc-transportation-and-parking-services
     name: UCSC Transportation and Parking Services
@@ -1302,7 +1309,7 @@ agencies:
     name: Clean Air Express
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://gtfs.calitp.org/production/CleanAirExpressFaresv2.zip
+    static_gtfs_url: https://cleanairexpress.com/wp-content/uploads/GTFS.zip
     mdb_id: 1872
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

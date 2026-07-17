@@ -20,6 +20,7 @@ from scorecard_pipeline.agencies import (
     registry_paths,
 )
 from scorecard_pipeline.config import AGENCIES
+from scorecard_pipeline.global_coverage import EUROPE_BETA_COUNTRY_CODES
 from scorecard_pipeline.jurisdictions import JURISDICTIONS
 from scorecard_pipeline.location import SUPPORTED_COUNTRY_CODES
 
@@ -169,6 +170,18 @@ def test_repo_registry_is_valid_and_lists_pilots(monkeypatch: pytest.MonkeyPatch
     assert unitrans.ntd_id == "90142"
 
 
+def test_repo_registry_matches_documented_feed_record_counts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
+    european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
+
+    assert len(agencies) == 1_163
+    assert len(european) == 15
+    assert len({agency.country for agency in european}) == 12
+
+
 def test_ntd_id_parses_and_defaults_empty() -> None:
     (default_agency,) = parse_agencies(VALID)
     assert default_agency.ntd_id == ""
@@ -311,6 +324,67 @@ def test_repo_registry_includes_four_region_worldwide_cohort(
         assert agency.is_official is True
         assert agency.ntd_id == ""
         assert agency.ntd_note == ""
+
+
+def test_repo_registry_includes_european_breadth_wave(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    cohort = {
+        "tec-wallonia": ("BE", "BE-WAL", "wallonne, Région", "1212", True),
+        "swiss-demand-responsive-ski-plus": ("CH", "", "", "2053", True),
+        "rejseplanen-denmark": ("DK", "", "", "1292", True),
+        "tallinn-public-transport-tlt": ("EE", "EE-37", "Harjumaa", "3047", True),
+        "metro-bilbao": ("ES", "ES-BI", "Bizkaia", "3052", True),
+        "waltti-kotka": ("FI", "FI-09", "Kymenlaakso", "1127", True),
+        "morebus": (
+            "GB",
+            "GB-BCP",
+            "Bournemouth, Christchurch and Poole",
+            "1943",
+            None,
+        ),
+        "ztm-gdansk": ("PL", "PL-22", "Pomorskie", "2093", True),
+        "transtejo-soflusa": ("PT", "PT-11", "Lisboa", "2921", True),
+    }
+
+    assert cohort.keys() <= by_id.keys()
+    for agency_id, expected in cohort.items():
+        agency = by_id[agency_id]
+        actual = (
+            agency.country,
+            agency.subdivision_code,
+            agency.subdivision_name,
+            agency.mdb_id,
+            agency.is_official,
+        )
+        assert actual == expected
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+
+    assert by_id["swiss-demand-responsive-ski-plus"].service_type == "demand_response"
+    assert len({by_id[agency_id].mdb_id for agency_id in cohort}) == len(cohort)
+    assert len({by_id[agency_id].static_gtfs_url for agency_id in cohort}) == len(cohort)
+
+
+def test_repo_registry_tracks_calitp_hosting_migration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    assert (
+        by_id["city-of-wasco"].static_gtfs_url
+        == "https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip"
+    )
+    assert by_id["city-of-wasco"].service_type == "demand_response"
+    assert "stale and noncanonical" in by_id["city-of-wasco"].operating_note
+    assert (
+        by_id["clean-air-express"].static_gtfs_url
+        == "https://cleanairexpress.com/wp-content/uploads/GTFS.zip"
+    )
 
 
 def test_worldwide_cohort_preserves_public_names_and_realtime_semantics(

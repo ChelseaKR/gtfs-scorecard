@@ -26,6 +26,7 @@ from . import (
     SCORING_PROFILE_PROVENANCE,
 )
 from .badge import render_badge, render_mark
+from .comparisons import reader_archive_profile
 from .config import Agency, artifacts_dir, repo_root
 from .effort_calibration import (
     CALIBRATION_SCHEMA_NOTE,
@@ -184,11 +185,18 @@ def build_artifact(
         # the configured feed URL is the best available statement of the fetch.
         "final_url": fetch.final_url or fetch.url,
         "user_agent": fetch.user_agent,
+        "reader_archive_profile": fetch.reader_archive_profile,
     }
     if fetch.max_attempts is not None:
         fetch_block["max_attempts"] = fetch.max_attempts
     if fetch.origin_error:
         fetch_block["origin_error"] = fetch.origin_error
+    # The feed hash and validator still describe the exact raw archive. This
+    # optional flag discloses that Scorecard-owned readers used the bounded
+    # single-root/filename-whitespace view prepared by fetch.py.
+    fetch_block.update(
+        {"reader_archive_normalized": True} if fetch.reader_archive_normalized else {}
+    )
     return {
         "schema_version": SCHEMA_VERSION,
         # Provenance: which methodology and which validator produced this grade,
@@ -402,6 +410,7 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
         "scoring_profile_id": profile.get("id"),
         "scoring_profile_rubric_version": profile.get("rubric_version"),
         "validator_version": artifact.get("validator_version"),
+        "reader_archive_profile": reader_archive_profile(artifact),
         "feed_sha256": artifact.get("feed", {}).get("sha256"),
         "categories": categories,
         "days_until_expiry": days,
@@ -416,6 +425,7 @@ _HISTORY_PROVENANCE_FIELDS = (
     "scoring_profile_id",
     "scoring_profile_rubric_version",
     "validator_version",
+    "reader_archive_profile",
     "feed_sha256",
 )
 

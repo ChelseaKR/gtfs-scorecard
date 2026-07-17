@@ -91,15 +91,15 @@ RULES: list[tuple[str, str, str, str]] = [
     ),
     (
         r"docs/feature-roadmap.md",
-        r"about ([\d,]+)\s+published\s+scorecard pages",
+        r"more than ([\d,]+)\s+published\s+scorecard pages",
         "pages",
-        "approx",
+        "floor",
     ),
     (
         r"CLAUDE.md",
-        r"~([\d,]+)\s+published scorecards, still concentrated",
+        r"more than ([\d,]+)\s+(?:>\s+)?published scorecards, still concentrated",
         "pages",
-        "approx",
+        "floor",
     ),
     (
         r"web/support/index.html",

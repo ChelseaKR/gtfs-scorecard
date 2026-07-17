@@ -35,7 +35,11 @@ from markdown_it import MarkdownIt
 from ._stats import _GRADES
 from .anomaly import latest_anomaly
 from .atomfeed import agency_change_feed, site_change_feed
-from .comparisons import current_producer_contract_suffix, same_producer_contract
+from .comparisons import (
+    current_producer_contract_suffix,
+    reader_archive_profile,
+    same_producer_contract,
+)
 from .config import artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
@@ -1100,6 +1104,7 @@ def _citation_reference(
     year = date[:4] or "n.d."
     rubric = str(artifact.get("rubric_version", "—"))
     validator = str(artifact.get("validator_version", "—"))
+    reader_profile = reader_archive_profile(artifact) or "unknown"
     sha = str((artifact.get("feed") or {}).get("sha256", "") or "")
     sha_note = f", feed sha256 {sha[:12]}…" if sha else ""
     overall = artifact.get("overall") or {}
@@ -1107,7 +1112,7 @@ def _citation_reference(
     return (
         f"GTFS Scorecard. ({year}). {agency_name} GTFS feed-quality record, "
         f"dated {date} ({grade_note}, rubric v{rubric}, gtfs-validator "
-        f"{validator}{sha_note}). {record_url}"
+        f"{validator}, reader archive profile {reader_profile}{sha_note}). {record_url}"
     )
 
 
@@ -1121,10 +1126,12 @@ def _citation_bibtex(
     year = date[:4] or "n.d."
     rubric = str(artifact.get("rubric_version", "—"))
     validator = str(artifact.get("validator_version", "—"))
+    reader_profile = reader_archive_profile(artifact) or "unknown"
     overall = artifact.get("overall") or {}
     key = f"gtfsscorecard-{agency_id}-{date}".replace(":", "")
     note = (
         f"Checked {date}; rubric v{rubric}; gtfs-validator {validator}; "
+        f"reader archive profile {reader_profile}; "
         f"grade {overall.get('grade', '—')} ({overall.get('score', '—')}/100)"
     )
     return (
@@ -1144,8 +1151,8 @@ def _citation_section(artifact: dict[str, Any], agency_id: str, agency_name: str
     live page above (which is overwritten on every check). The record it cites
     is the dated JSON artifact the publish step already writes and never
     overwrites (``<agency>/<date>.json``), pinning grade, category scores,
-    methodology (rubric + validator version), and provenance (the exact feed
-    bytes scored, by sha256) as they stood on that date, backed by the
+    methodology (rubric + validator version + reader archive profile), and
+    provenance (the exact feed bytes scored, by sha256) as they stood on that date, backed by the
     per-agency history archive so the cited state is reproducible. Emits both a
     plain-text formatted reference and a BibTeX entry, each with a copy button
     (the page-level copy script wires them), so citing a grade takes one click
@@ -1163,7 +1170,8 @@ def _citation_section(artifact: dict[str, Any], agency_id: str, agency_name: str
         '<p class="page-lede">This page updates on every check. The record below does not: it is '
         f'the dated file this grade came from, published at <a href="{esc(record_url)}">'
         f"{esc(record_url)}</a> and never overwritten, pinning the grade, category scores, "
-        "rubric version, validator version, and the scored feed's sha256 as they stood on "
+        "rubric version, validator version, reader archive profile, and the scored feed's "
+        "sha256 as they stood on "
         f"{esc(date)}. Use it in a board packet, a regulatory filing, or a research citation "
         "instead of linking the live page, whose content will differ on your next visit.</p>"
         '<label class="visually-hidden" for="cite-text">Formatted reference</label>'
@@ -2948,7 +2956,7 @@ def _anomaly_note(history: list[dict[str, Any]] | None) -> str:
     """A heads-up when the most recent check looks like a transient glitch rather
     than a real change (a one-day cliff or a calendar that jumped backward), so a
     reader doesn't over-react to a vendor export blip. Empty when nothing is off."""
-    anomaly = latest_anomaly(history or [])
+    anomaly = latest_anomaly(current_producer_contract_suffix(history or []))
     if anomaly is None:
         return ""
     return (
@@ -3916,6 +3924,7 @@ def _comparison_contract_text(comparison: dict[str, Any]) -> str:
     rubric = esc(comparison.get("required_rubric_version") or "current")
     profile = esc(comparison.get("required_scoring_profile_id") or "current")
     validator = esc(comparison.get("required_validator_version") or "current")
+    reader_profile = esc(comparison.get("required_reader_archive_profile") or "raw-v1")
     raw_categories = comparison.get("required_measured_categories") or []
     categories = [
         esc(CATEGORY_LABELS.get(str(category), str(category))) for category in raw_categories
@@ -3923,7 +3932,7 @@ def _comparison_contract_text(comparison: dict[str, Any]) -> str:
     measured = ", ".join(categories) if categories else "one shared measured-category set"
     return (
         f"rubric {rubric}, scoring profile {profile}, MobilityData gtfs-validator "
-        f"{validator}, and measured categories {measured}"
+        f"{validator}, reader archive profile {reader_profile}, and measured categories {measured}"
     )
 
 
@@ -5465,6 +5474,7 @@ def _write_catalog(write: Callable[..., None], catalog: list[dict[str, Any]]) ->
         "scoring_profile_id",
         "scoring_profile_rubric_version",
         "validator_version",
+        "reader_archive_profile",
         "feed_sha256",
         "feed_url",
         "top_fix",
@@ -8298,6 +8308,7 @@ def _has_auditable_change_contract(payload: object) -> bool:
         "required_rubric_version",
         "required_scoring_profile_id",
         "required_validator_version",
+        "required_reader_archive_profile",
     ):
         if not isinstance(comparison.get(key), str) or not comparison[key].strip():
             return False
@@ -8550,6 +8561,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # the grade is reproducible and citeable without opening the
             # per-agency artifact.
             "validator_version": artifact.get("validator_version"),
+            "reader_archive_profile": reader_archive_profile(artifact),
             "rubric_version": artifact.get("rubric_version"),
             "scoring_profile_id": (artifact.get("scoring_profile") or {}).get("id"),
             "scoring_profile_rubric_version": (artifact.get("scoring_profile") or {}).get(

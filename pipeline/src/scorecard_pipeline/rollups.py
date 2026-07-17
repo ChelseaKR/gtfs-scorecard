@@ -27,7 +27,7 @@ import yaml
 
 from . import SCHEMA_VERSION
 from .alerts import build_digest
-from .comparisons import build_comparison_cohort
+from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import artifacts_dir, repo_root
 from .metrics import expiry_status
 from .ntd import assess_shapes_readiness
@@ -236,6 +236,7 @@ def build_rollup(
                     "rubric_version"
                 ),
                 "validator_version": latest.get("validator_version"),
+                "reader_archive_profile": reader_archive_profile(latest),
                 "feed_sha256": (latest.get("feed") or {}).get("sha256"),
                 "days_until_expiry": days,
                 **{

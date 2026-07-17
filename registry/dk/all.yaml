@@ -1,0 +1,27 @@
+# Denmark (DK) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: rejseplanen-denmark
+    name: Rejseplanen national timetable
+    country: DK
+    mdb_id: "1292"
+    is_official: true
+    static_gtfs_url: https://www.rejseplanen.info/labs/GTFS.zip
+    license_note: >-
+      CC BY 4.0; credit Rejseplanen. Do not change or distort the data in a way
+      that misleads users.
+    operating_note: >-
+      National multimodal aggregate with 26 agency rows, including cross-border
+      Skånetrafiken service. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://labs.rejseplanen.dk/hc/en-us/articles/21639730766877-Om-GTFS-Schedule-Static
+      terms_url: https://labs.rejseplanen.dk/hc/en-us/articles/21553298043165-Retningslinjer-for-Labs
+      scope: [gtfs_schedule]
+      attribution: Rejseplanen - https://www.rejseplanen.dk
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

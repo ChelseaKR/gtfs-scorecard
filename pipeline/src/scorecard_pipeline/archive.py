@@ -36,8 +36,10 @@ module does not implement or expose that path.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +53,29 @@ class ArchiveMiss(RuntimeError):
     nor, if configured, the S3 tier holds it."""
 
 
+class ArchiveIntegrityError(RuntimeError):
+    """A content-addressed archive key or body violates the SHA-256 contract."""
+
+
+_SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def _validated_sha256(sha256: str) -> str:
+    if not isinstance(sha256, str) or not _SHA256_RE.fullmatch(sha256):
+        raise ArchiveIntegrityError(
+            "raw archive key must be exactly 64 lowercase hexadecimal characters"
+        )
+    return sha256
+
+
+def _verify_body(sha256: str, data: bytes, *, source: str) -> None:
+    actual = hashlib.sha256(data).hexdigest()
+    if actual != sha256:
+        raise ArchiveIntegrityError(
+            f"raw archive integrity failure for {source}: expected {sha256}, got {actual}"
+        )
+
+
 def _local_dir() -> Path:
     return repo_root() / "data" / "raw-archive"
 
@@ -61,6 +86,7 @@ def local_path(sha256: str) -> Path:
     Sharded by the hash's first two hex characters so the directory never
     holds more than ~1/256th of the archive in one listing (the same reasoning
     as a git object store's fanout)."""
+    sha256 = _validated_sha256(sha256)
     return _local_dir() / sha256[:2] / f"{sha256}.zip"
 
 
@@ -87,7 +113,7 @@ def _s3_key(sha256: str) -> str:
     # The artifacts distribution enforces a viewer-request allowlist and an
     # origin policy that both exclude this prefix. Keeping the raw archive out
     # of data/artifacts/ makes that private boundary fail closed.
-    return f"feeds/{sha256}.zip"
+    return f"feeds/{_validated_sha256(sha256)}.zip"
 
 
 def _s3_client() -> Any:  # pragma: no cover - thin boto3 wrapper, faked in tests
@@ -136,13 +162,16 @@ def store(sha256: str, path: Path) -> Path:
     bytes). If a durable bucket is configured, uploads only when that hash is
     not already stored there, so a feed that scores identically day after day
     costs one upload total, not one per run."""
+    sha256 = _validated_sha256(sha256)
+    data = path.read_bytes()
+    _verify_body(sha256, data, source=str(path))
     dest = local_path(sha256)
-    if not dest.exists():
-        _write_local(dest, path.read_bytes())
+    if not dest.exists() or dest.read_bytes() != data:
+        _write_local(dest, data)
 
     bucket = _archive_bucket()
     if bucket and not _s3_has(bucket, sha256):
-        _s3_store(bucket, sha256, dest.read_bytes())
+        _s3_store(bucket, sha256, data)
     return dest
 
 
@@ -152,16 +181,28 @@ def fetch(sha256: str) -> bytes:
     second reproduce run against the same checkout costs no network call.
 
     Raises ``ArchiveMiss`` when neither tier has the hash."""
+    sha256 = _validated_sha256(sha256)
     dest = local_path(sha256)
+    local_integrity_error: ArchiveIntegrityError | None = None
     if dest.exists():
-        return dest.read_bytes()
+        body = dest.read_bytes()
+        try:
+            _verify_body(sha256, body, source=str(dest))
+        except ArchiveIntegrityError as exc:
+            local_integrity_error = exc
+        else:
+            return body
 
     bucket = _archive_bucket()
     if bucket:
-        body = _s3_load(bucket, sha256)
-        if body is not None:
-            _write_local(dest, body)
-            return body
+        s3_body = _s3_load(bucket, sha256)
+        if s3_body is not None:
+            _verify_body(sha256, s3_body, source=f"s3://{bucket}/{_s3_key(sha256)}")
+            _write_local(dest, s3_body)
+            return s3_body
+
+    if local_integrity_error is not None:
+        raise local_integrity_error
 
     where = (
         f"checked local and s3://{bucket}"
