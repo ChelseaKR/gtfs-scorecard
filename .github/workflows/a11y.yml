@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+# Cancel superseded runs on the same ref (new push to a PR) to save minutes.
+concurrency:
+  group: a11y-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   axe:
     runs-on: ubuntu-latest

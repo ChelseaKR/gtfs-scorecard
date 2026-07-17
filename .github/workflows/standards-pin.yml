@@ -13,6 +13,11 @@ on:
 permissions:
   contents: read
 
+# Cancel superseded runs on the same ref (new push to a PR) to save minutes.
+concurrency:
+  group: standards-pin-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   standards-pin:
     runs-on: ubuntu-latest
