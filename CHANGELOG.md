@@ -27,6 +27,8 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-07-16
+
 ### Added
 - Publish an auditable European GTFS beta gate in the status page, feature
   finder, and versioned API. Structured provider-source, reuse-terms,
@@ -64,6 +66,13 @@ the declared public surface).
   GTFS field and file names exact.
 - Close the mobile primary menu after following a navigation link and rebalance
   the feature controls across desktop and narrow layouts.
+- Make Mobility Database registry proposals fail closed around authenticated
+  Schedule feeds and already-tracked feed identities. Strict registry lint now
+  blocks duplicate canonical feed URLs and Mobility Database ids, and reviewed
+  reuse evidence cannot be dated in the future.
+- Repair exact Mobility Database identity pins for the Malaysia, New Zealand,
+  France, and Ireland canaries so rediscovery cannot select a redirect alias or
+  a prefixed non-catalog identifier.
 
 ## [1.2.1] - 2026-07-15
 

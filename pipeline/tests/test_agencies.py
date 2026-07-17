@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import os
 import subprocess
 import sys
@@ -78,6 +79,18 @@ def test_reuse_evidence_parses_as_frozen_reviewed_record() -> None:
     assert evidence.identity_reviewed is True
     with pytest.raises(FrozenInstanceError):
         evidence.reviewed_by = "Someone else"  # type: ignore[misc]
+
+
+def test_reuse_evidence_review_date_cannot_be_in_the_future(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import agencies as agency_config
+
+    monkeypatch.setattr(agency_config, "_today", lambda: dt.date(2026, 7, 16))
+
+    parse_agencies(entry(reuse_evidence={**VALID_REUSE_EVIDENCE, "reviewed_on": "2026-07-16"}))
+    with pytest.raises(AgencyConfigError, match="reviewed_on must not be in the future"):
+        parse_agencies(entry(reuse_evidence={**VALID_REUSE_EVIDENCE, "reviewed_on": "2026-07-17"}))
 
 
 def test_legacy_provenance_never_implies_reuse_approval() -> None:

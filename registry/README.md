@@ -69,10 +69,10 @@ reuse_evidence:
 
 The parser accepts only an `approved` decision, `official_portal` or `provider`
 source kind, HTTP(S) evidence links, the closed `gtfs_schedule` scope, a valid
-review date, non-empty attribution and reviewer, and an explicit identity
-review. Unknown keys or inferred evidence fail registry loading. Absence means
-no approved evidence record is on file; it is not a claim that the feed is
-unlicensed.
+review date that is not in the future, non-empty attribution and reviewer, and
+an explicit identity review. Unknown keys or inferred evidence fail registry
+loading. Absence means no approved evidence record is on file; it is not a
+claim that the feed is unlicensed.
 
 Unknown fields, malformed URLs or locations, duplicate ids, missing alias
 targets, and alias cycles fail registry loading. Run the same gates as CI before

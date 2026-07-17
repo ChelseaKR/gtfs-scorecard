@@ -652,6 +652,8 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         subdivision=args.state,
         providers=args.provider or None,
         existing_ids=set(AGENCIES),
+        existing_mdb_ids={agency.mdb_id for agency in AGENCIES.values() if agency.mdb_id},
+        existing_feed_urls={agency.static_gtfs_url for agency in AGENCIES.values()},
     )
     if not proposals:
         log.info("No new agencies matched the filter (all matches already tracked).")
@@ -1363,7 +1365,8 @@ def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         print(f"{issue.kind}\t{issue.agency_id}\t{issue.detail}")
     by_kind = Counter(i.kind for i in issues)
     log.info("%d registry issue(s): %s", len(issues), dict(by_kind))
-    if args.strict and by_kind.get("feed_descriptor_name"):
+    strict_kinds = {"feed_descriptor_name", "duplicate_mdb_id", "duplicate_feed_url"}
+    if args.strict and strict_kinds.intersection(by_kind):
         return 1
     return 0
 
@@ -2753,7 +2756,9 @@ def main(argv: list[str] | None = None) -> int:
     lint.add_argument(
         "--strict",
         action="store_true",
-        help="exit non-zero when an agency name is a feed descriptor (for CI)",
+        help=(
+            "exit non-zero for feed-descriptor names or duplicate canonical feed identity (for CI)"
+        ),
     )
 
     identity = sub.add_parser(

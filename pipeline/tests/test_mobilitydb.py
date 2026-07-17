@@ -163,10 +163,40 @@ def test_key_gated_rt_becomes_note_not_url() -> None:
     assert "access key" in cap.rt_note
 
 
+def test_key_gated_schedule_feed_is_not_registry_ready() -> None:
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,"
+        "urls.authentication_type\n"
+        "open,gtfs,Open Transit,Open Transit,https://ex.org/open.zip,0\n"
+        "gated,gtfs,Gated Transit,Gated Transit,https://ex.org/gated.zip,1\n"
+    )
+
+    proposals = propose_agencies(parse_catalog(catalog))
+
+    assert [proposal.mdb_id for proposal in proposals] == ["open"]
+
+
 def test_existing_ids_are_skipped() -> None:
     feeds = parse_catalog(CATALOG)
     proposals = propose_agencies(feeds, country="US", existing_ids={"davis-community-transit"})
     assert "davis-community-transit" not in {p.id for p in proposals}
+
+
+def test_existing_catalog_ids_and_normalized_urls_are_skipped() -> None:
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download\n"
+        "tracked-id,gtfs,Renamed Transit,Renamed Transit,https://ex.org/renamed.zip\n"
+        "url-copy,gtfs,URL Copy,URL Copy,https://tracked.example/feed.zip/\n"
+        "fresh,gtfs,Fresh Transit,Fresh Transit,https://ex.org/fresh.zip\n"
+    )
+
+    proposals = propose_agencies(
+        parse_catalog(catalog),
+        existing_mdb_ids={"tracked-id"},
+        existing_feed_urls={"http://tracked.example/feed.zip"},
+    )
+
+    assert [proposal.mdb_id for proposal in proposals] == ["fresh"]
 
 
 def test_provider_filter() -> None:

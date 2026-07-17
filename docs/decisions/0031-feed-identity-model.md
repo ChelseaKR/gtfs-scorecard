@@ -30,9 +30,16 @@ An empty `organization_id` means the record's own id. An empty `alias_of` means
 the record is canonical. Aliases remain in the registry so old artifacts and
 citations keep resolving, but they do not count as canonical active feeds.
 
-The Mobility Database proposer now excludes explicitly unofficial and
-non-active rows, deduplicates source ids and scheme-only URL variants, and
-retains status/provenance in proposed YAML.
+The Mobility Database proposer excludes explicitly unofficial, non-active, and
+authentication-gated Schedule rows. It deduplicates source ids and normalized
+URL variants both within a proposal batch and against the tracked registry,
+then retains status/provenance in proposed YAML. A catalog row with unknown
+official status still requires curator review; omission is not approval.
+
+`scorecard lint --strict` makes repeated Mobility Database ids and normalized
+canonical feed URLs merge-blocking. Non-HTTPS endpoints and missing catalog ids
+remain visible maintenance findings because many valid legacy sources still
+have those limitations.
 
 `scorecard identity` publishes the coverage ledger used while the existing
 registry is backfilled. It reports configured records, active records,
@@ -58,5 +65,5 @@ uv run scorecard identity
 uv run scorecard lint
 ```
 
-Last verified: 2026-07-09 · Recheck cadence: whenever the Mobility Database
+Last verified: 2026-07-16 · Recheck cadence: whenever the Mobility Database
 catalog schema or registry identity fields change.

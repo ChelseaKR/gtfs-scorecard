@@ -1,6 +1,6 @@
 # Feature roadmap
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 This is the ordered delivery list for the next 90 days. It implements the
 proof-first direction in [`product-roadmap.md`](product-roadmap.md) and uses the
@@ -111,9 +111,10 @@ or hosted scoring only when the measurable triggers in
 One direct consumer-feedback slice is also in this lane because it repairs an
 existing surface without changing a grade or adding a service:
 
-- **Shipped in the next site build:** primary navigation to the feature finder,
+- **Shipped 2026-07-16:** primary navigation to the feature finder,
   `translations.txt` detection and language filtering, aligned API and CSV
-  fields, and a visible coverage limitation.
+  fields, a visible coverage limitation, mode-aware language, the ungraded
+  ferry profile, and the auditable European beta gate.
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.
