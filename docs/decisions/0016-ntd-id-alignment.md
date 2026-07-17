@@ -72,3 +72,9 @@ provides a value. This mirrors the state-level equity overlay degrading to
   (recommendations, conformance, routability).
 - Older artifacts with `feed_agency_ids` are re-presented with the current
   presence and equality wording without waiting for a rescore.
+
+Last verified: 2026-07-17. `ntd.py` and the registry `ntd_id` field match this
+record; the RY2026 policy wording was last checked against FTA guidance in the
+2026-07-13 update above, and transit.dot.gov answers automated re-checks with
+403. Recheck cadence: each NTD reporting-year policy update, and before any
+RY-cycle outreach that cites the requirement.
