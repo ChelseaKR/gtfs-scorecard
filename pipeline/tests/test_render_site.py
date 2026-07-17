@@ -417,6 +417,76 @@ def test_rollup_suppresses_stale_aggregates_without_a_guarded_cohort() -> None:
     assert "Grade distribution" not in html
     assert "Stale shared fix" not in html
     assert "complete guarded summary" in html
+    # Only country rollups carry the reviewed-feed-record scope note.
+    assert "reviewed feed record" not in html
+
+
+def test_country_rollup_page_states_reviewed_feed_record_scope() -> None:
+    from scorecard_pipeline.render_site import _render_rollup
+
+    html = _render_rollup(
+        {
+            "rollup": {
+                "id": "country-ca",
+                "name": "Canada",
+                "country_code": "CA",
+                "country_name": "Canada",
+            },
+            "agency_count": 2,
+            "average_score": None,
+            "grade_distribution": {},
+            "comparison": {"eligible_count": 0},
+            "needs_attention": 0,
+            "expired": {"lapsed": 0, "stale": 0, "total": 0},
+            "shapes_readiness": {
+                "ready": 0,
+                "at_risk": 0,
+                "not_ready": 0,
+                "not_measured": 2,
+                "total": 2,
+            },
+            "members": [
+                {
+                    "id": "barrie-transit",
+                    "name": "Barrie Transit",
+                    "score": 82.0,
+                    "grade": "B",
+                    "snapshot_date": "2026-07-16",
+                    "needs_attention": False,
+                    "attention_reason": None,
+                    "days_until_expiry": 120,
+                    "expiry_status": "current",
+                    "top_fix": None,
+                    "shapes_status": None,
+                    "annual_trips": None,
+                },
+                {
+                    "id": "brampton-transit",
+                    "name": "Brampton Transit",
+                    "score": 88.0,
+                    "grade": "B",
+                    "snapshot_date": "2026-07-16",
+                    "needs_attention": False,
+                    "attention_reason": None,
+                    "days_until_expiry": 90,
+                    "expiry_status": "current",
+                    "top_fix": None,
+                    "shapes_status": None,
+                    "annual_trips": None,
+                },
+            ],
+            "common_fixes": [],
+        }
+    )
+
+    # Scope-honest denominator: reviewed feed records, never country coverage.
+    assert "Scope: 2 reviewed feed records tracked in Canada." in html
+    assert "not a claim that GTFS Scorecard covers Canada" in html
+    assert "measures those records, not operators, routes, or all public transport" in html
+    # The page itself is the ordinary rollup surface: member links, no ranking.
+    assert '<a href="/agency/barrie-transit/">' in html
+    assert "attention first, then alphabetical" in html
+    assert "https://gtfsscorecard.org/program/country-ca/" in html
 
 
 def test_static_directory_card_isolates_international_agency_name() -> None:

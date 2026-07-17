@@ -4030,6 +4030,22 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
             "unavailable until this rollup has a complete guarded summary under "
             f"{comparison_contract}. Every member remains listed below."
         )
+    # Country rollups state their denominator plainly (global_coverage.py's
+    # convention): this page measures reviewed feed records, not operators or
+    # a country's public transport, and never claims country coverage.
+    country_label = str(
+        rollup["rollup"].get("country_name") or rollup["rollup"].get("country_code") or ""
+    ).strip()
+    scope_html = ""
+    if country_label:
+        record_count = rollup["agency_count"]
+        noun = "reviewed feed record" if record_count == 1 else "reviewed feed records"
+        scope_html = (
+            f'<p class="fineprint">Scope: {record_count} {noun} tracked in '
+            f"{esc(country_label)}. This page measures those records, not operators, "
+            f"routes, or all public transport in {esc(country_label)}, and it is not "
+            f"a claim that GTFS Scorecard covers {esc(country_label)}.</p>"
+        )
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (rname, None)])
     body = f"""    {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
@@ -4038,7 +4054,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
         <h1 class="page-title">{esc(rname)}</h1>
         <p class="overall"><strong>{rollup["agency_count"]} feed scorecards</strong> ·
           {avg} · {rollup["needs_attention"]} need attention</p>
-        <p class="fineprint">{comparison_note}</p>
+        <p class="fineprint">{comparison_note}</p>{scope_html}
       </div>
     </div>
     {_route_rule()}

@@ -639,6 +639,11 @@ then by name; other members are alphabetical. `average_score` and
 single rubric, scoring profile, validator, and measured-category set described
 by `comparison`, including its required `raw-v1` reader archive profile.
 `state_percentile` is retained as null for v1 compatibility.
+Country rollups (ids like `country-ca`) additionally carry `country_code`
+(ISO 3166-1 alpha-2) and `country_name` inside `rollup`; both are absent on
+every other rollup. Additive. A country rollup's cohort is the reviewed feed
+records tracked in that country, not the country's operators, routes, or
+public transport network, and it is not a claim of country coverage.
 `expired` counts the members whose feed
 has run out, split into recently lapsed and long stale. `common_fixes` lists
 fixes shared by more than one comparison-eligible member, so excluded legacy or
