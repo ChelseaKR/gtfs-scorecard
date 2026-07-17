@@ -238,17 +238,17 @@ declared here; none is silently skipped.
 
 | Standard | Applies? |
 |---|---|
-| [CODE-QUALITY](docs/standards/CODE-QUALITY-STANDARD.md) | Applies (Python; TS/Node N/A — `web/` is no-build vanilla JS) |
-| [SECURITY & SUPPLY-CHAIN](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth, no PII store) |
+| [Code Quality](docs/standards/CODE-QUALITY-STANDARD.md) | Applies (Python; TS/Node N/A — `web/` is no-build vanilla JS) |
+| [Security & Supply-Chain](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth, no PII store) |
 | [CI/CD](docs/standards/CI-CD-STANDARD.md) | Applies |
-| [OBSERVABILITY](docs/standards/OBSERVABILITY-STANDARD.md) | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) |
-| [ACCESSIBILITY](docs/standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) |
-| [INTERNATIONALIZATION](docs/standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; N/A path unavailable |
-| AI-EVALUATION | **N/A** — no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
-| [QUALITY & METRICS](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
-| [DOCUMENTATION](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [RELEASE & VERSIONING](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.3.0`), monthly dataset releases, MCP registry entry |
-| [RESPONSIBLE-TECH](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
+| [Observability](docs/standards/OBSERVABILITY-STANDARD.md) | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) |
+| [Accessibility](docs/standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) |
+| [Internationalization](docs/standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; exemption path unavailable |
+| AI Evaluation | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
+| [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
+| [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
+| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.3.0`), monthly dataset releases, MCP registry entry |
+| [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked
 in [docs/standards-conformance-gaps.md](docs/standards-conformance-gaps.md)
