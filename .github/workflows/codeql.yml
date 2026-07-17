@@ -6,14 +6,21 @@
 name: CodeQL
 
 on:
-  push:
-    branches: [main]
+  # CICD §11e: PRs into main + the weekly schedule. The former push: main
+  # trigger re-analyzed a commit the merged PR run had already covered; the
+  # schedule keeps the default-branch code-scanning baseline fresh.
   pull_request:
+    branches: [main]
   schedule:
     - cron: "23 5 * * 3" # weekly, Wednesday — CodeQL's own analysis is slow-moving
 
 permissions:
   contents: read
+
+# Cancel superseded runs on the same ref (new push to a PR) to save minutes.
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:

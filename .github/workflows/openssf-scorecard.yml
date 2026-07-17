@@ -16,6 +16,12 @@ on:
 
 permissions: read-all
 
+# Cancel a superseded analysis when main moves again before it finishes;
+# the newer run re-scores the same repo state and more.
+concurrency:
+  group: openssf-scorecard-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analysis:
     runs-on: ubuntu-latest
