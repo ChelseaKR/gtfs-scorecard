@@ -6,7 +6,9 @@ This is the infrastructure and delivery roadmap for GTFS Scorecard. The
 product counterpart is [`product-roadmap.md`](product-roadmap.md), and the
 ordered near-term ship list is [`feature-roadmap.md`](feature-roadmap.md).
 Earlier scale and expansion proposals remain available in [`ideation/`](ideation/)
-as planning history, not as an active queue.
+as planning history, not as an active queue. Delivery-health measurements, CI
+stage declarations, and the OpenSSF Scorecard record live in
+[`governance-ledger.md`](governance-ledger.md).
 
 ## Decision
 
