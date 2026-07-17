@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Status | GTFS Scorecard</title>
-  <meta name="description" content="The scorecard&#x27;s monitoring schedule, current direct feed-URL liveness, latest full scoring run, unreachable records, and catalog freshness.">
+  <meta name="description" content="The scorecard&#x27;s monitoring schedule, current direct feed-URL liveness, latest full scoring run, catalog freshness, and bounded European GTFS beta readiness.">
   <link rel="canonical" href="https://gtfsscorecard.org/status/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Status | GTFS Scorecard">
-  <meta property="og:description" content="The scorecard&#x27;s monitoring schedule, current direct feed-URL liveness, latest full scoring run, unreachable records, and catalog freshness.">
+  <meta property="og:description" content="The scorecard&#x27;s monitoring schedule, current direct feed-URL liveness, latest full scoring run, catalog freshness, and bounded European GTFS beta readiness.">
   <meta property="og:url" content="https://gtfsscorecard.org/status/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -45,11 +45,13 @@
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Status</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Service status</h1>
-    <p class="page-lede">This page shows whether configured feed URLs are responding and whether
-    scheduled scoring completed. Direct liveness checks and the mirror-assisted daily run are
-    reported separately because they measure different things. Machine-readable at
-    <a href="/api/v1/status.json">/api/v1/status.json</a> and
-    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+    <p class="page-lede">This page shows whether configured feed URLs are responding, whether
+    scheduled scoring completed, and whether the bounded European beta criteria are met.
+    Direct liveness checks and the mirror-assisted daily run are reported separately because
+    they measure different things. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a>,
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>, and
+    <a href="/api/v1/global-coverage.json">/api/v1/global-coverage.json</a>.</p>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <h2 class="section-title" id="commitment-h">Monitoring status and schedule</h2>
@@ -114,6 +116,27 @@
     <p class="fineprint">Built from <a href="/api/v1/run-status.json">the run-status API</a>,
     refreshed after each completed scoring run. See <a href="/how-to-read/">how to read a scorecard</a> for what
     the grades themselves mean.</p>
+
+    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
+    <h2 class="section-title" id="global-coverage">European beta readiness</h2>
+    <p><span class="pill-warn">Not ready</span> The reviewed cohort currently contains <strong>0</strong> GTFS Schedule feed records across <strong>0</strong> countries.</p>
+    <p>This is a bounded European <abbr title="General Transit Feed Specification">GTFS</abbr>
+    Schedule beta gate based on feed records with reviewed reuse evidence. It is not a claim
+    of coverage for all European public transport, and it does not assess NeTEx coverage.</p>
+
+    <section aria-labelledby="global-criteria-h"><h3 class="section-title" id="global-criteria-h">Readiness criteria</h3>
+    <div class="table-wrap"><table>
+      <caption>Current European beta measures compared with release thresholds</caption>
+      <thead><tr><th scope="col">Measure</th><th scope="col">Current</th>
+      <th scope="col">Threshold</th><th scope="col">Status</th></tr></thead>
+      <tbody><tr><th scope="row">Reviewed European GTFS Schedule feed records</th><td>0</td><td>at least 250</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Countries represented</th><td>0</td><td>at least 12</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Largest single-country share</th><td>Not available</td><td>at most 40%</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Scorecards retrieved within the inclusive seven-day window</th><td>Not available</td><td>at least 95%</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Translation publication measured</th><td>Not available</td><td>at least 100%</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Valid portable country and subdivision pair</th><td>Not available</td><td>at least 100%</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Feed identity reviewed</th><td>Not available</td><td>at least 100%</td><td><span class="pill-warn">Not met</span></td></tr><tr><th scope="row">Feature finder discloses its feed-record denominator</th><td>Yes</td><td>equals Yes</td><td><span class="pill-ok">Met</span></td></tr></tbody></table></div></section>
+
+    <section aria-labelledby="global-exceptions-h"><h3 class="section-title" id="global-exceptions-h">Exceptions</h3>
+    <p>No coverage-gate exceptions are recorded.</p></section>
+
+    <p class="fineprint">Read the auditable <a href="/api/v1/global-coverage.json">global coverage JSON</a>
+    or the <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/global-expansion.md">global expansion methodology</a>. Counts are feed records,
+    not agencies, operators, routes, or services.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap">

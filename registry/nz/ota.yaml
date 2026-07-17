@@ -12,6 +12,16 @@ agencies:
     is_official: true
     static_gtfs_url: https://www.orc.govt.nz/transit/google_transit.zip
     license_note: CC BY 4.0; published by Otago Regional Council.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.orc.govt.nz/privacy-and-tscs/
+      terms_url: https://www.orc.govt.nz/privacy-and-tscs/
+      scope: [gtfs_schedule]
+      attribution: Otago Regional Council.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true
     rt_note: >-
       Orbus provides live tracking in its rider tools, but no keyless public
       GTFS-Realtime endpoint was verified. Nothing here counts against the grade.

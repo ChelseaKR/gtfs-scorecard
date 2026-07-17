@@ -28,6 +28,10 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Publish an auditable European GTFS beta gate in the status page, feature
+  finder, and versioned API. Structured provider-source, reuse-terms,
+  attribution, review-date, and identity evidence now determines the bounded
+  cohort; the initial six-record result is explicitly not ready.
 - Add a five-record, source- and reuse-reviewed ferry cohort covering Magnetic
   Island, Brittany Ferries, Transmanche, Sardegna–Corsica, and Sardegna's minor
   islands. Each feed is official, current, and explicitly open for reuse.

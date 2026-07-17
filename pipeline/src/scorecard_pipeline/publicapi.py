@@ -388,6 +388,7 @@ def api_index(base_url: str, generated_at: str) -> dict[str, Any]:
             "accessibility": f"{base}/accessibility.json",
             "adoption": f"{base}/adoption.json",
             "features": f"{base}/features.json",
+            "global_coverage": f"{base}/global-coverage.json",
             "realtime": f"{base}/realtime.json",
             "problems": f"{base}/problems.json",
             "trend": f"{base}/trend.json",

@@ -535,6 +535,54 @@ function locationControlsHtml(countries, states) {
       <div class="location-groups"></div>`;
 }
 
+/** Append the evidence-gated European denominator beside the feature filters.
+ *  The base coverage warning remains useful if the additive endpoint is absent
+ *  during a partial deploy. Endpoint values are inserted as text nodes so an
+ *  evidence record can never become markup in the application.
+ *  @returns {Promise<void>} */
+async function hydrateGlobalCoverageDisclosure() {
+  const target = document.getElementById("global-coverage-disclosure");
+  if (!target) return;
+  try {
+    const response = await fetch("/api/v1/global-coverage.json");
+    if (!response.ok) return;
+    const payload = await response.json();
+    const cohort = payload?.cohort || {};
+    const featureFinder = payload?.feature_finder || {};
+    const criteria = Array.isArray(payload?.criteria) ? payload.criteria : [];
+    const reviewed = Number(cohort.feed_record_count);
+    const countries = Number(cohort.country_count);
+    const finderRows = Number(featureFinder.reviewed_europe_feature_record_count);
+    const recordGate = criteria.find((criterion) => criterion?.key === "reviewed_feed_records");
+    const countryGate = criteria.find((criterion) => criterion?.key === "countries");
+    const requiredRecords = Number(recordGate?.threshold);
+    const requiredCountries = Number(countryGate?.threshold);
+    if (
+      ![reviewed, countries, finderRows, requiredRecords, requiredCountries].every(
+        Number.isFinite
+      )
+    )
+      return;
+
+    const status = payload.ready === true ? "Ready" : "Not ready";
+    target.append(
+      document.createTextNode(
+        ` European GTFS beta gate: ${formatNumber(reviewed)} reviewed feed records across ` +
+          `${formatNumber(countries)} countries; ${formatNumber(finderRows)} are represented ` +
+          `in this finder. Status: ${status}. The gate requires at least ` +
+          `${formatNumber(requiredRecords)} reviewed records across ` +
+          `${formatNumber(requiredCountries)} countries plus its published evidence checks. `
+      )
+    );
+    const link = document.createElement("a");
+    link.href = "/status/#global-coverage";
+    link.textContent = "See the gate and limitations.";
+    target.append(link);
+  } catch {
+    // Keep the generic coverage disclosure during a partial or offline deploy.
+  }
+}
+
 /** @param {any} directory */
 function renderOverview(directory) {
   document.title = "GTFS Scorecard — transit data quality, agency by agency";
@@ -743,7 +791,7 @@ function renderOverview(directory) {
       ${formatNumber(translationMeasuredCount)}; service modes are measured for
       ${formatNumber(modeMeasuredCount)}. Selecting a field excludes records where that field is unknown.
       The score-comparison cohort above is a separate contract.</p>
-      <p class="coverage-limit">${coverageLimit}</p>
+      <p class="coverage-limit" id="global-coverage-disclosure">${coverageLimit}</p>
     </section>
 
     <section class="state-browse reveal" aria-labelledby="locations-h">
@@ -775,6 +823,7 @@ function renderOverview(directory) {
     <a href="#/programs">Supporting a group of agencies? See the program rollup view.</a></p>`;
 
   setupOverview(agencies, total, s);
+  void hydrateGlobalCoverageDisclosure();
 }
 
 /** Wire the directory: search, grade/size/expiry facet, portable location

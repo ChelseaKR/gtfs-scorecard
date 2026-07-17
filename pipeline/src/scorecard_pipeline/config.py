@@ -13,6 +13,21 @@ from pathlib import Path
 
 
 @dataclass(frozen=True)
+class ReuseEvidence:
+    """Curator-reviewed permission and identity evidence for one GTFS feed."""
+
+    decision: str
+    source_kind: str
+    provider_source_url: str
+    terms_url: str
+    scope: tuple[str, ...]
+    attribution: str
+    reviewed_by: str
+    reviewed_on: str
+    identity_reviewed: bool
+
+
+@dataclass(frozen=True)
 class Agency:
     """One transit agency tracked by the scorecard."""
 
@@ -84,6 +99,10 @@ class Agency:
     # "no fare data" finding becomes a neutral note. Mirrors the neutral
     # treatment of agencies without realtime: a deliberate policy is not a gap.
     fare_free: bool = False
+    # Explicit, curator-reviewed evidence that this feed may be reused. Legacy
+    # catalog metadata and prose license notes are intentionally not promoted
+    # into this record: absence means the reuse decision is still unreviewed.
+    reuse_evidence: ReuseEvidence | None = None
 
     @property
     def organization_key(self) -> str:

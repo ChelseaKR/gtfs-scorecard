@@ -209,6 +209,23 @@ def _serve_directory(page: Page, directory: dict[str, Any]) -> None:
     )
 
 
+def _serve_global_coverage(page: Page) -> None:
+    page.route(
+        "**/api/v1/global-coverage.json",
+        lambda route: route.fulfill(
+            json={
+                "ready": False,
+                "cohort": {"feed_record_count": 6, "country_count": 3},
+                "feature_finder": {"reviewed_europe_feature_record_count": 5},
+                "criteria": [
+                    {"key": "reviewed_feed_records", "threshold": 250},
+                    {"key": "countries", "threshold": 12},
+                ],
+            }
+        ),
+    )
+
+
 def _hash_params(page: Page) -> dict[str, str]:
     return cast(
         dict[str, str],
@@ -486,6 +503,7 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
 def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url: str) -> None:
     directory = _feature_directory()
     _serve_directory(page, directory)
+    _serve_global_coverage(page)
     page.goto(
         f"{app_url}#/?country=ca&subdivision=ca-on"
         "&features=accessibility,fares_v2&stops=95&trips=95"
@@ -508,6 +526,13 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     expect(page.locator(".feature-match-board")).to_have_attribute("data-active", "true")
     expect(page.get_by_role("link", name="Open the feature API")).to_have_attribute(
         "href", "/api/v1/features.json"
+    )
+    expect(page.locator("#global-coverage-disclosure")).to_contain_text(
+        "European GTFS beta gate: 6 reviewed feed records across 3 countries; "
+        "5 are represented in this finder. Status: Not ready."
+    )
+    expect(page.get_by_role("link", name="See the gate and limitations.")).to_have_attribute(
+        "href", "/status/#global-coverage"
     )
 
     # A user interaction canonicalizes the portable location keys while
