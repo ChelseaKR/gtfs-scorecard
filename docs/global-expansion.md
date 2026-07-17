@@ -186,11 +186,10 @@ the 95% floor. Translation measurement, portable location, and identity review
 each covered the full cohort, the feature finder disclosed its denominator,
 and the exception list was empty. The record count is the only open criterion.
 
-Two changes landed the same day. The executable gate surface merged in the
-morning (PR #116): the document at `/api/v1/global-coverage.json`, its JSON
+Two changes landed the same day (UTC). The executable gate surface merged
+first (PR #116): the document at `/api/v1/global-coverage.json`, its JSON
 schema, the status page section, and the finder's regional denominator.
-Country program pages for every non-US registry country followed in the
-afternoon (PR #121).
+Country program pages for every non-US registry country followed (PR #121).
 
 ## Delivery sequence
 
