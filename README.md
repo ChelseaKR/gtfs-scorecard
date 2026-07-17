@@ -96,9 +96,10 @@ finding-clearance records exist, a clearance log (`/fixes/`). Around those sit:
   releases, and a read-only MCP server ([docs/mcp.md](docs/mcp.md)).
 
 The country controls describe only the current covered set. They are not a
-census of a country or region. The evidence and release gate for a useful
-European GTFS cohort are in
-[docs/global-expansion.md](docs/global-expansion.md).
+census of a country or region. The live evidence and readiness result for a
+bounded European GTFS beta are on the
+[status page](https://gtfsscorecard.org/status/#global-coverage); the release
+gate and scope limits are in [docs/global-expansion.md](docs/global-expansion.md).
 
 ## Quickstart
 

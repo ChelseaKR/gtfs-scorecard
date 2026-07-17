@@ -139,6 +139,19 @@ thresholds hold:
 6. The feature finder states the regional denominator and keeps the coverage
    limitation beside the filters and exports.
 
+The gate is now executable rather than prose-only. The site publishes its
+current result and reviewed evidence at `/api/v1/global-coverage.json`, shows
+the same result on `/status/`, and repeats the regional feature denominator
+beside the finder. A `not_ready` result is expected until every threshold is
+met. It blocks the beta label without blocking the individual canary
+scorecards.
+
+The initial reviewed European cohort contains six feed records across France,
+Ireland, and Italy. This establishes the evidence, identity, freshness,
+translation, and location contracts while truthfully failing the 250-record,
+12-country, and country-balance thresholds. The source rows are public so a
+consumer can audit what “reviewed” means.
+
 The threshold is intentionally below the 406 license-linked discovery rows so
 manual review can reject stale, duplicate, restricted, or misidentified feeds.
 It is intentionally above a canary cohort so a consumer can use the result for

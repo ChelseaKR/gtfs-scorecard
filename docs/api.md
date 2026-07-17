@@ -447,6 +447,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/accessibility.json` | Covered-set accessibility-data completeness: how many feeds populate wheelchair fields, overall and by portable country/subdivision. Backs the coverage section at `/adoption/#access`. |
 | `api/v1/adoption.json` | Which optional GTFS capabilities (Flex, Fares v2, pathways, cEMV, and rider-facing translations) feeds publish, overall and by portable country/subdivision. Backs `/adoption/`. |
 | `api/v1/features.json` | Every current feed record with filterable service modes, capability flags, translation languages, stop- and trip-level wheelchair-field completeness, ferry-subset capability measurements, portable location, identity, scorecard URL, and comparison eligibility. Unknown measurements are `null`, never `false`. Backs the consumer filters and CSV export in `/app/`. |
+| `api/v1/global-coverage.json` | Auditable readiness gate for a bounded European GTFS Schedule beta. It lists the reviewed feed-record cohort, source and terms evidence, current-versus-threshold criteria, country balance, freshness and measurement exceptions, and explicit limits. `not_ready` is a valid result, not an API failure. |
 | `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. |
 | `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
 | `api/v1/trend.json` | The covered-set quality time series. Backs the trend section at `/pulse/#trend`. |
@@ -478,6 +479,18 @@ usable rows and language tags in `translations.txt`; it does not assess
 linguistic accuracy or complete coverage of every customer-facing value.
 Translation-language filters match an exact BCP 47 tag case-insensitively, so
 `fr` does not imply a match for `fr-CA`.
+
+`global-coverage.json` counts active canonical feed records whose structured
+registry evidence was reviewed and approved for GTFS Schedule reuse. It does
+not infer permission from free-form notes, catalog flags, or proposed metadata.
+The European scope is the EU27 plus the United Kingdom, Switzerland, Norway,
+Iceland, and Liechtenstein. The gate requires 250 reviewed records across 12
+countries, no country above 40%, at least 95% of scorecards retrieved within
+seven days, and complete translation-measurement, portable-location, identity,
+and feature-denominator checks. Percentages over an empty cohort are `null` and
+unmet. This is not a claim about all European transit, distinct agencies,
+NeTEx, or service-calendar freshness. Provider terms remain attached to each
+record; the endpoint's CC BY notice applies to the derived gate output.
 
 In `api/v1/status.json`, `currently_clean_pct` is the current share of feed
 records with no consecutive failed direct check. The legacy

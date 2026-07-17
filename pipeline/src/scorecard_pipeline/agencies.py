@@ -7,12 +7,14 @@ in a community PR fails with a sentence, not a stack trace mid-pipeline.
 
 from __future__ import annotations
 
+import datetime as dt
 import re
 from pathlib import Path
+from typing import NoReturn
 
 import yaml
 
-from .config import AGENCIES, Agency, repo_root
+from .config import AGENCIES, Agency, ReuseEvidence, repo_root
 from .location import SUPPORTED_COUNTRY_CODES, normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
@@ -20,13 +22,27 @@ NTD_ID_PATTERN = re.compile(r"^\d{4,5}$")
 RT_KINDS = ("trip_updates", "vehicle_positions", "service_alerts")
 
 FEED_STATUSES = {"active", "deprecated", "inactive", "development"}
+REUSE_EVIDENCE_KEYS = {
+    "decision",
+    "source_kind",
+    "provider_source_url",
+    "terms_url",
+    "scope",
+    "attribution",
+    "reviewed_by",
+    "reviewed_on",
+    "identity_reviewed",
+}
+REUSE_SOURCE_KINDS = {"official_portal", "provider"}
+REUSE_SCOPES = {"gtfs_schedule"}
+ISO_DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 class AgencyConfigError(ValueError):
     """The agency registry is malformed; the message says exactly where."""
 
 
-def _fail(entry_label: str, message: str, source: str = "agencies.yaml") -> None:
+def _fail(entry_label: str, message: str, source: str = "agencies.yaml") -> NoReturn:
     raise AgencyConfigError(f"{source}, {entry_label}: {message}")
 
 
@@ -34,6 +50,110 @@ def _require_url(entry_label: str, field: str, value: object, source: str) -> st
     if not isinstance(value, str) or not value.startswith(("https://", "http://")):
         _fail(entry_label, f"{field} must be an http(s) URL, got {value!r}", source)
     return str(value)
+
+
+def _require_nonempty_text(entry_label: str, field: str, value: object, source: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        _fail(entry_label, f"{field} must be a non-empty string", source)
+    return value.strip()
+
+
+def _parse_reuse_scope(
+    raw: object, *, entry_label: str, field: str, source: str
+) -> tuple[str, ...]:
+    if not isinstance(raw, list) or not raw:
+        _fail(entry_label, f"{field} must be a non-empty list", source)
+    if not all(isinstance(item, str) for item in raw):
+        _fail(entry_label, f"{field} entries must be strings", source)
+    scope = tuple(raw)
+    if len(scope) != len(set(scope)):
+        _fail(entry_label, f"{field} entries must be unique", source)
+    unknown_scopes = set(scope) - REUSE_SCOPES
+    if unknown_scopes:
+        _fail(
+            entry_label,
+            f"{field} contains unknown value(s): {', '.join(sorted(unknown_scopes))}",
+            source,
+        )
+    return scope
+
+
+def _require_iso_date(entry_label: str, field: str, value: object, source: str) -> str:
+    if not isinstance(value, str) or not ISO_DATE_PATTERN.fullmatch(value):
+        _fail(entry_label, f"{field} must be an ISO date (YYYY-MM-DD)", source)
+    try:
+        dt.date.fromisoformat(value)
+    except ValueError:
+        _fail(entry_label, f"{field} must be a valid ISO date", source)
+    return value
+
+
+def _parse_reuse_evidence(raw: object, *, entry_label: str, source: str) -> ReuseEvidence:
+    field = "reuse_evidence"
+    if not isinstance(raw, dict):
+        _fail(entry_label, f"{field} must be a mapping of reviewed evidence", source)
+
+    unknown = set(raw) - REUSE_EVIDENCE_KEYS
+    if unknown:
+        _fail(
+            entry_label,
+            f"unknown {field} field(s): {', '.join(sorted(unknown))}",
+            source,
+        )
+    missing = REUSE_EVIDENCE_KEYS - set(raw)
+    if missing:
+        _fail(
+            entry_label,
+            f"{field} missing required field(s): {', '.join(sorted(missing))}",
+            source,
+        )
+
+    decision = raw["decision"]
+    if decision != "approved":
+        _fail(entry_label, f"{field}.decision must be exactly 'approved'", source)
+
+    source_kind = raw["source_kind"]
+    if not isinstance(source_kind, str) or source_kind not in REUSE_SOURCE_KINDS:
+        _fail(
+            entry_label,
+            f"{field}.source_kind must be one of {sorted(REUSE_SOURCE_KINDS)}",
+            source,
+        )
+
+    provider_source_url = _require_url(
+        entry_label,
+        f"{field}.provider_source_url",
+        raw["provider_source_url"],
+        source,
+    )
+    terms_url = _require_url(entry_label, f"{field}.terms_url", raw["terms_url"], source)
+
+    scope = _parse_reuse_scope(
+        raw["scope"], entry_label=entry_label, field=f"{field}.scope", source=source
+    )
+    attribution = _require_nonempty_text(
+        entry_label, f"{field}.attribution", raw["attribution"], source
+    )
+    reviewed_by = _require_nonempty_text(
+        entry_label, f"{field}.reviewed_by", raw["reviewed_by"], source
+    )
+    reviewed_on = _require_iso_date(entry_label, f"{field}.reviewed_on", raw["reviewed_on"], source)
+
+    identity_reviewed = raw["identity_reviewed"]
+    if not isinstance(identity_reviewed, bool):
+        _fail(entry_label, f"{field}.identity_reviewed must be true or false", source)
+
+    return ReuseEvidence(
+        decision=decision,
+        source_kind=source_kind,
+        provider_source_url=provider_source_url,
+        terms_url=terms_url,
+        scope=scope,
+        attribution=attribution,
+        reviewed_by=reviewed_by,
+        reviewed_on=reviewed_on,
+        identity_reviewed=identity_reviewed,
+    )
 
 
 def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -114,6 +234,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             "state",
             "service_type",
             "fare_free",
+            "reuse_evidence",
         }
         if unknown:
             _fail(label, f"unknown field(s): {', '.join(sorted(unknown))}", entry_source)
@@ -167,6 +288,12 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         official_raw = entry.get("is_official")
         if official_raw is not None and not isinstance(official_raw, bool):
             _fail(label, f"is_official must be true or false, got {official_raw!r}", entry_source)
+
+        reuse_evidence = None
+        if "reuse_evidence" in entry:
+            reuse_evidence = _parse_reuse_evidence(
+                entry["reuse_evidence"], entry_label=label, source=entry_source
+            )
 
         country = str(entry.get("country") or "US").strip().upper()
         subdivision_code = str(entry.get("subdivision_code") or "").strip().upper()
@@ -233,6 +360,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 state=state,
                 service_type=service_type,
                 fare_free=fare_free,
+                reuse_evidence=reuse_evidence,
             )
         )
     if not agencies:

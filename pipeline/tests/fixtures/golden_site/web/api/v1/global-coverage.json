@@ -1,0 +1,165 @@
+{
+  "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
+  "cohort": {
+    "country_count": 0,
+    "feature_record_count": 0,
+    "feed_record_count": 0,
+    "largest_country": null
+  },
+  "countries": [],
+  "criteria": [
+    {
+      "actual": 0,
+      "key": "reviewed_feed_records",
+      "label": "Reviewed European GTFS Schedule feed records",
+      "met": false,
+      "operator": ">=",
+      "threshold": 250,
+      "unit": "feed_records"
+    },
+    {
+      "actual": 0,
+      "key": "countries",
+      "label": "Countries represented",
+      "met": false,
+      "operator": ">=",
+      "threshold": 12,
+      "unit": "countries"
+    },
+    {
+      "actual": null,
+      "key": "largest_country_share",
+      "label": "Largest single-country share",
+      "met": false,
+      "operator": "<=",
+      "threshold": 40.0,
+      "unit": "percent"
+    },
+    {
+      "actual": null,
+      "denominator": 0,
+      "key": "fresh_scorecards",
+      "label": "Scorecards retrieved within the inclusive seven-day window",
+      "met": false,
+      "numerator": 0,
+      "operator": ">=",
+      "threshold": 95.0,
+      "unit": "percent"
+    },
+    {
+      "actual": null,
+      "denominator": 0,
+      "key": "translations_measured",
+      "label": "Translation publication measured",
+      "met": false,
+      "numerator": 0,
+      "operator": ">=",
+      "threshold": 100.0,
+      "unit": "percent"
+    },
+    {
+      "actual": null,
+      "denominator": 0,
+      "key": "portable_location",
+      "label": "Valid portable country and subdivision pair",
+      "met": false,
+      "numerator": 0,
+      "operator": ">=",
+      "threshold": 100.0,
+      "unit": "percent"
+    },
+    {
+      "actual": null,
+      "denominator": 0,
+      "key": "identity_reviewed",
+      "label": "Feed identity reviewed",
+      "met": false,
+      "numerator": 0,
+      "operator": ">=",
+      "threshold": 100.0,
+      "unit": "percent"
+    },
+    {
+      "actual": true,
+      "key": "feature_denominator_disclosed",
+      "label": "Feature finder discloses its feed-record denominator",
+      "met": true,
+      "operator": "=",
+      "threshold": true,
+      "unit": "boolean"
+    }
+  ],
+  "evaluated_at": "2026-07-02T03:10:02+00:00",
+  "exceptions": [],
+  "feature_finder": {
+    "denominator_disclosed": true,
+    "reviewed_europe_feature_record_count": 0,
+    "reviewed_europe_feed_record_count": 0,
+    "source_feed_record_count": 3,
+    "source_row_count": 3
+  },
+  "generated_at": "2026-07-02T03:10:02+00:00",
+  "license": "CC-BY-4.0",
+  "license_scope": "The license covers this derived GTFS Scorecard gate output. Each source feed's reuse terms are cited on its record.",
+  "limitations": [
+    "This gate does not claim coverage of all European transit.",
+    "It covers GTFS Schedule feed records only; it does not assess NeTEx coverage.",
+    "Feed-record counts are not counts of agencies, operators, routes, or services.",
+    "Freshness describes the latest published scorecard retrieval, not the service calendar."
+  ],
+  "methodology": {
+    "empty_percentage": "null and criterion not met",
+    "freshness_window_days": 7,
+    "freshness_window_inclusive": true,
+    "future_timestamps_are_fresh": false,
+    "registry_permission_fields_not_used": [
+      "license_note",
+      "is_official",
+      "mdb_id"
+    ],
+    "translation_measurement": "translations_measured must be the boolean true"
+  },
+  "ready": false,
+  "records": [],
+  "schema_version": "1.0",
+  "scope": {
+    "country_codes": [
+      "AT",
+      "BE",
+      "BG",
+      "CH",
+      "CY",
+      "CZ",
+      "DE",
+      "DK",
+      "EE",
+      "ES",
+      "FI",
+      "FR",
+      "GB",
+      "GR",
+      "HR",
+      "HU",
+      "IE",
+      "IS",
+      "IT",
+      "LI",
+      "LT",
+      "LU",
+      "LV",
+      "MT",
+      "NL",
+      "NO",
+      "PL",
+      "PT",
+      "RO",
+      "SE",
+      "SI",
+      "SK"
+    ],
+    "name": "Bounded European GTFS Schedule beta",
+    "selection": "Active canonical registry records with approved reuse evidence whose scope includes gtfs_schedule",
+    "unit": "feed_records"
+  },
+  "status": "not_ready"
+}

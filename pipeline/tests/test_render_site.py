@@ -825,6 +825,12 @@ def test_catalog_derives_status_from_legacy_latest_artifact(
     assert "26834" not in agency_html
     assert "26,834" not in agency_html
 
+    global_coverage = json.loads(
+        (isolated_repo_root / "web" / "api" / "v1" / "global-coverage.json").read_text()
+    )
+    assert global_coverage["scope"]["name"] == "Bounded European GTFS Schedule beta"
+    assert global_coverage["status"] == "not_ready"
+
 
 def test_catalog_top_level_rubric_reports_mixed_row_versions() -> None:
     from scorecard_pipeline.render_site import _write_catalog
@@ -4230,7 +4236,40 @@ def test_render_status_combines_commitment_and_evidence_sections() -> None:
         "shards": [],
     }
     catalog = [{"id": "unitrans", "name": "Unitrans", "retrieved_at": "2026-07-08T13:00:00+00:00"}]
-    html = _render_status(status_doc, run_summary, catalog, now)
+    global_coverage = {
+        "status": "not_ready",
+        "ready": False,
+        "cohort": {"feed_record_count": 6, "country_count": 3},
+        "criteria": [
+            {
+                "key": "reviewed_feed_records",
+                "label": "Reviewed European GTFS Schedule feed records",
+                "actual": 6,
+                "threshold": 250,
+                "operator": ">=",
+                "unit": "feed_records",
+                "met": False,
+            },
+            {
+                "key": "translations_measured",
+                "label": "Translation publication measured",
+                "actual": 100.0,
+                "threshold": 100.0,
+                "operator": ">=",
+                "unit": "percent",
+                "met": True,
+            },
+        ],
+        "exceptions": [
+            {
+                "key": "stale_scorecard",
+                "label": "Scorecard is older than the seven-day freshness window",
+                "count": 2,
+                "feed_record_ids": ["one", "two"],
+            }
+        ],
+    }
+    html = _render_status(status_doc, run_summary, catalog, now, global_coverage)
     # The commitment half (EXP-10).
     assert "Service status" in html
     assert "Monitoring status and schedule" in html
@@ -4243,9 +4282,23 @@ def test_render_status_combines_commitment_and_evidence_sections() -> None:
     assert "Latest full scoring run" in html
     assert "Show per-shard breakdown" in html
     assert "Catalog freshness" in html
-    # Both JSON twins stay cross-linked, and only one page-level title exists.
+    # The bounded Europe gate is the third section, with its status expressed
+    # in text, current/threshold comparison, and exception counts.
+    assert "European beta readiness" in html
+    assert ">Not ready<" in html
+    assert "6</strong> GTFS Schedule feed records across <strong>3</strong> countries" in html
+    assert "Current European beta measures compared with release thresholds" in html
+    assert "at least 250" in html
+    assert "at least 100%" in html
+    assert "Scorecard is older than the seven-day freshness window" in html
+    assert "<td>2</td>" in html
+    assert "not a claim\n    of coverage for all European public transport" in html
+    assert "does not assess NeTEx coverage" in html
+    # All three JSON documents stay cross-linked, and only one page-level title exists.
     assert 'href="/api/v1/status.json"' in html
     assert 'href="/api/v1/run-status.json"' in html
+    assert 'href="/api/v1/global-coverage.json"' in html
+    assert "docs/global-expansion.md" in html
     assert html.count("<h1") == 1
 
 

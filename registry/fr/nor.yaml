@@ -18,6 +18,16 @@ agencies:
     license_note: >-
       Licence Ouverte 2.0; published by Intercom Bernay Terres de Normandie
       through France's National Access Point.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-transport-urbain-de-bernay
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Intercom Bernay Terres de Normandie.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true
     # The publisher exposes one combined GTFS-Realtime stream for all kinds.
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
@@ -34,3 +44,13 @@ agencies:
       Licence Ouverte 2.0; source Syndicat mixte Atoumod and Transmanche
       Ferries through France's National Access Point. Derived measurements by
       GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transmanche-ferries
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Syndicat mixte Atoumod and Transmanche Ferries.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

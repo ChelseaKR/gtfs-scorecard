@@ -7540,11 +7540,128 @@ def _status_evidence_section(
     the grades themselves mean.</p>"""
 
 
+def _global_coverage_value(value: object, unit: str = "") -> str:
+    """Present one readiness-gate value without making ``null`` look like zero."""
+    if value is None:
+        return "Not available"
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    if unit == "percent" and isinstance(value, (int, float)):
+        return f"{value:g}%"
+    if isinstance(value, int):
+        return f"{value:,}"
+    return str(value)
+
+
+def _global_coverage_section(payload: dict[str, Any] | None) -> str:
+    """Render the public view of the evidence-gated European beta contract.
+
+    The JSON remains the audit record.  This view gives a non-technical reader
+    the same pass/fail criteria, denominators, and exception counts without
+    implying that a reviewed GTFS cohort represents all European transport.
+    """
+    doc = payload if isinstance(payload, dict) else {}
+    ready = doc.get("ready") is True and doc.get("status") == "ready"
+    badge_class = "pill-ok" if ready else "pill-warn"
+    badge_text = "Ready" if ready else "Not ready"
+
+    raw_cohort = doc.get("cohort")
+    cohort = raw_cohort if isinstance(raw_cohort, dict) else {}
+    feed_count = cohort.get("feed_record_count")
+    country_count = cohort.get("country_count")
+    if feed_count is None or country_count is None:
+        cohort_line = (
+            "No coverage-gate payload has been published on this deployment yet. "
+            "The beta cannot be marked ready without that evidence."
+        )
+    else:
+        feed_word = "record" if feed_count == 1 else "records"
+        country_word = "country" if country_count == 1 else "countries"
+        cohort_line = (
+            f"The reviewed cohort currently contains <strong>{esc(_global_coverage_value(feed_count))}</strong> "
+            f"GTFS Schedule feed {feed_word} across "
+            f"<strong>{esc(_global_coverage_value(country_count))}</strong> {country_word}."
+        )
+
+    raw_criteria = doc.get("criteria")
+    criteria = raw_criteria if isinstance(raw_criteria, list) else []
+    criterion_rows: list[str] = []
+    operator_labels = {">=": "at least", "<=": "at most", "=": "equals"}
+    for criterion in criteria:
+        if not isinstance(criterion, dict):
+            continue
+        unit = str(criterion.get("unit") or "")
+        current = _global_coverage_value(criterion.get("actual"), unit)
+        threshold = _global_coverage_value(criterion.get("threshold"), unit)
+        operator = operator_labels.get(
+            str(criterion.get("operator") or ""), str(criterion.get("operator") or "")
+        )
+        met = criterion.get("met") is True
+        criterion_rows.append(
+            f'<tr><th scope="row">{esc(str(criterion.get("label") or criterion.get("key") or "Criterion"))}</th>'
+            f"<td>{esc(current)}</td><td>{esc(operator)} {esc(threshold)}</td>"
+            f'<td><span class="{"pill-ok" if met else "pill-warn"}">'
+            f"{'Met' if met else 'Not met'}</span></td></tr>"
+        )
+    if not criterion_rows:
+        criterion_rows.append(
+            '<tr><th scope="row">Coverage gate payload</th><td>Not available</td>'
+            '<td>Published evidence required</td><td><span class="pill-warn">Not met</span></td></tr>'
+        )
+
+    raw_exceptions = doc.get("exceptions")
+    exceptions = raw_exceptions if isinstance(raw_exceptions, list) else []
+    exception_rows: list[str] = []
+    for exception in exceptions:
+        if not isinstance(exception, dict):
+            continue
+        count = exception.get("count")
+        if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+            continue
+        exception_rows.append(
+            f'<tr><th scope="row">{esc(str(exception.get("label") or exception.get("key") or "Exception"))}</th>'
+            f"<td>{count:,}</td></tr>"
+        )
+    if exception_rows:
+        exceptions_html = f"""<div class="table-wrap"><table>
+      <caption>Coverage-gate exceptions by reason</caption>
+      <thead><tr><th scope="col">Reason</th><th scope="col">Count</th></tr></thead>
+      <tbody>{"".join(exception_rows)}</tbody></table></div>
+    <p class="fineprint">A feed record can appear under more than one reason. The JSON lists
+    the affected record identifiers.</p>"""
+    else:
+        exceptions_html = "<p>No coverage-gate exceptions are recorded.</p>"
+
+    methodology_url = (
+        "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/global-expansion.md"
+    )
+    return f"""    <h2 class="section-title" id="global-coverage">European beta readiness</h2>
+    <p><span class="{badge_class}">{badge_text}</span> {cohort_line}</p>
+    <p>This is a bounded European <abbr title="General Transit Feed Specification">GTFS</abbr>
+    Schedule beta gate based on feed records with reviewed reuse evidence. It is not a claim
+    of coverage for all European public transport, and it does not assess NeTEx coverage.</p>
+
+    <section aria-labelledby="global-criteria-h"><h3 class="section-title" id="global-criteria-h">Readiness criteria</h3>
+    <div class="table-wrap"><table>
+      <caption>Current European beta measures compared with release thresholds</caption>
+      <thead><tr><th scope="col">Measure</th><th scope="col">Current</th>
+      <th scope="col">Threshold</th><th scope="col">Status</th></tr></thead>
+      <tbody>{"".join(criterion_rows)}</tbody></table></div></section>
+
+    <section aria-labelledby="global-exceptions-h"><h3 class="section-title" id="global-exceptions-h">Exceptions</h3>
+    {exceptions_html}</section>
+
+    <p class="fineprint">Read the auditable <a href="/api/v1/global-coverage.json">global coverage JSON</a>
+    or the <a href="{methodology_url}">global expansion methodology</a>. Counts are feed records,
+    not agencies, operators, routes, or services.</p>"""
+
+
 def _render_status(
     status_doc: dict[str, Any],
     run_summary: dict[str, Any] | None,
     catalog: list[dict[str, Any]],
     now: dt.datetime,
+    global_coverage: dict[str, Any] | None = None,
 ) -> str:
     """The one public /status/ page. EXP-10 (the refresh/liveness commitment)
     and FIX-11 (latest-run evidence) both used to render their own
@@ -7553,29 +7670,34 @@ def _render_status(
     commitment (`_status_commitment_section`, sourced from
     `api/v1/status.json`) on top, framed as what we commit to; latest-run
     evidence (`_status_evidence_section`, sourced from
-    `api/v1/run-status.json`) below, framed as latest-run evidence. Both JSON
-    endpoints stay published unchanged and are cross-linked from here and
-    from within each section."""
+    `api/v1/run-status.json`) below, framed as latest-run evidence; and the
+    bounded European GTFS beta gate last. All three JSON endpoints are
+    cross-linked from here and from within each section."""
     canonical = f"{BASE_URL}/status/"
     body = f"""    {_breadcrumb([("Home", "/"), ("Status", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Service status</h1>
-    <p class="page-lede">This page shows whether configured feed URLs are responding and whether
-    scheduled scoring completed. Direct liveness checks and the mirror-assisted daily run are
-    reported separately because they measure different things. Machine-readable at
-    <a href="/api/v1/status.json">/api/v1/status.json</a> and
-    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>.</p>
+    <p class="page-lede">This page shows whether configured feed URLs are responding, whether
+    scheduled scoring completed, and whether the bounded European beta criteria are met.
+    Direct liveness checks and the mirror-assisted daily run are reported separately because
+    they measure different things. Machine-readable at
+    <a href="/api/v1/status.json">/api/v1/status.json</a>,
+    <a href="/api/v1/run-status.json">/api/v1/run-status.json</a>, and
+    <a href="/api/v1/global-coverage.json">/api/v1/global-coverage.json</a>.</p>
 
     {_route_rule()}
 {_status_commitment_section(status_doc)}
 
     {_route_rule()}
-{_status_evidence_section(run_summary, catalog, now)}"""
+{_status_evidence_section(run_summary, catalog, now)}
+
+    {_route_rule()}
+{_global_coverage_section(global_coverage)}"""
     return _page(
         title="Status | GTFS Scorecard",
         description=(
             "The scorecard's monitoring schedule, current direct feed-URL liveness, latest full "
-            "scoring run, unreachable records, and catalog freshness."
+            "scoring run, catalog freshness, and bounded European GTFS beta readiness."
         ),
         canonical=canonical,
         body=body,
@@ -8505,6 +8627,24 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         json.dumps(feature_payload, indent=2, sort_keys=True) + "\n",
     )
 
+    # Evidence-gated global expansion contract: this deliberately measures a
+    # bounded European GTFS Schedule cohort, not Europe as a whole. Build it
+    # from the registry plus the same directory and feature documents consumers
+    # receive, then publish the complete evidence rows for auditability.
+    from .global_coverage import build_global_coverage
+
+    global_coverage_payload = build_global_coverage(
+        registry_by_id.values(),
+        directory,
+        feature_payload,
+        now.astimezone(dt.UTC).isoformat(timespec="seconds"),
+        now=now,
+    )
+    write(
+        "api/v1/global-coverage.json",
+        json.dumps(global_coverage_payload, indent=2, sort_keys=True) + "\n",
+    )
+
     # Daily change feed: agencies whose grade or score moved since their last
     # check, so a consumer ingests transitions instead of diffing the whole
     # catalog. Written under data/artifacts (served and committed like the rest)
@@ -8585,7 +8725,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # + catalog, both ready by this point in the render), composed into one page.
     write(
         "status/index.html",
-        _render_status(status_doc, run_summary, catalog, now),
+        _render_status(status_doc, run_summary, catalog, now, global_coverage_payload),
         f"{BASE_URL}/status/",
     )
 

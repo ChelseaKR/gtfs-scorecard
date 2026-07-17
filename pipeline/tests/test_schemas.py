@@ -98,6 +98,7 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "rollup-index.schema.json",
         "coverage.schema.json",
         "by-location.schema.json",
+        "global-coverage.schema.json",
     } <= names
 
 
@@ -119,6 +120,79 @@ def test_coverage_api_conforms_to_its_schema() -> None:
         [Agency("demo", "Demo", "https://example.org/feed.zip")],
     )
     _validator("coverage.schema.json").validate(payload)
+
+
+def test_global_coverage_api_conforms_to_its_schema() -> None:
+    from scorecard_pipeline.config import ReuseEvidence
+    from scorecard_pipeline.global_coverage import build_global_coverage
+
+    evidence = ReuseEvidence(
+        decision="approved",
+        source_kind="official_portal",
+        provider_source_url="https://transport.example.org/datasets/demo",
+        terms_url="https://transport.example.org/terms",
+        scope=("gtfs_schedule",),
+        attribution="Example transport authority",
+        reviewed_by="ChelseaKR",
+        reviewed_on="2026-07-16",
+        identity_reviewed=True,
+    )
+    agency = Agency(
+        id="demo-fr",
+        name="Demo France",
+        static_gtfs_url="https://transport.example.org/demo.zip",
+        country="FR",
+        subdivision_code="FR-NOR",
+        subdivision_name="Normandie",
+        reuse_evidence=evidence,
+    )
+    generated_at = "2026-07-16T12:00:00+00:00"
+    payload = build_global_coverage(
+        [agency],
+        {
+            "agencies": [
+                {
+                    "id": agency.id,
+                    "country": agency.country,
+                    "subdivision_code": agency.subdivision_code,
+                    "subdivision_name": agency.subdivision_name,
+                    "retrieved_at": "2026-07-16T11:00:00+00:00",
+                }
+            ]
+        },
+        {
+            "feed_record_count": 1,
+            "feeds": [{"id": agency.id, "translations_measured": True}],
+        },
+        generated_at,
+    )
+
+    # The producer intentionally publishes absent optional identity and page
+    # URLs as JSON null, rather than an empty or fabricated value.
+    assert payload["records"][0]["organization_id"] is None
+    assert payload["records"][0]["scorecard_url"] is None
+    _validator("global-coverage.schema.json").validate(payload)
+
+    empty_payload = build_global_coverage(
+        [],
+        {"agencies": []},
+        {"feed_record_count": 0, "feeds": []},
+        generated_at,
+    )
+    assert empty_payload["cohort"]["largest_country"] is None
+    assert {
+        row["actual"]
+        for row in empty_payload["criteria"]
+        if row["key"]
+        in {
+            "largest_country_share",
+            "fresh_scorecards",
+            "translations_measured",
+            "portable_location",
+            "identity_reviewed",
+        }
+    } == {None}
+    _validator("global-coverage.schema.json").validate(empty_payload)
 
 
 def test_by_location_api_conforms_to_its_schema() -> None:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from dataclasses import FrozenInstanceError
 from pathlib import Path
 
 import pytest
@@ -45,6 +46,101 @@ def test_valid_entry_parses() -> None:
     assert agency.id == "demo"
     assert agency.rt_urls == {"trip_updates": "https://example.org/tu.pb"}
     assert agency.license_note == "CC-BY"
+    assert agency.reuse_evidence is None
+
+
+VALID_REUSE_EVIDENCE: dict[str, object] = {
+    "decision": "approved",
+    "source_kind": "official_portal",
+    "provider_source_url": "https://data.example.org/datasets/demo",
+    "terms_url": "https://data.example.org/terms",
+    "scope": ["gtfs_schedule"],
+    "attribution": "  Demo Transit Authority  ",
+    "reviewed_by": "  Registry curator  ",
+    "reviewed_on": "2026-07-16",
+    "identity_reviewed": True,
+}
+
+
+def test_reuse_evidence_parses_as_frozen_reviewed_record() -> None:
+    (agency,) = parse_agencies(entry(reuse_evidence=VALID_REUSE_EVIDENCE))
+    evidence = agency.reuse_evidence
+
+    assert evidence is not None
+    assert evidence.decision == "approved"
+    assert evidence.source_kind == "official_portal"
+    assert evidence.provider_source_url == "https://data.example.org/datasets/demo"
+    assert evidence.terms_url == "https://data.example.org/terms"
+    assert evidence.scope == ("gtfs_schedule",)
+    assert evidence.attribution == "Demo Transit Authority"
+    assert evidence.reviewed_by == "Registry curator"
+    assert evidence.reviewed_on == "2026-07-16"
+    assert evidence.identity_reviewed is True
+    with pytest.raises(FrozenInstanceError):
+        evidence.reviewed_by = "Someone else"  # type: ignore[misc]
+
+
+def test_legacy_provenance_never_implies_reuse_approval() -> None:
+    (agency,) = parse_agencies(
+        entry(
+            license_note="CC BY 4.0",
+            is_official=True,
+            mdb_id="mdb-1234",
+        )
+    )
+
+    assert agency.reuse_evidence is None
+
+
+@pytest.mark.parametrize(
+    ("reuse_evidence", "message"),
+    [
+        (None, "reuse_evidence must be a mapping"),
+        ({}, "reuse_evidence missing required field"),
+        ({**VALID_REUSE_EVIDENCE, "extra": True}, "unknown reuse_evidence field"),
+        ({**VALID_REUSE_EVIDENCE, "decision": "pending"}, "decision must be exactly"),
+        ({**VALID_REUSE_EVIDENCE, "decision": " approved "}, "decision must be exactly"),
+        ({**VALID_REUSE_EVIDENCE, "source_kind": "catalog"}, "source_kind must be one of"),
+        ({**VALID_REUSE_EVIDENCE, "source_kind": []}, "source_kind must be one of"),
+        (
+            {**VALID_REUSE_EVIDENCE, "provider_source_url": "ftp://example.org/feed"},
+            "provider_source_url must be an http(s) URL",
+        ),
+        (
+            {**VALID_REUSE_EVIDENCE, "terms_url": "example.org/terms"},
+            "terms_url must be an http(s) URL",
+        ),
+        ({**VALID_REUSE_EVIDENCE, "scope": []}, "scope must be a non-empty list"),
+        ({**VALID_REUSE_EVIDENCE, "scope": "gtfs_schedule"}, "scope must be a non-empty list"),
+        ({**VALID_REUSE_EVIDENCE, "scope": [1]}, "scope entries must be strings"),
+        (
+            {**VALID_REUSE_EVIDENCE, "scope": ["gtfs_schedule", "gtfs_schedule"]},
+            "scope entries must be unique",
+        ),
+        (
+            {**VALID_REUSE_EVIDENCE, "scope": ["gtfs_realtime"]},
+            "scope contains unknown value",
+        ),
+        ({**VALID_REUSE_EVIDENCE, "attribution": "  "}, "attribution must be a non-empty"),
+        ({**VALID_REUSE_EVIDENCE, "reviewed_by": ""}, "reviewed_by must be a non-empty"),
+        (
+            {**VALID_REUSE_EVIDENCE, "reviewed_on": "2026-7-16"},
+            "reviewed_on must be an ISO date",
+        ),
+        (
+            {**VALID_REUSE_EVIDENCE, "reviewed_on": "2026-02-30"},
+            "reviewed_on must be a valid ISO date",
+        ),
+        (
+            {**VALID_REUSE_EVIDENCE, "identity_reviewed": "yes"},
+            "identity_reviewed must be true or false",
+        ),
+    ],
+)
+def test_invalid_reuse_evidence_fails_closed(reuse_evidence: object, message: str) -> None:
+    with pytest.raises(AgencyConfigError) as excinfo:
+        parse_agencies(entry(reuse_evidence=reuse_evidence))
+    assert message in str(excinfo.value)
 
 
 def test_repo_registry_is_valid_and_lists_pilots(monkeypatch: pytest.MonkeyPatch) -> None:

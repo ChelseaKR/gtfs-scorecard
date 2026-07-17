@@ -47,6 +47,33 @@ must not be guessed merely to choose a shard.
 - `service_type`: `fixed` (default), `seasonal`, or `demand_response`.
 - `fare_free`: `true` only when fare-free operation is a verified policy.
 
+### Reviewed reuse evidence
+
+`reuse_evidence` is an optional, curator-approved record used by bounded
+coverage gates. It is deliberately separate from `license_note`, catalog
+`is_official` flags, and Mobility Database metadata. Those fields can point a
+reviewer toward evidence, but they never grant permission by themselves.
+
+```yaml
+reuse_evidence:
+  decision: approved
+  source_kind: official_portal
+  provider_source_url: https://provider.example/dataset
+  terms_url: https://provider.example/terms
+  scope: [gtfs_schedule]
+  attribution: Provider name.
+  reviewed_by: curator-handle
+  reviewed_on: "2026-07-16"
+  identity_reviewed: true
+```
+
+The parser accepts only an `approved` decision, `official_portal` or `provider`
+source kind, HTTP(S) evidence links, the closed `gtfs_schedule` scope, a valid
+review date, non-empty attribution and reviewer, and an explicit identity
+review. Unknown keys or inferred evidence fail registry loading. Absence means
+no approved evidence record is on file; it is not a claim that the feed is
+unlicensed.
+
 Unknown fields, malformed URLs or locations, duplicate ids, missing alias
 targets, and alias cycles fail registry loading. Run the same gates as CI before
 opening a pull request:
