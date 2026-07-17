@@ -13,7 +13,8 @@ produces, so the artifact is reproducible and safe to re-run:
 
     {"agencies": {id: {"name", "history": [
         {"date", "grade", "score", "rubric_version", "scoring_profile_id",
-         "scoring_profile_rubric_version", "validator_version", "feed_sha256",
+         "scoring_profile_rubric_version", "validator_version",
+         "reader_archive_profile", "feed_sha256",
          "categories": {...}, "days_until_expiry", "service_horizon_status"}, ...
     ]}}}
 
@@ -30,7 +31,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from . import SCHEMA_VERSION
-from .comparisons import build_comparison_cohort
+from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import Agency
 from .metrics import resolve_service_horizon_status
 
@@ -51,6 +52,7 @@ COLUMNS: tuple[str, ...] = (
     "scoring_profile_id",
     "scoring_profile_rubric_version",
     "validator_version",
+    "reader_archive_profile",
     "feed_sha256",
     "comparison_eligible",
     *_CATEGORY_KEYS,
@@ -85,6 +87,7 @@ def _row_for_agency(agency_id: str, entry: dict[str, Any]) -> dict[str, Any] | N
         "scoring_profile_id": latest.get("scoring_profile_id"),
         "scoring_profile_rubric_version": latest.get("scoring_profile_rubric_version"),
         "validator_version": latest.get("validator_version"),
+        "reader_archive_profile": reader_archive_profile(latest),
         "feed_sha256": latest.get("feed_sha256"),
         "days_until_expiry": latest.get("days_until_expiry"),
         "service_horizon_status": resolve_service_horizon_status(latest),
@@ -97,7 +100,7 @@ def _row_for_agency(agency_id: str, entry: dict[str, Any]) -> dict[str, Any] | N
 def build_quality_dataset(
     index: dict[str, Any],
     *,
-    schema_version: str = "1.2",
+    schema_version: str = "1.3",
     agencies: Iterable[Agency] | None = None,
 ) -> dict[str, Any]:
     """Build the flat open dataset from a published index.

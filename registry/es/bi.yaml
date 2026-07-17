@@ -1,0 +1,31 @@
+# Bizkaia (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: metro-bilbao
+    name: Metro Bilbao
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    mdb_id: "3052"
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/metrobilbao.zip
+    license_note: >-
+      CC BY 4.0 through Consorcio de Transportes de Bizkaia; credit the source,
+      include the last-update date, and do not distort the data's meaning.
+    operating_note: >-
+      MDB 3052 is the active replacement for deprecated records 2683 and 1200;
+      the predecessors are not separate feed coverage.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/en/dataset/horario-metro-bilbao
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and Metro Bilbao; include the
+        source data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

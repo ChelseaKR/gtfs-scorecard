@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import io
 import zipfile
+from pathlib import Path
 
 import pytest
 import requests
@@ -24,6 +26,19 @@ def _zip_bytes() -> bytes:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
         z.writestr("agency.txt", "agency_name\nX")
+    return buf.getvalue()
+
+
+def _wasco_shaped_zip_bytes() -> bytes:
+    """The Caltrans Wasco export shape: one root folder plus a spaced name."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        z.writestr("Wasco Dial-a-Ride/agency.txt", "agency_id,agency_name\nwasco,Wasco")
+        z.writestr(
+            "Wasco Dial-a-Ride/ stop_times.txt",
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n",
+        )
+        z.writestr("Wasco Dial-a-Ride/stops.txt", "stop_id,stop_name\n1,City Hall")
     return buf.getvalue()
 
 
@@ -220,6 +235,76 @@ def test_fetch_static_downloads_and_records_the_snapshot(
     assert result.final_url == ORIGIN
     assert result.user_agent == fetchmod.USER_AGENT
     assert result.max_attempts == fetchmod.FETCH_RETRIES + 1
+    assert result.reader_view_path == result.path
+    assert result.reader_archive_normalized is False
+
+
+def test_fetch_static_preserves_wasco_raw_bytes_and_builds_deterministic_reader_view(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    body = _wasco_shaped_zip_bytes()
+    monkeypatch.setattr(fetchmod, "_download_with_mirror_fallback", lambda _a: (body, ORIGIN_PROV))
+
+    result = fetchmod.fetch_static(AGENCY, DATE)
+
+    assert result.path.read_bytes() == body
+    assert result.sha256 == hashlib.sha256(body).hexdigest()
+    assert result.reader_archive_normalized is True
+    assert result.reader_view_path != result.path
+    with zipfile.ZipFile(result.path) as raw:
+        assert raw.namelist() == [
+            "Wasco Dial-a-Ride/agency.txt",
+            "Wasco Dial-a-Ride/ stop_times.txt",
+            "Wasco Dial-a-Ride/stops.txt",
+        ]
+    first_view = result.reader_view_path.read_bytes()
+    with zipfile.ZipFile(result.reader_view_path) as reader:
+        assert reader.namelist() == ["agency.txt", "stop_times.txt", "stops.txt"]
+
+    # Re-preparing the same archived producer bytes is byte-deterministic.
+    prepared_again = fetchmod.prepare_reader_archive(result.path)
+    assert prepared_again.path.read_bytes() == first_view
+
+
+@pytest.mark.parametrize(
+    "members, message",
+    [
+        ({"A/agency.txt": "x", "B/stops.txt": "x"}, "multiple possible root"),
+        ({"A/nested/agency.txt": "x"}, "nested deeper"),
+        ({" agency.txt": "x", "A/stops.txt": "x"}, "mixes root and nested"),
+    ],
+)
+def test_reader_archive_rejects_ambiguous_layouts(
+    tmp_path: Path, members: dict[str, str], message: str
+) -> None:
+    raw = tmp_path / "gtfs.zip"
+    with zipfile.ZipFile(raw, "w") as archive:
+        for name, text in members.items():
+            archive.writestr(name, text)
+
+    with pytest.raises(ValueError, match=message):
+        fetchmod.prepare_reader_archive(raw)
+
+
+def test_reader_archive_rejects_names_that_collide_after_trimming(tmp_path: Path) -> None:
+    raw = tmp_path / "gtfs.zip"
+    with zipfile.ZipFile(raw, "w") as archive:
+        archive.writestr("Wasco/stops.txt", "a")
+        archive.writestr("Wasco/ stops.txt", "b")
+
+    with pytest.raises(ValueError, match="collide after normalization"):
+        fetchmod.prepare_reader_archive(raw)
+
+
+def test_canonical_root_with_nested_extras_conservatively_stays_raw(tmp_path: Path) -> None:
+    raw = tmp_path / "gtfs.zip"
+    with zipfile.ZipFile(raw, "w") as archive:
+        archive.writestr("agency.txt", "agency_name\nDemo")
+        archive.writestr("docs/readme.txt", "producer notes")
+
+    prepared = fetchmod.prepare_reader_archive(raw)
+
+    assert prepared == fetchmod.ReaderArchive(path=raw, normalized=False)
 
 
 def test_fetch_static_rejects_a_non_zip_response(monkeypatch: pytest.MonkeyPatch) -> None:

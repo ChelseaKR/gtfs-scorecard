@@ -246,6 +246,7 @@
             "required_rubric_version": {"type": "string"},
             "required_scoring_profile_id": {"type": "string"},
             "required_validator_version": {"type": "string"},
+            "required_reader_archive_profile": {"type": "string"},
             "required_measured_categories": {
               "type": "array",
               "items": {
@@ -392,6 +393,10 @@
               "null"
             ],
             "description": "SHA-256 of the exact feed bytes scored."
+          },
+          "reader_archive_profile": {
+            "type": "string",
+            "enum": ["raw-v1", "flat-single-root-v1"]
           },
           "retrieved_at": {
             "type": [

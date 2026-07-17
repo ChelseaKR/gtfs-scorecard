@@ -276,6 +276,8 @@ def build_digest(  # noqa: C901
 
     index = _load_json(root / "index.json") or {"agencies": {}}
     for agency_id, entry in sorted(index.get("agencies", {}).items()):
+        history = entry.get("history", [])
+        comparable_history = current_producer_contract_suffix(history)
         latest = _load_json(root / agency_id / "latest.json")
         expiry = None
         if latest:
@@ -287,12 +289,10 @@ def build_digest(  # noqa: C901
             # check hasn't already flagged this feed — otherwise it is a
             # slower-to-fire duplicate of the same warning.
             lapse_risk = _lapse_risk_item(
-                entry.get("history", []), entry.get("name", agency_id), agency_id
+                comparable_history, entry.get("name", agency_id), agency_id
             )
             if lapse_risk:
                 items.append(lapse_risk)
-        history = entry.get("history", [])
-        comparable_history = current_producer_contract_suffix(history)
         regression = _regression_item(comparable_history, entry.get("name", agency_id), agency_id)
         if regression:
             items.append(regression)

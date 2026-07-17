@@ -28,14 +28,17 @@ from .comparisons import producer_contract, same_producer_contract
 
 def _producer_contract_evidence(artifact: dict[str, Any]) -> dict[str, Any] | None:
     """Serializable evidence for the exact producer contract of ``artifact``."""
-    rubric, profile, profile_rubric, validator, measured = producer_contract(artifact)
-    if not all((rubric, profile, profile_rubric, validator)) or not measured:
+    rubric, profile, profile_rubric, validator, reader_profile, measured = producer_contract(
+        artifact
+    )
+    if not all((rubric, profile, profile_rubric, validator, reader_profile)) or not measured:
         return None
     return {
         "rubric_version": rubric,
         "scoring_profile_id": profile,
         "scoring_profile_rubric_version": profile_rubric,
         "validator_version": validator,
+        "reader_archive_profile": reader_profile,
         "measured_categories": list(measured),
     }
 
@@ -56,6 +59,7 @@ def _evidence_record(evidence: Any) -> dict[str, Any] | None:
         "scoring_profile_id": evidence.get("scoring_profile_id"),
         "scoring_profile_rubric_version": evidence.get("scoring_profile_rubric_version"),
         "validator_version": evidence.get("validator_version"),
+        "reader_archive_profile": evidence.get("reader_archive_profile"),
         "categories": {category: {"status": "measured"} for category in measured},
     }
     return record if same_producer_contract(record, record) else None

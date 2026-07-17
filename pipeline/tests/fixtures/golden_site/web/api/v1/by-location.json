@@ -10,8 +10,9 @@
     },
     "individual_percentiles_published": false,
     "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
     "required_measured_categories": [],
+    "required_reader_archive_profile": "raw-v1",
     "required_rubric_version": "1.2",
     "required_scoring_profile_id": "gtfs-scorecard-1.2",
     "required_validator_version": "8.0.1"

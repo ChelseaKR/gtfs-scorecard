@@ -148,6 +148,7 @@
         "required_rubric_version": {"type": "string"},
         "required_scoring_profile_id": {"type": "string"},
         "required_validator_version": {"type": "string"},
+        "required_reader_archive_profile": {"type": "string"},
         "required_measured_categories": {
           "type": "array",
           "items": {

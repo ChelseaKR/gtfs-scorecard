@@ -843,15 +843,29 @@ def test_catalog_top_level_rubric_reports_mixed_row_versions() -> None:
     _write_catalog(
         write,
         [
-            {"id": "old", "rubric_version": "1.1", "comparison_eligible": False},
-            {"id": "new", "rubric_version": "1.2", "comparison_eligible": True},
+            {
+                "id": "old",
+                "rubric_version": "1.1",
+                "reader_archive_profile": "raw-v1",
+                "comparison_eligible": False,
+            },
+            {
+                "id": "new",
+                "rubric_version": "1.2",
+                "reader_archive_profile": "flat-single-root-v1",
+                "comparison_eligible": True,
+            },
         ],
     )
 
     catalog = json.loads(written["catalog.json"])
     assert catalog["rubric_version"] == "mixed"
     assert catalog["rubric_versions"] == ["1.1", "1.2"]
-    assert "comparison_eligible" in written["catalog.csv"].splitlines()[0]
+    csv_lines = written["catalog.csv"].splitlines()
+    assert "comparison_eligible" in csv_lines[0]
+    assert "reader_archive_profile" in csv_lines[0]
+    assert "raw-v1" in csv_lines[1]
+    assert "flat-single-root-v1" in csv_lines[2]
 
 
 def test_california_checklist_reads_measured_fields() -> None:
@@ -1989,19 +2003,35 @@ def test_recommendations_section_lists_items_and_is_empty_without_any() -> None:
 def test_anomaly_note_flags_a_transient_dip_and_is_empty_when_steady() -> None:
     from scorecard_pipeline.render_site import _anomaly_note
 
+    def comparable(point: dict[str, object]) -> dict[str, object]:
+        point.update(
+            {
+                "rubric_version": "1.2",
+                "scoring_profile_id": "gtfs-scorecard-1.2",
+                "scoring_profile_rubric_version": "1.2",
+                "validator_version": "8.0.1",
+                "categories": {"correctness": 80.0},
+            }
+        )
+        return point
+
     dip = [
-        {"date": "2026-06-16", "score": 80.0, "grade": "B", "days_until_expiry": 83},
-        {"date": "2026-06-19", "score": 44.0, "grade": "F", "days_until_expiry": -138},
-        {"date": "2026-06-20", "score": 83.0, "grade": "B", "days_until_expiry": 79},
+        comparable({"date": "2026-06-16", "score": 80.0, "grade": "B", "days_until_expiry": 83}),
+        comparable({"date": "2026-06-19", "score": 44.0, "grade": "F", "days_until_expiry": -138}),
+        comparable({"date": "2026-06-20", "score": 83.0, "grade": "B", "days_until_expiry": 79}),
     ]
     html = _anomaly_note(dip)
     assert "Heads-up" in html and "anomaly-note" in html
     steady = [
-        {"date": "2026-06-19", "score": 82.0, "grade": "B", "days_until_expiry": 80},
-        {"date": "2026-06-20", "score": 83.0, "grade": "B", "days_until_expiry": 79},
+        comparable({"date": "2026-06-19", "score": 82.0, "grade": "B", "days_until_expiry": 80}),
+        comparable({"date": "2026-06-20", "score": 83.0, "grade": "B", "days_until_expiry": 79}),
     ]
     assert _anomaly_note(steady) == ""
     assert _anomaly_note([]) == ""
+
+    profile_change = [dict(point) for point in dip]
+    profile_change[-1]["reader_archive_profile"] = "flat-single-root-v1"
+    assert _anomaly_note(profile_change) == ""
 
 
 def test_google_gate_line_reports_coverage_status() -> None:
@@ -2624,7 +2654,25 @@ def test_render_compare_page_form_is_shareable_and_neutral() -> None:
     assert "visually-hidden" in html and "(higher)" in html
     assert "These scorecards are not like-for-like" in html
     assert "scoring profile" in html and "validator" in html
+    assert "reader archive profile" in html
+    assert "flat-single-root-v1" in html and "raw-v1" in html
+    assert "hasOwnProperty.call(owner" in html
+    assert "contractA.readerArchive === contractB.readerArchive" in html
     assert "distinct feed bytes" in html and "measured category set" in html
+
+
+def test_citation_carries_the_reader_archive_profile() -> None:
+    from scorecard_pipeline.render_site import _citation_bibtex, _citation_reference
+
+    artifact = _diff_artifact(date="2026-06-12", grade="B", score=82.0)
+    artifact["fetch"] = {"reader_archive_profile": "flat-single-root-v1"}
+    url = "https://gtfsscorecard.org/data/artifacts/demo/2026-06-12.json"
+
+    reference = _citation_reference(artifact, "demo", "Demo Transit", url)
+    bibtex = _citation_bibtex(artifact, "demo", "Demo Transit", url)
+
+    assert "reader archive profile flat-single-root-v1" in reference
+    assert "reader archive profile flat-single-root-v1" in bibtex
 
 
 def test_render_map_page_marker_shows_grade_not_color_only() -> None:
@@ -3018,6 +3066,7 @@ def test_query_page_is_lazy_local_and_honest_about_frame() -> None:
     assert "<noscript>" in html
     assert "Expiry support worklist" in html
     assert "Producer provenance" in html
+    assert "reader_archive_profile" in html
     assert "comparison_eligible = true" in html
     assert "not rankings" in html
     assert "Grade distribution" not in html
@@ -3553,6 +3602,7 @@ def test_change_snapshot_cleanup_keeps_only_auditable_contracts(tmp_path: Path) 
                     "required_rubric_version": "1.2",
                     "required_scoring_profile_id": "gtfs-scorecard-1.2",
                     "required_validator_version": "8.0.1",
+                    "required_reader_archive_profile": "raw-v1",
                     "required_measured_categories": [],
                 },
             }

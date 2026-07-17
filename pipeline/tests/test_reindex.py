@@ -26,7 +26,7 @@ def _publish(agency_id: str, date: dt.date, score: float) -> None:
         path=Path("/tmp/g.zip"),
         url=agency.static_gtfs_url,
         fetched_date=date,
-        sha256="x",
+        sha256="a" * 64,
         size_bytes=1,
         reused=False,
     )

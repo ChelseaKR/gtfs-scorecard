@@ -89,10 +89,11 @@ def _scored_result(
     """Score one validator report exactly the way the daily run does (minus
     realtime, which no validator version affects), so the grade shift the diff
     sees is purely validator-driven."""
+    reader_path = fetched.reader_view_path
     cats = [
         correctness(report),
-        freshness(read_feed_dates(str(fetched.path)), today=date, service_type=agency.service_type),
-        completeness(str(fetched.path), fare_free=agency.fare_free),
+        freshness(read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type),
+        completeness(str(reader_path), fare_free=agency.fare_free),
     ]
     scorecard = build_scorecard(cats)
     return agency_result(agency.id, report, scorecard.grade, scorecard.overall_score)

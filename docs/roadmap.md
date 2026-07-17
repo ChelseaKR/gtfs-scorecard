@@ -1,6 +1,6 @@
 # Roadmap: prove remediation before expanding
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 This is the infrastructure and delivery roadmap for GTFS Scorecard. The
 product counterpart is [`product-roadmap.md`](product-roadmap.md), and the
@@ -30,7 +30,7 @@ goal. The full competitive decision and its evidence are in
 The old regional and national scale plans landed ahead of their original
 sequence. Treat these capabilities as baseline:
 
-- The registry has more than 1,100 configured feed records in the current worldwide
+- The registry has more than 1,150 configured feed records in the current worldwide
   coverage, still concentrated in the United States and Canada. The artifact index
   has numeric current scores for more than 1,100 of them. The public status page
   reports the exact current configured and published counts.
@@ -77,15 +77,15 @@ remediation cycle.
 
 ### 1. Reusable release shipped
 
-Completed 2026-07-15. Marketplace release `v1.2.1` is public. The immutable
+Completed and refreshed 2026-07-16. Marketplace release `v1.3.0` is public. The immutable
 tag, signed release evidence, floating `v1` tag, public
 [Marketplace listing](https://github.com/marketplace/actions/gtfs-scorecard-gate),
 and downstream consumer runs are verified. The distribution prerequisite for
 asking the GTFS community to test the workflow is satisfied.
 
 Evidence: the public
-[downstream smoke run](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29454018351)
-passed against both `v1.2.1` and `v1`.
+[downstream smoke run](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29551173480)
+passed against both `v1.3.0` and `v1`.
 
 ### 2. Recruit the pilot
 
@@ -100,6 +100,11 @@ Before a request is sent, confirm:
 - the participant role responsible for the next action;
 - the existing channel where the participant tracks work;
 - what evidence may be public and what must remain private.
+
+One evidence-backed candidate is Wasco Dial-a-Ride. Its official Caltrans DDS
+archive is still the January 2022 upload and now scores as expired. Treat this
+as a recruitment lead only: a cycle begins only if Wasco and a support-program
+liaison accept the request and confirm the intended feed identity.
 
 ### 3. Run six concierge-led remediation requests
 
@@ -193,6 +198,7 @@ Maintenance does not compete with the pilot unless a threshold is crossed.
 | Site renderer | A change repeatedly crosses unrelated pages or golden tests cannot isolate regressions. | Decompose the renderer incrementally behind existing output contracts. |
 | Hosted one-off scoring | Repeated public requests cannot be served safely by the local or GitHub-backed paths. | Trial a capped service with abuse protection and a hard cost ceiling. |
 | Realtime | Existing bounded checks miss a documented support decision. | Add the smallest sampling window that answers that decision. |
+| Canonical feed URLs | A configured ZIP redirects to HTML or a retired host while a provider or catalog offers a current candidate. | Create a human identity and reuse review queue; never switch a feed automatically. |
 
 ## Work that is cut or parked
 

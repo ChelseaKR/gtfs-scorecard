@@ -1,0 +1,30 @@
+# Lisboa (PT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: transtejo-soflusa
+    name: Transtejo Soflusa (TTSL)
+    country: PT
+    subdivision_code: PT-11
+    subdivision_name: Lisboa
+    mdb_id: "2921"
+    is_official: true
+    static_gtfs_url: https://api.transtejo.pt/files/GTFS.zip
+    license_note: >-
+      CC0 through Portugal's public-administration open-data catalog;
+      attribution is not legally required, but GTFS Scorecard credits TTSL as
+      the source.
+    operating_note: >-
+      One official ferry feed with five routes connecting Lisboa and Setúbal
+      terminals across the Tagus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dados.gov.pt/pt/organizations/transtejo-soflusa/
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: TTSL - Transtejo Soflusa, S.A.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

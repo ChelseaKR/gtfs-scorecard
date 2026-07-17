@@ -10,8 +10,9 @@
     },
     "individual_percentiles_published": false,
     "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
     "required_measured_categories": [],
+    "required_reader_archive_profile": "raw-v1",
     "required_rubric_version": "1.2",
     "required_scoring_profile_id": "gtfs-scorecard-1.2",
     "required_validator_version": "8.0.1"
@@ -26,6 +27,7 @@
     "scoring_profile_id",
     "scoring_profile_rubric_version",
     "validator_version",
+    "reader_archive_profile",
     "feed_sha256",
     "comparison_eligible",
     "correctness",
@@ -35,7 +37,7 @@
     "days_until_expiry",
     "service_horizon_status"
   ],
-  "pipeline_schema_version": "1.14",
+  "pipeline_schema_version": "1.15",
   "rows": [
     {
       "comparison_eligible": false,
@@ -48,6 +50,7 @@
       "grade": "C",
       "id": "barrie-transit",
       "name": "Barrie Transit (Ontario)",
+      "reader_archive_profile": "raw-v1",
       "realtime": null,
       "rubric_version": "1.1",
       "score": 72.3,
@@ -67,6 +70,7 @@
       "grade": "B",
       "id": "unitrans",
       "name": "Unitrans (ASUCD / City of Davis)",
+      "reader_archive_profile": "raw-v1",
       "realtime": null,
       "rubric_version": "1.1",
       "score": 80.8,
@@ -86,6 +90,7 @@
       "grade": "B",
       "id": "yolobus",
       "name": "Yolobus (Yolo County Transportation District)",
+      "reader_archive_profile": "raw-v1",
       "realtime": 92.2,
       "rubric_version": "1.1",
       "score": 82.5,
@@ -95,5 +100,5 @@
       "validator_version": "8.0.1"
     }
   ],
-  "schema_version": "1.2"
+  "schema_version": "1.3"
 }

@@ -166,6 +166,31 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             pathways: !!(comp.pathways && comp.pathways.has_pathways)
           }};
         }}
+        function readerArchiveProfile(art) {{
+          var fetchBlock = art.fetch && typeof art.fetch === "object" ? art.fetch : {{}};
+          var direct = Object.prototype.hasOwnProperty.call(art, "reader_archive_profile");
+          var embedded = Object.prototype.hasOwnProperty.call(
+            fetchBlock, "reader_archive_profile");
+          var owner = direct ? art : fetchBlock;
+          var profile = Object.prototype.hasOwnProperty.call(owner, "reader_archive_profile")
+            ? owner.reader_archive_profile : null;
+          function valid(value) {{
+            return value === "raw-v1" || value === "flat-single-root-v1";
+          }}
+          if ((direct && !valid(art.reader_archive_profile)) ||
+              (embedded && !valid(fetchBlock.reader_archive_profile))) return "";
+          if (direct && embedded &&
+              art.reader_archive_profile !== fetchBlock.reader_archive_profile) return "";
+          var normalizedPresent = Object.prototype.hasOwnProperty.call(
+            fetchBlock, "reader_archive_normalized");
+          var normalized = fetchBlock.reader_archive_normalized;
+          if (normalizedPresent && typeof normalized !== "boolean") return "";
+          var implied = normalized === true ? "flat-single-root-v1" : "raw-v1";
+          if (direct || embedded) {{
+            return normalizedPresent && profile !== implied ? "" : profile;
+          }}
+          return implied;
+        }}
         function comparisonContract(art) {{
           var profile = art.scoring_profile || {{}};
           return {{
@@ -173,6 +198,7 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             profile: String(profile.id || ""),
             profileRubric: String(profile.rubric_version || ""),
             validator: String(art.validator_version || ""),
+            readerArchive: readerArchiveProfile(art),
             feedHash: String(((art.feed || {{}}).sha256) || ""),
             measured: CATS.filter(function (c) {{
               return ((art.categories || {{}})[c[0]] || {{}}).status === "measured";
@@ -184,6 +210,7 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           var nameA = artA.agency.name, nameB = artB.agency.name;
           var contractA = comparisonContract(artA), contractB = comparisonContract(artB);
           var likeForLike = contractA.rubric && contractA.profile && contractA.validator &&
+            contractA.readerArchive && contractB.readerArchive &&
             contractA.feedHash && contractB.feedHash &&
             contractA.feedHash !== contractB.feedHash &&
             contractA.profileRubric === contractA.rubric &&
@@ -191,6 +218,7 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             contractA.rubric === contractB.rubric &&
             contractA.profile === contractB.profile &&
             contractA.validator === contractB.validator &&
+            contractA.readerArchive === contractB.readerArchive &&
             JSON.stringify(contractA.measured) === JSON.stringify(contractB.measured);
           if (!likeForLike) {{
             result.textContent = "";
@@ -200,7 +228,8 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             warning.appendChild(el("h2", "These scorecards are not like-for-like."));
             warning.appendChild(el("p", nameA + " and " + nameB +
               " do not have distinct feed bytes under the same verified scoring profile, " +
-              "rubric, validator, and measured category set. Their grades stay separate so " +
+              "rubric, validator, reader archive profile, and measured category set. " +
+              "Their grades stay separate so " +
               "a duplicate record, methodology, or realtime-coverage difference is not " +
               "presented as a feed-quality difference."));
             var links = el("p");
@@ -296,15 +325,19 @@ _QUERY_EXAMPLES = [
     ),
     (
         "Rows outside the comparison cohort",
-        "SELECT id, name, date, rubric_version, scoring_profile_id, validator_version\n"
+        "SELECT id, name, date, rubric_version, scoring_profile_id, validator_version,\n"
+        "       reader_archive_profile\n"
         "FROM agencies\nWHERE comparison_eligible = false\nORDER BY name\nLIMIT 50",
     ),
     (
         "Producer provenance",
         "SELECT rubric_version, scoring_profile_id, validator_version,\n"
+        "       reader_archive_profile,\n"
         "       count(*) AS feed_records\nFROM agencies\n"
-        "GROUP BY rubric_version, scoring_profile_id, validator_version\n"
-        "ORDER BY rubric_version, scoring_profile_id, validator_version",
+        "GROUP BY rubric_version, scoring_profile_id, validator_version,\n"
+        "         reader_archive_profile\n"
+        "ORDER BY rubric_version, scoring_profile_id, validator_version,\n"
+        "         reader_archive_profile",
     ),
 ]
 

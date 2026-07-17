@@ -7,7 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from scorecard_pipeline import archive, cli, feedapi
+import scorecard_pipeline.archive as archive
+import scorecard_pipeline.cli as cli
+import scorecard_pipeline.feedapi as feedapi
 from scorecard_pipeline.config import AGENCIES, Agency
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.validate import VALIDATOR_VERSION, ValidationReport

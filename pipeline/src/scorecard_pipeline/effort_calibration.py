@@ -72,10 +72,10 @@ def agency_episodes(artifacts: Iterable[dict[str, Any]]) -> list[Episode]:
     open_first_seen: dict[str, str] = {}
     open_cat: dict[str, str] = {}
     episodes: list[Episode] = []
-    active_contract: tuple[str, str, str, str] | None = None
+    active_contract: tuple[str, str, str, str, str] | None = None
 
     for artifact in artifacts:
-        contract = producer_contract(artifact)[:4]
+        contract = producer_contract(artifact)[:5]
         if not all(contract):
             # Incomplete provenance cannot support a timing claim. Drop any
             # open episode so a later complete artifact cannot appear to close

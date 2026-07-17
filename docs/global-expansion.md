@@ -31,13 +31,19 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The registry snapshot after the reviewed ferry wave contains 1,154 feed
-records: 1,139 in the United States, three in Canada, two in Australia, three in
-France, one in Ireland, two in Italy, and one each in Japan, Malaysia, New
-Zealand, and Uruguay. The six records whose primary catalog location is in
-France, Ireland, or Italy are European canaries. The country controls prove that
-the data model and interface can carry worldwide locations; they are not country
-or regional samples.
+The configured registry snapshot after the reviewed breadth wave contains
+1,163 feed records: 1,139 in the United States, three in Canada, two in
+Australia, three in France, two in Italy, and one each in Belgium, Switzerland,
+Denmark, Estonia, Spain, Finland, Great Britain, Ireland, Japan, Malaysia, New
+Zealand, Poland, Portugal, and Uruguay. The public scored count is a separate,
+smaller number reported by the status API; configured and published feed records
+are not interchangeable.
+
+The 15 records whose primary catalog location is in 12 European countries are
+reviewed canaries. They cover bus, tram, metro, ferry, national multimodal, and
+GTFS-Flex demand-responsive service. The country and mode controls prove that
+the data model and interface can carry worldwide locations; they are not
+country or regional samples.
 
 The portable core already supports:
 
@@ -146,11 +152,24 @@ beside the finder. A `not_ready` result is expected until every threshold is
 met. It blocks the beta label without blocking the individual canary
 scorecards.
 
-The initial reviewed European cohort contains six feed records across France,
-Ireland, and Italy. This establishes the evidence, identity, freshness,
-translation, and location contracts while truthfully failing the 250-record,
-12-country, and country-balance thresholds. The source rows are public so a
-consumer can audit what “reviewed” means.
+The first reviewed European cohort contained six feed records across France,
+Ireland, and Italy. The next bounded wave adds nine records across Belgium,
+Switzerland, Denmark, Estonia, Spain, Finland, Great Britain, Poland, and
+Portugal. That produces 15 reviewed feed records across 12 countries, with France
+the largest country at 20%. Country breadth and balance therefore pass, while
+the 250-record threshold still fails by design. Freshness, translation,
+location, and identity remain executable per-record gates rather than claims
+inferred from the registry. The source rows are public so a consumer can audit
+what “reviewed” means.
+
+This wave did not relax ingestion limits to make the map look fuller. The
+Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
+pipeline's 2 GiB safety cap, so the cohort uses the much smaller official SKI+
+GTFS-Flex collection instead. The public Vienna archive was also deferred after
+`stop_times.txt` expanded to about 609 MB, above the 512 MiB single-entry cap;
+the bounded wave uses the preflighted Transtejo ferry feed instead. Norway's
+national aggregate was deferred at about 588 MB compressed. Large feeds need a
+separately designed shard, not an exception to the archive guard.
 
 The threshold is intentionally below the 406 license-linked discovery rows so
 manual review can reject stale, duplicate, restricted, or misidentified feeds.
@@ -169,9 +188,10 @@ a bounded product decision.
 
 ### Next: curated European GTFS cohort
 
-- Start with Spain, France, Sweden, the United Kingdom, Germany, and Italy
-  because the discovery audit provides the largest initial review queues. This
-  order does not waive the license and identity gates.
+- Build depth next within Spain, France, Sweden, the United Kingdom, Germany,
+  and Italy because the discovery audit provides the largest review queues.
+  Existing country canaries do not waive the license and identity gates for
+  another feed.
 - Cross-check provider pages and National Access Points, retain source and
   attribution evidence, and reject entries whose reuse terms remain unclear.
 - Add country waves only after the existing worldwide canary checklist in
@@ -182,6 +202,11 @@ The first ferry-focused wave added four European records after direct source,
 calendar, identity, route-type, and reuse review, plus one Australian ferry
 record. It is a product and ingestion canary, not the European beta. The wave
 also documented four exclusions where access, mode, or freshness did not pass.
+
+The nine-record breadth wave then added one reviewed record per new country.
+Several are regional or national multi-operator aggregates, so they remain one
+feed record each and never inflate an agency count. The next expansion decision
+is depth and consumer usefulness, not another race to add flags.
 
 ### Later: full interface localization
 

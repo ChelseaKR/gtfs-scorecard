@@ -59,6 +59,78 @@ def test_station_rows_are_not_orphans(make_gtfs_zip: Callable[..., Path]) -> Non
     assert p.boardable_stops == 2
 
 
+def test_stops_served_through_a_location_group_are_not_orphans(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        "trips.txt": "route_id,service_id,trip_id\nr,s,t1\n",
+        "stops.txt": "stop_id,stop_name,location_type\nA,Alpha,0\nB,Beta,0\n",
+        "stop_times.txt": (
+            "trip_id,location_group_id,stop_sequence,start_pickup_drop_off_window,"
+            "end_pickup_drop_off_window\n"
+            "t1,g,1,07:00:00,10:00:00\n"
+            "t1,g,2,07:00:00,10:00:00\n"
+        ),
+        "location_groups.txt": "location_group_id,location_group_name\ng,Service area\n",
+        "location_group_stops.txt": "location_group_id,stop_id\ng,A\ng,B\n",
+    }
+
+    p = assess_routability(str(make_gtfs_zip(feed)))
+
+    assert p.single_stop_trips == 0
+    assert p.boardable_stops == 2
+    assert p.orphan_stops == 0
+
+
+def test_geojson_location_header_whitespace_does_not_hide_trip_locations(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        "trips.txt": "route_id,service_id,trip_id\nr,s,t1\n",
+        "stops.txt": "stop_id,stop_name,location_type\n",
+        "stop_times.txt": (
+            "trip_id, location_id,stop_sequence,start_pickup_drop_off_window,"
+            "end_pickup_drop_off_window\n"
+            "t1,z,1,07:00:00,10:00:00\n"
+            "t1,z,2,07:00:00,10:00:00\n"
+        ),
+        "locations.geojson": (
+            '{"type":"FeatureCollection","features":[{"type":"Feature","id":"z",'
+            '"properties":{},"geometry":{"type":"Polygon","coordinates":[]}}]}'
+        ),
+    }
+
+    p = assess_routability(str(make_gtfs_zip(feed)))
+
+    assert p.single_stop_trips == 0
+    assert p.boardable_stops == 0
+    assert p.orphan_stops == 0
+
+
+def test_geojson_location_does_not_mark_an_unrelated_stop_as_served(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        "trips.txt": "route_id,service_id,trip_id\nr,s,t1\n",
+        "stops.txt": "stop_id,stop_name,location_type\nA,Alpha,0\n",
+        "stop_times.txt": (
+            "trip_id,location_id,stop_sequence,start_pickup_drop_off_window,"
+            "end_pickup_drop_off_window\n"
+            "t1,z,1,07:00:00,10:00:00\n"
+            "t1,z,2,07:00:00,10:00:00\n"
+        ),
+        "locations.geojson": (
+            '{"type":"FeatureCollection","features":[{"type":"Feature","id":"z",'
+            '"properties":{},"geometry":{"type":"Polygon","coordinates":[]}}]}'
+        ),
+    }
+
+    p = assess_routability(str(make_gtfs_zip(feed)))
+
+    assert p.single_stop_trips == 0
+    assert p.orphan_stops == 1
+
+
 def test_to_details_shape(make_gtfs_zip: Callable[..., Path]) -> None:
     st = "trip_id,stop_id,stop_sequence\nt1,A,1\nt1,B,2\nt2,C,1\n"
     d = assess_routability(str(_zip(make_gtfs_zip, st))).to_details()

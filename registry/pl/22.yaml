@@ -1,0 +1,34 @@
+# Pomorskie (PL) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ztm-gdansk
+    name: Zarząd Transportu Miejskiego w Gdańsku
+    country: PL
+    subdivision_code: PL-22
+    subdivision_name: Pomorskie
+    mdb_id: "2093"
+    is_official: true
+    static_gtfs_url: https://ckan.multimediagdansk.pl/dataset/c24aa637-3619-4dc2-a171-a23eec8f2172/resource/30e783e4-2bec-4a7d-bb22-ee3e3b26ca96/download/gtfsgoogle.zip
+    license_note: >-
+      The provider's binding terms require naming ZTM Gdańsk as the source,
+      linking its open-data page when possible, stating data production and
+      acquisition dates, and keeping reused data current. MDB's CC0 label was
+      not used as permission evidence.
+    operating_note: >-
+      This is a rolling short-horizon export, currently about fourteen days of
+      bus and tram service; routine refreshes are expected.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.multimediagdansk.pl/pl/dataset/tristar
+      terms_url: https://ckan.multimediagdansk.pl/dataset/c24aa637-3619-4dc2-a171-a23eec8f2172/resource/09cafa1b-604b-4408-ac48-5720319b72b7/download/regulamin-korzystania-z-danych.pdf
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: Zarząd Transportu Miejskiego w Gdańsku; include the data
+        production and acquisition dates and, where possible, link
+        http://www.ztm.gda.pl/otwarty_ztm.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

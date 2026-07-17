@@ -207,7 +207,19 @@ def test_expiring_feeds_grouped_by_lead_time_tier() -> None:
 def _lapse_series(base_date: dt.date, days_series: list[int]) -> list[dict]:  # type: ignore[type-arg]
     """A history list (EXP-13 lapse_risk shape) from a series of days_until_expiry."""
     return [
-        {"date": (base_date + dt.timedelta(days=i)).isoformat(), "days_until_expiry": d}
+        {
+            "date": (base_date + dt.timedelta(days=i)).isoformat(),
+            "days_until_expiry": d,
+            "rubric_version": RUBRIC_VERSION,
+            "scoring_profile_id": SCORING_PROFILE_ID,
+            "scoring_profile_rubric_version": RUBRIC_VERSION,
+            "validator_version": VALIDATOR_VERSION,
+            "categories": {
+                "correctness": 80.0,
+                "freshness": 80.0,
+                "completeness": 80.0,
+            },
+        }
         for i, d in enumerate(days_series)
     ]
 
@@ -265,3 +277,18 @@ def test_healthy_far_out_feed_produces_no_lapse_risk_item() -> None:
     )
     digest = build_digest(today=dt.date(2026, 6, 12))
     assert digest.items == []
+
+
+def test_reader_profile_change_does_not_fabricate_lapse_risk() -> None:
+    write_latest("profile-change", "Profile Change", 90.0, "A", days_until_expiry=200)
+    history = _lapse_series(
+        dt.date(2026, 5, 1),
+        [5, 4, 3, 2, 1, 0, -1, -2, 50, 49, 48, 47],
+    )
+    for point in history[-4:]:
+        point["reader_archive_profile"] = "flat-single-root-v1"
+    write_index({"profile-change": {"name": "Profile Change", "history": history}})
+
+    digest = build_digest(today=dt.date(2026, 6, 12))
+
+    assert [item for item in digest.items if item.kind == "lapse_risk"] == []

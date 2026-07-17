@@ -1,0 +1,28 @@
+# Bournemouth, Christchurch and Poole (GB) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: morebus
+    name: Morebus
+    country: GB
+    subdivision_code: GB-BCP
+    subdivision_name: Bournemouth, Christchurch and Poole
+    mdb_id: "1943"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/morebus/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0; credit Morebus as the public-transport
+      information source and link the licence.
+    operating_note: >-
+      The Morebus-branded feed contains four GoSouthCoast agency rows and serves
+      beyond its primary BCP catalog jurisdiction. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.morebus.co.uk/open-data
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: Contains Morebus public transport information licensed under OGL v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

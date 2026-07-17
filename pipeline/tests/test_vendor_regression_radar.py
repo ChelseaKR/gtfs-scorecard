@@ -20,6 +20,10 @@ def _artifact(date: str, *codes: str, category: str = "correctness") -> dict[str
     findings = [{"code": c, "count": 3, "what": f"what for {c}"} for c in codes]
     return {
         "snapshot_date": date,
+        "rubric_version": "1.2",
+        "scoring_profile_id": "gtfs-scorecard-1.2",
+        "scoring_profile_rubric_version": "1.2",
+        "validator_version": "8.0.1",
         "categories": {category: {"status": "measured", "findings": findings}},
     }
 
@@ -100,6 +104,31 @@ def test_first_scan_agency_excluded_from_cohort() -> None:
         _run("agency-b", TRILLIUM_URL, ("x",)),
         _run("agency-c", TRILLIUM_URL, ("x",), prev_codes=None),
     ]
+    assert detect_regressions(runs) == []
+
+
+def test_reader_profile_changes_are_excluded_from_vendor_regression_cohort() -> None:
+    runs = [
+        _run("agency-a", TRILLIUM_URL, ("x",)),
+        _run("agency-b", TRILLIUM_URL, ("x",)),
+        _run("agency-c", TRILLIUM_URL, ("x",)),
+    ]
+    for run in runs:
+        run.curr_artifact["fetch"] = {"reader_archive_profile": "flat-single-root-v1"}
+
+    assert detect_regressions(runs) == []
+
+
+def test_different_current_dates_are_not_pooled_as_one_same_day_spike() -> None:
+    runs = []
+    for day in ("2026-07-08", "2026-07-09", "2026-07-10"):
+        runs.extend(
+            [
+                _run(f"affected-{day}", TRILLIUM_URL, ("x",), date=day),
+                _run(f"steady-{day}", TRILLIUM_URL, (), date=day),
+            ]
+        )
+
     assert detect_regressions(runs) == []
 
 

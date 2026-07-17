@@ -97,6 +97,13 @@ def test_producer_contract_change_does_not_manufacture_a_clearance() -> None:
     assert agency_episodes(artifacts) == []
 
 
+def test_reader_archive_profile_change_does_not_manufacture_a_clearance() -> None:
+    before = _artifact("2026-06-01", "expired_calendar")
+    after = _artifact("2026-06-03")
+    after["fetch"] = {"reader_archive_profile": "flat-single-root-v1"}
+    assert agency_episodes([before, after]) == []
+
+
 def test_incomplete_producer_contract_fails_closed() -> None:
     before = _artifact("2026-06-01", "expired_calendar")
     del before["scoring_profile_id"]

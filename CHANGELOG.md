@@ -27,6 +27,32 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Added
+- Add nine source-, reuse-, and identity-reviewed European feed records across
+  Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain,
+  Poland, and Portugal. The bounded cohort now spans 15 feed records in 12
+  countries while remaining explicitly below the 250-record beta gate.
+
+### Changed
+- Broaden the European canaries beyond a bus-first view with metro, tram,
+  national multimodal, ferry, and GTFS-Flex demand-responsive service, while
+  keeping multi-operator aggregates counted as one feed record.
+- Bump the artifact schema to 1.15 and publish the versioned reader archive
+  profile (`raw-v1` or `flat-single-root-v1`). Raw hashes, archived bytes, and
+  canonical validator inputs remain exact; flat-profile rows stay outside the
+  default raw-profile comparison cohort.
+
+### Fixed
+- Read an otherwise unambiguous GTFS export through a deterministic flat view
+  when every file is under one root folder or a filename has surrounding
+  whitespace. Ambiguous layouts and post-trim collisions remain hard errors.
+- Treat stops assigned to a served GTFS-Flex location group as served in the
+  router-free usability check. GeoJSON service zones count as trip locations
+  without inventing links to unrelated ordinary stops.
+- Replace two Cal-ITP-hosted California feed URLs that now redirect to an HTML
+  page: Wasco now uses the listed DDS ZIP and Clean Air Express uses its current
+  provider-hosted ZIP.
+
 ## [1.3.0] - 2026-07-16
 
 ### Added
@@ -202,7 +228,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.3.0
 [1.2.1]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.1.0

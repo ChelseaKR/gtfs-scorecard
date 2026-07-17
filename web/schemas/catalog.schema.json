@@ -189,6 +189,10 @@
             "null"
           ]
         },
+        "reader_archive_profile": {
+          "type": "string",
+          "enum": ["raw-v1", "flat-single-root-v1"]
+        },
         "feed_url": {
           "type": [
             "string",

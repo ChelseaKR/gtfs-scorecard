@@ -141,6 +141,7 @@ def run_agency(  # noqa: C901
     """Run the full pipeline for one agency; return its RunOutcome."""
     agency = AGENCIES[agency_id]
     fetched = fetch_static(agency, date, force=force_fetch)
+    reader_path = fetched.reader_view_path
 
     # Content-addressed raw archive (FIX-02): keep the bytes that produced this
     # grade, deduplicated by hash, so a disputed grade or `scorecard reproduce`
@@ -200,14 +201,14 @@ def run_agency(  # noqa: C901
 
     cats = [
         correctness(report),
-        freshness(read_feed_dates(str(fetched.path)), today=date, service_type=agency.service_type),
-        completeness(str(fetched.path), fare_free=agency.fare_free),
+        freshness(read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type),
+        completeness(str(reader_path), fare_free=agency.fare_free),
     ]
     if agency.rt_urls and not skip_rt:
         cats.append(
             _realtime_category(
                 agency,
-                fetched.path,
+                reader_path,
                 date,
                 rt_samples=rt_samples,
                 rt_interval=rt_interval,
@@ -222,13 +223,13 @@ def run_agency(  # noqa: C901
     # filtering and presentation without changing any category or overall score.
     from .modes import mode_profile_from_zip
 
-    artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
+    artifact["mode_profile"] = mode_profile_from_zip(str(reader_path))
     # Ferry-specific schedule capabilities remain descriptive and ungraded.
     # Empty enum values stay unknown, matching the GTFS specification.
     from .ferry_profile import ferry_profile_from_zip
 
     ferry_profile = ferry_profile_from_zip(
-        str(fetched.path),
+        str(reader_path),
         fare_free=agency.fare_free,
         configured_realtime_kinds=agency.rt_urls,
     )
@@ -239,7 +240,7 @@ def run_agency(  # noqa: C901
     # any category score.
     from .recommend import gather_recommendations
 
-    artifact["recommendations"] = gather_recommendations(str(fetched.path))
+    artifact["recommendations"] = gather_recommendations(str(reader_path))
     # Conformance mark: a pass/not-yet credential over the scores just computed.
     # Attached so the badge and the page can show it without recomputing.
     from .conformance import assess as assess_conformance
@@ -250,7 +251,7 @@ def run_agency(  # noqa: C901
     # plotted. Computed here so the map needs no separate geometry pass.
     from .geo import agency_geo_from_zip
 
-    geo = agency_geo_from_zip(str(fetched.path))
+    geo = agency_geo_from_zip(str(reader_path))
     if geo is not None:
         artifact["geo"] = geo
     # Per-agency route + stop geometry for the scorecard map: one deduplicated
@@ -263,7 +264,7 @@ def run_agency(  # noqa: C901
     from .config import artifacts_dir as _artifacts_dir
     from .route_geometry import route_geometry_from_zip
 
-    geometry = route_geometry_from_zip(str(fetched.path))
+    geometry = route_geometry_from_zip(str(reader_path))
     geometry_dir = _artifacts_dir() / agency.id
     geometry_dir.mkdir(parents=True, exist_ok=True)
     geometry_path = geometry_dir / "geometry.geojson"
@@ -285,7 +286,7 @@ def run_agency(  # noqa: C901
     from .exportdiff import export_diff
 
     try:
-        diff_block = export_diff(agency.id, str(fetched.path), fetched.sha256)
+        diff_block = export_diff(agency.id, str(reader_path), fetched.sha256)
         if diff_block is not None:
             artifact["export_diff"] = diff_block
     except Exception as exc:
@@ -295,7 +296,7 @@ def run_agency(  # noqa: C901
     # zero-deduction block so the grade is unchanged, attached for the page.
     from .routability import assess_routability
 
-    routability = assess_routability(str(fetched.path))
+    routability = assess_routability(str(reader_path))
     artifact["routability"] = {
         **routability.to_details(),
         "findings": [f.to_json() for f in routability.findings],
@@ -315,12 +316,12 @@ def run_agency(  # noqa: C901
         # NTD ID is only a neutral, zero-deduction convention. The comparison is
         # shown as not-yet-checked when we have no NTD ID on file.
         artifact["ntd_id_alignment"] = assess_id_alignment(
-            read_agency_ids(str(fetched.path)), agency.ntd_id
+            read_agency_ids(str(reader_path)), agency.ntd_id
         ).to_dict()
         # Shapes readiness: does shapes.txt cover this feed's trips? FTA's July
         # 2025 final rule requires shapes.txt from Reduced, Rural, and Tribal
         # NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
-        shapes_coverage = read_shapes_coverage(str(fetched.path))
+        shapes_coverage = read_shapes_coverage(str(reader_path))
         artifact["shapes_readiness"] = assess_shapes_readiness(
             shapes_coverage.total_trips, shapes_coverage.trips_with_shape
         ).to_dict()
@@ -366,22 +367,23 @@ def run_adhoc(
     scratch_id = f"_adhoc-{hashlib.sha256(scratch_key).hexdigest()[:16]}"
     scratch_agency = dataclasses.replace(agency, id=scratch_id)
     fetched = fetch_static(scratch_agency, date, force=True)
+    reader_path = fetched.reader_view_path
     report_dir = raw_dir() / scratch_id / date.isoformat() / "validator"
     report = parse_report(run_validator(fetched.path, report_dir, country_code=country_code))
     cats = [
         correctness(report),
-        freshness(read_feed_dates(str(fetched.path)), today=date),
-        completeness(str(fetched.path)),
+        freshness(read_feed_dates(str(reader_path)), today=date),
+        completeness(str(reader_path)),
     ]
     scorecard = build_scorecard(cats)
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)
     artifact = build_artifact(agency, fetched, scorecard, generated_at=generated_at)
     from .modes import mode_profile_from_zip
 
-    artifact["mode_profile"] = mode_profile_from_zip(str(fetched.path))
+    artifact["mode_profile"] = mode_profile_from_zip(str(reader_path))
     from .ferry_profile import ferry_profile_from_zip
 
-    ferry_profile = ferry_profile_from_zip(str(fetched.path))
+    ferry_profile = ferry_profile_from_zip(str(reader_path))
     if ferry_profile is not None:
         artifact["ferry_profile"] = ferry_profile
     from .mode_language import adapt_artifact_language
@@ -1241,7 +1243,7 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
 
 
 def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    from .comparisons import build_comparison_cohort
+    from .comparisons import build_comparison_cohort, reader_archive_profile
     from .config import repo_root
     from .metrics import expiry_status
     from .ridership import (
@@ -1300,6 +1302,7 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
                 "scoring_profile_id": profile.get("id"),
                 "scoring_profile_rubric_version": profile.get("rubric_version"),
                 "validator_version": artifact.get("validator_version"),
+                "reader_archive_profile": reader_archive_profile(artifact),
                 "days_until_expiry": days,
                 **{
                     key: (

@@ -32,6 +32,25 @@ from .metrics import Finding
 _BOARDABLE_LOCATION_TYPES = {"", "0"}
 
 
+def _location_id(row: dict[str, str]) -> str:
+    """Read the Flex GeoJSON key, tolerating one known producer header typo.
+
+    This normalization stays inside the ungraded routability check. Graded
+    freshness/completeness readers continue to see producer headers exactly as
+    published, while the canonical validator reports the malformed header.
+    """
+    if "location_id" in row:
+        return (row.get("location_id") or "").strip()
+    return next(
+        (
+            (value or "").strip()
+            for key, value in row.items()
+            if isinstance(key, str) and key.strip() == "location_id"
+        ),
+        "",
+    )
+
+
 @dataclass(frozen=True)
 class RoutabilityProfile:
     trips_total: int
@@ -56,17 +75,37 @@ def assess_routability(gtfs_zip_path: str) -> RoutabilityProfile:
     boardable stops that no trip ever serves. Returns the counts and a
     zero-deduction finding for each gap that is present.
     """
-    tables = read_tables(gtfs_zip_path, ["stop_times.txt", "trips.txt", "stops.txt"])
+    tables = read_tables(
+        gtfs_zip_path,
+        ["stop_times.txt", "trips.txt", "stops.txt", "location_group_stops.txt"],
+    )
     stop_times, trips, stops = tables["stop_times.txt"], tables["trips.txt"], tables["stops.txt"]
 
     stops_per_trip: Counter[str] = Counter()
     served_stop_ids: set[str] = set()
+    served_location_group_ids: set[str] = set()
     for row in stop_times:
         trip_id = row.get("trip_id", "").strip()
         stop_id = row.get("stop_id", "").strip()
-        if trip_id:
+        location_group_id = row.get("location_group_id", "").strip()
+        location_id = _location_id(row)
+        # GTFS Schedule uses exactly one of these three fields to identify a
+        # serviced location. A GeoJSON location is a rideable trip location but
+        # has no implied relationship to an ordinary stop_id.
+        if trip_id and (stop_id or location_group_id or location_id):
             stops_per_trip[trip_id] += 1
         if stop_id:
+            served_stop_ids.add(stop_id)
+        if location_group_id:
+            served_location_group_ids.add(location_group_id)
+
+    # A referenced location group serves each stop explicitly assigned to it.
+    # Expand only that declared relationship; GeoJSON location_id values have
+    # no equivalent stop mapping in the official schema.
+    for row in tables["location_group_stops.txt"]:
+        location_group_id = row.get("location_group_id", "").strip()
+        stop_id = row.get("stop_id", "").strip()
+        if location_group_id in served_location_group_ids and stop_id:
             served_stop_ids.add(stop_id)
 
     trip_ids = [row.get("trip_id", "").strip() for row in trips if row.get("trip_id", "").strip()]

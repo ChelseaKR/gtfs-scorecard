@@ -1,0 +1,29 @@
+# Région wallonne (BE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tec-wallonia
+    name: Transport en Commun (TEC), Wallonia
+    country: BE
+    subdivision_code: BE-WAL
+    subdivision_name: "wallonne, Région"
+    mdb_id: "1212"
+    is_official: true
+    static_gtfs_url: https://opendata.tec-wl.be/Current%20GTFS/TEC-GTFS.zip
+    license_note: >-
+      CC0 1.0 Universal through Belgium's National Access Point; attribution is
+      not legally required, but GTFS Scorecard credits SRWT/TEC as the source.
+    operating_note: >-
+      One regional feed with five TEC agency rows and some cross-border service.
+      Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transportdata.be/dataset/tec-gtfs
+      terms_url: https://transportdata.be/dataset/tec-gtfs/resource/ecd983c4-e48c-4078-85af-835640881dba
+      scope: [gtfs_schedule]
+      attribution: Société Régionale Wallonne du Transport (TEC).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-16"
+      identity_reviewed: true

@@ -15,12 +15,65 @@ from typing import Any
 
 from . import RUBRIC_VERSION, SCORING_PROFILE_ID
 from .config import Agency
+from .fetch import (
+    FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
+    RAW_READER_ARCHIVE_PROFILE,
+)
 from .identity import normalized_feed_url
 from .validate import VALIDATOR_VERSION
 
 MIN_PUBLIC_COMPARISON_COHORT = 20
 REQUIRED_CATEGORIES = ("correctness", "freshness", "completeness")
 ALL_CATEGORIES = (*REQUIRED_CATEGORIES, "realtime")
+
+
+def reader_archive_profile(record: dict[str, Any]) -> str:
+    """Versioned Scorecard reader view; contradictions fail closed.
+
+    Older artifacts carried only ``reader_archive_normalized`` (or neither
+    field), so those shapes still resolve deterministically. Once an explicit
+    profile is present, every explicit statement must agree before the record
+    can participate in a producer-contract comparison.
+    """
+    fetch = record.get("fetch")
+    embedded = fetch if isinstance(fetch, dict) else {}
+    supported = (
+        RAW_READER_ARCHIVE_PROFILE,
+        FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
+    )
+    direct_present = "reader_archive_profile" in record
+    embedded_present = "reader_archive_profile" in embedded
+    direct_value = record.get("reader_archive_profile")
+    nested_value = embedded.get("reader_archive_profile")
+
+    direct: str | None = None
+    if direct_present:
+        if not isinstance(direct_value, str) or direct_value not in supported:
+            return ""
+        direct = direct_value
+    nested: str | None = None
+    if embedded_present:
+        if not isinstance(nested_value, str) or nested_value not in supported:
+            return ""
+        nested = nested_value
+    if direct is not None and nested is not None and direct != nested:
+        return ""
+
+    explicit = direct if direct is not None else nested
+    normalized_present = "reader_archive_normalized" in embedded
+    normalized = embedded.get("reader_archive_normalized")
+    if normalized_present and not isinstance(normalized, bool):
+        return ""
+    implied = (
+        FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE
+        if normalized is True
+        else RAW_READER_ARCHIVE_PROFILE
+    )
+    if explicit is not None:
+        if normalized_present and explicit != implied:
+            return ""
+        return explicit
+    return implied
 
 
 def _required_contract_field(
@@ -45,6 +98,7 @@ def _producer_contract_exclusions(
     required_rubric_version: str | None,
     required_scoring_profile_id: str | None,
     required_validator_version: str | None,
+    required_reader_archive_profile: str | None,
 ) -> list[str]:
     reasons = _required_contract_field(
         record,
@@ -81,6 +135,11 @@ def _producer_contract_exclusions(
             "validator_version_mismatch",
         )
     )
+    if (
+        required_reader_archive_profile is not None
+        and reader_archive_profile(record) != required_reader_archive_profile
+    ):
+        reasons.append("reader_archive_profile_mismatch")
     return reasons
 
 
@@ -90,6 +149,7 @@ def comparison_exclusions(
     required_rubric_version: str | None = None,
     required_scoring_profile_id: str | None = None,
     required_validator_version: str | None = None,
+    required_reader_archive_profile: str | None = RAW_READER_ARCHIVE_PROFILE,
 ) -> tuple[str, ...]:
     """Reasons a latest-record row is not suitable for a public comparison.
 
@@ -108,6 +168,7 @@ def comparison_exclusions(
             required_rubric_version,
             required_scoring_profile_id,
             required_validator_version,
+            required_reader_archive_profile,
         )
     )
     for category in REQUIRED_CATEGORIES:
@@ -135,7 +196,9 @@ def measured_category_signature(record: dict[str, Any]) -> tuple[str, ...]:
     )
 
 
-def producer_contract(record: dict[str, Any]) -> tuple[str, str, str, str, tuple[str, ...]]:
+def producer_contract(
+    record: dict[str, Any],
+) -> tuple[str, str, str, str, str, tuple[str, ...]]:
     """Comparable producer contract for either an artifact or history point."""
     embedded_profile = record.get("scoring_profile") or {}
     if not isinstance(embedded_profile, dict):
@@ -158,6 +221,7 @@ def producer_contract(record: dict[str, Any]) -> tuple[str, str, str, str, tuple
             or ""
         ),
         str(record.get("validator_version") or ""),
+        reader_archive_profile(record),
         tuple(measured),
     )
 
@@ -166,7 +230,7 @@ def same_producer_contract(left: dict[str, Any], right: dict[str, Any]) -> bool:
     """True only when a transition cannot be explained by producer changes."""
     left_contract = producer_contract(left)
     right_contract = producer_contract(right)
-    return bool(all(left_contract[:4]) and left_contract[4] and left_contract == right_contract)
+    return bool(all(left_contract[:5]) and left_contract[5] and left_contract == right_contract)
 
 
 def current_producer_contract_suffix(
@@ -251,6 +315,7 @@ def build_comparison_cohort(
     rubric_version: str = RUBRIC_VERSION,
     scoring_profile_id: str = SCORING_PROFILE_ID,
     validator_version: str = VALIDATOR_VERSION,
+    required_reader_archive_profile: str = RAW_READER_ARCHIVE_PROFILE,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Return one current producer/category contract plus public metadata."""
     rows = list(records)
@@ -265,6 +330,7 @@ def build_comparison_cohort(
                 required_rubric_version=rubric_version,
                 required_scoring_profile_id=scoring_profile_id,
                 required_validator_version=validator_version,
+                required_reader_archive_profile=required_reader_archive_profile,
             )
         ) | identity_reasons.get(record_id, set())
         evaluated.append((row, reasons))
@@ -296,6 +362,7 @@ def build_comparison_cohort(
         "required_rubric_version": rubric_version,
         "required_scoring_profile_id": scoring_profile_id,
         "required_validator_version": validator_version,
+        "required_reader_archive_profile": required_reader_archive_profile,
         "required_measured_categories": list(selected_signature),
         "measured_category_cohorts": {
             "+".join(signature): count for signature, count in sorted(signature_counts.items())
@@ -304,9 +371,9 @@ def build_comparison_cohort(
         "absolute_rankings_published": False,
         "individual_percentiles_published": False,
         "note": (
-            "Score aggregates and named changes use one current producer contract and "
-            "measured-category set across canonical feed records, with unresolved duplicate "
-            "identities removed. "
+            "Score aggregates and named changes use one current producer contract, raw "
+            "reader archive profile, and measured-category set across canonical feed records, "
+            "with unresolved duplicate identities removed. "
             "Absolute rankings and individual percentiles are not published."
         ),
     }

@@ -13,6 +13,7 @@ from scorecard_pipeline.dataset import (
     national_summary,
     to_csv,
 )
+from scorecard_pipeline.fetch import RAW_READER_ARCHIVE_PROFILE
 from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 
@@ -99,7 +100,7 @@ def _sample_index() -> dict[str, Any]:
 
 def test_rows_use_latest_history_point_only() -> None:
     dataset = build_quality_dataset(_sample_index())
-    assert dataset["schema_version"] == "1.2"
+    assert dataset["schema_version"] == "1.3"
     assert dataset["generated_fields"] == list(COLUMNS)
     rows = dataset["rows"]
     # Sorted by id: unitrans before yolobus.
@@ -116,6 +117,7 @@ def test_rows_use_latest_history_point_only() -> None:
         "scoring_profile_id": SCORING_PROFILE_ID,
         "scoring_profile_rubric_version": RUBRIC_VERSION,
         "validator_version": VALIDATOR_VERSION,
+        "reader_archive_profile": RAW_READER_ARCHIVE_PROFILE,
         "feed_sha256": "sha-2026-06-01-85.0-B",
         "comparison_eligible": True,
         "correctness": 88.0,
