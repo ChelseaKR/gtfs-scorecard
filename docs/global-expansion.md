@@ -271,14 +271,16 @@ named European partner and a bounded national-profile evaluation.
 **Operating cost at 2x and 5x feed count.** Actions minutes are free on a
 public repository, so CI compute does not gate growth. The real cost lines are
 storage. The tracked `data/artifacts` tree is about 500 MB at 1,163 configured
-feed records, the repository's git history is about 1 GB, and the S3 mirror
-retains every dated artifact under a lifecycle expiration policy. At double
-the registry, roughly 2,300 records, a checkout carries about 1 GB of
-artifacts and history growth accelerates with every daily rewrite. At five
-times, roughly 5,800 records, the git-committed artifact channel needs a
-redesign before the registry grows further: artifact offload, partial clone,
-or a thinner committed set. The S3 and CDN lines scale roughly linearly with
-feed count and remain the durable record either way.
+feed records and the repository's git history is about 1 GB. Since the
+fail-closed publishing change (#102), run outputs go to S3 and Pages rather
+than back into git, so the committed tree grows with curation and cutover
+commits, not with every run. The S3 mirror holds every dated artifact under a
+lifecycle expiration policy and is the durable record. At double the registry,
+roughly 2,300 records, a fresh checkout carries about 1 GB of committed
+artifacts. At five times, roughly 5,800 records, the committed bootstrap copy
+needs a redesign before the registry grows further: artifact offload, partial
+clone, or a thinner committed set. The S3 and CDN lines scale roughly linearly
+with feed count.
 
 ## Evidence to collect
 
