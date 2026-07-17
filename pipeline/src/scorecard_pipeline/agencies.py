@@ -42,6 +42,11 @@ class AgencyConfigError(ValueError):
     """The agency registry is malformed; the message says exactly where."""
 
 
+def _today() -> dt.date:
+    """Current local date, split out so date-bound validation is deterministic in tests."""
+    return dt.date.today()
+
+
 def _fail(entry_label: str, message: str, source: str = "agencies.yaml") -> NoReturn:
     raise AgencyConfigError(f"{source}, {entry_label}: {message}")
 
@@ -138,6 +143,8 @@ def _parse_reuse_evidence(raw: object, *, entry_label: str, source: str) -> Reus
         entry_label, f"{field}.reviewed_by", raw["reviewed_by"], source
     )
     reviewed_on = _require_iso_date(entry_label, f"{field}.reviewed_on", raw["reviewed_on"], source)
+    if dt.date.fromisoformat(reviewed_on) > _today():
+        _fail(entry_label, f"{field}.reviewed_on must not be in the future", source)
 
     identity_reviewed = raw["identity_reviewed"]
     if not isinstance(identity_reviewed, bool):

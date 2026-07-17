@@ -56,8 +56,10 @@ cd pipeline
 uv run scorecard sync --country US --state Washington
 ```
 
-Review and commit the proposed entries rather than trusting them blind — the
-tool proposes, it does not curate.
+The command omits authentication-gated Schedule feeds and identities already
+tracked by catalog id or normalized URL. Review source status, location, reuse
+terms, attribution, and feed identity before committing any proposal: the tool
+removes mechanical hazards, but it does not curate or grant reuse permission.
 
 ### 3. Set your branding
 

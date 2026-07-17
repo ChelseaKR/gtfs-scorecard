@@ -8,8 +8,9 @@ feeds that reference it, and emits reviewable registry blocks.
 
 A human still reviews and merges the output, so the registry stays curated.
 The point is to remove the typing, not the judgement: key-gated realtime feeds
-become an `rt_note` rather than a broken `rt_urls` entry, licenses are carried
-through, and ids already present in the registry are skipped.
+become an `rt_note` rather than a broken `rt_urls` entry, key-gated Schedule
+feeds are withheld, licenses are carried through, and feeds already present in
+the registry are skipped by stable catalog id or normalized URL.
 
 The catalog CSV is the stable public export of the Mobility Database; its
 column names are used directly so the mapping is auditable against the source.
@@ -37,6 +38,8 @@ _RT_ENTITY_TO_KIND = {
     "vp": "vehicle_positions",
     "sa": "service_alerts",
 }
+
+_OPEN_AUTHENTICATION_TYPES = frozenset({"", "0", "none"})
 
 _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
 
@@ -144,6 +147,11 @@ def _feed_url_key(url: str) -> str:
     return normalized_feed_url(url)
 
 
+def _requires_authentication(authentication_type: str) -> bool:
+    """Whether a catalog feed requires credentials before it can be fetched."""
+    return authentication_type.strip().lower() not in _OPEN_AUTHENTICATION_TYPES
+
+
 def parse_catalog(csv_text: str) -> list[CatalogFeed]:
     """Parse the catalog CSV into feed records, skipping rows without a usable
     download URL or a recognised data type."""
@@ -217,16 +225,24 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
     subdivision: str | None = None,
     providers: list[str] | None = None,
     existing_ids: set[str] | None = None,
+    existing_mdb_ids: set[str] | None = None,
+    existing_feed_urls: set[str] | None = None,
 ) -> list[ProposedAgency]:
     """Build candidate registry entries from catalog feeds.
 
     Schedule feeds matching the filter become agencies; realtime feeds are
     attached to the schedule feed they reference (static_reference). Key-gated
     realtime feeds are recorded as a note, not a broken URL, so they show
-    neutrally rather than scoring zero. Ids already in `existing_ids` are
-    skipped so re-running the sync never re-proposes a tracked agency.
+    neutrally rather than scoring zero. Key-gated Schedule feeds cannot produce
+    a registry-ready entry and are omitted. Existing agency ids, catalog ids,
+    and normalized feed URLs are skipped so a rerun never re-proposes a tracked
+    feed even when its display name or URL spelling differs.
     """
     existing = existing_ids or set()
+    tracked_mdb_ids = {mdb_id for mdb_id in (existing_mdb_ids or set()) if mdb_id}
+    tracked_feed_urls = {
+        key for url in (existing_feed_urls or set()) if (key := _feed_url_key(url))
+    }
     provider_filter = {p.lower() for p in providers} if providers else None
 
     rt_by_reference: dict[str, list[CatalogFeed]] = {}
@@ -251,6 +267,8 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
             continue
         if feed.is_official is False:
             continue
+        if _requires_authentication(feed.authentication_type):
+            continue
         if not _matches(feed, country, subdivision, provider_filter):
             continue
         url_key = _feed_url_key(feed.direct_download)
@@ -258,6 +276,8 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
         # unusable proposal or add the empty sentinel to the dedup set, where
         # it would make later malformed rows look like the same endpoint.
         if not url_key:
+            continue
+        if feed.mdb_id in tracked_mdb_ids or url_key in tracked_feed_urls:
             continue
         if (feed.mdb_id and feed.mdb_id in proposed_sources) or url_key in proposed_urls:
             continue
@@ -279,7 +299,7 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
             kind = _RT_ENTITY_TO_KIND.get(rt.entity_type)
             if not kind:
                 continue
-            if rt.authentication_type and rt.authentication_type.lower() not in ("0", "none"):
+            if _requires_authentication(rt.authentication_type):
                 key_gated = True
                 continue
             rt_urls[kind] = rt.direct_download

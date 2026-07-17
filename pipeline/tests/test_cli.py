@@ -248,6 +248,70 @@ def test_discover_applies_a_replacement_only_to_the_owning_manifest_shard(
     assert second.read_bytes() == untouched
 
 
+def test_sync_only_emits_untracked_credential_free_schedule_feeds(
+    tmp_path: Path,
+    isolated_repo_root: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline.cli import main
+
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "agencies.yaml").write_text(
+        "agencies:\n"
+        "  - id: tracked\n"
+        "    name: Tracked Transit\n"
+        "    static_gtfs_url: https://tracked.example/feed.zip\n"
+        "    mdb_id: tracked-id\n"
+    )
+    catalog = tmp_path / "catalog.csv"
+    catalog.write_text(
+        "mdb_source_id,data_type,provider,name,urls.direct_download,"
+        "urls.authentication_type\n"
+        "tracked-id,gtfs,Renamed Transit,Renamed Transit,https://new.example/feed.zip,0\n"
+        "url-copy,gtfs,URL Copy,URL Copy,http://tracked.example/feed.zip/,none\n"
+        "gated,gtfs,Gated Transit,Gated Transit,https://gated.example/feed.zip,1\n"
+        "fresh,gtfs,Fresh Transit,Fresh Transit,https://fresh.example/feed.zip,0\n"
+    )
+
+    assert main(["sync", "--catalog", str(catalog)]) == 0
+
+    output = capsys.readouterr().out
+    assert "id: fresh-transit" in output
+    assert "tracked-id" not in output
+    assert "id: url-copy" not in output
+    assert "id: gated-transit" not in output
+
+
+@pytest.mark.parametrize("duplicate_kind", ["mdb_id", "feed_url"])
+def test_lint_strict_rejects_each_duplicate_canonical_identity(
+    isolated_repo_root: Path,
+    duplicate_kind: str,
+) -> None:
+    from scorecard_pipeline.cli import main
+
+    isolated_repo_root.mkdir(parents=True)
+    duplicate_mdb = "same" if duplicate_kind == "mdb_id" else "second"
+    duplicate_url = (
+        "http://first.example/feed.zip/"
+        if duplicate_kind == "feed_url"
+        else "https://second.example/feed.zip"
+    )
+    (isolated_repo_root / "agencies.yaml").write_text(
+        "agencies:\n"
+        "  - id: first\n"
+        "    name: First Transit\n"
+        "    static_gtfs_url: https://first.example/feed.zip\n"
+        "    mdb_id: same\n"
+        "  - id: second\n"
+        "    name: Second Transit\n"
+        f"    static_gtfs_url: {duplicate_url}\n"
+        f"    mdb_id: {duplicate_mdb}\n"
+    )
+
+    assert main(["lint"]) == 0
+    assert main(["lint", "--strict"]) == 1
+
+
 def test_ntd_crosswalk_applies_only_to_the_owning_manifest_shard(
     isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
