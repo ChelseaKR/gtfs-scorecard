@@ -1546,6 +1546,18 @@ function renderProgram(rollup) {
     shapes && measured > 0
       ? `<p class="snapshot-note">shapes.txt (NTD RY2026): ${shapes.ready} of ${measured} ready</p>`
       : "";
+  // Country rollups state their denominator plainly: reviewed feed records
+  // tracked in that country, never a claim of country coverage.
+  const countryLabel = String(
+    rollup.rollup.country_name || rollup.rollup.country_code || ""
+  ).trim();
+  const recordNoun = rollup.agency_count === 1 ? "reviewed feed record" : "reviewed feed records";
+  const scopeNote = countryLabel
+    ? `<p class="fineprint">Scope: ${rollup.agency_count} ${recordNoun} tracked in
+      ${esc(countryLabel)}. This page measures those records, not operators, routes, or
+      all public transport in ${esc(countryLabel)}, and it is not a claim that
+      GTFS Scorecard covers ${esc(countryLabel)}.</p>`
+    : "";
   main.innerHTML = `
     <a class="backlink" href="#/programs">&larr; All rollups</a>
     <div class="score-hero reveal">
@@ -1554,6 +1566,7 @@ function renderProgram(rollup) {
         <p class="overall"><strong>${rollup.agency_count} feed scorecards</strong> ·
           ${avg} · ${rollup.needs_attention} need attention</p>
         <p class="fineprint">${comparisonNote}</p>
+        ${scopeNote}
         ${shapesNote}
       </div>
     </div>
