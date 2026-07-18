@@ -298,6 +298,56 @@ Rejection reasons are recorded in
   Trójmiasto, ZKM Gdynia, and the country's first Czech records, PID Prague
   and IDS JMK Brno.
 
+## Fifth reviewed European wave
+
+This wave on 2026-07-18 led with non-United-Kingdom sources and added 16
+records, taking the reviewed European cohort from 149 to 165 across 18
+countries. No United Kingdom feed was added. Each candidate passed a live
+license check, a mechanical download and current-calendar preflight, a size
+check under the archive cap, and an ISO 3166-2 subdivision review. Rejection
+reasons are also summarized in [global-expansion.md](global-expansion.md).
+
+- **Germany (nine records)**: six Baden-Württemberg association feeds on
+  NVBW's Datenlizenz Deutschland - Namensnennung 2.0 portal (naldo, VPE, HNV,
+  RVF, VHB, and the Landkreis Calw VGC feed), VGN Nürnberg under CC BY-SA 3.0
+  as Bavaria's first record, AVV Aachen under CC0, and the gtfs.de
+  long-distance rail aggregate under CC BY 4.0.
+- **Slovenia (one record)**: LPP Ljubljana, the eighteenth country, published
+  on the national OPSI portal under CC BY 4.0.
+- **France (two records)**: SEMO in Normandie and the Zoom network in
+  Chalon-sur-Saône, both Licence Ouverte 2.0 through the National Access Point.
+- **Italy (two records)**: TPER's Bologna and Ferrara bus networks under CC BY
+  3.0 Italia, opening Emilia-Romagna. Their download pins a dated version, so a
+  curator refreshes the version parameter when TPER publishes a new archive.
+- **Spain (one record)**: CRTM's interurban regional bus network under the
+  consortium licence, a distinct feed from the tracked city bus and light rail.
+- **Portugal (one record)**: STCP Porto under CC0, from the portal's current
+  rolling resource rather than its dated snapshots.
+
+Rejections outnumbered additions again, and the reasons are the review:
+
+- **No explicit open license**: OASA Athens (data.gov.gr provides the data "as
+  is" with no named license), HŽ Passenger Transport (data.gov.hr states no
+  license exists), Sofia Traffic and BKK Budapest (custom municipal reuse
+  rules, no named open license), and TPBI Bucharest, Carris Lisbon, and Metro
+  Transportes do Sul (no license text on the portal).
+- **ODbL or special conditions**: numerous French datasets on the National
+  Access Point, including SURF Fougères, Proxim iTi, INTERCOM Sens, Brévibus,
+  Tisséo Toulouse, and Île-de-France Mobilités.
+- **Community rebuild or aggregator host**: the mkuran.pl-hosted Polish city
+  feeds (Warszawa WTP, Toruń, Radom, and others) and the stops.lt Lithuanian
+  city feeds, refused on identity even where the stated license was open.
+- **Expired calendar**: Luxembourg's national aggregate (service ended six
+  days before review), Navarra and Extremadura in Spain, and the three
+  Sardinian ferry feeds.
+- **Unreachable or access-blocked from the pipeline network**: Generalitat
+  Valenciana intercity (DNS failure), ZTP Kraków and Burgos (portals block
+  automated access to their terms), and ATP Nuoro and ATP Sassari (the
+  operator hosts return an HTML page, not the archive).
+- **Terms unverifiable**: the Slovak ŽSR national rail feed, whose license
+  the national catalog serves only through a script-rendered page, stayed out
+  to fail closed.
+
 ## Oceania coverage wave
 
 The first coverage wave outside Europe and North America, curated under the

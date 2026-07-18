@@ -1,0 +1,55 @@
+# Emilia-Romagna (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tper-bologna
+    name: TPER — Rete bus Bologna
+    country: IT
+    subdivision_code: IT-45
+    subdivision_name: Emilia-Romagna
+    mdb_id: "3040"
+    is_official: true
+    static_gtfs_url: https://solweb.tper.it/web/tools/open-data/open-data-download.aspx?source=solweb.tper.it&filename=gommagtfsbo&version=20260709&format=zip
+    license_note: >-
+      CC BY 3.0 Italia through TPER's open data portal; credit Trasporto
+      Passeggeri Emilia-Romagna. Commercial reuse is permitted with attribution.
+    operating_note: >-
+      Bologna's bus network. TPER serves dated versions of each dataset, so the
+      download pins the current version; a curator refreshes the version
+      parameter when TPER publishes a new archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://solweb.tper.it/web/tools/open-data/open-data.aspx
+      terms_url: https://creativecommons.org/licenses/by/3.0/it/legalcode
+      scope: [gtfs_schedule]
+      attribution: Trasporto Passeggeri Emilia-Romagna (TPER).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tper-ferrara
+    name: TPER — Rete bus Ferrara
+    country: IT
+    subdivision_code: IT-45
+    subdivision_name: Emilia-Romagna
+    mdb_id: "3042"
+    is_official: true
+    static_gtfs_url: https://solweb.tper.it/web/tools/open-data/open-data-download.aspx?source=solweb.tper.it&filename=gommagtfsfe&version=20260522&format=zip
+    license_note: >-
+      CC BY 3.0 Italia through TPER's open data portal; credit Trasporto
+      Passeggeri Emilia-Romagna. Commercial reuse is permitted with attribution.
+    operating_note: >-
+      Ferrara's bus network, a distinct TPER dataset from the Bologna record.
+      The download pins the current dated version and needs a periodic version
+      refresh.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://solweb.tper.it/web/tools/open-data/open-data.aspx
+      terms_url: https://creativecommons.org/licenses/by/3.0/it/legalcode
+      scope: [gtfs_schedule]
+      attribution: Trasporto Passeggeri Emilia-Romagna (TPER).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

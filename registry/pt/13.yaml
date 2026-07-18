@@ -1,0 +1,29 @@
+# Porto (PT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: stcp-porto
+    name: STCP (Sociedade de Transportes Colectivos do Porto)
+    country: PT
+    subdivision_code: PT-13
+    subdivision_name: Porto
+    mdb_id: "2148"
+    static_gtfs_url: https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/57320c51-39e0-4181-a4d4-17cf0b031be8/download/gtfs_feed.zip
+    license_note: >-
+      Creative Commons CC0 through Porto's municipal open data portal; no
+      attribution is legally required, but GTFS Scorecard credits STCP as the
+      source.
+    operating_note: >-
+      Porto's urban bus and funicular operator. The record uses the portal's
+      current rolling GTFS resource, not the dated snapshots kept beside it.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.porto.digital/dataset/horarios-paragens-e-rotas-em-formato-gtfs-stcp
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: Sociedade de Transportes Colectivos do Porto (STCP).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
