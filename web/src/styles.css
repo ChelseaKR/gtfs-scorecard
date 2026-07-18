@@ -1433,6 +1433,15 @@ main:focus { outline: none; }
 .map-back:hover { border-color: var(--ink); }
 .map-back:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .map-drill-title { font-weight: 700; color: var(--ink); }
+/* How much coverage this drill-down shows, stated in text beside the country
+   name so the count never rests on the fill color. Wraps under the title on a
+   narrow phone rather than pushing the row wider than the map. */
+.map-drill-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
 
 .map-legend {
   display: flex;
@@ -1451,6 +1460,16 @@ main:focus { outline: none; }
 .map-swatch.q2 { background: #e7c46a; }
 .map-swatch.q3 { background: #d6894e; }
 .map-swatch.q4 { background: #b5482a; }
+
+/* Legend footnote: names the color encoding in prose and says what the counts
+   and the unshaded areas mean, so meaning never rests on color alone. */
+.map-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 44rem;
+}
 
 /* ---------- scorecard hero ---------- */
 
