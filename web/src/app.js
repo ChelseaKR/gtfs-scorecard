@@ -527,6 +527,44 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
     <p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
 }
 
+/** Build the world choropleth SVG from projected country paths and the summary
+ *  country rows. Reuses the state-map fill classes and quintiles, so the same
+ *  contrast-gated tokens and text legend carry the meaning; countries with no
+ *  feed records render faint and inert.
+ *  @param {{viewBox: string, countries: Record<string,string>}} mapData
+ *  @param {Record<string, any>} byCountry @returns {string} */
+function buildWorldMapSvg(mapData, byCountry) {
+  const paths = Object.entries(mapData.countries)
+    .map(([code, d]) => {
+      const row = byCountry[code];
+      if (!row || !row.agencies) {
+        return `<path d="${d}" class="us-state us-empty" aria-hidden="true"></path>`;
+      }
+      const pct = Math.round((row.expired / row.agencies) * 100);
+      const q = expiredQuintile(row.expired / row.agencies);
+      const noun = row.agencies === 1 ? "feed" : "feeds";
+      const label = `${row.country_name || code}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
+      return `<path d="${escAttr(d)}" class="us-state q${q}" data-map-country="${escAttr(code)}"
+        tabindex="0" role="button" aria-pressed="false"
+        aria-label="${escAttr(label)} — filter to this country"><title>${esc(label)}</title></path>`;
+    })
+    .join("");
+  const legend = [
+    [0, "none expired"],
+    [1, "under 10%"],
+    [2, "10–25%"],
+    [3, "25–40%"],
+    [4, "40% or more"],
+  ]
+    .map(([q, lab]) => `<span class="map-key"><span class="map-swatch q${q}"></span>${lab}</span>`)
+    .join("");
+  return `<svg class="us-map-svg" viewBox="${mapData.viewBox}" role="group"
+      aria-label="World map; each country with tracked GTFS feeds is shaded by the share of those feeds that have expired, and selecting a country filters the list below.">
+      ${paths}
+    </svg>
+    <p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
+}
+
 /** Portable country controls when the directory exposes the location contract.
  *  The selected country's subdivision controls are mounted on demand by
  *  setupOverview, after the optional U.S. map in source order. Older directory
@@ -560,7 +598,8 @@ function locationControlsHtml(countries, states) {
     )
     .join("");
   return `<div class="country-grid" role="group" aria-label="Filter scorecards by country">
-      ${countryChips}</div><div class="us-map" id="us-map" hidden></div>
+      ${countryChips}</div><div class="us-map" id="world-map"></div>
+      <div class="us-map" id="us-map" hidden></div>
       <div class="location-groups"></div>`;
 }
 
@@ -1241,6 +1280,7 @@ function setupOverview(agencies, total, summary) {
   // native button pressed states in sync. Only the selected country's
   // subdivision buttons are mounted, keeping the worldwide directory compact.
   let mapPaths = /** @type {HTMLElement[]} */ ([]);
+  let worldPaths = /** @type {HTMLElement[]} */ ([]);
   let renderedSubdivisionCountry = "";
   function renderSelectedCountrySubdivisions() {
     if (!locationGroups || !portableLocations) return;
@@ -1308,6 +1348,11 @@ function setupOverview(agencies, total, summary) {
     }
     if (mapHost?.dataset.loaded === "true") {
       mapHost.hidden = portableLocations && locationFilter.country !== "US";
+    }
+    for (const path of worldPaths) {
+      const selected = path.dataset.mapCountry === locationFilter.country;
+      path.classList.toggle("selected", selected);
+      path.setAttribute("aria-pressed", String(selected));
     }
     for (const path of mapPaths) {
       const selected = portableLocations
@@ -1379,6 +1424,40 @@ function setupOverview(agencies, total, summary) {
   }
   clear.addEventListener("click", resetFilters);
   resetBtn.addEventListener("click", resetFilters);
+
+  // Mount the world choropleth the same way as the US one: progressive
+  // enhancement over the country chips, omitted when the geometry asset
+  // (web/world-countries.json) can't load. Clicking a country behaves exactly
+  // like its chip.
+  (async function mountWorldMap() {
+    const host = /** @type {HTMLElement | null} */ (main.querySelector("#world-map"));
+    if (!host || !portableLocations) return;
+    let mapData;
+    try {
+      const resp = await fetch(new URL("../world-countries.json", location.href));
+      if (!resp.ok) return;
+      mapData = await resp.json();
+    } catch {
+      return;
+    }
+    const byCountry = {};
+    for (const row of countries) byCountry[row.country_code || ""] = row;
+    host.innerHTML = buildWorldMapSvg(mapData, byCountry);
+    host.dataset.loaded = "true";
+    worldPaths = /** @type {HTMLElement[]} */ (
+      Array.from(host.querySelectorAll("path[data-map-country]"))
+    );
+    for (const p of worldPaths) {
+      p.addEventListener("click", () => selectCountry(p.dataset.mapCountry || ""));
+      p.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectCountry(p.dataset.mapCountry || "");
+        }
+      });
+    }
+    syncLocationUI();
+  })();
 
   // Mount the choropleth as progressive enhancement: the chip grid already
   // covers browse-by-state, so if the geometry asset can't load the map is just
