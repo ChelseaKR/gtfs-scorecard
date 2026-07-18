@@ -143,17 +143,47 @@ phase and noted for the alternative-catalog work below.
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,
 angkot — and its GTFS, where it exists, is produced by community-mapping and
-capacity-building projects, not by a government open-data portal. This project
-does not curate those feeds from a catalog. This phase opens only when a named
-local steward — a regional program, a transit authority, or the community
-project that produced the data — owns the licensing, source verification, and
-consent, and agrees to operate or review the regional cohort. Until then the
-project links out to the source projects and does not score their data.
+capacity-building projects, not by a government open-data portal. The largest
+sources are the [Digital Transport for Africa](https://digitaltransport4africa.org/)
+commons (managed by WRI and the Agence Française de Développement, feeds
+typically under ODbL) and the Digital Matatus lineage of university and
+community collaborations. These are community-produced, and a Northern-built
+tool that assigns them a letter grade risks reading as a deficit judgement of
+the community rather than feedback to an accountable publisher. This project
+does not curate those feeds from a catalog.
+
+The phase opens only when a named local steward — a regional program, a transit
+authority, or the community project that produced the data — owns the licensing,
+source verification, and consent, and agrees to operate or review the regional
+cohort. It is governed by the bounded Global South pilot in
+[ADR 0028](decisions/0028-global-south-pilot.md), and it adopts, by analogy, the
+[CARE principles for data governance](https://www.gida-global.org/care)
+(collective benefit, authority to control, responsibility, ethics) alongside the
+project's existing no-shaming stance. Concretely:
+
+- **Opt-in, not opt-out.** No public grade for a community-produced feed without
+  the local steward's sign-off, and a standing removal right — the community's
+  right to be off the scorecard, mirroring the humanitarian-mapping "right to
+  invisibility."
+- **Credit the steward.** The community or program that produced the data is
+  named and attributed, never treated as an authorless source.
+- **Support, not sanction.** For an informal feed, findings are framed as
+  support and next steps, and the interface does not imply an accountable agency
+  exists to act on them. An informal or demand-responsive feed is scored as its
+  own kind of object, not as a defective fixed-route feed — the same reasoning
+  that already treats a missing realtime feed as neutral rather than a zero.
+- **Benefit stays local.** The most defensible posture is a cohort a local
+  partner runs or co-owns, not a Northern-hosted ranking of Southern cities. The
+  no-public-leaderboard rule holds especially here.
 
 Gate: a named local steward accepts the licensing, source, identity, and
-consent responsibility, and the reuse of each feed is established from a source
-the steward confirms. Absent that, the region stays uncurated by design, and
-the roadmap says so rather than leaving a silent gap.
+consent responsibility; the reuse of each feed is established from a source the
+steward confirms; and the pilot stays bounded and labelled per ADR 0028. Absent
+that, the region stays uncurated by design, and the roadmap says so rather than
+leaving a silent gap. The Digital Matatus project is the precedent worth
+following: it validated data with the operators and commuters it described and
+planned an explicit handoff to a neutral local steward with a mandate to keep
+the data open.
 
 ## Cross-cutting enablers
 
@@ -177,7 +207,20 @@ These unblock more than one phase and are sequenced by first need.
 - **Alternative-catalog ingestion.** For regions the Mobility Database does not
   cover, a reviewed way to discover feeds from national open-data portals and
   regional aggregators, with the same identity and reuse review. This is what
-  actually raises non-Western coverage; catalog curation alone cannot.
+  actually raises non-Western coverage; catalog curation alone cannot. The first
+  concrete step is wiring [Transitland](https://www.transit.land/) in as a
+  second discovery source: it is an independently curated live catalog explicitly
+  designed as a crosswalk, and it is strongest exactly where the Mobility
+  Database is thin.
+- **A named-license vocabulary for non-SPDX government terms.** Outside Europe,
+  many official feeds carry a custom national open license with no SPDX
+  identifier — Mexico's Términos de Libre Uso MX, Israel's government open terms,
+  jurisdiction-ported Creative Commons (CC BY 2.5 AR, CC BY 3.0 CL) — and some
+  official downloads carry no per-file license at all despite statutory openness.
+  The reuse-evidence review handles these case by case today. A small controlled
+  vocabulary of named government licenses, plus an explicit reviewer note for
+  "openness established by statute, no per-file license," would keep those
+  judgements auditable without auto-approving any of them.
 - **Per-region coverage denominators.** The finder and exports already disclose
   the United-States-heavy denominator; each activated region needs its own
   disclosed denominator so no regional cohort is read as a census.
