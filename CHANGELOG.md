@@ -28,6 +28,20 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Publish a comprehensive multi-region global coverage roadmap
+  (`docs/global-coverage-roadmap.md`) that sequences expansion by
+  defensibility: official openly licensed feeds first, a partnership-gated
+  phase for the Global South and informal transit that this project will not
+  curate without a named local steward, and cross-cutting enablers (large-feed
+  sharding, beta-gate generalization, alternative-catalog ingestion). Coverage
+  remains explicitly not a success measure.
+- Add the first Oceania coverage wave: eleven reviewed Australian and New
+  Zealand government open-data feed records (six Queensland TransLink networks
+  including Brisbane, Transperth in Perth, the Northern Territory's Darwin and
+  Alice Springs networks, and Auckland Transport and Baybus in New Zealand).
+  Sydney, Melbourne, Canberra, Tasmania, and Metlink Wellington are deferred
+  with recorded reasons (size cap, registration wall, bot block, share-alike,
+  or unstated license).
 - Add a world coverage choropleth to the app overview: every country with
   tracked feed records is shaded by its expired-feed share using the same
   contrast-gated quintile tokens and text legend as the United States map,

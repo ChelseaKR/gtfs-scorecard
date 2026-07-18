@@ -1,0 +1,29 @@
+# Auckland (NZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: auckland-transport
+    name: Auckland Transport
+    country: NZ
+    subdivision_code: NZ-AUK
+    subdivision_name: Auckland
+    mdb_id: "1029"
+    is_official: true
+    static_gtfs_url: https://gtfs.at.govt.nz/gtfs.zip
+    license_note: >-
+      CC BY 4.0; credit Auckland Transport. The static bulk feed is downloaded
+      directly; only the realtime developer API requires a key.
+    operating_note: >-
+      One metropolitan network feed for Auckland's bus, train, and ferry
+      services; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://at.govt.nz/about-us/at-data-sources/general-transit-feed-specification
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Auckland Transport.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

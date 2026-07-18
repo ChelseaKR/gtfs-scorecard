@@ -182,7 +182,7 @@ These are valid options, not commitments:
 | White-label and regional guidance | A named program agrees to operate an instance and provide local review. |
 | European GTFS beta curation | The reviewed cohort can meet the 250-feed, 12-country, freshness, identity, and licensing gate in `global-expansion.md`. |
 | Full interface localization | A named language steward owns translation review, pseudolocale and RTL checks, and ongoing copy quality. |
-| Broader worldwide curation | A local steward owns licensing, source verification, and the regional consent or partnership requirements. |
+| Broader worldwide curation | A local steward owns licensing, source verification, and the regional consent or partnership requirements. The phased, defensibility-ordered plan is [`global-coverage-roadmap.md`](global-coverage-roadmap.md); its partnership-gated phase names this same requirement. |
 | Deeper realtime sampling | A named program needs the result, grants endpoint access, and funds a bounded sampling plan. |
 | Research dataset expansion | Retention, privacy, licence, and citation requirements are settled. |
 | Vendor or program intelligence | Enough comparable verified closures exist to report a pattern without ranking or blame. |

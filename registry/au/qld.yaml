@@ -24,3 +24,147 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: translink-south-east-queensland
+    name: TransLink South East Queensland
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "3048"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/gtfs/SEQ_SCH_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One multi-operator schedule for the Brisbane and South East Queensland
+      network; counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      scope: [gtfs_schedule]
+      attribution: State of Queensland, Department of Transport and Main Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: translink-sunbus-cairns
+    name: TransLink Sunbus Cairns
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "674"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/CNS_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Cairns area; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      terms_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      scope: [gtfs_schedule]
+      attribution: State of Queensland, Department of Transport and Main Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: translink-sunbus-townsville
+    name: TransLink Sunbus Townsville
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "677"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/TSV_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Townsville area; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      terms_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      scope: [gtfs_schedule]
+      attribution: State of Queensland, Department of Transport and Main Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: translink-bus-queensland-toowoomba
+    name: TransLink Bus Queensland Toowoomba
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "653"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/TWB_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Toowoomba area; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      terms_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      scope: [gtfs_schedule]
+      attribution: State of Queensland, Department of Transport and Main Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: translink-mackay
+    name: TransLink Mackay Transit Coaches
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "678"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/MKY_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Mackay area; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      terms_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      scope: [gtfs_schedule]
+      attribution: State of Queensland, Department of Transport and Main Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: translink-maryborough-hervey-bay
+    name: TransLink Maryborough-Hervey Bay
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "651"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/MHB_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Maryborough and Hervey Bay
+      area; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      terms_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-qcon
+      scope: [gtfs_schedule]
+      attribution: State of Queensland, Department of Transport and Main Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
