@@ -28,6 +28,17 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Grow reviewed coverage by 35 records to 1,359 across three parallel waves.
+  Eighteen official Japanese GTFS-JP feeds from the national gtfs-data.jp
+  repository (one flagship municipal network across eighteen new prefectures,
+  CC BY 4.0 or CC0), a fifth European wave of sixteen non-UK-led feeds that
+  takes the European cohort to 165 records across eighteen countries with the
+  United Kingdom at 20.6% (well under the 40% ceiling) — opening Bavaria,
+  Slovenia, Emilia-Romagna, and a Portuguese CC0 record — and one genuinely-new
+  California agency (SacRT's SCT/Link) after a fail-closed pass confirmed the
+  other untracked US candidates were dead sources already carried via mirrors.
+  Every record carries a live license check, a current-calendar preflight, and
+  a closed reuse-evidence block; rejections are documented in `docs/feeds.md`.
 - Disclose each region's own reviewed-cohort denominator in the finder. When a
   visitor filters the directory to a country or subdivision, a line beside the
   location controls states how many reviewed feed records the cohort holds there
