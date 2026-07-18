@@ -154,3 +154,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: iwade-loop-bus
+    name: Iwade City Loop Bus (岩出市巡回バス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/iwadecity/feeds/junkaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Iwade City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Iwade City.
+    operating_note: >-
+      Iwade City's circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/iwadecity.junkaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Iwade City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

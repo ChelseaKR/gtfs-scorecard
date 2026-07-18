@@ -153,3 +153,72 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kenko-hokubu-kotsu
+    name: Kenko Hokubu Kotsu (県交北部交通)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/khkhokubu-kotsu/feeds/GTFS-Hokubutraffic_Localbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kenko Hokubu Kotsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kenko Hokubu Kotsu.
+    operating_note: >-
+      A private local bus operator in northern Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/khkhokubu-kotsu.GTFS-Hokubutraffic_Localbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kenko Hokubu Kotsu. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kochi-prefectural-ferry
+    name: Kochi Prefectural Ferry (高知県営渡船)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi_pref/feeds/GTFS-Kochipref_Ferry/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kochi Prefecture through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kochi Prefecture.
+    operating_note: >-
+      The prefecture's public ferry crossings.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi_pref.GTFS-Kochipref_Ferry
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kochi Prefecture. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tosa-dragon-bus
+    name: Tosa City Dragon Bus (土佐市コミュニティバス「ドラゴンバス」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tosacity/feeds/GTFS-Tosacity_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tosa City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Tosa City.
+    operating_note: >-
+      Tosa City's Dragon community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tosacity.GTFS-Tosacity_Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tosa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

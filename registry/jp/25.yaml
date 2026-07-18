@@ -103,3 +103,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: higashiomi-chokotto-bus
+    name: Higashiomi City Chokotto Bus (東近江市ちょこっとバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/higashiomicity/feeds/higasiohmisicommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Higashiomi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Higashiomi City.
+    operating_note: >-
+      Higashiomi City's Chokotto community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/higashiomicity.higasiohmisicommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Higashiomi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nagahama-nishiazai-wagon
+    name: Nagahama City Nishiazai Odekake Wagon (長浜市西浅井おでかけワゴン)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagahamacity/feeds/nishiazaiodekakewagon/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagahama City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagahama City.
+    operating_note: >-
+      Nagahama City's Nishiazai area community wagon.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagahamacity.nishiazaiodekakewagon
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagahama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

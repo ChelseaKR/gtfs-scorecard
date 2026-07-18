@@ -159,3 +159,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: himeji-island-community-bus
+    name: Himeji City Island Community Buses (姫路市 家島・坊勢・雪彦コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/himejicity/feeds/ieshima-boze-yukihiko/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Himeji City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Himeji City.
+    operating_note: >-
+      Himeji's Ieshima and Boze island community buses and the Yukihiko route.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/himejicity.ieshima-boze-yukihiko
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Himeji City. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: minamiawaji-ranran-bus
+    name: Minami-Awaji City Ran-Ran Bus (南あわじ市らん・らんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamiawajicity/feeds/lanrunbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Minami-Awaji City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Minami-Awaji
+      City.
+    operating_note: >-
+      Minami-Awaji City's Ran-Ran community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamiawajicity.lanrunbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Minami-Awaji City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

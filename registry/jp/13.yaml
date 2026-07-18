@@ -136,3 +136,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: arakawa-sakura-bus
+    name: Arakawa City Community Bus Sakura (荒川区コミュニティバスさくら)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/arakawacity/feeds/sakura/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Arakawa City (Tokyo)
+      through the GTFS Data Repository (gtfs-data.jp). Credit Arakawa City
+      (Tokyo).
+    operating_note: >-
+      Arakawa ward's Sakura community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/arakawacity.sakura
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Arakawa City (Tokyo). Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: katsushika-sakura-bus
+    name: Katsushika City Community Bus Sakura (葛飾区コミュニティバスさくら)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/katsushikacity/feeds/sakura/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Katsushika City (Tokyo)
+      through the GTFS Data Repository (gtfs-data.jp). Credit Katsushika City
+      (Tokyo).
+    operating_note: >-
+      Katsushika ward's Sakura community bus, a separate network from
+      Arakawa's same-named service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/katsushikacity.sakura
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Katsushika City (Tokyo). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

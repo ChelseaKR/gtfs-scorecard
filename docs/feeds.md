@@ -1021,6 +1021,88 @@ The exclusions carry the discipline:
   admitted-license operators not yet tracked. The wave was capped for review
   quality, not for lack of supply.
 
+## Japan gtfs-data.jp fifth wave
+
+A fifth pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The four prior waves lifted Japan to 145 records across 40
+prefectures. This wave again goes deeper inside prefectures already represented,
+because the seven prefectures still missing carry no admitted-license feed in the
+catalog. Forty records were added, lifting Japan from 145 to 185 records, still
+across the same 40 prefectures. Every candidate is a distinct operator not already
+tracked, confirmed official through the repository, and mechanically preflighted on
+2026-07-18: the download was opened, its GTFS core tables and a current, non-expired
+service calendar were confirmed by reading calendar.txt and calendar_dates.txt
+directly, its size was checked against the standard ingestion caps, and the archive
+was deleted after the check.
+
+The license mix of the forty is 34 CC BY 4.0, 4 CC0 1.0, and 2 CC BY 2.1 JP, the
+same three admitted licenses as before, with the exact version stated in each
+record's `license_note` and attribution. About a quarter of the forty are private
+operators rather than municipal community buses, including Mogamigawa Kotsu,
+Kusakaru Kotsu, Hachiman Kanko Bus, Kenko Hokubu Kotsu, and Seikatsu Bus Yokkaichi.
+Three water services join the cohort: the Meitetsu Kaijo Kanko high-speed boats to
+the Mikawa Bay islands, the Tsu Airport Line ferry, and the Kochi prefectural ferry.
+
+Nineteen prefectures deepened, each operator distinct from those already tracked
+(license in parentheses where not CC BY 4.0):
+
+- **Hokkaido (`JP-01`)**: Ishikari City Itsumo AI on-demand transit (CC0 1.0).
+- **Aomori (`JP-02`)**: Hiranai Town Community Bus, Kuroishi City Platto-go, Towada
+  City Community Bus.
+- **Yamagata (`JP-06`)**: Mogamigawa Kotsu, Shinjo City Bus, Tsuruoka City Bus.
+- **Fukushima (`JP-07`)**: Otama Village Commuter Bus.
+- **Tochigi (`JP-09`)**: Nasushiobara City Community Bus, Otawara City Bus.
+- **Chiba (`JP-12`)**: Katori City Loop Bus (CC0 1.0), Narita City Community Bus.
+- **Tokyo (`JP-13`)**: Arakawa Sakura Bus, Katsushika Sakura Bus.
+- **Toyama (`JP-16`)**: Nanto City Bus (CC0 1.0), Takaoka City Public Bus (CC0 1.0).
+- **Nagano (`JP-20`)**: Kusakaru Kotsu, Shiojiri Step-kun Bus, Nagano City Bus.
+- **Gifu (`JP-21`)**: Gujo City Bus, Hachiman Kanko Bus, Ogaki City Bus (Meihan
+  Kintetsu).
+- **Aichi (`JP-23`)**: Meitetsu Kaijo Kanko Ferry, Minamichita Umikko Bus.
+- **Mie (`JP-24`)**: Seikatsu Bus Yokkaichi, Tsu Airport Line, Yokkaichi City Bus.
+- **Shiga (`JP-25`)**: Higashiomi Chokotto Bus, Nagahama Nishiazai Wagon.
+- **Hyogo (`JP-28`)**: Himeji island community buses (CC BY 2.1 JP), Minami-Awaji
+  Ran-Ran Bus (CC BY 2.1 JP).
+- **Wakayama (`JP-30`)**: Iwade City Loop Bus.
+- **Okayama (`JP-33`)**: Nagi Town Bus.
+- **Tokushima (`JP-36`)**: Tokushima Bus Nanbu, Miyoshi City Bus.
+- **Kochi (`JP-39`)**: Kenko Hokubu Kotsu, Kochi Prefectural Ferry, Tosa City Dragon
+  Bus.
+- **Fukuoka (`JP-40`)**: Kama City Bus, Yanagawa City Community Bus.
+
+The exclusions carry the discipline:
+
+- **Expired current calendar:** Nanbu Town (Yamanashi) advertised a 2026-to-2027
+  window in the catalog metadata, but its `rid=current` archive still held a
+  calendar.txt that ended 2026-03-31, already expired at the 2026-07-18 review. It
+  was rejected. Reading the calendar by hand rather than trusting the metadata is
+  what caught it.
+- **One operator per municipality:** the Hachinohe City Nango community bus was held
+  back because Hachinohe is already tracked through its transportation bureau's city
+  bus, a separate publisher slug for the same municipality.
+- **Not a public network:** the Radiant City Yokohama shuttle (Daishinto, Kanagawa)
+  remains excluded as a single residential complex's service, consistent with the
+  fourth wave.
+- **One feed per operator:** operators that publish only line-level or area-level
+  exports were passed over. Nakatsu City (Oita) publishes eighteen line feeds,
+  Saitama City publishes per-ward and per-route shared-taxi feeds, and Minami-Shinshu
+  publishes eleven area feeds. None yields one feed for the whole network.
+- **Unversioned or ambiguous license:** the catalog's two feeds under a bare
+  "CC-BY", with no resolvable version, stayed rejected. Only the three named,
+  versioned Creative Commons licenses were admitted.
+- **Discontinued and expired:** the feeds the catalog flags as discontinued were
+  excluded by construction, and feeds whose service calendar had already ended by
+  the review were filtered out before the shortlist.
+- **Seven priority prefectures still empty:** Fukui (`JP-18`), Kyoto (`JP-26`),
+  Tottori (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`),
+  and Miyazaki (`JP-45`) still carry zero feeds under an admitted license anywhere
+  in the catalog. They stay unrepresented; no aggregator mirror was used.
+- **Capped for review quality:** the preflight cleared fifty new operators after
+  dedup. Forty were kept, weighted toward breadth across prefectures and toward
+  private and water operators, and the remaining ten were held for a later wave.
+  After this wave the catalog still lists well over 200 admitted-license operators
+  not yet tracked.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

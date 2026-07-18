@@ -152,3 +152,74 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: mogamigawa-kotsu
+    name: Mogamigawa Kotsu (最上川交通)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mogamigawakotsu/feeds/MOGAMIGAWAKOTSU/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mogamigawa Kotsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Mogamigawa Kotsu.
+    operating_note: >-
+      A private bus operator serving the Murayama and Mogami areas of
+      Yamagata.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mogamigawakotsu.MOGAMIGAWAKOTSU
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mogamigawa Kotsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shinjo-city-bus
+    name: Shinjo City Bus (新庄市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shinjocity/feeds/ShinjoCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shinjo City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shinjo City.
+    operating_note: >-
+      Shinjo City's municipal bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shinjocity.ShinjoCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shinjo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tsuruoka-city-bus
+    name: Tsuruoka City Bus (鶴岡市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsuruokacity/feeds/TsuruokaCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsuruoka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Tsuruoka City.
+    operating_note: >-
+      Tsuruoka City's municipal bus, distinct from the tracked Shonai Kotsu
+      feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsuruokacity.TsuruokaCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsuruoka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
