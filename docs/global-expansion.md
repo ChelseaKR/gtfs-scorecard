@@ -197,6 +197,21 @@ manual review can reject stale, duplicate, restricted, or misidentified feeds.
 It is intentionally above a canary cohort so a consumer can use the result for
 a bounded product decision.
 
+### Executable result on 2026-07-17
+
+The published gate document reported `not_ready` with seven of eight criteria
+met. The reviewed cohort held 15 of the 250 required feed records across 12 of
+12 required countries, with France the largest country at 20.0% (3 of 15)
+against the 40% ceiling. Fresh scorecards covered 100% of the cohort against
+the 95% floor. Translation measurement, portable location, and identity review
+each covered the full cohort, the feature finder disclosed its denominator,
+and the exception list was empty. The record count is the only open criterion.
+
+Two changes landed the same day (UTC). The executable gate surface merged
+first (PR #116): the document at `/api/v1/global-coverage.json`, its JSON
+schema, the status page section, and the finder's regional denominator.
+Country program pages for every non-US registry country followed (PR #121).
+
 ## Delivery sequence
 
 ### Now: consumer decision support
@@ -256,6 +271,46 @@ Evaluate NeTEx-to-GTFS normalization only with a named European partner and a
 bounded national profile. The evaluation must cover source fidelity, profile
 variance, validator responsibility, attribution, runtime cost, and how a
 converted feed is labeled. Until then, NeTEx-only datasets are out of scope.
+
+## Beyond the Europe beta
+
+Passing the European gate would not make the service global. The remaining
+tracks each carry their own gate, and none of them opens as a side effect of
+registry growth.
+
+**Global South pilot.** [ADR 0028](decisions/0028-global-south-pilot.md)
+bounds this to a labelled demonstrator of three to five agencies. Onboarding
+any new country waits for confirmed data licensing and operator or community
+consent. A partnership starts this track; registry additions alone do not.
+
+**Per-country equity modules.** The US overlay is state-level ACS data and the
+Canada overlay is the Statistics Canada CIMD
+([ADR 0027](decisions/0027-canada-equity-cimd.md)). Each required its own data
+sourcing, small-area geography, and presentation review. An equity module for
+a new country is an engineering effort against a reviewed national data
+source, not a configuration change.
+
+**Interface localization.** Full-interface translation stays steward-gated
+under [ADR 0026](decisions/0026-internationalization.md): a named language
+steward and human review precede any production locale. The reviewed `/es/`
+lookup shows the required scope; it is not a shortcut around it.
+
+**NeTEx.** Out of scope, as decided above. NeTEx-only datasets wait for a
+named European partner and a bounded national-profile evaluation.
+
+**Operating cost at 2x and 5x feed count.** Actions minutes are free on a
+public repository, so CI compute does not gate growth. The real cost lines are
+storage. The tracked `data/artifacts` tree is about 500 MB at 1,163 configured
+feed records and the repository's git history is about 1 GB. Since the
+fail-closed publishing change (#102), run outputs go to S3 and Pages rather
+than back into git, so the committed tree grows with curation and cutover
+commits, not with every run. The S3 mirror holds every dated artifact under a
+lifecycle expiration policy and is the durable record. At double the registry,
+roughly 2,300 records, a fresh checkout carries about 1 GB of committed
+artifacts. At five times, roughly 5,800 records, the committed bootstrap copy
+needs a redesign before the registry grows further: artifact offload, partial
+clone, or a thinner committed set. The S3 and CDN lines scale roughly linearly
+with feed count.
 
 ## Evidence to collect
 
