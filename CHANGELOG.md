@@ -28,6 +28,17 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Grow reviewed coverage by 91 records to 1,609 and reach the European beta
+  gate's 250 reviewed-feed-record threshold. Two more waves: a fifth gtfs-data.jp
+  pass takes Japan from 145 to 185 records, and an eighth European wave adds 51
+  non-UK-led records that lift the European cohort to 251 across 22 countries.
+  France stays the largest single country at 27% and the United Kingdom fell to
+  14%, both under the 40% concentration limit, so the cohort now meets the gate's
+  count, country-spread, and concentration criteria. The European additions lean
+  on France's Licence Ouverte networks and Norway's Entur operators under NLOD
+  2.0; the Netherlands, Romania, and Belgium produced nothing that clears an
+  explicit first-party open license, and those rejections are recorded in
+  `docs/feeds.md`.
 - Grow reviewed coverage by 95 records to 1,518 through a Japanese deepening and
   a seventh European wave. Two more passes over the national gtfs-data.jp
   repository take Japan from 65 to 145 records, going deeper into its 40
