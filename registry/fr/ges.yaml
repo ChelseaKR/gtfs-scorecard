@@ -106,3 +106,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: solea-mulhouse
+    name: Soléa (Mulhouse Alsace Agglomération)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80492/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Mulhouse Alsace Agglomération (réseau
+      Soléa) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-solea-et-tram-train-en-format-gtfs-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mulhouse Alsace Agglomération (réseau Soléa).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

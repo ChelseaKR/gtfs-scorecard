@@ -348,6 +348,57 @@ Rejections outnumbered additions again, and the reasons are the review:
   the national catalog serves only through a script-rendered page, stayed out
   to fail closed.
 
+## Sixth reviewed European wave
+
+This wave on 2026-07-18 again led with non-United-Kingdom sources and added 20
+records, taking the reviewed European cohort from 165 to 185 across 20
+countries. No United Kingdom feed was added. Each candidate passed a live
+license read, a mechanical download and current-calendar preflight, a size
+check under the archive cap, and an ISO 3166-2 subdivision review. After the
+additions the United Kingdom is 18.4% of the cohort (34 of 185) and France, the
+largest country, is 22.2% (41 of 185), both under the 40% ceiling.
+
+- **Bulgaria (one record)**: Sofia's Center for Urban Mobility, the nineteenth
+  country. The municipal open data portal urbandata.sofia.bg names CC BY-SA for
+  the same GTFS the earlier wave had found unlicensed on the operator page.
+- **Croatia (one record)**: Zagreb's ZET, the twentieth country, under the Open
+  Licence of the Republic of Croatia. The Mobility Database's ZET row is
+  deprecated, so the direct download is ZET's own current endpoint.
+- **France (eleven records)**: DiviaMobilités (Dijon), ilévia (Lille), Ametis
+  (Amiens), Transvilles (Valenciennes), Impulsyon (La Roche-sur-Yon), STAS
+  (Saint-Étienne), T2C (Clermont-Ferrand), TAO (Orléans), Soléa (Mulhouse),
+  Citalis (La Réunion), and Tango (Nîmes), which opens Occitanie. All are
+  Licence Ouverte 2.0 as recorded on the National Access Point; each uses the
+  point's current resource permalink rather than a dated snapshot.
+- **Spain (three records)**: Renfe's Cercanías/Rodalies commuter rail and its
+  high-speed and long-distance rail, both CC BY 4.0 on data.renfe.com, and EMT
+  Málaga's city bus network under CC BY 4.0, distinct from the tracked Metro de
+  Málaga.
+- **Italy (two records)**: ATP Nuoro (Sardinia) and Bologna's Marconi Express
+  people-mover, both under CC BY through Regione Sardegna and TPER. The operator
+  endpoints do not serve a fetchable archive, so the direct download is
+  MobilityData's hosted mirror.
+- **Germany (two records)**: MVV München under CC BY, and MDV under CC BY 4.0,
+  which opens Saxony. MVV's own file path rotates, so it uses the hosted mirror.
+
+Rejections again outnumbered additions, and the reasons are the review:
+
+- **No stable current download**: the Luxembourg national aggregate and the
+  Austrian ÖBB rail feed. Luxembourg publishes only dated weekly snapshots (the
+  newest still valid but version-pinned), and no ÖBB path served the current
+  2025/2026 period.
+- **Over the size guard**: the Entur Norway national aggregate, 606 MiB, well
+  past the archive cap and too heavy to be one feed record.
+- **Non-commercial license**: OASA Athens on data.gov.gr is CC BY-NC.
+- **No reviewable open license**: HŽ Passenger Transport, BKK Budapest, TPBI
+  Bucharest and the external.gtfs.ro-hosted Romanian city feeds, the Cyprus
+  Motion feeds, and the Slovak ŽSR rail feed.
+- **ODbL with special conditions**: French networks such as TCAT Troyes and
+  Irigo Angers on the National Access Point.
+- **Expired calendar or dead host**: Metro de Madrid and Metrotenerife (stale),
+  Junta de Extremadura (expired), and Generalitat Valenciana intercity (DNS
+  failure).
+
 ## Oceania coverage wave
 
 The first coverage wave outside Europe and North America, curated under the

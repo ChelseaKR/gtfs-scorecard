@@ -24,3 +24,71 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: ilevia-lille
+    name: ilévia (Métropole Européenne de Lille)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    mdb_id: "2152"
+    static_gtfs_url: https://media.ilevia.fr/opendata/gtfs.zip
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Métropole Européenne de Lille (réseau
+      ilévia) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/ilevia-localisation-des-arrets-bus-metro-et-tram-gtfs
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Métropole Européenne de Lille (réseau ilévia).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ametis-amiens
+    name: Ametis (Amiens Métropole)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    mdb_id: "1988"
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80705/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Amiens Métropole (réseau Ametis) and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/ametis
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Amiens Métropole (réseau Ametis).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: transvilles-valenciennes
+    name: Transvilles (Valenciennes)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82442/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to SIMOUV (réseau Transvilles, Valenciennes)
+      and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/simouv-horaires-theoriques-format-gtfs-et-temps-reel-format-siri-transvilles-valenciennes
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        SIMOUV (réseau Transvilles, Valenciennes).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

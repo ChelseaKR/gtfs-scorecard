@@ -85,3 +85,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: divia-dijon
+    name: DiviaMobilités (Dijon)
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    mdb_id: "2153"
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80742/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Dijon Métropole (réseau DiviaMobilités)
+      and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-diviamobilites
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Dijon Métropole (réseau DiviaMobilités).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

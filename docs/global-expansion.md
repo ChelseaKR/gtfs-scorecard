@@ -301,6 +301,31 @@ The wave kept the balance criterion comfortable: the United Kingdom is now
 second-largest at 22. The 250-record threshold stays the only open criterion,
 and it still fails by design.
 
+### Sixth European wave on 2026-07-18
+
+A sixth wave stayed non-United-Kingdom and added 20 reviewed feed records,
+moving the European cohort from 165 to 185 records across 20 countries. It
+opened Bulgaria with Sofia's Urban Mobility Center feed (CC BY-SA on the
+municipal open data portal) and Croatia with Zagreb's ZET feed (Open Licence of
+the Republic of Croatia), the nineteenth and twentieth countries. The rest is
+depth in already-listed countries: eleven in France under the Licence Ouverte
+recorded on the national access point (DiviaMobilités, ilévia, Ametis,
+Transvilles, Impulsyon, STAS, T2C, TAO, Soléa, Citalis, and Tango, which opened
+Occitanie); three in Spain (Renfe's commuter and long-distance rail under CC BY
+4.0, and EMT Málaga's bus network); two in Italy (ATP Nuoro and Bologna's
+Marconi Express under CC BY); and two in Germany (MVV München under CC BY and
+MDV under CC BY 4.0, opening Saxony). Every record carried a live license read,
+a mechanical download and current-calendar preflight, and an ISO 3166-2
+subdivision review. Candidates that could not clear those gates were dropped:
+Luxembourg and Austrian rail lacked a stable current download, the Norway
+national aggregate exceeded the size guard, Athens (OASA) was non-commercial,
+and Slovakia, Greece, Romania, and Cyprus rail lacked a reviewable open licence.
+
+The balance criterion stays comfortable: the United Kingdom is now 18.4% of the
+cohort (34 of 185), and France, the largest country, is 22.2% (41 of 185), both
+well under the 40% ceiling. The 250-record threshold stays the only open
+criterion, and it still fails by design.
+
 ## Delivery sequence
 
 ### Now: consumer decision support
