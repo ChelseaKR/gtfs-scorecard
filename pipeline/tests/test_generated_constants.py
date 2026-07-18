@@ -79,3 +79,17 @@ def test_write_constants_honors_an_explicit_path(tmp_path: Path) -> None:
     out = write_constants(tmp_path / "elsewhere" / "constants.js")
     assert out == tmp_path / "elsewhere" / "constants.js"
     assert out.read_text() == render_constants_js()
+
+
+def test_committed_strings_module_matches_render() -> None:
+    from scorecard_pipeline.constants_export import STRINGS_GENERATED_PATH, render_strings_js
+
+    committed = (_REPO / STRINGS_GENERATED_PATH).read_text()
+    assert committed == render_strings_js(), (
+        "web/src/generated/strings.js drifted from locales/app.en.json; "
+        "run `scorecard render-constants` and commit the result"
+    )
+    assert committed.startswith("// GENERATED")
+    (payload,) = [body for name, body in _EXPORT_RE.findall(committed) if name == "STRINGS"]
+    catalog = json.loads(payload)
+    assert catalog and all(isinstance(v, str) for v in catalog.values())

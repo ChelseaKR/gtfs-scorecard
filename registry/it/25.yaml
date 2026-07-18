@@ -1,0 +1,30 @@
+# Lombardia (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: atm-milano
+    name: ATM Milano (Comune di Milano)
+    country: IT
+    subdivision_code: IT-25
+    subdivision_name: Lombardia
+    mdb_id: "2666"
+    is_official: true
+    static_gtfs_url: https://dati.comune.milano.it/gtfs.zip
+    license_note: >-
+      CC BY 4.0 through Milan's municipal open data portal; credit the Comune
+      di Milano. The dataset is produced by AMAT from ATM scheduling data.
+    operating_note: >-
+      The Mobility Database notes the download may be limited to European
+      users; the reviewed fetch succeeded from a United States address, and
+      reachability stays visible on the public status page.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.comune.milano.it/dataset/ds929-orari-del-trasporto-pubblico-locale-nel-comune-di-milano-in-formato-gtfs
+      terms_url: https://dati.comune.milano.it/dataset/ds929-orari-del-trasporto-pubblico-locale-nel-comune-di-milano-in-formato-gtfs
+      scope: [gtfs_schedule]
+      attribution: Comune di Milano; data produced by AMAT from ATM scheduling data.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

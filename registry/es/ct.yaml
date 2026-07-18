@@ -1,0 +1,26 @@
+# Catalunya (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fgc-catalunya
+    name: Ferrocarrils de la Generalitat de Catalunya (FGC)
+    country: ES
+    subdivision_code: ES-CT
+    subdivision_name: Catalunya [Cataluña]
+    mdb_id: "1856"
+    is_official: true
+    static_gtfs_url: https://www.fgc.cat/google/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through FGC's own open data portal; credit Ferrocarrils de la
+      Generalitat de Catalunya.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://dadesobertes.fgc.cat/explore/dataset/gtfs_zip/information/
+      terms_url: https://dadesobertes.fgc.cat/explore/dataset/gtfs_zip/information/
+      scope: [gtfs_schedule]
+      attribution: Ferrocarrils de la Generalitat de Catalunya (FGC).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

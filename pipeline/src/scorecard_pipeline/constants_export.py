@@ -56,6 +56,20 @@ TIER_LABELS = {"small": "small", "medium": "mid-size", "large": "large"}
 # Repo-relative path of the generated ES module.
 GENERATED_PATH = Path("web") / "src" / "generated" / "constants.js"
 
+# Repo-relative path of the generated string-catalog module. Same contract:
+# the app imports its externalized English copy from here instead of keeping
+# literals inline, and the reviewed catalog in locales/app.en.json is the one
+# place that copy is edited.
+STRINGS_GENERATED_PATH = Path("web") / "src" / "generated" / "strings.js"
+
+_STRINGS_HEADER = (
+    "// GENERATED — do not edit; run `scorecard render-constants`.\n"
+    "// Source of truth: pipeline/src/scorecard_pipeline/locales/app.en.json\n"
+    "// (the interactive app's reviewed English string catalog; i18n.py owns\n"
+    "// the catalog contract and the derived en-XA pseudolocale).\n"
+    "// pipeline/tests/test_generated_constants.py fails CI when this file drifts.\n"
+)
+
 _HEADER = (
     "// GENERATED — do not edit; run `scorecard render-constants`.\n"
     "// Source of truth: pipeline/src/scorecard_pipeline/constants_export.py\n"
@@ -113,4 +127,21 @@ def write_constants(path: Path | None = None) -> Path:
     target = path if path is not None else repo_root() / GENERATED_PATH
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(render_constants_js())
+    return target
+
+
+def render_strings_js() -> str:
+    """The generated string-catalog ES module as one deterministic string."""
+    from .i18n import load_app_catalog, validate_catalogs
+
+    validate_catalogs()
+    catalog = json.dumps(load_app_catalog("en"), sort_keys=True, indent=2, ensure_ascii=False)
+    return f"{_STRINGS_HEADER}\nexport const STRINGS = {catalog};\n"
+
+
+def write_strings(path: Path | None = None) -> Path:
+    """Write the generated string-catalog module and return the path written."""
+    target = path if path is not None else repo_root() / STRINGS_GENERATED_PATH
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(render_strings_js())
     return target
