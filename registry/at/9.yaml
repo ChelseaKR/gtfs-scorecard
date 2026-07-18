@@ -10,6 +10,10 @@ agencies:
     subdivision_name: Wien
     mdb_id: "648"
     is_official: true
+    # Its largest table expands past the standard 512 MiB single-entry ceiling,
+    # so it is scored on the large-feed tier (streamed fetch, raised bounded
+    # caps). Without this flag the daily run rejects it as over-cap.
+    large_feed: true
     static_gtfs_url: https://www.wienerlinien.at/ogd_realtime/doku/ogd/gtfs/gtfs.zip
     license_note: >-
       CC BY 4.0 per the Stadt Wien dataset record on data.gv.at; the Wiener

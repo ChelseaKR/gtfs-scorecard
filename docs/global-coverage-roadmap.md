@@ -189,13 +189,26 @@ the data open.
 
 These unblock more than one phase and are sequenced by first need.
 
-- **Large-feed sharding.** The ingestion caps (256 MiB download, 512 MiB single
-  entry, 2 GiB total) correctly exclude very large aggregates today — Sydney and
-  Melbourne's bundles, several national feeds, and Europe's deferred nationals.
-  A separately designed shard (streamed fetch, per-mode or per-region split,
-  bounded memory) would let these publish without weakening the archive guard.
-  This is the highest-value enabler because it unblocks the largest systems in
-  every region. Needed first by Phase 1 (Sydney, Melbourne) and Europe.
+- **Large-feed tier (shipped).** The standard ingestion caps (256 MiB download,
+  512 MiB single entry, 2 GiB total) correctly exclude very large aggregates,
+  but a small number of official national and metropolitan feeds legitimately
+  exceed them: their compressed download runs past 256 MiB, or a single table
+  such as `stop_times.txt` expands past 512 MiB. A feed now opts in per record
+  with `large_feed: true` after a curator confirms it is a real published feed.
+  The tier raises the size ceilings to a bounded larger level (512 MiB download,
+  2 GiB single entry, 4 GiB total), streams the download to disk with a bounded
+  memory footprint (`net.safe_download`), and gives the validator an explicit
+  heap ceiling (`SCORECARD_LARGE_FEED_HEAP`, default 6g). Every zip-bomb *shape*
+  guard — the entry count, the compression-ratio check, and the
+  central-directory-only inspection before the Java validator opens the bytes —
+  stays exactly as strict; only the raw size ceilings move, and only for an
+  opted-in feed. The first records on the tier are Israel's national feed,
+  Melbourne (PTV), HSL Helsinki, Wiener Linien, and Carris Metropolitana — each
+  a feed the standard caps rejected. A per-mode or per-region *split* of one
+  oversized feed (distinct sub-records that each score) remains a possible
+  future extension for feeds larger than the bounded tier; the tier unblocks
+  every current target without it. Sydney (Transport for NSW) stays deferred on
+  its registration wall, not on size.
 - **Beta-gate generalization decision.** The European beta gate is Europe-coded
   by design (a closed country set and thresholds chosen for that market's
   addressable feeds). Before any second regional beta is claimed, decide whether
