@@ -1,0 +1,30 @@
+# Sicilia (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: amat-palermo
+    name: AMAT Palermo
+    country: IT
+    subdivision_code: IT-82
+    subdivision_name: Sicilia
+    mdb_id: "2373"
+    is_official: true
+    static_gtfs_url: https://opendata.comune.palermo.it/js/server/uploads/dataset/gtfs/amat_gtfs.zip
+    license_note: >-
+      CC BY 4.0 through Palermo's municipal open data portal; credit AMAT
+      Palermo and the Comune di Palermo. Tram data inside the feed carries a
+      CC BY-SA marking with OpenStreetMap-derived georeferencing.
+    operating_note: >-
+      The portal publishes per-period dataset pages plus a permanent
+      latest-archive URL; this record tracks the permanent URL.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.comune.palermo.it/opendata-dataset.php?dataset=1783
+      terms_url: https://opendata.comune.palermo.it/opendata-dataset.php?dataset=1783
+      scope: [gtfs_schedule]
+      attribution: AMAT Palermo S.p.A. and Comune di Palermo.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

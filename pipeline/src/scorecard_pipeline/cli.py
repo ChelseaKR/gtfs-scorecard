@@ -2228,9 +2228,10 @@ def _cmd_render_site(args: argparse.Namespace, parser: argparse.ArgumentParser) 
 
 
 def _cmd_render_constants(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    from .constants_export import write_constants
+    from .constants_export import write_constants, write_strings
 
     print(write_constants())
+    print(write_strings())
     return 0
 
 

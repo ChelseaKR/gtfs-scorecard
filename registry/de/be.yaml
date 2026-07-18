@@ -1,0 +1,31 @@
+# Berlin (DE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: vbb-berlin-brandenburg
+    name: Verkehrsverbund Berlin-Brandenburg (VBB)
+    country: DE
+    subdivision_code: DE-BE
+    subdivision_name: Berlin
+    mdb_id: "3233"
+    is_official: true
+    static_gtfs_url: https://unternehmen.vbb.de/fileadmin/user_upload/VBB/Dokumente/API-Datensaetze/gtfs-mastscharf/GTFS.zip
+    license_note: >-
+      Creative Commons Attribution through Berlin's open data portal; credit
+      VBB Verkehrsverbund Berlin-Brandenburg GmbH as the source.
+    operating_note: >-
+      One multi-operator regional aggregate for Berlin and Brandenburg;
+      counted as one feed record, not a distinct-agency count. The publisher's
+      separate GTFS-Flex collection stays unlisted until a source page stating
+      its reuse terms can be reviewed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://daten.berlin.de/datensaetze/vbb-fahrplandaten-via-gtfs
+      terms_url: https://creativecommons.org/licenses/by/4.0/deed.en
+      scope: [gtfs_schedule]
+      attribution: VBB Verkehrsverbund Berlin-Brandenburg GmbH.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

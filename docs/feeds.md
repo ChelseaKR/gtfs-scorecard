@@ -195,6 +195,47 @@ records across 12 countries. It clears the country-count and concentration
 checks, but it remains well below the 250-record beta gate in
 [global-expansion.md](global-expansion.md).
 
+## Reviewed European depth wave
+
+These 27 records work the depth queues that the 2026-07-15 discovery audit
+named: Spain, France, Great Britain, Germany, and Italy. Provider source,
+reuse terms, current download, service calendar, archive size, and feed
+identity were checked on 2026-07-17. Candidates were drawn from the Mobility
+Database catalog, mechanically preflighted (live ZIP, required GTFS files,
+size caps, calendar coverage), and then reviewed for reuse terms and identity.
+More candidates were rejected than added; the rejection reasons are listed in
+[global-expansion.md](global-expansion.md).
+
+- **Great Britain (ten records)**: Nottingham City Transport, Reading Buses,
+  Brighton & Hove Buses, Oxford Bus Company, Go North East, Cardiff Bus,
+  Xplore Dundee, Blackpool Transport, Unilink (Southampton), and Southern
+  Vectis all publish through the Passenger open-data platform
+  (data.discoverpassenger.com) under the
+  [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+  Each operator page states its own copyright line; each record tracks the
+  rolling `dataset/current` download, which rolls over on a short cycle.
+- **Spain (seven records)**: two CRTM network feeds (Madrid city bus and Metro
+  Ligero) under the [Licencia CRTM](https://www.crtm.es/licencia-de-uso),
+  which permits commercial reuse and transformation with CRTM cited; EMT
+  València and TUVISA Vitoria-Gasteiz under CC BY 4.0 through their city
+  portals; FGC and the Puente Bizkaia transporter bridge under CC BY 4.0
+  through provider portals; and the TIB Mallorca consortium feed under CC BY
+  4.0. TUVISA publishes rider-facing `translations.txt`.
+- **Italy (four records)**: Roma Servizi per la Mobilità (CC BY-SA through
+  Rome's municipal catalog, share-alike noted), AMAT Palermo and ATM Milano
+  (CC BY 4.0 through their comune portals), and Regione Calabria's CORE
+  regional aggregate (CC BY 4.0 via Italy's national catalog record).
+- **Germany (four records)**: the VBB Berlin-Brandenburg aggregate (CC BY
+  through Berlin's open data portal), bodo Verkehrsverbund and VAG Freiburg
+  (Datenlizenz Deutschland - Namensnennung 2.0, with NVBW's OpenStreetMap
+  shapes credit where it applies), and KVV Karlsruhe (CC0). Germany is a new
+  registry country in this wave.
+- **France (two records)**: Transports Bordeaux Métropole with its three
+  public realtime feeds (Licence Ouverte 1.0, with the publisher's public
+  open-data key embedded in the National Access Point URLs), and Car Jaune,
+  the interurban network of La Réunion (Licence Ouverte 2.0, with one
+  combined realtime stream).
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

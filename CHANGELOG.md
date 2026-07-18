@@ -28,6 +28,22 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add 27 source-, reuse-, and identity-reviewed European depth-wave records
+  from the named review queues: ten Great Britain operators on the Passenger
+  open-data platform, seven in Spain, four in Italy, four in Germany (a new
+  registry country), and two in France, including two feeds with public
+  realtime endpoints. The reviewed cohort now spans 42 feed records in 13
+  countries with Great Britain the largest at 26%, still explicitly below the
+  250-record beta gate; rejected candidates and their reasons are documented
+  in `docs/global-expansion.md`.
+- Externalize the interactive app's shell copy (loading, fetch errors, the
+  error and not-found boxes, compare-picker validation) into a reviewed app
+  string catalog rendered as a generated module, with a derived `en-XA`
+  pseudolocale behind an explicit `?l10n=en-XA` preview, browser tests for
+  expansion overflow, fail-closed English fallback, and right-to-left
+  direction, and exact-baseline ratchets on hardcoded strings and directional
+  CSS (ADR 0038). English remains the only production interface language and
+  the language-steward gate is unchanged.
 - Add nine source-, reuse-, and identity-reviewed European feed records across
   Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain,
   Poland, and Portugal. The bounded cohort now spans 15 feed records in 12

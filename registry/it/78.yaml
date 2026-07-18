@@ -1,0 +1,30 @@
+# Calabria (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: core-calabria
+    name: Regione Calabria regional transport (CORE)
+    country: IT
+    subdivision_code: IT-78
+    subdivision_name: Calabria
+    mdb_id: "2668"
+    is_official: true
+    static_gtfs_url: https://mobilita.regione.calabria.it/gtfs/otp_gtfs.zip
+    license_note: >-
+      CC BY 4.0, confirmed on the dataset's federated record in Italy's
+      national open data catalog; credit Regione Calabria.
+    operating_note: >-
+      One regional multi-operator aggregate published by the region's mobility
+      operations center; counted as one feed record, not a distinct-agency
+      count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.regione.calabria.it/catalogo/percorsi-linee-trasporto-pubblico/
+      terms_url: https://www.dati.gov.it/view-dataset/dataset?id=026ab3aa-8646-45f6-afcd-8948e12ed536
+      scope: [gtfs_schedule]
+      attribution: Regione Calabria.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

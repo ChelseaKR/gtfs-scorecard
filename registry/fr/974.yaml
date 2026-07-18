@@ -1,0 +1,35 @@
+# La Réunion (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: car-jaune-reunion
+    name: Car Jaune (La Réunion)
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: La Réunion
+    mdb_id: "2458"
+    is_official: true
+    static_gtfs_url: https://pysae.com/api/v2/groups/car-jaune/gtfs/pub
+    license_note: >-
+      Licence Ouverte 2.0; published by Région Réunion through France's
+      National Access Point. Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      The island interurban network of La Réunion, an overseas department of
+      France; the first reviewed record outside continental Europe within the
+      French registry coverage.
+    # The publisher exposes one combined GTFS-Realtime stream for all kinds.
+    rt_urls:
+      trip_updates: https://pysae.com/api/v2/groups/car-jaune/gtfs-rt
+      vehicle_positions: https://pysae.com/api/v2/groups/car-jaune/gtfs-rt
+      service_alerts: https://pysae.com/api/v2/groups/car-jaune/gtfs-rt
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-au-format-gtfs-et-horaires-temps-reel-au-format-gtfs-rt-du-reseau-car-jaune-a-la-reunion
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Région Réunion.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
