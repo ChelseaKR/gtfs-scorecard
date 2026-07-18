@@ -83,3 +83,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: keisei-bus-chiba-west
+    name: Keisei Bus Chiba West (京成バス千葉ウエスト)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/keisei-transitbus/feeds/keiseitransitbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Keisei Bus Chiba West Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Keisei Bus
+      Chiba West Co., Ltd.
+    operating_note: >-
+      The Shiohama-depot network of Keisei Bus Chiba West, including Ichikawa
+      City's Wakuwaku community bus; part of the Keisei group.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/keisei-transitbus.keiseitransitbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Keisei Bus Chiba West Co., Ltd. Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

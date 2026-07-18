@@ -81,3 +81,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: chikuma-bus
+    name: Chikuma Bus (千曲バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chikuma-bus/feeds/rosenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chikuma Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Chikuma Bus Co.,
+      Ltd.
+    operating_note: >-
+      Chikuma Bus operates route services in the Saku and Ueda areas of
+      eastern Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chikuma-bus.rosenbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chikuma Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ueda-bus
+    name: Ueda Bus (上田バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/uedabus/feeds/noriai_bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ueda Bus Co., Ltd. through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ueda Bus Co., Ltd.
+    operating_note: >-
+      Ueda Bus operates route services around Ueda in eastern Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/uedabus.noriai_bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ueda Bus Co., Ltd. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

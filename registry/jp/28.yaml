@@ -111,3 +111,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ono-city-ranran-bus
+    name: Ono City Ran-Ran Bus (小野市らんらんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hyogo-ono/feeds/ranranbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Ono City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ono City.
+    operating_note: >-
+      Ono City's Ran-Ran community bus in south-central Hyogo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hyogo-ono.ranranbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ono City. Published as GTFS-JP open data (CC BY 2.1 JP) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tatsuno-city-bus
+    name: Tatsuno City Community Bus (たつの市コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tatsunocity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Tatsuno City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tatsuno City.
+    operating_note: >-
+      Tatsuno City's community bus in southwestern Hyogo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tatsunocity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tatsuno City. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

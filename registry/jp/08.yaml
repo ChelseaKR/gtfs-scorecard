@@ -81,3 +81,50 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: otone-kotsu
+    name: Otone Kotsu (大利根交通)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/otonekotu/feeds/otonekotubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Otone Kotsu Jidosha Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Otone Kotsu
+      Jidosha Co., Ltd.
+    operating_note: >-
+      Otone Kotsu operates route buses in western Ibaraki.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/otonekotu.otonekotubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Otone Kotsu Jidosha Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: namegata-city-bus
+    name: Namegata City Bus (行方市営路線バス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/namegatacity/feeds/bus-namegata-ibaraki-jp/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Namegata City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Namegata City.
+    operating_note: >-
+      Namegata City's municipal route bus in eastern Ibaraki.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/namegatacity.bus-namegata-ibaraki-jp
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Namegata City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

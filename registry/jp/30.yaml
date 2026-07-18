@@ -106,3 +106,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: chuki-bus
+    name: Chuki Bus (中紀バス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chukibus/feeds/chukibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chuki Bus Co., Ltd. through
+      the GTFS Data Repository (gtfs-data.jp). Credit Chuki Bus Co., Ltd.
+    operating_note: >-
+      Chuki Bus operates route services in central Wakayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chukibus.chukibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chuki Bus Co., Ltd. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ryujin-bus
+    name: Ryujin Bus (龍神自動車)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ryujinbus/feeds/ryujinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ryujin Jidosha Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Ryujin Jidosha
+      Co., Ltd.
+    operating_note: >-
+      Ryujin Bus operates route services in the Tanabe and Ryujin area of
+      Wakayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ryujinbus.ryujinbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ryujin Jidosha Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

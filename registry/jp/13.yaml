@@ -112,3 +112,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kozushima-village-bus
+    name: Kozushima Village Bus (神津島村営バス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kozushimavillage/feeds/kozushimavillagebus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kozushima Village through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kozushima Village.
+    operating_note: >-
+      The village bus on Kozushima, one of the Izu Islands administered by
+      Tokyo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kozushimavillage.kozushimavillagebus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kozushima Village. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

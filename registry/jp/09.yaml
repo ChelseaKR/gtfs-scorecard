@@ -47,3 +47,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: nikko-city-bus
+    name: Nikko City Bus (日光市営バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nikkocity/feeds/nikkocity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nikko City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Nikko City.
+    operating_note: >-
+      Nikko City's municipal bus in the mountains of western Tochigi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nikkocity.nikkocity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nikko City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
