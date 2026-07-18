@@ -565,6 +565,60 @@ function buildWorldMapSvg(mapData, byCountry) {
     <p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
 }
 
+/** The shared five-bucket legend markup for any coverage choropleth. */
+function expiredLegendHtml() {
+  const legend = [
+    [0, "none expired"],
+    [1, "under 10%"],
+    [2, "10–25%"],
+    [3, "25–40%"],
+    [4, "40% or more"],
+  ]
+    .map(([q, lab]) => `<span class="map-key"><span class="map-swatch q${q}"></span>${lab}</span>`)
+    .join("");
+  return `<p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
+}
+
+/** Build a country's subdivision choropleth, the drill-down level below the
+ *  world map. Each subdivision is shaded by its expired-feed share exactly like
+ *  the country and state maps, announces its counts in text, and filters the
+ *  list on selection. A back control returns to the world view. Subdivisions
+ *  with no tracked feeds (or with no matching geometry) render faint and inert,
+ *  so a partial geometry match degrades gracefully rather than hiding the level.
+ *  @param {{viewBox: string, country: string, subdivisions: Record<string,string>}} mapData
+ *  @param {any[]} subRows @param {string} countryName @returns {string} */
+function buildSubdivisionMapSvg(mapData, subRows, countryName) {
+  const byCode = {};
+  for (const row of subRows) byCode[row.subdivision_code] = row;
+  const paths = Object.entries(mapData.subdivisions)
+    .map(([code, d]) => {
+      const row = byCode[code];
+      if (!row || !row.agencies) {
+        return `<path d="${escAttr(d)}" class="us-state us-empty" aria-hidden="true"></path>`;
+      }
+      const pct = Math.round((row.expired / row.agencies) * 100);
+      const q = expiredQuintile(row.expired / row.agencies);
+      const noun = row.agencies === 1 ? "feed" : "feeds";
+      const name = row.subdivision_name || code;
+      const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
+      return `<path d="${escAttr(d)}" class="us-state q${q}"
+        data-map-subdivision="${escAttr(code)}" data-map-country="${escAttr(mapData.country)}"
+        tabindex="0" role="button" aria-pressed="false"
+        aria-label="${escAttr(label)} — filter to this area"><title>${esc(label)}</title></path>`;
+    })
+    .join("");
+  return `<div class="map-drill-head">
+      <button type="button" class="map-back" data-map-back="1" aria-label="Back to the world map">
+        <span aria-hidden="true">←</span> World</button>
+      <span class="map-drill-title"><bdi>${esc(countryName)}</bdi></span>
+    </div>
+    <svg class="us-map-svg" viewBox="${mapData.viewBox}" role="group"
+      aria-label="Map of ${escAttr(countryName)}; each area is shaded by the share of its tracked GTFS feeds that have expired, and selecting an area filters the list below.">
+      ${paths}
+    </svg>
+    ${expiredLegendHtml()}`;
+}
+
 /** Portable country controls when the directory exposes the location contract.
  *  The selected country's subdivision controls are mounted on demand by
  *  setupOverview, after the optional U.S. map in source order. Older directory
@@ -1350,7 +1404,11 @@ function setupOverview(agencies, total, summary) {
       mapHost.hidden = portableLocations && locationFilter.country !== "US";
     }
     for (const path of worldPaths) {
-      const selected = path.dataset.mapCountry === locationFilter.country;
+      const selected = path.dataset.mapSubdivision
+        ? locationFilter.subdivision !== "all" &&
+          path.dataset.mapSubdivision === locationFilter.subdivision &&
+          path.dataset.mapCountry === locationFilter.country
+        : path.dataset.mapCountry === locationFilter.country;
       path.classList.toggle("selected", selected);
       path.setAttribute("aria-pressed", String(selected));
     }
@@ -1425,38 +1483,103 @@ function setupOverview(agencies, total, summary) {
   clear.addEventListener("click", resetFilters);
   resetBtn.addEventListener("click", resetFilters);
 
-  // Mount the world choropleth the same way as the US one: progressive
-  // enhancement over the country chips, omitted when the geometry asset
-  // (web/world-countries.json) can't load. Clicking a country behaves exactly
-  // like its chip.
+  // Mount the world choropleth as progressive enhancement over the country
+  // chips (omitted when web/world-countries.json can't load), and let a country
+  // that has committed subdivision geometry drill down into its states or
+  // provinces. Selecting a country filters exactly like its chip; drilling in is
+  // an additional view, and a Back control returns to the world. Cities are the
+  // agencies themselves, reached through the filtered list and the /map/ page.
   (async function mountWorldMap() {
     const host = /** @type {HTMLElement | null} */ (main.querySelector("#world-map"));
     if (!host || !portableLocations) return;
-    let mapData;
+    let worldData;
     try {
       const resp = await fetch(new URL("../world-countries.json", location.href));
       if (!resp.ok) return;
-      mapData = await resp.json();
+      worldData = await resp.json();
     } catch {
       return;
     }
     const byCountry = {};
     for (const row of countries) byCountry[row.country_code || ""] = row;
-    host.innerHTML = buildWorldMapSvg(mapData, byCountry);
-    host.dataset.loaded = "true";
-    worldPaths = /** @type {HTMLElement[]} */ (
-      Array.from(host.querySelectorAll("path[data-map-country]"))
-    );
-    for (const p of worldPaths) {
-      p.addEventListener("click", () => selectCountry(p.dataset.mapCountry || ""));
-      p.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          selectCountry(p.dataset.mapCountry || "");
-        }
-      });
+    const subGeoCache = /** @type {Record<string, any>} */ ({});
+
+    /** Load a country's subdivision geometry once, or null if it has none. */
+    async function subdivisionGeometry(code) {
+      const cc = (code || "").toLowerCase();
+      if (cc in subGeoCache) return subGeoCache[cc];
+      let geo = null;
+      try {
+        const resp = await fetch(new URL(`../subdivisions/${cc}.json`, location.href));
+        if (resp.ok) geo = await resp.json();
+      } catch {
+        geo = null;
+      }
+      subGeoCache[cc] = geo;
+      return geo;
     }
-    syncLocationUI();
+
+    function wireWorldPaths() {
+      worldPaths = /** @type {HTMLElement[]} */ (
+        Array.from(host.querySelectorAll("path[data-map-country]"))
+      );
+      for (const p of worldPaths) {
+        const go = () => enterCountry(p.dataset.mapCountry || "");
+        p.addEventListener("click", go);
+        p.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            go();
+          }
+        });
+      }
+    }
+
+    function renderWorld() {
+      host.innerHTML = buildWorldMapSvg(worldData, byCountry);
+      wireWorldPaths();
+      syncLocationUI();
+    }
+
+    function renderCountry(cc, geo, countryRow) {
+      const rows = (countryRow && countryRow.subdivisions) || [];
+      host.innerHTML = buildSubdivisionMapSvg(geo, rows, (countryRow && countryRow.country_name) || cc);
+      worldPaths = /** @type {HTMLElement[]} */ (
+        Array.from(host.querySelectorAll("path[data-map-subdivision]"))
+      );
+      for (const p of worldPaths) {
+        const go = () => selectSubdivision(p.dataset.mapSubdivision || "", p.dataset.mapCountry || cc);
+        p.addEventListener("click", go);
+        p.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            go();
+          }
+        });
+      }
+      const back = host.querySelector("[data-map-back]");
+      if (back) {
+        back.addEventListener("click", () => {
+          renderWorld();
+          const world = host.querySelector(`path[data-map-country="${cc}"]`);
+          if (world instanceof HTMLElement) world.focus();
+        });
+      }
+      syncLocationUI();
+      const first = host.querySelector("path[data-map-subdivision]");
+      if (first instanceof SVGElement) first.focus();
+    }
+
+    async function enterCountry(cc) {
+      selectCountry(cc);
+      const geo = await subdivisionGeometry(cc);
+      if (locationFilter.country !== cc) return; // selection toggled back off
+      const countryRow = countries.find((row) => (row.country_code || "") === cc);
+      if (geo && countryRow) renderCountry(cc, geo, countryRow);
+    }
+
+    host.dataset.loaded = "true";
+    renderWorld();
   })();
 
   // Mount the choropleth as progressive enhancement: the chip grid already

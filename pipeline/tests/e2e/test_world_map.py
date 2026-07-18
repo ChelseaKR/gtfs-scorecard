@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is not installed")
 
-from playwright.sync_api import Page
+from playwright.sync_api import Page, Route
 
 pytestmark = pytest.mark.e2e
 
@@ -44,3 +46,45 @@ def test_world_map_absence_degrades_silently(page: Page, base_url: str) -> None:
     page.wait_for_selector(".country-grid")
     assert page.locator("#world-map svg").count() == 0
     assert page.locator(".location-country").count() > 0
+
+
+def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None:
+    # A country with committed subdivision geometry drills down: selecting it on
+    # the world map swaps to its subdivision choropleth, each area filters the
+    # list, and a Back control returns to the world. Canada (present in the
+    # fixture with one Ontario feed) stands in for any country; the geometry is
+    # routed synthetically so the test exercises the interaction, not one
+    # country's real shape.
+    geometry = {
+        "viewBox": "0 0 100 100",
+        "country": "CA",
+        "subdivisions": {"CA-ON": "M10 10 L90 10 L90 90 L10 90 Z"},
+    }
+
+    def serve_geometry(route: Route) -> None:
+        route.fulfill(status=200, content_type="application/json", body=json.dumps(geometry))
+
+    page.route("**/subdivisions/ca.json", serve_geometry)
+    page.goto(f"{base_url}/app/")
+    page.wait_for_selector("#world-map svg")
+
+    canada = page.locator('#world-map path[data-map-country="CA"]')
+    assert canada.count() == 1
+    canada.click()
+
+    # The map has drilled in: a Back control and the subdivision area appear.
+    page.wait_for_selector("#world-map [data-map-back]")
+    ontario = page.locator('#world-map path[data-map-subdivision="CA-ON"]')
+    assert ontario.count() == 1
+    label = ontario.get_attribute("aria-label") or ""
+    assert "Ontario" in label
+    assert "feed" in label  # counts are announced in text, never color alone
+
+    # Selecting the area filters to it and marks it pressed.
+    ontario.click()
+    assert ontario.get_attribute("aria-pressed") == "true"
+
+    # Back returns to the world view.
+    page.locator("#world-map [data-map-back]").click()
+    page.wait_for_selector('#world-map path[data-map-country="CA"]')
+    assert page.locator("#world-map [data-map-back]").count() == 0

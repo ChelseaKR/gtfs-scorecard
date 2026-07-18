@@ -38,10 +38,11 @@ _PHYSICAL = re.compile(
 
 # file name -> count of English-looking string literals (see module docstring).
 HARDCODED_STRING_BASELINE = {
-    # Raised 260 -> 339 with the world coverage map: its aria labels, legend
-    # rows, and chart titles are new accessible copy, a conscious increase to
-    # work back down through the catalog.
-    "app.js": 339,
+    # Raised 260 -> 339 with the world coverage map, then 339 -> 378 with the
+    # subdivision drill-down: its Back control, drill heading, and per-area aria
+    # labels are new accessible copy, a conscious increase to work back down
+    # through the catalog.
+    "app.js": 378,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,

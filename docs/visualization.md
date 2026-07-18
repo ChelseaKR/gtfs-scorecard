@@ -14,7 +14,7 @@ Choose the form from the relationship in the data:
 | How are records distributed across ordered ranges? | Zero-based bucket columns | Current scorecard age |
 | What is the composition of a whole? | Proportional labelled bands | Grade distribution |
 | Which direction did a selected set move? | Two-part movement band | Material national score changes |
-| Where is a condition concentrated? | Geographic map with a visible legend | Feed expiry by country and by state; equity by state |
+| Where is a condition concentrated? | Geographic map with a visible legend, drill-down from world to country to subdivision | Feed expiry by country, then by state or province; equity by state |
 | What are the exact records? | Table or semantic list | Named changes, state detail, findings, and chart data |
 
 Do not use pie charts, 3D effects, dual axes, area fills that imply volume, or
