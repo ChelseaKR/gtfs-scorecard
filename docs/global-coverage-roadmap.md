@@ -240,9 +240,16 @@ These unblock more than one phase and are sequenced by first need.
   vocabulary of named government licenses, plus an explicit reviewer note for
   "openness established by statute, no per-file license," would keep those
   judgements auditable without auto-approving any of them.
-- **Per-region coverage denominators.** The finder and exports already disclose
-  the United-States-heavy denominator; each activated region needs its own
-  disclosed denominator so no regional cohort is read as a census.
+- **Per-region coverage denominators (shipped).** The finder and exports
+  disclose the United-States-heavy global denominator, and each region now also
+  discloses its own. Filtering the directory to a country or subdivision states
+  that place's reviewed-cohort size beside the location controls ("19 reviewed
+  feed records in Italy"), read from the directory summary counts, framed as a
+  cohort size and never as a census. The per-country program pages carry the
+  same scope line, and the `/status/` page states the European cohort's
+  denominator with a per-country breakdown. A remaining refinement is to carry
+  the per-region denominator into the CSV export headers as it is added to more
+  activated regions.
 
 ## Completion
 
