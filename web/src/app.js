@@ -31,6 +31,7 @@ import {
   VALIDATOR_RULES_PAGE,
 } from "./generated/constants.js";
 import { compareText, formatDate, formatLanguageName, formatNumber } from "./locale.js";
+import { initStrings, t } from "./i18n.js";
 
 /** Candidate locations for published artifacts. A configured CDN base
  *  (web/src/config.js) is tried first, then the deployed-site and repo
@@ -154,7 +155,7 @@ async function fetchJson(path) {
     }
   }
   const detail = lastError instanceof Error ? ` (${lastError.message})` : "";
-  throw new Error(`Could not load ${path}${detail}.`);
+  throw new Error(t("app_fetch_error", { path, detail }));
 }
 
 /** Return the URL only if it is http(s); otherwise "#". Blocks javascript:/data:
@@ -2978,19 +2979,19 @@ function badgeSection(agencyId) {
 /** @param {string} message */
 function renderError(message) {
   main.innerHTML = `<div class="error-box" role="alert">
-    <h1 class="page-title">We couldn't load this scorecard.</h1>
+    <h1 class="page-title">${esc(t("app_error_title"))}</h1>
     <p>${esc(message)}</p>
-    <p><a class="backlink" href="#/">Back to all agencies</a></p>
+    <p><a class="backlink" href="#/">${esc(t("app_back_all_agencies"))}</a></p>
   </div>`;
 }
 
 /** @param {string} agencyId */
 function renderNotFound(agencyId) {
-  document.title = "Agency not found — GTFS Scorecard";
+  document.title = t("app_not_found_doc_title");
   main.innerHTML = `<div class="error-box" role="alert">
-    <h1 class="page-title">No scorecard for “${esc(agencyId)}”.</h1>
-    <p>That agency isn't tracked yet, or the link is out of date.</p>
-    <p><a class="backlink" href="#/">Back to all agencies</a></p>
+    <h1 class="page-title">${esc(t("app_not_found_title", { agency: agencyId }))}</h1>
+    <p>${esc(t("app_not_found_body"))}</p>
+    <p><a class="backlink" href="#/">${esc(t("app_back_all_agencies"))}</a></p>
   </div>`;
 }
 
@@ -3064,7 +3065,7 @@ async function renderCompare(aId, bId) {
       const a = first.value;
       const b = second.value;
       if (!a || !b || a === b) {
-        status.textContent = "Pick two different agencies to compare.";
+        status.textContent = t("app_compare_pick_two");
         status.hidden = false;
         second.focus();
         return;
@@ -3074,7 +3075,7 @@ async function renderCompare(aId, bId) {
     return;
   }
 
-  main.innerHTML = `<p class="loading" role="status">Loading…</p>`;
+  main.innerHTML = `<p class="loading" role="status">${esc(t("app_loading"))}</p>`;
   const [aArt, bArt] = await Promise.all([
     fetchJson(`${aId}/latest.json`),
     fetchJson(`${bId}/latest.json`),
@@ -3178,7 +3179,7 @@ async function route() {
   // Every non-agency route is global. Reset first so navigating away from a
   // non-U.S. scorecard never leaves its country-specific footer state behind.
   showUsPolicyToolsForCountry();
-  main.innerHTML = `<p class="loading" role="status">Loading…</p>`;
+  main.innerHTML = `<p class="loading" role="status">${esc(t("app_loading"))}</p>`;
   try {
     if (hash === "#/programs") {
       renderPrograms(await fetchJson("rollups/index.json"));
@@ -3229,5 +3230,9 @@ async function route() {
   main.focus({ preventScroll: true });
 }
 
-window.addEventListener("hashchange", route);
-route();
+// Strings resolve before first render so a requested pseudolocale preview
+// applies to the whole page; in production initStrings returns immediately.
+initStrings().finally(() => {
+  window.addEventListener("hashchange", route);
+  route();
+});
