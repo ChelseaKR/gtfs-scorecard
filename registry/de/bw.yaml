@@ -1,0 +1,32 @@
+# Baden-Württemberg (DE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: vrn-rhein-neckar
+    name: Verkehrsverbund Rhein-Neckar (VRN)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "1173"
+    is_official: false
+    static_gtfs_url: https://geoportal.vrn.de/services/sharing/rest/content/items/4ec4b1d131eb46a6bb8e216ce9b90eff/data
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 per the dataset record on
+      VRN's open data portal; name Verkehrsverbund Rhein-Neckar GmbH as the
+      publisher.
+    operating_note: >-
+      One aggregate covering the VRN and RNN association areas across
+      Baden-Württemberg, Rheinland-Pfalz, and Hessen, filed under the
+      publisher's Mannheim seat; counted as one feed record, not a
+      distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.vrn.de/datasets/vrn-und-rnn-gtfs-sollfahrplandaten-aktuell
+      terms_url: https://www.govdata.de/dl-de/by-2-0
+      scope: [gtfs_schedule]
+      attribution: Verkehrsverbund Rhein-Neckar GmbH.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
