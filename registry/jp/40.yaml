@@ -174,3 +174,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kama-city-bus
+    name: Kama City Bus (嘉麻市バス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamacity/feeds/KamaCityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kama City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Kama City.
+    operating_note: >-
+      Kama City's municipal bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamacity.KamaCityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yanagawa-community-bus
+    name: Yanagawa City Community Bus (柳川市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yanagawacity/feeds/YanagawaCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yanagawa City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yanagawa City.
+    operating_note: >-
+      Yanagawa City's community bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yanagawacity.YanagawaCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yanagawa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

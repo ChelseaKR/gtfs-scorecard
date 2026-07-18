@@ -79,3 +79,30 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ishikari-itsumo-demand
+    name: Ishikari City Itsumo AI On-Demand Transit (石狩市AIデマンド交通「いつモ」)
+    country: JP
+    subdivision_code: JP-01
+    subdivision_name: Hokkaido
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ishikariwanshinko/feeds/on-demandtransit_itsumo/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      the Ishikari Bay New Port Area Public Transport Council through the GTFS
+      Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Ishikari City's AI-dispatched on-demand transit, published with fixed
+      stops and sample times; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ishikariwanshinko.on-demandtransit_itsumo
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        The Ishikari Bay New Port Area Public Transport Council. Published as
+        GTFS-JP open data (CC0 1.0) through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

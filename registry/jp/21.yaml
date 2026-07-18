@@ -128,3 +128,72 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: gujo-city-bus
+    name: Gujo City Bus (郡上市自主運行バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gujocity/feeds/citybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Gujo City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Gujo City.
+    operating_note: >-
+      Gujo City's self-operated bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gujocity.citybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gujo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: hachiman-kanko-bus
+    name: Hachiman Kanko Bus (八幡観光バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hachikanbus/feeds/hachimanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Hachiman Kanko Bus through
+      the GTFS Data Repository (gtfs-data.jp). Credit Hachiman Kanko Bus.
+    operating_note: >-
+      A private operator running the Hachiman bus network in Gujo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hachikanbus.hachimanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hachiman Kanko Bus. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ogaki-meihan-kintetsu-bus
+    name: Ogaki City Bus (Meihan Kintetsu) (大垣市 名阪近鉄バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ogakicity/feeds/meihankintetsubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ogaki City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Ogaki City.
+    operating_note: >-
+      Ogaki City routes operated under contract by Meihan Kintetsu Bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ogakicity.meihankintetsubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ogaki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
