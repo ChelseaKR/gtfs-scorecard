@@ -1,0 +1,26 @@
+# Centre-Val de Loire (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fil-bleu-tours
+    name: Fil Bleu (Tours)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    mdb_id: "1987"
+    static_gtfs_url: https://data.tours-metropole.fr/api/datasets/1.0/horaires-temps-reel-gtfsrt-reseau-filbleu-tmvl/alternative_exports/filbleu_gtfszip/
+    license_note: >-
+      Licence Ouverte 2.0; published by the Syndicat des Mobilités de
+      Touraine through France's National Access Point. Derived measurements
+      by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fil-bleu-syndicat-des-mobilites-gtfs-gtfs-rt
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Syndicat des Mobilités de Touraine.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

@@ -1,0 +1,31 @@
+# Essex (GB) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: hedingham-chambers
+    name: Hedingham & Chambers
+    country: GB
+    subdivision_code: GB-ESS
+    subdivision_name: Essex
+    mdb_id: "1938"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/hedinghamandchambers/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Hedingham & Chambers as the source and do not imply
+      endorsement.
+    operating_note: >-
+      The operator page carries the copyright line of the parent operator,
+      Konectbus.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/hedinghamandchambers
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hedingham & Chambers; contains public sector information licensed
+        under the Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

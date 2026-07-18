@@ -28,3 +28,47 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: aleop-pays-de-la-loire
+    name: Aléop (Pays de la Loire)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "1096"
+    static_gtfs_url: https://donnees.paysdelaloire.fr/data/pdl.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Région des Pays de la Loire
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One regional multi-operator aggregate; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-circuits-des-lignes-de-transports-aleop-1
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Région des Pays de la Loire.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: choletbus
+    name: Choletbus
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "1789"
+    static_gtfs_url: https://www.data.gouv.fr/fr/datasets/r/71e8ee8e-0b55-40a1-a297-21ef89aba4dc
+    license_note: >-
+      Licence Ouverte 2.0; published by the Agglomération du Choletais
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-reseau-choletbus
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Agglomération du Choletais.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

@@ -31,18 +31,18 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the second reviewed depth wave and the
-Nordic-Baltic and Central Europe waves contains 1,232 feed records: 1,139 in
-the United States, three in Canada, two in Australia, twenty-three in Great
-Britain, thirteen in Germany, nine in Finland, eight each in Spain and
-France, seven in Italy, three in Poland, two each in Switzerland, Czechia,
-and Estonia, one each in Austria, Belgium, Denmark, Ireland, Latvia,
-Lithuania, and Portugal, and one each in Japan, Malaysia, New Zealand, and
-Uruguay. The public scored count is a separate, smaller number reported by
-the status API; configured and published feed records are not
-interchangeable.
+The configured registry snapshot after the third depth wave and the parallel
+Nordic-Baltic and Central Europe waves contains 1,296 feed records: 1,139 in
+the United States, three in Canada, two in Australia, thirty-four in Great
+Britain, twenty-eight in France, nineteen in Italy, sixteen in Spain,
+fourteen in Finland, thirteen in Germany, six in Ireland, five in Poland,
+two each in Switzerland, Czechia, Estonia, and Portugal, one each in
+Austria, Belgium, Denmark, Latvia, and Lithuania, and one each in Japan,
+Malaysia, New Zealand, and Uruguay. The public scored count is a separate,
+smaller number reported by the status API; configured and published feed
+records are not interchangeable.
 
-The 84 records whose primary catalog location is in 17 European countries are
+The 148 records whose primary catalog location is in 17 European countries are
 individually reviewed. They cover bus, tram, metro, light rail, regional rail,
 ferry, national multimodal, and GTFS-Flex demand-responsive service. The
 country and mode controls prove that the data model and interface can carry
@@ -166,11 +166,21 @@ platform, seven in Spain, four in Italy, four in Germany, and two in France.
 A second wave on 2026-07-17 added 21 more from the same queues: twelve
 further Passenger-platform operators, five Baden-Württemberg network feeds
 from NVBW's portal, three in France including the Yeu-Continent ferry, and
-Trenitalia's regional rail resource from Regione Toscana's catalog. That
-produces 63 reviewed feed records across 13 countries, with Great Britain the
-largest country at 36.5%. Country breadth and balance still pass, but the
-Great Britain share is close to the 40% ceiling, so the next wave must lead
-with non-British queues. The 250-record threshold still fails by design. Freshness, translation,
+Trenitalia's regional rail resource from Regione Toscana's catalog.
+
+A third wave the same day worked every remaining non-Swedish queue in
+parallel and added 75 records: twenty in France after resolving canonical
+live URLs on the National Access Point, twelve in Italy across seven regions,
+eleven more Passenger-platform operators, nine in Spain with one in Portugal,
+twelve in Finland (the Waltti city networks, Föli Turku, and Tampere), five
+Irish operators from the National Transport Authority's per-operator files,
+four in Poland, and Czechia's first two records (PID Prague and IDS JMK
+Brno). Eleven of the wave's candidates turned out to duplicate records the
+parallel Nordic-Baltic and Central Europe waves merged the same evening; the
+duplicates were dropped in favor of the merged records. Together the waves
+produce 148 reviewed feed records across 17 countries, with Great Britain
+the largest country at 23%. Country breadth and balance pass with room, and
+the 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
 inferred from the registry. The source rows are public so a consumer can audit
 what “reviewed” means.
@@ -191,13 +201,30 @@ whose only license-bearing URL is unreachable from the pipeline's own network
 key-gated; it needs API credentials, not more review effort.
 
 The second wave repeated the pattern. STP Brindisi states adherence to a
-national open-data policy without naming a license; ASPO Olbia's archive
-lives on the operator's own host, which the regional CC BY 4.0 statement does
-not demonstrably cover; Reus Transport's National Access Point listing is not
-publicly reachable, so its endpoint cannot be tied to a readable official
-source; the Zenbus-published French networks declare ODbL plus unread special
-conditions; two Passenger operator pages had been removed; and several
-catalog endpoints returned dead archives.
+national open-data policy without naming a license; the Zenbus-published
+French networks declare ODbL plus unread special conditions; two Passenger
+operator pages had been removed; and several catalog endpoints returned dead
+archives. Deeper review in the third wave later resolved two of its
+exclusions: the Sardinian regional catalog was found to list ASPO Olbia's
+operator-hosted archive as one of its CC BY 4.0 datasets, and Genoa's
+municipal open-data record was found to name a reachable municipally hosted
+AMT archive.
+
+The third wave's rejections came from every country at once. Seventeen French
+datasets on the National Access Point declare ODbL, including the Grenoble,
+Toulouse, Montpellier, Rennes, and both regional Nouvelle-Aquitaine and
+Occitanie aggregates, and Île-de-France Mobilités uses a custom Licence
+Mobilités; TMB Barcelona gates its download behind personal API credentials;
+Lisbon's municipal portal hard-blocks automated access, which alone gates
+Carris, CP, and Transtejo; Carris Metropolitana's archive exceeds the 512 MiB
+entry cap, as do both reviewed Austrian feeds (Wiener Linien and ÖBB) and
+HSL Helsinki; Estonia's national register endpoint serves an error page, so
+its aggregate exists only on a third-party mirror; Belgium's STIB, SNCB, and
+De Waterbus are registration-gated, non-commercial, or contractual at the
+source; Luxembourg's published archives are expired; and community rebuilds
+on third-party hosts (a Katowice GitHub proxy, a Bydgoszcz community build,
+Estonian Remix mirrors) were refused on identity grounds even where their
+stated licenses were open. Norway's national aggregate stays size-deferred.
 
 A same-day Nordic-Baltic wave adds eleven reviewed records: eight in Finland
 (HSL and seven Waltti city feeds, all CC BY 4.0 per the providers' own

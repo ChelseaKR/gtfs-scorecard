@@ -27,3 +27,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: toremar
+    name: Toremar (Toscana island ferries)
+    country: IT
+    subdivision_code: IT-52
+    subdivision_name: Toscana
+    mdb_id: "1068"
+    is_official: true
+    static_gtfs_url: http://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1/resource/56539a5a-e0be-49eb-b3ac-052a42ad0de0/download/toremar.gtfs
+    license_note: >-
+      Creative Commons Attribution through Regione Toscana's open data
+      catalog; credit Regione Toscana and Toremar.
+    operating_note: >-
+      The maritime resource of the region's multi-file public transport
+      dataset, covering Toremar's island ferry service; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      terms_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      scope: [gtfs_schedule]
+      attribution: Regione Toscana and Toremar.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

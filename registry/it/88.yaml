@@ -43,3 +43,92 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: arst-sardegna
+    name: ARST (Trasporti Regionali della Sardegna)
+    country: IT
+    subdivision_code: IT-88
+    subdivision_name: Sardegna
+    mdb_id: "895"
+    static_gtfs_url: https://www.arstspa.info/arst-cagliari-it.zip
+    license_note: >-
+      CC BY 4.0; the regional mobility portal lists this operator-hosted
+      archive as one of its open data datasets. Credit Regione Autonoma della
+      Sardegna and ARST.
+    operating_note: >-
+      One regional bus and rail operator feed; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.sardegnamobilita.it/open-data/offerta-servizi
+      terms_url: https://www.sardegnamobilita.it/open-data
+      scope: [gtfs_schedule]
+      attribution: Regione Autonoma della Sardegna and ARST.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: trenitalia-sardegna
+    name: Trenitalia regional rail in Sardegna
+    country: IT
+    subdivision_code: IT-88
+    subdivision_name: Sardegna
+    mdb_id: "1052"
+    is_official: true
+    static_gtfs_url: https://www.sardegnamobilita.it/opendata/R_SARDEGTRASP_00008_1_dati_trenitalia.zip
+    license_note: >-
+      CC BY 4.0 through the regional mobility portal; credit Regione Autonoma
+      della Sardegna and Trenitalia.
+    operating_note: >-
+      Trenitalia's regional rail service in Sardegna, distinct from the
+      Toscana Trenitalia record; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.sardegnamobilita.it/open-data/offerta-servizi
+      terms_url: https://www.sardegnamobilita.it/open-data
+      scope: [gtfs_schedule]
+      attribution: Regione Autonoma della Sardegna and Trenitalia.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: aspo-olbia
+    name: ASPO (Olbia urban bus)
+    country: IT
+    subdivision_code: IT-88
+    subdivision_name: Sardegna
+    mdb_id: "2008"
+    static_gtfs_url: https://www.aspo.it/wp-content/uploads/open_data.zip
+    license_note: >-
+      CC BY 4.0; the regional mobility portal lists this operator-hosted
+      archive as one of its open data datasets. Credit Regione Autonoma della
+      Sardegna and ASPO Olbia.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.sardegnamobilita.it/open-data/offerta-servizi
+      terms_url: https://www.sardegnamobilita.it/open-data
+      scope: [gtfs_schedule]
+      attribution: Regione Autonoma della Sardegna and ASPO Olbia.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: asara-sardegna
+    name: ASARA contributed lines (Sardegna)
+    country: IT
+    subdivision_code: IT-88
+    subdivision_name: Sardegna
+    mdb_id: "2993"
+    is_official: true
+    static_gtfs_url: http://www.sardegnamobilita.it/opendata/R_SARDEGTRASP_00007_1_dati_privati.zip
+    license_note: >-
+      CC BY 4.0 through the regional mobility portal; credit Regione Autonoma
+      della Sardegna and ASARA Giuseppe Eredi Autoservizi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.sardegnamobilita.it/open-data/offerta-servizi
+      terms_url: https://www.sardegnamobilita.it/open-data
+      scope: [gtfs_schedule]
+      attribution: Regione Autonoma della Sardegna and ASARA Giuseppe Eredi Autoservizi.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

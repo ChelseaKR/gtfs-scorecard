@@ -21,3 +21,66 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: luas
+    name: Luas (Dublin light rail)
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    mdb_id: "2638"
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_LUAS.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: goahead-ireland
+    name: Go-Ahead Ireland
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    mdb_id: "2639"
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_GoAhead.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: aircoach
+    name: Aircoach
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    mdb_id: "2640"
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Aircoach.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

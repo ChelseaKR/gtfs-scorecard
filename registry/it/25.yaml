@@ -28,3 +28,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: trenord
+    name: Trenord
+    country: IT
+    subdivision_code: IT-25
+    subdivision_name: Lombardia
+    mdb_id: "855"
+    is_official: true
+    static_gtfs_url: https://www.dati.lombardia.it/download/3z4k-mxz9/application%2Fzip
+    license_note: >-
+      CC BY 4.0 through Regione Lombardia's open data portal; credit Trenord
+      and Regione Lombardia.
+    operating_note: >-
+      The regional rail network for Lombardia; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.dati.lombardia.it/api/views/3z4k-mxz9.json
+      terms_url: https://creativecommons.org/licenses/by/4.0/legalcode
+      scope: [gtfs_schedule]
+      attribution: Trenord and Regione Lombardia.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

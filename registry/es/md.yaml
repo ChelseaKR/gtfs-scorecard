@@ -63,3 +63,47 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: emt-madrid
+    name: EMT Madrid
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "793"
+    is_official: true
+    static_gtfs_url: https://servicios.emtmadrid.es:8443/gtfs/transitemt.zip
+    license_note: >-
+      EMT MobilityLabs open data terms permitting reuse, including commercial
+      reuse, with attribution. The GTFS archive is an open direct download;
+      only the realtime APIs are registration-gated.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://mobilitylabs.emtmadrid.es/es/portal/opendata
+      terms_url: https://mobilitylabs.emtmadrid.es/es/portal/opendata
+      scope: [gtfs_schedule]
+      attribution: Powered by EMT de Madrid.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: emt-fuenlabrada
+    name: EMT Fuenlabrada (EMTF)
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "2400"
+    is_official: true
+    static_gtfs_url: https://api.control.optibus.co/opendata/v1/gtfs?uid=c-5cfcd2d1
+    license_note: >-
+      Open Data Commons Attribution through Fuenlabrada's open data portal.
+      The download is the city's vendor-hosted open data endpoint named by
+      the portal dataset.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datosabiertos.ayto-fuenlabrada.es/
+      terms_url: https://opendatacommons.org/licenses/by/1-0/
+      scope: [gtfs_schedule]
+      attribution: Ayuntamiento de Fuenlabrada (EMTF).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

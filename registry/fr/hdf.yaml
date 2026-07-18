@@ -1,0 +1,26 @@
+# Hauts-de-France (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: marineo-boulogne
+    name: Marinéo (Boulogne-sur-Mer)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    mdb_id: "1876"
+    static_gtfs_url: https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/boulogne/exports/medias.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Communauté d'Agglomération du
+      Boulonnais through France's National Access Point. Derived measurements
+      by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-de-transport-marineo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'Agglomération du Boulonnais.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
