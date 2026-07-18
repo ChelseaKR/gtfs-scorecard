@@ -1,0 +1,34 @@
+# Toyama (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Discovered through the Transitland Atlas (docs/feeds.md, "Transitland-sourced
+# wave"): an official municipal GTFS-JP feed published as open data through the
+# GTFS Data Repository (gtfs-data.jp, operated by AIGID) and absent from the
+# Mobility Database.
+agencies:
+  - id: uozu-community-bus
+    name: Uozu Community Bus (魚津市民バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/uozucity/feeds/junkai/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Uozu City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Uozu City's community bus (市民バス) circulator network; counted as one
+      feed record. Realtime is published separately and is not scored here.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/uozucity.junkai
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Uozu City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -371,6 +371,54 @@ for Addis Ababa, Kumasi, Douala, and Abidjan, and Transport for Cairo's
 paratransit mapping — and this project does not curate community-mapped transit
 data from a catalog. Those feeds wait for a named local steward.
 
+## Transitland-sourced wave
+
+The first wave curated from the second discovery source. The Transitland Atlas
+(`scorecard sync --source transitland`) reads a keyless, CC-BY DMFR registry
+that is strongest where the Mobility Database is thin, so it is the way to reach
+coverage the catalog does not carry
+([global coverage roadmap](global-coverage-roadmap.md), "alternative-catalog
+ingestion"). The DMFR carries no ISO country, so each candidate's country,
+subdivision, license, and identity were established by hand and verified against
+both the operator's publication venue and the Mobility Database catalog on
+2026-07-18. Only feeds the Mobility Database does not already carry were kept, so
+the wave proves the source surfaces genuinely new coverage rather than
+re-listing catalog feeds.
+
+Five records were added, all official Japanese municipal feeds published as
+GTFS-JP open data through the GTFS Data Repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID under the national "standard bus information format" program),
+the same open-data path as the existing Nasu Town canary. Each download was
+confirmed live, valid, and carrying a current service calendar; none appears in
+the Mobility Database:
+
+- **Toki City Community Bus (土岐市民バス)** — Gifu (`JP-21`), CC BY 4.0.
+- **Higashine City Bus (東根市営バス)** — Yamagata (`JP-06`), CC BY 4.0.
+- **Yonezawa City Bus (米沢市営バス)** — Yamagata (`JP-06`), CC BY 4.0.
+- **Uozu Community Bus (魚津市民バス)** — Toyama (`JP-16`), CC0 1.0.
+- **Naruto City Ferry (鳴門市営渡船)** — Tokushima (`JP-36`), CC BY 4.0.
+
+The review rejected more than it kept, and the rejections are the point:
+
+- **Already in the Mobility Database (not new coverage):** Mexico City SEMOVI,
+  Santiago DTPM (Red Metropolitana de Movilidad), Bogotá Transmilenio/SIMUR
+  (the proposed URL matched a catalog row and served a stale 2024 dataset), and
+  Kochi Metro. These are official and open, but the catalog already carries the
+  operator, so curating them would not demonstrate new coverage.
+- **Not a current, valid feed:** Buenos Aires Subte (SBASE) returned a
+  single-file archive with no GTFS tables — the portal shows its GTFS "under
+  revision" — and Porto Alegre's EPTC feed was a valid archive whose service had
+  expired in December 2025. Both fail the current-download gate.
+- **No open license:** Puerto Rico's ATI (Autoridad de Transporte Integrado)
+  publishes GTFS but under custom terms that reserve rights to the agencies and
+  restrict reuse, not a Creative Commons or named open government license.
+- **Community- or aggregator-hosted:** the African DMFR feeds (Abidjan, Accra,
+  Douala, Nairobi minibus mapping, Cairo) are Digital Transport for Africa and
+  university/community survey data under ODbL and stay held for the roadmap's
+  partnership-gated phase; several Japanese city feeds were reachable only
+  through third-party aggregator hosts (opentrans.it, busmaps.jp) rather than a
+  first-party or national-portal source.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
