@@ -151,7 +151,7 @@ national aggregate still counts as one feed record.
   national archive, whose roughly 3.0 GB expanded size exceeds the pipeline's
   2 GiB security limit.
 
-- **Morebus, Great Britain (`GB-BCP`)** is a bus feed with four GoSouthCoast
+- **Morebus, United Kingdom (`GB-BCP`)** is a bus feed with four GoSouthCoast
   agency rows and service beyond its primary Bournemouth, Christchurch and
   Poole location. The operator's
   [open-data page](https://www.morebus.co.uk/open-data) publishes it under the
@@ -198,7 +198,7 @@ checks, but it remains well below the 250-record beta gate in
 ## Reviewed European depth wave
 
 These 27 records work the depth queues that the 2026-07-15 discovery audit
-named: Spain, France, Great Britain, Germany, and Italy. Provider source,
+named: Spain, France, the United Kingdom, Germany, and Italy. Provider source,
 reuse terms, current download, service calendar, archive size, and feed
 identity were checked on 2026-07-17. Candidates were drawn from the Mobility
 Database catalog, mechanically preflighted (live ZIP, required GTFS files,
@@ -206,7 +206,7 @@ size caps, calendar coverage), and then reviewed for reuse terms and identity.
 More candidates were rejected than added; the rejection reasons are listed in
 [global-expansion.md](global-expansion.md).
 
-- **Great Britain (ten records)**: Nottingham City Transport, Reading Buses,
+- **United Kingdom (ten records)**: Nottingham City Transport, Reading Buses,
   Brighton & Hove Buses, Oxford Bus Company, Go North East, Cardiff Bus,
   Xplore Dundee, Blackpool Transport, Unilink (Southampton), and Southern
   Vectis all publish through the Passenger open-data platform
@@ -242,11 +242,11 @@ These 21 records continue the same queues, checked the same way on
 2026-07-17. Rejection reasons are recorded in
 [global-expansion.md](global-expansion.md).
 
-- **Great Britain (twelve records)**: Borders Buses, Carousel Buses, East
+- **United Kingdom (twelve records)**: Borders Buses, Carousel Buses, East
   Yorkshire, Go Cornwall Bus, Intalink, McGill's Buses, Metrobus, Newport
   Bus, Plymouth Citybus, Transdev Blazefield, Warrington's Own Buses, and
   Bluestar, all on the Passenger platform under the Open Government Licence
-  v3.0 with per-operator copyright lines verified. Great Britain now sits at
+  v3.0 with per-operator copyright lines verified. The United Kingdom now sits at
   36.5% of the cohort, close to the 40% ceiling, so later waves lead
   elsewhere.
 - **Germany (five records)**: the DING (Donau-Iller), OstalbMobil, VGF
@@ -280,7 +280,7 @@ Rejection reasons are recorded in
   vaporetto networks, Trentino Trasporti, SGM Lecce, Toremar's island
   ferries, AMT Genova through Genoa's municipal record, and four Sardinian
   records tied to the regional CC BY 4.0 catalog.
-- **Great Britain (eleven records)**: further Passenger-platform operators
+- **United Kingdom (eleven records)**: further Passenger-platform operators
   from Borders Buses to Thames Valley Buses, each page and copyright line
   verified.
 - **Finland (twelve records)**: the Waltti city networks plus Föli Turku and
