@@ -31,16 +31,17 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the second reviewed depth wave
-contains 1,211 feed records: 1,139 in the United States, three in Canada, two
-in Australia, twenty-three in Great Britain, nine in Germany, eight each in
-Spain and France, seven in Italy, one each in Belgium, Switzerland, Denmark,
-Estonia, Finland, Ireland, Poland, and Portugal, and one each in Japan,
-Malaysia, New Zealand, and Uruguay. The public scored count is a separate,
-smaller number reported by the status API; configured and published feed
-records are not interchangeable.
+The configured registry snapshot after the second reviewed depth wave and the
+Nordic-Baltic wave contains 1,222 feed records: 1,139 in the United States,
+three in Canada, two in Australia, twenty-three in Great Britain, nine each
+in Finland and Germany, eight each in Spain and France, seven in Italy, two
+in Estonia, one each in Belgium, Switzerland, Denmark, Ireland, Latvia,
+Lithuania, Poland, and Portugal, and one each in Japan, Malaysia, New
+Zealand, and Uruguay. The public scored count is a separate, smaller number
+reported by the status API; configured and published feed records are not
+interchangeable.
 
-The 63 records whose primary catalog location is in 13 European countries are
+The 74 records whose primary catalog location is in 15 European countries are
 individually reviewed. They cover bus, tram, metro, light rail, regional rail,
 ferry, national multimodal, and GTFS-Flex demand-responsive service. The
 country and mode controls prove that the data model and interface can carry
@@ -196,6 +197,17 @@ publicly reachable, so its endpoint cannot be tied to a readable official
 source; the Zenbus-published French networks declare ODbL plus unread special
 conditions; two Passenger operator pages had been removed; and several
 catalog endpoints returned dead archives.
+
+A same-day Nordic-Baltic wave adds eleven reviewed records: eight in Finland
+(HSL and seven Waltti city feeds, all CC BY 4.0 per the providers' own
+open-data statements), Estonia's national register aggregate, Latvia's ATD
+national aggregate (CC0 per data.gov.lv), and Vilnius (JUDU's published
+data-use terms). That brings the total to 74 reviewed feed records across 15
+countries, with Great Britain the largest country at about 31%. Candidates
+whose reuse terms could not be verified on a live provider or official-portal
+page (Rīgas Satiksme, Kaunas, Klaipėda, and ELRON) stayed out, and Norway's
+national aggregate remains deferred under the archive guard described below.
+The 250-record threshold still fails by design.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
