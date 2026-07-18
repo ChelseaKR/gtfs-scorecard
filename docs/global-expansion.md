@@ -1,6 +1,6 @@
 # Global expansion and European GTFS beta gate
 
-Last updated: 2026-07-16
+Last updated: 2026-07-17
 
 This plan separates four jobs that are easy to collapse into “go global”:
 measuring multilingual GTFS, curating representative coverage, localizing the
@@ -31,19 +31,22 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the reviewed breadth wave contains
-1,163 feed records: 1,139 in the United States, three in Canada, two in
-Australia, three in France, two in Italy, and one each in Belgium, Switzerland,
-Denmark, Estonia, Spain, Finland, Great Britain, Ireland, Japan, Malaysia, New
-Zealand, Poland, Portugal, and Uruguay. The public scored count is a separate,
-smaller number reported by the status API; configured and published feed records
-are not interchangeable.
+The configured registry snapshot after the reviewed depth wave contains
+1,190 feed records: 1,139 in the United States, three in Canada, two in
+Australia, eleven in Great Britain, eight in Spain, six in Italy, five in
+France, four in Germany, one each in Belgium, Switzerland, Denmark, Estonia,
+Finland, Ireland, Poland, and Portugal, and one each in Japan, Malaysia, New
+Zealand, and Uruguay. The public scored count is a separate, smaller number
+reported by the status API; configured and published feed records are not
+interchangeable.
 
-The 15 records whose primary catalog location is in 12 European countries are
-reviewed canaries. They cover bus, tram, metro, ferry, national multimodal, and
-GTFS-Flex demand-responsive service. The country and mode controls prove that
-the data model and interface can carry worldwide locations; they are not
-country or regional samples.
+The 42 records whose primary catalog location is in 13 European countries are
+individually reviewed. They cover bus, tram, metro, light rail, regional rail,
+ferry, national multimodal, and GTFS-Flex demand-responsive service. The
+country and mode controls prove that the data model and interface can carry
+worldwide locations; they are not country or regional samples. One French
+record, Car Jaune, is located in La Réunion, an overseas department that the
+country-code cohort rule counts as France.
 
 The portable core already supports:
 
@@ -153,14 +156,32 @@ met. It blocks the beta label without blocking the individual canary
 scorecards.
 
 The first reviewed European cohort contained six feed records across France,
-Ireland, and Italy. The next bounded wave adds nine records across Belgium,
-Switzerland, Denmark, Estonia, Spain, Finland, Great Britain, Poland, and
-Portugal. That produces 15 reviewed feed records across 12 countries, with France
-the largest country at 20%. Country breadth and balance therefore pass, while
+Ireland, and Italy. The nine-record breadth wave added one record in each of
+Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain, Poland,
+and Portugal. The 2026-07-17 depth wave then worked the named review queues and
+added 27 records: ten Great Britain operators on the Passenger open-data
+platform, seven in Spain, four in Italy, four in Germany, and two in France.
+That produces 42 reviewed feed records across 13 countries, with Great Britain
+the largest country at 26%. Country breadth and balance therefore pass, while
 the 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
 inferred from the registry. The source rows are public so a consumer can audit
 what “reviewed” means.
+
+The depth wave rejected more candidates than it added, and the reasons are the
+point of the review: a non-commercial-only license (GTT Torino), terms that
+could not be read at all (Metro de Málaga's dead license file, MVG's unstated
+terms, Grenoble's script-only license page), registration walls or bot
+challenges in front of the terms or the download (RNV, Essex County Council,
+Kent Fastrack), calendars already expired at review (both Renfe feeds, Metro
+de Madrid, CRTM Cercanías, HVV, TCAT Troyes), dead or moved catalog URLs
+(MVV, MDV, TPER, BreizhGo, Bibus, Kicéo, Hauts-de-France, Hobus, BlaBlaCar,
+GVA intercity), one archive over the 512 MiB single-entry cap (Île-de-France
+Mobilités), one duplicate of an already-listed dataset under a different URL
+(Delcomar, already covered by the Sardegna minor-islands record), and one feed
+whose only license-bearing URL is unreachable from the pipeline's own network
+(AMT Genova). Sweden stays at zero because every catalog download there is
+key-gated; it needs API credentials, not more review effort.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
@@ -218,6 +239,16 @@ is depth and consumer usefulness, not another race to add flags.
   not publish machine-translated scorecard advice as reviewed guidance.
 - Keep locale quality, source coverage, and GTFS translation availability as
   separate denominators.
+
+The engineering half of this gate shipped on 2026-07-17 (ADR 0038): the app
+now has a reviewed English catalog (`locales/app.en.json`) rendered into a
+generated strings module, a derived `en-XA` pseudolocale served behind an
+explicit `?l10n=en-XA` preview request, browser tests that prove the preview
+expands catalog strings without layout overflow and that an unsupported tag
+fails closed to English, a right-to-left check on a rendered route, and two
+ratchets that stop new hardcoded copy and new directional CSS from
+accumulating. The steward requirement is unchanged: no production language
+exists, and none may ship without named human review.
 
 ### Separate decision: NeTEx
 

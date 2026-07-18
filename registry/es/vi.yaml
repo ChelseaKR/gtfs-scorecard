@@ -1,0 +1,31 @@
+# Álava (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tuvisa-vitoria
+    name: TUVISA (Vitoria-Gasteiz)
+    country: ES
+    subdivision_code: ES-VI
+    subdivision_name: Álava
+    mdb_id: "797"
+    is_official: true
+    static_gtfs_url: http://www.vitoria-gasteiz.org/we001/http/vgTransit/google_transit.zip
+    license_note: >-
+      CC BY 4.0 per the city's federated record on Spain's national open data
+      catalog; credit the Ayuntamiento de Vitoria-Gasteiz. The city server
+      only publishes the feed over plain HTTP with a broken certificate chain
+      on the HTTPS variant.
+    operating_note: >-
+      The feed publishes rider-facing translations (translations.txt), one of
+      the translation-capability measurements this registry tracks.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.gob.es/es/catalogo/l01010590-informacion-sobre-las-lineas-de-autobus-de-tuvisa1
+      terms_url: https://datos.gob.es/es/catalogo/l01010590-informacion-sobre-las-lineas-de-autobus-de-tuvisa1
+      scope: [gtfs_schedule]
+      attribution: Ayuntamiento de Vitoria-Gasteiz.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

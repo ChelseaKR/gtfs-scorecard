@@ -1,0 +1,26 @@
+# Valencia (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: emt-valencia
+    name: EMT València
+    country: ES
+    subdivision_code: ES-V
+    subdivision_name: Valencia
+    mdb_id: "795"
+    is_official: true
+    static_gtfs_url: https://opendata.vlci.valencia.es/dataset/ab058cf8-ad3e-4d9c-ac89-0c6367ecf351/resource/c81b69e6-c082-44dc-acc6-66fc417b4e66/download/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through València's open data portal; credit the Ajuntament de
+      València and EMT València and indicate any changes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.vlci.valencia.es/dataset/google-transit-lines-stops-bus-schedules
+      terms_url: https://opendata.vlci.valencia.es/dataset/google-transit-lines-stops-bus-schedules
+      scope: [gtfs_schedule]
+      attribution: Ajuntament de València and EMT València.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
