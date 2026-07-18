@@ -276,9 +276,13 @@ def build(features: list[dict], country: str, min_dist: float) -> tuple[dict, st
         path = _path_for(rings, lat0, fit, min_dist)
         if path:
             paths[code] = path
-    payload = {"viewBox": f"0 0 {w} {h}", "country": country, "subdivisions": paths}
+    # Sort by subdivision code so the output is byte-deterministic regardless of
+    # the set-iteration order upstream; otherwise a regeneration (e.g. the
+    # geometry-refresh workflow) produces spurious key-reordering diffs.
+    ordered = dict(sorted(paths.items()))
+    payload = {"viewBox": f"0 0 {w} {h}", "country": country, "subdivisions": ordered}
     body = json.dumps(payload, separators=(",", ":")) + "\n"
-    return paths, body, w, h
+    return ordered, body, w, h
 
 
 def main() -> int:
