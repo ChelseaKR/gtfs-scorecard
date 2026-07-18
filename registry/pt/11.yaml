@@ -28,3 +28,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: carris-metropolitana
+    name: Carris Metropolitana
+    country: PT
+    subdivision_code: PT-11
+    subdivision_name: Lisboa
+    mdb_id: "2027"
+    is_official: true
+    static_gtfs_url: https://api.carrismetropolitana.pt/gtfs
+    license_note: >-
+      CC BY 4.0; the operator publishes the feed and licence in its official
+      GitHub repository and API. Credit Carris Metropolitana.
+    operating_note: >-
+      One metropolitan bus feed covering Carris Metropolitana service across
+      the Lisboa metropolitan area's four operating lots. Counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://github.com/carrismetropolitana/gtfs
+      terms_url: https://github.com/carrismetropolitana/gtfs
+      scope: [gtfs_schedule]
+      attribution: Carris Metropolitana (Transportes Metropolitanos de Lisboa).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

@@ -1,0 +1,68 @@
+# Grand-Est (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fluo-grand-est-ardennes
+    name: Réseau interurbain Fluo Grand Est - Ardennes
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80413/download
+    license_note: >-
+      Licence Ouverte 2.0; published by Fluo Grand Est (Région Grand Est)
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-ardennes-08
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Fluo Grand Est (Région Grand Est).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: fluo-grand-est-aube
+    name: Réseau interurbain Fluo Grand Est - Aube
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80415/download
+    license_note: >-
+      Licence Ouverte 2.0; published by Fluo Grand Est (Région Grand Est)
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-aube-10
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Fluo Grand Est (Région Grand Est).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: fluo-grand-est-bas-rhin
+    name: Réseau interurbain Fluo Grand Est - Bas-Rhin
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80417/download
+    license_note: >-
+      Licence Ouverte 2.0; published by Fluo Grand Est (Région Grand Est)
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-bas-rhin-67
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Fluo Grand Est (Région Grand Est).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

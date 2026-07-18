@@ -1,0 +1,28 @@
+# France (FR) national-scope agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: sncf-tgv-intercites-ter
+    name: Réseau SNCF TGV, Intercités et TER
+    country: FR
+    mdb_id: "tdg-83582"
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83582/download
+    license_note: >-
+      ODbL with the National Access Point's particular conditions; credit SNCF
+      Voyageurs and mention the ODbL licence. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One national multi-operator schedule covering TGV, Intercités and TER
+      services across France. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-sncf
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-sncf
+      scope: [gtfs_schedule]
+      attribution: SNCF Voyageurs.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

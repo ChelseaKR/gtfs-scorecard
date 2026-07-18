@@ -1,0 +1,30 @@
+# Trentino-Alto Adige (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: trentino-trasporti-urban
+    name: Trentino Trasporti urban network
+    country: IT
+    subdivision_code: IT-32
+    subdivision_name: Trentino-Alto Adige
+    mdb_id: "978"
+    feed_variant: urban
+    is_official: true
+    static_gtfs_url: https://www.trentinotrasporti.it/opendata/google_transit_urbano_tte.zip
+    license_note: >-
+      CC BY 4.0 through the Provincia Autonoma di Trento open-data portal;
+      credit Trentino Trasporti SpA and the province.
+    operating_note: >-
+      The province's dataset publishes separate urban and extra-urban feeds;
+      this record tracks the urban feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.trentino.it/dataset/trasporti-pubblici-del-trentino-formato-gtfs
+      terms_url: https://dati.trentino.it/dataset/trasporti-pubblici-del-trentino-formato-gtfs
+      scope: [gtfs_schedule]
+      attribution: Trentino Trasporti SpA and Provincia Autonoma di Trento.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
