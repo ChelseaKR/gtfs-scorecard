@@ -459,6 +459,80 @@ Rejections again outnumbered additions, and the reasons are the review:
   and an out-of-scope seasonal tourist railway), and the Irish TFI operator
   feeds, which are already tracked.
 
+## Eighth reviewed European wave
+
+This wave on 2026-07-18 again led with non-United-Kingdom sources and added 51
+records, taking the reviewed European cohort from 200 to 251 across the same 22
+countries. No United Kingdom feed was added. The wave reaches the 250-record
+beta threshold. Each candidate passed a live license read, a mechanical
+download and current-calendar preflight, a size check under the archive cap,
+and an ISO 3166-2 subdivision review. After the additions France, the largest
+country, is 27.1% of the cohort (68 of 251) and the United Kingdom is 13.5% (34
+of 251), both under the 40% ceiling.
+
+- **France (twenty-seven records)**: urban networks on the national access
+  point transport.data.gouv.fr, each recorded as Licence Ouverte 2.0. They span
+  ten regions, from Palmbus (Cannes) and Zest (Menton) in PACA through Filibus
+  (Chartres), TRACE (Colmar), Ritmo (Haguenau), Izilo (Lorient), Idelis (Pau),
+  and Occitanie networks (Agglobus Rodez, Citibus Narbonne, Sète, TLP
+  Tarbes-Lourdes) to Normandy (Transurbain Évreux, Astrobus Lisieux, DeepMob
+  Dieppe) and Hauts-de-France (TUC Cambrai, Corolis Beauvais, Pastel
+  Saint-Quentin, TIC Compiègne). Each uses the point's stable resource
+  permalink.
+- **Norway (nine records)**: six national operators published through Entur
+  under NLOD 2.0 that are distinct from the county-authority feeds. They are Vy
+  (national rail), Go-Ahead Norge and SJ Nord (rail concessions), Vy Express and
+  NOR-WAY Bussekspress (express coach), and Flytoget (airport express). The wave
+  also adds three more county authorities, Østfold kollektivtrafikk, Farte
+  (Telemark), and Svipper (Troms). The national operators carry no subdivision;
+  the Entur national aggregate stays out over the archive cap.
+- **Ireland (seven records)**: further National Transport Authority per-operator
+  files under CC BY 4.0. They are TFI Local Link, Citylink, JJ Kavanagh, Dublin
+  Coach, Wexford Bus, Matthews Coach Hire, and Swords Express (Dublin).
+- **Italy (four records)**: three resources of Regione Toscana's CC BY dataset
+  (GEST's Florence tramway, TFT's Arezzo rail and bus, and Autolinee Toscane's
+  regional bus) and ATM Messina in Sicilia, published under CC BY on the Comune
+  di Messina open data portal.
+- **Germany (two records)**: VVS Stuttgart (CC BY 4.0) and SWU Ulm (CC0 1.0),
+  both read on MobiData BW, the Baden-Württemberg state mobility portal. SWU
+  operates within the tracked DING association but is a distinct operator-level
+  feed under its own licence.
+- **Portugal (one record)**: Metropolitano de Lisboa under CC BY 4.0 on the
+  national portal dados.gov.pt, using the portal's stable latest-version
+  redirect.
+- **Poland (one record)**: MPK Legnica under CC BY 4.0 on dane.gov.pl, from a
+  stable first-party City of Legnica endpoint, opening the Dolnośląskie
+  voivodeship.
+
+Rejections again outnumbered additions, and the reasons are the review:
+
+- **No reviewable open license**: the Netherlands as a whole (the national
+  portal returns no GTFS dataset, and OVapi/GOVI/NDOV stay license-blank),
+  Belgium beyond the tracked TEC (De Lijn behind a registration wall with an
+  unclear license, STIB API-key gated, SNCB non-commercial), Romania in full
+  (data.gov.ro unreachable, CTP Cluj gated behind the third-party Tranzy
+  platform with no named license, TPBI and the external.gtfs.ro mirrors
+  unlicensed), Białystok and Olomouc (stable first-party feeds but no locatable
+  license), SMTUC Coimbra, LVB Leipzig, and Stadtwerke Münster.
+- **Non-commercial, no-derivatives, or share-alike outside the allowlist**:
+  GTT Torino (operator pages CC BY-NC), VBN Bremen (CC BY-SA plus a form gate),
+  and DPO Ostrava's portal default of CC BY-SA.
+- **No stable or first-party download**: TUS Santander (the CKAN resource URL
+  returns HTML, not the archive), AUVASA Valladolid (only a raw-IP HTTP endpoint
+  on a nonstandard port), Regione Piemonte (SmartDataNet API endpoints, no
+  stable GTFS zip), Matera (an http third-party content host with no archive
+  form), Olsztyn and Kalisz (dated snapshots), and the Slovak IDS BK feed
+  (third-party community host).
+- **Access blocked or unreachable from the pipeline network**: Kraków's terms
+  page (HTTP 403), Rzeszów's license portal, RMV Hessen, the Dresden and
+  Austrian portals (anti-bot walls), and several Spanish municipal portals
+  (Sevilla, Palma, Valencia FGV, Gijón, Córdoba, Donostia, Zaragoza, Murcia,
+  Bilbao/CTB), whose licenses could not be read.
+- **Expired calendar or out of scope**: Citéa (Valence Romans), Sillages (Pays
+  de Grasse), and Elios (Grand Villeneuvois) in France; Águeda in Portugal
+  (2018-2019 snapshots); and Via Bastia, held out because Corse has no ISO
+  3166-2 subdivision in the registry vocabulary.
+
 ## Oceania coverage wave
 
 The first coverage wave outside Europe and North America, curated under the

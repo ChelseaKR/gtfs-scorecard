@@ -67,3 +67,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: montelibus-montelimar
+    name: Montélibus (Montélimar)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82545/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Montélimar Agglomération (réseau
+      Montélibus) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-montelibus
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Montélimar Agglomération (réseau Montélibus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: rlv-riom
+    name: RLV Mobilités (Riom)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82547/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Riom Limagne et Volcans (réseau RLV
+      Mobilités) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-rlv-mobilites
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Riom Limagne et Volcans (réseau RLV Mobilités).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

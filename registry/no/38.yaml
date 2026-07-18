@@ -30,3 +30,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: farte-telemark
+    name: Farte (Telemark)
+    country: "NO"
+    subdivision_code: NO-38
+    subdivision_name: Vestfold og Telemark
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_tel-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Farte county
+      transport authority in the Telemark part of the Vestfold og Telemark
+      region.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Farte (Telemark fylkeskommune); published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
