@@ -1,0 +1,30 @@
+# Pays-de-la-Loire (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: aleop-yeu-continent
+    name: Aléop Yeu-Continent (Île d'Yeu ferry)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "1257"
+    is_official: true
+    static_gtfs_url: https://app.mecatran.com/utw/ws/gtfsfeed/static/pdlYeuContinent?apiKey=2c715462180f36483d5f24340c706b627f2f2364
+    license_note: >-
+      Licence Ouverte 2.0; published by the Région des Pays de la Loire
+      through France's National Access Point. The download URL carries the
+      publisher's public open-data key as published there.
+    operating_note: >-
+      The regional ferry crossing between Fromentine and the Île d'Yeu under
+      the Aléop brand; one maritime feed counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-circuit-de-la-lignes-yeu-continent-gtfs
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Région des Pays de la Loire and L'Île-d'Yeu.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

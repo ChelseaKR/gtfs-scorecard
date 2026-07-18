@@ -31,16 +31,16 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the reviewed depth wave contains
-1,190 feed records: 1,139 in the United States, three in Canada, two in
-Australia, eleven in Great Britain, eight in Spain, six in Italy, five in
-France, four in Germany, one each in Belgium, Switzerland, Denmark, Estonia,
-Finland, Ireland, Poland, and Portugal, and one each in Japan, Malaysia, New
-Zealand, and Uruguay. The public scored count is a separate, smaller number
-reported by the status API; configured and published feed records are not
-interchangeable.
+The configured registry snapshot after the second reviewed depth wave
+contains 1,211 feed records: 1,139 in the United States, three in Canada, two
+in Australia, twenty-three in Great Britain, nine in Germany, eight each in
+Spain and France, seven in Italy, one each in Belgium, Switzerland, Denmark,
+Estonia, Finland, Ireland, Poland, and Portugal, and one each in Japan,
+Malaysia, New Zealand, and Uruguay. The public scored count is a separate,
+smaller number reported by the status API; configured and published feed
+records are not interchangeable.
 
-The 42 records whose primary catalog location is in 13 European countries are
+The 63 records whose primary catalog location is in 13 European countries are
 individually reviewed. They cover bus, tram, metro, light rail, regional rail,
 ferry, national multimodal, and GTFS-Flex demand-responsive service. The
 country and mode controls prove that the data model and interface can carry
@@ -161,9 +161,14 @@ Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain, Poland,
 and Portugal. The 2026-07-17 depth wave then worked the named review queues and
 added 27 records: ten Great Britain operators on the Passenger open-data
 platform, seven in Spain, four in Italy, four in Germany, and two in France.
-That produces 42 reviewed feed records across 13 countries, with Great Britain
-the largest country at 26%. Country breadth and balance therefore pass, while
-the 250-record threshold still fails by design. Freshness, translation,
+A second wave on 2026-07-17 added 21 more from the same queues: twelve
+further Passenger-platform operators, five Baden-Württemberg network feeds
+from NVBW's portal, three in France including the Yeu-Continent ferry, and
+Trenitalia's regional rail resource from Regione Toscana's catalog. That
+produces 63 reviewed feed records across 13 countries, with Great Britain the
+largest country at 36.5%. Country breadth and balance still pass, but the
+Great Britain share is close to the 40% ceiling, so the next wave must lead
+with non-British queues. The 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
 inferred from the registry. The source rows are public so a consumer can audit
 what “reviewed” means.
@@ -182,6 +187,15 @@ Mobilités), one duplicate of an already-listed dataset under a different URL
 whose only license-bearing URL is unreachable from the pipeline's own network
 (AMT Genova). Sweden stays at zero because every catalog download there is
 key-gated; it needs API credentials, not more review effort.
+
+The second wave repeated the pattern. STP Brindisi states adherence to a
+national open-data policy without naming a license; ASPO Olbia's archive
+lives on the operator's own host, which the regional CC BY 4.0 statement does
+not demonstrably cover; Reus Transport's National Access Point listing is not
+publicly reachable, so its endpoint cannot be tied to a readable official
+source; the Zenbus-published French networks declare ODbL plus unread special
+conditions; two Passenger operator pages had been removed; and several
+catalog endpoints returned dead archives.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
@@ -212,10 +226,10 @@ first (PR #116): the document at `/api/v1/global-coverage.json`, its JSON
 schema, the status page section, and the finder's regional denominator.
 Country program pages for every non-US registry country followed (PR #121).
 
-That published result predates the depth wave described above. The configured
-cohort now holds 42 reviewed records across 13 countries; the published gate
-document reports the new arithmetic after the next scored render, and the
-record count stays the only open criterion.
+That published result predates the depth waves described above. The
+configured cohort now holds 63 reviewed records across 13 countries; the
+published gate document reports the new arithmetic after the next scored
+render, and the record count stays the only open criterion.
 
 ## Delivery sequence
 
