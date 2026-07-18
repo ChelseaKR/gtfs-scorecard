@@ -298,6 +298,36 @@ Rejection reasons are recorded in
   Trójmiasto, ZKM Gdynia, and the country's first Czech records, PID Prague
   and IDS JMK Brno.
 
+## Oceania coverage wave
+
+The first coverage wave outside Europe and North America, curated under the
+[global coverage roadmap](global-coverage-roadmap.md). Australia and New Zealand
+publish official government GTFS through mature open-data programs, so these are
+the same kind of record as an official European feed and raise no local-steward
+concern. Source, reuse terms, current download, and identity were checked on
+2026-07-17. Eleven records were added:
+
+- **Queensland (six records)**: the TransLink South East Queensland network
+  (Brisbane) and the Sunbus Cairns, Sunbus Townsville, Bus Queensland
+  Toowoomba, Mackay, and Maryborough-Hervey Bay qconnect regional networks, all
+  CC BY 4.0 as © State of Queensland (Department of Transport and Main Roads).
+- **Western Australia (one record)**: Transperth (Perth), under the Public
+  Transport Authority's custom Spatial Data Access terms — an attribution-only
+  grant, noted as a custom government license rather than Creative Commons.
+- **Northern Territory (two records)**: the Darwin and Alice Springs urban bus
+  networks, CC BY 4.0 as © State of the Northern Territory.
+- **New Zealand (two records)**: Auckland Transport and Baybus (Bay of Plenty),
+  both CC BY 4.0 through their official open-data pages.
+
+Deferred with recorded reasons: the Sydney (Transport for NSW) and Melbourne
+(Public Transport Victoria) bundles both exceed the 256 MiB download cap and
+wait on the large-feed shard; Transport for NSW also gates its bulk download
+behind a registered account. The ACT (Transport Canberra) host returns HTTP 403
+to the pipeline. Tasmania's per-city Metro feeds have moved to a single
+Department of State Growth feed whose license page was unreachable and appears
+to add a share-alike term, and Metlink Wellington publishes no stated reuse
+license. Each is revisited when its blocker clears.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
