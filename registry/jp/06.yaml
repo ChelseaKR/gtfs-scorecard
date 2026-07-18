@@ -1,0 +1,56 @@
+# Yamagata (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Discovered through the Transitland Atlas (docs/feeds.md, "Transitland-sourced
+# wave"): official municipal GTFS-JP feeds published as open data through the
+# GTFS Data Repository (gtfs-data.jp, operated by AIGID) and absent from the
+# Mobility Database. Same open-data path as the Nasu Town canary.
+agencies:
+  - id: higashine-city-bus
+    name: Higashine City Bus (東根市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/higashinecity/feeds/HigashineCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Higashine City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Higashine City.
+    operating_note: >-
+      Higashine City's municipal bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/higashinecity.HigashineCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Higashine City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yonezawa-city-bus
+    name: Yonezawa City Bus (米沢市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yonezawacity/feeds/Yonezawa/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yonezawa City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yonezawa City.
+    operating_note: >-
+      Yonezawa City's municipal bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yonezawacity.Yonezawa
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yonezawa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
