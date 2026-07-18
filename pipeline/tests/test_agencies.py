@@ -177,9 +177,9 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_200
-    assert len(european) == 52
-    assert len({agency.country for agency in european}) == 15
+    assert len(agencies) == 1_232
+    assert len(european) == 84
+    assert len({agency.country for agency in european}) == 17
 
 
 def test_ntd_id_parses_and_defaults_empty() -> None:
