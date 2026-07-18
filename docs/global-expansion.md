@@ -326,6 +326,29 @@ cohort (34 of 185), and France, the largest country, is 22.2% (41 of 185), both
 well under the 40% ceiling. The 250-record threshold stays the only open
 criterion, and it still fails by design.
 
+### Seventh European wave on 2026-07-18
+
+A seventh wave stayed non-United-Kingdom and added 15 reviewed feed records,
+moving the European cohort from 185 to 200 records across 22 countries. It
+opened Norway as the twenty-first country with one county transport authority
+per mainland fylke (eleven Entur per-operator exports under NLOD 2.0, since the
+national aggregate runs past the archive cap), and Slovakia as the twenty-second
+with Dopravný podnik Bratislava under CC BY 4.0. The rest is depth in
+already-listed countries: two in Latvia under CC0 1.0 (Rīgas satiksme and the
+Pasažieru vilciens rail network) and one in Czechia under CC BY 4.0 (Plzeň's
+PMDP, opening the Plzeňský kraj). Every record carried a live license read, a
+mechanical download and current-calendar preflight, and an ISO 3166-2
+subdivision review. Candidates that could not clear those gates were dropped:
+the Netherlands OVapi aggregate and Croatian rail lacked a reviewable license,
+Sweden and Slovenia were key or registration walled, Luxembourg still had no
+stable current URL, and the Polish community-mirror and access-blocked city
+feeds stayed out.
+
+The balance criterion stays comfortable: the United Kingdom is now 17.0% of the
+cohort (34 of 200), and France, the largest country, is 20.5% (41 of 200), both
+well under the 40% ceiling. The 250-record threshold stays the only open
+criterion, and it still fails by design.
+
 ## Delivery sequence
 
 ### Now: consumer decision support

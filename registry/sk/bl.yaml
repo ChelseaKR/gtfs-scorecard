@@ -1,0 +1,26 @@
+# Bratislavský kraj (SK) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: dpb-bratislava
+    name: Dopravný podnik Bratislava, a.s. (DPB)
+    country: SK
+    subdivision_code: SK-BL
+    subdivision_name: Bratislavský kraj
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/aba12fd2cbac4843bc7406151bc66106/data
+    license_note: >-
+      CC BY 4.0; published by Dopravný podnik Bratislava through the city's
+      open-data portal data.bratislava.sk (ArcGIS item licenseInfo "CC BY 4.0",
+      title "Cestovné poriadky MHD vo formáte GTFS").
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.bratislava.sk/datasets/aba12fd2cbac4843bc7406151bc66106/about
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Dopravný podnik Bratislava, a.s. (data.bratislava.sk).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

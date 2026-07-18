@@ -1,0 +1,30 @@
+# Rīga (LV) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: rigas-satiksme
+    name: Rīgas satiksme
+    country: LV
+    subdivision_code: LV-RIX
+    subdivision_name: Rīga
+    mdb_id: "884"
+    is_official: true
+    static_gtfs_url: https://saraksti.rigassatiksme.lv/gtfs.zip
+    license_note: >-
+      CC0 1.0 per the data.gov.lv "Rīgas satiksme public transport routes"
+      dataset. The scored URL is the operator's stable production endpoint.
+    operating_note: >-
+      Bus, tram, and trolleybus network of Rīga, operated by the municipal
+      company Rīgas satiksme.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lv/dati/eng/dataset/marsrutu-saraksti-rigas-satiksme-sabiedriskajam-transportam
+      terms_url: https://data.gov.lv/dati/eng/dataset/marsrutu-saraksti-rigas-satiksme-sabiedriskajam-transportam
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: Rīgas satiksme via data.gov.lv, released under CC0 1.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
