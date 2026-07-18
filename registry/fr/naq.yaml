@@ -1,0 +1,31 @@
+# Nouvelle-Aquitaine (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tbm-bordeaux-metropole
+    name: Transports Bordeaux Métropole (TBM)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    mdb_id: "2622"
+    is_official: true
+    static_gtfs_url: https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+    license_note: >-
+      Licence Ouverte 1.0 declared by Bordeaux Métropole on France's National
+      Access Point. The download and realtime URLs carry the publisher's
+      public open-data key as published there; it is not a private credential.
+    rt_urls:
+      trip_updates: https://bdx.mecatran.com/utw/ws/gtfsfeed/realtime/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+      vehicle_positions: https://bdx.mecatran.com/utw/ws/gtfsfeed/vehicles/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+      service_alerts: https://bdx.mecatran.com/utw/ws/gtfsfeed/alerts/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offres-de-services-bus-tram-et-scolaire-au-format-gtfs-gtfs-rt-siri-lite-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence
+      scope: [gtfs_schedule]
+      attribution: Bordeaux Métropole.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

@@ -3,7 +3,7 @@
 > Root instruction file for the `gtfs-scorecard` repo. Read fully before writing code.
 
 > **Status (2026-07):** the four build phases below have shipped, and the pilot
-> grew into a live service: 1,163 curated feed records and more than 1,100
+> grew into a live service: 1,190 curated feed records and more than 1,100
 > published scorecards, still concentrated in the US and Canada and now
 > carrying reviewed global canaries, scored daily at gtfsscorecard.org, with a
 > versioned read API, a GitHub Marketplace action, and an MCP server. This file

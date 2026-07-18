@@ -48,7 +48,15 @@ from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
 from .google_gate import from_artifact as google_from_artifact
-from .i18n import CATALOG_DIR, SUPPORTED_LOCALES, load_catalog, validate_catalogs
+from .i18n import (
+    APP_CATALOG_LOCALES,
+    CATALOG_DIR,
+    PSEUDOLOCALE,
+    SUPPORTED_LOCALES,
+    load_app_catalog,
+    load_catalog,
+    validate_catalogs,
+)
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
 from .location import country_name, resolve_published_location
@@ -8431,6 +8439,15 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("es/index.html", _render_spanish_rider_page(), f"{BASE_URL}/es/")
     for locale in SUPPORTED_LOCALES:
         write(f"locales/{locale}.json", (CATALOG_DIR / f"{locale}.json").read_text())
+    for locale in APP_CATALOG_LOCALES:
+        write(f"locales/app.{locale}.json", (CATALOG_DIR / f"app.{locale}.json").read_text())
+    # The derived pseudolocale ships only as a preview catalog the app loads
+    # behind an explicit ?l10n=en-XA request; it is not a production language.
+    write(
+        f"locales/app.{PSEUDOLOCALE}.json",
+        json.dumps(load_app_catalog(PSEUDOLOCALE), sort_keys=True, indent=2, ensure_ascii=False)
+        + "\n",
+    )
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
     # status.json, extending FIX-11's internal run-summary outward. Built from
