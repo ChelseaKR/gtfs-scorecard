@@ -33,3 +33,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: chigasaki-city-eboshi-bus
+    name: Chigasaki City Community Bus Eboshi-go (茅ヶ崎市コミュニティバスえぼし号)
+    country: JP
+    subdivision_code: JP-14
+    subdivision_name: Kanagawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chigasakicity/feeds/eboshigou/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chigasaki City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Chigasaki
+      City.
+    operating_note: >-
+      Chigasaki City's Eboshi-go community bus (コミュニティバスえぼし号); a second
+      Kanagawa feed record distinct from Yokosuka City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chigasakicity.eboshigou
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chigasaki City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

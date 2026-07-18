@@ -1,0 +1,60 @@
+# Nara (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: yamatokoriyama-city-community-bus
+    name: Yamatokoriyama City Community Bus (大和郡山市コミュニティバス)
+    country: JP
+    subdivision_code: JP-29
+    subdivision_name: Nara
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yamatokoriyamacity/feeds/kingyobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yamatokoriyama City
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      Yamatokoriyama City.
+    operating_note: >-
+      Yamatokoriyama City's community bus network (愛称「元気バス」); counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yamatokoriyamacity.kingyobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yamatokoriyama City. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yamatotakada-city-kibou-bus
+    name: Yamatotakada City Kibou-go Community Bus (大和高田市コミュニティバスきぼう号)
+    country: JP
+    subdivision_code: JP-29
+    subdivision_name: Nara
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yamatotakadacity/feeds/communitybuskibougou/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yamatotakada City
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      Yamatotakada City.
+    operating_note: >-
+      Yamatotakada City's Kibou-go community bus (コミュニティバスきぼう号); counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yamatotakadacity.communitybuskibougou
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yamatotakada City. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

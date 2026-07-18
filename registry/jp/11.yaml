@@ -33,3 +33,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: wako-city-loop-bus
+    name: Wako City Loop Bus Wakoba (和光市内循環バス「わこば」)
+    country: JP
+    subdivision_code: JP-11
+    subdivision_name: Saitama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/wakocity/feeds/Wako-City-junkanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Wako City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Wako City.
+    operating_note: >-
+      Wako City's Wakoba city loop bus (市内循環バス「わこば」); a second Saitama
+      feed record distinct from Kumagaya City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/wakocity.Wako-City-junkanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Wako City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

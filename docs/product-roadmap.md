@@ -50,7 +50,7 @@ vendor causality, compliance, or certification.
 
 ## Where the product is today
 
-The service tracks more than 1,280 curated feed records, with numeric latest
+The service tracks more than 1,300 curated feed records, with numeric latest
 scores published for more than 1,100 of them. The public status page reports
 the exact current configured and published counts.
 It publishes per-agency grades, prioritized fixes, trends,

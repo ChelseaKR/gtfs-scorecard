@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,280 feed records, still mostly in
+reference; the full registry has more than 1,300 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -666,6 +666,85 @@ The sweep rejected far more than it kept, and the rejections are the point:
   the note in this file). Taiwan's TDX feed for Taipei Metro
   (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
   does not ingest.
+## Japan gtfs-data.jp second wave
+
+A deeper pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The first wave took one flagship feed per prefecture; this
+wave goes deeper two ways: it reaches prefectures Japan did not yet have in the
+registry, and it adds further municipal networks inside prefectures already
+represented. A prefecture can hold several distinct city networks, and each is
+one feed record. Thirty-eight records were added, lifting Japan from 27 records
+across 25 prefectures to 65 across 40.
+
+This wave also widens the license policy. The first wave admitted only CC BY 4.0
+and CC0 1.0 and held back about 52 feeds under **CC BY 2.1 JP**. CC BY 2.1 JP is
+a valid open Creative Commons Attribution license, the Japan jurisdiction port of
+CC Attribution 2.1. It permits reuse with attribution, which is exactly what this
+project needs, since it republishes metrics and attribution rather than raw data.
+CC BY 2.1 JP feeds are therefore admitted here, with the exact license version
+stated in each record's `license_note` and attribution. CC BY 4.0 and CC0 1.0
+remain admitted. The license mix of the 38 is 30 CC BY 4.0, 5 CC0 1.0, and 3
+CC BY 2.1 JP. Every candidate was confirmed to be an official municipality or a
+first-party operator, and each download was mechanically preflighted on
+2026-07-18: a valid archive with the GTFS core tables and a current, non-expired
+service calendar, within the ingestion size caps, and absent from the Mobility
+Database. The archive was deleted after each check.
+
+Fifteen prefectures newly represented (license in parentheses):
+
+- **Osaka (`JP-27`)**: Limon Bus, 神姫観光 (Shinki Kanko) (CC BY 4.0).
+- **Hyogo (`JP-28`)**: Akashi City Tako Bus (CC BY 4.0), Kakogawa City Kako Bus
+  (CC BY 2.1 JP), Takarazuka City Ran-Ran Bus (CC BY 2.1 JP).
+- **Nara (`JP-29`)**: Yamatokoriyama City Community Bus and Yamatotakada City
+  Kibou-go (both CC BY 4.0).
+- **Wakayama (`JP-30`)**: Aridagawa Town, Kinokawa City, and Tanabe City
+  community/residents buses (all CC BY 4.0).
+- **Shimane (`JP-32`)**: Masuda City shared taxi (CC BY 4.0), scored on the
+  Schedule rubric as a demand-response service.
+- **Okayama (`JP-33`)**: Maniwa City Maniwa-kun (CC0 1.0) and Setouchi City Bus
+  (CC BY 4.0).
+- **Kagawa (`JP-37`)**: Mitoyo City (CC BY 4.0), Kanonji City Noriai Bus
+  (CC0 1.0), Naoshima Town Bus (CC BY 4.0).
+- **Kochi (`JP-39`)**: Tosaden Kotsu streetcar, Shimanto City Bus, and Sukumo
+  City Yururin Bus (all CC BY 4.0).
+- **Fukuoka (`JP-40`)**: Dazaifu City Mahoroba-go, Munakata City, Nogata City,
+  and Tagawa City community buses (all CC BY 4.0).
+- **Saga (`JP-41`)**: Imari City Imarin Bus (CC0 1.0).
+- **Nagasaki (`JP-42`)**: Hirado City Fureai Bus (CC BY 4.0).
+- **Kumamoto (`JP-43`)**: Kumamoto City tram, 熊本市交通局 (CC BY 2.1 JP) and
+  Kumamoto Toshi Bus (CC BY 4.0).
+- **Oita (`JP-44`)**: Kusu Town Community Bus (CC0 1.0).
+- **Kagoshima (`JP-46`)**: Kagoshima City Ai Bus (CC BY 4.0).
+- **Okinawa (`JP-47`)**: Yaese Town Bus and Yanbaru Express Bus (both CC BY 4.0).
+
+Eight more within prefectures already covered, each a distinct city network from
+the one already tracked: Misawa City Me-Bus (Aomori), Tsuchiura City Tsuchimaru
+Bus (Ibaraki), Wako City Wakoba loop (Saitama), Yotsukaido City Yoppii (Chiba,
+CC0 1.0), Chigasaki City Eboshi-go (Kanagawa), Fujieda City self-operated bus
+(Shizuoka), Nagakute City N-Bus (Aichi), and Kuwana City K-Bus (Mie). All CC BY
+4.0 except Yotsukaido.
+
+The wave stayed fail-closed, and the exclusions are the point:
+
+- **Unversioned or ambiguous license:** the catalog's two feeds under a bare
+  "CC-BY", with no version, were rejected as before. Only the three named,
+  versioned Creative Commons licenses were admitted.
+- **Expired calendar:** several otherwise-open feeds carried a service window
+  already ended by the 2026-07-18 review, including Ando Town (Nara), Susami Town
+  (Wakayama), Wake Town (Okayama), and Kami Town, Kato City, and Yabu City
+  (Hyogo). Each fails the current-calendar gate.
+- **Discontinued:** the 24 feeds the catalog flags as discontinued were excluded
+  by construction.
+- **One feed per operator:** Nakatsu City (Oita) publishes its community bus as
+  roughly eighteen separate line-level feeds. Rather than stack one operator's
+  line exports, Oita is represented by Kusu Town's whole-network feed. Saitama's
+  many single-route shared-taxi exports were likewise passed over for a clean
+  city circulator elsewhere.
+- **No admitted first-party feed:** Fukui (`JP-18`), Kyoto (`JP-26`), Tottori
+  (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`), and
+  Miyazaki (`JP-45`) remain unrepresented, since the repository lists no feed for
+  them under an admitted license. They wait for a first-party open feed rather
+  than an aggregator mirror (busmaps.jp, opentrans.it), which stays out of scope.
 
 ## Reviewed ferry cohort
 
