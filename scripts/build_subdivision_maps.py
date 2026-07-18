@@ -59,7 +59,7 @@ SOURCE = (
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/"
     "geojson/ne_10m_admin_1_states_provinces.geojson"
 )
-COUNTRIES = ["GB", "FR", "DE", "ES", "IT"]
+COUNTRIES = ["GB", "FR", "DE", "ES", "IT", "CA"]
 MARGIN = 8.0  # blank border, in viewBox px, around the fitted country
 MAX_DIM = 1000.0  # the longer viewBox axis; the shorter follows the aspect ratio
 MIN_RING_AREA_PX = 2.0  # projected square px; drops islet specks
@@ -94,6 +94,9 @@ REGISTRY = {
         "IT-25", "IT-32", "IT-34", "IT-42", "IT-52", "IT-62", "IT-72", "IT-75",
         "IT-78", "IT-82", "IT-88",
     },
+    # Canada's provinces and territories are admin-1 (iso_3166_2 CA-ON, CA-QC,
+    # ...), so no region-level dissolve is needed. Only two carry feeds today.
+    "CA": {"CA-ON", "CA-YT"},
 }
 
 
