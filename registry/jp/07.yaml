@@ -33,3 +33,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: motomiya-city-community-bus
+    name: Motomiya City Community Bus (本宮市コミュニティバス)
+    country: JP
+    subdivision_code: JP-07
+    subdivision_name: Fukushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/motomiyacity/feeds/motomiyashibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Motomiya City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Motomiya City.
+    operating_note: >-
+      Motomiya City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/motomiyacity.motomiyashibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Motomiya City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shin-joban-kotsu
+    name: Shin-Joban Kotsu (新常磐交通)
+    country: JP
+    subdivision_code: JP-07
+    subdivision_name: Fukushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shinjobankotsu/feeds/SHINJOBANKOTSU/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shin-Joban Kotsu Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit
+      Shin-Joban Kotsu Co., Ltd.
+    operating_note: >-
+      Shin-Joban Kotsu's route bus network around Iwaki in Fukushima;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shinjobankotsu.SHINJOBANKOTSU
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shin-Joban Kotsu Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

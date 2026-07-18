@@ -86,3 +86,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: takasago-joton-bus
+    name: Takasago City Joton Bus (高砂市じょうとんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takasagocity/feeds/jotonbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Takasago City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Takasago City.
+    operating_note: >-
+      Takasago City's Joton Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takasagocity.jotonbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takasago City. Published as GTFS-JP open data (CC BY 2.1 JP) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

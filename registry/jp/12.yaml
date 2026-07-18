@@ -59,3 +59,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: nagareyama-green-bus
+    name: Nagareyama Green Bus (流山ぐりーんバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagareyamacity/feeds/nagareyamagreenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagareyama City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nagareyama City.
+    operating_note: >-
+      Nagareyama City's Green Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagareyamacity.nagareyamagreenbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagareyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

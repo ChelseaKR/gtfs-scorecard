@@ -797,6 +797,84 @@ The wave stayed fail-closed, and the exclusions are the point:
   them under an admitted license. They wait for a first-party open feed rather
   than an aggregator mirror (busmaps.jp, opentrans.it), which stays out of scope.
 
+## Japan gtfs-data.jp third wave
+
+A third pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The two prior waves lifted Japan to 65 records across 40
+prefectures. This wave only goes deeper: it adds distinct new operators inside
+prefectures already represented, because the seven prefectures still missing after
+the second wave carry no feed at all in the catalog. Forty records were added,
+lifting Japan from 65 to 105 records, still across 40 prefectures. Every candidate
+is a distinct operator not already tracked, confirmed official, openly licensed,
+and mechanically preflighted on 2026-07-18: a valid archive with the GTFS core
+tables and a current, non-expired service calendar, within the ingestion size caps,
+and absent from the Mobility Database. Each download was deleted after the check.
+
+The license mix of the 40 is 35 CC BY 4.0, 3 CC0 1.0, and 2 CC BY 2.1 JP, the same
+three admitted licenses as the second wave, with the exact version stated in each
+record's `license_note` and attribution. The two bare "CC-BY" feeds with no
+resolvable version stayed rejected.
+
+Thirty prefectures deepened, each operator distinct from those already tracked
+(license in parentheses where not CC BY 4.0):
+
+- **Hokkaido (`JP-01`)**: Nemuro Kotsu (CC0 1.0).
+- **Aomori (`JP-02`)**: Goshogawara City Community Bus.
+- **Iwate (`JP-03`)**: Ichinoseki City Bus.
+- **Miyagi (`JP-04`)**: Takeya Kotsu.
+- **Yamagata (`JP-06`)**: Sakata City Bus, Yamagata Railway.
+- **Fukushima (`JP-07`)**: Motomiya City Community Bus, Shin-Joban Kotsu.
+- **Ibaraki (`JP-08`)**: Ryugasaki City Community Bus.
+- **Tochigi (`JP-09`)**: Ashikaga City Route Bus.
+- **Gunma (`JP-10`)**: Annaka City An-Bus, Nagai Bus.
+- **Chiba (`JP-12`)**: Nagareyama Green Bus.
+- **Tokyo (`JP-13`)**: Tachikawa City Kururin Bus, Ogasawara Village Bus.
+- **Kanagawa (`JP-14`)**: Ninomiya Town Community Bus.
+- **Niigata (`JP-15`)**: Kamo City Kamon Bus.
+- **Toyama (`JP-16`)**: Imizu City Kitokito Bus (CC0 1.0), Manyosen (CC0 1.0).
+- **Ishikawa (`JP-17`)**: Nonoichi City Community Bus.
+- **Yamanashi (`JP-19`)**: Hokuto City Bus.
+- **Nagano (`JP-20`)**: Chikuma City Loop Bus, Kiso Town Public Transport (CC BY 2.1 JP).
+- **Gifu (`JP-21`)**: Gifu City Community Bus, Akechi Railway.
+- **Shizuoka (`JP-22`)**: Hamamatsu Bus, Iwata routes.
+- **Aichi (`JP-23`)**: Seto City Community Bus, Chita Bus.
+- **Mie (`JP-24`)**: Iga City Community Bus, Ise Railway.
+- **Shiga (`JP-25`)**: Omihachiman City Akakon Bus.
+- **Hyogo (`JP-28`)**: Takasago City Joton Bus (CC BY 2.1 JP).
+- **Wakayama (`JP-30`)**: Meiko Bus.
+- **Okayama (`JP-33`)**: Niimi City Bus.
+- **Tokushima (`JP-36`)**: Tokushima City Bus, Asa Coast Railway DMV.
+- **Kagawa (`JP-37`)**: Seisan Kanko Takamatsu Airport Limousine.
+- **Kochi (`JP-39`)**: Aki City Genki Bus.
+- **Fukuoka (`JP-40`)**: Koga City Bus.
+- **Kumamoto (`JP-43`)**: Sanko Bus.
+
+The wave reaches past municipal community buses into first-party private operators
+and rail. It adds five rail feeds (Yamagata Railway, Akechi Railway, Ise Railway,
+the Manyosen light rail, and the Asa Coast Railway dual-mode vehicle service) and
+several regional bus companies (Nemuro Kotsu, Takeya Kotsu, Shin-Joban Kotsu, Nagai
+Bus, Chita Bus, Meiko Bus, and Kyushu Sanko Bus).
+
+The exclusions carry the discipline:
+
+- **Seven priority prefectures still empty:** Fukui (`JP-18`), Kyoto (`JP-26`),
+  Tottori (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`), and
+  Miyazaki (`JP-45`) carry zero feeds anywhere in the catalog, first-party or
+  otherwise. This was confirmed by scanning the prefecture field of every one of
+  the roughly 596 catalog records. They stay unrepresented; no aggregator mirror
+  (busmaps.jp, opentrans.it) was used.
+- **Vein not exhausted:** after this wave the catalog still lists on the order of
+  240 more admitted-license operators not yet tracked. The wave was capped for
+  review quality, not for lack of supply.
+- **One feed per operator:** operators that publish only line-level exports were
+  passed over for whole-network feeds elsewhere. Nakatsu City (Oita) publishes its
+  community bus as eighteen separate line feeds, and Saitama City publishes its
+  circulators as per-ward and per-route shared-taxi feeds; neither yields a single
+  whole-network feed, so both were skipped.
+- **Discontinued and expired:** the feeds the catalog flags as discontinued were
+  excluded by construction, and any feed whose service calendar had already ended
+  by the 2026-07-18 review was dropped.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

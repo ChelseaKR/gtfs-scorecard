@@ -58,3 +58,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ninomiya-town-community-bus
+    name: Ninomiya Town Community Bus (二宮町コミュニティバス)
+    country: JP
+    subdivision_code: JP-14
+    subdivision_name: Kanagawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ninomiyatown/feeds/Ninomiyatowncommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ninomiya Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ninomiya Town.
+    operating_note: >-
+      Ninomiya Town's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ninomiyatown.Ninomiyatowncommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ninomiya Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

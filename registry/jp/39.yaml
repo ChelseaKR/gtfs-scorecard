@@ -80,3 +80,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: aki-city-genki-bus
+    name: Aki City Genki Bus (安芸市「元気バス」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/akicity/feeds/GTFS-Akicity_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Aki City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Aki City.
+    operating_note: >-
+      Aki City's Genki Bus community network in Kochi; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/akicity.GTFS-Akicity_Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -64,3 +64,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: tachikawa-kururin-bus
+    name: Tachikawa City Kururin Bus (立川市くるりんバス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tachikawacity/feeds/kururinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tachikawa City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tachikawa City.
+    operating_note: >-
+      Tachikawa City's Kururin Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tachikawacity.kururinbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tachikawa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ogasawara-village-bus
+    name: Ogasawara Village Bus (小笠原村営バス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ogasawaravillage/feeds/o/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ogasawara Village through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ogasawara Village.
+    operating_note: >-
+      Ogasawara Village's municipal bus on Chichijima in the Ogasawara
+      Islands; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ogasawaravillage.o
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ogasawara Village. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

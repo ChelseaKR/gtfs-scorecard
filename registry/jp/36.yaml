@@ -32,3 +32,53 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: tokushima-city-bus
+    name: Tokushima City Bus (徳島市営バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokushima-shiei/feeds/tokushimacitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima City
+      Transportation Bureau through the GTFS Data Repository (gtfs-data.jp).
+      Credit Tokushima City Transportation Bureau.
+    operating_note: >-
+      The Tokushima City municipal bus network, run by the city
+      transportation bureau; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokushima-shiei.tokushimacitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima City Transportation Bureau. Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: asa-coast-railway
+    name: Asa Coast Railway DMV (阿佐海岸鉄道)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/asatetu/feeds/asakaigantetsudo/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Asa Coast Railway Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Asa Coast
+      Railway Co., Ltd.
+    operating_note: >-
+      The Asa Coast Railway dual-mode vehicle service linking Tokushima and
+      Kochi; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/asatetu.asakaigantetsudo
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Asa Coast Railway Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -56,3 +56,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: seto-city-community-bus
+    name: Seto City Community Bus (瀬戸市コミュニティバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/setocity/feeds/setocitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Seto City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Seto City.
+    operating_note: >-
+      Seto City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/setocity.setocitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Seto City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: chita-bus
+    name: Chita Bus (知多バス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitabus/feeds/chitabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chita Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Chita Bus Co.,
+      Ltd.
+    operating_note: >-
+      Chita Bus's route network on the Chita Peninsula in Aichi; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitabus.chitabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chita Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
