@@ -131,6 +131,10 @@ the declared public surface).
   countries while remaining explicitly below the 250-record beta gate.
 
 ### Changed
+- Record the large-feed tier decision in `docs/decisions/0039-large-feed-tier.md`:
+  a per-record `large_feed` opt-in raises only the raw size ceilings to a bounded
+  larger level and streams the download to disk, while every zip-bomb shape guard
+  stays unchanged.
 - Broaden the European canaries beyond a bus-first view with metro, tram,
   national multimodal, ferry, and GTFS-Flex demand-responsive service, while
   keeping multi-operator aggregates counted as one feed record.
