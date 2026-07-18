@@ -94,9 +94,9 @@ the declared public surface).
   Thresholds come from the published criteria payload, never a second copy.
 - Add a third 75-record European depth wave from every remaining non-Swedish
   queue, reviewed in parallel: twenty in France, twelve each in Italy and
-  Finland, eleven in Great Britain, nine in Spain, five in Ireland, four in
+  Finland, eleven in the United Kingdom, nine in Spain, five in Ireland, four in
   Poland, one in Portugal, and Czechia's first two records. The reviewed
-  cohort reaches 148 records in 17 countries alongside the parallel Nordic-Baltic and Central Europe waves, with Great Britain at 23%.
+  cohort reaches 148 records in 17 countries alongside the parallel Nordic-Baltic and Central Europe waves, with the United Kingdom at 23%.
   Documented rejections include seventeen French ODbL datasets, size-capped
   archives in Austria, Portugal, and Finland, Belgium's source-gated
   operators, Estonia's broken register endpoint, and community rebuilds on
@@ -106,7 +106,7 @@ the declared public surface).
   NVBW's portal, three French networks including the Yeu-Continent ferry and
   a combined realtime stream for Cap Cotentin, and Trenitalia's regional rail
   resource from Regione Toscana. The reviewed cohort reaches 63 records in 13
-  countries with Great Britain at 36.5% of the cohort; new rejections
+  countries with the United Kingdom at 36.5% of the cohort; new rejections
   (unstated licenses, uncovered hosts, an unreachable National Access Point
   listing, ODbL with unread special conditions) are documented alongside the
   first wave's.
@@ -115,7 +115,7 @@ the declared public surface).
   open-data platform, seven in Spain, four in Italy, four in Germany (a new
   registry country), and two in France, including two feeds with public
   realtime endpoints. The reviewed cohort now spans 42 feed records in 13
-  countries with Great Britain the largest at 26%, still explicitly below the
+  countries with the United Kingdom the largest at 26%, still explicitly below the
   250-record beta gate; rejected candidates and their reasons are documented
   in `docs/global-expansion.md`.
 - Externalize the interactive app's shell copy (loading, fetch errors, the
@@ -127,7 +127,7 @@ the declared public surface).
   CSS (ADR 0038). English remains the only production interface language and
   the language-steward gate is unchanged.
 - Add nine source-, reuse-, and identity-reviewed European feed records across
-  Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain,
+  Belgium, Switzerland, Denmark, Estonia, Spain, Finland, the United Kingdom,
   Poland, and Portugal. The bounded cohort now spans 15 feed records in 12
   countries while remaining explicitly below the 250-record beta gate.
 
