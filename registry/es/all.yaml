@@ -1,0 +1,55 @@
+# Spain (ES) national agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: renfe-cercanias-rodalies
+    name: Renfe Cercanías y Rodalies
+    country: ES
+    mdb_id: "2653"
+    is_official: true
+    static_gtfs_url: https://ssl.renfe.com/ftransit/Fichero_CER_FOMENTO/fomento_transit.zip
+    rt_urls:
+      trip_updates: https://gtfsrt.renfe.com/trip_updates.pb
+      vehicle_positions: https://gtfsrt.renfe.com/vehicle_positions.pb
+      service_alerts: https://gtfsrt.renfe.com/alerts.pb
+    license_note: >-
+      CC BY 4.0 through Renfe's open data portal; commercial reuse and
+      adaptation are permitted with attribution to Renfe.
+    operating_note: >-
+      Spain's national commuter-rail network (Cercanías and Rodalies)
+      published by Renfe.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.renfe.com/dataset/horarios-cercanias
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Renfe.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: renfe-alta-larga-media
+    name: Renfe (Alta Velocidad, Larga y Media Distancia)
+    country: ES
+    mdb_id: "2620"
+    is_official: true
+    static_gtfs_url: https://ssl.renfe.com/gtransit/Fichero_AV_LD/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through Renfe's open data portal; commercial reuse and
+      adaptation are permitted with attribution to Renfe.
+    operating_note: >-
+      Spain's high-speed, long-distance, and medium-distance rail network
+      published by Renfe.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.renfe.com/dataset/horarios-de-alta-velocidad-larga-distancia-y-media-distancia
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Renfe.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

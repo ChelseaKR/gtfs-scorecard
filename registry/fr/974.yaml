@@ -33,3 +33,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: citalis-reunion
+    name: Citalis (La Réunion)
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: La Réunion
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82879/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Citalis, réseau urbain de La Réunion and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaire-du-reseau-citalis
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Citalis, réseau urbain de La Réunion.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

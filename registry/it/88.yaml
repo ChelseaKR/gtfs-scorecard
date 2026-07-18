@@ -132,3 +132,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: atp-nuoro
+    name: Azienda Trasporti Pubblici di Nuoro (ATP Nuoro)
+    country: IT
+    subdivision_code: IT-88
+    subdivision_name: Sardegna
+    mdb_id: "991"
+    static_gtfs_url: https://storage.googleapis.com/storage/v1/b/mdb-latest/o/it-regione-autonoma-della-sardegna-atp-nuoro-gtfs-991.zip?alt=media
+    license_note: >-
+      CC BY 4.0 through Regione Autonoma della Sardegna's open data;
+      commercial reuse and adaptation are permitted with attribution.
+    operating_note: >-
+      Provincial bus network around Nuoro. The direct download is
+      MobilityData's hosted mirror; the operator's own endpoint does not serve
+      a fetchable archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.sardegnamobilita.it/open-data
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Regione Autonoma della Sardegna; ATP Nuoro.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

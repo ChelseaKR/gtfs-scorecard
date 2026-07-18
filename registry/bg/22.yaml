@@ -1,0 +1,35 @@
+# Sofia (BG) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: cgm-sofia
+    name: Център за градска мобилност (Sofia Urban Mobility Center)
+    country: BG
+    subdivision_code: BG-22
+    subdivision_name: Sofia (stolitsa)
+    mdb_id: "2848"
+    is_official: true
+    static_gtfs_url: https://gtfs.sofiatraffic.bg/api/v1/static
+    rt_urls:
+      trip_updates: https://gtfs.sofiatraffic.bg/api/v1/trip-updates
+      vehicle_positions: https://gtfs.sofiatraffic.bg/api/v1/vehicle-positions
+      service_alerts: https://gtfs.sofiatraffic.bg/api/v1/alerts
+    license_note: >-
+      CC BY-SA through Sofia Municipality's open data portal; reuse including
+      commercial reuse is permitted with attribution to the Urban Mobility
+      Center and share-alike on redistributed data.
+    operating_note: >-
+      Bulgaria's first reviewed feed record. Sofia city transport published by
+      the municipal Urban Mobility Center on Sofia's open data portal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://urbandata.sofia.bg/dataset/gtfs-static
+      terms_url: https://urbandata.sofia.bg/dataset/gtfs-static
+      scope: [gtfs_schedule]
+      attribution: >-
+        Център за градска мобилност (Sofia Urban Mobility Center).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

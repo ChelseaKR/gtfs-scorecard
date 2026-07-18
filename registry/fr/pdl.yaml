@@ -72,3 +72,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: impulsyon-la-roche-sur-yon
+    name: Impulsyon (La Roche-sur-Yon)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "2005"
+    static_gtfs_url: https://transport.data.gouv.fr/resources/79520/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to La Roche-sur-Yon Agglomération (réseau
+      Impulsyon) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-impulsyon-a-la-roche-sur-yon
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        La Roche-sur-Yon Agglomération (réseau Impulsyon).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
