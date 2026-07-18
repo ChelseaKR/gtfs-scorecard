@@ -1,0 +1,31 @@
+# Uusimaa (FI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: hsl-helsinki-region
+    name: Helsinki Region Transport (HSL)
+    country: FI
+    subdivision_code: FI-18
+    subdivision_name: Uusimaa
+    mdb_id: "865"
+    is_official: true
+    static_gtfs_url: https://dev.hsl.fi/gtfs/hsl.zip
+    license_note: >-
+      CC BY 4.0 per the Helsinki Region Infoshare dataset that lists this exact
+      feed URL; credit HSL and note the retrieval date.
+    operating_note: >-
+      One regional-authority feed covering HSL's member municipalities in the
+      Helsinki region. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://hri.fi/data/fi/dataset/hsl-reittiopas-api
+      terms_url: https://hri.fi/data/fi/dataset/hsl-reittiopas-api
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: Helsingin seudun liikenne (HSL) via Helsinki Region Infoshare,
+        licensed CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

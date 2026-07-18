@@ -31,15 +31,16 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the reviewed breadth wave contains
-1,163 feed records: 1,139 in the United States, three in Canada, two in
-Australia, three in France, two in Italy, and one each in Belgium, Switzerland,
-Denmark, Estonia, Spain, Finland, Great Britain, Ireland, Japan, Malaysia, New
-Zealand, Poland, Portugal, and Uruguay. The public scored count is a separate,
+The configured registry snapshot after the reviewed Nordic-Baltic wave
+contains 1,174 feed records: 1,139 in the United States, three in Canada, two
+in Australia, three in France, two in Italy, nine in Finland, two in Estonia,
+and one each in Belgium, Switzerland, Denmark, Spain, Great Britain, Ireland,
+Japan, Latvia, Lithuania, Malaysia, New Zealand, Poland, Portugal, and
+Uruguay. The public scored count is a separate,
 smaller number reported by the status API; configured and published feed records
 are not interchangeable.
 
-The 15 records whose primary catalog location is in 12 European countries are
+The 26 records whose primary catalog location is in 14 European countries are
 reviewed canaries. They cover bus, tram, metro, ferry, national multimodal, and
 GTFS-Flex demand-responsive service. The country and mode controls prove that
 the data model and interface can carry worldwide locations; they are not
@@ -161,6 +162,18 @@ the 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
 inferred from the registry. The source rows are public so a consumer can audit
 what “reviewed” means.
+
+A third bounded wave (2026-07-17) adds eleven reviewed records across the
+Nordics and Baltics: eight in Finland (HSL and seven Waltti city feeds, all
+CC BY 4.0 per the providers' own open-data statements), Estonia's national
+register aggregate, Latvia's ATD national aggregate (CC0 per data.gov.lv), and
+Vilnius (JUDU's published data-use terms). That produces 26 reviewed feed
+records across 14 countries, with Finland the largest country at about 35%.
+Candidates whose reuse terms could not be verified on a live provider or
+official-portal page — Rīgas Satiksme, Kaunas, Klaipėda, and ELRON — stayed
+out, and Sweden's national feed stayed out because its download requires an
+API key. Norway's national aggregate remains deferred under the archive guard
+described below. The 250-record threshold still fails by design.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
