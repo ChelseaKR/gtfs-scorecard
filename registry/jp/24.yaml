@@ -129,3 +129,74 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: seikatsu-bus-yokkaichi
+    name: Seikatsu Bus Yokkaichi (生活バスよっかいち)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/seikatsubus-yokkaichi/feeds/sbusyokkaichi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Seikatsu Bus Yokkaichi
+      through the GTFS Data Repository (gtfs-data.jp). Credit Seikatsu Bus
+      Yokkaichi.
+    operating_note: >-
+      A community-supported bus company in Yokkaichi, distinct from the city's
+      own network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/seikatsubus-yokkaichi.sbusyokkaichi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Seikatsu Bus Yokkaichi. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tsu-airport-line
+    name: Tsu Airport Line (津エアポートライン)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsu-airportline/feeds/airportline/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsu Airport Line through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tsu Airport Line.
+    operating_note: >-
+      A high-speed ferry between Tsu-Nagisamachi and Chubu Centrair airport.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsu-airportline.airportline
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsu Airport Line. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yokkaichi-community-bus
+    name: Yokkaichi City Bus (四日市市自主運行バス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yokkaichicity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yokkaichi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yokkaichi City.
+    operating_note: >-
+      Yokkaichi City's self-operated bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yokkaichicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yokkaichi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

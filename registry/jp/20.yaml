@@ -129,3 +129,73 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kusakaru-kotsu
+    name: Kusakaru Kotsu (草軽交通)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kusakarukotsu/feeds/kusakarubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kusakaru Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kusakaru Kotsu.
+    operating_note: >-
+      A private bus operator linking Karuizawa, Kusatsu, and
+      Naganohara-Kusatsuguchi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kusakarukotsu.kusakarubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kusakaru Kotsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shiojiri-step-bus
+    name: Shiojiri Community Bus Step-kun (塩尻市地域振興バス「すてっぷくん」)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shiojiricity/feeds/suteppukunn/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shiojiri City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shiojiri City.
+    operating_note: >-
+      Shiojiri City's Step-kun regional bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shiojiricity.suteppukunn
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shiojiri City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nagano-city-bus
+    name: Nagano City Bus and Shared Taxi (長野市営バス・乗合タクシー)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/naganocity/feeds/shiei_noriaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagano City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagano City.
+    operating_note: >-
+      Nagano City's municipal bus and shared-taxi services.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/naganocity.shiei_noriaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagano City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

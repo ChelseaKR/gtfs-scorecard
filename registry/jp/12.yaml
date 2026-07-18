@@ -108,3 +108,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: katori-loop-bus
+    name: Katori City Loop Bus (香取市循環バス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/katoricity/feeds/katori-junkan/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Katori City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Katori City's circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/katoricity.katori-junkan
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Katori City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: narita-community-bus
+    name: Narita City Community Bus (成田市コミュニティバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/naritacity/feeds/narita-community-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Narita City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Narita City.
+    operating_note: >-
+      Narita City's community bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/naritacity.narita-community-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Narita City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
