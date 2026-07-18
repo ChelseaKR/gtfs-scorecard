@@ -212,6 +212,11 @@ first (PR #116): the document at `/api/v1/global-coverage.json`, its JSON
 schema, the status page section, and the finder's regional denominator.
 Country program pages for every non-US registry country followed (PR #121).
 
+That published result predates the depth wave described above. The configured
+cohort now holds 42 reviewed records across 13 countries; the published gate
+document reports the new arithmetic after the next scored render, and the
+record count stays the only open criterion.
+
 ## Delivery sequence
 
 ### Now: consumer decision support
