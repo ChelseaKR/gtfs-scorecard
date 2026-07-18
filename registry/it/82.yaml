@@ -28,3 +28,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: atm-messina
+    name: ATM Messina
+    country: IT
+    subdivision_code: IT-82
+    subdivision_name: Sicilia
+    is_official: true
+    static_gtfs_url: https://www.atmmessinaspa.it/GTFS/GTFS_ATM_SPA.zip
+    license_note: >-
+      Creative Commons Attribution (CC BY) through the Comune di Messina open
+      data portal; the national catalog dati.gov.it records it as CC BY 4.0.
+      Credit Azienda Trasporti Messina and the Comune di Messina.
+    operating_note: >-
+      The Messina urban bus and tram network, published as a stable direct
+      file listed on the Comune di Messina open data portal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.comune.messina.it/dataset/dati-trasporto-pubblico-urbano-atm-gtfs
+      terms_url: https://dati.comune.messina.it/dataset/dati-trasporto-pubblico-urbano-atm-gtfs
+      scope: [gtfs_schedule]
+      attribution: >-
+        Azienda Trasporti Messina S.p.A.; Comune di Messina.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

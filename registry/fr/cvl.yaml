@@ -46,3 +46,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: filibus-chartres
+    name: Filibus (Chartres)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80587/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Chartres Métropole (réseau Filibus) and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/filibus-urbain
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chartres Métropole (réseau Filibus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: move-vendome
+    name: Move (Vendôme)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82832/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération Territoires
+      Vendômois (réseau Move) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-move-vendome
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération Territoires Vendômois (réseau Move).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

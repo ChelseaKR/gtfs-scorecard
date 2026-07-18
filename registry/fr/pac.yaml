@@ -90,3 +90,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: palmbus-cannes
+    name: Palmbus (Cannes)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/79420/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération Cannes Pays de
+      Lérins (réseau Palmbus) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-gtfs-gtfs-rt-du-reseau-palmbus-cannes-pays-de-lerins
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération Cannes Pays de Lérins (réseau Palmbus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: zest-menton
+    name: Zest (Menton)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/79559/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération de la Riviera
+      Française (réseau Zest) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-reseau-zest
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération de la Riviera Française (réseau Zest).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -349,6 +349,33 @@ cohort (34 of 200), and France, the largest country, is 20.5% (41 of 200), both
 well under the 40% ceiling. The 250-record threshold stays the only open
 criterion, and it still fails by design.
 
+### Eighth European wave on 2026-07-18
+
+An eighth wave stayed non-United-Kingdom and added 51 reviewed feed records,
+moving the European cohort from 200 to 251 records across the same 22 countries.
+The wave reaches the 250-record threshold, which had been the only open
+criterion. It is depth in already-listed countries rather than new ones:
+twenty-seven Licence Ouverte 2.0 urban networks in France across ten regions,
+nine in Norway (six national Entur operators under NLOD 2.0 that are distinct
+from the county authorities, plus three more county authorities), seven National
+Transport Authority per-operator files in Ireland under CC BY 4.0, four in Italy
+(three Regione Toscana resources and ATM Messina in Sicilia under CC BY), two in
+Germany (VVS Stuttgart under CC BY 4.0 and SWU Ulm under CC0 on MobiData BW), one
+in Portugal (Metropolitano de Lisboa under CC BY 4.0), and one in Poland (MPK
+Legnica under CC BY 4.0, opening the Dolnośląskie voivodeship). Every record
+carried a live license read, a mechanical download and current-calendar
+preflight, and an ISO 3166-2 subdivision review. The Netherlands, Belgium, and
+Romania again returned nothing that cleared the fail-closed bar: the Dutch
+national portal lists no GTFS dataset, Belgium beyond the tracked TEC feed is
+registration-walled or non-commercial, and Romania's sources are unreachable or
+unlicensed.
+
+The balance criterion stays comfortable: France, the largest country, is now
+27.1% of the cohort (68 of 251), and the United Kingdom is 13.5% (34 of 251),
+both well under the 40% ceiling. With the record count met, the gate's remaining
+work is the freshness, translation, portable-location, and identity coverage the
+scored render measures.
+
 ## Delivery sequence
 
 ### Now: consumer decision support

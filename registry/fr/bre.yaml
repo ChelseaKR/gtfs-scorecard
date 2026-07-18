@@ -64,3 +64,72 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: izilo-lorient
+    name: Izilo (Lorient)
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80611/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Lorient Agglomération (réseau Izilo) and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-izilo-format-gtfs-de-lorient-agglomeration
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lorient Agglomération (réseau Izilo).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: red-redon
+    name: RED (Redon)
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83512/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Redon Agglomération (réseau RED) and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-de-redon-agglomeration
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Redon Agglomération (réseau RED).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tbk-quimperle
+    name: TBK (Quimperlé)
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80671/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Quimperlé Communauté (réseau TBK) and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tbk-offre-theorique-et-temps-reel-du-reseau-de-transports-du-pays-de-quimperle
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Quimperlé Communauté (réseau TBK).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

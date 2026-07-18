@@ -92,3 +92,99 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: tuc-cambrai
+    name: TUC (Cambrai)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80751/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération de Cambrai
+      (réseau TUC) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-gtfs-reseau-tuc-communaute-dagglomeration-de-cambrai
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération de Cambrai (réseau TUC).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: corolis-beauvais
+    name: Corolis (Beauvais)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81074/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération du Beauvaisis
+      (réseau Corolis) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-theoriques-et-temps-reel-du-reseau-corolis-urbain-communaute-dagglomeration-du-beauvaisis
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération du Beauvaisis (réseau Corolis).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: pastel-saint-quentin
+    name: Pastel (Saint-Quentin)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82704/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération du
+      Saint-Quentinois (réseau Pastel) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/bus-pastel-saint-quentin
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération du Saint-Quentinois (réseau Pastel).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tic-compiegne
+    name: TIC (Compiègne)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81066/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération de la Région de
+      Compiègne et de la Basse Automne (réseau TIC) and the update date.
+    operating_note: >-
+      One French urban network published on the national access point
+      transport.data.gouv.fr.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-theoriques-et-temps-reel-du-reseau-tic-urbain-communaute-dagglomeration-de-la-region-de-compiegne-et-de-la-basse-automne
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération de la Région de Compiègne et de la Basse
+        Automne (réseau TIC).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

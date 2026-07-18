@@ -25,3 +25,95 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: agglobus-rodez
+    name: Agglobus (Rodez)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81175/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Rodez Agglomération (réseau Agglobus) and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transport-du-reseau-urbain-agglobus-et-de-transports-scolaires-gtfs
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Rodez Agglomération (réseau Agglobus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: citibus-narbonne
+    name: Citibus (Narbonne)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82661/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Le Grand Narbonne, Communauté
+      d'agglomération (réseau Citibus) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-communaute-dagglomeration-le-grand-narbonne
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Le Grand Narbonne, Communauté d'agglomération (réseau Citibus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sete-agglopole-mobilite
+    name: Sète Agglopole Mobilité
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81575/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Sète Agglopôle Méditerranée (réseau Sète
+      Agglopole Mobilité) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-bus-sete-agglopole-mobilite
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sète Agglopôle Méditerranée (réseau Sète Agglopole Mobilité).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tlp-tarbes-lourdes
+    name: TLP (Tarbes-Lourdes)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83134/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération
+      Tarbes-Lourdes-Pyrénées (réseau TLP) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tarbes-lourdes-tlp-mobilites-gtfs
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération Tarbes-Lourdes-Pyrénées (réseau TLP).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

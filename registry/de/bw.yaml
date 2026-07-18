@@ -404,3 +404,56 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: vvs-stuttgart
+    name: Verkehrs- und Tarifverbund Stuttgart (VVS)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    is_official: true
+    static_gtfs_url: https://download.vvs.de/gtfs_realtime.zip
+    license_note: >-
+      CC BY 4.0 as stated on MobiData BW, the Baden-Württemberg state mobility
+      open data portal run by NVBW; reuse including commercial reuse is
+      permitted with attribution to VVS.
+    operating_note: >-
+      The published file name says realtime, but the download is the VVS GTFS
+      Schedule feed with route shapes. One regional feed record for the
+      Stuttgart tariff association.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://mobidata-bw.de/dataset/soll-fahrplandaten-vvs
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Verkehrs- und Tarifverbund Stuttgart (VVS); published on MobiData BW
+        (NVBW).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: swu-ulm
+    name: SWU Verkehr (Ulm/Neu-Ulm)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    is_official: true
+    static_gtfs_url: https://gtfs.swu.de/daten/SWU.zip
+    license_note: >-
+      CC0 1.0 (public domain dedication) as stated on MobiData BW, the
+      Baden-Württemberg state mobility open data portal run by NVBW; free
+      reuse without conditions.
+    operating_note: >-
+      The municipal operator's own GTFS Schedule feed for Ulm and Neu-Ulm tram
+      and bus. SWU operates within the DING tariff association, but this is a
+      distinct operator-level feed under a different licence.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://mobidata-bw.de/dataset/opnv-fahrplandaten-der-swu
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        SWU Verkehr GmbH (Stadtwerke Ulm/Neu-Ulm).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

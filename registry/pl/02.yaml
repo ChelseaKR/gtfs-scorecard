@@ -1,0 +1,32 @@
+# Dolnośląskie (PL) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: mpk-legnica
+    name: MPK Legnica
+    country: PL
+    subdivision_code: PL-02
+    subdivision_name: Dolnośląskie
+    is_official: true
+    static_gtfs_url: https://gtfs.legnica.eu/static/GTFS.zip
+    license_note: >-
+      CC BY 4.0 as assigned to the City of Legnica GTFS dataset on Poland's
+      national open data portal dane.gov.pl; the first-party portal
+      opendata.legnica.eu permits reuse for any purpose. Credit MPK Legnica
+      and the City of Legnica.
+    operating_note: >-
+      The Legnica municipal bus network, published from a stable first-party
+      City of Legnica endpoint and refreshed on a rolling short horizon.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dane.gov.pl/pl/dataset/dane-transportowe-w-standardzie-gtfs
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Miejskie Przedsiębiorstwo Komunikacyjne sp. z o.o. w Legnicy (MPK
+        Legnica); City of Legnica open data.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
