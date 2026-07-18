@@ -919,6 +919,7 @@ function renderOverview(directory) {
     <section class="state-browse reveal" aria-labelledby="locations-h">
       <h2 class="section-title" id="locations-h">Browse by location</h2>
       ${locationControlsHtml(countries, s.states || [])}
+      <p class="region-coverage fineprint" id="region-coverage" role="status" aria-live="polite" hidden></p>
     </section>
 
     <section class="feature-match-board reveal" aria-labelledby="feature-match-h" data-active="false">
@@ -991,6 +992,8 @@ function setupOverview(agencies, total, summary) {
   const legacyStateBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".legacy-location")));
   const locationGroups = /** @type {HTMLElement | null} */ (main.querySelector(".location-groups"));
   const mapHost = /** @type {HTMLElement | null} */ (main.querySelector("#us-map"));
+  const regionCoverage = /** @type {HTMLElement | null} */ (main.querySelector("#region-coverage"));
+  let lastRegionHtml = "";
   const myLink = /** @type {HTMLElement} */ (main.querySelector("#my-agencies"));
 
   // Deep-linkable filters: prefer portable country/subdivision keys while still
@@ -1382,8 +1385,46 @@ function setupOverview(agencies, total, summary) {
       );
     }
   }
+  // The reviewed-cohort size for the selected country or subdivision, disclosed
+  // beside the location filter so no regional cohort is read as a census. The
+  // count is the tracked feed records for that place (directory.summary carries
+  // it), never a claim of complete coverage. "" when no country is selected.
+  function regionCoverageHtml() {
+    if (locationFilter.country === "all") return "";
+    const country = countries.find((row) => (row.country_code || "") === locationFilter.country);
+    if (!country) return "";
+    const countryName = country.country_name || locationFilter.country;
+    let count = Number(country.agencies) || 0;
+    let place = countryName;
+    let scope = "this country";
+    if (locationFilter.subdivision !== "all") {
+      const sub = (country.subdivisions || []).find(
+        (row) => (row.subdivision_code || UNLOCATED_SUBDIVISION) === locationFilter.subdivision
+      );
+      if (!sub) return "";
+      count = Number(sub.agencies) || 0;
+      place = `${sub.subdivision_name || "Unlocated"}, ${countryName}`;
+      scope = "this area";
+    }
+    const noun = count === 1 ? "reviewed feed record" : "reviewed feed records";
+    const verb = count === 1 ? "is" : "are";
+    return (
+      `${formatNumber(count)} ${noun} in <bdi>${esc(place)}</bdi> ${verb} tracked here. ` +
+      `That is the size of the cohort for ${scope}, not a census of its transit.`
+    );
+  }
+  function updateRegionCoverage() {
+    if (!regionCoverage) return;
+    const html = regionCoverageHtml();
+    if (html !== lastRegionHtml) {
+      lastRegionHtml = html;
+      regionCoverage.innerHTML = html;
+    }
+    regionCoverage.hidden = !html;
+  }
   function syncLocationUI() {
     renderSelectedCountrySubdivisions();
+    updateRegionCoverage();
     for (const button of countryBtns) {
       button.setAttribute("aria-pressed", String(button.dataset.country === locationFilter.country));
     }

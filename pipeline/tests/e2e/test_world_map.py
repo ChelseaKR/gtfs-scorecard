@@ -48,6 +48,45 @@ def test_world_map_absence_degrades_silently(page: Page, base_url: str) -> None:
     assert page.locator(".location-country").count() > 0
 
 
+def test_region_coverage_discloses_the_selected_cohort_denominator(
+    page: Page, app_url: str
+) -> None:
+    # Filtering to a country states that country's own reviewed-cohort size, so
+    # a non-US region is never read against only the US-heavy global denominator.
+    # Canada stands in for any non-US country (three feed records in the fixture,
+    # Ontario carrying two); the counts are read from the chips, not hardcoded,
+    # so the test survives data refreshes.
+    page.goto(app_url)
+    page.wait_for_selector(".location-country")
+    disclosure = page.locator("#region-coverage")
+    assert disclosure.is_hidden()  # nothing claimed until a region is chosen
+
+    canada = page.locator('.location-country[data-country="CA"]')
+    assert canada.count() == 1
+    country_count = canada.locator(".state-n").inner_text().strip()
+    canada.click()
+
+    page.wait_for_selector("#region-coverage:not([hidden])")
+    text = disclosure.inner_text()
+    assert "Canada" in text
+    assert "reviewed feed record" in text  # cohort size, in text not color
+    assert country_count in text
+    assert "not a census" in text  # never overstated as coverage
+
+    # Drilling into a subdivision restates the denominator for that area.
+    ontario = page.locator('.location-subdivision[data-subdivision="CA-ON"]')
+    assert ontario.count() == 1
+    sub_count = ontario.locator(".state-n").inner_text().strip()
+    ontario.click()
+    page.wait_for_function(
+        "() => document.querySelector('#region-coverage')?.textContent?.includes('Ontario')"
+    )
+    sub_text = disclosure.inner_text()
+    assert "Ontario, Canada" in sub_text
+    assert sub_count in sub_text
+    assert "not a census" in sub_text
+
+
 def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None:
     # A country with committed subdivision geometry drills down: selecting it on
     # the world map swaps to its subdivision choropleth, each area filters the

@@ -41,7 +41,11 @@ HARDCODED_STRING_BASELINE = {
     # Raised 260 -> 339 with the world coverage map, then 339 -> 378 with the
     # subdivision drill-down: its Back control, drill heading, and per-area aria
     # labels are new accessible copy, a conscious increase to work back down
-    # through the catalog.
+    # through the catalog. The per-region coverage disclosure (the reviewed-
+    # cohort denominator shown when a country or subdivision is filtered) added a
+    # few more English literals to move into the catalog; the count is unchanged
+    # here because this heuristic under-counts strings nested in the overview's
+    # template literals, not because the copy is exempt from localization.
     "app.js": 378,
     "config.js": 1,
     "es.js": 2,

@@ -28,6 +28,14 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Disclose each region's own reviewed-cohort denominator in the finder. When a
+  visitor filters the directory to a country or subdivision, a line beside the
+  location controls states how many reviewed feed records the cohort holds there
+  (for example "19 reviewed feed records in Italy"), read from the directory
+  summary counts already present, so a region is never read against only the
+  US-heavy global denominator. The count is stated as a cohort size, never as a
+  census or a claim of complete coverage. Announced as a text status region, no
+  color-only meaning, mobile-friendly.
 - Let the world coverage map drill down into a country's subdivisions. Selecting
   a country with committed subdivision geometry swaps the world choropleth for
   its states or provinces, each shaded by expired-feed share, each announcing
