@@ -103,6 +103,15 @@ class Agency:
     # catalog metadata and prose license notes are intentionally not promoted
     # into this record: absence means the reuse decision is still unreviewed.
     reuse_evidence: ReuseEvidence | None = None
+    # Opt-in to the large-feed tier: a curator has confirmed this is a real,
+    # published feed whose compressed download exceeds 256 MiB or whose largest
+    # single table expands past 512 MiB (a national rail-plus-bus export, a whole
+    # metro network). It raises the size ceilings to a bounded larger level and
+    # streams the download to disk with a bounded memory footprint. The zip-bomb
+    # shape guards (entry count, compression ratio, central-directory-only
+    # inspection) stay unchanged. Default False keeps every ordinary feed on the
+    # tight standard caps. See fetch.LARGE_LIMITS and docs/global-coverage-roadmap.md.
+    large_feed: bool = False
 
     @property
     def organization_key(self) -> str:

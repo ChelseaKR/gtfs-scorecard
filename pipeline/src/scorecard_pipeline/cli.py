@@ -189,6 +189,7 @@ def run_agency(  # noqa: C901
                     fetched.path,
                     report_dir,
                     country_code=agency.country,
+                    large_feed=agency.large_feed,
                 )
             report = parse_report(report_path)
         store_cached(

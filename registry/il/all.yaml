@@ -1,0 +1,30 @@
+# Israel (IL) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: israel-mot-national
+    name: Israel Ministry of Transport national GTFS
+    country: IL
+    mdb_id: "2519"
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://gtfs.mot.gov.il/gtfsfiles/israel-public-transportation.zip
+    license_note: >-
+      Israeli government open data terms; credit the Ministry of Transport and
+      Road Safety. Published free with no registration. Derived measurements by
+      GTFS Scorecard.
+    operating_note: >-
+      One national feed covering roughly thirty-six operators. Its stop_times
+      table expands past the standard single-entry ceiling, so it is scored on
+      the large-feed tier; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.gov.il/en/pages/gtfs_general_transit_feed_specifications
+      terms_url: https://www.gov.il/en/pages/gtfs_general_transit_feed_specifications
+      scope: [gtfs_schedule]
+      attribution: Ministry of Transport and Road Safety, Israel.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

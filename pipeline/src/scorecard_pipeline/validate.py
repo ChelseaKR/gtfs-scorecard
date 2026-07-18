@@ -107,11 +107,26 @@ def country_scoped_output_dir(base_dir: Path, country_code: str) -> Path:
     return base_dir.with_name(f"{base_dir.name}-{country.lower()}")
 
 
+# Heap ceiling handed to the JVM for a large-feed validation. A national
+# rail-plus-bus or whole-metro feed unzips to hundreds of megabytes of tables
+# the validator holds in memory, which can exceed the JVM default max heap on a
+# smaller runner. Large feeds get this explicit, bounded ceiling so their memory
+# need is a known quantity rather than the runner's implicit default; ordinary
+# feeds are untouched. Tunable per environment without a code change.
+DEFAULT_LARGE_FEED_HEAP = "6g"
+
+
+def large_feed_heap() -> str:
+    return os.environ.get("SCORECARD_LARGE_FEED_HEAP", DEFAULT_LARGE_FEED_HEAP)
+
+
 def run_validator(
     gtfs_zip: Path,
     output_dir: Path,
     country_code: str = "US",
     version: str = VALIDATOR_VERSION,
+    *,
+    large_feed: bool = False,
 ) -> Path:
     """Run the validator on a GTFS zip; return the path to report.json.
 
@@ -119,13 +134,18 @@ def run_validator(
     run (canary.py) passes a candidate version to dual-score the same feed.
     ``country_code`` is the feed's assigned ISO 3166-1 alpha-2 country. The
     Java CLI expects its lower-case form; rejecting an unassigned code here
-    keeps every caller on the same validator-country contract.
+    keeps every caller on the same validator-country contract. ``large_feed``
+    gives the JVM an explicit bounded max heap (``large_feed_heap()``) so an
+    opted-in large feed validates against a known ceiling instead of the
+    runner's default; ordinary feeds keep the default heap.
     """
     country = validator_country_code(country_code)
     jar = ensure_validator(version)
     output_dir.mkdir(parents=True, exist_ok=True)
+    heap_flags = [f"-Xmx{large_feed_heap()}"] if large_feed else []
     cmd = [
         _java_binary(),
+        *heap_flags,
         "-jar",
         str(jar),
         "-i",
