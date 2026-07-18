@@ -585,6 +585,88 @@ The wave was deliberately narrowed, and the choices are the point:
 - **Already tracked:** the six gtfs-data.jp feeds already in the registry (Nasu
   Town, Higashine, Yonezawa, Uozu, Toki, Naruto) were excluded by construction.
 
+## Transitland non-Western sweep
+
+A second pass over the Transitland Atlas (`scorecard sync --source transitland`),
+this time aimed only at the regions the Mobility Database is thinnest in and the
+first Transitland wave did not cover: Latin America, non-Japan Asia-Pacific, the
+Middle East, and Africa. Japan, Europe, the United States, Canada, Australia, and
+New Zealand were excluded as already well covered. The Atlas carries no ISO
+country, so each candidate's country was decoded from the geohash in its Onestop
+id or inferred from the operator and URL, then confirmed by hand. Each survivor
+was cross-checked against both the registry and the Mobility Database catalog,
+and its source, license, and live download were verified on 2026-07-18. The gate
+was fail-closed: only an official first-party publisher, an explicit open
+license, and a live current feed that the Mobility Database does not already
+carry could be added.
+
+Six records were added, all from Malaysia's official open data platform
+(`data.gov.my`, the Government of Malaysia's open data portal), which publishes
+its datasets under CC BY 4.0. The Mobility Database carries only the smaller
+BAS.MY town networks from this platform, so the country's two largest operators
+were absent. Each download was preflighted on 2026-07-18 as a valid archive with
+the GTFS core tables and a current service calendar:
+
+- **Keretapi Tanah Melayu (KTMB)**, Malaysia national rail. The KTM Komuter
+  commuter lines and intercity shuttle services across Peninsular Malaysia;
+  carried as a national feed with no single subdivision.
+- **Rapid KL bus network** (`MY-14`), Prasarana Malaysia Berhad. The Klang
+  Valley city bus and BRT network.
+- **Rapid Rail KL** (`MY-14`), Prasarana. The LRT, MRT, and monorail lines of
+  the Klang Valley.
+- **Rapid KL MRT feeder bus** (`MY-14`), Prasarana. The T-route feeder buses
+  serving MRT and LRT stations.
+- **Rapid Penang** (`MY-07`), Prasarana. The bus network on Penang island and
+  the Seberang Perai mainland.
+- **Rapid Kuantan** (`MY-06`), Prasarana. The Kuantan, Pahang bus network.
+
+The sweep rejected far more than it kept, and the rejections are the point:
+
+- **Already in the Mobility Database (not new coverage):** BAS.MY Johor Bahru /
+  Causeway Link (`data.gov.my` `mybas-johor`); Subterráneos de Buenos Aires and
+  Trenes Argentinos (`cdn.buenosaires.gob.ar`, mdb 6 and 647); Metrofor,
+  Fortaleza (`metrofor.ce.gov.br`, mdb 2367); ESHOT İzmir bus
+  (`eshot.gov.tr`, mdb 1823); TransJakarta (`gtfs.transjakarta.co.id`, mdb 1909);
+  SNCFT, Tunisia national rail (`gps.sncft.com.tn`, mdb 1016); Hyderabad MMTS
+  (`data.telangana.gov.in`, operator carried at mdb 921); DTPM Santiago / Red
+  Metropolitana de Movilidad (mdb 987 and 2145); SIMUR Bogotá / Transmilenio
+  feeders (mdb 2012, and its published file was a stale 2024 dataset); Mexico
+  City's STC and SEMOVI systems (`datos.cdmx.gob.mx`, carried at mdb 1099 and
+  1830); Kochi Metro / KMRL (mdb 1209); and the Jalisco and Puerto Vallarta Mi
+  Transporte feeds (`datos.jalisco.gob.mx`, mdb 1925, 1926, 2034, 2366, whose
+  files are also frozen at 2021 to 2022). These are official and open, but the
+  catalog already carries the operator, so adding them would not demonstrate new
+  coverage.
+- **Official and current, but no explicit open license (fail closed):** Mwasalat
+  (Oman National Transport Company) serves a live, current national feed at
+  `avl.mwasalat.om`, and Mwasalat is the state transport company, but no reuse
+  license is published for that feed. Córdoba, Argentina lists a "datos abiertos"
+  GTFS at `gobiernoabierto.cordoba.gob.ar`, but the page states no license, its
+  resource was last updated in March 2023, and no direct current download
+  resolves from it. Puerto Rico's ATI publishes GTFS under custom terms that
+  reserve rights rather than an open license.
+- **Community- or aggregator-hosted (partnership-gated, not catalog curation):**
+  the African Atlas feeds for Abidjan, Accra, Douala, and Nairobi are Digital
+  Transport for Africa and university survey data on GitLab or GitHub under ODbL;
+  Nicaragua's Managua and Estelí feeds come from the MapaNica community mapping
+  project (`datos.mapanica.net`); Phnom Penh City Bus is served from a private
+  app host (`citybus.kroma.asia`); and the Ubud shuttle, Bogor angkot, Kochi
+  community transport, Patras proastiakos, and Manila feeds are personal GitHub
+  or datahub.io exports. None is a first-party official source, so all wait for
+  the roadmap's partnership-gated phase.
+- **Not first-party, or behind a wall:** SPTrans São Paulo sits behind a
+  developer registration wall; the "LTA Singapore" candidate was an app
+  aggregator's mirror (`rushowl.app`), not the registration-walled official LTA
+  DataMall; SãoPaulo's Transpiedade, Argentina's Mar Chiquita, and a Venezuela
+  feed are private operator sites with no open license; and the Flixbus and
+  Greyhound feeds are private intercity operators.
+- **Technical holds:** Hong Kong's official `static.data.gov.hk` feed is open,
+  but it stays a known technical canary (no ISO 3166-2 subdivision, and
+  frequency-based schedules whose freshness handling is still under review, per
+  the note in this file). Taiwan's TDX feed for Taipei Metro
+  (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
+  does not ingest.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

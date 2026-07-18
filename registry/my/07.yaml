@@ -1,0 +1,34 @@
+# Pulau Pinang (MY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: rapidpenang-bus
+    name: Rapid Penang
+    country: MY
+    subdivision_code: MY-07
+    subdivision_name: Pulau Pinang
+    is_official: true
+    organization_id: prasarana
+    feed_variant: Penang bus
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/prasarana?category=rapid-bus-penang
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit Prasarana Malaysia Berhad
+      (Rapid Bus).
+    operating_note: >-
+      Prasarana's Rapid Penang bus network on Penang island and the Seberang
+      Perai mainland; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Prasarana Malaysia Berhad (Rapid Bus), published as open data through
+        data.gov.my, the Government of Malaysia's official open data platform,
+        under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
