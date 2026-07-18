@@ -28,6 +28,15 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add a second 21-record European depth wave: twelve more Great Britain
+  Passenger-platform operators, five Baden-Württemberg network feeds from
+  NVBW's portal, three French networks including the Yeu-Continent ferry and
+  a combined realtime stream for Cap Cotentin, and Trenitalia's regional rail
+  resource from Regione Toscana. The reviewed cohort reaches 63 records in 13
+  countries with Great Britain at 36.5% of the cohort; new rejections
+  (unstated licenses, uncovered hosts, an unreachable National Access Point
+  listing, ODbL with unread special conditions) are documented alongside the
+  first wave's.
 - Add 27 source-, reuse-, and identity-reviewed European depth-wave records
   from the named review queues: ten Great Britain operators on the Passenger
   open-data platform, seven in Spain, four in Italy, four in Germany (a new

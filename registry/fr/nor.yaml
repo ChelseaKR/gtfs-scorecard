@@ -32,6 +32,32 @@ agencies:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
       vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
       service_alerts: https://www.data.gouv.fr/api/1/datasets/r/622b4abe-e029-4a6b-bd59-ef849e9b005f
+  - id: cap-cotentin
+    name: Réseau urbain Cap Cotentin
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    mdb_id: "1840"
+    static_gtfs_url: https://www.data.gouv.fr/fr/datasets/r/2e97c9b3-a59f-42dd-9b9e-a232fa771f21
+    license_note: >-
+      Licence Ouverte 2.0; published by the Communauté d'Agglomération du
+      Cotentin through France's National Access Point. Derived measurements by
+      GTFS Scorecard.
+    # The publisher exposes one combined GTFS-Realtime stream for all kinds.
+    rt_urls:
+      trip_updates: https://pysae.com/api/v2/groups/transdev-cotentin/gtfs-rt
+      vehicle_positions: https://pysae.com/api/v2/groups/transdev-cotentin/gtfs-rt
+      service_alerts: https://pysae.com/api/v2/groups/transdev-cotentin/gtfs-rt
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-en-temps-reel-des-bus-et-autocars-circulant-sur-le-reseau-cap-cotentin
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'Agglomération du Cotentin.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
   - id: transmanche-ferries
     name: Transmanche Ferries
     country: FR
