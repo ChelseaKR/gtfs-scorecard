@@ -10,6 +10,8 @@ agencies:
     subdivision_name: Pohjois-Karjala
     mdb_id: "1227"
     is_official: true
+    organization_id: waltti
+    feed_variant: joensuu
     static_gtfs_url: https://tvv.fra1.digitaloceanspaces.com/207.zip
     license_note: >-
       CC BY 4.0; credit Waltti, link the licence, and indicate any changes made
@@ -17,11 +19,12 @@ agencies:
     reuse_evidence:
       decision: approved
       source_kind: provider
-      provider_source_url: https://opendata.waltti.fi/
+      provider_source_url: https://opendata.waltti.fi/docs
       terms_url: https://opendata.waltti.fi/docs
       scope: [gtfs_schedule]
       attribution: >-
-        Waltti Solutions (TVV) and the City of Joensuu.
+        Source: Waltti open data (Joensuu), licensed CC BY 4.0; indicate
+        changes.
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true

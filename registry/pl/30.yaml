@@ -4,25 +4,29 @@
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
   - id: ztm-poznan
-    name: ZTM Poznań
+    name: Zarząd Transportu Miejskiego w Poznaniu
     country: PL
     subdivision_code: PL-30
     subdivision_name: Wielkopolskie
     mdb_id: "982"
+    is_official: false
     static_gtfs_url: https://www.ztm.poznan.pl/pl/dla-deweloperow/getGTFSFile
     license_note: >-
-      The provider's public-sector reuse terms require naming the source,
-      stating the data's last-update date, and noting any processing applied
-      to the data.
+      ZTM Poznań's developer terms make the data free to reuse without prior
+      application; name the source, state the last data update, and note that
+      the data was processed.
+    operating_note: >-
+      This is a rolling short-horizon export, currently about one to two
+      weeks of service per file; routine refreshes are expected.
     reuse_evidence:
       decision: approved
-      source_kind: official_portal
+      source_kind: provider
       provider_source_url: https://www.ztm.poznan.pl/otwarte-dane/gtfsfiles/
       terms_url: https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/
       scope: [gtfs_schedule]
       attribution: >-
-        Zarząd Transportu Miejskiego w Poznaniu; include the data's
-        last-update date and note any processing.
+        Source: Zarząd Transportu Miejskiego w Poznaniu; include the last
+        data update date and note processing.
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true

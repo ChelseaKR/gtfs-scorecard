@@ -4,23 +4,28 @@
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
   - id: zditm-szczecin
-    name: ZDiTM Szczecin
+    name: Zarząd Dróg i Transportu Miejskiego w Szczecinie
     country: PL
     subdivision_code: PL-32
     subdivision_name: Zachodniopomorskie
     mdb_id: "981"
+    is_official: false
     static_gtfs_url: https://www.zditm.szczecin.pl/storage/gtfs/gtfs.zip
+    rt_urls:
+      trip_updates: https://www.zditm.szczecin.pl/storage/gtfs/gtfs-rt-trips.pb
+      vehicle_positions: https://www.zditm.szczecin.pl/storage/gtfs/gtfs-rt-vehicles.pb
+      service_alerts: https://www.zditm.szczecin.pl/storage/gtfs/gtfs-rt-alerts.pb
     license_note: >-
-      The operator's developer page states CC0 1.0 for the feed; attribution
-      is not legally required, but GTFS Scorecard credits ZDiTM as the
-      source.
+      CC0 1.0 per ZDiTM's developer GTFS page, for use in any purpose without
+      prior notice; attribution is not legally required, but GTFS Scorecard
+      credits ZDiTM Szczecin as the source.
     reuse_evidence:
       decision: approved
-      source_kind: official_portal
-      provider_source_url: https://www.zditm.szczecin.pl/pl/zditm/dla-programistow
-      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      source_kind: provider
+      provider_source_url: https://www.zditm.szczecin.pl/pl/zditm/dla-programistow/gtfs
+      terms_url: https://www.zditm.szczecin.pl/pl/zditm/dla-programistow/gtfs
       scope: [gtfs_schedule]
-      attribution: Zarząd Dróg i Transportu Miejskiego w Szczecinie.
+      attribution: Zarząd Dróg i Transportu Miejskiego w Szczecinie (ZDiTM).
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true

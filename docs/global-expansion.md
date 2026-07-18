@@ -31,17 +31,18 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the third reviewed depth wave
-contains 1,286 feed records: 1,139 in the United States, three in Canada, two
-in Australia, thirty-four in Great Britain, twenty-eight in France, nineteen
-in Italy, sixteen in Spain, thirteen in Finland, nine in Germany, six in
-Ireland, five in Poland, two each in Czechia and Portugal, one each in
-Belgium, Switzerland, Denmark, and Estonia, and one each in Japan, Malaysia,
-New Zealand, and Uruguay. The public scored count is a separate, smaller
-number reported by the status API; configured and published feed records are
-not interchangeable.
+The configured registry snapshot after the third depth wave and the parallel
+Nordic-Baltic and Central Europe waves contains 1,296 feed records: 1,139 in
+the United States, three in Canada, two in Australia, thirty-four in Great
+Britain, twenty-eight in France, nineteen in Italy, sixteen in Spain,
+fourteen in Finland, thirteen in Germany, six in Ireland, five in Poland,
+two each in Switzerland, Czechia, Estonia, and Portugal, one each in
+Austria, Belgium, Denmark, Latvia, and Lithuania, and one each in Japan,
+Malaysia, New Zealand, and Uruguay. The public scored count is a separate,
+smaller number reported by the status API; configured and published feed
+records are not interchangeable.
 
-The 138 records whose primary catalog location is in 14 European countries are
+The 148 records whose primary catalog location is in 17 European countries are
 individually reviewed. They cover bus, tram, metro, light rail, regional rail,
 ferry, national multimodal, and GTFS-Flex demand-responsive service. The
 country and mode controls prove that the data model and interface can carry
@@ -174,9 +175,12 @@ eleven more Passenger-platform operators, nine in Spain with one in Portugal,
 twelve in Finland (the Waltti city networks, Föli Turku, and Tampere), five
 Irish operators from the National Transport Authority's per-operator files,
 four in Poland, and Czechia's first two records (PID Prague and IDS JMK
-Brno). That produces 138 reviewed feed records across 14 countries, with
-Great Britain the largest country at 24.6%. Country breadth and balance pass
-with room, and the 250-record threshold still fails by design. Freshness, translation,
+Brno). Eleven of the wave's candidates turned out to duplicate records the
+parallel Nordic-Baltic and Central Europe waves merged the same evening; the
+duplicates were dropped in favor of the merged records. Together the waves
+produce 148 reviewed feed records across 17 countries, with Great Britain
+the largest country at 23%. Country breadth and balance pass with room, and
+the 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
 inferred from the registry. The source rows are public so a consumer can audit
 what “reviewed” means.
@@ -221,6 +225,25 @@ source; Luxembourg's published archives are expired; and community rebuilds
 on third-party hosts (a Katowice GitHub proxy, a Bydgoszcz community build,
 Estonian Remix mirrors) were refused on identity grounds even where their
 stated licenses were open. Norway's national aggregate stays size-deferred.
+
+A same-day Nordic-Baltic wave adds eleven reviewed records: eight in Finland
+(HSL and seven Waltti city feeds, all CC BY 4.0 per the providers' own
+open-data statements), Estonia's national register aggregate, Latvia's ATD
+national aggregate (CC0 per data.gov.lv), and Vilnius (JUDU's published
+data-use terms). That brings the total to 74 reviewed feed records across 15
+countries, with Great Britain the largest country at about 31%. Candidates
+whose reuse terms could not be verified on a live provider or official-portal
+page (Rīgas Satiksme, Kaunas, Klaipėda, and ELRON) stayed out, and Norway's
+national aggregate remains deferred under the archive guard described below.
+The 250-record threshold still fails by design.
+
+A same-day Central Europe wave adds ten more reviewed records: Wiener Linien
+(CC BY 4.0 on data.gv.at), the Swiss national timetable under the ODMCH
+terms, PID Prague and IDS JMK (CC-BY per the providers' and Brno's portals),
+the two gtfs.de national aggregates plus VRN and VRS under their stated
+German data licences, and Poznań and Szczecin under ZTM's developer terms
+and CC0. That brings the cohort to 84 reviewed feed records across 17
+countries, with Great Britain the largest country at about 27%.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the

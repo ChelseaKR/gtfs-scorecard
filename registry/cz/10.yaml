@@ -1,28 +1,34 @@
-# Praha, Hlavní město (CZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+# Praha (CZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
 #
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
-  - id: pid-praha
+  - id: pid-prague
     name: Pražská integrovaná doprava (PID)
     country: CZ
     subdivision_code: CZ-10
-    subdivision_name: "Praha, Hlavní město"
+    subdivision_name: Praha, Hlavní město
     mdb_id: "767"
-    static_gtfs_url: http://data.pid.cz/PID_GTFS.zip
+    is_official: false
+    static_gtfs_url: https://data.pid.cz/PID_GTFS.zip
     license_note: >-
-      The PID open data page states CC BY for the feed; reuse must cite the
-      author and note any modifications.
+      CC-BY per the PID open data page for data downloaded directly from the
+      site; credit the author and note any changes made. The data is provided
+      as a preview without guarantee.
     operating_note: >-
-      One integrated-system feed covering Prague and its surrounding region;
-      counted as one feed record, not a distinct-agency count.
+      One integrated-system aggregate covering Prague city transit and PID
+      regional lines; counted as one feed record, not a distinct-agency
+      count. The export is a rolling fourteen-day window updated daily, so
+      routine refreshes are expected.
     reuse_evidence:
       decision: approved
-      source_kind: official_portal
+      source_kind: provider
       provider_source_url: https://pid.cz/o-systemu/opendata/
       terms_url: https://pid.cz/o-systemu/opendata/
       scope: [gtfs_schedule]
-      attribution: Pražská integrovaná doprava (PID).
+      attribution: >-
+        Pražská integrovaná doprava (PID/ROPID); note any changes made to the
+        data.
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true

@@ -1,0 +1,58 @@
+# Germany (DE) national aggregates — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: gtfs-de-local-transit
+    name: Germany local transit aggregate (gtfs.de)
+    country: DE
+    mdb_id: "1090"
+    organization_id: gtfs-de
+    feed_variant: Local transit (nv_free)
+    is_official: false
+    static_gtfs_url: https://download.gtfs.de/germany/nv_free/latest.zip
+    license_note: >-
+      CC BY 4.0 per the gtfs.de feeds page, which links the license deed;
+      credit gtfs.de as the source. The free base feeds are generated daily
+      from DELFI e.V. data.
+    operating_note: >-
+      One nationwide multi-operator aggregate of German local transit
+      (U-Bahn, Stadtbahn, tram, ferry, and bus across the Verkehrsverbünde);
+      counted as one feed record, not a distinct-agency count. The free feed
+      covers a rolling 30-day horizon.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://gtfs.de/de/feeds/de_nv/
+      terms_url: https://gtfs.de/de/feeds/
+      scope: [gtfs_schedule]
+      attribution: "Source: gtfs.de, based on DELFI e.V. data."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: gtfs-de-regional-rail
+    name: Germany regional rail aggregate (gtfs.de)
+    country: DE
+    mdb_id: "1089"
+    organization_id: gtfs-de
+    feed_variant: Regional rail (rv_free)
+    is_official: false
+    static_gtfs_url: https://download.gtfs.de/germany/rv_free/latest.zip
+    license_note: >-
+      CC BY 4.0 per the gtfs.de feeds page, which links the license deed;
+      credit gtfs.de as the source. The free base feeds are generated daily
+      from DELFI e.V. data.
+    operating_note: >-
+      One nationwide regional-rail aggregate (RB, RE, IRE, S-Bahn, and
+      non-federal railways); counted as one feed record, not a
+      distinct-agency count. The free feed covers a rolling 30-day horizon.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://gtfs.de/de/feeds/de_rv/
+      terms_url: https://gtfs.de/de/feeds/
+      scope: [gtfs_schedule]
+      attribution: "Source: gtfs.de, based on DELFI e.V. data."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

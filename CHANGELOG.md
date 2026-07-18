@@ -32,7 +32,7 @@ the declared public surface).
   queue, reviewed in parallel: twenty in France, twelve each in Italy and
   Finland, eleven in Great Britain, nine in Spain, five in Ireland, four in
   Poland, one in Portugal, and Czechia's first two records. The reviewed
-  cohort reaches 138 records in 14 countries with Great Britain at 24.6%.
+  cohort reaches 148 records in 17 countries alongside the parallel Nordic-Baltic and Central Europe waves, with Great Britain at 23%.
   Documented rejections include seventeen French ODbL datasets, size-capped
   archives in Austria, Portugal, and Finland, Belgium's source-gated
   operators, Estonia's broken register endpoint, and community rebuilds on

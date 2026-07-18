@@ -208,7 +208,7 @@ current deployment status.
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: the manifest-backed [`registry`](registry/README.md) now
 carries more than 1,280 curated feed records, mostly across the US and Canada,
-with a 138-record reviewed European cohort across 14 countries.
+with a 148-record reviewed European cohort across 17 countries.
 It now includes a geographically diverse reviewed canary cohort, scored daily
 (a 2026-07 dedupe pass removed ~350 records that duplicated an already-listed
 feed).
