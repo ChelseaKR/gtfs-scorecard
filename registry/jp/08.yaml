@@ -1,0 +1,35 @@
+# Ibaraki (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: yuki-city-loop-bus
+    name: Yuki City Loop Bus (結城市巡回バス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yukicity/feeds/junkaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Yuki City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Yuki City's circulating community bus (巡回バス) in western Ibaraki; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yukicity.junkaibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yuki City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
