@@ -419,6 +419,60 @@ The review rejected more than it kept, and the rejections are the point:
   through third-party aggregator hosts (opentrans.it, busmaps.jp) rather than a
   first-party or national-portal source.
 
+## Untracked US small-agency review (2026-07-18)
+
+A short pass over untracked US feeds that were listed as open and active in the
+Mobility Database catalog, prioritizing California. Each candidate was
+mechanically preflighted: the source zip was downloaded, confirmed to be valid
+GTFS with a current (non-expired) service calendar, and the archive deleted; the
+subdivision was normalized to its ISO 3166-2 code; and the reuse license was
+reviewed at the publisher before any approved reuse_evidence record was written.
+The gate was fail-closed — a candidate had to show both a live current source and
+a confirmable open license to be added. Of the eight California candidates only
+one cleared it.
+
+One record was added:
+
+- **South County Transit Link (SCT/Link)** — California (`US-CA`), mdb 2203. The
+  Galt-to-Sacramento service, hosted by Sacramento Regional Transit District
+  (SacRT) at `iportal.sacrt.com`. The catalog's `direct_download` pointed at a
+  stale path (`.../gtfs/SCTLink/southcountytransitlink-ca-us.zip`, 404); the live
+  canonical source is `https://iportal.sacrt.com/GTFS/SCTLink/google_transit.zip`,
+  verified as valid GTFS with service through 2026-12-31. SacRT's transit data
+  portal (`sacrt.com/transit-data-portal`) grants non-exclusive rights to use,
+  reproduce, and redistribute the data, reviewed for the reuse_evidence block. It
+  is a second, agency-direct feed record for a service already carried through a
+  Trillium mirror (`south-county-transit-link`, mdb 817).
+
+Seven candidates were dropped, and the reasons are the point:
+
+- **Cal-ITP host decommissioned, feed long expired:** Arvin Transit (mdb 2233),
+  Camarillo Area Transit (2234), San Juan Capistrano Free Weekend Trolley (2235),
+  Taft Area Transit (2236), and West Berkeley Shuttle (2238) were all given as
+  `gtfs.calitp.org/production/*GTFS.zip`. That host now 301-redirects every path
+  to the Caltrans DDS index (`gtfs.dds.dot.ca.gov`), the same migration already
+  recorded for other California feeds in this repo. Only Arvin survived the
+  migration to the DDS index, and its DDS copy has expired (service ended
+  2025-05-31). The Mobility Database `latest` mirrors confirm abandonment: Arvin
+  ends 2025-05-31, and Camarillo, San Juan Capistrano, Taft, and West Berkeley
+  are frozen at 2021–2022 calendars. All five agencies remain carried through
+  their live Trillium mirrors, so no coverage is lost.
+- **Source URL unreachable, no open license:** Baldwin Park Transit (mdb 2247).
+  Its only published source, `baldwinpark.tectransit.com`, no longer resolves
+  (NXDOMAIN); Transitland reports a fetch error on the same URL, and the city
+  page states no data license. The MDB `latest` mirror still shows a 2026
+  calendar from the last successful crawl, but a dead source cannot be fetched
+  daily. The agency is already carried through a Trillium mirror
+  (`baldwin-park-transit`, mdb 219).
+- **Cannot confirm a live feed:** Glendale Beeline (mdb 3177). The city host
+  (`glendaleca.gov/home/showdocument?id=29549`) returns HTTP 403 to every
+  automated client, and no MDB `latest` mirror is archived, so the source could
+  not be verified. Glendale Beeline is already carried through a transitfeeds
+  mirror (`glendale-beeline`, mdb 1280).
+
+The optional other-state candidates (one each in Colorado, Idaho, Georgia,
+Hawaii, and Washington) were not pursued in this pass: no source URLs were on
+hand and the review deliberately kept its scope to the named California list.
 ## Japan gtfs-data.jp wave
 
 A substantial wave curated directly from Japan's national GTFS Data Repository
