@@ -1561,8 +1561,12 @@ function setupOverview(agencies, total, summary) {
       if (back) {
         back.addEventListener("click", () => {
           renderWorld();
+          // SVG <path> elements are SVGElement, not HTMLElement, so returning
+          // focus to the country the user drilled from must test SVGElement
+          // (as the drill-in focus below does). Testing HTMLElement here was
+          // dead code that dropped keyboard focus to <body> on every Back.
           const world = host.querySelector(`path[data-map-country="${cc}"]`);
-          if (world instanceof HTMLElement) world.focus();
+          if (world instanceof SVGElement) world.focus();
         });
       }
       syncLocationUI();

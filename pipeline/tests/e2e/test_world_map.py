@@ -28,12 +28,14 @@ def test_world_map_mounts_shades_and_filters(page: Page, app_url: str) -> None:
     assert "expired" in label
     code = first.get_attribute("data-map-country") or ""
     first.click()
-    assert first.get_attribute("aria-pressed") == "true"
+    # Selecting a country path filters the directory, marking its chip pressed —
+    # whether or not the country also drills into its subdivisions. The chip is
+    # outside #world-map, so a drill-down re-render never detaches it.
     chip = page.locator(f'.location-country[data-country="{code}"]')
     assert chip.get_attribute("aria-pressed") == "true"
-    # Clicking again clears the filter, mirroring chip behavior.
-    first.click()
-    assert first.get_attribute("aria-pressed") == "false"
+    # Clearing via the chip returns the filter to all.
+    chip.click()
+    assert chip.get_attribute("aria-pressed") == "false"
     # The legend restates the shading in text.
     assert "Share of feeds expired" in (page.locator("#world-map .map-legend").inner_text())
 
@@ -84,7 +86,9 @@ def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None
     ontario.click()
     assert ontario.get_attribute("aria-pressed") == "true"
 
-    # Back returns to the world view.
+    # Back returns to the world view and restores keyboard focus to the country
+    # the user drilled from (WCAG 2.4.3 focus order), not to <body>.
     page.locator("#world-map [data-map-back]").click()
     page.wait_for_selector('#world-map path[data-map-country="CA"]')
     assert page.locator("#world-map [data-map-back]").count() == 0
+    assert page.evaluate("() => document.activeElement?.getAttribute('data-map-country')") == "CA"
