@@ -1,4 +1,4 @@
-# ADR 0039: The beta gate stays Europe-scoped until a consumer needs a region
+# ADR 0040: The beta gate stays Europe-scoped until a consumer needs a region
 
 **Status:** Accepted (2026-07-18)
 

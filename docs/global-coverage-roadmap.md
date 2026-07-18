@@ -210,12 +210,12 @@ These unblock more than one phase and are sequenced by first need.
   every current target without it. Sydney (Transport for NSW) stays deferred on
   its registration wall, not on size.
 - **Beta-gate generalization decision (decided,
-  [ADR 0039](decisions/0039-beta-gate-europe-scoped.md)).** The European beta
+  [ADR 0040](decisions/0040-beta-gate-europe-scoped.md)).** The European beta
   gate is Europe-coded by design (a closed country set and thresholds chosen for
   that market's addressable feeds). The question was whether the gate becomes a
   parameterized contract (region, country set, thresholds, denominators)
   evaluated by the same executable evidence, or whether other regions stay
-  ordinary reviewed coverage with no beta label. ADR 0039 is the decision of
+  ordinary reviewed coverage with no beta label. ADR 0040 is the decision of
   record: the gate stays Europe-scoped and is not parameterized now; other
   regions remain ordinary reviewed coverage with their own disclosed
   denominators and no beta label until a named consumer asks for a specific
