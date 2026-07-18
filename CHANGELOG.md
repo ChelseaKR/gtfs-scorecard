@@ -28,6 +28,18 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Grow reviewed coverage by 95 records to 1,518 through a Japanese deepening and
+  a seventh European wave. Two more passes over the national gtfs-data.jp
+  repository take Japan from 65 to 145 records, going deeper into its 40
+  prefectures with more first-party private bus and rail operators under CC BY
+  4.0, CC0, and CC BY 2.1 JP. The seventh European wave adds 15 non-UK-led
+  records and takes the European cohort from 185 to 200 across 22 countries:
+  Norway joins with eleven county-authority Entur feeds under NLOD 2.0, Slovakia
+  with Bratislava, and Latvia and Plzeň deepen countries already present. The
+  United Kingdom share fell to 17% and France, the largest single country, to
+  20.5%, both well under the 40% concentration limit. Every record carries a live
+  license check, a current-calendar preflight, and a closed reuse-evidence block;
+  rejections are documented in `docs/feeds.md`.
 - Grow reviewed coverage by 64 records to 1,423 across three more parallel waves.
   A deeper Japanese pass over the national gtfs-data.jp repository adds 38
   first-party records and takes Japan from 27 to 65 across 40 prefectures, now
