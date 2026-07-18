@@ -120,7 +120,7 @@ existing surface without changing a grade or adding a service:
   fields, a visible coverage limitation, mode-aware language, the ungraded
   ferry profile, and the auditable European beta gate.
 - **Shipped 2026-07-17:** the reviewed European depth wave (27 records from
-  the Spain, France, Great Britain, Germany, and Italy queues; the cohort is
+  the Spain, France, United Kingdom, Germany, and Italy queues; the cohort is
   now 42 records in 13 countries, with rejections documented), and the
   interface-localization readiness layer (app string catalog, `en-XA`
   pseudolocale preview, right-to-left browser check, hardcoded-string and

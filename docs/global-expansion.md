@@ -33,8 +33,8 @@ not turn two European canaries into a representative dataset.
 
 The configured registry snapshot after the third depth wave and the parallel
 Nordic-Baltic and Central Europe waves contains 1,296 feed records: 1,139 in
-the United States, three in Canada, two in Australia, thirty-four in Great
-Britain, twenty-eight in France, nineteen in Italy, sixteen in Spain,
+the United States, three in Canada, two in Australia, thirty-four in the
+United Kingdom, twenty-eight in France, nineteen in Italy, sixteen in Spain,
 fourteen in Finland, thirteen in Germany, six in Ireland, five in Poland,
 two each in Switzerland, Czechia, Estonia, and Portugal, one each in
 Austria, Belgium, Denmark, Latvia, and Lithuania, and one each in Japan,
@@ -159,7 +159,7 @@ scorecards.
 
 The first reviewed European cohort contained six feed records across France,
 Ireland, and Italy. The nine-record breadth wave added one record in each of
-Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain, Poland,
+Belgium, Switzerland, Denmark, Estonia, Spain, Finland, the United Kingdom, Poland,
 and Portugal. The 2026-07-17 depth wave then worked the named review queues and
 added 27 records: ten Great Britain operators on the Passenger open-data
 platform, seven in Spain, four in Italy, four in Germany, and two in France.
@@ -178,7 +178,7 @@ four in Poland, and Czechia's first two records (PID Prague and IDS JMK
 Brno). Eleven of the wave's candidates turned out to duplicate records the
 parallel Nordic-Baltic and Central Europe waves merged the same evening; the
 duplicates were dropped in favor of the merged records. Together the waves
-produce 148 reviewed feed records across 17 countries, with Great Britain
+produce 148 reviewed feed records across 17 countries, with the United Kingdom
 the largest country at 23%. Country breadth and balance pass with room, and
 the 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
@@ -231,7 +231,7 @@ A same-day Nordic-Baltic wave adds eleven reviewed records: eight in Finland
 open-data statements), Estonia's national register aggregate, Latvia's ATD
 national aggregate (CC0 per data.gov.lv), and Vilnius (JUDU's published
 data-use terms). That brings the total to 74 reviewed feed records across 15
-countries, with Great Britain the largest country at about 31%. Candidates
+countries, with the United Kingdom the largest country at about 31%. Candidates
 whose reuse terms could not be verified on a live provider or official-portal
 page (Rīgas Satiksme, Kaunas, Klaipėda, and ELRON) stayed out, and Norway's
 national aggregate remains deferred under the archive guard described below.
@@ -243,7 +243,7 @@ terms, PID Prague and IDS JMK (CC-BY per the providers' and Brno's portals),
 the two gtfs.de national aggregates plus VRN and VRS under their stated
 German data licences, and Poznań and Szczecin under ZTM's developer terms
 and CC0. That brings the cohort to 84 reviewed feed records across 17
-countries, with Great Britain the largest country at about 27%.
+countries, with the United Kingdom the largest country at about 27%.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
