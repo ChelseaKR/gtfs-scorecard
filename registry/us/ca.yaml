@@ -1688,3 +1688,29 @@ agencies:
     static_gtfs_url: http://www.yolobus.com/GTFS/google_transit.zip
     mdb_id: 1295
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  # Curated 2026-07-18 from the untracked-US review. SacRT-hosted canonical feed
+  # for South County Transit (SCT/Link), the Galt-to-Sacramento service. Distinct
+  # from the Trillium mirror already tracked as south-county-transit-link
+  # (mdb 817). The SacRT source was verified live with a current calendar (service
+  # through 2026-12-31), and SacRT's transit data portal states an explicit reuse
+  # grant reviewed for the reuse_evidence block below.
+  - id: south-county-transit-link-2203
+    name: South County Transit Link
+    subdivision_code: US-CA
+    subdivision_name: California
+    static_gtfs_url: https://iportal.sacrt.com/GTFS/SCTLink/google_transit.zip
+    mdb_id: 2203
+    license_note: >-
+      Sacramento Regional Transit District (SacRT) transit data portal grants
+      non-exclusive rights to use, reproduce, and redistribute the data.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.sacrt.com/transit-data-portal/
+      terms_url: https://www.sacrt.com/transit-data-portal/
+      scope: [gtfs_schedule]
+      attribution: Sacramento Regional Transit District (SacRT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
