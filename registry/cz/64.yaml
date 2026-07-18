@@ -1,0 +1,28 @@
+# Jihomoravský kraj (CZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ids-jmk-brno
+    name: Integrovaný dopravní systém Jihomoravského kraje (IDS JMK)
+    country: CZ
+    subdivision_code: CZ-64
+    subdivision_name: Jihomoravský kraj
+    mdb_id: "2155"
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/379d2e9a7907460c8ca7fda1f3e84328/data
+    license_note: >-
+      CC BY per the dataset item on Brno's open data portal.
+    operating_note: >-
+      One integrated-system aggregate for the South Moravian Region; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.brno.cz/datasets/379d2e9a7907460c8ca7fda1f3e84328/about
+      terms_url: https://data.brno.cz/datasets/379d2e9a7907460c8ca7fda1f3e84328/about
+      scope: [gtfs_schedule]
+      attribution: Data Brno and IDS JMK.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

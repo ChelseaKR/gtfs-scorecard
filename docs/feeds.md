@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,150 feed records, still mostly in
+reference; the full registry has more than 1,280 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -261,6 +261,42 @@ These 21 records continue the same queues, checked the same way on
 - **Italy (one record)**: Trenitalia's regional rail resource within Regione
   Toscana's multi-file open dataset (Creative Commons Attribution), named as
   one resource rather than the whole regional dataset.
+
+## Third reviewed European depth wave
+
+These 75 records came from working every remaining non-Swedish queue in
+parallel on 2026-07-17: mechanical preflight of 223 candidates ran alongside
+per-country reuse-terms review, and only the intersection was onboarded.
+Rejection reasons are recorded in
+[global-expansion.md](global-expansion.md).
+
+- **France (twenty records)**: Licence Ouverte networks across ten regions,
+  from CTS Strasbourg and Stan Nancy to Lignes d'Azur Nice, Réseau Mistral
+  Toulon, the fourteen-network Aix-Marseille-Provence referential, and
+  Eurostar's international rail feed. The review resolved current canonical
+  URLs where the catalog held stale ones; seventeen ODbL datasets and the
+  custom-licensed Île-de-France Mobilités aggregate were rejected.
+- **Italy (twelve records)**: Trenord, ANM Napoli, ACTV Venezia's road and
+  vaporetto networks, Trentino Trasporti, SGM Lecce, Toremar's island
+  ferries, AMT Genova through Genoa's municipal record, and four Sardinian
+  records tied to the regional CC BY 4.0 catalog.
+- **Great Britain (eleven records)**: further Passenger-platform operators
+  from Borders Buses to Thames Valley Buses, each page and copyright line
+  verified.
+- **Finland (twelve records)**: the Waltti city networks plus Föli Turku and
+  Tampere, all CC BY 4.0; identity review corrected one mislabeled regional
+  package (Lahti, not Salo) and one wrong region code.
+- **Spain (nine records) and Portugal (one)**: TITSA Tenerife, EMT Madrid,
+  both TRAM Barcelona concessions, Metro de Málaga through the National
+  Access Point's public record, Bizkaibus, EMT Fuenlabrada, the Generalitat
+  de Catalunya interurban aggregate, and Guimabus in Portugal.
+- **Ireland (five records)**: the National Transport Authority's per-operator
+  CC BY 4.0 files for Bus Éireann, Irish Rail, Luas, Go-Ahead Ireland, and
+  Aircoach; the national aggregate is deliberately not listed because it
+  duplicates them.
+- **Poland (four records) and Czechia (two)**: Szczecin (CC0), Poznań, SKM
+  Trójmiasto, ZKM Gdynia, and the country's first Czech records, PID Prague
+  and IDS JMK Brno.
 
 ## Reviewed ferry cohort
 

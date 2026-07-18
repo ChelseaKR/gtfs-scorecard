@@ -1,0 +1,26 @@
+# Braga (PT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: guimabus
+    name: Guimabus (Guimarães)
+    country: PT
+    subdivision_code: PT-03
+    subdivision_name: Braga
+    mdb_id: "2838"
+    is_official: true
+    static_gtfs_url: https://map.mobility.ubiwhere.com/dataset/ee6d46e4-9f19-4f4a-ab93-1a3cd69df349/resource/08f1ee6c-2d3f-4fb3-a861-5d6fb347a6d4/download/gtfs_gui.zip
+    license_note: >-
+      CC BY through the municipality's mobility open data portal; credit the
+      Município de Guimarães.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://map.mobility.ubiwhere.com/dataset/operador-de-sptp-de-guimaraes
+      terms_url: https://map.mobility.ubiwhere.com/dataset/operador-de-sptp-de-guimaraes
+      scope: [gtfs_schedule]
+      attribution: Município de Guimarães (Guimabus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

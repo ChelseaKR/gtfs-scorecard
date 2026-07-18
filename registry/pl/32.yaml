@@ -1,0 +1,26 @@
+# Zachodniopomorskie (PL) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: zditm-szczecin
+    name: ZDiTM Szczecin
+    country: PL
+    subdivision_code: PL-32
+    subdivision_name: Zachodniopomorskie
+    mdb_id: "981"
+    static_gtfs_url: https://www.zditm.szczecin.pl/storage/gtfs/gtfs.zip
+    license_note: >-
+      The operator's developer page states CC0 1.0 for the feed; attribution
+      is not legally required, but GTFS Scorecard credits ZDiTM as the
+      source.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.zditm.szczecin.pl/pl/zditm/dla-programistow
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: Zarząd Dróg i Transportu Miejskiego w Szczecinie.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

@@ -1,0 +1,92 @@
+# Provence-Alpes-Côte-d’Azur (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: lignes-dazur-nice
+    name: Lignes d'Azur (Nice)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    mdb_id: "845"
+    static_gtfs_url: https://chouette.enroute.mobi/api/v1/datas/OpendataRLA/gtfs.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Métropole Nice Côte d'Azur
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-statiques-et-dynamiques-du-reseau-de-transport-lignes-dazur
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Métropole Nice Côte d'Azur.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: reseau-mistral-toulon
+    name: Réseau Mistral (Toulon)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    mdb_id: "1820"
+    static_gtfs_url: https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rd-toulon/exports/gtfs-complet.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Métropole Toulon Provence
+      Méditerranée through France's National Access Point. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-de-la-metropole-toulon-provence-mediterranee
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Métropole Toulon Provence Méditerranée.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: orizo-grand-avignon
+    name: Orizo (Grand Avignon)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    mdb_id: "1878"
+    static_gtfs_url: https://api.maas-fr.cityway.fr/dataflow/offre-tc/download?provider=ORIZO&dataFormat=GTFS&dataProfil=OPENDATA
+    license_note: >-
+      Licence Ouverte 2.0; published by Grand Avignon through France's
+      National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-orizo-grand-avignon
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Grand Avignon.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: aix-marseille-provence
+    name: Métropole Aix-Marseille-Provence networks
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    mdb_id: "2133"
+    static_gtfs_url: https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp?apiKey=60327e505a214c77303f52206f11483069257343
+    license_note: >-
+      Licence Ouverte 2.0; published by the Métropole Aix-Marseille-Provence
+      through France's National Access Point. The download URL carries the
+      publisher's public open-data key as published on the National Access
+      Point. Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One metropolitan referential covering fourteen member networks
+      including RTM; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseaux-de-transports-en-commun-de-la-metropole-daix-marseille-provence-et-des-bouches-du-rhone
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Métropole Aix-Marseille-Provence.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

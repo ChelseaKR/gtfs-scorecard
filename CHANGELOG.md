@@ -28,6 +28,15 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add a third 75-record European depth wave from every remaining non-Swedish
+  queue, reviewed in parallel: twenty in France, twelve each in Italy and
+  Finland, eleven in Great Britain, nine in Spain, five in Ireland, four in
+  Poland, one in Portugal, and Czechia's first two records. The reviewed
+  cohort reaches 138 records in 14 countries with Great Britain at 24.6%.
+  Documented rejections include seventeen French ODbL datasets, size-capped
+  archives in Austria, Portugal, and Finland, Belgium's source-gated
+  operators, Estonia's broken register endpoint, and community rebuilds on
+  third-party hosts refused on identity grounds.
 - Add a second 21-record European depth wave: twelve more Great Britain
   Passenger-platform operators, five Baden-Württemberg network feeds from
   NVBW's portal, three French networks including the Yeu-Continent ferry and

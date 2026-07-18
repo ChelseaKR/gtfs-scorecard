@@ -1,0 +1,25 @@
+# Auvergne-Rhône-Alpes (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ondea-aix-les-bains
+    name: Ondéa (Aix-les-Bains)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    mdb_id: "600"
+    static_gtfs_url: https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/ctlb-aix-les-bains/exports/pan.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by Grand Lac (CTLB) through France's
+      National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/ctlb-donnees-theoriques-et-rt-aix-les-bains-lac-du-bourget
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Grand Lac (CTLB).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

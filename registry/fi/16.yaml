@@ -1,0 +1,30 @@
+# Päijät-Häme (FI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: waltti-lahti-region
+    name: Waltti (Lahti region)
+    country: FI
+    subdivision_code: FI-16
+    subdivision_name: Päijät-Häme
+    mdb_id: "1129"
+    is_official: true
+    static_gtfs_url: https://tvv.fra1.digitaloceanspaces.com/223.zip
+    license_note: >-
+      CC BY 4.0; credit Waltti, link the licence, and indicate any changes made
+      to the source data.
+    operating_note: >-
+      One regional multi-operator package with six operator rows. Counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.waltti.fi/
+      terms_url: https://opendata.waltti.fi/docs
+      scope: [gtfs_schedule]
+      attribution: >-
+        Waltti Solutions (TVV) and Lahden seudun liikenne (LSL).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

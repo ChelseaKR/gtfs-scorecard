@@ -23,3 +23,44 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: kiceo-vannes
+    name: Kicéo (Vannes)
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    mdb_id: "656"
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/565533c0-64ae-44d6-9dfa-169be5b805c6
+    license_note: >-
+      Licence Ouverte 2.0; published by Golfe du Morbihan Vannes
+      Agglomération through France's National Access Point. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-kiceo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Golfe du Morbihan Vannes Agglomération.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: bibus-brest
+    name: Bibus (Brest)
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    mdb_id: "999"
+    static_gtfs_url: https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/bibus/exports/medias.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by Brest Métropole through France's
+      National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-des-bus-et-tramways-circulant-sur-le-territoire-de-brest-metropole
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Brest Métropole.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

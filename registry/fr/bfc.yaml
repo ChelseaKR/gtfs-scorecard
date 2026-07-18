@@ -24,3 +24,44 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: mobigo-cote-dor
+    name: Mobigo interurbain (Côte-d'Or)
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    mdb_id: "659"
+    static_gtfs_url: https://www.viamobigo.fr/ftp/zipopendata/ut.gtfs.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Région Bourgogne-Franche-Comté
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-interurbain-mobigo-en-bourgogne-franche-comte
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Région Bourgogne-Franche-Comté.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: ginko-besancon
+    name: Ginko (Besançon)
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    mdb_id: "1116"
+    static_gtfs_url: https://api.ginko.voyage/gtfs-ginko.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by Grand Besançon Métropole through
+      France's National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-et-siri-du-reseau-ginko-besancon-lignes-urbaines-et-periurbaines
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Grand Besançon Métropole.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
