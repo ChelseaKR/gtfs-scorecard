@@ -28,6 +28,14 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Wire in the Transitland Atlas as a second feed-discovery source alongside the
+  Mobility Database: `scorecard sync --source transitland` (or `all`) reads the
+  keyless, CC-BY Atlas DMFR registry and emits the same `CatalogFeed` shape, so
+  a Transitland candidate flows through the same proposer, deduplication, and
+  curator review as a Mobility Database feed. It is strongest exactly where the
+  Mobility Database is thin. DMFR carries no ISO country, so a candidate's
+  location is left blank for review rather than guessed; key-gated feeds are
+  flagged and skipped as usual.
 - Add a large-feed tier so official national and metropolitan feeds that exceed
   the standard ingestion caps can be scored. A record opts in with
   `large_feed: true`; the tier streams the download to disk with a bounded

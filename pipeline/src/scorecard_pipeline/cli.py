@@ -645,10 +645,19 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         render_yaml,
     )
 
-    source = args.catalog or DEFAULT_CATALOG_URL
-    is_url = source.startswith(("http://", "https://"))
-    csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
-    feeds = parse_catalog(csv_text)
+    which = getattr(args, "source", "mobilitydb")
+    feeds = []
+    if which in ("mobilitydb", "all"):
+        source = args.catalog or DEFAULT_CATALOG_URL
+        is_url = source.startswith(("http://", "https://"))
+        csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
+        feeds.extend(parse_catalog(csv_text))
+    if which in ("transitland", "all"):
+        from .transitland import fetch_feeds
+
+        transitland_feeds = fetch_feeds()
+        log.info("Transitland Atlas contributed %d feed rows.", len(transitland_feeds))
+        feeds.extend(transitland_feeds)
     proposals = propose_agencies(
         feeds,
         country=args.country,
@@ -2440,7 +2449,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
-    sync = sub.add_parser("sync", help="propose registry entries from the Mobility Database")
+    sync = sub.add_parser("sync", help="propose registry entries from a feed catalog")
+    sync.add_argument(
+        "--source",
+        choices=("mobilitydb", "transitland", "all"),
+        default="mobilitydb",
+        help="discovery source: the Mobility Database (default), the Transitland "
+        "Atlas, or both concatenated (dedup handles overlap)",
+    )
     sync.add_argument("--catalog", help="catalog CSV path or URL (default: Mobility Database)")
     sync.add_argument("--country", help="ISO country code filter, e.g. US")
     sync.add_argument("--state", help="state/subdivision filter, e.g. California")
