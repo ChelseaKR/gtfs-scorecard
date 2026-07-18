@@ -33,3 +33,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: tsuchiura-city-tsuchimaru-bus
+    name: Tsuchiura City Tsuchimaru Bus (土浦市つちまるバス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsuchiuracity/feeds/tsuchimarubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsuchiura City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Tsuchiura
+      City.
+    operating_note: >-
+      Tsuchiura City's Tsuchimaru Bus community network (つちまるバス); a
+      second Ibaraki feed record distinct from Yuki City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsuchiuracity.tsuchimarubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsuchiura City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

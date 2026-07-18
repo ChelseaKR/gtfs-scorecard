@@ -32,3 +32,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: nagakute-city-n-bus
+    name: Nagakute City N-Bus (長久手市N-バス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagakutecity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagakute City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nagakute City.
+    operating_note: >-
+      Nagakute City's N-Bus community network (N-バス); a second Aichi
+      feed record distinct from Anjo City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagakutecity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagakute City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

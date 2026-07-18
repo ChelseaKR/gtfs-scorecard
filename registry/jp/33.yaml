@@ -1,0 +1,58 @@
+# Okayama (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: maniwa-city-maniwakun
+    name: Maniwa City Community Bus Maniwa-kun (真庭市コミュニティバス「まにわくん」)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/maniwacity/feeds/maniwakun/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Maniwa City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Maniwa City's Maniwa-kun community bus network (コミュニティバス「まにわくん」);
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/maniwacity.maniwakun
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Maniwa City. Published as GTFS-JP open data (CC0 1.0) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: setouchi-city-bus
+    name: Setouchi City Bus (瀬戸内市営バス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/setouchicity/feeds/setouchicitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Setouchi City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Setouchi City.
+    operating_note: >-
+      Setouchi City's municipal bus network (市営バス); counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/setouchicity.setouchicitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Setouchi City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

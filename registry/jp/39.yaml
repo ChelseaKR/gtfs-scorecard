@@ -1,0 +1,82 @@
+# Kochi (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: tosaden-streetcar
+    name: Tosaden Kotsu Streetcar (とさでん交通 路面電車)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tosaden-kotsu/feeds/GTFS-Tosadentraffic_Streetcar/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tosaden Kotsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tosaden Kotsu.
+    operating_note: >-
+      Tosaden Kotsu's Kochi city streetcar / tram network (路面電車); a
+      first-party operator feed counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tosaden-kotsu.GTFS-Tosadentraffic_Streetcar
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tosaden Kotsu (とさでん交通). Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shimanto-city-bus
+    name: Shimanto City Bus (四万十市営バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shimantocity/feeds/GTFS-Shimantocity_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shimanto City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Shimanto City.
+    operating_note: >-
+      Shimanto City's municipal bus network (市営バス); counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shimantocity.GTFS-Shimantocity_Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shimanto City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sukumo-city-yururin-bus
+    name: Sukumo City Yururin Bus (宿毛市「ゆるりんバス」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sukumocity/feeds/GTFS-Sukumocity_Yururinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Sukumo City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Sukumo City.
+    operating_note: >-
+      Sukumo City's Yururin Bus community service (「ゆるりんバス」); counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sukumocity.GTFS-Sukumocity_Yururinbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sukumo City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
