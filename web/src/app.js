@@ -486,6 +486,21 @@ function expiredQuintile(share) {
   return 4;
 }
 
+/** Plain-language coverage label for one choropleth area: how many feeds it
+ *  covers and how many have expired, carried in text so neither count depends
+ *  on the fill color. Reads "Osaka: 3 feeds, 1 expired (33%)", or
+ *  "Osaka: 3 feeds, none expired" when every feed is current. The state, world,
+ *  and subdivision maps share it, so the fill shows the expired share while the
+ *  label always states the raw counts the color cannot.
+ *  @param {string} name @param {number} agencies @param {number} expired
+ *  @returns {string} */
+function coverageLabel(name, agencies, expired) {
+  const noun = agencies === 1 ? "feed" : "feeds";
+  if (!expired) return `${name}: ${agencies} ${noun}, none expired`;
+  const pct = Math.round((expired / agencies) * 100);
+  return `${name}: ${agencies} ${noun}, ${expired} expired (${pct}%)`;
+}
+
 /** Build the US choropleth SVG from the projected state paths and the per-state
  *  summary rows. States with no published feed records render faint and inert.
  *  @param {{viewBox: string, states: Record<string,string>}} mapData
@@ -497,10 +512,8 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
       if (!row || !row.agencies) {
         return `<path d="${d}" class="us-state us-empty" aria-hidden="true"></path>`;
       }
-      const pct = Math.round((row.expired / row.agencies) * 100);
       const q = expiredQuintile(row.expired / row.agencies);
-      const noun = row.agencies === 1 ? "feed" : "feeds";
-      const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
+      const label = coverageLabel(name, row.agencies, row.expired);
       const subdivision = subdivisionCodes[name] || "";
       if (portableLocations && !subdivision) {
         return `<path d="${escAttr(d)}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
@@ -540,10 +553,8 @@ function buildWorldMapSvg(mapData, byCountry) {
       if (!row || !row.agencies) {
         return `<path d="${d}" class="us-state us-empty" aria-hidden="true"></path>`;
       }
-      const pct = Math.round((row.expired / row.agencies) * 100);
       const q = expiredQuintile(row.expired / row.agencies);
-      const noun = row.agencies === 1 ? "feed" : "feeds";
-      const label = `${row.country_name || code}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
+      const label = coverageLabel(row.country_name || code, row.agencies, row.expired);
       return `<path d="${escAttr(d)}" class="us-state q${q}" data-map-country="${escAttr(code)}"
         tabindex="0" role="button" aria-pressed="false"
         aria-label="${escAttr(label)} — filter to this country"><title>${esc(label)}</title></path>`;
@@ -590,33 +601,46 @@ function expiredLegendHtml() {
 function buildSubdivisionMapSvg(mapData, subRows, countryName) {
   const byCode = {};
   for (const row of subRows) byCode[row.subdivision_code] = row;
+  let shadedAreas = 0;
+  let shadedFeeds = 0;
   const paths = Object.entries(mapData.subdivisions)
     .map(([code, d]) => {
       const row = byCode[code];
       if (!row || !row.agencies) {
         return `<path d="${escAttr(d)}" class="us-state us-empty" aria-hidden="true"></path>`;
       }
-      const pct = Math.round((row.expired / row.agencies) * 100);
+      shadedAreas += 1;
+      shadedFeeds += Number(row.agencies) || 0;
       const q = expiredQuintile(row.expired / row.agencies);
-      const noun = row.agencies === 1 ? "feed" : "feeds";
       const name = row.subdivision_name || code;
-      const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
+      const label = coverageLabel(name, row.agencies, row.expired);
       return `<path d="${escAttr(d)}" class="us-state q${q}"
         data-map-subdivision="${escAttr(code)}" data-map-country="${escAttr(mapData.country)}"
         tabindex="0" role="button" aria-pressed="false"
         aria-label="${escAttr(label)} — filter to this area"><title>${esc(label)}</title></path>`;
     })
     .join("");
+  // A visible coverage readout beside the country name: how many feeds this
+  // drill-down covers and across how many areas, so the depth of coverage is
+  // legible without hovering a path or reading the shading. Omitted when the
+  // committed geometry shades nothing, which keeps a bare "0 feeds" off-screen.
+  const feedNoun = shadedFeeds === 1 ? "feed" : "feeds";
+  const areaNoun = shadedAreas === 1 ? "area" : "areas";
+  const coverageReadout = shadedAreas
+    ? `<span class="map-drill-count">${shadedFeeds} ${feedNoun} in ${shadedAreas} ${areaNoun}</span>`
+    : "";
   return `<div class="map-drill-head">
       <button type="button" class="map-back" data-map-back="1" aria-label="Back to the world map">
         <span aria-hidden="true">←</span> World</button>
       <span class="map-drill-title"><bdi>${esc(countryName)}</bdi></span>
+      ${coverageReadout}
     </div>
     <svg class="us-map-svg" viewBox="${mapData.viewBox}" role="group"
       aria-label="Map of ${escAttr(countryName)}; each area is shaded by the share of its tracked GTFS feeds that have expired, and selecting an area filters the list below.">
       ${paths}
     </svg>
-    ${expiredLegendHtml()}`;
+    ${expiredLegendHtml()}
+    <p class="map-note">Color shows the share of feeds in an area that have expired. Each area lists its feed count in its label, and areas with no tracked feed stay unshaded.</p>`;
 }
 
 /** Portable country controls when the directory exposes the location contract.

@@ -120,6 +120,18 @@ def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None
     label = ontario.get_attribute("aria-label") or ""
     assert "Ontario" in label
     assert "feed" in label  # counts are announced in text, never color alone
+    # The raw feed count rides in the label, not just the expired share, so the
+    # fixture's two Ontario feeds are stated (Ontario carries two, none expired).
+    assert "2 feeds" in label
+    assert "expired" in label
+
+    # The drill-down states how much coverage it shows, in visible text beside
+    # the country name (one shaded area with two feeds in this synthetic geometry).
+    count_readout = page.locator("#world-map .map-drill-count")
+    assert count_readout.count() == 1
+    assert "2 feeds in 1 area" in count_readout.inner_text()
+    # The legend footnote names the color encoding and what the counts mean.
+    assert "feed count" in page.locator("#world-map .map-note").inner_text()
 
     # Selecting the area filters to it and marks it pressed.
     ontario.click()
