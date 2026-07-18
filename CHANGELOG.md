@@ -141,6 +141,10 @@ the declared public surface).
   default raw-profile comparison cohort.
 
 ### Fixed
+- Restore keyboard focus to the country a user drilled from when they leave a
+  subdivision map via Back. The focus-return guard tested `HTMLElement`, but SVG
+  paths are `SVGElement`, so focus silently fell to the page body (a WCAG 2.4.3
+  focus-order regression); the e2e test now asserts focus returns.
 - Score Wiener Linien and HSL Helsinki, which the daily run had been rejecting
   as over the single-entry cap since they were added, by moving them to the new
   large-feed tier.
