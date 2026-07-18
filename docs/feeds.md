@@ -236,6 +236,32 @@ More candidates were rejected than added; the rejection reasons are listed in
   the interurban network of La Réunion (Licence Ouverte 2.0, with one
   combined realtime stream).
 
+## Second reviewed European depth wave
+
+These 21 records continue the same queues, checked the same way on
+2026-07-17. Rejection reasons are recorded in
+[global-expansion.md](global-expansion.md).
+
+- **Great Britain (twelve records)**: Borders Buses, Carousel Buses, East
+  Yorkshire, Go Cornwall Bus, Intalink, McGill's Buses, Metrobus, Newport
+  Bus, Plymouth Citybus, Transdev Blazefield, Warrington's Own Buses, and
+  Bluestar, all on the Passenger platform under the Open Government Licence
+  v3.0 with per-operator copyright lines verified. Great Britain now sits at
+  36.5% of the cohort, close to the 40% ceiling, so later waves lead
+  elsewhere.
+- **Germany (five records)**: the DING (Donau-Iller), OstalbMobil, VGF
+  Freudenstadt, TGO Ortenau, and Kreisverkehr Schwäbisch-Hall network feeds
+  from NVBW's open data portal under Datenlizenz Deutschland - Namensnennung
+  2.0, with the network identities confirmed against the portal's own
+  listing. Each association feed counts as one feed record.
+- **France (three records)**: the Réseau Léo Auxerrois bus network and the
+  Cap Cotentin network with its combined realtime stream (Licence Ouverte
+  2.0), and the Aléop Yeu-Continent island ferry published by the Région des
+  Pays de la Loire.
+- **Italy (one record)**: Trenitalia's regional rail resource within Regione
+  Toscana's multi-file open dataset (Creative Commons Attribution), named as
+  one resource rather than the whole regional dataset.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
