@@ -1407,6 +1407,33 @@ main:focus { outline: none; }
 }
 .us-state.selected { stroke: var(--ink); stroke-width: 2.4; }
 
+/* Drill-down header shown when the world map zooms into one country's
+   subdivisions: a Back control plus the country name. */
+.map-drill-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.5rem;
+  flex-wrap: wrap;
+}
+.map-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 44px;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.map-back:hover { border-color: var(--ink); }
+.map-back:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.map-drill-title { font-weight: 700; color: var(--ink); }
+
 .map-legend {
   display: flex;
   flex-wrap: wrap;
