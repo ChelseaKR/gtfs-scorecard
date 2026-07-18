@@ -247,7 +247,7 @@ dependencies = ["babel>=2.16", "pyicu>=2.13"]   # CLDR via ICU >= 78.3 / CLDR >=
 | `trans-docs-navigator` | confirm MF2/`LocaleBundle` parity + pseudolocale + RTL gates; fix the one tag-pinned `uses:` in `deploy-aws-preview.yml` (supply-chain, cross-ref) | G5, G9, G10 |
 | `personal-site` | reference i18next repo; audit MF1→MF2 (§9) | G9 (reference) |
 | `habitable` | JSON catalogs → wire G5/G6 parity gate | G6 |
-| `gtfs-scorecard` | done 2026-07-17 (ADR 0038): UI catalog (`locales/app.en.json` → generated `strings.js`), key/placeholder parity, `en-XA` pseudolocale + overflow e2e, RTL route e2e, hardcoded-string and physical-CSS ratchets; remaining: work the G2 ratchet baseline down | G2 (ratchet), G5, G6, G9, G10 |
+| `gtfs-scorecard` | add UI catalog; note real `pyproject.toml` lives under `pipeline/` — wire gates there | G1, G2, G4 |
 | `davis-bike-hazard-map` | pseudolocale + RTL gates on the map UI | G9, G10 |
 | `govchat-eval` | served HTML report `lang` + bidi; disaggregated eval | G4, §7 |
 | N/A candidates (`tods-validate`, `olive-bark-logger`, `self-osint-monitor`, `women-artist-discovery`) | commit `docs/I18N.md` N/A declaration | N/A-declaration gate |
