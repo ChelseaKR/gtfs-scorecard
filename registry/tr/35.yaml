@@ -1,0 +1,47 @@
+# İzmir (TR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: izmir-metro
+    name: İzmir Metro
+    country: TR
+    subdivision_code: TR-35
+    subdivision_name: İzmir
+    mdb_id: "1824"
+    is_official: true
+    static_gtfs_url: https://www.izmirmetro.com.tr/gtfs/rail-metro-gtfs.zip
+    license_note: >-
+      İzmir Metropolitan Municipality Open Data License (CC BY 4.0); credit the
+      İzmir Metropolitan Municipality.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://acikveri.bizizmir.com/en/dataset/toplu-ulasim-gtfs-verileri
+      terms_url: https://acikveri.bizizmir.com/en/license
+      scope: [gtfs_schedule]
+      attribution: İzmir Metropolitan Municipality.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: izmir-tram
+    name: Tram İzmir
+    country: TR
+    subdivision_code: TR-35
+    subdivision_name: İzmir
+    mdb_id: "1829"
+    is_official: true
+    static_gtfs_url: https://www.tramizmir.com/gtfs/rail-tramizmir-gtfs.zip
+    license_note: >-
+      İzmir Metropolitan Municipality Open Data License (CC BY 4.0); credit the
+      İzmir Metropolitan Municipality.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://acikveri.bizizmir.com/en/dataset/toplu-ulasim-gtfs-verileri
+      terms_url: https://acikveri.bizizmir.com/en/license
+      scope: [gtfs_schedule]
+      attribution: İzmir Metropolitan Municipality.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

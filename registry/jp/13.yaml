@@ -1,0 +1,66 @@
+# Tokyo (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: toei-bus
+    name: Toei Bus (Tokyo Metropolitan Bureau of Transportation)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    mdb_id: "3175"
+    is_official: true
+    organization_id: toei
+    feed_variant: bus network
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/Toei/data/ToeiBus-GTFS.zip
+    license_note: >-
+      CC BY 4.0 through the Public Transportation Open Data Center (ODPT);
+      credit ODPT and the Tokyo Metropolitan Bureau of Transportation, and
+      carry ODPT's notice that accuracy is not guaranteed and that the operator
+      should not be contacted about the data.
+    operating_note: >-
+      The Toei bus network; a distinct published feed from the Toei rail
+      network, counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/b_bus_gtfs_jp-toei
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Public Transportation Open Data Center (ODPT) and the Tokyo
+        Metropolitan Bureau of Transportation.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: toei-train
+    name: Toei Subway (Tokyo Metropolitan Bureau of Transportation)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    mdb_id: "3176"
+    is_official: true
+    organization_id: toei
+    feed_variant: rail network
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/Toei/data/Toei-Train-GTFS.zip
+    license_note: >-
+      CC BY 4.0 through the Public Transportation Open Data Center (ODPT);
+      credit ODPT and the Tokyo Metropolitan Bureau of Transportation, and
+      carry ODPT's notice that accuracy is not guaranteed and that the operator
+      should not be contacted about the data.
+    operating_note: >-
+      The Toei subway network (Asakusa, Mita, Shinjuku, and Oedo lines); a
+      distinct published feed from the Toei bus network, counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/en/organization/toei
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Public Transportation Open Data Center (ODPT) and the Tokyo
+        Metropolitan Bureau of Transportation.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

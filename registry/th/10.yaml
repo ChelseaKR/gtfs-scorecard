@@ -1,0 +1,32 @@
+# Krung Thep Maha Nakhon (TH) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: otp-thailand-namtang
+    name: OTP Thailand (Namtang)
+    country: TH
+    subdivision_code: TH-10
+    subdivision_name: Krung Thep Maha Nakhon
+    mdb_id: "1831"
+    is_official: true
+    static_gtfs_url: https://namtang-api.otp.go.th/download/namtang-gtfs.zip
+    license_note: >-
+      CC BY 4.0; credit the Office of Transport and Traffic Policy and Planning
+      (OTP), Ministry of Transport, Thailand.
+    operating_note: >-
+      The OTP Namtang multimodal feed, centered on the Bangkok metropolitan
+      network; located at its Bangkok primary catalog location and counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://namtang.otp.go.th/opendata
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Office of Transport and Traffic Policy and Planning, Ministry of
+        Transport, Thailand.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

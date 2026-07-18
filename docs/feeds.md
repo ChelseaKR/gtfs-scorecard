@@ -328,6 +328,49 @@ Department of State Growth feed whose license page was unreachable and appears
 to add a share-alike term, and Metlink Wellington publishes no stated reuse
 license. Each is revisited when its blocker clears.
 
+## Latin America and Asia-Pacific official wave
+
+The next coverage waves under the
+[global coverage roadmap](global-coverage-roadmap.md), Phases 2 and 3: official,
+first-party, openly licensed feeds outside Europe, North America, and Oceania.
+Source, reuse terms, current download, and identity were checked on 2026-07-17
+against a parallel per-region license review of every candidate the Mobility
+Database lists for these regions. Nine records were added:
+
+- **Brazil (three records)**: Belo Horizonte's conventional and supplementary
+  networks (BHTRANS) and Rio de Janeiro's municipal network (SMTR via data.rio),
+  all CC BY through their municipal open-data portals.
+- **Japan (three records)**: the Toei bus and subway networks (Tokyo
+  Metropolitan Bureau of Transportation, CC BY 4.0 through the ODPT open-data
+  center) and Donan Bus (southern Hokkaido, CC BY through the Hokkaido open-data
+  platform), the same GTFS-JP open-data path as the existing Nasu Town canary.
+- **Turkey (two records)**: the İzmir metro and tram networks, CC BY 4.0 under
+  the İzmir Metropolitan Municipality open-data license.
+- **Thailand (one record)**: the OTP Namtang multimodal feed for the Bangkok
+  metropolitan network, CC BY 4.0 from the Office of Transport and Traffic
+  Policy and Planning.
+
+The review rejected or deferred far more than it added, and the reasons are the
+point. Deferred on ingestion or freshness: Israel's national feed (a single
+table exceeds the 512 MiB entry cap, so it joins the large-feed shard queue),
+Sydney and Melbourne (over the download cap), and several stale or expired
+official feeds (İstanbul İETT marked "will not be updated", İzmir IZBAN,
+Fortaleza, Porto Alegre). Deferred on unstable URLs: Santiago's DTPM feed (its
+stable alias serves a 2020 dataset while the current feed sits at a rotating
+dated URL) and Bogotá's SIMUR feed (a rotating dated URL); both are
+license-approved and wait on canonical-URL resolution. Rejected on access or
+license: São Paulo and Singapore's LTA (registration walls), Flixbus and Cairo's
+Transport for Cairo (private operators, non-commercial or partner-only terms),
+and many feeds hosted on personal repositories or the defunct transitfeeds
+aggregator rather than an official source.
+
+The African candidates were held back entirely, as the roadmap's
+partnership-gated phase requires. Every African GTFS the catalog lists is
+community- or survey-produced — the Digital Transport for Africa repositories
+for Addis Ababa, Kumasi, Douala, and Abidjan, and Transport for Cairo's
+paratransit mapping — and this project does not curate community-mapped transit
+data from a catalog. Those feeds wait for a named local steward.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

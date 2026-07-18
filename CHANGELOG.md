@@ -28,6 +28,16 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add the first official coverage outside Europe, North America, and Oceania
+  (global coverage roadmap Phases 2-3): nine reviewed first-party open-data feed
+  records — Belo Horizonte's two networks and Rio de Janeiro (Brazil, CC BY),
+  the Tokyo Toei bus and subway networks and Donan Bus (Japan, CC BY via ODPT
+  and the Hokkaido platform), the İzmir metro and tram (Turkey, CC BY 4.0), and
+  the OTP Namtang Bangkok feed (Thailand, CC BY 4.0). Israel's national feed is
+  size-deferred to the large-feed shard; Santiago and Bogotá are deferred on
+  rotating dated URLs; and every African candidate is held for the roadmap's
+  partnership-gated phase because all catalog-listed African GTFS is
+  community- or survey-produced.
 - Publish a comprehensive multi-region global coverage roadmap
   (`docs/global-coverage-roadmap.md`) that sequences expansion by
   defensibility: official openly licensed feeds first, a partnership-gated

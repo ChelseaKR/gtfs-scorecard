@@ -1,0 +1,30 @@
+# Hokkaido (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: donan-bus
+    name: Donan Bus (道南バス)
+    country: JP
+    subdivision_code: JP-01
+    subdivision_name: Hokkaido
+    mdb_id: "2871"
+    is_official: true
+    static_gtfs_url: https://ckan.hoda.jp/dataset/24d1dd70-5395-4d6b-b41f-0d83e8eabdb9/resource/a70d369c-405c-4c25-996c-c70aa53682bc/download/dounan_bus.zip
+    license_note: >-
+      CC BY through the Hokkaido open data platform (HODA); credit Donan Bus and
+      the Regional Revitalization Mobility Consortium. Published as GTFS-JP, the
+      Japanese national GTFS profile.
+    operating_note: >-
+      A southern Hokkaido regional bus operator, following the same official
+      open-data path as the Nasu Town canary; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.hoda.jp/dataset/24d1dd70-5395-4d6b-b41f-0d83e8eabdb9
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Donan Bus and the Regional Revitalization Mobility Consortium.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
