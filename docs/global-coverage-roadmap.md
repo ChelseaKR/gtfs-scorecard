@@ -209,14 +209,20 @@ These unblock more than one phase and are sequenced by first need.
   future extension for feeds larger than the bounded tier; the tier unblocks
   every current target without it. Sydney (Transport for NSW) stays deferred on
   its registration wall, not on size.
-- **Beta-gate generalization decision.** The European beta gate is Europe-coded
-  by design (a closed country set and thresholds chosen for that market's
-  addressable feeds). Before any second regional beta is claimed, decide whether
-  the gate becomes a parameterized contract (region, country set, thresholds,
-  denominators) evaluated by the same executable evidence, or whether other
-  regions stay ordinary reviewed coverage with no beta label. The default is the
-  latter until a named consumer asks for a specific region's beta, exactly as a
-  consumer named European coverage.
+- **Beta-gate generalization decision (decided,
+  [ADR 0039](decisions/0039-beta-gate-europe-scoped.md)).** The European beta
+  gate is Europe-coded by design (a closed country set and thresholds chosen for
+  that market's addressable feeds). The question was whether the gate becomes a
+  parameterized contract (region, country set, thresholds, denominators)
+  evaluated by the same executable evidence, or whether other regions stay
+  ordinary reviewed coverage with no beta label. ADR 0039 is the decision of
+  record: the gate stays Europe-scoped and is not parameterized now; other
+  regions remain ordinary reviewed coverage with their own disclosed
+  denominators and no beta label until a named consumer asks for a specific
+  region and that region's cohort meets a stated, executable, region-appropriate
+  gate, exactly as a consumer named European coverage. The ADR records the
+  `RegionGate` seam so a second region's beta is an actionable follow-up with its
+  own ADR when it is needed.
 - **Alternative-catalog ingestion (first source shipped).** For regions the
   Mobility Database does not cover, a reviewed way to discover feeds from other
   catalogs, national open-data portals, and regional aggregators, with the same
