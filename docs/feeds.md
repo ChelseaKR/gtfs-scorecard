@@ -399,6 +399,66 @@ Rejections again outnumbered additions, and the reasons are the review:
   Junta de Extremadura (expired), and Generalitat Valenciana intercity (DNS
   failure).
 
+## Seventh reviewed European wave
+
+This wave on 2026-07-18 again led with non-United-Kingdom sources and added 15
+records, taking the reviewed European cohort from 185 to 200 across 22
+countries. No United Kingdom feed was added. Each candidate passed a live
+license read, a mechanical download and current-calendar preflight, a size
+check under the archive cap, and an ISO 3166-2 subdivision review. After the
+additions the United Kingdom is 17.0% of the cohort (34 of 200) and France, the
+largest country, is 20.5% (41 of 200), both under the 40% ceiling.
+
+- **Norway (eleven records)**: the twenty-first country, opened with one county
+  transport authority per mainland fylke: Ruter (Oslo), Kolumbus (Rogaland),
+  FRAM (Møre og Romsdal), the Nordland county authority, Brakar (Viken),
+  Innlandstrafikk (Innlandet), VKT (Vestfold og Telemark), Agder
+  Kollektivtrafikk, Skyss (Vestland), AtB (Trøndelag), and Snelandia (Troms og
+  Finnmark). All are Entur per-operator GTFS exports under the Norwegian Licence
+  for Open Government Data (NLOD) 2.0. Entur's national aggregate is a separate
+  download that runs past the archive cap, so each per-operator slice is scored
+  on its own.
+- **Slovakia (one record)**: the twenty-second country, opened with Dopravný
+  podnik Bratislava (DPB) on the city open data portal data.bratislava.sk, whose
+  ArcGIS item records CC BY 4.0.
+- **Latvia (two records)**: Rīgas satiksme (Rīga bus, tram, and trolleybus) and
+  Pasažieru vilciens (the Vivi domestic rail network), both CC0 1.0 on
+  data.gov.lv, distinct from the tracked ATD national bus aggregate.
+- **Czechia (one record)**: Plzeňské městské dopravní podniky (PMDP) in Plzeň
+  under CC BY 4.0 on opendata.plzen.eu, opening the Plzeňský kraj.
+
+Rejections again outnumbered additions, and the reasons are the review:
+
+- **No reviewable open license**: the Netherlands OVapi national aggregate
+  (license blank in the Mobility Database and Transitland, NDOV redirects to a
+  no-license host), HŽPP Croatian rail (license and portal pages 404), Strætó
+  bs in Iceland, Tartu in Estonia, the Lithuanian stops.lt city feeds, GTT
+  Torino (feed current and stable but the GTT license pages return 404 and 403),
+  and the small Aytos feed in Bulgaria.
+- **Non-commercial or no-derivatives**: OASA Athens (CC BY-NC), SNCB Belgian
+  rail (signed non-commercial contract), and VMT Mittelthüringen (CC BY-ND).
+- **Registration or key walled**: the Swedish Trafiklab regional feeds (SL,
+  Skånetrafiken, Västtrafik, and others, all API-key gated), the Slovenian
+  National Access Point feeds on b2b.nap.si (CC BY-SA 4.0 but HTTP 401), De Lijn
+  in Flanders, and the Austrian national access point, whose GTFS carries a
+  custom licence agreement and exposes only sample data.
+- **No stable current download**: the Luxembourg official ATP feed, which
+  publishes only weekly-dated snapshots with per-release resource ids and no
+  rolling latest URL, unchanged from the sixth wave, and the German HVV Hamburg
+  and VRR Rhein-Ruhr feeds, whose Mobility Database URLs are version-pinned
+  snapshots that already expired in December 2025.
+- **Aggregator or community-mirror host**: the mkuran.pl-hosted Polish feeds
+  (Warszawa, Bydgoszcz, and others) and the Katowice ZTM feed, whose download
+  URL rotates every forty minutes and is served through a CKAN API rather than a
+  stable archive.
+- **Access blocked from the pipeline network**: Wrocław (the download host
+  returns HTTP 403) and Kraków (the terms page returns HTTP 403, so the license
+  cannot be reviewed).
+- **Expired, broken, or already present**: Metro do Porto (stale 2024 snapshot),
+  TUB Braga (feed missing agency.txt), the Slovak DZK Košice line (rotating URL
+  and an out-of-scope seasonal tourist railway), and the Irish TFI operator
+  feeds, which are already tracked.
+
 ## Oceania coverage wave
 
 The first coverage wave outside Europe and North America, curated under the
