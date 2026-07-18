@@ -59,7 +59,7 @@ SOURCE = (
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/"
     "geojson/ne_10m_admin_1_states_provinces.geojson"
 )
-COUNTRIES = ["GB", "FR", "DE", "ES", "IT", "CA", "AU", "NZ"]
+COUNTRIES = ["GB", "FR", "DE", "ES", "IT", "CA", "AU", "NZ", "JP", "MY", "BR"]
 MARGIN = 8.0  # blank border, in viewBox px, around the fitted country
 MAX_DIM = 1000.0  # the longer viewBox axis; the shorter follows the aspect ratio
 MIN_RING_AREA_PX = 2.0  # projected square px; drops islet specks
@@ -103,6 +103,21 @@ REGISTRY = {
     # New Zealand's regions are admin-1 (iso_3166_2 NZ-AUK, NZ-BOP, NZ-OTA, ...),
     # so no region-level dissolve is needed.
     "NZ": {"NZ-AUK", "NZ-BOP", "NZ-OTA"},
+    # Japan's prefectures are admin-1 (iso_3166_2 JP-01 ... JP-47), so no
+    # region-level dissolve is needed. Forty carry feeds today.
+    "JP": {
+        "JP-01", "JP-02", "JP-03", "JP-04", "JP-05", "JP-06", "JP-07", "JP-08",
+        "JP-09", "JP-10", "JP-11", "JP-12", "JP-13", "JP-14", "JP-15", "JP-16",
+        "JP-17", "JP-19", "JP-20", "JP-21", "JP-22", "JP-23", "JP-24", "JP-25",
+        "JP-27", "JP-28", "JP-29", "JP-30", "JP-32", "JP-33", "JP-36", "JP-37",
+        "JP-39", "JP-40", "JP-41", "JP-42", "JP-43", "JP-44", "JP-46", "JP-47",
+    },
+    # Malaysia's states are admin-1 (iso_3166_2 MY-01 ... MY-16), so no
+    # region-level dissolve is needed.
+    "MY": {"MY-06", "MY-07", "MY-09", "MY-14"},
+    # Brazil's states are admin-1 (iso_3166_2 BR-MG, BR-RJ, ...), so no
+    # region-level dissolve is needed.
+    "BR": {"BR-MG", "BR-RJ"},
 }
 
 

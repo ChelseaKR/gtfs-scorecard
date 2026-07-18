@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,280 feed records, still mostly in
+reference; the full registry has more than 1,400 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -635,6 +635,167 @@ The wave was deliberately narrowed, and the choices are the point:
   operator's many exports, keeping the cohort broad instead of deep.
 - **Already tracked:** the six gtfs-data.jp feeds already in the registry (Nasu
   Town, Higashine, Yonezawa, Uozu, Toki, Naruto) were excluded by construction.
+
+## Transitland non-Western sweep
+
+A second pass over the Transitland Atlas (`scorecard sync --source transitland`),
+this time aimed only at the regions the Mobility Database is thinnest in and the
+first Transitland wave did not cover: Latin America, non-Japan Asia-Pacific, the
+Middle East, and Africa. Japan, Europe, the United States, Canada, Australia, and
+New Zealand were excluded as already well covered. The Atlas carries no ISO
+country, so each candidate's country was decoded from the geohash in its Onestop
+id or inferred from the operator and URL, then confirmed by hand. Each survivor
+was cross-checked against both the registry and the Mobility Database catalog,
+and its source, license, and live download were verified on 2026-07-18. The gate
+was fail-closed: only an official first-party publisher, an explicit open
+license, and a live current feed that the Mobility Database does not already
+carry could be added.
+
+Six records were added, all from Malaysia's official open data platform
+(`data.gov.my`, the Government of Malaysia's open data portal), which publishes
+its datasets under CC BY 4.0. The Mobility Database carries only the smaller
+BAS.MY town networks from this platform, so the country's two largest operators
+were absent. Each download was preflighted on 2026-07-18 as a valid archive with
+the GTFS core tables and a current service calendar:
+
+- **Keretapi Tanah Melayu (KTMB)**, Malaysia national rail. The KTM Komuter
+  commuter lines and intercity shuttle services across Peninsular Malaysia;
+  carried as a national feed with no single subdivision.
+- **Rapid KL bus network** (`MY-14`), Prasarana Malaysia Berhad. The Klang
+  Valley city bus and BRT network.
+- **Rapid Rail KL** (`MY-14`), Prasarana. The LRT, MRT, and monorail lines of
+  the Klang Valley.
+- **Rapid KL MRT feeder bus** (`MY-14`), Prasarana. The T-route feeder buses
+  serving MRT and LRT stations.
+- **Rapid Penang** (`MY-07`), Prasarana. The bus network on Penang island and
+  the Seberang Perai mainland.
+- **Rapid Kuantan** (`MY-06`), Prasarana. The Kuantan, Pahang bus network.
+
+The sweep rejected far more than it kept, and the rejections are the point:
+
+- **Already in the Mobility Database (not new coverage):** BAS.MY Johor Bahru /
+  Causeway Link (`data.gov.my` `mybas-johor`); Subterráneos de Buenos Aires and
+  Trenes Argentinos (`cdn.buenosaires.gob.ar`, mdb 6 and 647); Metrofor,
+  Fortaleza (`metrofor.ce.gov.br`, mdb 2367); ESHOT İzmir bus
+  (`eshot.gov.tr`, mdb 1823); TransJakarta (`gtfs.transjakarta.co.id`, mdb 1909);
+  SNCFT, Tunisia national rail (`gps.sncft.com.tn`, mdb 1016); Hyderabad MMTS
+  (`data.telangana.gov.in`, operator carried at mdb 921); DTPM Santiago / Red
+  Metropolitana de Movilidad (mdb 987 and 2145); SIMUR Bogotá / Transmilenio
+  feeders (mdb 2012, and its published file was a stale 2024 dataset); Mexico
+  City's STC and SEMOVI systems (`datos.cdmx.gob.mx`, carried at mdb 1099 and
+  1830); Kochi Metro / KMRL (mdb 1209); and the Jalisco and Puerto Vallarta Mi
+  Transporte feeds (`datos.jalisco.gob.mx`, mdb 1925, 1926, 2034, 2366, whose
+  files are also frozen at 2021 to 2022). These are official and open, but the
+  catalog already carries the operator, so adding them would not demonstrate new
+  coverage.
+- **Official and current, but no explicit open license (fail closed):** Mwasalat
+  (Oman National Transport Company) serves a live, current national feed at
+  `avl.mwasalat.om`, and Mwasalat is the state transport company, but no reuse
+  license is published for that feed. Córdoba, Argentina lists a "datos abiertos"
+  GTFS at `gobiernoabierto.cordoba.gob.ar`, but the page states no license, its
+  resource was last updated in March 2023, and no direct current download
+  resolves from it. Puerto Rico's ATI publishes GTFS under custom terms that
+  reserve rights rather than an open license.
+- **Community- or aggregator-hosted (partnership-gated, not catalog curation):**
+  the African Atlas feeds for Abidjan, Accra, Douala, and Nairobi are Digital
+  Transport for Africa and university survey data on GitLab or GitHub under ODbL;
+  Nicaragua's Managua and Estelí feeds come from the MapaNica community mapping
+  project (`datos.mapanica.net`); Phnom Penh City Bus is served from a private
+  app host (`citybus.kroma.asia`); and the Ubud shuttle, Bogor angkot, Kochi
+  community transport, Patras proastiakos, and Manila feeds are personal GitHub
+  or datahub.io exports. None is a first-party official source, so all wait for
+  the roadmap's partnership-gated phase.
+- **Not first-party, or behind a wall:** SPTrans São Paulo sits behind a
+  developer registration wall; the "LTA Singapore" candidate was an app
+  aggregator's mirror (`rushowl.app`), not the registration-walled official LTA
+  DataMall; SãoPaulo's Transpiedade, Argentina's Mar Chiquita, and a Venezuela
+  feed are private operator sites with no open license; and the Flixbus and
+  Greyhound feeds are private intercity operators.
+- **Technical holds:** Hong Kong's official `static.data.gov.hk` feed is open,
+  but it stays a known technical canary (no ISO 3166-2 subdivision, and
+  frequency-based schedules whose freshness handling is still under review, per
+  the note in this file). Taiwan's TDX feed for Taipei Metro
+  (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
+  does not ingest.
+## Japan gtfs-data.jp second wave
+
+A deeper pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The first wave took one flagship feed per prefecture; this
+wave goes deeper two ways: it reaches prefectures Japan did not yet have in the
+registry, and it adds further municipal networks inside prefectures already
+represented. A prefecture can hold several distinct city networks, and each is
+one feed record. Thirty-eight records were added, lifting Japan from 27 records
+across 25 prefectures to 65 across 40.
+
+This wave also widens the license policy. The first wave admitted only CC BY 4.0
+and CC0 1.0 and held back about 52 feeds under **CC BY 2.1 JP**. CC BY 2.1 JP is
+a valid open Creative Commons Attribution license, the Japan jurisdiction port of
+CC Attribution 2.1. It permits reuse with attribution, which is exactly what this
+project needs, since it republishes metrics and attribution rather than raw data.
+CC BY 2.1 JP feeds are therefore admitted here, with the exact license version
+stated in each record's `license_note` and attribution. CC BY 4.0 and CC0 1.0
+remain admitted. The license mix of the 38 is 30 CC BY 4.0, 5 CC0 1.0, and 3
+CC BY 2.1 JP. Every candidate was confirmed to be an official municipality or a
+first-party operator, and each download was mechanically preflighted on
+2026-07-18: a valid archive with the GTFS core tables and a current, non-expired
+service calendar, within the ingestion size caps, and absent from the Mobility
+Database. The archive was deleted after each check.
+
+Fifteen prefectures newly represented (license in parentheses):
+
+- **Osaka (`JP-27`)**: Limon Bus, 神姫観光 (Shinki Kanko) (CC BY 4.0).
+- **Hyogo (`JP-28`)**: Akashi City Tako Bus (CC BY 4.0), Kakogawa City Kako Bus
+  (CC BY 2.1 JP), Takarazuka City Ran-Ran Bus (CC BY 2.1 JP).
+- **Nara (`JP-29`)**: Yamatokoriyama City Community Bus and Yamatotakada City
+  Kibou-go (both CC BY 4.0).
+- **Wakayama (`JP-30`)**: Aridagawa Town, Kinokawa City, and Tanabe City
+  community/residents buses (all CC BY 4.0).
+- **Shimane (`JP-32`)**: Masuda City shared taxi (CC BY 4.0), scored on the
+  Schedule rubric as a demand-response service.
+- **Okayama (`JP-33`)**: Maniwa City Maniwa-kun (CC0 1.0) and Setouchi City Bus
+  (CC BY 4.0).
+- **Kagawa (`JP-37`)**: Mitoyo City (CC BY 4.0), Kanonji City Noriai Bus
+  (CC0 1.0), Naoshima Town Bus (CC BY 4.0).
+- **Kochi (`JP-39`)**: Tosaden Kotsu streetcar, Shimanto City Bus, and Sukumo
+  City Yururin Bus (all CC BY 4.0).
+- **Fukuoka (`JP-40`)**: Dazaifu City Mahoroba-go, Munakata City, Nogata City,
+  and Tagawa City community buses (all CC BY 4.0).
+- **Saga (`JP-41`)**: Imari City Imarin Bus (CC0 1.0).
+- **Nagasaki (`JP-42`)**: Hirado City Fureai Bus (CC BY 4.0).
+- **Kumamoto (`JP-43`)**: Kumamoto City tram, 熊本市交通局 (CC BY 2.1 JP) and
+  Kumamoto Toshi Bus (CC BY 4.0).
+- **Oita (`JP-44`)**: Kusu Town Community Bus (CC0 1.0).
+- **Kagoshima (`JP-46`)**: Kagoshima City Ai Bus (CC BY 4.0).
+- **Okinawa (`JP-47`)**: Yaese Town Bus and Yanbaru Express Bus (both CC BY 4.0).
+
+Eight more within prefectures already covered, each a distinct city network from
+the one already tracked: Misawa City Me-Bus (Aomori), Tsuchiura City Tsuchimaru
+Bus (Ibaraki), Wako City Wakoba loop (Saitama), Yotsukaido City Yoppii (Chiba,
+CC0 1.0), Chigasaki City Eboshi-go (Kanagawa), Fujieda City self-operated bus
+(Shizuoka), Nagakute City N-Bus (Aichi), and Kuwana City K-Bus (Mie). All CC BY
+4.0 except Yotsukaido.
+
+The wave stayed fail-closed, and the exclusions are the point:
+
+- **Unversioned or ambiguous license:** the catalog's two feeds under a bare
+  "CC-BY", with no version, were rejected as before. Only the three named,
+  versioned Creative Commons licenses were admitted.
+- **Expired calendar:** several otherwise-open feeds carried a service window
+  already ended by the 2026-07-18 review, including Ando Town (Nara), Susami Town
+  (Wakayama), Wake Town (Okayama), and Kami Town, Kato City, and Yabu City
+  (Hyogo). Each fails the current-calendar gate.
+- **Discontinued:** the 24 feeds the catalog flags as discontinued were excluded
+  by construction.
+- **One feed per operator:** Nakatsu City (Oita) publishes its community bus as
+  roughly eighteen separate line-level feeds. Rather than stack one operator's
+  line exports, Oita is represented by Kusu Town's whole-network feed. Saitama's
+  many single-route shared-taxi exports were likewise passed over for a clean
+  city circulator elsewhere.
+- **No admitted first-party feed:** Fukui (`JP-18`), Kyoto (`JP-26`), Tottori
+  (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`), and
+  Miyazaki (`JP-45`) remain unrepresented, since the repository lists no feed for
+  them under an admitted license. They wait for a first-party open feed rather
+  than an aggregator mirror (busmaps.jp, opentrans.it), which stays out of scope.
 
 ## Reviewed ferry cohort
 

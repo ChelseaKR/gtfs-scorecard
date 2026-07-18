@@ -1,0 +1,88 @@
+# Hyogo (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: akashi-city-tako-bus
+    name: Akashi City Tako Bus (明石市たこバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/akashicity/feeds/tacobustacobusmini/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Akashi City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Akashi City.
+    operating_note: >-
+      Akashi City's Tako Bus and Tako Bus Mini community routes
+      (たこバス／たこバスミニ); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/akashicity.tacobustacobusmini
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Akashi City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kakogawa-city-kako-bus
+    name: Kakogawa City Kako Bus (加古川市かこバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kakogawacity/feeds/kakobuskakobusmini/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Kakogawa City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kakogawa
+      City.
+    operating_note: >-
+      Kakogawa City's Kako Bus and Kako Bus Mini community routes
+      (かこバス／かこバスミニ); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kakogawacity.kakobuskakobusmini
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kakogawa City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takarazuka-city-ranran-bus
+    name: Takarazuka City Ran-Ran Bus (宝塚市ランランバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takarazukacity/feeds/runrunbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Takarazuka
+      City through the GTFS Data Repository (gtfs-data.jp). Credit
+      Takarazuka City.
+    operating_note: >-
+      Takarazuka City's Ran-Ran Bus community service (ランランバス); counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takarazukacity.runrunbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takarazuka City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -1,0 +1,35 @@
+# Shimane (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: masuda-city-noriai-taxi
+    name: Masuda City Shared Taxi (益田市乗合タクシー)
+    country: JP
+    subdivision_code: JP-32
+    subdivision_name: Shimane
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/masudacity/feeds/noriai/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Masuda City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Masuda City.
+    operating_note: >-
+      Masuda City's shared-ride taxi service (乗合タクシー: 美都線・匹見線), scored
+      on the GTFS Schedule rubric; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/masudacity.noriai
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Masuda City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

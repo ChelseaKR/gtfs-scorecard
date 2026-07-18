@@ -30,7 +30,7 @@ goal. The full competitive decision and its evidence are in
 The old regional and national scale plans landed ahead of their original
 sequence. Treat these capabilities as baseline:
 
-- The registry has more than 1,280 configured feed records in the current worldwide
+- The registry has more than 1,400 configured feed records in the current worldwide
   coverage, still concentrated in the United States and Canada. The artifact index
   has numeric current scores for more than 1,100 of them. The public status page
   reports the exact current configured and published counts.
