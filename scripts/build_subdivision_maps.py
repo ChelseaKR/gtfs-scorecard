@@ -59,7 +59,7 @@ SOURCE = (
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/"
     "geojson/ne_10m_admin_1_states_provinces.geojson"
 )
-COUNTRIES = ["GB", "FR", "DE", "ES", "IT", "CA"]
+COUNTRIES = ["GB", "FR", "DE", "ES", "IT", "CA", "AU", "NZ"]
 MARGIN = 8.0  # blank border, in viewBox px, around the fitted country
 MAX_DIM = 1000.0  # the longer viewBox axis; the shorter follows the aspect ratio
 MIN_RING_AREA_PX = 2.0  # projected square px; drops islet specks
@@ -97,6 +97,12 @@ REGISTRY = {
     # Canada's provinces and territories are admin-1 (iso_3166_2 CA-ON, CA-QC,
     # ...), so no region-level dissolve is needed. Only two carry feeds today.
     "CA": {"CA-ON", "CA-YT"},
+    # Australia's states and territories are admin-1 (iso_3166_2 AU-QLD, AU-VIC,
+    # ...), so no region-level dissolve is needed.
+    "AU": {"AU-NT", "AU-QLD", "AU-SA", "AU-VIC", "AU-WA"},
+    # New Zealand's regions are admin-1 (iso_3166_2 NZ-AUK, NZ-BOP, NZ-OTA, ...),
+    # so no region-level dissolve is needed.
+    "NZ": {"NZ-AUK", "NZ-BOP", "NZ-OTA"},
 }
 
 
@@ -270,9 +276,13 @@ def build(features: list[dict], country: str, min_dist: float) -> tuple[dict, st
         path = _path_for(rings, lat0, fit, min_dist)
         if path:
             paths[code] = path
-    payload = {"viewBox": f"0 0 {w} {h}", "country": country, "subdivisions": paths}
+    # Sort by subdivision code so the output is byte-deterministic regardless of
+    # the set-iteration order upstream; otherwise a regeneration (e.g. the
+    # geometry-refresh workflow) produces spurious key-reordering diffs.
+    ordered = dict(sorted(paths.items()))
+    payload = {"viewBox": f"0 0 {w} {h}", "country": country, "subdivisions": ordered}
     body = json.dumps(payload, separators=(",", ":")) + "\n"
-    return paths, body, w, h
+    return ordered, body, w, h
 
 
 def main() -> int:
