@@ -3,6 +3,81 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  - id: bodo-verkehrsverbund
+    name: bodo Verkehrsverbund (Bodensee-Oberschwaben)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "769"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/bodo.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed covering the bodo tariff area's operators; counted
+      as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: vag-freiburg
+    name: Freiburger Verkehrs AG (VAG)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "1115"
+    is_official: false
+    static_gtfs_url: https://www.vag-freiburg.de/fileadmin/gtfs/VAGFR.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 from VAG Freiburg's own GTFS
+      download page; mark reuse as a dataset of VAG Freiburg with a link to the
+      download page.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.vag-freiburg.de/service-infos/downloads/gtfs-daten
+      terms_url: https://www.vag-freiburg.de/service-infos/downloads/gtfs-daten
+      scope: [gtfs_schedule]
+      attribution: Datensatz der VAG Freiburg.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: karlsruher-verkehrsverbund
+    name: Karlsruher Verkehrsverbund (KVV)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "2231"
+    is_official: false
+    static_gtfs_url: https://projekte.kvv-efa.de/GTFS/google_transit.zip
+    license_note: >-
+      CC0 per KVV's open data page; attribution is not legally required, but
+      GTFS Scorecard credits KVV as the source. KVV's TRIAS interface is
+      separately registration-gated; only the open GTFS download is used.
+    operating_note: >-
+      One association feed covering the KVV tariff area's operators; counted
+      as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.kvv.de/fahrplan/fahrplaene/open-data.html
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: Karlsruher Verkehrsverbund (KVV).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
   - id: vrn-rhein-neckar
     name: Verkehrsverbund Rhein-Neckar (VRN)
     country: DE
