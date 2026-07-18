@@ -57,3 +57,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: hamamatsu-bus-iwata
+    name: Hamamatsu Bus, Iwata routes (浜松バス／磐田市生活バス路線)
+    country: JP
+    subdivision_code: JP-22
+    subdivision_name: Shizuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hamabus/feeds/iwata_seikatsubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Hamamatsu Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Hamamatsu Bus
+      Co., Ltd.
+    operating_note: >-
+      Hamamatsu Bus's Iwata City life-line routes in Shizuoka; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hamabus.iwata_seikatsubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hamamatsu Bus Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

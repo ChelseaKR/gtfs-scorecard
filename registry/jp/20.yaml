@@ -33,3 +33,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: chikuma-city-loop-bus
+    name: Chikuma City Loop Bus (千曲市循環バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chikumacity/feeds/chikumajunkanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chikuma City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Chikuma City.
+    operating_note: >-
+      Chikuma City's circulating community bus; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chikumacity.chikumajunkanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chikuma City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kiso-town-bus
+    name: Kiso Town Public Transport (木曽町公共交通)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kisotown/feeds/kisotown/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Kiso Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kiso Town.
+    operating_note: >-
+      Kiso Town's community bus and shared transport network; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kisotown.kisotown
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kiso Town. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

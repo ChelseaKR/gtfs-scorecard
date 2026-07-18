@@ -62,3 +62,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: sanko-bus
+    name: Sanko Bus (産交バス)
+    country: JP
+    subdivision_code: JP-43
+    subdivision_name: Kumamoto
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sankobus/feeds/sankobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kyushu Sanko Bus Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Kyushu
+      Sanko Bus Co., Ltd.
+    operating_note: >-
+      Kyushu Sanko Bus's route network across Kumamoto Prefecture; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sankobus.sankobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kyushu Sanko Bus Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

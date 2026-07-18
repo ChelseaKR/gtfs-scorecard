@@ -54,3 +54,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: sakata-city-bus
+    name: Sakata City Bus (酒田市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sakatacity/feeds/SakataCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Sakata City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Sakata City.
+    operating_note: >-
+      Sakata City's municipal bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sakatacity.SakataCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sakata City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yamagata-railway
+    name: Yamagata Railway (山形鉄道)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yamagatatetsudo/feeds/flowerliner/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yamagata Railway Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Yamagata
+      Railway Co., Ltd.
+    operating_note: >-
+      Yamagata Railway's Flower Nagai Line in inland Yamagata; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yamagatatetsudo.flowerliner
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yamagata Railway Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

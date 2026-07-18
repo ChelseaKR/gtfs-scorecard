@@ -33,3 +33,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ichinoseki-city-bus
+    name: Ichinoseki City Bus (一関市市営バス)
+    country: JP
+    subdivision_code: JP-03
+    subdivision_name: Iwate
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ichinosekicity/feeds/Ichinosekibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ichinoseki City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ichinoseki City.
+    operating_note: >-
+      Ichinoseki City's municipal bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ichinosekicity.Ichinosekibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ichinoseki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

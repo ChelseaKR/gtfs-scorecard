@@ -56,3 +56,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: niimi-city-bus
+    name: Niimi City Bus (新見市営バス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/niimicity/feeds/niimishieibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Niimi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Niimi City.
+    operating_note: >-
+      Niimi City's municipal bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/niimicity.niimishieibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Niimi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

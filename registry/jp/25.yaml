@@ -33,3 +33,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: omihachiman-akakon-bus
+    name: Omihachiman City Akakon Bus (近江八幡市あかこんバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/omihachimancity/feeds/akakonbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Omihachiman City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Omihachiman City.
+    operating_note: >-
+      Omihachiman City's Akakon Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/omihachimancity.akakonbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Omihachiman City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

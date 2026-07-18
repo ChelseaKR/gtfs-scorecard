@@ -59,3 +59,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: goshogawara-city-community-bus
+    name: Goshogawara City Community Bus (五所川原市コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/goshogawaracity/feeds/goshogawara-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Goshogawara City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Goshogawara City.
+    operating_note: >-
+      Goshogawara City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/goshogawaracity.goshogawara-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Goshogawara City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

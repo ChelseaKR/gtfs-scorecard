@@ -33,3 +33,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: nonoichi-city-community-bus
+    name: Nonoichi City Community Bus (野々市市コミュニティバス)
+    country: JP
+    subdivision_code: JP-17
+    subdivision_name: Ishikawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nonoichicity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nonoichi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nonoichi City.
+    operating_note: >-
+      Nonoichi City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nonoichicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nonoichi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -57,3 +57,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: iga-city-community-bus
+    name: Iga City Community Bus (伊賀市行政バス・コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/igacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Iga City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Iga City.
+    operating_note: >-
+      Iga City's administrative and community bus network; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/igacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Iga City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ise-railway
+    name: Ise Railway (伊勢鉄道)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/isetetu/feeds/iserailway/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ise Railway Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Ise Railway
+      Co., Ltd.
+    operating_note: >-
+      The Ise Railway Ise Line between Kawarada and Tsu in Mie; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/isetetu.iserailway
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ise Railway Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

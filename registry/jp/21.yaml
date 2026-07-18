@@ -31,3 +31,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: gifu-city-community-bus
+    name: Gifu City Community Bus (岐阜市コミュニティバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gifucity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Gifu City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Gifu City.
+    operating_note: >-
+      Gifu City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gifucity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gifu City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: akechi-railway
+    name: Akechi Railway (明知鉄道)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/aketetsu/feeds/akechirailway/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Akechi Railway Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Akechi Railway
+      Co., Ltd.
+    operating_note: >-
+      The Akechi Line between Ena and Akechi in eastern Gifu; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/aketetsu.akechirailway
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Akechi Railway Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

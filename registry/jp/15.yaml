@@ -33,3 +33,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kamo-city-kamon-bus
+    name: Kamo City Kamon Bus (加茂市営バス「かもんバス」)
+    country: JP
+    subdivision_code: JP-15
+    subdivision_name: Niigata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamocity/feeds/kamonbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kamo City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kamo City.
+    operating_note: >-
+      Kamo City's municipal Kamon Bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamocity.kamonbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kamo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
