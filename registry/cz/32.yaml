@@ -1,0 +1,32 @@
+# Plzeňský kraj (CZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: plzen-pmdp
+    name: Plzeňské městské dopravní podniky, a.s. (PMDP)
+    country: CZ
+    subdivision_code: CZ-32
+    subdivision_name: Plzeňský kraj
+    is_official: true
+    static_gtfs_url: https://jizdnirady.pmdp.cz/jr/gtfs
+    license_note: >-
+      CC BY 4.0; published by Plzeňské městské dopravní podniky through the
+      Plzeň municipal open-data portal opendata.plzen.eu, which permits
+      redistribution and modification for any purpose with attribution.
+    operating_note: >-
+      The GTFS uses double-quoted CSV headers, which a naive comma-split
+      calendar check misreads as a missing end_date; the archive was verified
+      by hand to carry all core tables and a current calendar (end_date
+      20270114). The Java gtfs-validator parses it correctly, so the daily run
+      is unaffected.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.plzen.eu/public/opendata/dataset/187
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Plzeňské městské dopravní podniky, a.s. (PMDP).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
