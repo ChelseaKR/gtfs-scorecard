@@ -53,6 +53,143 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: ding-verkehrsverbund
+    name: Donau-Iller-Nahverkehrsverbund (DING)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "770"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/ding.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Donau-Iller region, which reaches across
+      the Bavarian border around Ulm and Neu-Ulm; counted as one feed record,
+      not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: ostalbmobil
+    name: OstalbMobil
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "772"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/oam.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Ostalb district's operators; counted as
+      one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: vgf-freudenstadt
+    name: Verkehrs-Gemeinschaft Landkreis Freudenstadt (VGF)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "774"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_ohne_liniennetz/vgf.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. This export ships without route shapes.
+    operating_note: >-
+      One association feed for the Freudenstadt district's operators; counted
+      as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: Datensatz der NVBW GmbH.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: tgo-ortenau
+    name: Tarifverbund Ortenau (TGO)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "900"
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/tgo.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Ortenau district's operators; counted as
+      one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: kreisverkehr-schwaebisch-hall
+    name: Kreisverkehr Schwäbisch-Hall
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "1082"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/kvsh.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Schwäbisch Hall district's operators;
+      counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
   - id: karlsruher-verkehrsverbund
     name: Karlsruher Verkehrsverbund (KVV)
     country: DE
@@ -75,6 +212,33 @@ agencies:
       terms_url: https://creativecommons.org/publicdomain/zero/1.0/
       scope: [gtfs_schedule]
       attribution: Karlsruher Verkehrsverbund (KVV).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: vrn-rhein-neckar
+    name: Verkehrsverbund Rhein-Neckar (VRN)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "1173"
+    is_official: false
+    static_gtfs_url: https://geoportal.vrn.de/services/sharing/rest/content/items/4ec4b1d131eb46a6bb8e216ce9b90eff/data
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 per the dataset record on
+      VRN's open data portal; name Verkehrsverbund Rhein-Neckar GmbH as the
+      publisher.
+    operating_note: >-
+      One aggregate covering the VRN and RNN association areas across
+      Baden-Württemberg, Rheinland-Pfalz, and Hessen, filed under the
+      publisher's Mannheim seat; counted as one feed record, not a
+      distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.vrn.de/datasets/vrn-und-rnn-gtfs-sollfahrplandaten-aktuell
+      terms_url: https://www.govdata.de/dl-de/by-2-0
+      scope: [gtfs_schedule]
+      attribution: Verkehrsverbund Rhein-Neckar GmbH.
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true

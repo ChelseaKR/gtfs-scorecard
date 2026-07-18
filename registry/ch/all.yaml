@@ -7,6 +7,8 @@ agencies:
     name: Swiss demand-responsive services (SKI+)
     country: CH
     mdb_id: "2053"
+    organization_id: opentransportdata-swiss
+    feed_variant: GTFS-Flex demand-responsive collection
     is_official: true
     service_type: demand_response
     static_gtfs_url: https://data.opentransportdata.swiss/de/dataset/gtfsflex/permalink
@@ -27,4 +29,31 @@ agencies:
       attribution: "Source: opentransportdata.swiss. Analysis: GTFS Scorecard."
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
+      identity_reviewed: true
+  - id: swiss-national-timetable-2026
+    name: Swiss national timetable (opentransportdata.swiss)
+    country: CH
+    mdb_id: "2898"
+    organization_id: opentransportdata-swiss
+    feed_variant: National timetable 2026 (GTFS Schedule)
+    is_official: true
+    static_gtfs_url: https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020/permalink
+    license_note: >-
+      ODMCH terms permit obtaining, using, and publishing the data. Cite
+      opentransportdata.swiss, update raw data on the source cadence, and
+      publish processed analysis under GTFS Scorecard's name.
+    operating_note: >-
+      The national 2026 timetable aggregate for Swiss public transport,
+      published by SKI+ on opentransportdata.swiss; counted as one feed
+      record, not a distinct-agency count. The permalink serves the current
+      fp2026 export.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.opentransportdata.swiss/en/dataset/timetable-2026-gtfs2020
+      terms_url: https://opentransportdata.swiss/en/terms-of-use/
+      scope: [gtfs_schedule]
+      attribution: "Source: opentransportdata.swiss. Analysis: GTFS Scorecard."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
       identity_reviewed: true

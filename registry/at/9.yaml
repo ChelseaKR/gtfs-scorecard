@@ -1,0 +1,30 @@
+# Wien (AT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: wiener-linien
+    name: Wiener Linien
+    country: AT
+    subdivision_code: AT-9
+    subdivision_name: Wien
+    mdb_id: "648"
+    is_official: true
+    static_gtfs_url: https://www.wienerlinien.at/ogd_realtime/doku/ogd/gtfs/gtfs.zip
+    license_note: >-
+      CC BY 4.0 per the Stadt Wien dataset record on data.gv.at; the Wiener
+      Linien open data page states all Wiener Linien data is published under
+      CC BY with source credit, commercial use included.
+    operating_note: >-
+      Covers the Wiener Linien city network including Wiener Lokalbahnen
+      services; counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gv.at/datasets/ab4a73b6-1c2d-42e1-b4d9-049e04889cf0
+      terms_url: https://creativecommons.org/licenses/by/4.0/deed.de
+      scope: [gtfs_schedule]
+      attribution: "Datenquelle: Stadt Wien - Wiener Linien GmbH & Co KG."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
