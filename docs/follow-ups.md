@@ -58,7 +58,7 @@ history is not rewritten.
 
 ## Fan-out compute (`infra/compute`, roadmap Year 2)
 
-**Status: deferred, and not a plain `terraform apply`.** At ~1,222 configured feeds the
+**Status: deferred, and not a plain `terraform apply`.** At ~1,232 configured feeds the
 GitHub Actions matrix handles the daily run in well under an hour, so this is
 premature. More importantly, applying `infra/compute` stands up an EventBridge
 schedule that would run the pipeline **in addition to** the Actions cron — two
