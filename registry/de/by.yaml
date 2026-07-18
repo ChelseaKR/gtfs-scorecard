@@ -28,3 +28,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: mvv-munchen
+    name: Münchner Verkehrs- und Tarifverbund (MVV)
+    country: DE
+    subdivision_code: DE-BY
+    subdivision_name: Bayern
+    mdb_id: "779"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/storage/v1/b/mdb-latest/o/de-bayern-munchner-verkehrs-und-tarifverbund-mvv-gtfs-779.zip?alt=media
+    license_note: >-
+      CC BY per MVV's open data terms; commercial reuse is permitted with
+      attribution to MVV, the retrieval date, and the feed version.
+    operating_note: >-
+      The Munich region's transport association network. The direct download
+      is MobilityData's hosted mirror; the association rotates its own file
+      path.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.mvv-muenchen.de/service-hilfe/mvv-content-fuer-entwickler
+      terms_url: https://www.mvv-muenchen.de/service-hilfe/mvv-content-fuer-entwickler
+      scope: [gtfs_schedule]
+      attribution: >-
+        Münchner Verkehrs- und Tarifverbund GmbH (MVV).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

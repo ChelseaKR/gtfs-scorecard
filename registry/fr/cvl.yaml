@@ -24,3 +24,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: tao-orleans
+    name: TAO (Orléans Métropole)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83751/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Orléans Métropole (réseau TAO) and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-netex-et-gtfs-rt-reseau-tao-orleans-metropole
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Orléans Métropole (réseau TAO).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -23,6 +23,36 @@ def test_pilot_observed_codes_are_curated() -> None:
     assert not missing, f"add curated translations for: {missing}"
 
 
+# The most common untranslated validator notices across the scored corpus
+# (feeds-affected, from a scan of data/artifacts/*/latest.json). Each must
+# resolve to a curated translation, not the generic auto-humanized fallback.
+CORPUS_TOP_UNTRANSLATED_CODES = [
+    "unknown_file",
+    "service_window_outside_feed_period",
+    "missing_feed_contact_email_and_url",
+    "stop_too_far_from_shape_using_user_distance",
+    "big_gap_in_service",
+    "missing_required_column",
+    "equal_shape_distance_same_coordinates",
+    "trip_distance_exceeds_shape_distance_below_threshold",
+    "route_long_name_contains_short_name",
+    "stops_match_shape_out_of_order",
+    "leading_or_trailing_whitespaces",
+    "trip_headsign_matches_intermediate_stop",
+]
+
+
+def test_corpus_top_codes_are_curated_not_fallback() -> None:
+    for code in CORPUS_TOP_UNTRANSLATED_CODES:
+        assert code in TRANSLATIONS, f"missing curated translation for {code}"
+        t = translate(code)
+        # The fallback marks its what with this parenthetical and sends the
+        # reader to the rules page; a curated entry does neither.
+        assert "flagged by the MobilityData validator" not in t.what, code
+        assert RULES_URL not in t.fix, code
+        assert t is TRANSLATIONS[code], code
+
+
 def test_curated_entries_are_complete() -> None:
     for code, t in TRANSLATIONS.items():
         for part in (t.what, t.why, t.fix, t.effort):

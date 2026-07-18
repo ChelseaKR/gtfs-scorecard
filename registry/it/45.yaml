@@ -53,3 +53,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: tper-marconi-express
+    name: Marconi Express (TPER, Bologna)
+    country: IT
+    subdivision_code: IT-45
+    subdivision_name: Emilia-Romagna
+    mdb_id: "3041"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/storage/v1/b/mdb-latest/o/it-bologna-tper-marconi-gtfs-3041.zip?alt=media
+    license_note: >-
+      CC BY 3.0 Italia through TPER's open data; commercial reuse and
+      adaptation are permitted with attribution to TPER.
+    operating_note: >-
+      Bologna's Marconi Express airport people-mover. The direct download is
+      MobilityData's hosted mirror; the operator's export endpoint is version-
+      pinned.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://solweb.tper.it/web/tools/open-data/open-data.aspx
+      terms_url: https://creativecommons.org/licenses/by/3.0/it/
+      scope: [gtfs_schedule]
+      attribution: >-
+        TPER S.p.A.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
