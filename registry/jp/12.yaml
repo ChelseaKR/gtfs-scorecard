@@ -1,0 +1,35 @@
+# Chiba (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: kimitsu-community-bus
+    name: Kimitsu City Community Bus (君津市コミュニティバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kimitsucity/feeds/Kimitsu_City_Community_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Kimitsu City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kimitsu City's community bus network on the Bōsō Peninsula in Chiba;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kimitsucity.Kimitsu_City_Community_Bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kimitsu City. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

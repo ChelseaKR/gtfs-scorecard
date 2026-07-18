@@ -419,6 +419,68 @@ The review rejected more than it kept, and the rejections are the point:
   through third-party aggregator hosts (opentrans.it, busmaps.jp) rather than a
   first-party or national-portal source.
 
+## Japan gtfs-data.jp wave
+
+A substantial wave curated directly from Japan's national GTFS Data Repository
+([gtfs-data.jp](https://gtfs-data.jp/), operated by AIGID under the country's
+"standard bus information format" / GTFS-JP program). The repository publishes a
+machine-readable catalog (`https://api.gtfs-data.jp/v2/feeds`) of roughly 600
+operator feeds, most of them small municipal networks, each carrying an explicit
+open license, prefecture, calendar window, and stable download. The Mobility
+Database barely indexes this source, so it is where new Japanese coverage
+actually lives. The existing Toei, Donan Bus, Nasu Town, and the five
+Transitland-sourced municipal records already draw on the same open-data path.
+
+Eighteen records were added, one flagship feed per prefecture across eighteen
+prefectures not previously represented in Japan. Every candidate was confirmed
+to be an official municipality or municipal transit bureau, openly licensed
+(CC BY 4.0 or CC0 1.0, read from the repository's per-feed license field), and
+served as a live, non-key-gated GTFS zip. Each download was mechanically
+preflighted on 2026-07-18: a valid archive with the required tables and a
+service calendar current for the 2026 school year or later. None appears in the
+Mobility Database.
+
+CC BY 4.0:
+
+- **Hachinohe City Bus (八戸市営バス)** — Aomori (`JP-02`).
+- **Hanamaki City Community Bus (花巻市コミュニティバス)** — Iwate (`JP-03`).
+- **Shichigahama Town Community Bus (七ヶ浜町民バス「ぐるりんこ」)** — Miyagi (`JP-04`).
+- **Semboku City Bus (仙北市民バス)** — Akita (`JP-05`).
+- **Ota City Bus (太田市営バス)** — Gunma (`JP-10`).
+- **Kumagaya City Yuyu Bus (熊谷市ゆうゆうバス)** — Saitama (`JP-11`).
+- **Yokosuka City Hamachan Bus (横須賀市ハマちゃんバス)** — Kanagawa (`JP-14`).
+- **Tsubame City Community Bus (燕市コミュニティバス)** — Niigata (`JP-15`).
+- **Hakusan City Community Bus (白山市コミュニティバス「めぐーる」)** — Ishikawa (`JP-17`).
+- **Suwa City Karin-chan Bus (諏訪市かりんちゃんバス)** — Nagano (`JP-20`).
+- **Shimada City Community Bus (島田市コミュニティバス)** — Shizuoka (`JP-22`).
+- **Anjo City Ankuru Bus (安城市あんくるバス)** — Aichi (`JP-23`).
+- **Tsu City Community Bus (津市コミュニティバス)** — Mie (`JP-24`).
+- **Kusatsu City Mame Bus (草津市コミュニティバス「まめバス」)** — Shiga (`JP-25`).
+
+CC0 1.0 (public domain dedication):
+
+- **Yanaizu Town Community Bus (柳津町町民バス「ふれあい号」)** — Fukushima (`JP-07`).
+- **Yuki City Loop Bus (結城市巡回バス)** — Ibaraki (`JP-08`).
+- **Kimitsu City Community Bus (君津市コミュニティバス)** — Chiba (`JP-12`).
+- **Kai City Bus (甲斐市民バス)** — Yamanashi (`JP-19`).
+
+The wave was deliberately narrowed, and the choices are the point:
+
+- **Failed preflight:** Tsukuba City's つくバス (`tsukubacity.TSUKUBUS`, Ibaraki)
+  served an archive with no `trips.txt`, `stop_times.txt`, or service calendar,
+  so it is not a scoreable schedule feed. Ibaraki is instead represented by Yuki
+  City, whose archive preflighted cleanly. Nothing uncertain was kept.
+- **Held for a cleaner license:** the catalog also lists 52 feeds under
+  "CC BY 2.1 JP" and two under an unversioned "CC-BY". Only the current
+  CC BY 4.0 and CC0 1.0 licenses were admitted, so every attribution string is
+  exact.
+- **One feed per operator:** several cities publish many route-level feeds
+  (Saitama, Toyama, Nagano's 南信州 consortium, Mie's 三重交通). The wave takes a
+  single representative municipal feed from a prefecture rather than stacking one
+  operator's many exports, keeping the cohort broad instead of deep.
+- **Already tracked:** the six gtfs-data.jp feeds already in the registry (Nasu
+  Town, Higashine, Yonezawa, Uozu, Toki, Naruto) were excluded by construction.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
