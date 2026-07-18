@@ -204,14 +204,20 @@ These unblock more than one phase and are sequenced by first need.
   regions stay ordinary reviewed coverage with no beta label. The default is the
   latter until a named consumer asks for a specific region's beta, exactly as a
   consumer named European coverage.
-- **Alternative-catalog ingestion.** For regions the Mobility Database does not
-  cover, a reviewed way to discover feeds from national open-data portals and
-  regional aggregators, with the same identity and reuse review. This is what
-  actually raises non-Western coverage; catalog curation alone cannot. The first
-  concrete step is wiring [Transitland](https://www.transit.land/) in as a
-  second discovery source: it is an independently curated live catalog explicitly
-  designed as a crosswalk, and it is strongest exactly where the Mobility
-  Database is thin.
+- **Alternative-catalog ingestion (first source shipped).** For regions the
+  Mobility Database does not cover, a reviewed way to discover feeds from other
+  catalogs, national open-data portals, and regional aggregators, with the same
+  identity and reuse review. This is what actually raises non-Western coverage;
+  catalog curation alone cannot. The [Transitland](https://www.transit.land/)
+  Atlas is now wired in as a second discovery source: `scorecard sync --source
+  transitland` (or `all`) reads its keyless, CC-BY DMFR registry, emits the same
+  `CatalogFeed` shape the Mobility Database sync uses, and flows through the same
+  proposer, deduplication, and curator-review-before-registry workflow. It never
+  writes the registry directly and never guesses a feed's country — DMFR carries
+  no ISO location, so a Transitland candidate surfaces with its location blank
+  for the same review every feed gets. Key-gated feeds are flagged and skipped
+  exactly as with the Mobility Database. National open-data portals remain a
+  further source to add the same way.
 - **A named-license vocabulary for non-SPDX government terms.** Outside Europe,
   many official feeds carry a custom national open license with no SPDX
   identifier — Mexico's Términos de Libre Uso MX, Israel's government open terms,
