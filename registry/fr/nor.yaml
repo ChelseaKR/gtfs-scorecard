@@ -79,3 +79,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: semo-seine-eure
+    name: SEMO (Seine-Eure)
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    mdb_id: "1838"
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81338/download
+    license_note: >-
+      Licence Ouverte 2.0; published by the Communauté d'agglomération
+      Seine-Eure through France's National Access Point. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/semo-val-de-reuil-louviers-seine-eure-agglo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'agglomération Seine-Eure.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -65,3 +65,23 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: zoom-grand-chalon
+    name: Zoom (Le Grand Chalon)
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    mdb_id: "658"
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f11a3766-1fe3-40ff-8d5a-27eacda3d9a7
+    license_note: >-
+      Licence Ouverte 2.0; published by Le Grand Chalon (réseau Zoom) through
+      France's National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-zoom-le-grand-chalon-gtfs
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Le Grand Chalon.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

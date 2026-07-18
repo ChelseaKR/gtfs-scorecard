@@ -30,3 +30,32 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: avv-aachen
+    name: Aachener Verkehrsverbund (AVV)
+    country: DE
+    subdivision_code: DE-NW
+    subdivision_name: Nordrhein-Westfalen
+    mdb_id: "1094"
+    is_official: true
+    static_gtfs_url: https://opendata.avv.de/current_GTFS/AVV_GTFS_mit_SPNV.zip
+    license_note: >-
+      CC0 for the schedule data per AVV's open data licence and readme;
+      attribution is not legally required, but GTFS Scorecard credits AVV as the
+      source. Route shapes derive from OpenStreetMap and carry the OpenStreetMap
+      contributors credit under ODbL.
+    operating_note: >-
+      One association feed covering the AVV tariff area's operators around
+      Aachen, including regional rail (SPNV); counted as one feed record, not a
+      distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.avv.de/
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aachener Verkehrsverbund (AVV); route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

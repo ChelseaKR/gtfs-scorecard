@@ -1,6 +1,6 @@
 # Global expansion and European GTFS beta gate
 
-Last updated: 2026-07-17
+Last updated: 2026-07-18
 
 This plan separates four jobs that are easy to collapse into “go global”:
 measuring multilingual GTFS, curating representative coverage, localizing the
@@ -278,6 +278,28 @@ That published result predates the depth waves described above. The
 configured cohort now holds 63 reviewed records across 13 countries; the
 published gate document reports the new arithmetic after the next scored
 render, and the record count stays the only open criterion.
+
+### Fifth European wave on 2026-07-18
+
+A fifth wave led with non-United-Kingdom sources and added 16 reviewed feed
+records, moving the European cohort from 149 to 165 records across 18
+countries. It opened Slovenia as the eighteenth country with Ljubljana's LPP
+feed, published on the national OPSI portal under CC BY 4.0. The rest is depth
+in already-listed countries: nine in Germany (six Baden-Württemberg
+association feeds and the Calw district feed on NVBW's Datenlizenz Deutschland
+portal, VGN Nürnberg under CC BY-SA 3.0 as Bavaria's first record, AVV Aachen
+under CC0, and the gtfs.de long-distance rail aggregate under CC BY 4.0), two
+in France under the Licence Ouverte (SEMO in Normandie and the Zoom network in
+Chalon-sur-Saône), two in Italy under CC BY 3.0 Italia (TPER's Bologna and
+Ferrara networks, opening Emilia-Romagna), one in Spain (CRTM's interurban
+network under the consortium licence), and one in Portugal under CC0 (STCP in
+Porto). Every record carried a live license check, a mechanical download and
+current-calendar preflight, and an ISO 3166-2 subdivision review.
+
+The wave kept the balance criterion comfortable: the United Kingdom is now
+20.6% of the cohort (34 of 165), well under the 40% ceiling, and Germany the
+second-largest at 22. The 250-record threshold stays the only open criterion,
+and it still fails by design.
 
 ## Delivery sequence
 
