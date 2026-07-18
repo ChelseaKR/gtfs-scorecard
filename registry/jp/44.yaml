@@ -1,0 +1,33 @@
+# Oita (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: kusu-town-community-bus
+    name: Kusu Town Community Bus (玖珠町コミュニティバス)
+    country: JP
+    subdivision_code: JP-44
+    subdivision_name: Oita
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kusutown/feeds/kusucommunity-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Kusu Town through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kusu Town's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kusutown.kusucommunity-bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kusu Town. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

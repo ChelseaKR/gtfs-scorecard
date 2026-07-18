@@ -33,3 +33,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: yotsukaido-city-yoppii
+    name: Yotsukaido City Loop Bus Yoppii (四街道市内循環バス「ヨッピィ」)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yotsukaidocity/feeds/yoppii/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Yotsukaido City through the GTFS Data Repository
+      (gtfs-data.jp).
+    operating_note: >-
+      Yotsukaido City's Yoppii city loop bus (市内循環バス「ヨッピィ」); a second
+      Chiba feed record distinct from Kimitsu City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yotsukaidocity.yoppii
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yotsukaido City. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
