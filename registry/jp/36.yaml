@@ -82,3 +82,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: tokushima-bus
+    name: Tokushima Bus (徳島バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokubus/feeds/tokushimabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Tokushima Bus
+      Co., Ltd.
+    operating_note: >-
+      Tokushima Bus operates route services across eastern Tokushima; a
+      regional private operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokubus.tokushimabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: matsushige-town-bus
+    name: Matsushige Town Community Bus (松茂町地域コミュニティバス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsushigetown/feeds/matsushigetownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Matsushige Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Matsushige Town.
+    operating_note: >-
+      Matsushige Town's community bus near Tokushima Airport.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsushigetown.matsushigetownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Matsushige Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

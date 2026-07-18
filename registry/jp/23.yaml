@@ -104,3 +104,50 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: aoi-kotsu
+    name: Aoi Kotsu (あおい交通)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/aoi-komaki/feeds/aoikotsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Aoi Kotsu Co., Ltd. through
+      the GTFS Data Repository (gtfs-data.jp). Credit Aoi Kotsu Co., Ltd.
+    operating_note: >-
+      Aoi Kotsu operates route and community buses around Komaki in northern
+      Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/aoi-komaki.aoikotsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aoi Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kariya-city-karimaru
+    name: Kariya City Karimaru Bus (刈谷市コミュニティバス「かりまる」)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kariyacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kariya City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kariya City.
+    operating_note: >-
+      Kariya City's Karimaru community bus in central Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kariyacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kariya City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

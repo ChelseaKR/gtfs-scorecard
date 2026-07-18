@@ -125,3 +125,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: amagi-kanko-bus
+    name: Amagi Kanko Bus (甘木観光バス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/amagikankobus/feeds/AmagiKankoBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Amagi Kanko Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Amagi Kanko Bus
+      Co., Ltd.
+    operating_note: >-
+      Amagi Kanko Bus operates route services in the Asakura area of southern
+      Fukuoka.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/amagikankobus.AmagiKankoBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Amagi Kanko Bus Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: taiyo-kotsu-fukuoka
+    name: Taiyo Kotsu (太陽交通)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/taiyo-koutu/feeds/taiyo-koutu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Taiyo Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Taiyo Kotsu Co.,
+      Ltd.
+    operating_note: >-
+      Taiyo Kotsu operates route buses in Fukuoka Prefecture.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/taiyo-koutu.taiyo-koutu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Taiyo Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

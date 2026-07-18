@@ -79,3 +79,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kitaena-kotsu
+    name: Kitaena Kotsu (北恵那交通)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kitaena/feeds/kitaena/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kitaena Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kitaena Kotsu
+      Co., Ltd.
+    operating_note: >-
+      Kitaena Kotsu operates route buses around Nakatsugawa in eastern Gifu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kitaena.kitaena
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kitaena Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tono-railway-ena-bus
+    name: Tono Railway Ena Bus (東濃鉄道 恵那営業所)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tohtetsu/feeds/tohtetsu_ena/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tono Railway Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Tono Railway
+      Co., Ltd.
+    operating_note: >-
+      The Ena-depot route buses of Tono Railway (Tohtetsu Bus) in eastern
+      Gifu; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tohtetsu.tohtetsu_ena
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tono Railway Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

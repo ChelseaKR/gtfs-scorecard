@@ -53,3 +53,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ganu-area-shiokaze-line
+    name: Ganu Area Shiokaze Line (岩宇地域しおかぜライン)
+    country: JP
+    subdivision_code: JP-01
+    subdivision_name: Hokkaido
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gan-wu/feeds/shiokazeline/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by The Ganu Area Public
+      Transport Revitalization Council through the GTFS Data Repository (gtfs-
+      data.jp). Credit The Ganu Area Public Transport Revitalization Council.
+    operating_note: >-
+      The Shiokaze Line shared bus serving the Ganu area (Iwanai and the
+      neighbouring towns) of western Hokkaido.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gan-wu.shiokazeline
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        The Ganu Area Public Transport Revitalization Council. Published as
+        GTFS-JP open data through the GTFS Data Repository (gtfs-data.jp),
+        operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

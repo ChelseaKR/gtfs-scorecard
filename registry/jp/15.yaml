@@ -56,3 +56,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: itoigawa-bus
+    name: Itoigawa Bus (糸魚川バス)
+    country: JP
+    subdivision_code: JP-15
+    subdivision_name: Niigata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/itoigawabus/feeds/itoigawabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Itoigawa Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Itoigawa Bus
+      Co., Ltd.
+    operating_note: >-
+      Itoigawa Bus operates route services in the Itoigawa area of western
+      Niigata.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/itoigawabus.itoigawabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Itoigawa Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: joetsu-city-bus
+    name: Joetsu City Bus (上越市市営バス)
+    country: JP
+    subdivision_code: JP-15
+    subdivision_name: Niigata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/joetsucity/feeds/joetsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Joetsu City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Joetsu City.
+    operating_note: >-
+      Joetsu City's municipal bus in southwestern Niigata.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/joetsucity.joetsu
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Joetsu City. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

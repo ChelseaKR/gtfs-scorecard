@@ -104,3 +104,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: jr-shikoku-bus-kochi
+    name: JR Shikoku Bus, Kochi (JR四国バス 高知支店)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/jr-shikoku-bus-kochi/feeds/GTFS-JRbus_Otochi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by JR Shikoku Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit JR Shikoku Bus
+      Co., Ltd.
+    operating_note: >-
+      The Kochi-branch route buses of JR Shikoku Bus serving the Otochi area;
+      part of the JR Shikoku group.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/jr-shikoku-bus-kochi.GTFS-JRbus_Otochi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        JR Shikoku Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kochi-tobu-kotsu
+    name: Kochi Tobu Kotsu (高知東部交通)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-tobu-kotsu/feeds/GTFS-Tobutraffic_Localbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kochi Tobu Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kochi Tobu Kotsu
+      Co., Ltd.
+    operating_note: >-
+      Kochi Tobu Kotsu operates route buses along the eastern coast of Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-tobu-kotsu.GTFS-Tobutraffic_Localbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kochi Tobu Kotsu Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

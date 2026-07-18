@@ -102,3 +102,53 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: yamako-bus
+    name: Yamako Bus (山交バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yamakobus/feeds/YAMAKOBUS/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yamagata Kotsu Co., Ltd.
+      (Yamako Bus) through the GTFS Data Repository (gtfs-data.jp). Credit
+      Yamagata Kotsu Co., Ltd. (Yamako Bus).
+    operating_note: >-
+      The route bus network of Yamako Bus across the Yamagata area; a regional
+      private operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yamakobus.YAMAKOBUS
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yamagata Kotsu Co., Ltd. (Yamako Bus). Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shonai-kotsu
+    name: Shonai Kotsu (庄内交通)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shonaikotsu/feeds/SHONAIKOTSU/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shonai Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shonai Kotsu
+      Co., Ltd.
+    operating_note: >-
+      Shonai Kotsu operates route buses in the Shonai region of coastal
+      Yamagata.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shonaikotsu.SHONAIKOTSU
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shonai Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

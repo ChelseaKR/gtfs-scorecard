@@ -80,3 +80,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: toyama-chitetsu-tram
+    name: Toyama Chitetsu City Tram (富山地方鉄道市内電車)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitetsu/feeds/chitetsushinaidensha/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Toyama Chiho Railroad Co., Ltd. through the GTFS Data Repository (gtfs-
+      data.jp).
+    operating_note: >-
+      The Toyama city tram network run by Toyama Chiho Railroad; the streetcar
+      lines counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitetsu.chitetsushinaidensha
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama Chiho Railroad Co., Ltd. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

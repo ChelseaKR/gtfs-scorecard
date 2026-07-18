@@ -57,3 +57,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: koka-city-bus
+    name: Koka City Community Bus (甲賀市コミュニティバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kokacity/feeds/sinaicommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Koka City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Koka City.
+    operating_note: >-
+      Koka City's community bus in southern Shiga.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kokacity.sinaicommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Koka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takashima-city-bus
+    name: Takashima City Community Bus (高島市コミュニティバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takashimacity/feeds/takasimasicommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Takashima City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Takashima City.
+    operating_note: >-
+      Takashima City's community bus along the western shore of Lake Biwa.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takashimacity.takasimasicommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takashima City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -79,3 +79,49 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kagamino-town-bus
+    name: Kagamino Town Bus (鏡野町営バス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kagaminotown/feeds/kagaminotownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kagamino Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kagamino Town.
+    operating_note: >-
+      Kagamino Town's municipal bus in northern Okayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kagaminotown.kagaminotownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kagamino Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: hayashima-town-bus
+    name: Hayashima Town Community Bus (早島町コミュニティバス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hayashimatown/feeds/hayashimatowncommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Hayashima Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Hayashima Town.
+    operating_note: >-
+      Hayashima Town's community bus between Okayama and Kurashiki.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hayashimatown.hayashimatowncommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hayashima Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

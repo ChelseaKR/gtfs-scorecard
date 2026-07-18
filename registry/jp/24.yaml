@@ -106,3 +106,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: matsusaka-city-bus
+    name: Matsusaka City Community Transport (松阪市コミュニティ交通)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsusakacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Matsusaka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Matsusaka City.
+    operating_note: >-
+      Matsusaka City's community transport network in central Mie.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsusakacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Matsusaka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,400 feed records, still mostly in
+reference; the full registry has more than 1,500 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -874,6 +874,92 @@ The exclusions carry the discipline:
 - **Discontinued and expired:** the feeds the catalog flags as discontinued were
   excluded by construction, and any feed whose service calendar had already ended
   by the 2026-07-18 review was dropped.
+
+## Japan gtfs-data.jp fourth wave
+
+A fourth pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The three prior waves lifted Japan to 105 records across 40
+prefectures. This wave goes deeper again inside prefectures already represented,
+because the seven prefectures still missing after the third wave carry no feed at
+all in the catalog. Forty records were added, lifting Japan from 105 to 145
+records, still across 40 prefectures. Every candidate is a distinct operator not
+already tracked, confirmed official, and mechanically preflighted on 2026-07-18:
+the download was opened, its GTFS core tables and a current, non-expired service
+calendar were confirmed, its size was checked against the standard ingestion
+caps, and the archive was deleted after the check.
+
+The wave leans toward first-party private operators. About twenty of the forty
+are private bus and rail companies rather than municipal community buses, and it
+adds two rail feeds: the Toyama Chitetsu city tram and the Kumamoto Electric
+Railway train lines. The license mix of the forty is 35 CC BY 4.0, 3 CC BY 2.1 JP,
+and 2 CC0 1.0, the same three admitted licenses as before, with the exact version
+stated in each record's `license_note` and attribution.
+
+Twenty-five prefectures deepened, each operator distinct from those already
+tracked (license in parentheses where not CC BY 4.0):
+
+- **Hokkaido (`JP-01`)**: Ganu Area Shiokaze Line.
+- **Aomori (`JP-02`)**: Shimokita Kotsu, Towada Kanko Dentetsu.
+- **Iwate (`JP-03`)**: Oshu City Community Bus.
+- **Yamagata (`JP-06`)**: Yamako Bus, Shonai Kotsu.
+- **Ibaraki (`JP-08`)**: Otone Kotsu, Namegata City Bus.
+- **Tochigi (`JP-09`)**: Nikko City Bus.
+- **Gunma (`JP-10`)**: Oizumi Town Aozora Bus.
+- **Chiba (`JP-12`)**: Keisei Bus Chiba West.
+- **Tokyo (`JP-13`)**: Kozushima Village Bus.
+- **Niigata (`JP-15`)**: Itoigawa Bus, Joetsu City Bus (CC BY 2.1 JP).
+- **Toyama (`JP-16`)**: Toyama Chitetsu City Tram (CC0 1.0).
+- **Ishikawa (`JP-17`)**: Uchinada Town Community Bus.
+- **Yamanashi (`JP-19`)**: Ichikawamisato Town Community Bus.
+- **Nagano (`JP-20`)**: Chikuma Bus, Ueda Bus.
+- **Gifu (`JP-21`)**: Kitaena Kotsu, Tono Railway Ena Bus.
+- **Aichi (`JP-23`)**: Aoi Kotsu, Kariya City Karimaru Bus.
+- **Mie (`JP-24`)**: Matsusaka City Community Transport.
+- **Shiga (`JP-25`)**: Koka City Community Bus, Takashima City Community Bus.
+- **Hyogo (`JP-28`)**: Ono City Ran-Ran Bus (CC BY 2.1 JP), Tatsuno City
+  Community Bus (CC BY 2.1 JP).
+- **Wakayama (`JP-30`)**: Chuki Bus, Ryujin Bus.
+- **Okayama (`JP-33`)**: Kagamino Town Bus, Hayashima Town Community Bus.
+- **Tokushima (`JP-36`)**: Tokushima Bus, Matsushige Town Community Bus.
+- **Kochi (`JP-39`)**: JR Shikoku Bus (Kochi branch), Kochi Tobu Kotsu.
+- **Fukuoka (`JP-40`)**: Amagi Kanko Bus, Taiyo Kotsu.
+- **Kumamoto (`JP-43`)**: Kumamoto Bus, Kumamoto Electric Railway (CC0 1.0).
+
+The exclusions carry the discipline:
+
+- **Capped at forty for review quality:** the pass turned up 54 preflight-clean
+  new operators, more than the wave admits. The forty were chosen to keep the
+  cohort broad across prefectures and weighted toward private and rail operators.
+  Thirteen valid municipal feeds that preflighted cleanly were held for a later
+  wave rather than stacked here, among them Hiranai Town and Shinjo City,
+  Otawara City, Narita City, Arakawa City, Takaoka City, Shiojiri City, Gujo
+  City, Minamichita Town, the Tsu Airport Line shuttle, Tosa City, Yanagawa
+  City, and Otama Village.
+- **Not a public network:** the Radiant City Yokohama feed (Daishinto, Kanagawa)
+  is a shuttle for a single residential complex rather than a public network, so
+  it was left out.
+- **One feed per operator:** operators that publish only line-level or area-level
+  exports were passed over for whole-network feeds elsewhere. Nakatsu City (Oita)
+  publishes eighteen separate line feeds, Saitama City publishes its circulators
+  as per-ward and per-route shared-taxi feeds, Shizuoka City publishes five
+  district feeds, and Ugo Kotsu (Akita) publishes two area feeds with no single
+  whole-network feed. None yields one feed for the whole network, so all were
+  skipped.
+- **Unversioned or ambiguous license:** the catalog's two feeds under a bare
+  "CC-BY", with no resolvable version, stayed rejected. Only the three named,
+  versioned Creative Commons licenses were admitted.
+- **Discontinued and expired:** the feeds the catalog flags as discontinued were
+  excluded by construction, and feeds whose service calendar had already ended by
+  the 2026-07-18 review were filtered out before the shortlist. Every record kept
+  carries a calendar current at review time.
+- **Seven priority prefectures still empty:** Fukui (`JP-18`), Kyoto (`JP-26`),
+  Tottori (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`),
+  and Miyazaki (`JP-45`) still carry zero feeds under an admitted license
+  anywhere in the catalog. They stay unrepresented; no aggregator mirror
+  (busmaps.jp, opentrans.it) was used.
+- **Vein still deep:** after this wave the catalog still lists more than 250
+  admitted-license operators not yet tracked. The wave was capped for review
+  quality, not for lack of supply.
 
 ## Reviewed ferry cohort
 
