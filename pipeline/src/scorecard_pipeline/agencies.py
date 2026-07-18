@@ -241,6 +241,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             "state",
             "service_type",
             "fare_free",
+            "large_feed",
             "reuse_evidence",
         }
         if unknown:
@@ -268,6 +269,10 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         fare_free = entry.get("fare_free", False)
         if not isinstance(fare_free, bool):
             _fail(label, f"fare_free must be true or false, got {fare_free!r}", entry_source)
+
+        large_feed = entry.get("large_feed", False)
+        if not isinstance(large_feed, bool):
+            _fail(label, f"large_feed must be true or false, got {large_feed!r}", entry_source)
 
         organization_id = str(entry.get("organization_id") or "").strip()
         if organization_id and not ID_PATTERN.match(organization_id):
@@ -367,6 +372,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 state=state,
                 service_type=service_type,
                 fare_free=fare_free,
+                large_feed=large_feed,
                 reuse_evidence=reuse_evidence,
             )
         )

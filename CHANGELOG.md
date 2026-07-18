@@ -28,6 +28,17 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add a large-feed tier so official national and metropolitan feeds that exceed
+  the standard ingestion caps can be scored. A record opts in with
+  `large_feed: true`; the tier streams the download to disk with a bounded
+  memory footprint (`net.safe_download`), raises the size ceilings to a bounded
+  larger level (512 MiB download, 2 GiB single entry, 4 GiB total), and gives
+  the validator an explicit heap ceiling (`SCORECARD_LARGE_FEED_HEAP`, default
+  6g). The zip-bomb shape guards are unchanged. First feeds on the tier: Israel's
+  national feed, Melbourne (PTV), HSL Helsinki, Wiener Linien, and Carris
+  Metropolitana — the latter two were already tracked but failing the daily run
+  as over-cap until now. Verified end to end on HSL, whose `stop_times.txt`
+  expands to ~1 GiB.
 - Add the first official coverage outside Europe, North America, and Oceania
   (global coverage roadmap Phases 2-3): nine reviewed first-party open-data feed
   records — Belo Horizonte's two networks and Rio de Janeiro (Brazil, CC BY),
@@ -112,6 +123,9 @@ the declared public surface).
   default raw-profile comparison cohort.
 
 ### Fixed
+- Score Wiener Linien and HSL Helsinki, which the daily run had been rejecting
+  as over the single-entry cap since they were added, by moving them to the new
+  large-feed tier.
 - Read an otherwise unambiguous GTFS export through a deterministic flat view
   when every file is under one root folder or a filename has surrounding
   whitespace. Ambiguous layouts and post-trim collisions remain hard errors.

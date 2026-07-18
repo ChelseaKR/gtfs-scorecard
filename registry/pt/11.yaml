@@ -28,3 +28,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: carris-metropolitana
+    name: Carris Metropolitana
+    country: PT
+    subdivision_code: PT-11
+    subdivision_name: Lisboa
+    mdb_id: "2027"
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://api.carrismetropolitana.pt/gtfs
+    license_note: >-
+      CC BY 4.0 through Carris Metropolitana's official GTFS repository; credit
+      Carris Metropolitana. Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      The Lisbon metropolitan area bus network. Its largest table expands past
+      the standard single-entry ceiling, so it is scored on the large-feed tier;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://github.com/carrismetropolitana/gtfs
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Carris Metropolitana.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
