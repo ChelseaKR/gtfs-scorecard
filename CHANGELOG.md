@@ -28,6 +28,15 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Score the three national and regional feeds that had silently failed to
+  produce a scorecard: the gtfs.de Germany-wide aggregate, the Swiss national
+  timetable, and Verkehrsverbund Rhein-Neckar. Each unzips past the standard
+  archive-shape limits (the Swiss `stop_times.txt` alone reaches 2.4 GiB), so
+  the standard tier was rejecting them before the validator ever ran. All three
+  now carry `large_feed: true`, and the large-tier per-entry ceiling rises from
+  2 GiB to 3 GiB to admit a national timetable's `stop_times` table. This fills
+  the three gaps in the European cohort's scored coverage that were holding the
+  beta gate's translation and portable-location checks below 100%.
 - Grow reviewed coverage by 91 records to 1,609 and reach the European beta
   gate's 250 reviewed-feed-record threshold. Two more waves: a fifth gtfs-data.jp
   pass takes Japan from 145 to 185 records, and an eighth European wave adds 51
