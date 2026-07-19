@@ -851,6 +851,77 @@ The sweep rejected far more than it kept, and the rejections are the point:
   the note in this file). Taiwan's TDX feed for Taipei Metro
   (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
   does not ingest.
+
+## Asia-Pacific breadth wave (second pass)
+
+A second, portal-driven pass at non-Japan Asia-Pacific, aimed at new countries
+and new cities rather than depth. It went past the Transitland sweep above to
+the national open-data portals named for each target country: South Korea's
+data.go.kr, India's first-party transit portals, Taiwan's TDX, and the
+Australian state and New Zealand regional catalogs. The gate was the same
+fail-closed test used above: an official first-party publisher, an explicit open
+license that permits reuse including commercial use, a keyless direct download
+the pipeline can fetch, and a live current calendar. Every candidate was
+preflighted on 2026-07-18 and deleted after inspection.
+
+Two records were added, both new Malaysian subdivisions on the same official
+platform used above (`data.gov.my`, published under CC BY 4.0 and Malaysia's
+Government Open Data Terms of Use 1.0, which permits reuse including commercial
+use with attribution). Each preflighted as a valid archive with the GTFS core
+tables and a current calendar through 2026-10-16:
+
+- **BAS.MY Johor Bahru** (`MY-01`), operated by Causeway Link. The Johor Bahru
+  stage bus network.
+- **BAS.MY Melaka** (`MY-04`), operated by Causeway Link. The Melaka stage bus
+  network.
+
+These two town networks also appear in the Mobility Database, so the
+Transitland sweep above left them out under its stricter "not already in the
+catalog" gate. This wave admits official, openly licensed feeds for subdivisions
+the registry does not yet carry, with `data.gov.my` as the first-party source,
+so Johor (`MY-01`) and Melaka (`MY-04`) enter as new sub-national coverage.
+
+No new country qualified. The reasons are the point, and they cluster:
+
+- **API-key, OAuth, or registration walls (rejected):** South Korea's KTDB
+  serves GTFS-based data only through an application and data-request process,
+  and its published set is frozen at a March 2023 reference date; data.go.kr
+  carries no keyless GTFS download. India's Open Transit Data Delhi
+  (`otd.delhi.gov.in`) gates its static GTFS behind a usage form and a terms
+  agreement rather than a stable direct URL, and Bengaluru, Mumbai, and Chennai
+  surface only through aggregators. New Zealand's Christchurch (Environment
+  Canterbury) serves GTFS through the Metro developer portal and a
+  data-agreement wall. Singapore's LTA DataMall and New South Wales' Open Data
+  Hub both require developer keys, and Transport for NSW is also over the
+  download cap. Taiwan's TDX requires OAuth client credentials.
+- **Official but no explicit open license (fail closed):** New Zealand's Metlink
+  (Greater Wellington) publishes a clean, current, keyless GTFS at
+  `static.opendata.metlink.org.nz`, but the dataset carries a liability
+  disclaimer that reserves rights and grants no reuse permission, not CC BY or a
+  named open license. Sri Lanka's National Transport Commission has GTFS
+  development work but no first-party open-data download with a resolvable
+  license. Waikato Regional Council (BUSIT) exposes no dataset-level open license
+  for its feed.
+- **Host blocks automated download, or an unstable URL (rejected):** Tasmania's
+  Department of State Growth publishes GTFS under CC BY-SA 4.0, but its download
+  sits behind a Cloudflare challenge that returns 403 to non-browser clients, so
+  the pipeline cannot fetch it, and the file uses a dated versioned name rather
+  than a stable URL. Transport Canberra's older ACTION feed on `data.act.gov.au`
+  (CC BY 4.0) now 403s, and its current MyWay+ GTFS requires an access key.
+- **Community, aggregator, or non-first-party (partnership-gated, not
+  curation):** Indonesia has no official city GTFS beyond the catalog's
+  TransJakarta; other cities are community exports. The Manila feed is community
+  and app-challenge data. Vietnam's Hanoi feed is hosted by the World Bank data
+  catalog and split into time-of-day files rather than a first-party Vietnamese
+  source, and Ho Chi Minh City publishes none. Nepal and Bangladesh have only
+  community-mapped data. These wait for the roadmap's partnership-gated phase.
+- **Same platform, held on data quality:** the other `data.gov.my` BAS.MY town
+  networks did not pass preflight. Alor Setar, Kota Bharu, Kuala Terengganu, and
+  Kuching return archives with zero trips at present, so they were held as
+  stubs. Ipoh and both Seremban feeds carry service, but their calendars end on
+  the review date with no `calendar_dates` extension, so they were held on
+  freshness.
+
 ## Japan gtfs-data.jp second wave
 
 A deeper pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
