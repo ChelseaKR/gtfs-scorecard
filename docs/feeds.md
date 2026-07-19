@@ -1177,6 +1177,86 @@ The exclusions carry the discipline:
   After this wave the catalog still lists well over 200 admitted-license operators
   not yet tracked.
 
+## Middle East and Africa breadth wave
+
+A breadth pass across Turkey beyond İzmir, the Gulf, North Africa, and
+sub-Saharan Africa under the [global coverage roadmap](global-coverage-roadmap.md)
+Phases 3 and 4, aimed at new countries and new cities with one representative
+feed each. The gate was fail-closed: admit only an official first-party
+publisher with an explicit, resolvable open license (CC BY, CC0, or a confirmed
+national open-data license that permits commercial reuse) whose feed downloads
+as a single current GTFS archive within the ingestion caps. Sources were the
+Mobility Database catalog, the Transitland Atlas, and the municipal open-data
+portals named below, all checked by hand on 2026-07-18.
+
+No candidate cleared the gate, so no record was added and the registry total is
+unchanged at 1,609. That is the expected result here, not a shortfall. This
+region carries the least official-open GTFS and the most community-mapped GTFS
+in the catalog, and holding the partnership gate firmly is the point of the
+review. The existing İzmir metro and tram records (CC BY 4.0, İzmir Metropolitan
+Municipality) and the size-deferred Israel national feed remain the region's
+only tracked entries. The rejections below are the deliverable.
+
+Rejected or deferred, grouped by reason:
+
+- **Official and openly licensed, but not a single GTFS archive.** İstanbul's
+  İETT network is on the İstanbul Metropolitan Municipality open-data portal
+  (`data.ibb.gov.tr`) under the İBB Açık Veri Lisansı, whose text equates it to
+  CC BY 4.0 and permits commercial reuse, and it was current (updated
+  2026-04-21). Both the İETT dataset and the wider public-transport dataset
+  (metro, Marmaray, ferries) expose the GTFS tables only as separate `.csv`
+  resources, with no bundled `.zip` of `.txt` files. The pipeline ingests one
+  GTFS archive per feed, so an unbundled CSV-resource dataset fails preflight.
+  Kocaeli (`veri.kocaeli.bel.tr`, CC BY, mdb 2710) publishes the same way; its
+  catalog record notes "individual text files provided." Metro İstanbul publishes
+  no separate GTFS of its own.
+- **No reviewable open license (fail closed).** Abu Dhabi's Integrated Transport
+  Centre feed (mdb 1329) states no license, and its catalog download is a
+  session-scoped `pubftp.dmt.gov.ae` weblink rather than a stable URL; the ITC
+  open-data page now returns 404. Isparta's private-operator feed
+  (`ots.kentekspress.com.tr`, mdb 2381) states no license and its URL returns a
+  redirect loop. Lagos State Waterways (mdb 3144) is current but carries no reuse
+  license, as already recorded in the Africa licensing hold below.
+- **Registration wall or non-first-party mirror.** Dubai RTA (mdb 904) is marked
+  inactive and its only catalog download is a Transitland community archive, not
+  a first-party file; the RTA GTFS itself sits behind Dubai Pulse registration.
+- **Dead aggregator or no license.** Algeria's SNTF national rail (mdb 1199) and
+  Tunisia's SRTMedenine (mdb 1158) resolve only to the defunct transitfeeds
+  aggregator and state no license.
+- **Non-commercial license.** Cairo Metro (mdb 3354 and 786) is served by
+  Transport for Cairo under CC BY-NC-SA, which the project does not admit.
+- **No official open GTFS found.** Qatar, Saudi Arabia, Bahrain, Kuwait, Jordan,
+  and Oman have no GTFS in the Mobility Database, and their transport authorities
+  publish through consumer apps or registration-gated portals rather than an open
+  feed. Mwasalat (Oman) serves a current national feed with no published reuse
+  license, as recorded in the Transitland non-Western sweep. Turkey's Bursa,
+  Ankara, and Antalya portals did not resolve from the review environment and are
+  not in the catalog as ingestible open feeds.
+
+**Partnership-gated community data, held out by design.** The largest body of
+African GTFS is community-mapped or survey-produced, and the roadmap's
+partnership-gated phase keeps it out of catalog curation until a named local
+steward owns licensing, source verification, and consent
+([global coverage roadmap](global-coverage-roadmap.md) Phase 4,
+[ADR 0028](decisions/0028-global-south-pilot.md)). Every sub-Saharan African
+feed in the catalog resolves to a
+[Digital Transport for Africa](https://digitaltransport4africa.org/) repository
+on `git.digitaltransport4africa.org` or `gitlab.com/digitaltransport`, several
+under ODbL: Abidjan (Côte d'Ivoire), Douala (Cameroon, Socatur), Addis Ababa
+(Ethiopia), Accra and Kumasi (Ghana), Nairobi (Kenya, DigitalMatatus), Kampala
+(Uganda, 14-seater paratransit), Kigali (Rwanda), Tétouan (Morocco, Vitalis),
+and Stellenbosch (South Africa). Held out and logged even where openly licensed.
+Two more sit in the same partnership-gated bucket: Morocco's ONCF national rail
+(mdb 3049), whose only catalog download is a personal GitHub scrape under ODbL
+rather than an ONCF-published feed, and Algoa Bus (South Africa, mdb 3133),
+served from a personal Google Drive link with no license.
+
+Cape Town's MyCiTi was checked as the roadmap named it. The City of Cape Town
+open-data portal did not surface a first-party GTFS download, and the widely
+mirrored South African feeds are produced by WhereIsMyTransport or GoMetro rather
+than a municipal open-data program. They stay partnership-gated, and no South
+African feed was added.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
