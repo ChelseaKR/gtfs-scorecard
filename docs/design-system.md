@@ -28,12 +28,19 @@ spacing, and hierarchy should help an agency act rather than dramatize failure.
 Put the next useful action before exhaustive evidence; keep all evidence
 available in the same document.
 
+The landing page uses a separate public-bulletin journey. It establishes the
+publication, places a real scorecard above the fold, lets the reader inspect its
+categories and fixes, traces the selected fix to source evidence, routes that
+evidence to five kinds of work, and states the operating boundaries. This is
+an operational index, not a marketing-page variant of the agency report.
+
 ## Sources of truth
 
 | Concern | Canonical source |
 | --- | --- |
 | Shared tokens, components, themes, responsive and print rules | `web/src/styles.css` |
 | Landing-page composition and its mirrored tokens | `web/index.html` |
+| Landing scorecard data loading and interaction | `web/src/landing-scorecard.js` |
 | Generated markup, including agency reports | `pipeline/src/scorecard_pipeline/render_site.py` |
 | Shared header, navigation, footer, and static-page sync | `pipeline/src/scorecard_pipeline/site_shell.py` |
 | Theme interaction | `web/src/theme.js` |
@@ -151,11 +158,14 @@ icons may use smaller values; new layout gaps should use the scale.
 - A related heading and body are normally `0.5–0.9rem` apart.
 - Major report sections receive about `2.4rem` of separation, usually carried
   by `.route-rule` rather than an empty decorative panel.
-- Default corners use `--radius: 10px`. Pills use a full radius; grade and stop
-  markers are circles. Do not introduce unrelated corner families.
+- Default report and application corners use `--radius: 10px`. Pills use a full
+  radius; grade and stop markers are circles. The landing bulletin is a scoped
+  exception: its publication rules, ledgers, and action blocks are square or
+  nearly square. Do not carry that exception into report cards.
 - Use `--shadow` only where elevation communicates a bounded, selectable, or
-  summary object. Long evidence sections and departure-board rows use rules,
-  not a stack of floating cards.
+  summary object. Long evidence sections, departure-board rows, and landing
+  ledgers use rules, not a stack of floating cards. Landing actions stay flat;
+  signal yellow, keylines, and labels carry their hierarchy.
 
 ## Layout and breakpoints
 
@@ -169,6 +179,15 @@ visually secondary item ahead of a primary item for assistive technology.
 | `.section-grid` | One column by default, two columns at `900px` |
 | `.site-header > .wrap` | Full chrome lane up to `90rem` |
 | `.agency-report` | Inherits the `78rem` wide report canvas; at `64rem` it reserves a readable content column plus the `.report-route` rail |
+
+The landing page mirrors the tokens but owns a wider local `.wrap` of
+`min(1340px, 92vw)`. Its bulletin columns, ledgers, and prose measures provide
+the reading boundaries inside that canvas. At `900px`, the service desk becomes
+one source-ordered column, its category and fix areas stack, and the selected
+fix trace becomes a vertical left rail. At `720px`, dense scope lists become
+single-column lists. On phones the record follows the main question before the
+directory search and coverage counts, so a real grade appears in the first
+screen without changing reading order.
 
 Existing responsive thresholds are deliberate boundaries, not device labels:
 
@@ -233,6 +252,116 @@ Never solve overflow by shrinking body text or interactive targets.
   disabled, and `:focus-visible` states.
 - A map is progressive enhancement. Keep the route table, stop list, agency
   list, or other equivalent data in the document.
+
+## Signature pattern: public feed bulletin
+
+The landing page is a public feed-quality bulletin. Its distinctiveness comes
+from treating published evidence like an operating document, not from adding
+decoration to a conventional hero and card grid. The canonical implementation
+is split between `web/index.html` and `web/src/landing-scorecard.js` and has
+five required parts.
+
+### Bulletin masthead and coverage ledger
+
+`.bulletin-hero` begins with `.bulletin-meta`, which identifies the publication
+and links to the last-run completion record. `.service-desk` pairs the main
+question with a real published scorecard, the opt-in directory search, two
+concrete entry actions, and a semantic coverage `<dl>`. Keep the following
+contracts:
+
+- Distinguish curated feed records from published scorecards. Neither number
+  is an agency count.
+- Describe monitoring as scheduled and link to observed completion evidence.
+- State that the service is free and does not require a login or realtime feed.
+- Lead with the agency reader's question. Avoid a generic product slogan.
+- Keep the published-directory route and the private, in-browser ZIP check as
+  separate actions.
+
+The coverage ledger is evidence, not a row of decorative proof points. Use
+`<dl>`, visible labels, and current rounded counts. On small screens it follows
+the active scorecard and directory tools rather than delaying the grade.
+The first-screen ledger names the worldwide footprint as 30+ countries; the
+operating notes separately disclose that most published records remain in the
+United States and Canada.
+
+### Interactive scorecard desk
+
+`#live-scorecard` renders one published artifact without recalculating its
+score. Unitrans and Yolobus are switchable home-pilot examples, not a comparison
+or ranking. The selected record exposes its dated grade, four category results,
+and any prioritized fixes in that snapshot. Category controls reveal the published summary;
+fix controls update the plain-language evidence and the source trace below.
+
+The progressively enhanced script fetches each selected record from
+`/data/artifacts/{agency_id}/latest.json`, validates a minimal response contract,
+retains the last good record on failure, and caches successful requests. The
+larger agency-name file loads only after a reader searches. Never fetch an
+aggregate directory merely to render the default scorecard. Realtime without a
+published measurement remains “Not measured,” has no meter, and is never
+rendered as zero.
+
+Every state must remain keyboard operable and shareable through the `feed`,
+`fix`, and `category` URL parameters. Selection leaves focus on the activating
+control. Status announcements are concise; changing the whole scorecard is not
+an assertive live region. The static Unitrans record and durable pilot links
+remain useful if JavaScript or the artifact request fails.
+
+### Functional feed-inspection route
+
+`.inspection` and its ordered `.route-track` show the evidence behind the fix
+selected in the scorecard desk. The stop order is fixed:
+
+1. Name the source field and file.
+2. State the measurement or validation check that produced the finding.
+3. Retain the traceable scorecard or canonical validator finding code.
+4. Link the finding to its dated published record.
+
+The route line and stop pips reinforce the ordered list but do not carry its
+meaning. Its visible values update from the active fix. Correctness findings may
+come from the canonical MobilityData validator; freshness, rider-experience,
+and realtime findings use the disclosed scorecard measurements. Do not label a
+scorecard-generated finding as a validator notice. The static default must read
+correctly without CSS or JavaScript. At `900px` it becomes one vertical sequence
+in the same DOM order.
+
+### Five-row scope ledger
+
+`.service-index` exposes the shipped product as one `.scope-ledger`, not a wall
+of equal cards. Every `.scope-row` is a labelled `<section>` with a work code,
+audience, short purpose, and visible links. The canonical row order is:
+
+| Code | Job |
+| --- | --- |
+| `AGENCY` | Work with one agency |
+| `PROGRAM` | Support a program or regional portfolio |
+| `FEATURES` | Find rider-facing and accessibility features |
+| `FEED BENCH` | Check and improve a feed before release |
+| `DATA` | Reuse the evidence in another workflow |
+
+Keep all five rows visible in the document. Do not move them into tabs,
+carousels, or closed disclosures. The ledger may consolidate related links,
+but it must continue to expose scorecards and history, meeting-ready outputs,
+program views, maps, regional modules, alerts, feature evidence, pre-publish
+tools, release gates, open downloads, browser SQL, the versioned API, and the
+read-only MCP server.
+
+### Explicit operating boundaries
+
+`.operating-notes` uses a visible `<dl>` because scope limitations are part of
+the product contract. Do not move these notes into fine print, the footer, or a
+closed disclosure. It must state:
+
+- The same disclosed quality core applies wherever a covered feed is published.
+- Coverage is not a census, and an absent place is not a poor result.
+- Regional modules apply only where their source data applies and do not alter
+  the worldwide quality grade.
+- Missing realtime is “not measured,” and the scorecard is not a determination
+  of legal compliance or transit service quality.
+
+The closing `.movement` section applies the same discipline to history: name a
+feed movement only when checks share a comparable measurement contract. The
+footer repeats the small-agency, open-source, Yolo County pilot framing and the
+compliance boundary.
 
 ## Signature pattern: report route
 
@@ -303,7 +432,7 @@ report markup. Use representative data states, not only the cleanest agency.
 
 | Surface | Desktop check (`1440×900`) | Mobile check (`390×844`) | Required variants |
 | --- | --- | --- | --- |
-| Landing page | Hero hierarchy, proof band, section rhythm, footer, no lazy-render blank gaps after scrolling | No clipped hero, reachable navigation/actions, readable samples | System/light/dark/contrast; reduced motion |
+| Landing page | Bulletin issue line, real scorecard desk, pilot/directory/category/fix controls, selected-fix trace, five-row scope ledger, operating notes, movement band, grouped footer | Question then real record; tools and coverage follow; trace becomes one vertical sequence; `44px` controls and no page overflow | System/light/dark/contrast; reduced motion; measured and unmeasured realtime; request failure; current counts and working status link |
 | Agency directory | Search/facets, grade rows, expired groups, readable density | `44px` controls, cards stack, no page overflow | Empty search, expired, long agency name |
 | Agency report | Overview and top fix dominate; report route sticks without overlap; wide evidence uses available space | Report route remains usable; alerts stack; maps/tables contain overflow | A–F, all-clear, no map, no history, long finding, non-US |
 | Tools/check/try | One primary action, form labels and errors, code and upload regions | Inputs and buttons fill safely; keyboard is not obscured | Loading, success, validation error, no JavaScript |
