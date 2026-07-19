@@ -1,0 +1,952 @@
+# British Columbia (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bc-transit-kamloops
+    name: BC Transit (Kamloops Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2551"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Kamloops; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-kelowna
+    name: BC Transit (Kelowna Regional Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2555"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=47
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Kelowna
+      region; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-victoria
+    name: BC Transit (Victoria Regional Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2571"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Victoria
+      region; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-nanaimo
+    name: BC Transit (Nanaimo Regional Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2473"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Nanaimo
+      region; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-central-fraser-valley
+    name: BC Transit (Central Fraser Valley Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "1991"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Central Fraser
+      Valley (Abbotsford, Chilliwack, Agassiz-Harrison, and Hope);
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-bulkley-nechako-prince-george
+    name: BC Transit (Bulkley-Nechako and Prince George Transit Systems)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2510"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=22
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Bulkley-
+      Nechako region and Prince George; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-shuswap-vernon
+    name: BC Transit (Shuswap and Vernon Regional Transit Systems)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2508"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=14
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Shuswap and
+      Vernon regions; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-comox-valley
+    name: BC Transit (Comox Valley Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2524"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Comox Valley;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-cowichan-valley
+    name: BC Transit (Cowichan Valley Regional Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2528"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Cowichan
+      Valley; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-south-okanagan-similkameen
+    name: BC Transit (South Okanagan-Similkameen Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2532"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the South
+      Okanagan-Similkameen region; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-columbia-valley
+    name: BC Transit (Columbia Valley, Cranbrook, Elk Valley, and Kimberley)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2520"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=21
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Columbia
+      Valley, Cranbrook, the Elk Valley, and Kimberley; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-campbell-river
+    name: BC Transit (Campbell River Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2514"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Campbell River;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-sunshine-coast
+    name: BC Transit (Sunshine Coast Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2567"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=18
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Sunshine
+      Coast; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-whistler
+    name: BC Transit (Whistler Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2583"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Whistler; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-squamish
+    name: BC Transit (Squamish Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2563"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Squamish; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-west-kootenay
+    name: BC Transit (West Kootenay Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2579"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=20
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the West Kootenay
+      region (Nelson, Castlegar, and Trail); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-hazelton-kitimat-terrace
+    name: BC Transit (Hazelton, Kitimat, and Terrace)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2462"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=26
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Hazelton, Kitimat,
+      and Terrace; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-fort-st-john
+    name: BC Transit (Fort St. John Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2547"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=28
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Fort St. John;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-dawson-creek
+    name: BC Transit (Dawson Creek Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "710"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=27
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Dawson Creek;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-port-alberni
+    name: BC Transit (Port Alberni Regional Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "761"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Port Alberni
+      region; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-port-edward-prince-rupert
+    name: BC Transit (Port Edward and Prince Rupert Transit Systems)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2543"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=23
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Port Edward and
+      Prince Rupert; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-powell-river
+    name: BC Transit (Powell River Regional Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2529"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=29
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Powell River;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-quesnel
+    name: BC Transit (Quesnel Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2463"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=32
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Quesnel; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-williams-lake
+    name: BC Transit (Williams Lake Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2587"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=33
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Williams Lake;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-revelstoke
+    name: BC Transit (Revelstoke Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2464"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=36
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Revelstoke;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-salt-spring-island
+    name: BC Transit (Salt Spring Island Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2466"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=39
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Salt Spring
+      Island; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-mount-waddington
+    name: BC Transit (Mount Waddington Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2467"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=17
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Mount
+      Waddington region; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-ashcroft-cache-creek-clinton
+    name: BC Transit (Ashcroft-Cache Creek-Clinton Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2468"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=38
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Ashcroft, Cache
+      Creek, and Clinton; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-100-mile-house
+    name: BC Transit (100 Mile House Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2469"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=34
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for 100 Mile House;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-pemberton-valley
+    name: BC Transit (Pemberton Valley Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2470"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Pemberton
+      Valley; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-merritt
+    name: BC Transit (Merritt Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2471"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=37
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Merritt; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-smithers
+    name: BC Transit (Smithers Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2472"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=31
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Smithers; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-clearwater
+    name: BC Transit (Clearwater Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2515"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=35
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for Clearwater;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-creston-valley
+    name: BC Transit (Creston Valley Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2536"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=16
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the Creston
+      Valley; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: bc-transit-west-coast
+    name: BC Transit (West Coast Transit System)
+    country: CA
+    subdivision_code: CA-BC
+    subdivision_name: British Columbia
+    mdb_id: "2575"
+    is_official: true
+    static_gtfs_url: https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=51
+    license_note: >-
+      BC Transit Open Data Terms of Use: a non-exclusive licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to BC Transit as the source. A custom government
+      licence, not Creative Commons. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One BC Transit regional transit system feed for the West Coast
+      (Tofino and Ucluelet); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.bctransit.com/open-data/
+      terms_url: https://www.bctransit.com/open-data/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: BC Transit.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

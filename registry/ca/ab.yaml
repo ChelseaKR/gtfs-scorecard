@@ -1,0 +1,28 @@
+# Alberta (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: calgary-transit
+    name: Calgary Transit
+    country: CA
+    subdivision_code: CA-AB
+    subdivision_name: Alberta
+    mdb_id: "712"
+    is_official: true
+    static_gtfs_url: https://data.calgary.ca/download/npk7-z3bj/application%2Fzip
+    license_note: >-
+      Open Government Licence – City of Calgary: a worldwide, royalty-
+      free, non-exclusive licence to use the information, including for
+      commercial purposes, with attribution. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.calgary.ca/Transportation-Transit/Calgary-Transit-Scheduling-Data-GTFS/npk7-z3bj
+      terms_url: https://data.calgary.ca/stories/s/u45n-7awa/
+      scope: [gtfs_schedule]
+      attribution: City of Calgary (Calgary Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

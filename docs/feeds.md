@@ -1395,6 +1395,90 @@ mirrored South African feeds are produced by WhereIsMyTransport or GoMetro rathe
 than a municipal open-data program. They stay partnership-gated, and no South
 African feed was added.
 
+## Canada and Australia depth wave
+
+A depth pass over two countries the registry already carried, adding official,
+first-party, openly licensed GTFS Schedule feeds. Discovery ran across the
+Mobility Database catalog, the Transitland Atlas, and Canadian and Australian
+open-data portals. Every candidate was preflighted on 2026-07-18: the source zip
+was downloaded, its `calendar.txt` and `calendar_dates.txt` window and size were
+read, the archive was deleted, and the reuse licence was confirmed at the
+publisher before any record was written. The gate was fail-closed, so a
+candidate had to show a first-party publisher, a resolvable licence permitting
+commercial reuse, a current service calendar, and a stable keyless download.
+Sixty-nine records were added.
+
+Australia added twelve records, all in Queensland. The TransLink GTFS dataset on
+data.qld.gov.au (CC BY 4.0, © State of Queensland, Department of Transport and
+Main Roads) carries a qconnect regional network export per town beyond the seven
+already curated. Added: Magnetic Island (bus), North Stradbroke Island, Warwick
+(Haidleys Panoramic Coaches), Gladstone (Buslink), Kilcoy (Christensens Bus and
+Coach), Maleny-Landsborough (Glass House Country Coaches), Gympie (Polleys
+Coaches), Bundaberg (Duffy's Buses), Innisfail, Bowen, Whitsundays (Whitsunday
+Transit), and Rockhampton-Yeppoon. Each read as a valid archive with a current
+calendar through September 2026. Rockhampton-Yeppoon is the dataset's
+consolidated RKY export and has no Mobility Database id, so it enters as a
+first-party feed without one.
+
+Canada added fifty-seven records across five subdivisions:
+
+- British Columbia (thirty-five): BC Transit regional systems across the
+  province, from the Victoria and Kelowna networks to small community systems
+  such as 100 Mile House and Salt Spring Island. The BC Transit Open Data Terms
+  of Use grant a non-exclusive licence to use, reproduce, and redistribute the
+  data including commercially, with attribution to BC Transit. It is a custom
+  government licence, recorded as such rather than as Creative Commons.
+- Québec (fourteen): the nine exo suburban sectors and the exo commuter-rail
+  feed (CC BY 4.0 through Données Québec), plus RTC (Québec City), STS
+  (Sherbrooke), STLévis, and Rouyn-Noranda, all CC BY 4.0.
+- Ontario (six): Toronto Transit Commission and York Region Transit under their
+  Open Government Licence variants, Oakville Transit under the Open Government
+  Licence – Town of Oakville, Brampton Transit under CC BY 4.0, and GO Transit
+  and UP Express under the Open Government Licence – Ontario (Metrolinx).
+- Alberta (one): Calgary Transit under the Open Government Licence – City of
+  Calgary, which grants commercial reuse.
+- Nationwide (one): VIA Rail Canada, the intercity passenger rail network, under
+  the Open Government Licence – Canada 2.0. It spans several provinces and is
+  carried without a subdivision.
+
+The review rejected or deferred more than it kept, and the reasons cluster:
+
+- Expired service calendar (official and reachable, window already ended): Roam
+  Transit (Banff, ended 2024-12), exo Haut-Saint-Laurent (2024-09), exo
+  Roussillon (2023-07), and Moose Jaw Transit (2024-03).
+- Dead or superseded download URL: the Youngs Bus Service (Yeppoon) and Sunbus
+  Rockhampton catalog entries both 404 and are replaced by the consolidated
+  Rockhampton-Yeppoon feed added above; Miramichi Transit's catalog URL also
+  404s.
+- Host unreachable or blocking automated fetch: Saskatoon Transit (HTTP 503) and
+  MRC les Moulins (HTTP 403).
+- Licence forbids or conditions commercial reuse (fail closed): Metrobus
+  (St. John's) reserves the right to charge commercial users a fee, and the
+  Société de transport de Laval restricts commercial and quasi-commercial use.
+  Neither is an open commercial-reuse grant.
+- Share-alike, held for consistency: Codiac Transpo (Moncton) publishes under
+  CC BY-SA. Share-alike is not on the accepted licence list, matching the
+  earlier hold on Tasmania's CC BY-SA feed.
+- Licence page not resolvable from the review environment (fail closed): Halifax
+  Transit, Lethbridge Transit, Red Deer Transit, Durham Region Transit, Greater
+  Sudbury Transit, Burlington Transit, Transit Windsor, City of Regina, and STO
+  (Gatineau) each returned a 403, a 404, or a JavaScript or bot-challenged
+  licence page, so the exact terms could not be read. They wait for a manual
+  licence read.
+- Licence unconfirmed in this pass (aggregator- or Metrolinx-hosted with no
+  dataset-level licence surfaced): Cornwall, Belleville, and Milton Transit
+  (served through metrolinx.tmix.se), Fredericton Transit (an ArcGIS item with
+  no licence field), Medicine Hat Transit, Thunder Bay Transit, and RTL
+  Longueuil (its conditions PDF 404s). These remain candidates for a later pass.
+- Aggregator-hosted rather than first-party: Maritime Bus is served only from a
+  Trillium mirror, not an operator or government portal.
+- Already evaluated by the Asia-Pacific breadth wave and not re-litigated:
+  Transport for New South Wales (key-gated and over the download cap), Transport
+  Canberra (HTTP 403, and its MyWay+ feed needs a key), and Tasmania's Metro
+  feeds (the state's consolidated feed is Cloudflare-challenged and CC BY-SA,
+  and the older per-city metrotas.com.au downloads carry no resolvable open
+  licence).
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

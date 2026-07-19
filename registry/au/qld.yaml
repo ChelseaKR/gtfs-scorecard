@@ -168,3 +168,319 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+
+  - id: translink-magnetic-island
+    name: TransLink Magnetic Island
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "650"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/MAG_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Magnetic Island bus
+      network, distinct from the separately listed Magnetic Island Ferry
+      feed; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-north-stradbroke-island
+    name: TransLink North Stradbroke Island
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "652"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/NSI_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for North Stradbroke Island
+      (Minjerribah); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-warwick
+    name: TransLink Warwick (Haidleys Panoramic Coaches)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "654"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/WAR_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Warwick; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-gladstone
+    name: TransLink Gladstone (Buslink)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "667"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/GLT_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Gladstone; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-kilcoy
+    name: TransLink Kilcoy (Christensens Bus and Coach)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "669"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/KIL_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Kilcoy and Caboolture-
+      Kilcoy corridor; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-maleny-landsborough
+    name: TransLink Maleny-Landsborough (Glass House Country Coaches)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "670"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/MAL_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Maleny and Landsborough
+      Glass House Country area; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-gympie
+    name: TransLink Gympie (Polleys Coaches)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "671"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/GYM_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Gympie; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-bundaberg
+    name: TransLink Bundaberg (Duffy's Buses)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "672"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/BUN_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Bundaberg; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-innisfail
+    name: TransLink Innisfail
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "673"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/INN_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Innisfail; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-bowen
+    name: TransLink Bowen
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "675"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/BOW_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Bowen; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-whitsundays
+    name: TransLink Whitsundays (Whitsunday Transit)
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    mdb_id: "676"
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/WHT_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for the Whitsundays
+      (Proserpine, Airlie Beach, and Cannonvale); counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: translink-rockhampton-yeppoon
+    name: TransLink Rockhampton-Yeppoon
+    country: AU
+    subdivision_code: AU-QLD
+    subdivision_name: Queensland
+    is_official: true
+    static_gtfs_url: https://gtfsrt.api.translink.com.au/GTFS/RKY_GTFS.zip
+    license_note: >-
+      CC BY 4.0; © State of Queensland (Department of Transport and Main
+      Roads). Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One qconnect regional network feed for Rockhampton and Yeppoon,
+      published in the Queensland TransLink GTFS dataset as
+      RKY_GTFS.zip; it supersedes the former separate Rockhampton and
+      Yeppoon exports. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.qld.gov.au/dataset/general-transit-feed-specification-gtfs-translink
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of Queensland, Department of Transport and Main
+        Roads/Translink.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
