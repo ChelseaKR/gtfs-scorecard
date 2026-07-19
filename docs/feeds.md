@@ -1395,6 +1395,69 @@ mirrored South African feeds are produced by WhereIsMyTransport or GoMetro rathe
 than a municipal open-data program. They stay partnership-gated, and no South
 African feed was added.
 
+## United States small and rural depth wave
+
+A pass aimed at small and rural US agencies that publish a first-party GTFS
+under a reuse basis that can actually be confirmed, since most US public-agency
+GTFS carries no stated license. Two sources cleared that bar. The Caltrans DDS
+GTFS index (`gtfs.dds.dot.ca.gov`) hosts California agency feeds and states a
+single site-wide Creative Commons Attribution 4.0 license. The National Park
+Service GTFS program (`nps.gov/subjects/developer/gtfs.htm`) publishes park
+transit feeds that are US Government works, and the NPS disclaimer places
+NPS-created material in the public domain. Every candidate was mechanically
+preflighted on 2026-07-18: the source zip was downloaded, confirmed to be a
+valid archive with a current (non-expired) service calendar, checked for size,
+then deleted. The subdivision was set to the ISO 3166-2 code, and each feed was
+deduplicated against the registry by URL, agency name, and MDB id. The gate was
+fail-closed.
+
+Fourteen records were added across nine states.
+
+Caltrans DDS, CC BY 4.0:
+
+- **Artesia Transit** — California (`US-CA`). City fixed-route shuttle, calendar
+  through 2028-04-30.
+- **Maywood Express Shuttle** — California (`US-CA`). City shuttle, calendar
+  through 2026-12-31.
+
+National Park Service, public domain:
+
+- **Island Explorer (Acadia National Park)** — Maine (`US-ME`), seasonal.
+- **Bandelier National Monument Shuttle** — New Mexico (`US-NM`), seasonal.
+- **Bryce Canyon Shuttle** — Utah (`US-UT`), seasonal.
+- **Zion Canyon Shuttle** — Utah (`US-UT`), seasonal.
+- **Denali National Park Courtesy Shuttle** — Alaska (`US-AK`), seasonal.
+- **Going-to-the-Sun Road Shuttle (Glacier National Park)** — Montana (`US-MT`),
+  seasonal.
+- **Giant Forest Shuttle (Sequoia National Park)** — California (`US-CA`),
+  seasonal.
+- **Mariposa Grove Shuttle (Yosemite National Park)** — California (`US-CA`),
+  seasonal.
+- **Yosemite Valley Shuttle** — California (`US-CA`), year-round.
+- **Harpers Ferry Shuttle** — West Virginia (`US-WV`), year-round.
+- **Fort Matanzas Ferry** — Florida (`US-FL`), year-round.
+- **Fort Sumter Ferry** — South Carolina (`US-SC`), year-round.
+
+The review rejected more than it kept, and the rejections are the point:
+
+- **Expired calendar:** the Yurok Tribe feed on Caltrans DDS ended 2026-06-28,
+  and the Havasu Landing Resort ferry feed ended 2025-06-30 (and is a private
+  resort service, not a public agency). Every DDS "Flex" dial-a-ride and
+  paratransit feed reviewed (Manteca, Tulare County, Valley Express, Union City,
+  MOVE Stanislaus) was frozen on a 2022 to 2024 calendar, the same stale DDS
+  packaging already recorded for City of Wasco. The Grand Canyon South Rim
+  Shuttle NPS feed had expired on 2026-05-22.
+- **Already in the registry:** several NPS feeds are already carried, so they
+  were skipped by URL match rather than added a second time (Dry Tortugas and
+  Pensacola Bay City Ferry in Florida, Ship Island in Mississippi, Cape Lookout
+  in North Carolina, Boston Harbor Islands in New York and Massachusetts, Rocky
+  Mountain in Colorado, Alcatraz in California). The DDS-hosted Reds Meadow
+  Shuttle for Devils Postpile is published by Trillium as Eastern Sierra Transit
+  Authority, which is already tracked, so it was left out to avoid a duplicate.
+- **Not small or rural:** the Statue of Liberty ferries are a high-volume urban
+  NPS service, off theme for this wave, so they were not added even though the
+  feed is current and public domain.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,

@@ -50,3 +50,26 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofhelena-mt-us/cityofhelena-mt-us.zip
     mdb_id: 310
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  # United States small and rural depth wave (2026-07-18). National Park
+  # Service park transit published as a US Government work (public domain).
+  # The source zip was preflighted for a current service calendar; see
+  # docs/feeds.md.
+  - id: glacier-going-to-the-sun-road-shuttle
+    name: Going-to-the-Sun Road Shuttle (Glacier National Park)
+    subdivision_code: US-MT
+    subdivision_name: Montana
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/glac/going-to-the-sun-road-shuttle.zip
+    license_note: Public domain as a United States Government work; published by the National Park Service GTFS program.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nps.gov/subjects/developer/gtfs.htm
+      terms_url: https://www.nps.gov/aboutus/disclaimer.htm
+      scope: [gtfs_schedule]
+      attribution: National Park Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
