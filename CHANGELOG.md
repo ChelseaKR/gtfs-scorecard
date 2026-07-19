@@ -28,6 +28,15 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Let a national feed with a multi-gigabyte table still score. The gtfs.de
+  Germany-wide aggregate and the Swiss national timetable were passing the
+  validator but then crashing the score when Scorecard's own reader hit its
+  per-table memory cap on their `stop_times.txt` (1.9 GiB and 2.4 GiB). The
+  descriptive ferry profile now skips a table it cannot read and reports no
+  profile, instead of failing the whole feed, so both national feeds publish a
+  full scorecard. With the earlier archive-limit change, this clears the last
+  two gaps and takes the European beta gate's translation and portable-location
+  checks to 100%.
 - Score the three national and regional feeds that had silently failed to
   produce a scorecard: the gtfs.de Germany-wide aggregate, the Swiss national
   timetable, and Verkehrsverbund Rhein-Neckar. Each unzips past the standard
