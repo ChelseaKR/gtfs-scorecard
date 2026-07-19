@@ -74,6 +74,61 @@ def test_local_fonts_do_not_swap_after_first_paint() -> None:
         )
 
 
+def test_accessible_utility_font_is_used_sitewide() -> None:
+    for rel in ("index.html", "src/styles.css"):
+        source = (_REPO / "web" / rel).read_text()
+        assert 'font-family: "Atkinson Hyperlegible Mono"' in source
+        assert "overpass-mono-latin.woff2" not in source
+
+    fonts = _REPO / "web" / "fonts"
+    assert (fonts / "atkinson-hyperlegible-mono-latin.woff2").is_file()
+    assert (fonts / "OFL-Atkinson-Hyperlegible-Mono.txt").is_file()
+    assert not (fonts / "overpass-mono-latin.woff2").exists()
+
+
+def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
+    html = (_REPO / "web" / "index.html").read_text()
+
+    assert "1,600+" in html
+    assert "curated feed records" in html
+    assert "1,100+" in html
+    assert "published scorecards" in html
+    assert "everywhere they publish a feed" not in html
+
+    representative_surfaces = (
+        "/agency/unitrans/board/",
+        "/program/all/",
+        "/app/#/?view=features",
+        "/fix/",
+        "/check/",
+        "/data/",
+        "/api/v1/index.json",
+        "https://github.com/marketplace/actions/gtfs-scorecard-gate",
+        "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/board-report.md",
+        "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/mcp.md",
+    )
+    for href in representative_surfaces:
+        assert f'href="{href}"' in html, href
+
+
+def test_public_surfaces_use_solid_color_grounds() -> None:
+    """Public surfaces and data keys use flat fills without CSS gradients."""
+    landing = (_REPO / "web" / "index.html").read_text()
+    shared = (_REPO / "web" / "src" / "styles.css").read_text()
+
+    assert "gradient(" not in landing
+    assert "gradient(" not in shared
+
+
+def test_gtfs_abbreviation_is_not_underlined() -> None:
+    selector = 'abbr[title="General Transit Feed Specification"]'
+    for rel in ("index.html", "src/styles.css"):
+        source = (_REPO / "web" / rel).read_text()
+        rule = re.search(rf"{re.escape(selector)}\s*\{{([^}}]+)\}}", source)
+        assert rule is not None, rel
+        assert "text-decoration: none;" in rule.group(1), rel
+
+
 def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
     html = (_REPO / "web" / "app" / "index.html").read_text()
 
