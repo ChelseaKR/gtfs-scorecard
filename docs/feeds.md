@@ -1248,6 +1248,73 @@ The exclusions carry the discipline:
   After this wave the catalog still lists well over 200 admitted-license operators
   not yet tracked.
 
+## Latin America breadth wave (2026-07-18)
+
+A breadth pass aimed at broadening Latin American coverage past the three
+records already carried (Belo Horizonte's two networks, Rio de Janeiro, and
+Montevideo), prioritizing new countries and new cities under the same
+fail-closed and partnership-gated bar as every wave above. The review read the
+full Latin American slice of the Mobility Database catalog (55 GTFS rows across
+ten countries), rechecked the four URLs earlier waves deferred (Mexico City,
+Guadalajara, Santiago DTPM, Bogotá SIMUR), and probed several municipal
+open-data portals directly. Every reachable candidate was preflighted: the zip
+was downloaded, its core tables and `calendar.txt` window read by hand, its size
+checked, and the archive deleted.
+
+**No records were added.** The bar for this wave is an official first-party feed
+with a resolvable open license, a current service calendar, a stable
+non-rotating URL, and a host the pipeline can actually reach. No Latin American
+candidate cleared all four at once, and the reason is a consistent regional
+pattern: the feeds that stay current republish under dated URLs, while the feeds
+that keep a stable URL have gone stale. The rejections are the deliverable.
+
+- **Expired service calendar (stable URL, active agency, window already ended):**
+  Fortaleza's ETUFOR bus feed (`dados.fortaleza.ce.gov.br`, calendar ends
+  2026-07-03), Porto Alegre's EPTC feed (`dadosabertos.poa.br`, ends 2025-12-12),
+  the ARCE metropolitan-Ceará feed (ends 2025-12-31), the Aguascalientes state
+  feed (ends 2025-12-31), and Buenos Aires' colectivos feed
+  (`cdn.buenosaires.gob.ar`, a roughly 200 MiB archive last modified in 2019).
+  All are official and reachable; none is current. ETUFOR is the closest miss,
+  expired by about two weeks and from an agency that republishes quarterly, and
+  is worth a recheck later.
+- **Dated or rotating URL with no stable alias:** Santiago's DTPM feed
+  (`GTFS_YYYYMMDD.zip` under `dtpm.cl/descargas/gtfs`) and Bogotá's SIMUR feed
+  (a `gtfs-estaticos` Google Cloud bucket whose every object is dated, refreshed
+  daily). Both are official and current, both wait on a canonical stable URL, and
+  both were deferred for this same reason by the earlier official wave.
+- **Host unreachable or broken from the fetch environment, so the pipeline could
+  not fetch them either:** Mexico City's SEMOVI feed (`datos.cdmx.gob.mx` times
+  out at the connection, and the older `setravi` S3 mirror returns access-denied),
+  Guadalajara's Jalisco-state feed (`datos.jalisco.gob.mx` serves no public A
+  record), and the METROFOR Fortaleza-metro feed (expired TLS certificate).
+- **Dead or non-GTFS download:** Oaxaca's SEMOVI feed (the recorded asset path
+  now returns the application shell) and Curitiba's URBS data (the official portal
+  publishes URBS's own JSON web-service format, not a GTFS zip; the GTFS builds
+  are community conversions). Medellín Metro's ArcGIS document is not publicly
+  downloadable (403) and its listed data is from 2024.
+- **No resolvable open license:** the Chilean regional operator feeds on
+  `datos.gob.cl` (Coquimbo, Rancagua, Talca, Temuco), Aguascalientes, and Peru's
+  Aeroexpreso carry no license a reviewer can confirm.
+- **OSM-derived, out regardless of license:** the Movimex feeds for Jilotepec and
+  Toluca (Estado de México), both licensed under the OpenStreetMap copyright,
+  which marks their data as derived from OpenStreetMap.
+- **Private operator, not a public-transit authority:** Daytrip Shuttle (Costa
+  Rica and Cancún), a door-to-door tourist shuttle whose route URLs carry
+  marketing tracking parameters; its calendar is also expired.
+- **Registration-walled:** São Paulo's SPTrans feed, behind a developer sign-in.
+- **No GTFS published:** Recife (the open-data portal returns no GTFS dataset),
+  Brasília (DFTrans was dissolved and the DF portal carries no current feed),
+  Mérida's Va y Ven, the Panamá Metro, Guayaquil's Metrovía, and Quito.
+- **Partnership-gated community, volunteer, or aggregator data, held out per the
+  [global coverage roadmap](global-coverage-roadmap.md) regardless of license:**
+  the MapaNica volunteer feeds (Managua, Estelí, and national Nicaragua), the
+  Trufi Association feed (Trujillo, Peru), the Digital Transport GitLab feed
+  (Santiago de los Caballeros, Dominican Republic, whose named provider is the
+  municipality but whose data is community-mapped and community-hosted), the
+  ColombiaGTFS GitHub builds (Cali's MIO and a Medellín community build), and
+  personal GitHub repositories (Ibagué and Sincelejo in Colombia, Bagé in Brazil,
+  and a national Honduras feed). These wait for a named local steward.
+
 ## Middle East and Africa breadth wave
 
 A breadth pass across Turkey beyond İzmir, the Gulf, North Africa, and
