@@ -50,6 +50,13 @@ HARDCODED_STRING_BASELINE = {
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,
+    # The hand-authored landing page is not yet part of the generated SPA
+    # locale catalog. Record its progressively enhanced scorecard copy here so
+    # later localization work can ratchet this standalone module down. The
+    # selected-record scope links, technical trace labels, and accessible
+    # selection announcements raised this reviewed baseline from 111 to 116;
+    # the source and method labels for freshness findings raise it to 121.
+    "landing-scorecard.js": 121,
     "locale.js": 0,
     "nav.js": 4,
     "submit.js": 17,

@@ -214,10 +214,33 @@ def test_key_pages_fit_tablet_and_desktop(page: Page, base_url: str, width: int)
         page.goto(f"{base_url}{path}")
         if path.startswith("/app/"):
             expect(page.locator("#main .loading")).to_have_count(0)
-        page_width, viewport = page.evaluate(
-            "() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]"
+        layout = page.evaluate(
+            """() => ({
+              pageWidth: document.documentElement.scrollWidth,
+              viewport: document.documentElement.clientWidth,
+              overflowers: Array.from(document.querySelectorAll('body *')).filter((el) => {
+                const r = el.getBoundingClientRect();
+                return r.right > document.documentElement.clientWidth + 1;
+              }).slice(0, 10).map((el) => ({
+                tag: el.tagName,
+                id: el.id,
+                className: typeof el.className === 'string' ? el.className : '',
+                left: Math.round(el.getBoundingClientRect().left),
+                right: Math.round(el.getBoundingClientRect().right),
+                width: Math.round(el.getBoundingClientRect().width),
+              })),
+              wide: Array.from(document.querySelectorAll('body *')).filter((el) =>
+                el.scrollWidth > el.clientWidth + 1
+              ).slice(0, 10).map((el) => ({
+                tag: el.tagName,
+                id: el.id,
+                className: typeof el.className === 'string' ? el.className : '',
+                clientWidth: el.clientWidth,
+                scrollWidth: el.scrollWidth,
+              })),
+            })"""
         )
-        assert page_width <= viewport, f"{path} at {width}px: {page_width}px page"
+        assert layout["pageWidth"] <= layout["viewport"], f"{path} at {width}px: {layout}"
 
 
 def test_feature_shortlist_keeps_a_readable_tablet_layout(page: Page, base_url: str) -> None:
@@ -249,25 +272,19 @@ def test_feature_shortlist_keeps_a_readable_tablet_layout(page: Page, base_url: 
     expect(page.get_by_role("button", name="Download matching feeds (CSV)")).to_be_hidden()
 
 
-@pytest.mark.parametrize(("path", "grade"), [("/", "A"), ("/agency/unitrans/", "B")])
+@pytest.mark.parametrize(
+    ("path", "selector", "grade"),
+    [("/", ".grade-reel", "B"), ("/agency/unitrans/", ".reel", "B")],
+)
 def test_reduced_motion_keeps_grade_and_content_visible(
-    page: Page, base_url: str, path: str, grade: str
+    page: Page, base_url: str, path: str, selector: str, grade: str
 ) -> None:
     page.emulate_media(reduced_motion="reduce")
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(f"{base_url}{path}")
 
-    visible_grade = page.evaluate(
-        """() => {
-          const reel = document.querySelector('.reel').getBoundingClientRect();
-          return Array.from(document.querySelectorAll('.reel-strip span'))
-            .filter((span) => {
-              const r = span.getBoundingClientRect();
-              return r.top < reel.bottom && r.bottom > reel.top;
-            }).map((span) => span.textContent.trim());
-        }"""
-    )
-    assert visible_grade == [grade]
+    expect(page.locator(selector)).to_have_attribute("aria-label", f"Overall grade {grade}")
+    expect(page.locator(selector)).to_contain_text(grade)
     assert page.evaluate(
         "() => Array.from(document.querySelectorAll('.rise')).every((el) => "
         "getComputedStyle(el).opacity === '1')"

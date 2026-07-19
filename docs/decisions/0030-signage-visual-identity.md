@@ -74,3 +74,62 @@ Every changed color pair was verified against WCAG AAA (7:1 normal text,
   signal, and the plain-language voice rather than from cream paper. That is
   a deliberate trade: guidance, not judgment, is the register the signage
   language carries.
+
+## Follow-up: 2026-07-19 landing-page information architecture
+
+The first signage pass changed the type, color, and shared chrome while leaving
+the landing-page layout intact. The result still used a familiar marketing
+composition: a two-column hero, a proof band, repeated card grids, and a final
+call-to-action block. Those patterns made the page feel less specific to feed
+quality than the inner reports, even though the visual tokens were now
+subject-specific.
+
+The landing page now treats the site as a public feed bulletin:
+
+- The opening pairs a publication line and last-run link with a semantic
+  coverage ledger. Counts keep curated feed records separate from published
+  scorecards.
+- The central route is the feed-inspection workflow itself. It follows a public
+  feed through canonical validation, plain-language translation, and a dated
+  result. The route metaphor therefore explains function rather than decorating
+  the page.
+- The shipped service is presented as a five-row scope ledger for agency work,
+  program work, rider-facing feature research, the pre-publish feed bench, and
+  machine-readable data use. The rows remain visible rather than hiding the
+  product range behind interactive disclosure.
+- A dedicated operating-notes ledger states the worldwide quality core,
+  coverage limits, regional-module boundary, neutral realtime treatment, and
+  the distinction between feed quality, compliance, and service quality.
+
+The bulletin uses square editorial rules, a wider working canvas, flat signal
+fills, and keylines instead of floating panels. This is a landing-specific
+composition, not a new shared component family. The locally mirrored palette,
+type families, theme behavior, solid-fill rule, and accessibility requirements
+from the original decision remain in force. Inner pages and the agency report
+route are unchanged.
+
+## Follow-up: 2026-07-19 interactive service desk
+
+Visual differentiation alone did not restore the scorecard's product value at
+the top of the landing page. The bulletin now treats a real scorecard as its
+working instrument:
+
+- The first record is the latest published Unitrans artifact, not a fictional
+  best-case grade. Yolobus is a second home-pilot state, with no comparison or
+  ranking language.
+- A reader can switch records, inspect all four category results, choose any
+  prioritized fix in the snapshot, and follow that fix through source file,
+  measurement check, finding code, and dated evidence.
+- Agency-name search is opt-in. It loads only the smaller public ID file after
+  input, then fetches the selected agency's individual artifact. The large
+  score directory is not part of initial rendering.
+- The chosen feed, fix, and category persist in the URL. Updates retain focus,
+  use concise status announcements, and keep the last good record visible while
+  another artifact loads.
+- On phones, source order is question, real scorecard, directory tools, coverage
+  evidence. This restores the scorecard to the first screen without hiding the
+  five-row service scope or operating boundaries below.
+
+The interface uses no rolling score animation or automatic rotation. State
+changes use the existing flat fills, rules, labels, and departure-board grade
+tile. Reduced-motion mode therefore loses no content or feedback.

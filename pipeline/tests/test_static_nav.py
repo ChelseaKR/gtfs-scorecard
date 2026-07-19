@@ -89,10 +89,12 @@ def test_accessible_utility_font_is_used_sitewide() -> None:
 def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
     html = (_REPO / "web" / "index.html").read_text()
 
-    assert "1,600+" in html
+    assert "1,700+" in html
     assert "curated feed records" in html
     assert "1,100+" in html
     assert "published scorecards" in html
+    assert "30+" in html
+    assert "Countries covered" in html
     assert "everywhere they publish a feed" not in html
 
     representative_surfaces = (
@@ -109,6 +111,63 @@ def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
     )
     for href in representative_surfaces:
         assert f'href="{href}"' in html, href
+
+
+def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashboard() -> None:
+    html = (_REPO / "web" / "index.html").read_text()
+    script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
+
+    assert 'id="live-scorecard"' in html
+    assert 'src="/src/landing-scorecard.js"' in html
+    assert "Latest published scorecard" in html
+    assert 'role="group" aria-label="Home pilots"' in html
+    assert "measured category sets can differ" in html
+    assert '<noscript><p class="pilot-fallback">' in html
+    assert 'href="/agency/yolobus/"' in html
+    assert "Selected fix trace" in html
+    assert "Unitrans (ASUCD / City of Davis)" in html
+    assert "80.8" in html
+    assert "Realtime is excluded from this grade, with no deduction" in html
+    for filename in ("stops.txt", "trips.txt", "shapes.txt", "feed_info.txt"):
+        assert filename in html + script
+    for endpoint in (
+        "/data/artifacts/unitrans/latest.json",
+        "/data/artifacts/yolobus/latest.json",
+    ):
+        assert endpoint in script
+    assert "/api/v1/ids.json" in script
+    assert "/api/v1/agencies.json" not in script
+    assert "/data/artifacts/directory.json" not in script
+    assert "/src/app.js" not in html
+    assert "Fictional example" not in html
+    assert "Format example" not in html
+    assert "Tri-County Transit" not in html
+    assert 'class="who-card"' not in html
+
+
+def test_landing_pilot_artifacts_have_the_interactive_scorecard_contract() -> None:
+    for agency_id in ("unitrans", "yolobus"):
+        artifact = json.loads(
+            (_REPO / "data" / "artifacts" / agency_id / "latest.json").read_text()
+        )
+        assert artifact["agency"]["id"] == agency_id
+        assert isinstance(artifact["snapshot_date"], str)
+        assert isinstance(artifact["overall"]["grade"], str)
+        assert isinstance(artifact["overall"]["score"], (int, float))
+        assert set(artifact["categories"]) >= {
+            "correctness",
+            "freshness",
+            "completeness",
+            "realtime",
+        }
+        assert len(artifact["top_fixes"]) >= 3
+        for fix in artifact["top_fixes"][:3]:
+            assert all(isinstance(fix[field], str) for field in ("code", "fix", "what", "why"))
+
+    unitrans = json.loads((_REPO / "data" / "artifacts" / "unitrans" / "latest.json").read_text())
+    yolobus = json.loads((_REPO / "data" / "artifacts" / "yolobus" / "latest.json").read_text())
+    assert unitrans["categories"]["realtime"]["status"] != "measured"
+    assert yolobus["categories"]["realtime"]["status"] == "measured"
 
 
 def test_public_surfaces_use_solid_color_grounds() -> None:

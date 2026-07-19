@@ -84,14 +84,11 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("landing --ink-soft on --paper", "L_ink-soft", "L_paper", False),
     ("landing --ink-soft on --paper-2", "L_ink-soft", "L_paper-2", False),
     ("landing --green on --paper (sectlabel/stop.n)", "L_green", "L_paper", False),
-    ("landing --green on --paper-2 (who band)", "L_green", "L_paper-2", False),
+    ("landing --green on --paper-2 (scope ledger)", "L_green", "L_paper-2", False),
     ("landing --rust on --paper card", "L_rust", "L_paper", False),
     ("landing --ink on --paper", "L_ink", "L_paper", False),
-    ("landing .lede #dfe7dd on --pine", "#dfe7dd", "L_pine", False),
-    ("landing .reassure #b9c7ba on --pine", "#b9c7ba", "L_pine", False),
-    ("landing board .lab #b9c7ba on --pine-2", "#b9c7ba", "L_pine-2", False),
-    ("landing footer #b9c7ba on --pine", "#b9c7ba", "L_pine", False),
-    ("landing cta p #d3decf on --pine", "#d3decf", "L_pine", False),
+    ("landing movement copy #d3decf on --pine", "#d3decf", "L_pine", False),
+    ("landing footer copy #cfdcd2 on --pine", "#cfdcd2", "L_pine", False),
     # Primary nav: cream stops on the pine wayfinding bar (theme-independent).
     ("nav active stop on pine", "#f4f6f0", "#102a20", False),
     ("nav inactive stop on pine", "#cfdcd2", "#102a20", False),
@@ -101,6 +98,9 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("landing --on-pine on --pine (hero/board/cta/footer/nav)", "L_on-pine", "L_pine", False),
     ("landing --on-pine on --pine-2 (board)", "L_on-pine", "L_pine-2", False),
     ("landing btn-primary #2a1c00 on --amber", "#2a1c00", "L_amber", False),
+    ("landing page focus ring on --paper", "L_focus-page", "L_paper", False),
+    ("landing dark-chrome focus ring on --pine", "L_focus-dark", "L_pine", False),
+    ("landing amber-surface focus ring on --amber", "L_focus-on-amber", "L_amber", False),
 ]
 
 THEMES: dict[str, dict[str, str]] = {
@@ -137,6 +137,9 @@ THEMES: dict[str, dict[str, str]] = {
         "L_pine-2": "#163a2c",
         "L_on-pine": "#f4f6f0",
         "L_amber": "#fdc70a",
+        "L_focus-page": "#1a3aa8",
+        "L_focus-dark": "#fdc70a",
+        "L_focus-on-amber": "#2a1c00",
     },
     "dark": {
         "ink": "#e9e4d7",
@@ -170,6 +173,9 @@ THEMES: dict[str, dict[str, str]] = {
         "L_pine-2": "#14201a",
         "L_on-pine": "#e9e4d7",
         "L_amber": "#ffd34d",
+        "L_focus-page": "#ffd34d",
+        "L_focus-dark": "#ffd34d",
+        "L_focus-on-amber": "#2a1c00",
     },
     "contrast": {
         "ink": "#000000",
@@ -202,6 +208,9 @@ THEMES: dict[str, dict[str, str]] = {
         "L_pine-2": "#111111",
         "L_on-pine": "#ffffff",
         "L_amber": "#ffce6a",
+        "L_focus-page": "#0033cc",
+        "L_focus-dark": "#ffce6a",
+        "L_focus-on-amber": "#2a1c00",
     },
 }
 
