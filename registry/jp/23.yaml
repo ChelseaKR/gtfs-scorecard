@@ -198,3 +198,77 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: chita-city-aiai-bus
+    name: Chita City Aiai Bus (知多市コミュニティバス あいあいバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitacity/feeds/chita-aiaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chita City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Chita City.
+    operating_note: >-
+      Chita City's Aiai Bus community network, distinct from the tracked
+      Chita Bus operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitacity.chita-aiaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chita City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tokai-city-ranran-bus
+    name: Tokai City Ran-Ran Bus (東海市らんらんバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokaicity/feeds/tokai-ranranbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokai City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tokai City.
+    operating_note: >-
+      Tokai City's Ran-Ran Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokaicity.tokai-ranranbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokai City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shinshiro-city-s-bus
+    name: Shinshiro City S-Bus (新城市Sバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shinshirocity/feeds/sbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shinshiro City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shinshiro
+      City.
+    operating_note: >-
+      Shinshiro City's S-Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shinshirocity.sbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shinshiro City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

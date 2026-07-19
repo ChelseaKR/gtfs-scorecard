@@ -222,3 +222,102 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kochi-konan-city-bus
+    name: Konan City Bus (香南市営バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-konancity/feeds/GTFS-Konancity_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Konan City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Konan City.
+    operating_note: >-
+      Konan City's municipal bus in Kochi, distinct from the Konan
+      cities in Shiga and Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-konancity.GTFS-Konancity_Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Konan City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: koryo-kotsu
+    name: Koryo Kotsu (高知高陵交通)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-koryo-kotsu/feeds/GTFS-Koryotraffic_Localbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Koryo Kotsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Koryo Kotsu.
+    operating_note: >-
+      A private bus operator running route service in Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-koryo-kotsu.GTFS-Koryotraffic_Localbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Koryo Kotsu. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kuroiwa-kanko
+    name: Kuroiwa Kanko (黒岩観光)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kuroiwa-kanko/feeds/GTFS-Kuroiwakanko_Localbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kuroiwa Kanko through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kuroiwa Kanko.
+    operating_note: >-
+      A private bus operator running route service in central Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kuroiwa-kanko.GTFS-Kuroiwakanko_Localbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kuroiwa Kanko. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: reihoku-kanko-jidosha
+    name: Reihoku Kanko Jidosha (嶺北観光自動車)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/reihoku-kanko/feeds/GTFS-Reihokukanko_Localbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Reihoku Kanko Jidosha
+      through the GTFS Data Repository (gtfs-data.jp). Credit Reihoku
+      Kanko Jidosha.
+    operating_note: >-
+      A private bus operator running route service in the Reihoku area
+      of Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/reihoku-kanko.GTFS-Reihokukanko_Localbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Reihoku Kanko Jidosha. Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

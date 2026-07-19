@@ -223,3 +223,99 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: yamagata-city-bus
+    name: Yamagata City Bus (山形市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yamagata-yamagatacity/feeds/YamagataCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yamagata City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Yamagata City.
+    operating_note: >-
+      Yamagata City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yamagata-yamagatacity.YamagataCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yamagata City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sagae-city-bus
+    name: Sagae City Bus (寒河江市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sagaecity/feeds/SagaeCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Sagae City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Sagae City.
+    operating_note: >-
+      Sagae City's municipal circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sagaecity.SagaeCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sagae City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nanyo-city-bus
+    name: Nanyo City Bus (南陽市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nanyocity/feeds/NanyoCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nanyo City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nanyo City.
+    operating_note: >-
+      Nanyo City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nanyocity.NanyoCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nanyo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tendo-city-bus
+    name: Tendo City Bus (天童市営バス)
+    country: JP
+    subdivision_code: JP-06
+    subdivision_name: Yamagata
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tendocity/feeds/TendoCity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tendo City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tendo City.
+    operating_note: >-
+      Tendo City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tendocity.TendoCity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tendo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
