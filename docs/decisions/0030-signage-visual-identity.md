@@ -8,6 +8,7 @@
 
 Status: accepted
 Date: 2026-07-04
+Updated: 2026-07-19
 
 ## Context
 
@@ -34,15 +35,17 @@ United States roadway and transit signage.
   Highway Gothic, the letterforms on road signs riders already follow. Running
   text stays Public Sans, the U.S. government's own open typeface (USWDS),
   which is what state program staff work in daily. Data and wayfinding labels
-  use Overpass Mono, keeping the family in one voice. The identity is all
-  sans, deliberately: signage has no serifs.
+  use Atkinson Hyperlegible Mono. Its distinct letters and numerals make compact
+  operational labels easier to scan while preserving the timetable voice. The
+  identity is all sans, deliberately: signage has no serifs.
 - **Color.** Grounds move from butter cream to an enamel sign-blank near-white
   with a green cast (`#f2f3ee` / `#e5e8df` / card `#fbfcf8`). The accent
   sharpens from amber to warning-sign yellow (`#fdc70a`). The pine chrome
   (`#102a20`) stays and is recast as what it already was: guide-sign green.
   The A-F grade ramp is unchanged; it already follows US sign-color semantics
   (guidance green, services blue-teal, warning, construction orange,
-  regulatory red).
+  regulatory red). Surfaces use solid fills; the identity does not use
+  decorative color gradients or simulated lighting.
 - **Components.** Grade letters sit in a roundel with a white keyline just
   inside the disc edge, the way a route number sits on a bus-stop flag; the
   rubber-stamp rotation is gone. Inner pages' footer becomes the same pine
@@ -62,11 +65,11 @@ Every changed color pair was verified against WCAG AAA (7:1 normal text,
 
 ## Consequences
 
-- One canonical Google Fonts URL is embedded in every page head (including
-  ~4,600 prerendered agency pages) and in `site_shell.py`; regenerating the
-  site keeps them in sync. Golden test fixtures were updated to match.
-- `web/og.svg` uses a Helvetica-first stack so local rasterization
-  (`rsvg-convert`) matches the signage voice without installing Overpass.
+- The three interface fonts are served locally as Latin WOFF2 subsets with
+  system fallbacks and `font-display: optional`. The site does not depend on a
+  third-party request for its visual identity.
+- `web/og.svg` keeps local fallback stacks so rasterization (`rsvg-convert`)
+  matches the signage voice without requiring the interface fonts to be installed.
 - The old palette's warmth now has to come from the deep greens, the yellow
   signal, and the plain-language voice rather than from cream paper. That is
   a deliberate trade: guidance, not judgment, is the register the signage

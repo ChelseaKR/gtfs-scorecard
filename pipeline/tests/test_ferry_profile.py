@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+import pytest
+
 from scorecard_pipeline.ferry_profile import build_ferry_profile, ferry_profile_from_zip
 
 
@@ -160,3 +162,23 @@ def test_profile_reads_zip_and_fare_model(
     assert profile["fares"]["applied"] is True
     assert profile["stop_access"]["through_station_count"] == 1
     assert profile["realtime"]["configured_kinds"] == ["vehicle_positions"]
+
+
+def test_oversized_table_skips_profile_instead_of_failing(
+    make_gtfs_zip: Callable[..., Path],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A national aggregate's stop_times.txt can exceed the per-table memory cap.
+    # The ferry profile is descriptive, so it is skipped, not fatal: run_agency
+    # still writes the feed's scorecard. Shrink the cap so a tiny table trips it.
+    path = make_gtfs_zip(
+        {
+            "routes.txt": "route_id,route_type\nf,4\n",
+            "trips.txt": "route_id,service_id,trip_id\nf,s,t\n",
+            "stop_times.txt": "trip_id,stop_id,stop_sequence\nt,p,1\n",
+            "stops.txt": "stop_id,stop_name,location_type\np,Pier,0\n",
+        }
+    )
+    monkeypatch.setattr("scorecard_pipeline.gtfs.MAX_MEMBER_BYTES", 4)
+
+    assert ferry_profile_from_zip(str(path)) is None

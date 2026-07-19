@@ -70,6 +70,10 @@ the product, not a decorative dark section to scatter through every page.
 Use `--card` for a bounded object and `--paper-deep` for a grouped or recessed
 region; do not alternate them solely to make a page look busier.
 
+Use solid fills for page, card, hero, and chrome surfaces. Decorative color
+gradients and simulated lighting are not part of the system. Repeating patterns
+are reserved for data hatching, where the pattern carries a non-color cue.
+
 ### Semantic status tokens
 
 | Token | Light value | Meaning |
@@ -112,11 +116,13 @@ work in all four choices before they are complete.
 | --- | --- | --- |
 | Display | `--font-display`: Overpass, then Helvetica/Arial | Page titles, section titles, grade and score numerals |
 | Body | `--font-body`: Public Sans, then Helvetica/Arial | Running copy, labels, forms, explanations |
-| Utility/data | `--font-mono`: Overpass Mono, then system mono | Stop numbers, kickers, rule codes, timestamps, compact metrics |
+| Utility/data | `--font-mono`: Atkinson Hyperlegible Mono, then system mono | Stop numbers, kickers, rule codes, timestamps, compact metrics |
 
 Overpass is the subject-specific voice: it descends from the road-sign
 letterforms riders already navigate. Public Sans keeps long operational prose
-plain. Overpass Mono is for short wayfinding and data labels, not paragraphs.
+plain. Atkinson Hyperlegible Mono gives short wayfinding and data labels more
+distinct letter and number forms, in keeping with the site's accessibility
+commitment. It is not for paragraphs.
 
 Use the existing hierarchy before introducing another size:
 
