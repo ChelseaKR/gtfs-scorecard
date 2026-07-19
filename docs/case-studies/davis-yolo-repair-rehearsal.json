@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-07-18",
+  "title": "Davis–Yolo safe repair rehearsal",
+  "method": {
+    "command": "scorecard autofix <original.zip> --out <corrected.zip>, then scorecard try <each local zip> --date 2026-07-18 --json-out <receipt.json>",
+    "rubric_version": "1.2",
+    "validator_version": "8.0.1",
+    "realtime_measured": false,
+    "scope": "Only deterministic whitespace and mixed-case recipes were applied. Accessibility, fares, contacts, service validity, unused shapes, and orphan stops were left unchanged because they require source-owner knowledge or review."
+  },
+  "limitations": [
+    "The corrected copies are local demonstrations, not agency-published feeds and not claimed agency outcomes.",
+    "The source sites state no reusable data license, so neither the original nor corrected zip is redistributed here. SHA-256 receipts identify the exact bytes used.",
+    "Ad-hoc local scoring has no realtime endpoints. These rehearsal grades therefore exclude realtime and must not be compared directly with a public scorecard that measured it."
+  ],
+  "agencies": [
+    {
+      "id": "unitrans",
+      "name": "Unitrans (ASUCD / City of Davis)",
+      "source_url": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
+      "original": {
+        "sha256": "3ddba2ca939679b1ba87d34babcd7f8715faab7f08c5241dc3f1d5277cf4f39d",
+        "size_bytes": 262411,
+        "grade": "B",
+        "score": 80.8,
+        "categories": {
+          "correctness": 84.8,
+          "freshness": 100.0,
+          "rider_experience": 60.0
+        }
+      },
+      "safe_changes": [
+        {
+          "code": "autofix_trim_whitespace",
+          "count": 5,
+          "label": "Trim surrounding whitespace"
+        }
+      ],
+      "corrected_demonstration": {
+        "sha256": "1a52a3de96ca9ae0b789601d3a9fe18fc3def23b7e2b1447f2bc4999d3b5ea48",
+        "size_bytes": 261526,
+        "grade": "B",
+        "score": 80.8,
+        "categories": {
+          "correctness": 84.8,
+          "freshness": 100.0,
+          "rider_experience": 60.0
+        }
+      },
+      "score_delta": 0.0,
+      "interpretation": "Five certain cleanup changes improved the feed copy without gaming the grade. The highest-impact findings stayed open because filling accessibility fields or deleting unused records without agency knowledge would invent facts or remove data on an assumption."
+    },
+    {
+      "id": "yolobus",
+      "name": "Yolobus (Yolo County Transportation District)",
+      "source_url": "https://avl.yctd.org/RealTime/google_transit.zip",
+      "original": {
+        "sha256": "946c49a1b1dae9b4788e9984a983b1a0c9105eecd337f65f60e5650256eca937",
+        "size_bytes": 485777,
+        "grade": "C",
+        "score": 76.4,
+        "categories": {
+          "correctness": 90.0,
+          "freshness": 70.0,
+          "rider_experience": 62.4
+        }
+      },
+      "safe_changes": [
+        {
+          "code": "autofix_trim_whitespace",
+          "count": 2,
+          "label": "Trim surrounding whitespace"
+        },
+        {
+          "code": "autofix_route_name_case",
+          "count": 27,
+          "label": "Recase uppercase route names and descriptions"
+        }
+      ],
+      "corrected_demonstration": {
+        "sha256": "87f4f824a6921fee7fa233cced7f2162122795eda1a5f0181a4b6952db19a300",
+        "size_bytes": 487793,
+        "grade": "C",
+        "score": 77.2,
+        "categories": {
+          "correctness": 92.0,
+          "freshness": 70.0,
+          "rider_experience": 62.4
+        }
+      },
+      "score_delta": 0.8,
+      "finding_delta": {
+        "mixed_case_recommended_field": {
+          "before": 15,
+          "after": 2
+        }
+      },
+      "interpretation": "The verified corrected copy cleared 13 of 15 mixed-case notices. Two abbreviated stop names remain for human review. Accessibility, fare, feed-contact, and validity findings remain open because the safe recipes cannot establish those facts."
+    }
+  ],
+  "verification_changed_the_tool": {
+    "first_attempt": "The initial Yolobus corrected copy changed route_long_name values but left all 15 validator notices because the notices were primarily attached to route_desc.",
+    "repair": "The autofix recipe was expanded to cover uppercase route_desc values, then both snapshots were regenerated and rescored.",
+    "result": "The second rehearsal reduced the notice count from 15 to 2 and raised correctness from 90.0 to 92.0."
+  }
+}
