@@ -28,6 +28,24 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Add local-zip support to `scorecard try`, so a maintainer can apply the
+  conservative autofix to a copy and rescore original and corrected bytes
+  without uploading either file. Local runs preserve the SHA-256 and state
+  their provenance in the confidence notes.
+- Preserve a machine-readable and narrative Davis–Yolo repair rehearsal with
+  dated source hashes, before/after measurements, explicit unknowns, and the
+  failed first attempt that exposed an autofix mismatch. Agency feed bytes are
+  not redistributed because reuse terms are not stated.
+- Make the conservative route-case autofix clear the validator finding it
+  claims to address by recasing uppercase `route_desc` values as well as
+  `route_long_name`. A local Yolobus before/after rehearsal exposed the prior
+  mismatch: the first corrected copy changed names but left all 15
+  `mixed_case_recommended_field` notices intact.
+- Correct the Unitrans realtime record after its March 2026 move from UmoIQ to
+  Swiftly. The registry and source notes no longer point maintainers at the
+  retired provider; because Unitrans does not publicly document a Swiftly
+  GTFS-Realtime endpoint or credential path, realtime remains explicitly
+  unmeasured and does not affect the grade.
 - Grow reviewed coverage by 95 records to 1,518 through a Japanese deepening and
   a seventh European wave. Two more passes over the national gtfs-data.jp
   repository take Japan from 65 to 145 records, going deeper into its 40
