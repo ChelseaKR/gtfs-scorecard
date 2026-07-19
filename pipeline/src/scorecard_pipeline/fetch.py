@@ -75,7 +75,11 @@ COMPRESSION_RATIO_MIN_BYTES = 10 * 1024 * 1024
 # strict; only the raw size ceilings move. The download ceiling stays at
 # net.MAX_DOWNLOAD_BYTES so the generic guard is never widened.
 LARGE_MAX_GTFS_DOWNLOAD_BYTES = 512 * 1024 * 1024
-LARGE_MAX_GTFS_ENTRY_BYTES = 2 * 1024 * 1024 * 1024
+# A national timetable's single stop_times.txt is the largest legitimate entry
+# seen: the Swiss fp2026 export unzips to a 2.43 GiB stop_times.txt, so the
+# per-entry ceiling sits at 3 GiB. The whole-archive ceiling stays comfortably
+# above the largest observed total (Switzerland's 2.99 GiB across all tables).
+LARGE_MAX_GTFS_ENTRY_BYTES = 3 * 1024 * 1024 * 1024
 LARGE_MAX_GTFS_UNCOMPRESSED_BYTES = 4 * 1024 * 1024 * 1024
 
 
