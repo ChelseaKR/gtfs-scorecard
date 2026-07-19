@@ -41,10 +41,13 @@ agencies:
     static_gtfs_url: https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip
     ntd_id: "90142"
     license_note: No stated data license (UC Regents copyright); see docs/feeds.md.
-    # GTFS-RT exists via UmoIQ but requires an API key; see docs/feeds.md.
+    # Unitrans moved passenger predictions from UmoIQ to Swiftly in March 2026.
+    # No public Swiftly GTFS-RT endpoint or credential path is documented; see
+    # docs/feeds.md.
     rt_note: >-
-      Unitrans runs live bus tracking, but its data feed needs an access key
-      we don't have yet. Nothing here counts against the grade.
+      Unitrans runs live tracking through Swiftly, but no public GTFS-Realtime
+      endpoint is documented. Realtime remains unmeasured and does not count
+      against the grade.
 
   - id: yolobus
     name: Yolobus (Yolo County Transportation District)

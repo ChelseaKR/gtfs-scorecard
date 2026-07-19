@@ -117,6 +117,11 @@ def _confidence(
             "This snapshot predates fetch-source recording, so where it was "
             "originally downloaded from is not known."
         )
+    elif fetch.source == "local":
+        notes.append(
+            "A local feed copy was scored. Its recorded SHA-256 can be compared with the "
+            "source or corrected copy used for this run."
+        )
     else:
         notes.append("The feed was downloaded from the agency's own URL.")
 
