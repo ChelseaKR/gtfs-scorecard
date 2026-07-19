@@ -174,6 +174,6 @@ openings; do not over-polish.
 ## Open questions to resolve early (all resolved)
 
 1. Feed URLs and licenses for Unitrans and Yolobus — resolved in `docs/feeds.md`.
-2. Pilot GTFS-RT — Yolobus publishes three open RT feeds and the Realtime category scores them. Unitrans publishes key-gated UmoIQ feeds; they remain unmeasured until access is available, and nothing is deducted.
+2. Pilot GTFS-RT — Yolobus publishes three open RT feeds and the Realtime category scores them. Unitrans moved passenger predictions from UmoIQ to Swiftly in March 2026, but no public Swiftly GTFS-RT endpoint is documented; realtime remains unmeasured and nothing is deducted.
 3. Validator runtime — Actions-cron with a sharded matrix; see `docs/decisions/0001-validator-runtime.md`.
 4. Caltrans/Cal-ITP guidance — cited throughout `docs/rubric.md` and mapped in `docs/crosswalk.md`.

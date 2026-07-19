@@ -851,6 +851,77 @@ The sweep rejected far more than it kept, and the rejections are the point:
   the note in this file). Taiwan's TDX feed for Taipei Metro
   (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
   does not ingest.
+
+## Asia-Pacific breadth wave (second pass)
+
+A second, portal-driven pass at non-Japan Asia-Pacific, aimed at new countries
+and new cities rather than depth. It went past the Transitland sweep above to
+the national open-data portals named for each target country: South Korea's
+data.go.kr, India's first-party transit portals, Taiwan's TDX, and the
+Australian state and New Zealand regional catalogs. The gate was the same
+fail-closed test used above: an official first-party publisher, an explicit open
+license that permits reuse including commercial use, a keyless direct download
+the pipeline can fetch, and a live current calendar. Every candidate was
+preflighted on 2026-07-18 and deleted after inspection.
+
+Two records were added, both new Malaysian subdivisions on the same official
+platform used above (`data.gov.my`, published under CC BY 4.0 and Malaysia's
+Government Open Data Terms of Use 1.0, which permits reuse including commercial
+use with attribution). Each preflighted as a valid archive with the GTFS core
+tables and a current calendar through 2026-10-16:
+
+- **BAS.MY Johor Bahru** (`MY-01`), operated by Causeway Link. The Johor Bahru
+  stage bus network.
+- **BAS.MY Melaka** (`MY-04`), operated by Causeway Link. The Melaka stage bus
+  network.
+
+These two town networks also appear in the Mobility Database, so the
+Transitland sweep above left them out under its stricter "not already in the
+catalog" gate. This wave admits official, openly licensed feeds for subdivisions
+the registry does not yet carry, with `data.gov.my` as the first-party source,
+so Johor (`MY-01`) and Melaka (`MY-04`) enter as new sub-national coverage.
+
+No new country qualified. The reasons are the point, and they cluster:
+
+- **API-key, OAuth, or registration walls (rejected):** South Korea's KTDB
+  serves GTFS-based data only through an application and data-request process,
+  and its published set is frozen at a March 2023 reference date; data.go.kr
+  carries no keyless GTFS download. India's Open Transit Data Delhi
+  (`otd.delhi.gov.in`) gates its static GTFS behind a usage form and a terms
+  agreement rather than a stable direct URL, and Bengaluru, Mumbai, and Chennai
+  surface only through aggregators. New Zealand's Christchurch (Environment
+  Canterbury) serves GTFS through the Metro developer portal and a
+  data-agreement wall. Singapore's LTA DataMall and New South Wales' Open Data
+  Hub both require developer keys, and Transport for NSW is also over the
+  download cap. Taiwan's TDX requires OAuth client credentials.
+- **Official but no explicit open license (fail closed):** New Zealand's Metlink
+  (Greater Wellington) publishes a clean, current, keyless GTFS at
+  `static.opendata.metlink.org.nz`, but the dataset carries a liability
+  disclaimer that reserves rights and grants no reuse permission, not CC BY or a
+  named open license. Sri Lanka's National Transport Commission has GTFS
+  development work but no first-party open-data download with a resolvable
+  license. Waikato Regional Council (BUSIT) exposes no dataset-level open license
+  for its feed.
+- **Host blocks automated download, or an unstable URL (rejected):** Tasmania's
+  Department of State Growth publishes GTFS under CC BY-SA 4.0, but its download
+  sits behind a Cloudflare challenge that returns 403 to non-browser clients, so
+  the pipeline cannot fetch it, and the file uses a dated versioned name rather
+  than a stable URL. Transport Canberra's older ACTION feed on `data.act.gov.au`
+  (CC BY 4.0) now 403s, and its current MyWay+ GTFS requires an access key.
+- **Community, aggregator, or non-first-party (partnership-gated, not
+  curation):** Indonesia has no official city GTFS beyond the catalog's
+  TransJakarta; other cities are community exports. The Manila feed is community
+  and app-challenge data. Vietnam's Hanoi feed is hosted by the World Bank data
+  catalog and split into time-of-day files rather than a first-party Vietnamese
+  source, and Ho Chi Minh City publishes none. Nepal and Bangladesh have only
+  community-mapped data. These wait for the roadmap's partnership-gated phase.
+- **Same platform, held on data quality:** the other `data.gov.my` BAS.MY town
+  networks did not pass preflight. Alor Setar, Kota Bharu, Kuala Terengganu, and
+  Kuching return archives with zero trips at present, so they were held as
+  stubs. Ipoh and both Seremban feeds carry service, but their calendars end on
+  the review date with no `calendar_dates` extension, so they were held on
+  freshness.
+
 ## Japan gtfs-data.jp second wave
 
 A deeper pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
@@ -1244,6 +1315,86 @@ that keep a stable URL have gone stale. The rejections are the deliverable.
   personal GitHub repositories (Ibagué and Sincelejo in Colombia, Bagé in Brazil,
   and a national Honduras feed). These wait for a named local steward.
 
+## Middle East and Africa breadth wave
+
+A breadth pass across Turkey beyond İzmir, the Gulf, North Africa, and
+sub-Saharan Africa under the [global coverage roadmap](global-coverage-roadmap.md)
+Phases 3 and 4, aimed at new countries and new cities with one representative
+feed each. The gate was fail-closed: admit only an official first-party
+publisher with an explicit, resolvable open license (CC BY, CC0, or a confirmed
+national open-data license that permits commercial reuse) whose feed downloads
+as a single current GTFS archive within the ingestion caps. Sources were the
+Mobility Database catalog, the Transitland Atlas, and the municipal open-data
+portals named below, all checked by hand on 2026-07-18.
+
+No candidate cleared the gate, so no record was added and the registry total is
+unchanged at 1,609. That is the expected result here, not a shortfall. This
+region carries the least official-open GTFS and the most community-mapped GTFS
+in the catalog, and holding the partnership gate firmly is the point of the
+review. The existing İzmir metro and tram records (CC BY 4.0, İzmir Metropolitan
+Municipality) and the size-deferred Israel national feed remain the region's
+only tracked entries. The rejections below are the deliverable.
+
+Rejected or deferred, grouped by reason:
+
+- **Official and openly licensed, but not a single GTFS archive.** İstanbul's
+  İETT network is on the İstanbul Metropolitan Municipality open-data portal
+  (`data.ibb.gov.tr`) under the İBB Açık Veri Lisansı, whose text equates it to
+  CC BY 4.0 and permits commercial reuse, and it was current (updated
+  2026-04-21). Both the İETT dataset and the wider public-transport dataset
+  (metro, Marmaray, ferries) expose the GTFS tables only as separate `.csv`
+  resources, with no bundled `.zip` of `.txt` files. The pipeline ingests one
+  GTFS archive per feed, so an unbundled CSV-resource dataset fails preflight.
+  Kocaeli (`veri.kocaeli.bel.tr`, CC BY, mdb 2710) publishes the same way; its
+  catalog record notes "individual text files provided." Metro İstanbul publishes
+  no separate GTFS of its own.
+- **No reviewable open license (fail closed).** Abu Dhabi's Integrated Transport
+  Centre feed (mdb 1329) states no license, and its catalog download is a
+  session-scoped `pubftp.dmt.gov.ae` weblink rather than a stable URL; the ITC
+  open-data page now returns 404. Isparta's private-operator feed
+  (`ots.kentekspress.com.tr`, mdb 2381) states no license and its URL returns a
+  redirect loop. Lagos State Waterways (mdb 3144) is current but carries no reuse
+  license, as already recorded in the Africa licensing hold below.
+- **Registration wall or non-first-party mirror.** Dubai RTA (mdb 904) is marked
+  inactive and its only catalog download is a Transitland community archive, not
+  a first-party file; the RTA GTFS itself sits behind Dubai Pulse registration.
+- **Dead aggregator or no license.** Algeria's SNTF national rail (mdb 1199) and
+  Tunisia's SRTMedenine (mdb 1158) resolve only to the defunct transitfeeds
+  aggregator and state no license.
+- **Non-commercial license.** Cairo Metro (mdb 3354 and 786) is served by
+  Transport for Cairo under CC BY-NC-SA, which the project does not admit.
+- **No official open GTFS found.** Qatar, Saudi Arabia, Bahrain, Kuwait, Jordan,
+  and Oman have no GTFS in the Mobility Database, and their transport authorities
+  publish through consumer apps or registration-gated portals rather than an open
+  feed. Mwasalat (Oman) serves a current national feed with no published reuse
+  license, as recorded in the Transitland non-Western sweep. Turkey's Bursa,
+  Ankara, and Antalya portals did not resolve from the review environment and are
+  not in the catalog as ingestible open feeds.
+
+**Partnership-gated community data, held out by design.** The largest body of
+African GTFS is community-mapped or survey-produced, and the roadmap's
+partnership-gated phase keeps it out of catalog curation until a named local
+steward owns licensing, source verification, and consent
+([global coverage roadmap](global-coverage-roadmap.md) Phase 4,
+[ADR 0028](decisions/0028-global-south-pilot.md)). Every sub-Saharan African
+feed in the catalog resolves to a
+[Digital Transport for Africa](https://digitaltransport4africa.org/) repository
+on `git.digitaltransport4africa.org` or `gitlab.com/digitaltransport`, several
+under ODbL: Abidjan (Côte d'Ivoire), Douala (Cameroon, Socatur), Addis Ababa
+(Ethiopia), Accra and Kumasi (Ghana), Nairobi (Kenya, DigitalMatatus), Kampala
+(Uganda, 14-seater paratransit), Kigali (Rwanda), Tétouan (Morocco, Vitalis),
+and Stellenbosch (South Africa). Held out and logged even where openly licensed.
+Two more sit in the same partnership-gated bucket: Morocco's ONCF national rail
+(mdb 3049), whose only catalog download is a personal GitHub scrape under ODbL
+rather than an ONCF-published feed, and Algoa Bus (South Africa, mdb 3133),
+served from a personal Google Drive link with no license.
+
+Cape Town's MyCiTi was checked as the roadmap named it. The City of Cape Town
+open-data portal did not surface a first-party GTFS download, and the widely
+mirrored South African feeds are produced by WhereIsMyTransport or GoMetro rather
+than a municipal open-data program. They stay partnership-gated, and no South
+African feed was added.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
@@ -1334,7 +1485,8 @@ create a broader-looking map.
 |---|---|
 | GTFS Schedule | `https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip` |
 | Status | Verified 200 (after one 301 redirect; always follow redirects) |
-| GTFS-Realtime | Published via UmoIQ (Cubic): trip updates, vehicle positions, and service alerts at `https://webservices.umoiq.com/api/gtfs-rt/v1/<kind>/unitrans`. All three endpoints exist but return 401 without a UmoIQ API key. |
+| Passenger realtime | [Unitrans moved arrival predictions and maps from UmoIQ to Swiftly on March 2, 2026](https://unitrans.ucdavis.edu/news/new-arrival-predictions-website-and-maps-unitrans-website). Google Maps, Apple Maps, and Transit were already consuming the Swiftly-provided information at announcement time. |
+| GTFS-Realtime measurement | No public Swiftly GTFS-RT endpoint, agency key, or credential path was documented on the Unitrans GTFS or announcement pages when rechecked July 18, 2026. The scorecard therefore leaves realtime unmeasured rather than probing the retired UmoIQ integration or treating the unknown as a zero. |
 | Mobility Database | `mdb-82` |
 | transit.land | feed `f-9qc7-unitransdavis`, operator `o-9qc7-unitransdavis` |
 | License | None stated. Site carries a UC Regents copyright. Treat as all-rights-reserved until the agency confirms terms. |
@@ -1347,9 +1499,10 @@ Notes:
 - A keyless mirror exists at the Mobility Database latest bucket
   (`us-california-unitrans-gtfs-82.zip`), refreshed by MobilityData rather
   than the agency. Use only as a fallback.
-- Realtime scoring for Unitrans (Phase 3) needs a UmoIQ API key. Until one is
-  granted, the Realtime category will show "Not yet published" wording with a
-  note that the agency does operate realtime tracking.
+- The prior UmoIQ endpoint record became stale when the public passenger system
+  moved to Swiftly. Realtime scoring now requires a documented Swiftly endpoint
+  and any required access terms. Until those are public, the category states
+  that it is unmeasured and does not affect the grade.
 
 ## Yolobus (Yolo County Transportation District)
 

@@ -1,0 +1,34 @@
+# Melaka (MY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: basmy-melaka
+    name: BAS.MY Melaka
+    country: MY
+    subdivision_code: MY-04
+    subdivision_name: Melaka
+    is_official: true
+    organization_id: causewaylink
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/mybas-melaka
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit the BAS.MY Melaka service,
+      operated by Causeway Link.
+    operating_note: >-
+      The BAS.MY Melaka stage bus network, a federally supported service
+      operated by Causeway Link and published as open data on data.gov.my;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        BAS.MY Melaka (operated by Causeway Link), published as open data
+        through data.gov.my, the Government of Malaysia's official open data
+        platform, under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
