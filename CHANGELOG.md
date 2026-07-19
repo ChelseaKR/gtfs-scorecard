@@ -28,24 +28,35 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
-- Let a national feed with a multi-gigabyte table still score. The gtfs.de
-  Germany-wide aggregate and the Swiss national timetable were passing the
-  validator but then crashing the score when Scorecard's own reader hit its
-  per-table memory cap on their `stop_times.txt` (1.9 GiB and 2.4 GiB). The
-  descriptive ferry profile now skips a table it cannot read and reports no
-  profile, instead of failing the whole feed, so both national feeds publish a
-  full scorecard. With the earlier archive-limit change, this clears the last
-  two gaps and takes the European beta gate's translation and portable-location
-  checks to 100%.
-- Score the three national and regional feeds that had silently failed to
-  produce a scorecard: the gtfs.de Germany-wide aggregate, the Swiss national
-  timetable, and Verkehrsverbund Rhein-Neckar. Each unzips past the standard
-  archive-shape limits (the Swiss `stop_times.txt` alone reaches 2.4 GiB), so
-  the standard tier was rejecting them before the validator ever ran. All three
-  now carry `large_feed: true`, and the large-tier per-entry ceiling rises from
-  2 GiB to 3 GiB to admit a national timetable's `stop_times` table. This fills
-  the three gaps in the European cohort's scored coverage that were holding the
-  beta gate's translation and portable-location checks below 100%.
+- Grow reviewed coverage by 123 records to 1,734 by deepening countries already
+  in the registry. A sixth gtfs-data.jp pass adds 40 first-party Japanese
+  operators across 15 prefectures under CC BY 4.0, CC0, and CC BY 2.1 JP, taking
+  Japan to 225. A United States small and rural pass adds 14 feeds under a
+  confirmable reuse basis: Caltrans DDS California agency feeds (CC BY 4.0) and
+  National Park Service park shuttles and ferries (US Government works). A Canada
+  and Australia pass adds 69, including BC Transit regional systems, Québec exo
+  and RTC networks, Queensland qconnect towns, and Ontario operators such as the
+  TTC and GO Transit. European counts are unchanged. Every record carries a live
+  license check, a current-calendar preflight, and a closed reuse-evidence block;
+  rejections are recorded in `docs/feeds.md`.
+- Raise the archive-shape ceiling for opted-in large feeds. A few national and
+  regional feeds unzip past the standard limits (a national `stop_times.txt` can
+  reach 2.4 GiB), so the standard tier rejected them before the validator ran.
+  These now carry `large_feed: true`, and the large-tier per-entry ceiling rises
+  from 2 GiB to 3 GiB. Verkehrsverbund Rhein-Neckar now scores. The two larger
+  aggregates, the gtfs.de Germany-wide feed and the Swiss national timetable,
+  clear this guard but remain unscored because a separate per-table reader cap
+  still applies (see below).
+- Stop an oversized table from failing a whole feed's score. Scorecard's own
+  reader caps a single table at 1 GiB, and the ungraded ferry profile reads
+  `stop_times.txt` whole; on a national aggregate whose `stop_times.txt` runs to
+  1.9 GiB or more, that raised an error and failed the entire feed. The ferry
+  profile now skips a table it cannot read and reports no profile. This is a
+  partial step: the same aggregates still hit the cap in another whole-table
+  reader (routability), so gtfs.de and the Swiss national timetable stay
+  unscored. Fully scoring national feeds of this size needs a streaming reader,
+  tracked in `docs/follow-ups.md`. The European beta gate stands at 99.2% of its
+  reviewed cohort measured for translation and portable location, not 100%.
 - Grow reviewed coverage by 91 records to 1,609 and reach the European beta
   gate's 250 reviewed-feed-record threshold. Two more waves: a fifth gtfs-data.jp
   pass takes Japan from 145 to 185 records, and an eighth European wave adds 51
