@@ -1785,13 +1785,18 @@ main:focus { outline: none; }
 .need-swatch.need-moderate::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    45deg, rgb(40 17 9 / 0.6) 0 1px, transparent 1px 4px);
+  inset: -50%;
+  width: 1px;
+  background: currentColor;
+  color: rgb(40 17 9 / 0.6);
+  box-shadow: 4px 0 currentColor, 8px 0 currentColor, 12px 0 currentColor,
+    16px 0 currentColor, 20px 0 currentColor, 24px 0 currentColor;
+  transform: rotate(45deg);
 }
 .need-swatch.need-moderate::after {
-  background-image: repeating-linear-gradient(
-    45deg, rgb(58 29 18 / 0.55) 0 1px, transparent 1px 7px);
+  color: rgb(58 29 18 / 0.55);
+  box-shadow: 7px 0 currentColor, 14px 0 currentColor, 21px 0 currentColor,
+    28px 0 currentColor;
 }
 
 /* Per-agency route + stop map (agency/<id>/index.html). The map is a visual

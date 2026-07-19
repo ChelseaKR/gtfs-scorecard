@@ -112,14 +112,12 @@ def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
 
 
 def test_public_surfaces_use_solid_color_grounds() -> None:
-    """Only the equity legend's non-color data hatches use gradients."""
+    """Public surfaces and data keys use flat fills without CSS gradients."""
     landing = (_REPO / "web" / "index.html").read_text()
     shared = (_REPO / "web" / "src" / "styles.css").read_text()
 
     assert "gradient(" not in landing
-    assert "radial-gradient" not in shared
-    assert shared.count("gradient(") == 2
-    assert shared.count("repeating-linear-gradient(") == 2
+    assert "gradient(" not in shared
 
 
 def test_gtfs_abbreviation_is_not_underlined() -> None:
