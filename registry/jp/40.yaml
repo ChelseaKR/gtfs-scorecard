@@ -220,3 +220,100 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: buzen-city-bus
+    name: Buzen City Bus (豊前市バス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/buzencity/feeds/BuzenCityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Buzen City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Buzen City.
+    operating_note: >-
+      Buzen City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/buzencity.BuzenCityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Buzen City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: fukuoka-ashiya-town-bus
+    name: Ashiya Town Bus (芦屋タウンバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ashiyatown/feeds/AshiyaTownBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ashiya Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ashiya Town.
+    operating_note: >-
+      Ashiya Town's Ashiya Town Bus in Fukuoka, distinct from Ashiya
+      City in Hyogo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ashiyatown.AshiyaTownBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ashiya Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: fukutsu-city-mini-bus
+    name: Fukutsu Mini-Bus (ふくつミニバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/fukutsucity/feeds/minibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Fukutsu City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Fukutsu City.
+    operating_note: >-
+      Fukutsu City's Mini-Bus and shared-taxi network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/fukutsucity.minibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Fukutsu City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: miyama-city-community-bus
+    name: Miyama City Community Bus (みやま市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/miyamacity/feeds/MiyamaCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Miyama City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Miyama City.
+    operating_note: >-
+      Miyama City's community bus in Fukuoka.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/miyamacity.MiyamaCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Miyama City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

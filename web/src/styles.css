@@ -1,7 +1,8 @@
 /* GTFS Scorecard — roadway signage aesthetic.
    Enamel sign-blank ground, guide-sign green, signal-yellow accents; type set
    in Overpass (the open digitization of the FHWA's Highway Gothic, the
-   letterforms on road signs) with Public Sans (USWDS) for running text.
+   letterforms on road signs), Public Sans (USWDS) for running text, and
+   Atkinson Hyperlegible Mono for compact data and wayfinding labels.
    Mobile-first. Severity and grades always carry text; color reinforces only. */
 
 /* The three type families are served locally (Latin variable-font subsets), so
@@ -18,11 +19,11 @@
   src: url("/fonts/overpass-latin.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Overpass Mono";
+  font-family: "Atkinson Hyperlegible Mono";
   font-style: normal;
   font-weight: 400 700;
   font-display: optional;
-  src: url("/fonts/overpass-mono-latin.woff2") format("woff2");
+  src: url("/fonts/atkinson-hyperlegible-mono-latin.woff2") format("woff2");
 }
 @font-face {
   font-family: "Public Sans";
@@ -57,7 +58,7 @@
   --shadow: 0 1px 2px rgb(32 36 31 / 0.08), 0 4px 14px rgb(32 36 31 / 0.07);
   --font-display: "Overpass", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Overpass Mono", ui-monospace, "SF Mono", monospace;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", monospace;
   --board: #102a20;        /* dark pine ground: guide-sign green, near black */
   --board-2: #163a2c;
   --amber: #fdc70a;        /* the signal accent: warning-sign yellow */
@@ -99,9 +100,12 @@ body {
   font-size: 1rem;
   line-height: 1.55;
   color: var(--ink);
-  background:
-    radial-gradient(at 15% 0%, rgb(255 255 255 / 0.55), transparent 45%),
-    var(--paper);
+  background: var(--paper);
+}
+
+abbr[title="General Transit Feed Specification"] {
+  font-style: normal;
+  text-decoration: none;
 }
 
 .wrap {
@@ -166,8 +170,8 @@ main.wrap-wide .page-title {
   left: 12px;
   right: 12px;
   top: 50%;
-  height: 2px;
-  background: repeating-linear-gradient(to right, var(--line) 0 7px, transparent 7px 14px);
+  height: 0;
+  border-top: 2px dashed var(--line);
   pointer-events: none;
 }
 .report-route li { position: relative; }
@@ -226,9 +230,10 @@ main.wrap-wide .page-title {
     right: auto;
     top: 12px;
     bottom: 12px;
-    width: 2px;
+    width: 0;
     height: auto;
-    background: repeating-linear-gradient(to bottom, var(--line) 0 7px, transparent 7px 14px);
+    border-top: 0;
+    border-inline-start: 2px dashed var(--line);
   }
   .report-route a { width: 100%; padding-inline: 0.6rem; }
 }
@@ -393,8 +398,8 @@ a:hover { color: var(--green-bright); }
   left: 0;
   right: 0;
   bottom: 0;
-  height: 2px;
-  background: repeating-linear-gradient(to right, rgba(244, 246, 240, 0.22) 0 7px, transparent 7px 14px);
+  height: 0;
+  border-top: 2px dashed rgba(244, 246, 240, 0.22);
 }
 /* The header spans the full viewport (the dashed route line in ::after already
    does), so the wayfinding stops use the whole width instead of overflowing the
@@ -1780,13 +1785,18 @@ main:focus { outline: none; }
 .need-swatch.need-moderate::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    45deg, rgb(40 17 9 / 0.6) 0 1px, transparent 1px 4px);
+  inset: -50%;
+  width: 1px;
+  background: currentColor;
+  color: rgb(40 17 9 / 0.6);
+  box-shadow: 4px 0 currentColor, 8px 0 currentColor, 12px 0 currentColor,
+    16px 0 currentColor, 20px 0 currentColor, 24px 0 currentColor;
+  transform: rotate(45deg);
 }
 .need-swatch.need-moderate::after {
-  background-image: repeating-linear-gradient(
-    45deg, rgb(58 29 18 / 0.55) 0 1px, transparent 1px 7px);
+  color: rgb(58 29 18 / 0.55);
+  box-shadow: 7px 0 currentColor, 14px 0 currentColor, 21px 0 currentColor,
+    28px 0 currentColor;
 }
 
 /* Per-agency route + stop map (agency/<id>/index.html). The map is a visual
@@ -2485,15 +2495,8 @@ main:focus { outline: none; }
   /* The board ground is always dark, so its text stays a fixed light cream
      regardless of the active theme (it must not follow --paper, which flips). */
   color: #f4f6f0;
-  background:
-    radial-gradient(110% 80% at 92% -20%, rgb(253 199 10 / 0.14), transparent 55%),
-    radial-gradient(90% 90% at -10% 120%, rgb(46 110 81 / 0.45), transparent 60%),
-    var(--board);
+  background: var(--board);
   padding: clamp(1.3rem, 4vw, 2.2rem);
-}
-.board-hero::before { /* faint LED scanlines */
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
-  background-image: repeating-linear-gradient(rgb(0 0 0 / 0.14) 0 1px, transparent 1px 4px);
 }
 .board-inner { position: relative; z-index: 1; }
 .board-kicker {
@@ -2740,9 +2743,7 @@ main p,
   }
 
   :root:not([data-theme]) body {
-    background:
-      radial-gradient(at 15% 0%, rgb(255 255 255 / 0.05), transparent 45%),
-      var(--paper);
+    background: var(--paper);
   }
 
   /* Keep the grade letter and pressed-facet count light on their coloured fills. */
@@ -2791,9 +2792,7 @@ main p,
   --success-surface: #183c2c;
 }
 :root[data-theme="dark"] body {
-  background:
-    radial-gradient(at 15% 0%, rgb(255 255 255 / 0.05), transparent 45%),
-    var(--paper);
+  background: var(--paper);
 }
 :root[data-theme="dark"] .grade-chip { color: #f2f3ee; }
 :root[data-theme="dark"] .facet-chip[aria-pressed="true"] { color: #15181b; }

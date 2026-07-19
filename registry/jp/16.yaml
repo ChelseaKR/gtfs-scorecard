@@ -151,3 +151,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: oyabe-city-bus
+    name: Oyabe City Bus (小矢部市営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/oyabecity/feeds/oyabecitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Oyabe City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Oyabe City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/oyabecity.oyabecitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Oyabe City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tonami-city-bus
+    name: Tonami City Bus (砺波市営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tonamicity/feeds/tonamishieibasu/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Tonami City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Tonami City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tonamicity.tonamishieibasu
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tonami City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

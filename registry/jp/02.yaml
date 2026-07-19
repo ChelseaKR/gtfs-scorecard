@@ -202,3 +202,76 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: shichinohe-town-community-bus
+    name: Shichinohe Town Community Bus (七戸町コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shichinohetown/feeds/shichinohe_community-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shichinohe Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shichinohe
+      Town.
+    operating_note: >-
+      Shichinohe Town's community and shuttle bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shichinohetown.shichinohe_community-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shichinohe Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: fukaura-town-community-bus
+    name: Fukaura Town Community Bus (深浦町コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/fukauratown/feeds/fukaura-town-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Fukaura Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Fukaura Town.
+    operating_note: >-
+      Fukaura Town's community bus along the western Aomori coast.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/fukauratown.fukaura-town-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Fukaura Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tsugaru-city-community-transit
+    name: Tsugaru City Community Transit (つがる市地域内交通)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsugarucity/feeds/tsugarucity_localtransportation/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsugaru City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tsugaru City.
+    operating_note: >-
+      Tsugaru City's local community transit.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsugarucity.tsugarucity_localtransportation
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsugaru City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

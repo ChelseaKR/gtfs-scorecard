@@ -200,3 +200,76 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: busnet-tsu-gurutto-bus
+    name: Gurutto-Tsu Bus (ぐるっと・つーバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/busnet-tsu/feeds/guruttotsubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Busnet Tsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Busnet Tsu.
+    operating_note: >-
+      The Gurutto-Tsu community bus serving Tsu, published by the Busnet
+      Tsu operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/busnet-tsu.guruttotsubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Busnet Tsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nabari-city-community-bus
+    name: Nabari City Community Bus (名張市コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nabaricity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nabari City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nabari City.
+    operating_note: >-
+      Nabari City's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nabaricity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nabari City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kameyama-city-community-bus
+    name: Kameyama City Community Bus (亀山市コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kameyamacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kameyama City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kameyama City.
+    operating_note: >-
+      Kameyama City's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kameyamacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kameyama City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

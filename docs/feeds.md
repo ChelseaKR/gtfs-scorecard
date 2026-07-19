@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,600 feed records, still mostly in
+reference; the full registry has more than 1,700 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -1479,6 +1479,69 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   and the older per-city metrotas.com.au downloads carry no resolvable open
   licence).
 
+## United States small and rural depth wave
+
+A pass aimed at small and rural US agencies that publish a first-party GTFS
+under a reuse basis that can actually be confirmed, since most US public-agency
+GTFS carries no stated license. Two sources cleared that bar. The Caltrans DDS
+GTFS index (`gtfs.dds.dot.ca.gov`) hosts California agency feeds and states a
+single site-wide Creative Commons Attribution 4.0 license. The National Park
+Service GTFS program (`nps.gov/subjects/developer/gtfs.htm`) publishes park
+transit feeds that are US Government works, and the NPS disclaimer places
+NPS-created material in the public domain. Every candidate was mechanically
+preflighted on 2026-07-18: the source zip was downloaded, confirmed to be a
+valid archive with a current (non-expired) service calendar, checked for size,
+then deleted. The subdivision was set to the ISO 3166-2 code, and each feed was
+deduplicated against the registry by URL, agency name, and MDB id. The gate was
+fail-closed.
+
+Fourteen records were added across nine states.
+
+Caltrans DDS, CC BY 4.0:
+
+- **Artesia Transit** — California (`US-CA`). City fixed-route shuttle, calendar
+  through 2028-04-30.
+- **Maywood Express Shuttle** — California (`US-CA`). City shuttle, calendar
+  through 2026-12-31.
+
+National Park Service, public domain:
+
+- **Island Explorer (Acadia National Park)** — Maine (`US-ME`), seasonal.
+- **Bandelier National Monument Shuttle** — New Mexico (`US-NM`), seasonal.
+- **Bryce Canyon Shuttle** — Utah (`US-UT`), seasonal.
+- **Zion Canyon Shuttle** — Utah (`US-UT`), seasonal.
+- **Denali National Park Courtesy Shuttle** — Alaska (`US-AK`), seasonal.
+- **Going-to-the-Sun Road Shuttle (Glacier National Park)** — Montana (`US-MT`),
+  seasonal.
+- **Giant Forest Shuttle (Sequoia National Park)** — California (`US-CA`),
+  seasonal.
+- **Mariposa Grove Shuttle (Yosemite National Park)** — California (`US-CA`),
+  seasonal.
+- **Yosemite Valley Shuttle** — California (`US-CA`), year-round.
+- **Harpers Ferry Shuttle** — West Virginia (`US-WV`), year-round.
+- **Fort Matanzas Ferry** — Florida (`US-FL`), year-round.
+- **Fort Sumter Ferry** — South Carolina (`US-SC`), year-round.
+
+The review rejected more than it kept, and the rejections are the point:
+
+- **Expired calendar:** the Yurok Tribe feed on Caltrans DDS ended 2026-06-28,
+  and the Havasu Landing Resort ferry feed ended 2025-06-30 (and is a private
+  resort service, not a public agency). Every DDS "Flex" dial-a-ride and
+  paratransit feed reviewed (Manteca, Tulare County, Valley Express, Union City,
+  MOVE Stanislaus) was frozen on a 2022 to 2024 calendar, the same stale DDS
+  packaging already recorded for City of Wasco. The Grand Canyon South Rim
+  Shuttle NPS feed had expired on 2026-05-22.
+- **Already in the registry:** several NPS feeds are already carried, so they
+  were skipped by URL match rather than added a second time (Dry Tortugas and
+  Pensacola Bay City Ferry in Florida, Ship Island in Mississippi, Cape Lookout
+  in North Carolina, Boston Harbor Islands in New York and Massachusetts, Rocky
+  Mountain in Colorado, Alcatraz in California). The DDS-hosted Reds Meadow
+  Shuttle for Devils Postpile is published by Trillium as Eastern Sierra Transit
+  Authority, which is already tracked, so it was left out to avoid a duplicate.
+- **Not small or rural:** the Statue of Liberty ferries are a high-volume urban
+  NPS service, off theme for this wave, so they were not added even though the
+  feed is current and public domain.
+
 ## Reviewed ferry cohort
 
 These five records were selected to exercise the ferry profile on current,
@@ -1562,6 +1625,89 @@ freshness behavior for those schedules is reviewed. Community or informal feeds
 in lower- and middle-income countries follow the partnership and consent gate in
 [ADR 0028](decisions/0028-global-south-pilot.md); they are not added merely to
 create a broader-looking map.
+
+## Japan gtfs-data.jp sixth wave
+
+A sixth pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The five prior waves lifted Japan to 185 records across 40
+prefectures. This wave only goes deeper inside prefectures already represented,
+because the seven prefectures still missing carry no admitted-license feed in the
+catalog. Forty records were added, lifting Japan from 185 to 225 records, still
+across the same 40 prefectures. Every candidate is a distinct operator not already
+tracked, confirmed official through the repository, and mechanically preflighted on
+2026-07-18: the download was opened, its GTFS core tables and a current, non-expired
+service calendar were confirmed by reading calendar.txt and calendar_dates.txt
+directly, its size was checked against the standard ingestion caps, and the archive
+was deleted after the check.
+
+The license mix of the forty is 34 CC BY 4.0, 4 CC0 1.0, and 2 CC BY 2.1 JP, the
+same three admitted licenses as before, with the exact version stated in each
+record's `license_note` and attribution. Six of the forty are first-party private
+operators rather than municipal community buses: Toshin Kanko Bus (Nagano),
+Shirotori Kotsu (Gifu), Busnet Tsu running the Gurutto-Tsu service (Mie), and Koryo
+Kotsu, Kuroiwa Kanko, and Reihoku Kanko Jidosha (all Kochi).
+
+Fifteen prefectures deepened, each operator distinct from those already tracked
+(license in parentheses where not CC BY 4.0):
+
+- **Aomori (`JP-02`)**: Shichinohe Town Community Bus, Fukaura Town Community Bus,
+  Tsugaru City Community Transit.
+- **Yamagata (`JP-06`)**: Yamagata City Bus, Sagae City Bus, Nanyo City Bus, Tendo
+  City Bus.
+- **Tochigi (`JP-09`)**: Mibu Town Community Bus, Yaita City Central Loop Bus.
+- **Chiba (`JP-12`)**: Inzai City Route Bus.
+- **Toyama (`JP-16`)**: Oyabe City Bus (CC0 1.0), Tonami City Bus (CC0 1.0).
+- **Nagano (`JP-20`)**: Ueda City Orange Bus, Karuizawa Town Loop Bus, Toshin Kanko
+  Bus (CC0 1.0).
+- **Gifu (`JP-21`)**: Shirotori Kotsu, Tajimi City Kikyo Bus, Gero City Gero Bus,
+  Nakatsugawa City Community Bus.
+- **Aichi (`JP-23`)**: Chita City Aiai Bus, Tokai City Ran-Ran Bus, Shinshiro City
+  S-Bus.
+- **Mie (`JP-24`)**: Gurutto-Tsu Bus (Busnet Tsu), Nabari City Community Bus,
+  Kameyama City Community Bus.
+- **Shiga (`JP-25`)**: Yasu City Onori-Yasu Bus, Konan City Megurukun Bus.
+- **Hyogo (`JP-28`)**: Sumoto City Community Bus (CC BY 2.1 JP), Sayo Town Community
+  Bus (CC BY 2.1 JP).
+- **Wakayama (`JP-30`)**: Katsuragi Town Community Bus (CC0 1.0).
+- **Tokushima (`JP-36`)**: Yoshinogawa City Bus, Naka Town Bus.
+- **Kochi (`JP-39`)**: Konan City Bus, Koryo Kotsu, Kuroiwa Kanko, Reihoku Kanko
+  Jidosha.
+- **Fukuoka (`JP-40`)**: Buzen City Bus, Ashiya Town Bus, Fukutsu Mini-Bus, Miyama
+  City Community Bus.
+
+The exclusions carry the discipline:
+
+- **Expired calendar behind a future end date:** Nishiwaki City (Hyogo) advertised a
+  window into 2027, but its `rid=current` archive held a calendar.txt whose weekday
+  and Saturday service ended 2026-03-31, and its calendar_dates.txt carried only
+  removals after that, so no service day remained at the review. It was rejected.
+  Nanbu Town (Yamanashi) was rechecked and still served a calendar.txt ending
+  2026-03-31, unchanged from the fifth wave. Both were caught by reading the calendar
+  by hand rather than trusting the catalog's advertised end date.
+- **Near-term expiry held for margin:** Shoo Town (Okayama) carried a catalog end
+  date of 2026-08-31, about six weeks past the review. It was set aside for a later
+  wave rather than admitted at the edge of its window.
+- **One feed per operator:** operators that publish only line-level or area-level
+  exports were passed over. Nakatsu City (Oita) publishes eighteen line feeds,
+  Saitama City publishes per-route feeds, Minami-Shinshu publishes eleven area feeds,
+  and private operators including Nagaden Bus and Mie Kotsu split their networks into
+  per-region feeds. None yields one feed for the whole network.
+- **Not a public network:** the Radiant City Yokohama shuttle (Daishinto, Kanagawa)
+  remains excluded as a single residential complex's service, consistent with prior
+  waves. It was the only single-feed Kanagawa candidate.
+- **Unversioned license:** the catalog's two feeds under a bare "CC-BY", with no
+  resolvable version, stayed rejected. Only the three named, versioned Creative
+  Commons licenses were admitted.
+- **Discontinued:** the feeds the catalog flags as discontinued were excluded by
+  construction.
+- **Seven priority prefectures still empty:** Fukui (`JP-18`), Kyoto (`JP-26`),
+  Tottori (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`),
+  and Miyazaki (`JP-45`) still carry zero feeds under an admitted license anywhere
+  in the catalog. They stay unrepresented; no aggregator mirror was used.
+- **Capped for review quality:** the catalog listed 222 distinct new operators under
+  an admitted license with a future service window in its metadata, after deduping
+  against the registry. Forty-two were preflighted by hand for this wave, forty
+  passed and were kept, and the rest of the pool is held for later waves.
 
 ## Unitrans (ASUCD / City of Davis)
 

@@ -178,3 +178,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: yoshinogawa-city-bus
+    name: Yoshinogawa City Bus (吉野川市代替バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yoshinogawacity/feeds/yoshinogawacitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yoshinogawa City
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      Yoshinogawa City.
+    operating_note: >-
+      Yoshinogawa City's replacement bus service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yoshinogawacity.yoshinogawacitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yoshinogawa City. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: naka-town-bus
+    name: Naka Town Bus (那賀町営バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nakatown/feeds/nakatownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Naka Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Naka Town.
+    operating_note: >-
+      Naka Town's municipal bus in Tokushima.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nakatown.nakatownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Naka Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

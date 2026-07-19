@@ -1717,3 +1717,100 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+
+  # United States small and rural depth wave (2026-07-18). Two Caltrans DDS
+  # feeds licensed CC BY 4.0 (Artesia, Maywood) and three National Park Service
+  # park shuttles published as US Government works (public domain). Each source
+  # zip was downloaded and confirmed to carry a current service calendar before
+  # the reuse_evidence block was written; see docs/feeds.md.
+  - id: artesia-transit
+    name: Artesia Transit
+    subdivision_code: US-CA
+    subdivision_name: California
+    is_official: true
+    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/ArtesiaGTFS.zip
+    license_note: CC BY 4.0 through the Caltrans DDS GTFS index (gtfs.dds.dot.ca.gov).
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs.dds.dot.ca.gov/
+      terms_url: https://gtfs.dds.dot.ca.gov/
+      scope: [gtfs_schedule]
+      attribution: Artesia Transit, via the Caltrans California GTFS (DDS) index.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+
+  - id: maywood-express-shuttle
+    name: Maywood Express Shuttle
+    subdivision_code: US-CA
+    subdivision_name: California
+    is_official: true
+    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/MaywoodGTFS.zip
+    license_note: CC BY 4.0 through the Caltrans DDS GTFS index (gtfs.dds.dot.ca.gov).
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs.dds.dot.ca.gov/
+      terms_url: https://gtfs.dds.dot.ca.gov/
+      scope: [gtfs_schedule]
+      attribution: Maywood Express Shuttle, via the Caltrans California GTFS (DDS) index.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+
+  - id: giant-forest-shuttle
+    name: Giant Forest Shuttle (Sequoia National Park)
+    subdivision_code: US-CA
+    subdivision_name: California
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/seki/giant-forest-shuttle.zip
+    license_note: Public domain as a United States Government work; published by the National Park Service GTFS program.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nps.gov/subjects/developer/gtfs.htm
+      terms_url: https://www.nps.gov/aboutus/disclaimer.htm
+      scope: [gtfs_schedule]
+      attribution: National Park Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+
+  - id: mariposa-grove-shuttle
+    name: Mariposa Grove Shuttle (Yosemite National Park)
+    subdivision_code: US-CA
+    subdivision_name: California
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/yose/mariposa-grove-shuttle-service.zip
+    license_note: Public domain as a United States Government work; published by the National Park Service GTFS program.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nps.gov/subjects/developer/gtfs.htm
+      terms_url: https://www.nps.gov/aboutus/disclaimer.htm
+      scope: [gtfs_schedule]
+      attribution: National Park Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+
+  - id: yosemite-valley-shuttle
+    name: Yosemite Valley Shuttle
+    subdivision_code: US-CA
+    subdivision_name: California
+    is_official: true
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/yose/yosemite-valley-shuttle.zip
+    license_note: Public domain as a United States Government work; published by the National Park Service GTFS program.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nps.gov/subjects/developer/gtfs.htm
+      terms_url: https://www.nps.gov/aboutus/disclaimer.htm
+      scope: [gtfs_schedule]
+      attribution: National Park Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

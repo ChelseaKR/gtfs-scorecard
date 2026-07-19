@@ -149,3 +149,52 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: yasu-city-onori-yasu-bus
+    name: Yasu City Onori-Yasu Bus (野洲市コミバス おのりやす)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yasucity/feeds/onoriyasu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yasu City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yasu City.
+    operating_note: >-
+      Yasu City's Onori-Yasu community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yasucity.onoriyasu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yasu City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shiga-konan-city-megurukun-bus
+    name: Konan City Megurukun Bus (湖南市コミバス めぐるくん)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shiga-konancity/feeds/konansimegurukun/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Konan City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Konan City.
+    operating_note: >-
+      The Megurukun community bus in Konan, Shiga, distinct from Konan
+      City in Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shiga-konancity.konansimegurukun
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Konan City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

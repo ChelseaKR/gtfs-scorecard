@@ -116,3 +116,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: mibu-town-community-bus
+    name: Mibu Town Community Bus (壬生町コミュニティバス みぶーぶ)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mibutown/feeds/mibubu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mibu Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mibu Town.
+    operating_note: >-
+      Mibu Town's Mibu-bu community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mibutown.mibubu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mibu Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yaita-city-central-loop-bus
+    name: Yaita City Central Loop Bus (矢板市中央部循環路線)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yaitacity/feeds/chuuou-junkan/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yaita City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Yaita City.
+    operating_note: >-
+      Yaita City's central-area loop route.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yaitacity.chuuou-junkan
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yaita City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
