@@ -37,11 +37,20 @@ def test_trims_surrounding_whitespace_everywhere() -> None:
     assert results["autofix_trim_whitespace"].count == 2
 
 
-def test_recases_route_long_names() -> None:
-    tables = {"routes.txt": [{"route_id": "A", "route_long_name": "DOWNTOWN LOOP"}]}
+def test_recases_route_names_and_descriptions() -> None:
+    tables = {
+        "routes.txt": [
+            {
+                "route_id": "A",
+                "route_long_name": "DOWNTOWN LOOP",
+                "route_desc": "WEST SACRAMENTO SHUTTLE",
+            }
+        ]
+    }
     results = {r.code: r for r in apply_fixes(tables)}
     assert tables["routes.txt"][0]["route_long_name"] == "Downtown Loop"
-    assert results["autofix_route_name_case"].count == 1
+    assert tables["routes.txt"][0]["route_desc"] == "West Sacramento Shuttle"
+    assert results["autofix_route_name_case"].count == 2
 
 
 def test_clean_feed_yields_no_results() -> None:

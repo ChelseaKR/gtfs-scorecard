@@ -1267,7 +1267,8 @@ create a broader-looking map.
 |---|---|
 | GTFS Schedule | `https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip` |
 | Status | Verified 200 (after one 301 redirect; always follow redirects) |
-| GTFS-Realtime | Published via UmoIQ (Cubic): trip updates, vehicle positions, and service alerts at `https://webservices.umoiq.com/api/gtfs-rt/v1/<kind>/unitrans`. All three endpoints exist but return 401 without a UmoIQ API key. |
+| Passenger realtime | [Unitrans moved arrival predictions and maps from UmoIQ to Swiftly on March 2, 2026](https://unitrans.ucdavis.edu/news/new-arrival-predictions-website-and-maps-unitrans-website). Google Maps, Apple Maps, and Transit were already consuming the Swiftly-provided information at announcement time. |
+| GTFS-Realtime measurement | No public Swiftly GTFS-RT endpoint, agency key, or credential path was documented on the Unitrans GTFS or announcement pages when rechecked July 18, 2026. The scorecard therefore leaves realtime unmeasured rather than probing the retired UmoIQ integration or treating the unknown as a zero. |
 | Mobility Database | `mdb-82` |
 | transit.land | feed `f-9qc7-unitransdavis`, operator `o-9qc7-unitransdavis` |
 | License | None stated. Site carries a UC Regents copyright. Treat as all-rights-reserved until the agency confirms terms. |
@@ -1280,9 +1281,10 @@ Notes:
 - A keyless mirror exists at the Mobility Database latest bucket
   (`us-california-unitrans-gtfs-82.zip`), refreshed by MobilityData rather
   than the agency. Use only as a fallback.
-- Realtime scoring for Unitrans (Phase 3) needs a UmoIQ API key. Until one is
-  granted, the Realtime category will show "Not yet published" wording with a
-  note that the agency does operate realtime tracking.
+- The prior UmoIQ endpoint record became stale when the public passenger system
+  moved to Swiftly. Realtime scoring now requires a documented Swiftly endpoint
+  and any required access terms. Until those are public, the category states
+  that it is unmeasured and does not affect the grade.
 
 ## Yolobus (Yolo County Transportation District)
 
