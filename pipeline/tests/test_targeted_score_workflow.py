@@ -98,6 +98,17 @@ def test_artifact_publishers_regenerate_and_prune_named_change_claims() -> None:
         assert "--delete --cache-control" in text
 
 
+def test_hourly_refresh_publishes_only_changed_or_swept_feed_directories() -> None:
+    text = (WORKFLOWS / "refresh.yml").read_text()
+
+    assert '--changed-out "$RUNNER_TEMP/swept.txt"' in text
+    assert 'sort -u "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/swept.txt"' in text
+    assert 'aws s3 sync "data/artifacts/${id}" "${artifact_uri}/${id}"' in text
+    assert 'done < "$RUNNER_TEMP/refreshed.txt"' in text
+    assert 'aws s3 sync data/artifacts "' not in text
+    assert 'aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive' not in text
+
+
 def test_boto3_workflow_commands_use_the_temporary_python_environment() -> None:
     names = ("scorecard.yml", "validator-canary.yml", "targeted-score.yml")
     combined = "\n".join((WORKFLOWS / name).read_text() for name in names)

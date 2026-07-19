@@ -94,7 +94,7 @@ def test_publishers_retire_legacy_validator_cache_objects() -> None:
     targeted = (ROOT / ".github" / "workflows" / "targeted-score.yml").read_text()
     pages = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
 
-    for workflow in (daily, refresh):
+    for workflow in (daily,):
         assert '--exclude "*/validator-cache.json"' in workflow
         assert '--include "*/validator-cache.json"' in workflow
         assert '--exclude "*/structure.json"' in workflow
@@ -105,6 +105,9 @@ def test_publishers_retire_legacy_validator_cache_objects() -> None:
         assert '--include "*/corrected.zip"' in workflow
         assert "data/cache/structure" in workflow
         assert "cache/structure" in workflow
+    for internal in ("validator-cache.json", "structure.json", "fixlog.json", "corrected.zip"):
+        assert f'--exclude "{internal}"' in refresh
+    assert "data/cache/structure/${id}.json" in refresh
     assert '--exclude "validator-cache.json"' in targeted
     assert '--exclude "structure.json"' in targeted
     assert '--exclude "fixlog.json"' in targeted

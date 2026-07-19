@@ -75,7 +75,9 @@ jobs:
 
       - name: Refresh expiry from calendar data (no fetch, no validator)
         working-directory: pipeline
-        run: uv run scorecard freshness-sweep --apply
+        run: |
+          uv run scorecard freshness-sweep --apply \
+            --changed-out "$RUNNER_TEMP/swept.txt"
 
       - name: Re-score only the feeds that changed
         working-directory: pipeline
@@ -100,37 +102,59 @@ jobs:
 
       - name: Publish refreshed artifacts to S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
         run: |
+          set -euo pipefail
+          artifact_uri="s3://${ARTIFACTS_BUCKET}/data/artifacts"
+          sort -u "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/swept.txt" \
+            > "$RUNNER_TEMP/refreshed.txt"
+
           fixlog_stage="$RUNNER_TEMP/private-fixlogs"
           rm -rf "$fixlog_stage"
           mkdir -p "$fixlog_stage"
-          jq -r '.agencies | keys[]' data/artifacts/index.json | while IFS= read -r id; do
+          while IFS= read -r id; do
+            [ -n "$id" ] || continue
             if [ -f "data/artifacts/${id}/fixlog.json" ]; then
               mkdir -p "$fixlog_stage/$id"
               cp "data/artifacts/${id}/fixlog.json" "$fixlog_stage/$id/fixlog.json"
             fi
-          done
-          mkdir -p data/cache/structure
-          aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
-            --exclude "*/validator-cache.json" --exclude "*/structure.json" \
-            --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
+            # Only a feed detected as changed or actually freshness-swept can
+            # have new public bytes. Never traverse/upload the full corpus.
+            aws s3 sync "data/artifacts/${id}" "${artifact_uri}/${id}" \
+              --exclude "validator-cache.json" --exclude "structure.json" \
+              --exclude "fixlog.json" --exclude "corrected.zip" \
+              --cache-control "max-age=300" --only-show-errors
+          done < "$RUNNER_TEMP/refreshed.txt"
+
+          # Reindex/rollups produce a small bounded aggregate set. index.json
+          # is the public commit pointer and is uploaded last.
+          aws s3 cp data/artifacts/directory.json "${artifact_uri}/directory.json" \
             --cache-control "max-age=300" --only-show-errors
-          aws s3 rm "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" --recursive \
-            --exclude "*" --include "*/validator-cache.json" \
-            --include "*/structure.json" --include "*/fixlog.json" \
-            --include "*/corrected.zip" --only-show-errors
+          aws s3 cp data/artifacts/scoring.json "${artifact_uri}/scoring.json" \
+            --cache-control "max-age=300" --only-show-errors
+          aws s3 sync data/artifacts/rollups "${artifact_uri}/rollups" \
+            --cache-control "max-age=300" --only-show-errors
           aws s3 sync data/artifacts/changes \
-            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
+            "${artifact_uri}/changes" \
             --delete --cache-control "max-age=300" --only-show-errors
           aws s3 cp data/liveness.json \
-            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
+            "s3://${ARTIFACTS_BUCKET}/data/liveness.json" \
             --cache-control "max-age=300" --only-show-errors
+          aws s3 cp data/artifacts/index.json "${artifact_uri}/index.json" \
+            --cache-control "max-age=300" --only-show-errors
+
           # Persist comparison memory only after every public write succeeds.
           aws s3 sync "$fixlog_stage" \
-            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" --delete --only-show-errors
-          aws s3 sync data/cache/structure \
-            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure" \
-            --only-show-errors
+            "s3://${ARTIFACTS_BUCKET}/cache/fixlog" --only-show-errors
+          while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            if [ -f "data/cache/structure/${id}.json" ]; then
+              aws s3 cp "data/cache/structure/${id}.json" \
+                "s3://${ARTIFACTS_BUCKET}/cache/structure/${id}.json" \
+                --only-show-errors
+            fi
+          done < "$RUNNER_TEMP/refreshed.txt"
 
   # Refreshes do not write to main, so deploy the newly published S3 state
   # explicitly after the refresh.
