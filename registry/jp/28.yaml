@@ -208,3 +208,55 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: sumoto-city-community-bus
+    name: Sumoto City Community Bus (洲本市コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sumotocity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Sumoto City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Sumoto
+      City.
+    operating_note: >-
+      Sumoto City's community bus on Awaji Island.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sumotocity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sumoto City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sayo-town-community-bus
+    name: Sayo Town Community Bus (佐用町コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sayotown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Sayo Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Sayo Town.
+    operating_note: >-
+      Sayo Town's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sayotown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sayo Town. Published as GTFS-JP open data (CC BY 2.1 JP) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -154,3 +154,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: inzai-city-route-bus
+    name: Inzai City Route Bus (印西市路線バス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/inzaicity/feeds/rosenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Inzai City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Inzai City.
+    operating_note: >-
+      Inzai City's Munakata and Kuni route buses.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/inzaicity.rosenbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Inzai City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

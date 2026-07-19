@@ -1542,6 +1542,89 @@ in lower- and middle-income countries follow the partnership and consent gate in
 [ADR 0028](decisions/0028-global-south-pilot.md); they are not added merely to
 create a broader-looking map.
 
+## Japan gtfs-data.jp sixth wave
+
+A sixth pass over the same national repository ([gtfs-data.jp](https://gtfs-data.jp/),
+operated by AIGID). The five prior waves lifted Japan to 185 records across 40
+prefectures. This wave only goes deeper inside prefectures already represented,
+because the seven prefectures still missing carry no admitted-license feed in the
+catalog. Forty records were added, lifting Japan from 185 to 225 records, still
+across the same 40 prefectures. Every candidate is a distinct operator not already
+tracked, confirmed official through the repository, and mechanically preflighted on
+2026-07-18: the download was opened, its GTFS core tables and a current, non-expired
+service calendar were confirmed by reading calendar.txt and calendar_dates.txt
+directly, its size was checked against the standard ingestion caps, and the archive
+was deleted after the check.
+
+The license mix of the forty is 34 CC BY 4.0, 4 CC0 1.0, and 2 CC BY 2.1 JP, the
+same three admitted licenses as before, with the exact version stated in each
+record's `license_note` and attribution. Six of the forty are first-party private
+operators rather than municipal community buses: Toshin Kanko Bus (Nagano),
+Shirotori Kotsu (Gifu), Busnet Tsu running the Gurutto-Tsu service (Mie), and Koryo
+Kotsu, Kuroiwa Kanko, and Reihoku Kanko Jidosha (all Kochi).
+
+Fifteen prefectures deepened, each operator distinct from those already tracked
+(license in parentheses where not CC BY 4.0):
+
+- **Aomori (`JP-02`)**: Shichinohe Town Community Bus, Fukaura Town Community Bus,
+  Tsugaru City Community Transit.
+- **Yamagata (`JP-06`)**: Yamagata City Bus, Sagae City Bus, Nanyo City Bus, Tendo
+  City Bus.
+- **Tochigi (`JP-09`)**: Mibu Town Community Bus, Yaita City Central Loop Bus.
+- **Chiba (`JP-12`)**: Inzai City Route Bus.
+- **Toyama (`JP-16`)**: Oyabe City Bus (CC0 1.0), Tonami City Bus (CC0 1.0).
+- **Nagano (`JP-20`)**: Ueda City Orange Bus, Karuizawa Town Loop Bus, Toshin Kanko
+  Bus (CC0 1.0).
+- **Gifu (`JP-21`)**: Shirotori Kotsu, Tajimi City Kikyo Bus, Gero City Gero Bus,
+  Nakatsugawa City Community Bus.
+- **Aichi (`JP-23`)**: Chita City Aiai Bus, Tokai City Ran-Ran Bus, Shinshiro City
+  S-Bus.
+- **Mie (`JP-24`)**: Gurutto-Tsu Bus (Busnet Tsu), Nabari City Community Bus,
+  Kameyama City Community Bus.
+- **Shiga (`JP-25`)**: Yasu City Onori-Yasu Bus, Konan City Megurukun Bus.
+- **Hyogo (`JP-28`)**: Sumoto City Community Bus (CC BY 2.1 JP), Sayo Town Community
+  Bus (CC BY 2.1 JP).
+- **Wakayama (`JP-30`)**: Katsuragi Town Community Bus (CC0 1.0).
+- **Tokushima (`JP-36`)**: Yoshinogawa City Bus, Naka Town Bus.
+- **Kochi (`JP-39`)**: Konan City Bus, Koryo Kotsu, Kuroiwa Kanko, Reihoku Kanko
+  Jidosha.
+- **Fukuoka (`JP-40`)**: Buzen City Bus, Ashiya Town Bus, Fukutsu Mini-Bus, Miyama
+  City Community Bus.
+
+The exclusions carry the discipline:
+
+- **Expired calendar behind a future end date:** Nishiwaki City (Hyogo) advertised a
+  window into 2027, but its `rid=current` archive held a calendar.txt whose weekday
+  and Saturday service ended 2026-03-31, and its calendar_dates.txt carried only
+  removals after that, so no service day remained at the review. It was rejected.
+  Nanbu Town (Yamanashi) was rechecked and still served a calendar.txt ending
+  2026-03-31, unchanged from the fifth wave. Both were caught by reading the calendar
+  by hand rather than trusting the catalog's advertised end date.
+- **Near-term expiry held for margin:** Shoo Town (Okayama) carried a catalog end
+  date of 2026-08-31, about six weeks past the review. It was set aside for a later
+  wave rather than admitted at the edge of its window.
+- **One feed per operator:** operators that publish only line-level or area-level
+  exports were passed over. Nakatsu City (Oita) publishes eighteen line feeds,
+  Saitama City publishes per-route feeds, Minami-Shinshu publishes eleven area feeds,
+  and private operators including Nagaden Bus and Mie Kotsu split their networks into
+  per-region feeds. None yields one feed for the whole network.
+- **Not a public network:** the Radiant City Yokohama shuttle (Daishinto, Kanagawa)
+  remains excluded as a single residential complex's service, consistent with prior
+  waves. It was the only single-feed Kanagawa candidate.
+- **Unversioned license:** the catalog's two feeds under a bare "CC-BY", with no
+  resolvable version, stayed rejected. Only the three named, versioned Creative
+  Commons licenses were admitted.
+- **Discontinued:** the feeds the catalog flags as discontinued were excluded by
+  construction.
+- **Seven priority prefectures still empty:** Fukui (`JP-18`), Kyoto (`JP-26`),
+  Tottori (`JP-31`), Hiroshima (`JP-34`), Yamaguchi (`JP-35`), Ehime (`JP-38`),
+  and Miyazaki (`JP-45`) still carry zero feeds under an admitted license anywhere
+  in the catalog. They stay unrepresented; no aggregator mirror was used.
+- **Capped for review quality:** the catalog listed 222 distinct new operators under
+  an admitted license with a future service window in its metadata, after deduping
+  against the registry. Forty-two were preflighted by hand for this wave, forty
+  passed and were kept, and the rest of the pool is held for later waves.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |

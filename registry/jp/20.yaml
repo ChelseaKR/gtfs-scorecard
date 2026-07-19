@@ -199,3 +199,77 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ueda-city-orange-bus
+    name: Ueda City Orange Bus (上田市街地循環バス・オレンジバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/uedacity/feeds/uedashigaitizyunkanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ueda City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ueda City.
+    operating_note: >-
+      Ueda City's downtown circulator and Orange Bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/uedacity.uedashigaitizyunkanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ueda City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: karuizawa-town-loop-bus
+    name: Karuizawa Town Loop Bus (軽井沢町町内循環バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/karuizawatown/feeds/junkan-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Karuizawa Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Karuizawa
+      Town.
+    operating_note: >-
+      Karuizawa Town's in-town circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/karuizawatown.junkan-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Karuizawa Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: toshin-kanko-bus
+    name: Toshin Kanko Bus (東信観光バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toshinkanko-bus/feeds/rosenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Toshin Kanko Bus through the GTFS Data Repository (gtfs-
+      data.jp).
+    operating_note: >-
+      A private bus operator running route service in eastern Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toshinkanko-bus.rosenbus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toshin Kanko Bus. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

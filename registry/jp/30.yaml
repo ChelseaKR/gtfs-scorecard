@@ -177,3 +177,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: katsuragi-town-community-bus
+    name: Katsuragi Town Community Bus (かつらぎ町コミュニティバス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/katsuragitown/feeds/community-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Katsuragi Town through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Katsuragi Town's community bus in Wakayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/katsuragitown.community-bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Katsuragi Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
