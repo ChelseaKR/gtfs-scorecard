@@ -366,3 +366,25 @@ agencies:
     static_gtfs_url: https://www.nps.gov/external-resources/gtfs/guis/guis-ferry-service-fl.zip
     mdb_id: 3209
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  # United States small and rural depth wave (2026-07-18). National Park
+  # Service park transit published as a US Government work (public domain).
+  # The source zip was preflighted for a current service calendar; see
+  # docs/feeds.md.
+  - id: fort-matanzas-ferry
+    name: Fort Matanzas Ferry (National Park Service)
+    subdivision_code: US-FL
+    subdivision_name: Florida
+    is_official: true
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/foma/foma-ferry-service.zip
+    license_note: Public domain as a United States Government work; published by the National Park Service GTFS program.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nps.gov/subjects/developer/gtfs.htm
+      terms_url: https://www.nps.gov/aboutus/disclaimer.htm
+      scope: [gtfs_schedule]
+      attribution: National Park Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

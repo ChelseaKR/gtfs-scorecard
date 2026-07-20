@@ -1,0 +1,51 @@
+# Catalunya (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fgc-catalunya
+    name: Ferrocarrils de la Generalitat de Catalunya (FGC)
+    country: ES
+    subdivision_code: ES-CT
+    subdivision_name: Catalunya [Cataluña]
+    mdb_id: "1856"
+    is_official: true
+    static_gtfs_url: https://www.fgc.cat/google/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through FGC's own open data portal; credit Ferrocarrils de la
+      Generalitat de Catalunya.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://dadesobertes.fgc.cat/explore/dataset/gtfs_zip/information/
+      terms_url: https://dadesobertes.fgc.cat/explore/dataset/gtfs_zip/information/
+      scope: [gtfs_schedule]
+      attribution: Ferrocarrils de la Generalitat de Catalunya (FGC).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: gencat-interurban-bus
+    name: Autobusos interurbans de la Generalitat de Catalunya
+    country: ES
+    subdivision_code: ES-CT
+    subdivision_name: Catalunya [Cataluña]
+    mdb_id: "2926"
+    is_official: true
+    static_gtfs_url: https://territori.gencat.cat/web/.content/home/serveis/visors-cartografia/bases-cartografiques/infraestructures-mobilitat/autobusos-interurbans/busos-interurbans-GTFS.zip
+    license_note: >-
+      Llicència oberta d'ús d'informació - Catalunya; cite the Generalitat de
+      Catalunya and the last-update date.
+    operating_note: >-
+      One multi-operator interurban aggregate; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.gob.es/es/catalogo/a09002970-autobuses-interurbanos-gtfs
+      terms_url: https://web.gencat.cat/ca/generalitat/dades-indicadors/dades-obertes/llicencies
+      scope: [gtfs_schedule]
+      attribution: >-
+        Generalitat de Catalunya, Departament de Territori; include the
+        last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

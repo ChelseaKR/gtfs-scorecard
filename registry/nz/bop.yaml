@@ -1,0 +1,30 @@
+# Bay of Plenty (NZ) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: baybus-bay-of-plenty
+    name: Baybus (Bay of Plenty)
+    country: NZ
+    subdivision_code: NZ-BOP
+    subdivision_name: Bay of Plenty
+    mdb_id: "1071"
+    is_official: true
+    static_gtfs_url: http://gtfs.dynamis.live/boprc/prod/boprc-nz.zip
+    license_note: >-
+      CC BY 4.0; credit Bay of Plenty Regional Council Toi Moana. The download
+      is the council's sanctioned data-platform host; the council publishes the
+      same feed under CC BY 4.0.
+    operating_note: >-
+      The Bay of Plenty regional bus network (Tauranga, Rotorua, and district
+      services); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.baybus.co.nz/help-and-contact/general-transit-feed-specification/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Bay of Plenty Regional Council Toi Moana.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

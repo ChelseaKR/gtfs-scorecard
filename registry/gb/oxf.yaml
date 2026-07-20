@@ -1,0 +1,29 @@
+# Oxfordshire (GB) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: oxford-bus-company
+    name: Oxford Bus Company
+    country: GB
+    subdivision_code: GB-OXF
+    subdivision_name: Oxfordshire
+    mdb_id: "1947"
+    is_official: true
+    static_gtfs_url: https://data.discoverpassenger.com/operator/oxfordbus/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Oxford Bus Company as the source and do not imply
+      endorsement.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/oxfordbus
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Oxford Bus Company; contains public sector information licensed under
+        the Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

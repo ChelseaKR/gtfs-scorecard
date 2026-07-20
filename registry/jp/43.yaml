@@ -1,0 +1,139 @@
+# Kumamoto (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: kumamoto-city-tram
+    name: Kumamoto City Tram (熊本市電)
+    country: JP
+    subdivision_code: JP-43
+    subdivision_name: Kumamoto
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumamoto-shiden/feeds/kumamotoshiden/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Kumamoto City
+      Transportation Bureau through the GTFS Data Repository
+      (gtfs-data.jp). Credit Kumamoto City Transportation Bureau.
+    operating_note: >-
+      The Kumamoto City tram / streetcar network (熊本市電) run by the
+      Kumamoto City Transportation Bureau; a first-party operator feed
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumamoto-shiden.kumamotoshiden
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kumamoto City Transportation Bureau (熊本市交通局). Published as
+        GTFS-JP open data (CC BY 2.1 JP) through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kumamoto-toshi-bus
+    name: Kumamoto Toshi Bus (熊本都市バス)
+    country: JP
+    subdivision_code: JP-43
+    subdivision_name: Kumamoto
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumamoto-toshibus/feeds/kumamoto-toshibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kumamoto Toshi Bus
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kumamoto
+      Toshi Bus.
+    operating_note: >-
+      Kumamoto Toshi Bus's city bus network; a first-party operator feed
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumamoto-toshibus.kumamoto-toshibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kumamoto Toshi Bus (熊本都市バス). Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sanko-bus
+    name: Sanko Bus (産交バス)
+    country: JP
+    subdivision_code: JP-43
+    subdivision_name: Kumamoto
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sankobus/feeds/sankobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kyushu Sanko Bus Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Kyushu
+      Sanko Bus Co., Ltd.
+    operating_note: >-
+      Kyushu Sanko Bus's route network across Kumamoto Prefecture; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sankobus.sankobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kyushu Sanko Bus Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kumamoto-bus
+    name: Kumamoto Bus (熊本バス)
+    country: JP
+    subdivision_code: JP-43
+    subdivision_name: Kumamoto
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kuma-bus/feeds/kuma-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kumamoto Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kumamoto Bus
+      Co., Ltd.
+    operating_note: >-
+      Kumamoto Bus operates a route network south and east of Kumamoto city; a
+      regional private operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kuma-bus.kuma-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kumamoto Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kumamoto-dentetsu-rail
+    name: Kumamoto Electric Railway (熊本電鉄)
+    country: JP
+    subdivision_code: JP-43
+    subdivision_name: Kumamoto
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumamotodentetsu/feeds/kumamotodentetsu/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Kumamoto Electric Railway Co., Ltd. through the GTFS Data Repository
+      (gtfs-data.jp).
+    operating_note: >-
+      The electric railway lines of Kumamoto Electric Railway north of
+      Kumamoto city; the train network counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumamotodentetsu.kumamotodentetsu
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kumamoto Electric Railway Co., Ltd. Published as GTFS-JP open data (CC0
+        1.0) through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

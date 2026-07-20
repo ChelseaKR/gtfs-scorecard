@@ -193,6 +193,55 @@ def test_run_validator_rejects_unassigned_country(
         validate.run_validator(gtfs, tmp_path / "out", country_code="ZZ")
 
 
+def _capture_cmd(monkeypatch: pytest.MonkeyPatch, out: Path) -> list[list[str]]:
+    calls: list[list[str]] = []
+
+    def fake_run(cmd: list[str], **_k: object) -> subprocess.CompletedProcess[str]:
+        calls.append(cmd)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "report.json").write_text("{}")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    return calls
+
+
+def test_run_validator_gives_a_large_feed_an_explicit_heap(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    monkeypatch.delenv("SCORECARD_LARGE_FEED_HEAP", raising=False)
+    validate.run_validator(gtfs, out, large_feed=True)
+    # The heap flag sits right after the java binary, before -jar.
+    assert calls[0][1] == f"-Xmx{validate.DEFAULT_LARGE_FEED_HEAP}"
+    assert calls[0][2] == "-jar"
+
+
+def test_run_validator_heap_is_tunable_by_env(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    monkeypatch.setenv("SCORECARD_LARGE_FEED_HEAP", "10g")
+    validate.run_validator(gtfs, out, large_feed=True)
+    assert calls[0][1] == "-Xmx10g"
+
+
+def test_run_validator_standard_feed_has_no_heap_flag(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    validate.run_validator(gtfs, out)
+    # An ordinary feed keeps the runner's default heap; no -Xmx is injected.
+    assert not any(arg.startswith("-Xmx") for arg in calls[0])
+    assert calls[0][1] == "-jar"
+
+
 def test_country_scoped_output_dir_preserves_us_and_isolates_other_countries(
     tmp_path: Path,
 ) -> None:

@@ -1,0 +1,203 @@
+# Wakayama (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: aridagawa-town-community-bus
+    name: Aridagawa Town Community Bus (有田川町コミュニティバス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/aridagawatown/feeds/aridagawatownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Aridagawa Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Aridagawa
+      Town.
+    operating_note: >-
+      Aridagawa Town's community bus network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/aridagawatown.aridagawatownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aridagawa Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kinokawa-city-community-bus
+    name: Kinokawa City Community Bus (紀の川市コミュニティバス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kinokawacity/feeds/kinokawa_bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kinokawa City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kinokawa City.
+    operating_note: >-
+      Kinokawa City's area circulator and community bus network
+      (地域巡回バス・コミュニティバス); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kinokawacity.kinokawa_bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kinokawa City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tanabe-city-jumin-bus
+    name: Tanabe City Residents Bus (田辺市住民バス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tanabecity/feeds/Jumin-Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tanabe City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tanabe City.
+    operating_note: >-
+      Tanabe City's residents' bus network (住民バス); counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tanabecity.Jumin-Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tanabe City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: meiko-bus
+    name: Meiko Bus (明光バス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/meikobus/feeds/meikobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Meiko Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Meiko Bus Co.,
+      Ltd.
+    operating_note: >-
+      Meiko Bus's route network around Nanki-Shirahama in Wakayama; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/meikobus.meikobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Meiko Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: chuki-bus
+    name: Chuki Bus (中紀バス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chukibus/feeds/chukibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chuki Bus Co., Ltd. through
+      the GTFS Data Repository (gtfs-data.jp). Credit Chuki Bus Co., Ltd.
+    operating_note: >-
+      Chuki Bus operates route services in central Wakayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chukibus.chukibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chuki Bus Co., Ltd. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ryujin-bus
+    name: Ryujin Bus (龍神自動車)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ryujinbus/feeds/ryujinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ryujin Jidosha Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Ryujin Jidosha
+      Co., Ltd.
+    operating_note: >-
+      Ryujin Bus operates route services in the Tanabe and Ryujin area of
+      Wakayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ryujinbus.ryujinbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ryujin Jidosha Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: iwade-loop-bus
+    name: Iwade City Loop Bus (岩出市巡回バス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/iwadecity/feeds/junkaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Iwade City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Iwade City.
+    operating_note: >-
+      Iwade City's circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/iwadecity.junkaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Iwade City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: katsuragi-town-community-bus
+    name: Katsuragi Town Community Bus (かつらぎ町コミュニティバス)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/katsuragitown/feeds/community-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Katsuragi Town through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Katsuragi Town's community bus in Wakayama.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/katsuragitown.community-bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Katsuragi Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

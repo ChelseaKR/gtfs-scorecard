@@ -54,6 +54,7 @@ def test_daily_run_passes_country_and_country_scopes_reusable_reports(
         output_dir: Path,
         *,
         country_code: str,
+        large_feed: bool = False,
     ) -> Path:
         validator_calls.append((country_code, output_dir.name))
         return output_dir / "report.json"

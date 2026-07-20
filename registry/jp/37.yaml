@@ -1,0 +1,105 @@
+# Kagawa (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: mitoyo-city-community-bus
+    name: Mitoyo City Community Bus (三豊市コミュニティバス)
+    country: JP
+    subdivision_code: JP-37
+    subdivision_name: Kagawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mitoyocity/feeds/mitoyocommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mitoyo City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Mitoyo City.
+    operating_note: >-
+      Mitoyo City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mitoyocity.mitoyocommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mitoyo City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kanonji-city-noriai-bus
+    name: Kanonji City Noriai Bus (観音寺市のりあいバス)
+    country: JP
+    subdivision_code: JP-37
+    subdivision_name: Kagawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kanonjicity/feeds/kanonjishi-noriaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Kanonji City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kanonji City's shared community bus network (のりあいバス); counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kanonjicity.kanonjishi-noriaibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kanonji City. Published as GTFS-JP open data (CC0 1.0) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: naoshima-town-bus
+    name: Naoshima Town Bus (直島町町営バス)
+    country: JP
+    subdivision_code: JP-37
+    subdivision_name: Kagawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/naoshimatown/feeds/naoshima/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Naoshima Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Naoshima Town.
+    operating_note: >-
+      Naoshima Town's municipal bus serving the Benesse art-island
+      network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/naoshimatown.naoshima
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Naoshima Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: seisan-kanko-limousine
+    name: Seisan Kanko Takamatsu Airport Limousine (西讃観光　高松空港リムジンバス)
+    country: JP
+    subdivision_code: JP-37
+    subdivision_name: Kagawa
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/seisan-kanko/feeds/seisankanko_limousine/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Seisan Kanko through the
+      GTFS Data Repository (gtfs-data.jp). Credit Seisan Kanko.
+    operating_note: >-
+      Seisan Kanko's Takamatsu Airport limousine bus in Kagawa; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/seisan-kanko.seisankanko_limousine
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Seisan Kanko. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

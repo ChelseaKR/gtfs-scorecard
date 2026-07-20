@@ -1,0 +1,187 @@
+# Tokyo (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: toei-bus
+    name: Toei Bus (Tokyo Metropolitan Bureau of Transportation)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    mdb_id: "3175"
+    is_official: true
+    organization_id: toei
+    feed_variant: bus network
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/Toei/data/ToeiBus-GTFS.zip
+    license_note: >-
+      CC BY 4.0 through the Public Transportation Open Data Center (ODPT);
+      credit ODPT and the Tokyo Metropolitan Bureau of Transportation, and
+      carry ODPT's notice that accuracy is not guaranteed and that the operator
+      should not be contacted about the data.
+    operating_note: >-
+      The Toei bus network; a distinct published feed from the Toei rail
+      network, counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/b_bus_gtfs_jp-toei
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Public Transportation Open Data Center (ODPT) and the Tokyo
+        Metropolitan Bureau of Transportation.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: toei-train
+    name: Toei Subway (Tokyo Metropolitan Bureau of Transportation)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    mdb_id: "3176"
+    is_official: true
+    organization_id: toei
+    feed_variant: rail network
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/Toei/data/Toei-Train-GTFS.zip
+    license_note: >-
+      CC BY 4.0 through the Public Transportation Open Data Center (ODPT);
+      credit ODPT and the Tokyo Metropolitan Bureau of Transportation, and
+      carry ODPT's notice that accuracy is not guaranteed and that the operator
+      should not be contacted about the data.
+    operating_note: >-
+      The Toei subway network (Asakusa, Mita, Shinjuku, and Oedo lines); a
+      distinct published feed from the Toei bus network, counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/en/organization/toei
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Public Transportation Open Data Center (ODPT) and the Tokyo
+        Metropolitan Bureau of Transportation.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: tachikawa-kururin-bus
+    name: Tachikawa City Kururin Bus (立川市くるりんバス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tachikawacity/feeds/kururinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tachikawa City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tachikawa City.
+    operating_note: >-
+      Tachikawa City's Kururin Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tachikawacity.kururinbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tachikawa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ogasawara-village-bus
+    name: Ogasawara Village Bus (小笠原村営バス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ogasawaravillage/feeds/o/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ogasawara Village through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ogasawara Village.
+    operating_note: >-
+      Ogasawara Village's municipal bus on Chichijima in the Ogasawara
+      Islands; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ogasawaravillage.o
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ogasawara Village. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kozushima-village-bus
+    name: Kozushima Village Bus (神津島村営バス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kozushimavillage/feeds/kozushimavillagebus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kozushima Village through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kozushima Village.
+    operating_note: >-
+      The village bus on Kozushima, one of the Izu Islands administered by
+      Tokyo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kozushimavillage.kozushimavillagebus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kozushima Village. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: arakawa-sakura-bus
+    name: Arakawa City Community Bus Sakura (荒川区コミュニティバスさくら)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/arakawacity/feeds/sakura/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Arakawa City (Tokyo)
+      through the GTFS Data Repository (gtfs-data.jp). Credit Arakawa City
+      (Tokyo).
+    operating_note: >-
+      Arakawa ward's Sakura community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/arakawacity.sakura
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Arakawa City (Tokyo). Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: katsushika-sakura-bus
+    name: Katsushika City Community Bus Sakura (葛飾区コミュニティバスさくら)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/katsushikacity/feeds/sakura/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Katsushika City (Tokyo)
+      through the GTFS Data Repository (gtfs-data.jp). Credit Katsushika City
+      (Tokyo).
+    operating_note: >-
+      Katsushika ward's Sakura community bus, a separate network from
+      Arakawa's same-named service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/katsushikacity.sakura
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Katsushika City (Tokyo). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

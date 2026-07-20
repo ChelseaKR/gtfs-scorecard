@@ -1,0 +1,29 @@
+# Vilniaus miestas (LT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: vilnius-public-transport-judu
+    name: Vilnius public transport (JUDU)
+    country: LT
+    subdivision_code: LT-57
+    subdivision_name: Vilniaus miestas
+    mdb_id: "1044"
+    is_official: true
+    static_gtfs_url: https://www.stops.lt/vilnius/vilnius/gtfs.zip
+    license_note: >-
+      SĮ Susisiekimo paslaugos data-use terms permit free reuse, publication,
+      translation, and adaptation; name SĮSP as the data source with a link and
+      keep republished data current.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://judu.lt/atviri-duomenys/
+      terms_url: https://judu.lt/wp-content/uploads/2022/03/Duomenu-naudojimo-salygos-lt.pdf
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: SĮ Susisiekimo paslaugos (JUDU, Vilnius); keep data current and
+        do not present it misleadingly.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

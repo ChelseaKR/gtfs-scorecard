@@ -1,0 +1,310 @@
+# Québec (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: exo-sorel-varennes
+    name: exo Sorel-Varennes
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "741"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/citsv/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-sud-ouest
+    name: exo Sud-Ouest
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "742"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/citso/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-la-presquile
+    name: exo La Presqu'Île
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "743"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/citpi/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-laurentides
+    name: exo Laurentides
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "744"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/citla/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-trains
+    name: exo (commuter rail network)
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "748"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/trains/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-chambly-richelieu-carignan
+    name: exo Chambly-Richelieu-Carignan
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "750"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/citcrc/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-vallee-du-richelieu
+    name: exo Vallée du Richelieu
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "752"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/citvr/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-sainte-julie
+    name: exo Ville de Sainte-Julie
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "753"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/omitsju/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-terrebonne-mascouche
+    name: exo Terrebonne-Mascouche
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "754"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/mrclm/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: exo-lassomption
+    name: exo L'Assomption
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "755"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/mrclasso/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data
+      published through Données Québec. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: rtc-quebec
+    name: Réseau de transport de la Capitale (RTC)
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "757"
+    is_official: true
+    static_gtfs_url: https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); published through
+      Données Québec. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.donneesquebec.ca/recherche/dataset/rtc-gtfs-arrets-et-les-parcours
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Réseau de transport de la Capitale (RTC).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sts-sherbrooke
+    name: Société de transport de Sherbrooke (STS)
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "1996"
+    is_official: true
+    static_gtfs_url: https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); published through
+      Données Québec. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.donneesquebec.ca/recherche/dataset/transport-sts
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Société de transport de Sherbrooke (STS).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: stlevis
+    name: Société de transport de Lévis (STLévis)
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "763"
+    is_official: true
+    static_gtfs_url: https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); STLévis open data.
+      Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.stlevis.ca/stlevis/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Société de transport de Lévis (STLévis).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: transport-rouyn-noranda
+    name: Transport en commun de Rouyn-Noranda
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "2603"
+    is_official: true
+    static_gtfs_url: https://www.donneesquebec.ca/recherche/dataset/41ae2192-51ec-4e20-9a1a-6dd1ffd43777/resource/c08636e0-5ce0-4bcf-9fb3-e3be76665c84/download/gtfs.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); Ville de Rouyn-
+      Noranda, published through Données Québec. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.donneesquebec.ca/recherche/dataset/41ae2192-51ec-4e20-9a1a-6dd1ffd43777
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Ville de Rouyn-Noranda.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

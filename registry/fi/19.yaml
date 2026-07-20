@@ -1,0 +1,27 @@
+# Varsinais-Suomi (FI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: foli-turku
+    name: Föli (Turku region)
+    country: FI
+    subdivision_code: FI-19
+    subdivision_name: Varsinais-Suomi
+    mdb_id: "864"
+    static_gtfs_url: http://data.foli.fi/gtfs/gtfs.zip
+    license_note: >-
+      CC BY 4.0 via the city's open data service at data.foli.fi; credit the
+      source and indicate any changes made to the data.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: http://data.foli.fi/
+      terms_url: http://data.foli.fi/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Turun kaupungin joukkoliikennetoimisto (Föli); data from data.foli.fi
+        under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

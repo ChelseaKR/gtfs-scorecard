@@ -1,0 +1,277 @@
+# Aomori (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: hachinohe-city-bus
+    name: Hachinohe City Bus (八戸市営バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hachinohe/feeds/hachinohe-citybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by the Hachinohe City
+      Transportation Bureau through the GTFS Data Repository (gtfs-data.jp).
+      Credit the Hachinohe City Transportation Bureau.
+    operating_note: >-
+      The Hachinohe City Transportation Bureau's municipal bus network in
+      northeastern Aomori; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hachinohe.hachinohe-citybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        The Hachinohe City Transportation Bureau. Published as GTFS-JP open
+        data through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: misawa-city-me-bus
+    name: Misawa City Community Bus Me-Bus (三沢市コミュニティバス「みーばす」)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/misawacity/feeds/misawacity-mebus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Misawa City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Misawa City.
+    operating_note: >-
+      Misawa City's Me-Bus community network (コミュニティバス「みーばす」); a second
+      Aomori feed record distinct from Hachinohe.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/misawacity.misawacity-mebus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Misawa City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: goshogawara-city-community-bus
+    name: Goshogawara City Community Bus (五所川原市コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/goshogawaracity/feeds/goshogawara-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Goshogawara City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Goshogawara City.
+    operating_note: >-
+      Goshogawara City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/goshogawaracity.goshogawara-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Goshogawara City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shimokita-kotsu
+    name: Shimokita Kotsu (下北交通)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shimoko/feeds/shimokitakotsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shimokita Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shimokita Kotsu
+      Co., Ltd.
+    operating_note: >-
+      Shimokita Kotsu operates route buses on the Shimokita Peninsula in
+      northern Aomori.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shimoko.shimokitakotsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shimokita Kotsu Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: towada-kanko-dentetsu
+    name: Towada Kanko Dentetsu (十和田観光電鉄)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/towadakankodentetsu/feeds/toutetsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Towada Kanko Dentetsu Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Towada
+      Kanko Dentetsu Co., Ltd.
+    operating_note: >-
+      The regular route buses of Towada Kanko Dentetsu in eastern Aomori; the
+      operator's general lines counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/towadakankodentetsu.toutetsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Towada Kanko Dentetsu Co., Ltd. Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: hiranai-townbus
+    name: Hiranai Town Community Bus (平内町民バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hiranaitown/feeds/hiranaitownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Hiranai Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Hiranai Town.
+    operating_note: >-
+      Hiranai Town's community bus on the Mutsu Bay shore.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hiranaitown.hiranaitownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hiranai Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kuroishi-platto-go
+    name: Kuroishi City Platto-go (黒石市「ぷらっと号」)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kuroishicity/feeds/kuroishi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kuroishi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kuroishi City.
+    operating_note: >-
+      Kuroishi City's Platto-go community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kuroishicity.kuroishi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kuroishi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: towada-city-communitybus
+    name: Towada City Community Bus (十和田市コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/towadacity/feeds/towadacity_communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Towada City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Towada City.
+    operating_note: >-
+      Towada City's community bus, distinct from the tracked Towada Kanko
+      Dentetsu railway feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/towadacity.towadacity_communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Towada City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shichinohe-town-community-bus
+    name: Shichinohe Town Community Bus (七戸町コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shichinohetown/feeds/shichinohe_community-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shichinohe Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shichinohe
+      Town.
+    operating_note: >-
+      Shichinohe Town's community and shuttle bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shichinohetown.shichinohe_community-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shichinohe Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: fukaura-town-community-bus
+    name: Fukaura Town Community Bus (深浦町コミュニティバス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/fukauratown/feeds/fukaura-town-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Fukaura Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Fukaura Town.
+    operating_note: >-
+      Fukaura Town's community bus along the western Aomori coast.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/fukauratown.fukaura-town-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Fukaura Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tsugaru-city-community-transit
+    name: Tsugaru City Community Transit (つがる市地域内交通)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsugarucity/feeds/tsugarucity_localtransportation/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsugaru City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tsugaru City.
+    operating_note: >-
+      Tsugaru City's local community transit.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsugarucity.tsugarucity_localtransportation
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsugaru City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

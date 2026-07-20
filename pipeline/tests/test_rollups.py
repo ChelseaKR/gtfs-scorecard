@@ -6,6 +6,8 @@ import datetime as dt
 import json
 from pathlib import Path
 
+import pytest
+
 from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.config import Agency, artifacts_dir, register, repo_root
 from scorecard_pipeline.rollups import (
@@ -137,6 +139,72 @@ def test_load_rollups_parses_state_selector(tmp_path: Path) -> None:
     (rollup,) = load_rollups(config)
     assert rollup.state == "CA"
     assert rollup.member_ids == ()
+
+
+def test_country_rollup_auto_includes_agencies_by_artifact_country() -> None:
+    write_latest("on1", "Ontario One", 80.0, "B", country="CA")
+    write_latest("bc1", "BC One", 70.0, "C", country="ca")  # case-insensitive
+    write_latest("gb1", "GB One", 90.0, "A", country="GB")
+    write_latest("legacy", "Legacy US", 85.0, "B")  # no country: a US record by contract
+    rollup = Rollup(id="country-ca", name="Canada", member_ids=(), country="CA")
+    payload = build_rollup(rollup, WHEN)
+    assert payload["agency_count"] == 2
+    assert sorted(m["id"] for m in payload["members"]) == ["bc1", "on1"]
+
+
+def test_country_rollup_treats_legacy_artifacts_as_us_records() -> None:
+    write_latest("legacy", "Legacy US", 85.0, "B")  # predates the country field
+    write_latest("ca1", "Canada One", 80.0, "B", country="CA")
+    rollup = Rollup(id="country-us", name="United States", member_ids=(), country="US")
+    payload = build_rollup(rollup, WHEN)
+    assert [m["id"] for m in payload["members"]] == ["legacy"]
+
+
+def test_country_rollup_prefers_registry_country_over_artifact() -> None:
+    # The curated registry is the authoritative location; a stale artifact
+    # country must not move an agency between country cohorts.
+    register(Agency("moved", "Moved", "https://example.com/moved.zip", country="CA"))
+    register(Agency("stays", "Stays", "https://example.com/stays.zip"))
+    write_latest("moved", "Moved", 80.0, "B", country="US")
+    write_latest("stays", "Stays", 75.0, "C")
+    rollup = Rollup(id="country-ca", name="Canada", member_ids=(), country="CA")
+    payload = build_rollup(rollup, WHEN)
+    assert [m["id"] for m in payload["members"]] == ["moved"]
+
+
+def test_load_rollups_parses_country_selector(tmp_path: Path) -> None:
+    config = tmp_path / "rollups.yaml"
+    config.write_text("rollups:\n  - id: country-ca\n    name: Canada\n    country: ca\n")
+    (rollup,) = load_rollups(config)
+    assert rollup.country == "CA"
+    assert rollup.state is None
+    assert rollup.member_ids == ()
+
+
+def test_load_rollups_rejects_state_and_country_together(tmp_path: Path) -> None:
+    config = tmp_path / "rollups.yaml"
+    config.write_text("rollups:\n  - id: bad\n    name: Bad\n    state: CA\n    country: CA\n")
+    with pytest.raises(ValueError, match="state or country, not both"):
+        load_rollups(config)
+
+
+def test_load_rollups_rejects_unassigned_country_code(tmp_path: Path) -> None:
+    config = tmp_path / "rollups.yaml"
+    config.write_text("rollups:\n  - id: bad\n    name: Bad\n    country: XX\n")
+    with pytest.raises(ValueError, match="ISO 3166-1"):
+        load_rollups(config)
+
+
+def test_country_rollup_payload_carries_iso_identity() -> None:
+    write_latest("ca1", "Canada One", 80.0, "B", country="CA")
+    rollup = Rollup(id="country-ca", name="Canada", member_ids=(), country="CA")
+    payload = build_rollup(rollup, WHEN)
+    assert payload["rollup"]["country_code"] == "CA"
+    assert payload["rollup"]["country_name"] == "Canada"
+    # Non-country rollups keep their exact prior shape: no country keys at all.
+    plain = build_rollup(Rollup(id="all", name="All tracked agencies", member_ids=()), WHEN)
+    assert "country_code" not in plain["rollup"]
+    assert "country_name" not in plain["rollup"]
 
 
 def test_reserved_dirs_are_not_treated_as_agencies() -> None:

@@ -1,0 +1,229 @@
+# Tokushima (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Discovered through the Transitland Atlas (docs/feeds.md, "Transitland-sourced
+# wave"): an official municipal GTFS-JP feed published as open data through the
+# GTFS Data Repository (gtfs-data.jp, operated by AIGID) and absent from the
+# Mobility Database.
+agencies:
+  - id: naruto-city-ferry
+    name: Naruto City Ferry (鳴門市営渡船)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/narutocity/feeds/narutocitytosen/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Naruto City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Naruto City.
+    operating_note: >-
+      Naruto City's municipal ferry (市営渡船) service, scored on the same GTFS
+      Schedule rubric as any fixed-route feed; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/narutocity.narutocitytosen
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Naruto City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tokushima-city-bus
+    name: Tokushima City Bus (徳島市営バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokushima-shiei/feeds/tokushimacitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima City
+      Transportation Bureau through the GTFS Data Repository (gtfs-data.jp).
+      Credit Tokushima City Transportation Bureau.
+    operating_note: >-
+      The Tokushima City municipal bus network, run by the city
+      transportation bureau; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokushima-shiei.tokushimacitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima City Transportation Bureau. Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: asa-coast-railway
+    name: Asa Coast Railway DMV (阿佐海岸鉄道)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/asatetu/feeds/asakaigantetsudo/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Asa Coast Railway Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Asa Coast
+      Railway Co., Ltd.
+    operating_note: >-
+      The Asa Coast Railway dual-mode vehicle service linking Tokushima and
+      Kochi; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/asatetu.asakaigantetsudo
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Asa Coast Railway Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tokushima-bus
+    name: Tokushima Bus (徳島バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokubus/feeds/tokushimabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Tokushima Bus
+      Co., Ltd.
+    operating_note: >-
+      Tokushima Bus operates route services across eastern Tokushima; a
+      regional private operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokubus.tokushimabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: matsushige-town-bus
+    name: Matsushige Town Community Bus (松茂町地域コミュニティバス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsushigetown/feeds/matsushigetownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Matsushige Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Matsushige Town.
+    operating_note: >-
+      Matsushige Town's community bus near Tokushima Airport.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsushigetown.matsushigetownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Matsushige Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tokushima-bus-nanbu
+    name: Tokushima Bus Nanbu (徳島バス南部)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokubus-nanbu/feeds/tokushimabusnanbu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima Bus Nanbu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tokushima Bus Nanbu.
+    operating_note: >-
+      A separately incorporated southern subsidiary, distinct from the tracked
+      Tokushima Bus city network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokubus-nanbu.tokushimabusnanbu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima Bus Nanbu. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: miyoshi-city-tokushima-bus
+    name: Miyoshi City Bus (三好市営バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokushima-miyoshicity/feeds/miyoshicitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Miyoshi City (Tokushima)
+      through the GTFS Data Repository (gtfs-data.jp). Credit Miyoshi City
+      (Tokushima).
+    operating_note: >-
+      Miyoshi City's municipal bus in western Tokushima.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokushima-miyoshicity.miyoshicitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Miyoshi City (Tokushima). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yoshinogawa-city-bus
+    name: Yoshinogawa City Bus (吉野川市代替バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yoshinogawacity/feeds/yoshinogawacitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yoshinogawa City
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      Yoshinogawa City.
+    operating_note: >-
+      Yoshinogawa City's replacement bus service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yoshinogawacity.yoshinogawacitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yoshinogawa City. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: naka-town-bus
+    name: Naka Town Bus (那賀町営バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nakatown/feeds/nakatownbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Naka Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Naka Town.
+    operating_note: >-
+      Naka Town's municipal bus in Tokushima.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nakatown.nakatownbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Naka Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

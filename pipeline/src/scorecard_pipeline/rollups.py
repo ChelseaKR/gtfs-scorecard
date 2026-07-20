@@ -29,6 +29,7 @@ from . import SCHEMA_VERSION
 from .alerts import build_digest
 from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import artifacts_dir, repo_root
+from .location import country_name, normalize_country_code
 from .metrics import expiry_status
 from .ntd import assess_shapes_readiness
 from .publish import RESERVED_ARTIFACT_DIRS, _write_json
@@ -41,6 +42,9 @@ class Rollup:
     name: str
     member_ids: tuple[str, ...]  # empty means "all agencies with artifacts"
     state: str | None = None  # auto-include every agency in this state (no member list)
+    # Auto-include every agency in this ISO 3166-1 alpha-2 country (no member
+    # list). Mutually exclusive with state: a rollup names one jurisdiction level.
+    country: str | None = None
 
 
 def _available_agency_ids() -> list[str]:
@@ -61,6 +65,28 @@ def _available_agency_ids() -> list[str]:
     )
 
 
+def _parse_rollup_country(entry: dict[str, Any]) -> str | None:
+    """Validated ISO 3166-1 alpha-2 country selector, or None when unset.
+
+    A rollup names one jurisdiction level, so setting both state and country
+    is a configuration error, and an unassigned code fails loading with a
+    sentence instead of silently publishing an empty cohort."""
+    raw = entry.get("country")
+    if raw is None:
+        return None
+    if entry.get("state"):
+        raise ValueError(
+            f"rollups.yaml, rollup {entry.get('id')!r}: set state or country, not both"
+        )
+    code = normalize_country_code(str(raw))
+    if not code:
+        raise ValueError(
+            f"rollups.yaml, rollup {entry.get('id')!r}: country must be an assigned "
+            f"ISO 3166-1 alpha-2 code, got {raw!r}"
+        )
+    return code
+
+
 def load_rollups(path: Path | None = None) -> list[Rollup]:
     """Read rollups.yaml, or fall back to a single all-agencies rollup."""
     config_path = path or repo_root() / "rollups.yaml"
@@ -71,13 +97,15 @@ def load_rollups(path: Path | None = None) -> list[Rollup]:
     rollups: list[Rollup] = []
     for entry in raw.get("rollups", []):
         state = entry.get("state")
-        members = () if (entry.get("all") or state) else tuple(entry.get("members", []))
+        country = _parse_rollup_country(entry)
+        members = () if (entry.get("all") or state or country) else tuple(entry.get("members", []))
         rollups.append(
             Rollup(
                 id=str(entry["id"]),
                 name=str(entry["name"]),
                 member_ids=members,
                 state=str(state) if state else None,
+                country=country,
             )
         )
     return rollups or [Rollup(id="all", name="All tracked agencies", member_ids=())]
@@ -121,17 +149,40 @@ def _agency_ids_in_state(state: str) -> list[str]:
     return ids
 
 
+def _agency_ids_in_country(country: str) -> list[str]:
+    """Available agencies whose ISO 3166-1 country matches, checked against the
+    curated registry entry first (the authoritative location) and then the
+    persisted artifact. An artifact that predates the country field is a US
+    record by the public API contract (location_rollups.py)."""
+    from .config import AGENCIES
+
+    want = country.strip().upper()
+    ids = []
+    for agency_id in _available_agency_ids():
+        agency = AGENCIES.get(agency_id)
+        resolved = agency.country.strip().upper() if agency else ""
+        if not resolved:
+            latest = _load_latest(agency_id)
+            raw_country = latest.get("agency", {}).get("country", "US") if latest else "US"
+            resolved = str(raw_country).strip().upper() or "US"
+        if resolved == want:
+            ids.append(agency_id)
+    return ids
+
+
 def resolve_member_ids(rollup: Rollup) -> list[str]:
     """The agency ids a rollup covers.
 
     Explicit members when the rollup lists them, otherwise every agency in its
-    state, otherwise every agency with a published artifact. Shared by the
-    rollup artifact build and the portfolio digest so a cohort means the same
-    set of agencies in both."""
+    state or country, otherwise every agency with a published artifact. Shared
+    by the rollup artifact build and the portfolio digest so a cohort means the
+    same set of agencies in both."""
     if rollup.member_ids:
         return list(rollup.member_ids)
     if rollup.state:
         return _agency_ids_in_state(rollup.state)
+    if rollup.country:
+        return _agency_ids_in_country(rollup.country)
     return _available_agency_ids()
 
 
@@ -153,6 +204,18 @@ def _shapes_status(latest: dict[str, Any]) -> str | None:
         return assess_shapes_readiness(total, with_shape).status
     status = shapes.get("status")
     return str(status) if status is not None else None
+
+
+def _rollup_identity(rollup: Rollup) -> dict[str, Any]:
+    """The payload's identity block. Country rollups carry their ISO identity
+    so every renderer can state the cohort's scope honestly (reviewed feed
+    records tracked in that country, never country coverage) without keying
+    off id naming conventions."""
+    identity: dict[str, Any] = {"id": rollup.id, "name": rollup.name}
+    if rollup.country:
+        identity["country_code"] = rollup.country
+        identity["country_name"] = country_name(rollup.country, rollup.country)
+    return identity
 
 
 def build_rollup(
@@ -314,7 +377,7 @@ def build_rollup(
 
     return {
         "schema_version": SCHEMA_VERSION,
-        "rollup": {"id": rollup.id, "name": rollup.name},
+        "rollup": _rollup_identity(rollup),
         "generated_at": generated_at.isoformat(timespec="seconds"),
         "agency_count": len(members),
         "average_score": round(sum(scores) / len(scores), 1) if scores else None,

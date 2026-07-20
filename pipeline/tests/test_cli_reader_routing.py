@@ -117,6 +117,7 @@ def test_run_agency_routes_raw_archive_and_reader_view_to_their_owners(  # noqa:
         output_dir: Path,
         *,
         country_code: str,
+        large_feed: bool = False,
     ) -> Path:
         raw_calls.append(("validator", path, country_code))
         return output_dir / "report.json"

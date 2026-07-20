@@ -1,0 +1,106 @@
+# Fukushima (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: yanaizu-community-bus
+    name: Yanaizu Town Community Bus (柳津町町民バス「ふれあい号」)
+    country: JP
+    subdivision_code: JP-07
+    subdivision_name: Fukushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yanaizutown/feeds/yanaizutown-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Yanaizu Town through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Yanaizu Town's community bus (ふれあい号) in the Aizu region of Fukushima;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yanaizutown.yanaizutown-bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yanaizu Town. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: motomiya-city-community-bus
+    name: Motomiya City Community Bus (本宮市コミュニティバス)
+    country: JP
+    subdivision_code: JP-07
+    subdivision_name: Fukushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/motomiyacity/feeds/motomiyashibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Motomiya City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Motomiya City.
+    operating_note: >-
+      Motomiya City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/motomiyacity.motomiyashibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Motomiya City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shin-joban-kotsu
+    name: Shin-Joban Kotsu (新常磐交通)
+    country: JP
+    subdivision_code: JP-07
+    subdivision_name: Fukushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shinjobankotsu/feeds/SHINJOBANKOTSU/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shin-Joban Kotsu Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit
+      Shin-Joban Kotsu Co., Ltd.
+    operating_note: >-
+      Shin-Joban Kotsu's route bus network around Iwaki in Fukushima;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shinjobankotsu.SHINJOBANKOTSU
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shin-Joban Kotsu Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: otama-village-bus
+    name: Otama Village Commuter Bus (大玉村通勤通学バス)
+    country: JP
+    subdivision_code: JP-07
+    subdivision_name: Fukushima
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/otamavillage/feeds/otamavillage-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Otama Village through the
+      GTFS Data Repository (gtfs-data.jp). Credit Otama Village.
+    operating_note: >-
+      Otama Village's commuter and school bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/otamavillage.otamavillage-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Otama Village. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

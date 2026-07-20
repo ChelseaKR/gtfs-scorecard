@@ -1,0 +1,201 @@
+# Toyama (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Discovered through the Transitland Atlas (docs/feeds.md, "Transitland-sourced
+# wave"): an official municipal GTFS-JP feed published as open data through the
+# GTFS Data Repository (gtfs-data.jp, operated by AIGID) and absent from the
+# Mobility Database.
+agencies:
+  - id: uozu-community-bus
+    name: Uozu Community Bus (魚津市民バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/uozucity/feeds/junkai/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Uozu City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Uozu City's community bus (市民バス) circulator network; counted as one
+      feed record. Realtime is published separately and is not scored here.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/uozucity.junkai
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Uozu City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: imizu-city-kitokito-bus
+    name: Imizu City Kitokito Bus (射水市きときとバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/imizucity/feeds/imizushi/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Imizu City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Imizu City's Kitokito Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/imizucity.imizushi
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Imizu City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: manyosen
+    name: Manyosen (万葉線)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/manyosen/feeds/manyosen/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Manyosen Co., Ltd. through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      The Manyosen light rail line between Takaoka and Imizu in Toyama;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/manyosen.manyosen
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Manyosen Co., Ltd. Published as GTFS-JP open data (CC0 1.0) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: toyama-chitetsu-tram
+    name: Toyama Chitetsu City Tram (富山地方鉄道市内電車)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitetsu/feeds/chitetsushinaidensha/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Toyama Chiho Railroad Co., Ltd. through the GTFS Data Repository (gtfs-
+      data.jp).
+    operating_note: >-
+      The Toyama city tram network run by Toyama Chiho Railroad; the streetcar
+      lines counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitetsu.chitetsushinaidensha
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama Chiho Railroad Co., Ltd. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nanto-city-bus
+    name: Nanto City Bus (南砺市営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nantocity/feeds/nanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Nanto City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Nanto City's municipal bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nantocity.nanbus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nanto City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takaoka-koei-bus
+    name: Takaoka City Public Bus (高岡市公営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takaokacity/feeds/koueibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Takaoka City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Takaoka City's public bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takaokacity.koueibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takaoka City. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: oyabe-city-bus
+    name: Oyabe City Bus (小矢部市営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/oyabecity/feeds/oyabecitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Oyabe City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Oyabe City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/oyabecity.oyabecitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Oyabe City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tonami-city-bus
+    name: Tonami City Bus (砺波市営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tonamicity/feeds/tonamishieibasu/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Tonami City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Tonami City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tonamicity.tonamishieibasu
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tonami City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

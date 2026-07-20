@@ -1,6 +1,6 @@
 # Global expansion and European GTFS beta gate
 
-Last updated: 2026-07-16
+Last updated: 2026-07-18
 
 This plan separates four jobs that are easy to collapse into “go global”:
 measuring multilingual GTFS, curating representative coverage, localizing the
@@ -31,19 +31,24 @@ not turn two European canaries into a representative dataset.
 
 ## Current baseline
 
-The configured registry snapshot after the reviewed breadth wave contains
-1,163 feed records: 1,139 in the United States, three in Canada, two in
-Australia, three in France, two in Italy, and one each in Belgium, Switzerland,
-Denmark, Estonia, Spain, Finland, Great Britain, Ireland, Japan, Malaysia, New
-Zealand, Poland, Portugal, and Uruguay. The public scored count is a separate,
-smaller number reported by the status API; configured and published feed records
-are not interchangeable.
+The configured registry snapshot after the third depth wave and the parallel
+Nordic-Baltic and Central Europe waves contains 1,296 feed records: 1,139 in
+the United States, three in Canada, two in Australia, thirty-four in the
+United Kingdom, twenty-eight in France, nineteen in Italy, sixteen in Spain,
+fourteen in Finland, thirteen in Germany, six in Ireland, five in Poland,
+two each in Switzerland, Czechia, Estonia, and Portugal, one each in
+Austria, Belgium, Denmark, Latvia, and Lithuania, and one each in Japan,
+Malaysia, New Zealand, and Uruguay. The public scored count is a separate,
+smaller number reported by the status API; configured and published feed
+records are not interchangeable.
 
-The 15 records whose primary catalog location is in 12 European countries are
-reviewed canaries. They cover bus, tram, metro, ferry, national multimodal, and
-GTFS-Flex demand-responsive service. The country and mode controls prove that
-the data model and interface can carry worldwide locations; they are not
-country or regional samples.
+The 148 records whose primary catalog location is in 17 European countries are
+individually reviewed. They cover bus, tram, metro, light rail, regional rail,
+ferry, national multimodal, and GTFS-Flex demand-responsive service. The
+country and mode controls prove that the data model and interface can carry
+worldwide locations; they are not country or regional samples. One French
+record, Car Jaune, is located in La Réunion, an overseas department that the
+country-code cohort rule counts as France.
 
 The portable core already supports:
 
@@ -153,14 +158,92 @@ met. It blocks the beta label without blocking the individual canary
 scorecards.
 
 The first reviewed European cohort contained six feed records across France,
-Ireland, and Italy. The next bounded wave adds nine records across Belgium,
-Switzerland, Denmark, Estonia, Spain, Finland, Great Britain, Poland, and
-Portugal. That produces 15 reviewed feed records across 12 countries, with France
-the largest country at 20%. Country breadth and balance therefore pass, while
+Ireland, and Italy. The nine-record breadth wave added one record in each of
+Belgium, Switzerland, Denmark, Estonia, Spain, Finland, the United Kingdom, Poland,
+and Portugal. The 2026-07-17 depth wave then worked the named review queues and
+added 27 records: ten Great Britain operators on the Passenger open-data
+platform, seven in Spain, four in Italy, four in Germany, and two in France.
+A second wave on 2026-07-17 added 21 more from the same queues: twelve
+further Passenger-platform operators, five Baden-Württemberg network feeds
+from NVBW's portal, three in France including the Yeu-Continent ferry, and
+Trenitalia's regional rail resource from Regione Toscana's catalog.
+
+A third wave the same day worked every remaining non-Swedish queue in
+parallel and added 75 records: twenty in France after resolving canonical
+live URLs on the National Access Point, twelve in Italy across seven regions,
+eleven more Passenger-platform operators, nine in Spain with one in Portugal,
+twelve in Finland (the Waltti city networks, Föli Turku, and Tampere), five
+Irish operators from the National Transport Authority's per-operator files,
+four in Poland, and Czechia's first two records (PID Prague and IDS JMK
+Brno). Eleven of the wave's candidates turned out to duplicate records the
+parallel Nordic-Baltic and Central Europe waves merged the same evening; the
+duplicates were dropped in favor of the merged records. Together the waves
+produce 148 reviewed feed records across 17 countries, with the United Kingdom
+the largest country at 23%. Country breadth and balance pass with room, and
 the 250-record threshold still fails by design. Freshness, translation,
 location, and identity remain executable per-record gates rather than claims
 inferred from the registry. The source rows are public so a consumer can audit
 what “reviewed” means.
+
+The depth wave rejected more candidates than it added, and the reasons are the
+point of the review: a non-commercial-only license (GTT Torino), terms that
+could not be read at all (Metro de Málaga's dead license file, MVG's unstated
+terms, Grenoble's script-only license page), registration walls or bot
+challenges in front of the terms or the download (RNV, Essex County Council,
+Kent Fastrack), calendars already expired at review (both Renfe feeds, Metro
+de Madrid, CRTM Cercanías, HVV, TCAT Troyes), dead or moved catalog URLs
+(MVV, MDV, TPER, BreizhGo, Bibus, Kicéo, Hauts-de-France, Hobus, BlaBlaCar,
+GVA intercity), one archive over the 512 MiB single-entry cap (Île-de-France
+Mobilités), one duplicate of an already-listed dataset under a different URL
+(Delcomar, already covered by the Sardegna minor-islands record), and one feed
+whose only license-bearing URL is unreachable from the pipeline's own network
+(AMT Genova). Sweden stays at zero because every catalog download there is
+key-gated; it needs API credentials, not more review effort.
+
+The second wave repeated the pattern. STP Brindisi states adherence to a
+national open-data policy without naming a license; the Zenbus-published
+French networks declare ODbL plus unread special conditions; two Passenger
+operator pages had been removed; and several catalog endpoints returned dead
+archives. Deeper review in the third wave later resolved two of its
+exclusions: the Sardinian regional catalog was found to list ASPO Olbia's
+operator-hosted archive as one of its CC BY 4.0 datasets, and Genoa's
+municipal open-data record was found to name a reachable municipally hosted
+AMT archive.
+
+The third wave's rejections came from every country at once. Seventeen French
+datasets on the National Access Point declare ODbL, including the Grenoble,
+Toulouse, Montpellier, Rennes, and both regional Nouvelle-Aquitaine and
+Occitanie aggregates, and Île-de-France Mobilités uses a custom Licence
+Mobilités; TMB Barcelona gates its download behind personal API credentials;
+Lisbon's municipal portal hard-blocks automated access, which alone gates
+Carris, CP, and Transtejo; Carris Metropolitana's archive exceeds the 512 MiB
+entry cap, as do both reviewed Austrian feeds (Wiener Linien and ÖBB) and
+HSL Helsinki; Estonia's national register endpoint serves an error page, so
+its aggregate exists only on a third-party mirror; Belgium's STIB, SNCB, and
+De Waterbus are registration-gated, non-commercial, or contractual at the
+source; Luxembourg's published archives are expired; and community rebuilds
+on third-party hosts (a Katowice GitHub proxy, a Bydgoszcz community build,
+Estonian Remix mirrors) were refused on identity grounds even where their
+stated licenses were open. Norway's national aggregate stays size-deferred.
+
+A same-day Nordic-Baltic wave adds eleven reviewed records: eight in Finland
+(HSL and seven Waltti city feeds, all CC BY 4.0 per the providers' own
+open-data statements), Estonia's national register aggregate, Latvia's ATD
+national aggregate (CC0 per data.gov.lv), and Vilnius (JUDU's published
+data-use terms). That brings the total to 74 reviewed feed records across 15
+countries, with the United Kingdom the largest country at about 31%. Candidates
+whose reuse terms could not be verified on a live provider or official-portal
+page (Rīgas Satiksme, Kaunas, Klaipėda, and ELRON) stayed out, and Norway's
+national aggregate remains deferred under the archive guard described below.
+The 250-record threshold still fails by design.
+
+A same-day Central Europe wave adds ten more reviewed records: Wiener Linien
+(CC BY 4.0 on data.gv.at), the Swiss national timetable under the ODMCH
+terms, PID Prague and IDS JMK (CC-BY per the providers' and Brno's portals),
+the two gtfs.de national aggregates plus VRN and VRS under their stated
+German data licences, and Poznań and Szczecin under ZTM's developer terms
+and CC0. That brings the cohort to 84 reviewed feed records across 17
+countries, with the United Kingdom the largest country at about 27%.
 
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
@@ -175,6 +258,123 @@ The threshold is intentionally below the 406 license-linked discovery rows so
 manual review can reject stale, duplicate, restricted, or misidentified feeds.
 It is intentionally above a canary cohort so a consumer can use the result for
 a bounded product decision.
+
+### Executable result on 2026-07-17
+
+The published gate document reported `not_ready` with seven of eight criteria
+met. The reviewed cohort held 15 of the 250 required feed records across 12 of
+12 required countries, with France the largest country at 20.0% (3 of 15)
+against the 40% ceiling. Fresh scorecards covered 100% of the cohort against
+the 95% floor. Translation measurement, portable location, and identity review
+each covered the full cohort, the feature finder disclosed its denominator,
+and the exception list was empty. The record count is the only open criterion.
+
+Two changes landed the same day (UTC). The executable gate surface merged
+first (PR #116): the document at `/api/v1/global-coverage.json`, its JSON
+schema, the status page section, and the finder's regional denominator.
+Country program pages for every non-US registry country followed (PR #121).
+
+That published result predates the depth waves described above. The
+configured cohort now holds 63 reviewed records across 13 countries; the
+published gate document reports the new arithmetic after the next scored
+render, and the record count stays the only open criterion.
+
+### Fifth European wave on 2026-07-18
+
+A fifth wave led with non-United-Kingdom sources and added 16 reviewed feed
+records, moving the European cohort from 149 to 165 records across 18
+countries. It opened Slovenia as the eighteenth country with Ljubljana's LPP
+feed, published on the national OPSI portal under CC BY 4.0. The rest is depth
+in already-listed countries: nine in Germany (six Baden-Württemberg
+association feeds and the Calw district feed on NVBW's Datenlizenz Deutschland
+portal, VGN Nürnberg under CC BY-SA 3.0 as Bavaria's first record, AVV Aachen
+under CC0, and the gtfs.de long-distance rail aggregate under CC BY 4.0), two
+in France under the Licence Ouverte (SEMO in Normandie and the Zoom network in
+Chalon-sur-Saône), two in Italy under CC BY 3.0 Italia (TPER's Bologna and
+Ferrara networks, opening Emilia-Romagna), one in Spain (CRTM's interurban
+network under the consortium licence), and one in Portugal under CC0 (STCP in
+Porto). Every record carried a live license check, a mechanical download and
+current-calendar preflight, and an ISO 3166-2 subdivision review.
+
+The wave kept the balance criterion comfortable: the United Kingdom is now
+20.6% of the cohort (34 of 165), well under the 40% ceiling, and Germany the
+second-largest at 22. The 250-record threshold stays the only open criterion,
+and it still fails by design.
+
+### Sixth European wave on 2026-07-18
+
+A sixth wave stayed non-United-Kingdom and added 20 reviewed feed records,
+moving the European cohort from 165 to 185 records across 20 countries. It
+opened Bulgaria with Sofia's Urban Mobility Center feed (CC BY-SA on the
+municipal open data portal) and Croatia with Zagreb's ZET feed (Open Licence of
+the Republic of Croatia), the nineteenth and twentieth countries. The rest is
+depth in already-listed countries: eleven in France under the Licence Ouverte
+recorded on the national access point (DiviaMobilités, ilévia, Ametis,
+Transvilles, Impulsyon, STAS, T2C, TAO, Soléa, Citalis, and Tango, which opened
+Occitanie); three in Spain (Renfe's commuter and long-distance rail under CC BY
+4.0, and EMT Málaga's bus network); two in Italy (ATP Nuoro and Bologna's
+Marconi Express under CC BY); and two in Germany (MVV München under CC BY and
+MDV under CC BY 4.0, opening Saxony). Every record carried a live license read,
+a mechanical download and current-calendar preflight, and an ISO 3166-2
+subdivision review. Candidates that could not clear those gates were dropped:
+Luxembourg and Austrian rail lacked a stable current download, the Norway
+national aggregate exceeded the size guard, Athens (OASA) was non-commercial,
+and Slovakia, Greece, Romania, and Cyprus rail lacked a reviewable open licence.
+
+The balance criterion stays comfortable: the United Kingdom is now 18.4% of the
+cohort (34 of 185), and France, the largest country, is 22.2% (41 of 185), both
+well under the 40% ceiling. The 250-record threshold stays the only open
+criterion, and it still fails by design.
+
+### Seventh European wave on 2026-07-18
+
+A seventh wave stayed non-United-Kingdom and added 15 reviewed feed records,
+moving the European cohort from 185 to 200 records across 22 countries. It
+opened Norway as the twenty-first country with one county transport authority
+per mainland fylke (eleven Entur per-operator exports under NLOD 2.0, since the
+national aggregate runs past the archive cap), and Slovakia as the twenty-second
+with Dopravný podnik Bratislava under CC BY 4.0. The rest is depth in
+already-listed countries: two in Latvia under CC0 1.0 (Rīgas satiksme and the
+Pasažieru vilciens rail network) and one in Czechia under CC BY 4.0 (Plzeň's
+PMDP, opening the Plzeňský kraj). Every record carried a live license read, a
+mechanical download and current-calendar preflight, and an ISO 3166-2
+subdivision review. Candidates that could not clear those gates were dropped:
+the Netherlands OVapi aggregate and Croatian rail lacked a reviewable license,
+Sweden and Slovenia were key or registration walled, Luxembourg still had no
+stable current URL, and the Polish community-mirror and access-blocked city
+feeds stayed out.
+
+The balance criterion stays comfortable: the United Kingdom is now 17.0% of the
+cohort (34 of 200), and France, the largest country, is 20.5% (41 of 200), both
+well under the 40% ceiling. The 250-record threshold stays the only open
+criterion, and it still fails by design.
+
+### Eighth European wave on 2026-07-18
+
+An eighth wave stayed non-United-Kingdom and added 51 reviewed feed records,
+moving the European cohort from 200 to 251 records across the same 22 countries.
+The wave reaches the 250-record threshold, which had been the only open
+criterion. It is depth in already-listed countries rather than new ones:
+twenty-seven Licence Ouverte 2.0 urban networks in France across ten regions,
+nine in Norway (six national Entur operators under NLOD 2.0 that are distinct
+from the county authorities, plus three more county authorities), seven National
+Transport Authority per-operator files in Ireland under CC BY 4.0, four in Italy
+(three Regione Toscana resources and ATM Messina in Sicilia under CC BY), two in
+Germany (VVS Stuttgart under CC BY 4.0 and SWU Ulm under CC0 on MobiData BW), one
+in Portugal (Metropolitano de Lisboa under CC BY 4.0), and one in Poland (MPK
+Legnica under CC BY 4.0, opening the Dolnośląskie voivodeship). Every record
+carried a live license read, a mechanical download and current-calendar
+preflight, and an ISO 3166-2 subdivision review. The Netherlands, Belgium, and
+Romania again returned nothing that cleared the fail-closed bar: the Dutch
+national portal lists no GTFS dataset, Belgium beyond the tracked TEC feed is
+registration-walled or non-commercial, and Romania's sources are unreachable or
+unlicensed.
+
+The balance criterion stays comfortable: France, the largest country, is now
+27.1% of the cohort (68 of 251), and the United Kingdom is 13.5% (34 of 251),
+both well under the 40% ceiling. With the record count met, the gate's remaining
+work is the freshness, translation, portable-location, and identity coverage the
+scored render measures.
 
 ## Delivery sequence
 
@@ -219,12 +419,62 @@ is depth and consumer usefulness, not another race to add flags.
 - Keep locale quality, source coverage, and GTFS translation availability as
   separate denominators.
 
+The engineering half of this gate shipped on 2026-07-17 (ADR 0038): the app
+now has a reviewed English catalog (`locales/app.en.json`) rendered into a
+generated strings module, a derived `en-XA` pseudolocale served behind an
+explicit `?l10n=en-XA` preview request, browser tests that prove the preview
+expands catalog strings without layout overflow and that an unsupported tag
+fails closed to English, a right-to-left check on a rendered route, and two
+ratchets that stop new hardcoded copy and new directional CSS from
+accumulating. The steward requirement is unchanged: no production language
+exists, and none may ship without named human review.
+
 ### Separate decision: NeTEx
 
 Evaluate NeTEx-to-GTFS normalization only with a named European partner and a
 bounded national profile. The evaluation must cover source fidelity, profile
 variance, validator responsibility, attribution, runtime cost, and how a
 converted feed is labeled. Until then, NeTEx-only datasets are out of scope.
+
+## Beyond the Europe beta
+
+Passing the European gate would not make the service global. The remaining
+tracks each carry their own gate, and none of them opens as a side effect of
+registry growth.
+
+**Global South pilot.** [ADR 0028](decisions/0028-global-south-pilot.md)
+bounds this to a labelled demonstrator of three to five agencies. Onboarding
+any new country waits for confirmed data licensing and operator or community
+consent. A partnership starts this track; registry additions alone do not.
+
+**Per-country equity modules.** The US overlay is state-level ACS data and the
+Canada overlay is the Statistics Canada CIMD
+([ADR 0027](decisions/0027-canada-equity-cimd.md)). Each required its own data
+sourcing, small-area geography, and presentation review. An equity module for
+a new country is an engineering effort against a reviewed national data
+source, not a configuration change.
+
+**Interface localization.** Full-interface translation stays steward-gated
+under [ADR 0026](decisions/0026-internationalization.md): a named language
+steward and human review precede any production locale. The reviewed `/es/`
+lookup shows the required scope; it is not a shortcut around it.
+
+**NeTEx.** Out of scope, as decided above. NeTEx-only datasets wait for a
+named European partner and a bounded national-profile evaluation.
+
+**Operating cost at 2x and 5x feed count.** Actions minutes are free on a
+public repository, so CI compute does not gate growth. The real cost lines are
+storage. The tracked `data/artifacts` tree is about 500 MB at 1,163 configured
+feed records and the repository's git history is about 1 GB. Since the
+fail-closed publishing change (#102), run outputs go to S3 and Pages rather
+than back into git, so the committed tree grows with curation and cutover
+commits, not with every run. The S3 mirror holds every dated artifact under a
+lifecycle expiration policy and is the durable record. At double the registry,
+roughly 2,300 records, a fresh checkout carries about 1 GB of committed
+artifacts. At five times, roughly 5,800 records, the committed bootstrap copy
+needs a redesign before the registry grows further: artifact offload, partial
+clone, or a thinner committed set. The S3 and CDN lines scale roughly linearly
+with feed count.
 
 ## Evidence to collect
 

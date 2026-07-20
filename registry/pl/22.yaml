@@ -32,3 +32,47 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: skm-trojmiasto
+    name: PKP Szybka Kolej Miejska w Trójmieście (SKM)
+    country: PL
+    subdivision_code: PL-22
+    subdivision_name: Pomorskie
+    mdb_id: "1290"
+    is_official: true
+    static_gtfs_url: https://www.skm.pkp.pl/gtfs-mi-kpd.zip
+    license_note: >-
+      The provider's public-sector reuse terms require naming the source as
+      PKP Szybka Kolej Miejska w Trójmieście Sp. z o.o. and stating the data
+      dates.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://bip.skm.pkp.pl/c97/otwarte-dane
+      terms_url: https://bip.skm.pkp.pl/c97/otwarte-dane
+      scope: [gtfs_schedule]
+      attribution: >-
+        PKP Szybka Kolej Miejska w Trójmieście Sp. z o.o.; include the data
+        creation and acquisition dates.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: zkm-gdynia
+    name: ZKM Gdynia
+    country: PL
+    subdivision_code: PL-22
+    subdivision_name: Pomorskie
+    mdb_id: "2094"
+    is_official: true
+    static_gtfs_url: http://api.zdiz.gdynia.pl/pt/gtfs.zip
+    license_note: >-
+      CC BY through Gdynia's open data portal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://otwartedane.gdynia.pl/
+      terms_url: https://otwartedane.gdynia.pl/
+      scope: [gtfs_schedule]
+      attribution: Zarząd Dróg i Zieleni w Gdyni (ZKM Gdynia).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

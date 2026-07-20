@@ -9,6 +9,12 @@
 #   members   explicit list of agency ids (ignored when all: true)
 #   state     auto-include every agency in this state, e.g. CA (no member list;
 #             uses the state persisted in each agency's artifact)
+#   country   auto-include every agency in this country, as an assigned ISO
+#             3166-1 alpha-2 code, e.g. CA for Canada (no member list; uses the
+#             registry's curated country, falling back to the artifact). A
+#             rollup names one jurisdiction level: state and country together
+#             fail loading. Country pages state their scope as reviewed feed
+#             records, never as coverage of the country.
 #
 # With no rollups.yaml at all, a single "all tracked agencies" rollup is still
 # produced, so this file only adds named groups on top of that default.
@@ -346,3 +352,79 @@ rollups:
   - id: wisconsin
     name: Wisconsin agencies
     state: Wisconsin
+
+  # Country programs, one per country with at least one registry agency. The
+  # US keeps its state and national surfaces above instead of a country page.
+  # Names come from the generated ISO 3166 vocabulary. Each page's copy states
+  # its denominator as reviewed feed records, never as covering the country.
+  - id: country-au
+    name: Australia
+    country: AU
+
+  - id: country-be
+    name: Belgium
+    country: BE
+
+  - id: country-ca
+    name: Canada
+    country: CA
+
+  - id: country-ch
+    name: Switzerland
+    country: CH
+
+  - id: country-dk
+    name: Denmark
+    country: DK
+
+  - id: country-ee
+    name: Estonia
+    country: EE
+
+  - id: country-es
+    name: Spain
+    country: ES
+
+  - id: country-fi
+    name: Finland
+    country: FI
+
+  - id: country-fr
+    name: France
+    country: FR
+
+  - id: country-gb
+    name: United Kingdom
+    country: GB
+
+  - id: country-ie
+    name: Ireland
+    country: IE
+
+  - id: country-it
+    name: Italy
+    country: IT
+
+  - id: country-jp
+    name: Japan
+    country: JP
+
+  - id: country-my
+    name: Malaysia
+    country: MY
+
+  - id: country-nz
+    name: New Zealand
+    country: NZ
+
+  - id: country-pl
+    name: Poland
+    country: PL
+
+  - id: country-pt
+    name: Portugal
+    country: PT
+
+  - id: country-uy
+    name: Uruguay
+    country: UY

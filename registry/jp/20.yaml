@@ -1,0 +1,275 @@
+# Nagano (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: suwa-karinchan-bus
+    name: Suwa City Karin-chan Bus (諏訪市かりんちゃんバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/suwacity/feeds/karinchanbas/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Suwa City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Suwa City.
+    operating_note: >-
+      Suwa City's community bus (かりんちゃんバス) by Lake Suwa in Nagano; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/suwacity.karinchanbas
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Suwa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: chikuma-city-loop-bus
+    name: Chikuma City Loop Bus (千曲市循環バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chikumacity/feeds/chikumajunkanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chikuma City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Chikuma City.
+    operating_note: >-
+      Chikuma City's circulating community bus; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chikumacity.chikumajunkanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chikuma City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kiso-town-bus
+    name: Kiso Town Public Transport (木曽町公共交通)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kisotown/feeds/kisotown/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Kiso Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kiso Town.
+    operating_note: >-
+      Kiso Town's community bus and shared transport network; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kisotown.kisotown
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kiso Town. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: chikuma-bus
+    name: Chikuma Bus (千曲バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chikuma-bus/feeds/rosenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chikuma Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Chikuma Bus Co.,
+      Ltd.
+    operating_note: >-
+      Chikuma Bus operates route services in the Saku and Ueda areas of
+      eastern Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chikuma-bus.rosenbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chikuma Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ueda-bus
+    name: Ueda Bus (上田バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/uedabus/feeds/noriai_bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ueda Bus Co., Ltd. through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ueda Bus Co., Ltd.
+    operating_note: >-
+      Ueda Bus operates route services around Ueda in eastern Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/uedabus.noriai_bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ueda Bus Co., Ltd. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kusakaru-kotsu
+    name: Kusakaru Kotsu (草軽交通)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kusakarukotsu/feeds/kusakarubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kusakaru Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kusakaru Kotsu.
+    operating_note: >-
+      A private bus operator linking Karuizawa, Kusatsu, and
+      Naganohara-Kusatsuguchi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kusakarukotsu.kusakarubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kusakaru Kotsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shiojiri-step-bus
+    name: Shiojiri Community Bus Step-kun (塩尻市地域振興バス「すてっぷくん」)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shiojiricity/feeds/suteppukunn/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shiojiri City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shiojiri City.
+    operating_note: >-
+      Shiojiri City's Step-kun regional bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shiojiricity.suteppukunn
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shiojiri City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nagano-city-bus
+    name: Nagano City Bus and Shared Taxi (長野市営バス・乗合タクシー)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/naganocity/feeds/shiei_noriaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagano City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagano City.
+    operating_note: >-
+      Nagano City's municipal bus and shared-taxi services.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/naganocity.shiei_noriaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagano City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ueda-city-orange-bus
+    name: Ueda City Orange Bus (上田市街地循環バス・オレンジバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/uedacity/feeds/uedashigaitizyunkanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ueda City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ueda City.
+    operating_note: >-
+      Ueda City's downtown circulator and Orange Bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/uedacity.uedashigaitizyunkanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ueda City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: karuizawa-town-loop-bus
+    name: Karuizawa Town Loop Bus (軽井沢町町内循環バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/karuizawatown/feeds/junkan-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Karuizawa Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Karuizawa
+      Town.
+    operating_note: >-
+      Karuizawa Town's in-town circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/karuizawatown.junkan-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Karuizawa Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: toshin-kanko-bus
+    name: Toshin Kanko Bus (東信観光バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toshinkanko-bus/feeds/rosenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Toshin Kanko Bus through the GTFS Data Repository (gtfs-
+      data.jp).
+    operating_note: >-
+      A private bus operator running route service in eastern Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toshinkanko-bus.rosenbus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toshin Kanko Bus. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

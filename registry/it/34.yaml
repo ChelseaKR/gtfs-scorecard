@@ -1,0 +1,54 @@
+# Veneto (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: actv-venezia-bus
+    name: ACTV Venezia (bus and tram)
+    country: IT
+    subdivision_code: IT-34
+    subdivision_name: Veneto
+    mdb_id: "1062"
+    is_official: true
+    organization_id: actv
+    feed_variant: road network
+    static_gtfs_url: http://actv.avmspa.it/sites/default/files/attachments/opendata/automobilistico/actv_aut.zip
+    license_note: >-
+      Creative Commons Attribution through Venice's municipal open data
+      catalog; credit ACTV and the Comune di Venezia.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.venezia.it/?q=content/actv-general-transit-feed-specification-gtfs
+      terms_url: https://dati.venezia.it/?q=content/actv-general-transit-feed-specification-gtfs
+      scope: [gtfs_schedule]
+      attribution: ACTV and Comune di Venezia.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: actv-venezia-navigazione
+    name: ACTV Venezia (vaporetto navigation)
+    country: IT
+    subdivision_code: IT-34
+    subdivision_name: Veneto
+    mdb_id: "1063"
+    is_official: true
+    organization_id: actv
+    feed_variant: navigation network
+    static_gtfs_url: http://actv.avmspa.it/sites/default/files/attachments/opendata/navigazione/actv_nav.zip
+    license_note: >-
+      Creative Commons Attribution through Venice's municipal open data
+      catalog; credit ACTV and the Comune di Venezia.
+    operating_note: >-
+      The waterborne vaporetto network, a distinct published feed from the
+      same organization as the road network record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.venezia.it/?q=content/actv-general-transit-feed-specification-gtfs
+      terms_url: https://dati.venezia.it/?q=content/actv-general-transit-feed-specification-gtfs
+      scope: [gtfs_schedule]
+      attribution: ACTV and Comune di Venezia.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
