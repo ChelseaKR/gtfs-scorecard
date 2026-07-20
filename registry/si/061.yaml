@@ -1,0 +1,30 @@
+# Ljubljana (SI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: lpp-ljubljana
+    name: Ljubljanski potniški promet (LPP)
+    country: SI
+    subdivision_code: SI-061
+    subdivision_name: Ljubljana
+    mdb_id: "1827"
+    is_official: true
+    static_gtfs_url: https://data.lpp.si/api/gtfs/feed.zip
+    license_note: >-
+      CC BY 4.0; the Ljubljana city bus GTFS is published on Slovenia's national
+      open data portal (OPSI) by the Ministrstvo za infrastrukturo. Credit LPP
+      and the ministry as the source.
+    operating_note: >-
+      Slovenia's first reviewed feed record. The direct download is LPP's own
+      live GTFS endpoint; the reuse terms are the open-data publication on OPSI.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://podatki.gov.si/dataset/a87483b0-a055-488c-a854-1c4a8d079a35
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Ljubljanski potniški promet and Ministrstvo za infrastrukturo.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

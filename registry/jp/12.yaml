@@ -1,0 +1,180 @@
+# Chiba (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: kimitsu-community-bus
+    name: Kimitsu City Community Bus (君津市コミュニティバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kimitsucity/feeds/Kimitsu_City_Community_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Kimitsu City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kimitsu City's community bus network on the Bōsō Peninsula in Chiba;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kimitsucity.Kimitsu_City_Community_Bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kimitsu City. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yotsukaido-city-yoppii
+    name: Yotsukaido City Loop Bus Yoppii (四街道市内循環バス「ヨッピィ」)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yotsukaidocity/feeds/yoppii/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Yotsukaido City through the GTFS Data Repository
+      (gtfs-data.jp).
+    operating_note: >-
+      Yotsukaido City's Yoppii city loop bus (市内循環バス「ヨッピィ」); a second
+      Chiba feed record distinct from Kimitsu City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yotsukaidocity.yoppii
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yotsukaido City. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nagareyama-green-bus
+    name: Nagareyama Green Bus (流山ぐりーんバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagareyamacity/feeds/nagareyamagreenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagareyama City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nagareyama City.
+    operating_note: >-
+      Nagareyama City's Green Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagareyamacity.nagareyamagreenbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagareyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: keisei-bus-chiba-west
+    name: Keisei Bus Chiba West (京成バス千葉ウエスト)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/keisei-transitbus/feeds/keiseitransitbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Keisei Bus Chiba West Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Keisei Bus
+      Chiba West Co., Ltd.
+    operating_note: >-
+      The Shiohama-depot network of Keisei Bus Chiba West, including Ichikawa
+      City's Wakuwaku community bus; part of the Keisei group.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/keisei-transitbus.keiseitransitbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Keisei Bus Chiba West Co., Ltd. Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: katori-loop-bus
+    name: Katori City Loop Bus (香取市循環バス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/katoricity/feeds/katori-junkan/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Katori City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Katori City's circulator bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/katoricity.katori-junkan
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Katori City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: narita-community-bus
+    name: Narita City Community Bus (成田市コミュニティバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/naritacity/feeds/narita-community-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Narita City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Narita City.
+    operating_note: >-
+      Narita City's community bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/naritacity.narita-community-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Narita City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: inzai-city-route-bus
+    name: Inzai City Route Bus (印西市路線バス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/inzaicity/feeds/rosenbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Inzai City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Inzai City.
+    operating_note: >-
+      Inzai City's Munakata and Kuni route buses.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/inzaicity.rosenbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Inzai City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

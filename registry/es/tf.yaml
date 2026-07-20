@@ -1,0 +1,27 @@
+# Santa Cruz de Tenerife (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: titsa-tenerife
+    name: TITSA (Tenerife)
+    country: ES
+    subdivision_code: ES-TF
+    subdivision_name: Santa Cruz de Tenerife
+    mdb_id: "787"
+    is_official: true
+    static_gtfs_url: http://www.titsa.com/Google_transit.zip
+    license_note: >-
+      CC BY per the datos.gob.es federated record; credit Transportes
+      Interurbanos de Tenerife and the Cabildo de Tenerife.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.gob.es/es/catalogo/la0010696-informacion-sobre-el-sistema-de-transporte-de-titsa-en-tenerife
+      terms_url: https://datos.gob.es/es/catalogo/la0010696-informacion-sobre-el-sistema-de-transporte-de-titsa-en-tenerife
+      scope: [gtfs_schedule]
+      attribution: >-
+        Transportes Interurbanos de Tenerife (TITSA) and Cabildo de Tenerife.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

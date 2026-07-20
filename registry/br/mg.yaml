@@ -1,0 +1,57 @@
+# Minas Gerais (BR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bhtrans-convencional
+    name: BHTRANS (Belo Horizonte conventional network)
+    country: BR
+    subdivision_code: BR-MG
+    subdivision_name: Minas Gerais
+    mdb_id: "9"
+    is_official: true
+    organization_id: bhtrans
+    feed_variant: conventional network
+    static_gtfs_url: https://ckan.pbh.gov.br/dataset/77764a7e-63fc-4111-ace3-fb7d3037953a/resource/f0fa78dc-74c3-49fa-8971-c310a76a07fa/download/gtfsfiles.zip
+    license_note: >-
+      CC BY through the Belo Horizonte municipal open data portal; credit the
+      Prefeitura de Belo Horizonte and its mobility authority (BHTRANS).
+    operating_note: >-
+      Belo Horizonte's conventional bus network; a distinct published feed from
+      the supplementary network, counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dados.pbh.gov.br/dataset/gtfs-estatico-do-sistema-convencional
+      terms_url: https://dados.pbh.gov.br/dataset/gtfs-estatico-do-sistema-convencional
+      scope: [gtfs_schedule]
+      attribution: Prefeitura de Belo Horizonte, Superintendência de Mobilidade (BHTRANS).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: bhtrans-suplementar
+    name: BHTRANS (Belo Horizonte supplementary network)
+    country: BR
+    subdivision_code: BR-MG
+    subdivision_name: Minas Gerais
+    mdb_id: "687"
+    is_official: true
+    organization_id: bhtrans
+    feed_variant: supplementary network
+    static_gtfs_url: https://ckan.pbh.gov.br/dataset/af0c47bb-5a82-4ae1-874f-e45dea1397ff/resource/b2a9341e-4471-45cc-a8c0-11be805590bc/download/gtfsfiles.zip
+    license_note: >-
+      CC BY through the Belo Horizonte municipal open data portal; credit the
+      Prefeitura de Belo Horizonte and its mobility authority (BHTRANS).
+    operating_note: >-
+      Belo Horizonte's supplementary (smaller-vehicle) network; a distinct
+      published feed from the conventional network, counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dados.pbh.gov.br/dataset/feed-gtfs-estatico-do-sistema-suplementar
+      terms_url: https://dados.pbh.gov.br/dataset/feed-gtfs-estatico-do-sistema-suplementar
+      scope: [gtfs_schedule]
+      attribution: Prefeitura de Belo Horizonte, Superintendência de Mobilidade (BHTRANS).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

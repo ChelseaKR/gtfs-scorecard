@@ -1,0 +1,56 @@
+# Bayern (DE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: vgn-nurnberg
+    name: Verkehrsverbund Großraum Nürnberg (VGN)
+    country: DE
+    subdivision_code: DE-BY
+    subdivision_name: Bayern
+    mdb_id: "858"
+    is_official: true
+    static_gtfs_url: https://www.vgn.de/opendata/GTFS.zip
+    license_note: >-
+      CC BY-SA 3.0 DE per VGN's open data terms; commercial reuse is permitted
+      with attribution to VGN and share-alike on redistributed data.
+    operating_note: >-
+      Bavaria's first reviewed feed record. One association feed covering the
+      VGN tariff area's operators around Nürnberg, Fürth, and Erlangen; counted
+      as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.vgn.de/opendata/
+      terms_url: https://creativecommons.org/licenses/by-sa/3.0/de/
+      scope: [gtfs_schedule]
+      attribution: Verkehrsverbund Großraum Nürnberg (VGN).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: mvv-munchen
+    name: Münchner Verkehrs- und Tarifverbund (MVV)
+    country: DE
+    subdivision_code: DE-BY
+    subdivision_name: Bayern
+    mdb_id: "779"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/storage/v1/b/mdb-latest/o/de-bayern-munchner-verkehrs-und-tarifverbund-mvv-gtfs-779.zip?alt=media
+    license_note: >-
+      CC BY per MVV's open data terms; commercial reuse is permitted with
+      attribution to MVV, the retrieval date, and the feed version.
+    operating_note: >-
+      The Munich region's transport association network. The direct download
+      is MobilityData's hosted mirror; the association rotates its own file
+      path.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.mvv-muenchen.de/service-hilfe/mvv-content-fuer-entwickler
+      terms_url: https://www.mvv-muenchen.de/service-hilfe/mvv-content-fuer-entwickler
+      scope: [gtfs_schedule]
+      attribution: >-
+        Münchner Verkehrs- und Tarifverbund GmbH (MVV).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

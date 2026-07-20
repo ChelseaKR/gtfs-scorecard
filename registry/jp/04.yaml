@@ -1,0 +1,60 @@
+# Miyagi (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: shichigahama-town-bus
+    name: Shichigahama Town Community Bus (七ヶ浜町民バス「ぐるりんこ」)
+    country: JP
+    subdivision_code: JP-04
+    subdivision_name: Miyagi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shichigahamatown/feeds/Gururinko/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shichigahama Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Shichigahama Town.
+    operating_note: >-
+      Shichigahama Town's community bus (ぐるりんこ) on the Miyagi coast; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shichigahamatown.Gururinko
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shichigahama Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takeya-kotsu
+    name: Takeya Kotsu (タケヤ交通)
+    country: JP
+    subdivision_code: JP-04
+    subdivision_name: Miyagi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takeyakoutu/feeds/takeyakotsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Takeya Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Takeya Kotsu
+      Co., Ltd.
+    operating_note: >-
+      Takeya Kotsu's route bus service in Miyagi; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takeyakoutu.takeyakotsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takeya Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

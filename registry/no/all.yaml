@@ -1,0 +1,151 @@
+# Norway (NO) national operators — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# These are national rail and express-coach operators whose per-operator GTFS
+# exports Entur publishes separately from the county-authority feeds in the
+# registry/no/<fylke>.yaml shards. They are national in scope, so they carry no
+# subdivision. Each is one Entur per-operator export under NLOD 2.0; the Entur
+# national aggregate is a separate, much larger download that exceeds the
+# standard archive cap.
+agencies:
+  - id: vy-rail
+    name: Vy (national rail)
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_vyg-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Vy passenger rail
+      network. Distinct from the county-authority local feeds and from the
+      Entur national aggregate, which exceeds the standard archive cap.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Vy; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: go-ahead-nordic-rail
+    name: Go-Ahead Norge (rail)
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_goa-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering Go-Ahead Norge's
+      southern and western Norway rail concessions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Go-Ahead Norge AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sj-nord-rail
+    name: SJ Nord (SJ Norge)
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_sjn-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering SJ Norge's northern
+      Norway rail concession (SJ Nord).
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        SJ Norge AS (SJ Nord); published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: vy-express-coach
+    name: Vy Express (Vy Buss)
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_vyx-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Vy Buss long
+      distance express coach network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Vy Buss AS (Vy Express); published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: norway-bussekspress
+    name: NOR-WAY Bussekspress
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_nwy-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the NOR-WAY
+      Bussekspress national express coach network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        NOR-WAY Bussekspress; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: flytoget-airport-express
+    name: Flytoget (Airport Express Train)
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_flt-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Flytoget airport
+      express rail service between Oslo and Oslo Airport.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Flytoget AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

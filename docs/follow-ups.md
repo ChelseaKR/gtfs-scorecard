@@ -58,7 +58,7 @@ history is not rewritten.
 
 ## Fan-out compute (`infra/compute`, roadmap Year 2)
 
-**Status: deferred, and not a plain `terraform apply`.** At ~1,160 configured feeds the
+**Status: deferred, and not a plain `terraform apply`.** At ~1,734 configured feeds the
 GitHub Actions matrix handles the daily run in well under an hour, so this is
 premature. More importantly, applying `infra/compute` stands up an EventBridge
 schedule that would run the pipeline **in addition to** the Actions cron — two
@@ -75,3 +75,35 @@ When the registry outgrows the Actions matrix, the cutover is:
    only one scheduler runs. Keep `workflow_dispatch` for manual runs.
 
 See `docs/decisions/0003-fan-out-compute.md` for the original design.
+
+## Streaming reader for national-scale feeds
+
+**Status: open. Two reviewed feeds cannot be scored today.** The gtfs.de
+Germany-wide aggregate and the Swiss national timetable have a `stop_times.txt`
+of 1.9 GiB and 2.4 GiB. Scorecard's own table reader (`gtfs.py`) loads a table
+whole into memory and caps a single table at 1 GiB (`MAX_MEMBER_BYTES`), so any
+metric that reads `stop_times.txt` this way raises `TableTooLargeError` and the
+feed produces no scorecard. The archive-shape guard and the Java validator both
+handle these feeds; only the in-memory table reader does not. Raising the cap is
+not safe: loading a 2.4 GiB table whole risks a Python out-of-memory even on a
+16 GiB runner.
+
+Consumers of `stop_times.txt` in the daily scoring path: `ferry_profile`
+(already made to skip an oversized table), `routability`, and the realtime
+readers `rt_drift` and `rt` (only for feeds that publish realtime). All are
+zero-deduction and descriptive, so none changes a grade.
+
+Two ways forward, a product decision:
+
+1. **Stream the table.** Give `gtfs.py` a row-iterating reader for the large
+   tables and move each consumer above to the aggregates it actually needs
+   (counts, per-trip first/last stop). Memory-safe and accurate. Raises the
+   tool's ceiling so it can score a national feed. The larger change.
+2. **Treat national aggregates as a distinct class.** Either mark their
+   whole-table metrics "not assessed" with a stated reason, or keep national
+   aggregates out of the small-agency-focused reviewed cohort. Smaller change,
+   but it is a framing decision about what the scorecard measures.
+
+Until one is chosen, these two feeds are curated but unscored, and the European
+beta gate reports 99.2% of its reviewed cohort measured rather than 100%.
+Verkehrsverbund Rhein-Neckar, whose largest table fits the cap, does score.

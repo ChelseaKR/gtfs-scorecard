@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import Agency, raw_dir
-from .net import FetchTrace, UnsafeURLError, safe_get
+from .net import FetchTrace, UnsafeURLError, safe_download, safe_get
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +61,54 @@ MAX_GTFS_ENTRY_BYTES = 512 * 1024 * 1024
 MAX_GTFS_UNCOMPRESSED_BYTES = 2 * 1024 * 1024 * 1024
 MAX_GTFS_COMPRESSION_RATIO = 1_000
 COMPRESSION_RATIO_MIN_BYTES = 10 * 1024 * 1024
+
+# The large-feed tier. A small number of official national and metropolitan
+# feeds (an entire country's rail plus bus, or a whole metro network in one
+# export) legitimately exceed the standard caps: their compressed download runs
+# past 256 MiB, or a single table such as stop_times.txt expands past 512 MiB.
+# A feed opts in per record with ``large_feed: true`` after a curator confirms
+# it is a real published feed, not a zip bomb. The tier raises the size ceilings
+# to a still-bounded level and routes the download through a streaming,
+# bounded-memory fetch (net.safe_download). Every zip-bomb *shape* guard — the
+# entry count, the compression-ratio check, and the central-directory-only
+# inspection before the Java validator opens the bytes — stays exactly as
+# strict; only the raw size ceilings move. The download ceiling stays at
+# net.MAX_DOWNLOAD_BYTES so the generic guard is never widened.
+LARGE_MAX_GTFS_DOWNLOAD_BYTES = 512 * 1024 * 1024
+# A national timetable's single stop_times.txt is the largest legitimate entry
+# seen: the Swiss fp2026 export unzips to a 2.43 GiB stop_times.txt, so the
+# per-entry ceiling sits at 3 GiB. The whole-archive ceiling stays comfortably
+# above the largest observed total (Switzerland's 2.99 GiB across all tables).
+LARGE_MAX_GTFS_ENTRY_BYTES = 3 * 1024 * 1024 * 1024
+LARGE_MAX_GTFS_UNCOMPRESSED_BYTES = 4 * 1024 * 1024 * 1024
+
+
+@dataclass(frozen=True)
+class ArchiveLimits:
+    """Per-feed size ceilings for the download and the archive-shape guard.
+
+    ``None`` anywhere a caller accepts ``ArchiveLimits | None`` means "use the
+    standard module-level constants", which keeps those constants the single
+    monkeypatchable source of truth for the standard tier. The large tier passes
+    an explicit instance.
+    """
+
+    max_download_bytes: int
+    max_entry_bytes: int
+    max_uncompressed_bytes: int
+
+
+LARGE_LIMITS = ArchiveLimits(
+    max_download_bytes=LARGE_MAX_GTFS_DOWNLOAD_BYTES,
+    max_entry_bytes=LARGE_MAX_GTFS_ENTRY_BYTES,
+    max_uncompressed_bytes=LARGE_MAX_GTFS_UNCOMPRESSED_BYTES,
+)
+
+
+def limits_for(large_feed: bool) -> ArchiveLimits | None:
+    """The archive limits for a feed: the large tier, or None for the standard
+    tier (which reads the monkeypatchable module constants)."""
+    return LARGE_LIMITS if large_feed else None
 
 
 @dataclass(frozen=True)
@@ -143,14 +191,22 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _validate_gtfs_archive(path: Path) -> None:
+def _validate_gtfs_archive(path: Path, limits: ArchiveLimits | None = None) -> None:
     """Reject archive shapes that can exhaust the validator worker.
 
     Reading the central directory does not extract member contents. The limits
     therefore stop oversized or implausibly compressed entries before the
     embedded gtfs-validator and Apache Commons Compress parse attacker-controlled
-    data.
+    data. ``limits`` is the large tier for an opted-in feed; ``None`` uses the
+    standard module constants, which stay the monkeypatchable source of truth.
+    The entry-count and compression-ratio guards are the same in both tiers:
+    they check archive *shape*, not raw size, so a zip bomb is caught whether or
+    not a feed opted into larger raw ceilings.
     """
+    max_entry_bytes = limits.max_entry_bytes if limits else MAX_GTFS_ENTRY_BYTES
+    max_uncompressed_bytes = (
+        limits.max_uncompressed_bytes if limits else MAX_GTFS_UNCOMPRESSED_BYTES
+    )
     try:
         with zipfile.ZipFile(path) as archive:
             entries = archive.infolist()
@@ -166,15 +222,15 @@ def _validate_gtfs_archive(path: Path) -> None:
     for entry in entries:
         if entry.is_dir():
             continue
-        if entry.file_size > MAX_GTFS_ENTRY_BYTES:
+        if entry.file_size > max_entry_bytes:
             raise ValueError(
                 f"GTFS archive entry {entry.filename!r} expands to {entry.file_size:,} bytes; "
-                f"limit is {MAX_GTFS_ENTRY_BYTES:,}"
+                f"limit is {max_entry_bytes:,}"
             )
         expanded += entry.file_size
-        if expanded > MAX_GTFS_UNCOMPRESSED_BYTES:
+        if expanded > max_uncompressed_bytes:
             raise ValueError(
-                f"GTFS archive expands beyond the {MAX_GTFS_UNCOMPRESSED_BYTES:,}-byte limit"
+                f"GTFS archive expands beyond the {max_uncompressed_bytes:,}-byte limit"
             )
         ratio = entry.file_size / max(entry.compress_size, 1)
         if entry.file_size >= COMPRESSION_RATIO_MIN_BYTES and ratio > MAX_GTFS_COMPRESSION_RATIO:
@@ -256,7 +312,7 @@ def _write_reader_archive(archive: zipfile.ZipFile, mapping: ReaderMapping, outp
         raise
 
 
-def prepare_reader_archive(path: Path) -> ReaderArchive:
+def prepare_reader_archive(path: Path, limits: ArchiveLimits | None = None) -> ReaderArchive:
     """Return a deterministic flat view for Scorecard-owned table readers.
 
     GTFS requires its text files at the archive root, but a small class of
@@ -274,7 +330,7 @@ def prepare_reader_archive(path: Path) -> ReaderArchive:
     """
     # Reproduce and any future direct caller get the same zip-bomb boundary as
     # fetch_static before we stream a single member into the reader view.
-    _validate_gtfs_archive(path)
+    _validate_gtfs_archive(path, limits)
     output = path.with_name(f"{path.stem}.reader{path.suffix or '.zip'}")
     try:
         with zipfile.ZipFile(path) as archive:
@@ -289,9 +345,42 @@ def prepare_reader_archive(path: Path) -> ReaderArchive:
     return ReaderArchive(path=output, normalized=True)
 
 
-def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenance]:
-    """Fetch the agency's feed, falling back to the Mobility Database's hosted
-    mirror when the origin is unreachable.
+def _fetch_to(url: str, dest: Path, *, max_bytes: int, retries: int, large: bool) -> str:
+    """Fetch ``url`` into ``dest``, returning the served final URL.
+
+    A large feed streams straight to disk with a bounded memory footprint
+    (net.safe_download); a standard feed keeps the existing buffer-then-write
+    path so the 1,300 ordinary feeds see byte-for-byte the same behavior.
+    """
+    trace = FetchTrace()
+    if large:
+        safe_download(
+            url,
+            dest,
+            headers=FEED_HEADERS,
+            timeout=TIMEOUT,
+            max_bytes=max_bytes,
+            retries=retries,
+            trace=trace,
+        )
+    else:
+        body = safe_get(
+            url,
+            headers=FEED_HEADERS,
+            timeout=TIMEOUT,
+            max_bytes=max_bytes,
+            retries=retries,
+            trace=trace,
+        )
+        dest.write_bytes(body)
+    return trace.final_url or url
+
+
+def _download_with_mirror_fallback(
+    agency: Agency, dest: Path, limits: ArchiveLimits | None
+) -> FetchProvenance:
+    """Fetch the agency's feed into ``dest``, falling back to the Mobility
+    Database's hosted mirror when the origin is unreachable.
 
     Some agencies firewall datacenter IP ranges (the feed times out from CI) or
     sit behind a bot filter (a 403). MobilityData keeps a hosted copy on Google
@@ -299,25 +388,22 @@ def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenan
     that mirror rather than drop the agency. SSRF rejections are never retried or
     mirrored; they mean the URL itself is unsafe.
 
-    Returns the body plus a FetchProvenance stating which URL actually served it,
-    so the published artifact can say "we scored the mirror copy" instead of
-    passing a mirror fetch off as an origin fetch.
+    Returns a FetchProvenance stating which URL actually served the bytes now on
+    disk, so the published artifact can say "we scored the mirror copy" instead
+    of passing a mirror fetch off as an origin fetch.
     """
     import requests
 
+    large = limits is not None
+    max_bytes = limits.max_download_bytes if limits else MAX_GTFS_DOWNLOAD_BYTES
+
     try:
-        trace = FetchTrace()
-        body = safe_get(
-            agency.static_gtfs_url,
-            headers=FEED_HEADERS,
-            timeout=TIMEOUT,
-            max_bytes=MAX_GTFS_DOWNLOAD_BYTES,
-            retries=FETCH_RETRIES,
-            trace=trace,
+        final_url = _fetch_to(
+            agency.static_gtfs_url, dest, max_bytes=max_bytes, retries=FETCH_RETRIES, large=large
         )
-        return body, FetchProvenance(
+        return FetchProvenance(
             source="origin",
-            final_url=trace.final_url or agency.static_gtfs_url,
+            final_url=final_url or agency.static_gtfs_url,
             max_attempts=FETCH_RETRIES + 1,
         )
     except (requests.exceptions.RequestException, UnsafeURLError) as origin_exc:
@@ -337,17 +423,10 @@ def _download_with_mirror_fallback(agency: Agency) -> tuple[bytes, FetchProvenan
             type(origin_exc).__name__,
             mirror,
         )
-        trace = FetchTrace()
-        body = safe_get(
-            mirror,
-            headers=FEED_HEADERS,
-            timeout=TIMEOUT,
-            max_bytes=MAX_GTFS_DOWNLOAD_BYTES,
-            trace=trace,
-        )
-        return body, FetchProvenance(
+        final_url = _fetch_to(mirror, dest, max_bytes=max_bytes, retries=0, large=large)
+        return FetchProvenance(
             source="mirror",
-            final_url=trace.final_url or mirror,
+            final_url=final_url or mirror,
             max_attempts=1,  # the mirror fetch is a single attempt (no retries)
             origin_error=type(origin_exc).__name__,
         )
@@ -394,11 +473,12 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
     older snapshots without one report source="unknown", since how those bytes
     were fetched is not recorded on disk.
     """
+    limits = limits_for(agency.large_feed)
     dest = raw_dir() / agency.id / date.isoformat() / "gtfs.zip"
     if dest.exists() and not force:
         log.info("%s: reusing snapshot %s", agency.id, dest)
-        _validate_gtfs_archive(dest)
-        reader_archive = prepare_reader_archive(dest)
+        _validate_gtfs_archive(dest, limits)
+        reader_archive = prepare_reader_archive(dest, limits)
         recorded = _read_provenance_sidecar(dest)
         max_attempts = recorded.get("max_attempts")
         return FetchResult(
@@ -420,21 +500,24 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     log.info("%s: downloading %s", agency.id, agency.static_gtfs_url)
-    body, prov = _download_with_mirror_fallback(agency)
-
     tmp = dest.with_suffix(".zip.part")
-    tmp.write_bytes(body)
+    try:
+        prov = _download_with_mirror_fallback(agency, tmp, limits)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+
     if not zipfile.is_zipfile(tmp):
-        tmp.unlink()
+        tmp.unlink(missing_ok=True)
         raise ValueError(f"{agency.id}: response from {agency.static_gtfs_url} is not a zip")
     try:
-        _validate_gtfs_archive(tmp)
+        _validate_gtfs_archive(tmp, limits)
     except ValueError:
         tmp.unlink(missing_ok=True)
         raise
     tmp.replace(dest)
     _write_provenance_sidecar(dest, prov)
-    reader_archive = prepare_reader_archive(dest)
+    reader_archive = prepare_reader_archive(dest, limits)
 
     return FetchResult(
         agency_id=agency.id,

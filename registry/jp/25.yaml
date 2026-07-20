@@ -1,0 +1,200 @@
+# Shiga (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: kusatsu-mame-bus
+    name: Kusatsu City Mame Bus (草津市コミュニティバス「まめバス」)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kusatsucity/feeds/kusatsusimamebus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kusatsu City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kusatsu City.
+    operating_note: >-
+      Kusatsu City's community bus (まめバス) in Shiga; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kusatsucity.kusatsusimamebus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kusatsu City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: omihachiman-akakon-bus
+    name: Omihachiman City Akakon Bus (近江八幡市あかこんバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/omihachimancity/feeds/akakonbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Omihachiman City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Omihachiman City.
+    operating_note: >-
+      Omihachiman City's Akakon Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/omihachimancity.akakonbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Omihachiman City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: koka-city-bus
+    name: Koka City Community Bus (甲賀市コミュニティバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kokacity/feeds/sinaicommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Koka City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Koka City.
+    operating_note: >-
+      Koka City's community bus in southern Shiga.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kokacity.sinaicommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Koka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takashima-city-bus
+    name: Takashima City Community Bus (高島市コミュニティバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takashimacity/feeds/takasimasicommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Takashima City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Takashima City.
+    operating_note: >-
+      Takashima City's community bus along the western shore of Lake Biwa.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takashimacity.takasimasicommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takashima City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: higashiomi-chokotto-bus
+    name: Higashiomi City Chokotto Bus (東近江市ちょこっとバス)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/higashiomicity/feeds/higasiohmisicommunitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Higashiomi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Higashiomi City.
+    operating_note: >-
+      Higashiomi City's Chokotto community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/higashiomicity.higasiohmisicommunitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Higashiomi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nagahama-nishiazai-wagon
+    name: Nagahama City Nishiazai Odekake Wagon (長浜市西浅井おでかけワゴン)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagahamacity/feeds/nishiazaiodekakewagon/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagahama City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagahama City.
+    operating_note: >-
+      Nagahama City's Nishiazai area community wagon.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagahamacity.nishiazaiodekakewagon
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagahama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yasu-city-onori-yasu-bus
+    name: Yasu City Onori-Yasu Bus (野洲市コミバス おのりやす)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yasucity/feeds/onoriyasu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yasu City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yasu City.
+    operating_note: >-
+      Yasu City's Onori-Yasu community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yasucity.onoriyasu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yasu City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shiga-konan-city-megurukun-bus
+    name: Konan City Megurukun Bus (湖南市コミバス めぐるくん)
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shiga-konancity/feeds/konansimegurukun/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Konan City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Konan City.
+    operating_note: >-
+      The Megurukun community bus in Konan, Shiga, distinct from Konan
+      City in Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shiga-konancity.konansimegurukun
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Konan City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

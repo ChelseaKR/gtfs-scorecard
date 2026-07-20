@@ -1,0 +1,30 @@
+# Canada nationwide (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: via-rail-canada
+    name: VIA Rail Canada
+    country: CA
+    mdb_id: "735"
+    is_official: true
+    static_gtfs_url: https://www.viarail.ca/sites/all/files/gtfs/viarail.zip
+    license_note: >-
+      Open Government Licence – Canada version 2.0: a worldwide,
+      royalty-free, non-exclusive licence to use the information,
+      including commercially, with attribution. Derived measurements by
+      GTFS Scorecard.
+    operating_note: >-
+      The national intercity passenger rail network across Canada; a
+      multi-province feed carried without a subdivision. Counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.viarail.ca/en/developer-resources
+      terms_url: https://open.canada.ca/en/open-government-licence-canada
+      scope: [gtfs_schedule]
+      attribution: VIA Rail Canada.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

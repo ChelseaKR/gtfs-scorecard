@@ -20,3 +20,145 @@ agencies:
     mdb_id: 2
     static_gtfs_url: http://www.londontransit.ca/gtfsfeed/google_transit.zip
     license_note: No stated data license in the Mobility Database; verify before relying on.
+
+  - id: toronto-transit-commission
+    name: Toronto Transit Commission (TTC)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "732"
+    is_official: true
+    static_gtfs_url: https://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip
+    license_note: >-
+      Open Government Licence – Toronto: a worldwide, royalty-free, non-
+      exclusive licence to use the information, including commercially,
+      with attribution to the City of Toronto. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://open.toronto.ca/dataset/ttc-routes-and-schedules/
+      terms_url: https://open.toronto.ca/open-data-licence/
+      scope: [gtfs_schedule]
+      attribution: City of Toronto (Toronto Transit Commission).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: york-region-transit
+    name: York Region Transit (YRT)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "728"
+    is_official: true
+    static_gtfs_url: https://www.yrt.ca/google/google_transit.zip
+    license_note: >-
+      Open Government Licence – York Region: a licence to use the
+      information, including commercially, with attribution, based on
+      the UK Open Government Licence. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.yrt.ca/en/about-us/open-data.aspx
+      terms_url: https://www.yrt.ca/en/about-us/open-data-licence-agreement.aspx
+      scope: [gtfs_schedule]
+      attribution: Regional Municipality of York (York Region Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: oakville-transit
+    name: Oakville Transit
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "725"
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data
+    license_note: >-
+      Open Government Licence – Town of Oakville (based on Open
+      Government Licence – Canada 2.0): a worldwide, royalty-free,
+      perpetual, non-exclusive licence to use the information, including
+      for commercial purposes, with attribution. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.oakville.ca/town-hall/town-studies-plans-projects/town-initiatives/open-data/
+      terms_url: https://www.oakville.ca/town-hall/town-studies-plans-projects/town-initiatives/open-data/open-data-licence/
+      scope: [gtfs_schedule]
+      attribution: Town of Oakville (Oakville Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: brampton-transit
+    name: Brampton Transit
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "1994"
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); City of Brampton
+      open data. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://brampton.maps.arcgis.com/home/item.html?id=a355aabd5a8c490186bdce559c9c75fb
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: City of Brampton (Brampton Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: go-transit-metrolinx
+    name: GO Transit (Metrolinx)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "1993"
+    is_official: true
+    static_gtfs_url: https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip
+    license_note: >-
+      Open Government Licence – Ontario (Metrolinx): a licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to Metrolinx. Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One regional network export for the Greater Golden Horseshoe (GO
+      Transit rail and bus); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.metrolinx.com/en/aboutus/opendata/default.aspx
+      terms_url: https://www.metrolinx.com/en/aboutus/opendata/default.aspx
+      scope: [gtfs_schedule]
+      attribution: Metrolinx (GO Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: up-express
+    name: Union Pearson Express (UP Express)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "1995"
+    is_official: true
+    static_gtfs_url: https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/UP-GTFS.zip
+    license_note: >-
+      Open Government Licence – Ontario (Metrolinx): a licence to use,
+      reproduce, and redistribute the data, including commercially, with
+      attribution to Metrolinx. Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      The airport rail link between Union Station and Toronto Pearson,
+      published by Metrolinx; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.metrolinx.com/en/aboutus/opendata/default.aspx
+      terms_url: https://www.metrolinx.com/en/aboutus/opendata/default.aspx
+      scope: [gtfs_schedule]
+      attribution: Metrolinx (Union Pearson Express).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -62,6 +62,36 @@ def test_run_adhoc_defaults_name_to_host(monkeypatch) -> None:  # type: ignore[n
     assert artifact["agency"]["name"] == "transit.example.org"
 
 
+def test_run_adhoc_scores_local_corrected_copy(monkeypatch, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]
+    local = tmp_path / "corrected.zip"
+    local.write_bytes(FIXTURE.read_bytes())
+    scratch = tmp_path / "raw"
+    report = ValidationReport(validator_version="9.9.9", notices=[])
+
+    monkeypatch.setattr(cli, "raw_dir", lambda: scratch)
+    monkeypatch.setattr(
+        cli,
+        "fetch_static",
+        lambda *_args, **_kwargs: pytest.fail("local input must not use the network fetcher"),
+    )
+    monkeypatch.setattr(cli, "run_validator", lambda *a, **k: Path("unused.json"))
+    monkeypatch.setattr(cli, "parse_report", lambda *a, **k: report)
+
+    artifact = cli.run_adhoc(str(local), None, dt.date(2026, 7, 18))
+
+    assert artifact["agency"]["name"] == "corrected"
+    assert artifact["feed"]["static_url"] == local.resolve().as_uri()
+    assert artifact["fetch"]["source"] == "local"
+    assert "local feed copy" in " ".join(artifact["confidence"]["notes"])
+    assert artifact["overall"]["grade"] in {"A", "B", "C", "D", "F"}
+    assert not (artifacts_dir() / "_adhoc").exists()
+
+
+def test_run_adhoc_rejects_missing_local_path() -> None:
+    with pytest.raises(FileNotFoundError, match="local GTFS zip not found"):
+        cli.run_adhoc("missing-feed.zip", None, dt.date(2026, 7, 18))
+
+
 def test_run_adhoc_isolates_parallel_work_by_url(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     _stub_fetch(monkeypatch)
     scratch_ids: list[str] = []

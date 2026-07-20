@@ -26,3 +26,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: unibus-bournemouth
+    name: Unibus (Bournemouth)
+    country: GB
+    subdivision_code: GB-BCP
+    subdivision_name: Bournemouth, Christchurch and Poole
+    mdb_id: "1954"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/unibus/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Unibus as the source and do not imply endorsement.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/unibus
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Unibus; contains public sector information licensed under the Open
+        Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

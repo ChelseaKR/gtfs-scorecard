@@ -1,0 +1,30 @@
+# Keski-Suomi (FI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: waltti-jyvaskyla
+    name: Waltti (Jyväskylä)
+    country: FI
+    subdivision_code: FI-08
+    subdivision_name: Keski-Suomi
+    mdb_id: "867"
+    is_official: true
+    organization_id: waltti
+    feed_variant: jyvaskyla
+    static_gtfs_url: https://tvv.fra1.digitaloceanspaces.com/209.zip
+    license_note: >-
+      CC BY 4.0; credit Waltti, link the licence, and indicate any changes made
+      to the source data.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.waltti.fi/docs
+      terms_url: https://opendata.waltti.fi/docs
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: Waltti open data (Jyväskylä), licensed CC BY 4.0; indicate
+        changes.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

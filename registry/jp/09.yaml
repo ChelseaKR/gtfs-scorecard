@@ -24,3 +24,143 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-16"
       identity_reviewed: true
+  - id: ashikaga-city-route-bus
+    name: Ashikaga City Route Bus (足利市路線バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ashikagacity/feeds/Ashikaga-route-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ashikaga City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ashikaga City.
+    operating_note: >-
+      Ashikaga City's route bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ashikagacity.Ashikaga-route-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ashikaga City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nikko-city-bus
+    name: Nikko City Bus (日光市営バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nikkocity/feeds/nikkocity/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nikko City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Nikko City.
+    operating_note: >-
+      Nikko City's municipal bus in the mountains of western Tochigi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nikkocity.nikkocity
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nikko City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nasushiobara-community-bus
+    name: Nasushiobara City Community Bus (那須塩原市地域バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nasushiobaracity/feeds/chiikibasu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nasushiobara City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nasushiobara City.
+    operating_note: >-
+      Nasushiobara City's local community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nasushiobaracity.chiikibasu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nasushiobara City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: otawara-city-bus
+    name: Otawara City Bus (大田原市営バス)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/otawaracity/feeds/Ohtawaracitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Otawara City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Otawara City.
+    operating_note: >-
+      Otawara City's municipal bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/otawaracity.Ohtawaracitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Otawara City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: mibu-town-community-bus
+    name: Mibu Town Community Bus (壬生町コミュニティバス みぶーぶ)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mibutown/feeds/mibubu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mibu Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mibu Town.
+    operating_note: >-
+      Mibu Town's Mibu-bu community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mibutown.mibubu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mibu Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yaita-city-central-loop-bus
+    name: Yaita City Central Loop Bus (矢板市中央部循環路線)
+    country: JP
+    subdivision_code: JP-09
+    subdivision_name: Tochigi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yaitacity/feeds/chuuou-junkan/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yaita City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Yaita City.
+    operating_note: >-
+      Yaita City's central-area loop route.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yaitacity.chuuou-junkan
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yaita City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

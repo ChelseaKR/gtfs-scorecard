@@ -53,3 +53,26 @@ agencies:
     static_gtfs_url: https://transitfeeds.com/p/ride-sitka/713/latest/download
     mdb_id: 1293
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  # United States small and rural depth wave (2026-07-18). National Park
+  # Service park transit published as a US Government work (public domain).
+  # The source zip was preflighted for a current service calendar; see
+  # docs/feeds.md.
+  - id: denali-national-park-shuttle
+    name: Denali National Park Courtesy Shuttle
+    subdivision_code: US-AK
+    subdivision_name: Alaska
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/dena/dena-shuttle.zip
+    license_note: Public domain as a United States Government work; published by the National Park Service GTFS program.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nps.gov/subjects/developer/gtfs.htm
+      terms_url: https://www.nps.gov/aboutus/disclaimer.htm
+      scope: [gtfs_schedule]
+      attribution: National Park Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

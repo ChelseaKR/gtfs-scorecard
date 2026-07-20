@@ -177,9 +177,9 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_163
-    assert len(european) == 15
-    assert len({agency.country for agency in european}) == 12
+    assert len(agencies) == 1_734
+    assert len(european) == 251
+    assert len({agency.country for agency in european}) == 22
 
 
 def test_ntd_id_parses_and_defaults_empty() -> None:
@@ -199,6 +199,18 @@ def test_country_defaults_to_us_and_normalizes() -> None:
     assert default_agency.country == "US"  # default keeps every existing entry US
     (agency,) = parse_agencies(entry(country="ca"))
     assert agency.country == "CA"  # normalized to an uppercase ISO code
+
+
+def test_large_feed_defaults_false_and_parses_when_set() -> None:
+    (default_agency,) = parse_agencies(VALID)
+    assert default_agency.large_feed is False
+    (large,) = parse_agencies(entry(large_feed=True))
+    assert large.large_feed is True
+
+
+def test_large_feed_must_be_boolean() -> None:
+    with pytest.raises(AgencyConfigError, match="large_feed must be true or false"):
+        parse_agencies(entry(large_feed="yes"))
 
 
 def test_iso_subdivision_parses_and_legacy_us_state_derives_it() -> None:

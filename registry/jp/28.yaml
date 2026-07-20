@@ -1,0 +1,262 @@
+# Hyogo (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: akashi-city-tako-bus
+    name: Akashi City Tako Bus (明石市たこバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/akashicity/feeds/tacobustacobusmini/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Akashi City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Akashi City.
+    operating_note: >-
+      Akashi City's Tako Bus and Tako Bus Mini community routes
+      (たこバス／たこバスミニ); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/akashicity.tacobustacobusmini
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Akashi City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kakogawa-city-kako-bus
+    name: Kakogawa City Kako Bus (加古川市かこバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kakogawacity/feeds/kakobuskakobusmini/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Kakogawa City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kakogawa
+      City.
+    operating_note: >-
+      Kakogawa City's Kako Bus and Kako Bus Mini community routes
+      (かこバス／かこバスミニ); counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kakogawacity.kakobuskakobusmini
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kakogawa City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takarazuka-city-ranran-bus
+    name: Takarazuka City Ran-Ran Bus (宝塚市ランランバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takarazukacity/feeds/runrunbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Takarazuka
+      City through the GTFS Data Repository (gtfs-data.jp). Credit
+      Takarazuka City.
+    operating_note: >-
+      Takarazuka City's Ran-Ran Bus community service (ランランバス); counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takarazukacity.runrunbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takarazuka City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: takasago-joton-bus
+    name: Takasago City Joton Bus (高砂市じょうとんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takasagocity/feeds/jotonbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Takasago City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Takasago City.
+    operating_note: >-
+      Takasago City's Joton Bus community network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takasagocity.jotonbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takasago City. Published as GTFS-JP open data (CC BY 2.1 JP) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ono-city-ranran-bus
+    name: Ono City Ran-Ran Bus (小野市らんらんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hyogo-ono/feeds/ranranbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Ono City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ono City.
+    operating_note: >-
+      Ono City's Ran-Ran community bus in south-central Hyogo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hyogo-ono.ranranbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ono City. Published as GTFS-JP open data (CC BY 2.1 JP) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tatsuno-city-bus
+    name: Tatsuno City Community Bus (たつの市コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tatsunocity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Tatsuno City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tatsuno City.
+    operating_note: >-
+      Tatsuno City's community bus in southwestern Hyogo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tatsunocity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tatsuno City. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: himeji-island-community-bus
+    name: Himeji City Island Community Buses (姫路市 家島・坊勢・雪彦コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/himejicity/feeds/ieshima-boze-yukihiko/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Himeji City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Himeji City.
+    operating_note: >-
+      Himeji's Ieshima and Boze island community buses and the Yukihiko route.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/himejicity.ieshima-boze-yukihiko
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Himeji City. Published as GTFS-JP open data (CC BY 2.1 JP) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: minamiawaji-ranran-bus
+    name: Minami-Awaji City Ran-Ran Bus (南あわじ市らん・らんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamiawajicity/feeds/lanrunbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Minami-Awaji City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Minami-Awaji
+      City.
+    operating_note: >-
+      Minami-Awaji City's Ran-Ran community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamiawajicity.lanrunbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Minami-Awaji City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sumoto-city-community-bus
+    name: Sumoto City Community Bus (洲本市コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sumotocity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Sumoto City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Sumoto
+      City.
+    operating_note: >-
+      Sumoto City's community bus on Awaji Island.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sumotocity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sumoto City. Published as GTFS-JP open data (CC BY 2.1 JP)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: sayo-town-community-bus
+    name: Sayo Town Community Bus (佐用町コミュニティバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sayotown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Sayo Town
+      through the GTFS Data Repository (gtfs-data.jp). Credit Sayo Town.
+    operating_note: >-
+      Sayo Town's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sayotown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sayo Town. Published as GTFS-JP open data (CC BY 2.1 JP) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

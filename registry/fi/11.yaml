@@ -1,0 +1,27 @@
+# Pirkanmaa (FI) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tampere-nysse
+    name: Tampere regional transport (Nysse)
+    country: FI
+    subdivision_code: FI-11
+    subdivision_name: Pirkanmaa
+    mdb_id: "866"
+    is_official: true
+    static_gtfs_url: http://data.itsfactory.fi/journeys/files/gtfs/latest/gtfs_tampere.zip
+    license_note: >-
+      CC BY 4.0 via the City of Tampere open data portal; credit the source and
+      indicate any changes made to the data.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.tampere.fi/data/en/dataset/tampereen-joukkoliikenteen-aikataulut-ja-reitit-gtfs
+      terms_url: https://data.tampere.fi/data/en/dataset/tampereen-joukkoliikenteen-aikataulut-ja-reitit-gtfs
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tampereen seudun joukkoliikenne (Nysse) and City of Tampere.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

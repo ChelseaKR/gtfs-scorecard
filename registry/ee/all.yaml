@@ -1,0 +1,31 @@
+# Estonia (EE) national agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: estonia-public-transport-register
+    name: Estonian Public Transport Register national aggregate
+    country: EE
+    mdb_id: "3235"
+    is_official: true
+    static_gtfs_url: https://eu-gtfs.remix.com/estonia_unified_gtfs.zip
+    license_note: >-
+      Estonia's public-transport open-data terms permit reuse with the data
+      origin cited; rider-facing data must be no more than seven days old.
+    operating_note: >-
+      National unified aggregate of Estonia's public transport register
+      (Ühistranspordiregister); the Mobility Database marks the register's
+      former peatus.ee export (MDB 1095) as deprecated with a redirect to this
+      source. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.agri.ee/regionaalareng-uhistransport/uhistransport-ja-reisimine/uhistranspordiregistri-avaandmed
+      terms_url: https://www.agri.ee/sites/default/files/documents/2023-07/%C3%BChistranspordiregister-avaandmed-spetsifikatsioon-v1_4.pdf
+      scope: [gtfs_schedule]
+      attribution: >-
+        Estonia's Public Transport Register open data; cite the data origin and
+        use data no more than seven days old.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

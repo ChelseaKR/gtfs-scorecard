@@ -1,0 +1,63 @@
+name: Refresh map geometry
+
+# Regenerate the committed SVG map geometry the web app colors at runtime:
+# web/us-states.json, web/world-countries.json, and web/subdivisions/<cc>.json.
+# The three build scripts re-download public-domain source boundaries (Natural
+# Earth admin-0/admin-1, PublicaMundi US states), re-project them, and rewrite
+# the simplified paths.
+#
+# This is deliberately dispatch-only: it never runs on the daily cron or on
+# push, so it cannot disturb the daily Pages deploy. Trigger it from the Actions
+# tab to pull in a Natural Earth update or after new countries gain cohort
+# depth, and it opens a pull request only when the geometry actually changed.
+# Run the same scripts locally with `make map-geometry`. See docs/visualization.md.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  geometry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # commit the regenerated geometry on a branch
+      pull-requests: write # open the review PR
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the pipeline
+        working-directory: pipeline
+        run: uv sync --locked
+
+      - name: Rebuild the US, world, and subdivision geometry
+        run: |
+          set -euo pipefail
+          uv run --project pipeline python scripts/build_us_map.py
+          uv run --project pipeline python scripts/build_world_map.py
+          uv run --project pipeline python scripts/build_subdivision_maps.py
+
+      # peter-evans/create-pull-request opens a PR only when the scoped paths
+      # actually changed, so a re-run against unchanged source data is a no-op
+      # and no PR is opened.
+      - name: Open a pull request for the refreshed geometry
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: chore/map-geometry
+          title: "chore(viz): refresh committed map geometry"
+          commit-message: "chore(viz): refresh committed map geometry"
+          body: |
+            Regenerated the committed map geometry from its public-domain
+            sources (Natural Earth admin-0 and admin-1, PublicaMundi US states)
+            via `scripts/build_us_map.py`, `scripts/build_world_map.py`, and
+            `scripts/build_subdivision_maps.py`. Only the simplified path
+            artifacts changed; review the map rendering before merging.
+          labels: viz, automated
+          add-paths: |
+            web/us-states.json
+            web/world-countries.json
+            web/subdivisions/*.json

@@ -1,0 +1,26 @@
+# Puglia (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: sgm-lecce
+    name: Società Gestione Multipla (SGM Lecce)
+    country: IT
+    subdivision_code: IT-75
+    subdivision_name: Puglia
+    mdb_id: "1066"
+    is_official: true
+    static_gtfs_url: https://www.sgmlecce.it/images/Servizi_trasparenti/GTFS/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution through Lecce's municipal open data
+      catalog; credit SGM Lecce and the Comune di Lecce.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: http://dati.comune.lecce.it/dataset/trasporto-pubblico-locale
+      terms_url: http://www.opendefinition.org/licenses/cc-by
+      scope: [gtfs_schedule]
+      attribution: SGM Lecce and Comune di Lecce.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

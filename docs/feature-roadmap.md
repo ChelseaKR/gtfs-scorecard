@@ -1,6 +1,6 @@
 # Feature roadmap
 
-Last updated: 2026-07-16
+Last updated: 2026-07-17
 
 This is the ordered delivery list for the next 90 days. It implements the
 proof-first direction in [`product-roadmap.md`](product-roadmap.md) and uses the
@@ -119,10 +119,19 @@ existing surface without changing a grade or adding a service:
   `translations.txt` detection and language filtering, aligned API and CSV
   fields, a visible coverage limitation, mode-aware language, the ungraded
   ferry profile, and the auditable European beta gate.
+- **Shipped 2026-07-17:** the reviewed European depth wave (27 records from
+  the Spain, France, United Kingdom, Germany, and Italy queues; the cohort is
+  now 42 records in 13 countries, with rejections documented), and the
+  interface-localization readiness layer (app string catalog, `en-XA`
+  pseudolocale preview, right-to-left browser check, hardcoded-string and
+  directional-CSS ratchets; ADR 0038).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.
-- **Still steward-gated:** full interface localization and any NeTEx ingestion.
+  Sweden needs Trafiklab API credentials before any record can be reviewed.
+- **Still steward-gated:** full interface localization (a production language
+  needs a named steward; the engineering prerequisites are in place) and any
+  NeTEx ingestion.
 
 ## Not on the ship list
 
