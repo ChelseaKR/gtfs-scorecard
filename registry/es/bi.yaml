@@ -56,3 +56,23 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: bizkaibus
+    name: Bizkaibus
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    mdb_id: "1135"
+    static_gtfs_url: https://baliabideak.bizkaia.eus/Bizkaibus/GTFS/Bizkaibus.zip
+    license_note: >-
+      CC BY 4.0 through Bizkaia's open data portal; credit the Diputación
+      Foral de Bizkaia.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.opendatabizkaia.eus/es/catalogo/bizkaibus
+      terms_url: https://www.opendatabizkaia.eus/es/catalogo/bizkaibus
+      scope: [gtfs_schedule]
+      attribution: Diputación Foral de Bizkaia (Bizkaibus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

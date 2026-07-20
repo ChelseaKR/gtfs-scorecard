@@ -1,0 +1,60 @@
+# Northern Territory (AU) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: nt-darwin-bus
+    name: Northern Territory Public Transport (Darwin)
+    country: AU
+    subdivision_code: AU-NT
+    subdivision_name: Northern Territory
+    mdb_id: "680"
+    is_official: true
+    static_gtfs_url: https://dipl.nt.gov.au/data-feeds/bus-gtfs/google-transit-darwin.zip?v=0.16.0
+    license_note: >-
+      CC BY 4.0; © State of the Northern Territory (Department of
+      Infrastructure, Planning and Logistics). Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      The Darwin urban bus network. The department's data-feeds host now
+      redirects from dipl.nt.gov.au to dli.nt.gov.au; the redirect is followed
+      at fetch time.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dli.nt.gov.au/data/bus-timetable-data-and-geographic-information
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of the Northern Territory (Department of Infrastructure, Planning
+        and Logistics).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: nt-alice-springs-bus
+    name: Northern Territory Public Transport (Alice Springs)
+    country: AU
+    subdivision_code: AU-NT
+    subdivision_name: Northern Territory
+    mdb_id: "683"
+    is_official: true
+    static_gtfs_url: https://dipl.nt.gov.au/data-feeds/bus-gtfs/google-transit-alice-springs.zip?v=0.7.0
+    license_note: >-
+      CC BY 4.0; © State of the Northern Territory (Department of
+      Infrastructure, Planning and Logistics). Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      The Alice Springs urban bus network, published on the same Northern
+      Territory data page as the Darwin feed; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dli.nt.gov.au/data/bus-timetable-data-and-geographic-information
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        State of the Northern Territory (Department of Infrastructure, Planning
+        and Logistics).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

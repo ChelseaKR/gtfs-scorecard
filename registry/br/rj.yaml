@@ -1,0 +1,31 @@
+# Rio de Janeiro (BR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: rio-de-janeiro-transportes
+    name: Rio de Janeiro municipal transport (SMTR)
+    country: BR
+    subdivision_code: BR-RJ
+    subdivision_name: Rio de Janeiro
+    mdb_id: "1791"
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/8ffe62ad3b2f42e49814bf941654ea6c/data
+    license_note: >-
+      CC BY 4.0 through the data.rio open data portal; credit the Prefeitura da
+      Cidade do Rio de Janeiro and the Instituto Pereira Passos.
+    operating_note: >-
+      Rio de Janeiro's municipal bus and BRT network as published by the
+      Secretaria Municipal de Transportes; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.rio/datasets/gtfs-do-rio-de-janeiro/about
+      terms_url: https://www.data.rio/datasets/gtfs-do-rio-de-janeiro/about
+      scope: [gtfs_schedule]
+      attribution: >-
+        Prefeitura da Cidade do Rio de Janeiro / data.rio (Instituto Pereira
+        Passos).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

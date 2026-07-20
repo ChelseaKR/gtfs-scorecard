@@ -28,12 +28,197 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Grow reviewed coverage by 123 records to 1,734 by deepening countries already
+  in the registry. A sixth gtfs-data.jp pass adds 40 first-party Japanese
+  operators across 15 prefectures under CC BY 4.0, CC0, and CC BY 2.1 JP, taking
+  Japan to 225. A United States small and rural pass adds 14 feeds under a
+  confirmable reuse basis: Caltrans DDS California agency feeds (CC BY 4.0) and
+  National Park Service park shuttles and ferries (US Government works). A Canada
+  and Australia pass adds 69, including BC Transit regional systems, Québec exo
+  and RTC networks, Queensland qconnect towns, and Ontario operators such as the
+  TTC and GO Transit. European counts are unchanged. Every record carries a live
+  license check, a current-calendar preflight, and a closed reuse-evidence block;
+  rejections are recorded in `docs/feeds.md`.
+- Raise the archive-shape ceiling for opted-in large feeds. A few national and
+  regional feeds unzip past the standard limits (a national `stop_times.txt` can
+  reach 2.4 GiB), so the standard tier rejected them before the validator ran.
+  These now carry `large_feed: true`, and the large-tier per-entry ceiling rises
+  from 2 GiB to 3 GiB. Verkehrsverbund Rhein-Neckar now scores. The two larger
+  aggregates, the gtfs.de Germany-wide feed and the Swiss national timetable,
+  clear this guard but remain unscored because a separate per-table reader cap
+  still applies (see below).
+- Stop an oversized table from failing a whole feed's score. Scorecard's own
+  reader caps a single table at 1 GiB, and the ungraded ferry profile reads
+  `stop_times.txt` whole; on a national aggregate whose `stop_times.txt` runs to
+  1.9 GiB or more, that raised an error and failed the entire feed. The ferry
+  profile now skips a table it cannot read and reports no profile. This is a
+  partial step: the same aggregates still hit the cap in another whole-table
+  reader (routability), so gtfs.de and the Swiss national timetable stay
+  unscored. Fully scoring national feeds of this size needs a streaming reader,
+  tracked in `docs/follow-ups.md`. The European beta gate stands at 99.2% of its
+  reviewed cohort measured for translation and portable location, not 100%.
+- Grow reviewed coverage by 91 records to 1,609 and reach the European beta
+  gate's 250 reviewed-feed-record threshold. Two more waves: a fifth gtfs-data.jp
+  pass takes Japan from 145 to 185 records, and an eighth European wave adds 51
+  non-UK-led records that lift the European cohort to 251 across 22 countries.
+  France stays the largest single country at 27% and the United Kingdom fell to
+  14%, both under the 40% concentration limit, so the cohort now meets the gate's
+  count, country-spread, and concentration criteria. The European additions lean
+  on France's Licence Ouverte networks and Norway's Entur operators under NLOD
+  2.0; the Netherlands, Romania, and Belgium produced nothing that clears an
+  explicit first-party open license, and those rejections are recorded in
+  `docs/feeds.md`.
+- Add local-zip support to `scorecard try`, so a maintainer can apply the
+  conservative autofix to a copy and rescore original and corrected bytes
+  without uploading either file. Local runs preserve the SHA-256 and state
+  their provenance in the confidence notes.
+- Preserve a machine-readable and narrative Davis–Yolo repair rehearsal with
+  dated source hashes, before/after measurements, explicit unknowns, and the
+  failed first attempt that exposed an autofix mismatch. Agency feed bytes are
+  not redistributed because reuse terms are not stated.
+- Make the conservative route-case autofix clear the validator finding it
+  claims to address by recasing uppercase `route_desc` values as well as
+  `route_long_name`. A local Yolobus before/after rehearsal exposed the prior
+  mismatch: the first corrected copy changed names but left all 15
+  `mixed_case_recommended_field` notices intact.
+- Correct the Unitrans realtime record after its March 2026 move from UmoIQ to
+  Swiftly. The registry and source notes no longer point maintainers at the
+  retired provider; because Unitrans does not publicly document a Swiftly
+  GTFS-Realtime endpoint or credential path, realtime remains explicitly
+  unmeasured and does not affect the grade.
+- Grow reviewed coverage by 95 records to 1,518 through a Japanese deepening and
+  a seventh European wave. Two more passes over the national gtfs-data.jp
+  repository take Japan from 65 to 145 records, going deeper into its 40
+  prefectures with more first-party private bus and rail operators under CC BY
+  4.0, CC0, and CC BY 2.1 JP. The seventh European wave adds 15 non-UK-led
+  records and takes the European cohort from 185 to 200 across 22 countries:
+  Norway joins with eleven county-authority Entur feeds under NLOD 2.0, Slovakia
+  with Bratislava, and Latvia and Plzeň deepen countries already present. The
+  United Kingdom share fell to 17% and France, the largest single country, to
+  20.5%, both well under the 40% concentration limit. Every record carries a live
+  license check, a current-calendar preflight, and a closed reuse-evidence block;
+  rejections are documented in `docs/feeds.md`.
+- Grow reviewed coverage by 64 records to 1,423 across three more parallel waves.
+  A deeper Japanese pass over the national gtfs-data.jp repository adds 38
+  first-party records and takes Japan from 27 to 65 across 40 prefectures, now
+  admitting the CC BY 2.1 JP license alongside CC BY 4.0 and CC0 with the exact
+  version stated in each record. A Transitland Atlas sweep of the regions the
+  Mobility Database is thin in adds the first Malaysian coverage: six data.gov.my
+  records under CC BY 4.0 for KTMB national rail and Prasarana's Rapid networks
+  in Kuala Lumpur, Penang, and Kuantan. A sixth European wave adds 20 non-UK-led
+  records and takes the European cohort to 185 across 20 countries as Bulgaria
+  (Sofia) and Croatia (Zagreb) join and additions in France, Spain, Italy, and
+  Germany open Occitanie and Saxony; no United Kingdom feed was added, so its
+  share fell to 18% and France stays the largest single country at 22%, both
+  under the 40% concentration limit the beta gate sets. Every record carries a
+  live license check, a current-calendar preflight, and a closed reuse-evidence
+  block; rejections are documented in `docs/feeds.md`.
+- Translate the most common untranslated validator notices into plain-language
+  fixes. Every notice was ranked by the number of scored feeds it affects, and
+  the twelve most frequent untranslated codes now carry a curated explanation and
+  a concrete fix rather than an auto-humanized label. The most common of them
+  shows up in about half the scored feeds. Each new entry clears the same
+  readability bars as the existing translations.
+- Grow reviewed coverage by 35 records to 1,359 across three parallel waves.
+  Eighteen official Japanese GTFS-JP feeds from the national gtfs-data.jp
+  repository (one flagship municipal network across eighteen new prefectures,
+  CC BY 4.0 or CC0), a fifth European wave of sixteen non-UK-led feeds that
+  takes the European cohort to 165 records across eighteen countries with the
+  United Kingdom at 20.6% (well under the 40% ceiling) — opening Bavaria,
+  Slovenia, Emilia-Romagna, and a Portuguese CC0 record — and one genuinely-new
+  California agency (SacRT's SCT/Link) after a fail-closed pass confirmed the
+  other untracked US candidates were dead sources already carried via mirrors.
+  Every record carries a live license check, a current-calendar preflight, and
+  a closed reuse-evidence block; rejections are documented in `docs/feeds.md`.
+- Disclose each region's own reviewed-cohort denominator in the finder. When a
+  visitor filters the directory to a country or subdivision, a line beside the
+  location controls states how many reviewed feed records the cohort holds there
+  (for example "19 reviewed feed records in Italy"), read from the directory
+  summary counts already present, so a region is never read against only the
+  US-heavy global denominator. The count is stated as a cohort size, never as a
+  census or a claim of complete coverage. Announced as a text status region, no
+  color-only meaning, mobile-friendly.
+- Let the world coverage map drill down into a country's subdivisions. Selecting
+  a country with committed subdivision geometry swaps the world choropleth for
+  its states, provinces, or prefectures, each shaded by expired-feed share, each announcing
+  its counts in text and filtering the list on selection, with a Back control to
+  the world. Subdivision geometry ships as committed per-country assets
+  (`web/subdivisions/<cc>.json`) generated by `scripts/build_subdivision_maps.py`
+  from public-domain Natural Earth admin-1 data, for the United Kingdom, France,
+  Germany, Spain, Italy, Canada, Australia, New Zealand, Japan, Malaysia, and
+  Brazil; a country without
+  geometry, or a subdivision with none, degrades to the existing chip-and-list
+  behavior. Fully keyboard-navigable and mobile-friendly, with no external map
+  tiles.
+- Wire in the Transitland Atlas as a second feed-discovery source alongside the
+  Mobility Database: `scorecard sync --source transitland` (or `all`) reads the
+  keyless, CC-BY Atlas DMFR registry and emits the same `CatalogFeed` shape, so
+  a Transitland candidate flows through the same proposer, deduplication, and
+  curator review as a Mobility Database feed. It is strongest exactly where the
+  Mobility Database is thin. DMFR carries no ISO country, so a candidate's
+  location is left blank for review rather than guessed; key-gated feeds are
+  flagged and skipped as usual.
+- Add a large-feed tier so official national and metropolitan feeds that exceed
+  the standard ingestion caps can be scored. A record opts in with
+  `large_feed: true`; the tier streams the download to disk with a bounded
+  memory footprint (`net.safe_download`), raises the size ceilings to a bounded
+  larger level (512 MiB download, 2 GiB single entry, 4 GiB total), and gives
+  the validator an explicit heap ceiling (`SCORECARD_LARGE_FEED_HEAP`, default
+  6g). The zip-bomb shape guards are unchanged. First feeds on the tier: Israel's
+  national feed, Melbourne (PTV), HSL Helsinki, Wiener Linien, and Carris
+  Metropolitana — the latter two were already tracked but failing the daily run
+  as over-cap until now. Verified end to end on HSL, whose `stop_times.txt`
+  expands to ~1 GiB.
+- Add the first official coverage outside Europe, North America, and Oceania
+  (global coverage roadmap Phases 2-3): nine reviewed first-party open-data feed
+  records — Belo Horizonte's two networks and Rio de Janeiro (Brazil, CC BY),
+  the Tokyo Toei bus and subway networks and Donan Bus (Japan, CC BY via ODPT
+  and the Hokkaido platform), the İzmir metro and tram (Turkey, CC BY 4.0), and
+  the OTP Namtang Bangkok feed (Thailand, CC BY 4.0). Israel's national feed is
+  size-deferred to the large-feed shard; Santiago and Bogotá are deferred on
+  rotating dated URLs; and every African candidate is held for the roadmap's
+  partnership-gated phase because all catalog-listed African GTFS is
+  community- or survey-produced.
+- Publish a comprehensive multi-region global coverage roadmap
+  (`docs/global-coverage-roadmap.md`) that sequences expansion by
+  defensibility: official openly licensed feeds first, a partnership-gated
+  phase for the Global South and informal transit that this project will not
+  curate without a named local steward, and cross-cutting enablers (large-feed
+  sharding, beta-gate generalization, alternative-catalog ingestion). Coverage
+  remains explicitly not a success measure.
+- Add the first Oceania coverage wave: eleven reviewed Australian and New
+  Zealand government open-data feed records (six Queensland TransLink networks
+  including Brisbane, Transperth in Perth, the Northern Territory's Darwin and
+  Alice Springs networks, and Auckland Transport and Baybus in New Zealand).
+  Sydney, Melbourne, Canberra, Tasmania, and Metlink Wellington are deferred
+  with recorded reasons (size cap, registration wall, bot block, share-alike,
+  or unstated license).
+- Add a world coverage choropleth to the app overview: every country with
+  tracked feed records is shaded by its expired-feed share using the same
+  contrast-gated quintile tokens and text legend as the United States map,
+  with each country announcing its counts in text and filtering the list like
+  its chip. The geometry ships as a committed 119 KB asset generated by
+  `scripts/build_world_map.py` (public-domain Natural Earth source); the map
+  degrades silently to the chip grid when the asset is unavailable.
+- Add two gate-progress charts to the status page's European beta section in
+  the shared route-bar grammar: reviewed records as a share of the release
+  threshold, and per-country cohort shares beside the concentration ceiling.
+  Thresholds come from the published criteria payload, never a second copy.
+- Add a third 75-record European depth wave from every remaining non-Swedish
+  queue, reviewed in parallel: twenty in France, twelve each in Italy and
+  Finland, eleven in the United Kingdom, nine in Spain, five in Ireland, four in
+  Poland, one in Portugal, and Czechia's first two records. The reviewed
+  cohort reaches 148 records in 17 countries alongside the parallel Nordic-Baltic and Central Europe waves, with the United Kingdom at 23%.
+  Documented rejections include seventeen French ODbL datasets, size-capped
+  archives in Austria, Portugal, and Finland, Belgium's source-gated
+  operators, Estonia's broken register endpoint, and community rebuilds on
+  third-party hosts refused on identity grounds.
 - Add a second 21-record European depth wave: twelve more Great Britain
   Passenger-platform operators, five Baden-Württemberg network feeds from
   NVBW's portal, three French networks including the Yeu-Continent ferry and
   a combined realtime stream for Cap Cotentin, and Trenitalia's regional rail
   resource from Regione Toscana. The reviewed cohort reaches 63 records in 13
-  countries with Great Britain at 36.5% of the cohort; new rejections
+  countries with the United Kingdom at 36.5% of the cohort; new rejections
   (unstated licenses, uncovered hosts, an unreachable National Access Point
   listing, ODbL with unread special conditions) are documented alongside the
   first wave's.
@@ -42,7 +227,7 @@ the declared public surface).
   open-data platform, seven in Spain, four in Italy, four in Germany (a new
   registry country), and two in France, including two feeds with public
   realtime endpoints. The reviewed cohort now spans 42 feed records in 13
-  countries with Great Britain the largest at 26%, still explicitly below the
+  countries with the United Kingdom the largest at 26%, still explicitly below the
   250-record beta gate; rejected candidates and their reasons are documented
   in `docs/global-expansion.md`.
 - Externalize the interactive app's shell copy (loading, fetch errors, the
@@ -54,11 +239,15 @@ the declared public surface).
   CSS (ADR 0038). English remains the only production interface language and
   the language-steward gate is unchanged.
 - Add nine source-, reuse-, and identity-reviewed European feed records across
-  Belgium, Switzerland, Denmark, Estonia, Spain, Finland, Great Britain,
+  Belgium, Switzerland, Denmark, Estonia, Spain, Finland, the United Kingdom,
   Poland, and Portugal. The bounded cohort now spans 15 feed records in 12
   countries while remaining explicitly below the 250-record beta gate.
 
 ### Changed
+- Record the large-feed tier decision in `docs/decisions/0039-large-feed-tier.md`:
+  a per-record `large_feed` opt-in raises only the raw size ceilings to a bounded
+  larger level and streams the download to disk, while every zip-bomb shape guard
+  stays unchanged.
 - Broaden the European canaries beyond a bus-first view with metro, tram,
   national multimodal, ferry, and GTFS-Flex demand-responsive service, while
   keeping multi-operator aggregates counted as one feed record.
@@ -68,6 +257,13 @@ the declared public surface).
   default raw-profile comparison cohort.
 
 ### Fixed
+- Restore keyboard focus to the country a user drilled from when they leave a
+  subdivision map via Back. The focus-return guard tested `HTMLElement`, but SVG
+  paths are `SVGElement`, so focus silently fell to the page body (a WCAG 2.4.3
+  focus-order regression); the e2e test now asserts focus returns.
+- Score Wiener Linien and HSL Helsinki, which the daily run had been rejecting
+  as over the single-entry cap since they were added, by moving them to the new
+  large-feed tier.
 - Read an otherwise unambiguous GTFS export through a deterministic flat view
   when every file is under one root folder or a filename has surrounding
   whitespace. Ambiguous layouts and post-trim collisions remain hard errors.

@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results
+.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -67,6 +67,17 @@ tiles:
 # Just the aggregated GeoJSONL, no tippecanoe needed (for inspecting the input).
 tiles-geojsonl:
 	cd pipeline && uv run python scripts/build_national_pmtiles.py --geojsonl-only
+
+# Regenerate the committed SVG map geometry the web app colors at runtime:
+# web/us-states.json, web/world-countries.json, and web/subdivisions/<cc>.json.
+# Each script re-downloads its public-domain source (Natural Earth admin-0/
+# admin-1, PublicaMundi US states), so this needs network access. NOT part of
+# `verify` or the daily build. The .github/workflows/geometry.yml dispatch does
+# the same and opens a PR when the geometry changed.
+map-geometry:
+	uv run --project pipeline python scripts/build_us_map.py
+	uv run --project pipeline python scripts/build_world_map.py
+	uv run --project pipeline python scripts/build_subdivision_maps.py
 
 # ADVISORY mutation testing of the scoring math (src/scorecard_pipeline/score.py,
 # metrics.py, and rt.py: the grade ladder, fix-priority tiers, deduction

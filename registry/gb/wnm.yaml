@@ -1,0 +1,28 @@
+# Windsor and Maidenhead (GB) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: thames-valley-buses
+    name: Thames Valley Buses
+    country: GB
+    subdivision_code: GB-WNM
+    subdivision_name: Windsor and Maidenhead
+    mdb_id: "2913"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/courtney/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Thames Valley Buses as the source and do not imply
+      endorsement.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/courtney
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Thames Valley Buses; contains public sector information licensed under
+        the Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

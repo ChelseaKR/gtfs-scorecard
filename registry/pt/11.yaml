@@ -35,21 +35,48 @@ agencies:
     subdivision_name: Lisboa
     mdb_id: "2027"
     is_official: true
+    large_feed: true
     static_gtfs_url: https://api.carrismetropolitana.pt/gtfs
     license_note: >-
-      CC BY 4.0; the operator publishes the feed and licence in its official
-      GitHub repository and API. Credit Carris Metropolitana.
+      CC BY 4.0 through Carris Metropolitana's official GTFS repository; credit
+      Carris Metropolitana. Derived measurements by GTFS Scorecard.
     operating_note: >-
-      One metropolitan bus feed covering Carris Metropolitana service across
-      the Lisboa metropolitan area's four operating lots. Counted as one feed
-      record.
+      The Lisbon metropolitan area bus network. Its largest table expands past
+      the standard single-entry ceiling, so it is scored on the large-feed tier;
+      counted as one feed record.
     reuse_evidence:
       decision: approved
       source_kind: provider
       provider_source_url: https://github.com/carrismetropolitana/gtfs
-      terms_url: https://github.com/carrismetropolitana/gtfs
+      terms_url: https://creativecommons.org/licenses/by/4.0/
       scope: [gtfs_schedule]
-      attribution: Carris Metropolitana (Transportes Metropolitanos de Lisboa).
+      attribution: Carris Metropolitana.
       reviewed_by: ChelseaKR
-      reviewed_on: "2026-07-17"
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: metro-lisboa
+    name: Metropolitano de Lisboa
+    country: PT
+    subdivision_code: PT-11
+    subdivision_name: Lisboa
+    is_official: true
+    static_gtfs_url: https://dados.gov.pt/api/1/datasets/r/e7e8ef72-9cee-43a0-b141-656ced144394
+    license_note: >-
+      CC BY 4.0 as recorded on Portugal's national open data portal
+      dados.gov.pt, published by Metropolitano de Lisboa; reuse including
+      commercial reuse is permitted with attribution.
+    operating_note: >-
+      The Lisbon metro network. The download uses the portal's stable
+      latest-version redirect; the underlying dated file URL rotates on each
+      release.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dados.gov.pt/datasets/gtfs-do-metropolitano-de-lisboa/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Metropolitano de Lisboa, E.P.E.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
       identity_reviewed: true

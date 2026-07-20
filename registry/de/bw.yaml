@@ -222,6 +222,7 @@ agencies:
     subdivision_name: Baden-Württemberg
     mdb_id: "1173"
     is_official: false
+    large_feed: true
     static_gtfs_url: https://geoportal.vrn.de/services/sharing/rest/content/items/4ec4b1d131eb46a6bb8e216ce9b90eff/data
     license_note: >-
       Datenlizenz Deutschland - Namensnennung 2.0 per the dataset record on
@@ -241,4 +242,219 @@ agencies:
       attribution: Verkehrsverbund Rhein-Neckar GmbH.
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: naldo-verkehrsverbund
+    name: naldo (Verkehrsverbund Neckar-Alb-Donau)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "771"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_ohne_liniennetz/naldo.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. This export ships without route shapes.
+    operating_note: >-
+      One association feed for the Neckar-Alb-Donau region's operators; counted
+      as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: Datensatz der NVBW GmbH.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: vpe-pforzheim-enzkreis
+    name: Verkehrsverbund Pforzheim-Enzkreis (VPE)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "1085"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vpe.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Pforzheim and Enzkreis area's operators;
+      counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: hnv-heilbronn
+    name: Heilbronner·Hohenloher·Haller Nahverkehr (HNV)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "783"
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/hnv.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Heilbronn, Hohenlohe, and Schwäbisch Hall
+      area's operators; counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: rvf-freiburg
+    name: Regio-Verkehrsverbund Freiburg (RVF)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/rvf.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Freiburg region's operators; counted as one
+      feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: vhb-hegau-bodensee
+    name: Verkehrsverbund Hegau-Bodensee (VHB)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "914"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vhb.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Hegau and Bodensee area's operators; counted
+      as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: vgc-calw
+    name: Verkehrsgesellschaft Bäderkreis Calw (VGC)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    mdb_id: "906"
+    is_official: true
+    static_gtfs_url: https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vgc.zip
+    license_note: >-
+      Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data
+      portal; mark reuse as a dataset of NVBW GmbH with a link back to the
+      portal. Route shapes derive from OpenStreetMap and carry the
+      OpenStreetMap contributors credit.
+    operating_note: >-
+      One association feed for the Landkreis Calw's operators, of which VOLZ is
+      one; counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
+      terms_url: https://www.nvbw.de/open-data/lizenz
+      scope: [gtfs_schedule]
+      attribution: >-
+        Datensatz der NVBW GmbH; route shapes include OpenStreetMap
+        contributors.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: vvs-stuttgart
+    name: Verkehrs- und Tarifverbund Stuttgart (VVS)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    is_official: true
+    static_gtfs_url: https://download.vvs.de/gtfs_realtime.zip
+    license_note: >-
+      CC BY 4.0 as stated on MobiData BW, the Baden-Württemberg state mobility
+      open data portal run by NVBW; reuse including commercial reuse is
+      permitted with attribution to VVS.
+    operating_note: >-
+      The published file name says realtime, but the download is the VVS GTFS
+      Schedule feed with route shapes. One regional feed record for the
+      Stuttgart tariff association.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://mobidata-bw.de/dataset/soll-fahrplandaten-vvs
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Verkehrs- und Tarifverbund Stuttgart (VVS); published on MobiData BW
+        (NVBW).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: swu-ulm
+    name: SWU Verkehr (Ulm/Neu-Ulm)
+    country: DE
+    subdivision_code: DE-BW
+    subdivision_name: Baden-Württemberg
+    is_official: true
+    static_gtfs_url: https://gtfs.swu.de/daten/SWU.zip
+    license_note: >-
+      CC0 1.0 (public domain dedication) as stated on MobiData BW, the
+      Baden-Württemberg state mobility open data portal run by NVBW; free
+      reuse without conditions.
+    operating_note: >-
+      The municipal operator's own GTFS Schedule feed for Ulm and Neu-Ulm tram
+      and bus. SWU operates within the DING tariff association, but this is a
+      distinct operator-level feed under a different licence.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://mobidata-bw.de/dataset/opnv-fahrplandaten-der-swu
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        SWU Verkehr GmbH (Stadtwerke Ulm/Neu-Ulm).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
       identity_reviewed: true

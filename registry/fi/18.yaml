@@ -10,6 +10,10 @@ agencies:
     subdivision_name: Uusimaa
     mdb_id: "865"
     is_official: true
+    # Its stop_times table expands to roughly 1 GiB, past the standard 512 MiB
+    # single-entry ceiling, so it is scored on the large-feed tier (streamed
+    # fetch, raised bounded caps). Without this flag the daily run rejects it.
+    large_feed: true
     static_gtfs_url: https://dev.hsl.fi/gtfs/hsl.zip
     license_note: >-
       CC BY 4.0 per the Helsinki Region Infoshare dataset that lists this exact

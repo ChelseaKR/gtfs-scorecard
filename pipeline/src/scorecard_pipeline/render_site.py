@@ -7587,6 +7587,65 @@ def _global_coverage_value(value: object, unit: str = "") -> str:
     return str(value)
 
 
+def _global_coverage_charts(doc: dict[str, Any], feed_count: object, criteria: list[Any]) -> str:
+    """Two chart views of the same gate numbers, in the shared route-bar
+    grammar: progress toward the record threshold, and the per-country balance
+    the concentration ceiling constrains. Every value stays visible as text;
+    the thresholds come from the published criteria, never a second hardcoded
+    copy."""
+
+    def threshold_for(key: str) -> float | None:
+        for criterion in criteria:
+            if isinstance(criterion, dict) and criterion.get("key") == key:
+                threshold = criterion.get("threshold")
+                if isinstance(threshold, (int, float)) and not isinstance(threshold, bool):
+                    return float(threshold)
+        return None
+
+    charts_html = ""
+    record_threshold = threshold_for("reviewed_feed_records")
+    if isinstance(feed_count, int) and record_threshold:
+        share = min(100.0, round(feed_count / record_threshold * 100, 1))
+        charts_html += _service_bar_chart(
+            [("Reviewed feed records", share, f"{feed_count:,} of {int(record_threshold):,}")],
+            title="Progress toward the record threshold",
+            note="Reviewed European feed records as a share of the release threshold.",
+            css_class="coverage-progress",
+        )
+    raw_countries = doc.get("countries")
+    country_rows = [
+        row
+        for row in (raw_countries if isinstance(raw_countries, list) else [])
+        if isinstance(row, dict)
+        and isinstance(row.get("feed_record_count"), int)
+        and row.get("feed_record_count", 0) > 0
+    ]
+    if isinstance(feed_count, int) and feed_count > 0 and country_rows:
+        ceiling = threshold_for("largest_country_share")
+        ceiling_note = (
+            f"No single country may hold more than {ceiling:g}% of the cohort."
+            if ceiling
+            else "Shares of the reviewed cohort by country."
+        )
+        bars = [
+            (
+                str(row.get("country_name") or row.get("country_code") or "Unknown"),
+                round(row["feed_record_count"] / feed_count * 100, 1),
+                f"{row['feed_record_count']:,} records"
+                if row["feed_record_count"] != 1
+                else "1 record",
+            )
+            for row in sorted(country_rows, key=lambda r: -int(r.get("feed_record_count", 0)))
+        ]
+        charts_html += _service_bar_chart(
+            bars,
+            title="Reviewed records by country",
+            note=ceiling_note,
+            css_class="coverage-countries",
+        )
+    return charts_html
+
+
 def _global_coverage_section(payload: dict[str, Any] | None) -> str:
     """Render the public view of the evidence-gated European beta contract.
 
@@ -7619,6 +7678,8 @@ def _global_coverage_section(payload: dict[str, Any] | None) -> str:
 
     raw_criteria = doc.get("criteria")
     criteria = raw_criteria if isinstance(raw_criteria, list) else []
+    charts_html = _global_coverage_charts(doc, feed_count, criteria)
+
     criterion_rows: list[str] = []
     operator_labels = {">=": "at least", "<=": "at most", "=": "equals"}
     for criterion in criteria:
@@ -7674,7 +7735,7 @@ def _global_coverage_section(payload: dict[str, Any] | None) -> str:
     <p>This is a bounded European <abbr title="General Transit Feed Specification">GTFS</abbr>
     Schedule beta gate based on feed records with reviewed reuse evidence. It is not a claim
     of coverage for all European public transport, and it does not assess NeTEx coverage.</p>
-
+    {charts_html}
     <section aria-labelledby="global-criteria-h"><h3 class="section-title" id="global-criteria-h">Readiness criteria</h3>
     <div class="table-wrap"><table>
       <caption>Current European beta measures compared with release thresholds</caption>

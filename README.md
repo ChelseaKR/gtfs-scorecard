@@ -19,7 +19,7 @@ manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains more than 1,180 curated
+District). Beyond the pilots, the registry contains more than 1,700 curated
 feed records, mostly in the United States and Canada, plus reviewed canaries
 across Europe, Asia-Pacific, and South America. The repository
 keeps the generated corpus registry-bounded, with more than 1,100 numeric
@@ -36,6 +36,43 @@ completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/s
 scorecard. Realtime quality is scored only when a usable realtime feed is
 configured and measured; otherwise it is shown neutrally as not yet measured.
 Any agency can be added through `registry/intake.yaml`.
+
+## Quickstart
+
+Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
+(the validator jar is downloaded automatically on first run).
+
+```sh
+cd pipeline
+uv sync
+uv run scorecard run --all
+```
+
+This fetches today's snapshot of every configured feed, validates and scores it,
+and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
+`latest.json` and a cross-agency `index.json`. Re-running a day is
+idempotent. Checks (from the repo root; mirrors the CI gate):
+
+```sh
+make verify
+```
+
+### Run the web app locally
+
+The frontend reads the JSON artifacts over HTTP. Serve the repo root and open
+the page through `http://`, not by double-clicking the file:
+
+```sh
+cd ..            # repo root, so data/artifacts/ is reachable
+python3 -m http.server 8000
+# then open http://localhost:8000/web/index.html
+```
+
+Opening `web/index.html` as a `file://` URL leaves the page stuck on
+"Loading scorecards…": browsers block ES module loading and `fetch` over
+`file://`, so the app never runs. Any static server works; the only requirement
+is that `data/artifacts/` sits one level above `web/`, which the
+`../data/artifacts` fallback in `web/src/app.js` expects.
 
 ## What an agency gets
 
@@ -100,43 +137,6 @@ census of a country or region. The live evidence and readiness result for a
 bounded European GTFS beta are on the
 [status page](https://gtfsscorecard.org/status/#global-coverage); the release
 gate and scope limits are in [docs/global-expansion.md](docs/global-expansion.md).
-
-## Quickstart
-
-Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
-(the validator jar is downloaded automatically on first run).
-
-```sh
-cd pipeline
-uv sync
-uv run scorecard run --all
-```
-
-This fetches today's snapshot of every configured feed, validates and scores it,
-and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
-`latest.json` and a cross-agency `index.json`. Re-running a day is
-idempotent. Checks (from the repo root; mirrors the CI gate):
-
-```sh
-make verify
-```
-
-### Run the web app locally
-
-The frontend reads the JSON artifacts over HTTP. Serve the repo root and open
-the page through `http://`, not by double-clicking the file:
-
-```sh
-cd ..            # repo root, so data/artifacts/ is reachable
-python3 -m http.server 8000
-# then open http://localhost:8000/web/index.html
-```
-
-Opening `web/index.html` as a `file://` URL leaves the page stuck on
-"Loading scorecards…": browsers block ES module loading and `fetch` over
-`file://`, so the app never runs. Any static server works; the only requirement
-is that `data/artifacts/` sits one level above `web/`, which the
-`../data/artifacts` fallback in `web/src/app.js` expects.
 
 ## Use it in CI
 
@@ -207,8 +207,8 @@ current deployment status.
 
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: the manifest-backed [`registry`](registry/README.md) now
-carries more than 1,180 curated feed records, mostly across the US and Canada,
-with a 42-record reviewed European cohort across 13 countries.
+carries more than 1,700 curated feed records, mostly across the US and Canada,
+with a 148-record reviewed European cohort across 17 countries.
 It now includes a geographically diverse reviewed canary cohort, scored daily
 (a 2026-07 dedupe pass removed ~350 records that duplicated an already-listed
 feed).
@@ -301,14 +301,14 @@ docs/           feeds, rubric, roadmap, api, fixes/ (KB), decisions/ (ADRs)
 data/           raw snapshots (ignored) and published artifacts (committed)
 ```
 
-## For Claude Code
+## Guardrails
 
-`CLAUDE.md` is the build spec: product framing, rubric, and quality bar. The
-original four build phases have shipped; current direction lives in the
-roadmaps and [docs/ideation/](docs/ideation/). Hard rules: every metric ships
-with its plain-language explanation; accessibility (WCAG 2.2 AAA) is
-non-negotiable in the web app; agencies without realtime are shown
-neutrally, never shamed.
+Three rules hold everywhere in this project: every metric is published with a
+plain-language explanation of what it means; accessibility (WCAG 2.2 AAA) is
+non-negotiable in the web app; and an agency without a realtime feed is shown
+neutrally, never shamed. Contributor and agent-facing build rules live in
+`CLAUDE.md`; current direction beyond the shipped roadmap is worked in the
+open as labeled notes in [docs/ideation/](docs/ideation/).
 
 ## Maintainer
 

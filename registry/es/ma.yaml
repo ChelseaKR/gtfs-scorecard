@@ -1,0 +1,55 @@
+# Málaga (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: metro-malaga
+    name: Metro de Málaga
+    country: ES
+    subdivision_code: ES-MA
+    subdivision_name: Málaga
+    mdb_id: "1017"
+    is_official: true
+    static_gtfs_url: https://metromalaga.es/GTFS/GTFS_METRO_MALAGA.zip
+    license_note: >-
+      Spain's National Access Point (MITRAMS) license; reuse and derived works
+      are permitted with MITRAMS cited and "Powered by MITRAMS" shown. The
+      operator's own license file is no longer published, so the National
+      Access Point record is the license source; the operator's archive is
+      the open download.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://nap.transportes.gob.es/Files/Detail/1296
+      terms_url: https://nap.transportes.gob.es/licencia-datos
+      scope: [gtfs_schedule]
+      attribution: >-
+        Metro de Málaga; Powered by MITRAMS (Ministerio de Transportes y
+        Movilidad Sostenible).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: emt-malaga
+    name: Empresa Malagueña de Transportes (EMT Málaga)
+    country: ES
+    subdivision_code: ES-MA
+    subdivision_name: Málaga
+    mdb_id: "2212"
+    is_official: true
+    static_gtfs_url: https://gtfs.emtmalaga.es/GTFS/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through Málaga's open data portal; commercial reuse and
+      adaptation are permitted with attribution to EMT Málaga.
+    operating_note: >-
+      Málaga's city bus network published on the municipal open data portal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datosabiertos.malaga.eu/dataset/lineas-y-paradas-autobuses-emt
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Empresa Malagueña de Transportes (EMT); Ayuntamiento de Málaga.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

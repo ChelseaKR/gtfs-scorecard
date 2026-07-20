@@ -13,12 +13,15 @@ and are labelled that way in the public contract.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Collection
 from typing import Any
 
 from .fares import detect_fares
-from .gtfs import read_tables
+from .gtfs import TableTooLargeError, read_tables
 from .modes import route_type_mode
+
+log = logging.getLogger(__name__)
 
 _BOARDABLE_LOCATION_TYPES = {"", "0"}
 _STATED_ENUM_VALUES = {"1", "2"}
@@ -161,11 +164,21 @@ def ferry_profile_from_zip(
     fare_free: bool = False,
     configured_realtime_kinds: Collection[str] = (),
 ) -> dict[str, Any] | None:
-    """Read the ferry-relevant GTFS tables and return the ungraded profile."""
-    tables = read_tables(
-        gtfs_zip_path,
-        ["routes.txt", "trips.txt", "stop_times.txt", "stops.txt"],
-    )
+    """Read the ferry-relevant GTFS tables and return the ungraded profile.
+
+    Returns None when there is no ferry profile to report, including the case
+    where a table is too large to read: a national aggregate's stop_times.txt
+    can exceed the reader's per-table memory cap, and the ferry profile is a
+    descriptive add-on, so it is skipped rather than failing the whole score.
+    """
+    try:
+        tables = read_tables(
+            gtfs_zip_path,
+            ["routes.txt", "trips.txt", "stop_times.txt", "stops.txt"],
+        )
+    except TableTooLargeError as exc:
+        log.warning("ferry profile skipped: %s", exc)
+        return None
     fares = detect_fares(gtfs_zip_path).to_details()
     return build_ferry_profile(
         tables["routes.txt"],

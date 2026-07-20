@@ -1,0 +1,32 @@
+# Victoria (AU) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: public-transport-victoria
+    name: Public Transport Victoria (PTV)
+    country: AU
+    subdivision_code: AU-VIC
+    subdivision_name: Victoria
+    mdb_id: "3340"
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://opendata.transport.vic.gov.au/dataset/3f4e292e-7f8a-4ffe-831f-1953be0fe448/resource/fb152201-859f-4882-9206-b768060b50ad/download/gtfs.zip
+    license_note: >-
+      CC BY 4.0; credit the Department of Transport and Planning (Victoria).
+      Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One metropolitan and regional network export for Victoria (Melbourne
+      train, tram, and bus plus regional services). Its compressed download
+      exceeds the standard ceiling, so it is scored on the large-feed tier;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.transport.vic.gov.au/dataset/gtfs-schedule
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Department of Transport and Planning (Victoria).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

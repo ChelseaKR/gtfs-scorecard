@@ -1,0 +1,25 @@
+# Campania (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: anm-napoli
+    name: Azienda Napoletana Mobilità (ANM)
+    country: IT
+    subdivision_code: IT-72
+    subdivision_name: Campania
+    mdb_id: "893"
+    static_gtfs_url: https://dati.comune.napoli.it/dataset/75007df9-fdb2-427c-ad81-d5e084946ebc/resource/8b17b44d-1afc-421a-881b-857fa756ec03/download/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through Naples' municipal open data portal; credit Azienda
+      Napoletana Mobilità and the Comune di Napoli.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.comune.napoli.it/dataset/75007df9-fdb2-427c-ad81-d5e084946ebc
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Azienda Napoletana Mobilità and Comune di Napoli.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

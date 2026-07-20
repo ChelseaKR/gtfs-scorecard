@@ -3,7 +3,7 @@ operational commands the rollout roadmap (docs/roadmap.md) needs.
 
 scorecard run --all
 scorecard run --agency unitrans [--date 2026-06-11] [--force-fetch]
-scorecard try <gtfs-zip-url> [--country CA] [--name "Agency"]  # ad-hoc, unpublished
+scorecard try <gtfs-zip-url-or-path> [--country CA] [--name "Agency"]  # ad-hoc, unpublished
 scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
@@ -34,6 +34,7 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import sys
 import time
 import urllib.parse
@@ -44,7 +45,7 @@ from .agencies import load_agencies
 from .completeness import completeness
 from .config import AGENCIES, Agency, raw_dir, repo_root
 from .constants_export import GRADE_RANK
-from .fetch import fetch_static
+from .fetch import FetchResult, fetch_static, prepare_reader_archive
 from .gtfs import read_feed_dates
 from .metrics import CategoryResult, correctness, freshness
 from .publish import build_artifact, publish
@@ -189,6 +190,7 @@ def run_agency(  # noqa: C901
                     fetched.path,
                     report_dir,
                     country_code=agency.country,
+                    large_feed=agency.large_feed,
                 )
             report = parse_report(report_path)
         store_cached(
@@ -343,30 +345,63 @@ def run_agency(  # noqa: C901
 
 
 def run_adhoc(
-    url: str,
+    source: str,
     name: str | None,
     date: dt.date,
     country: str = "US",
 ) -> dict[str, Any]:
-    """Score an arbitrary GTFS Schedule feed without registering or publishing.
+    """Score an arbitrary GTFS Schedule URL or local zip without publishing.
 
-    For live, exploratory use: point it at any feed zip and get the same grade,
-    category scores, and plain-language fixes a tracked agency gets. Nothing is
-    written to the public artifacts or index; the download and validator output
-    land in the gitignored data/raw cache. Realtime is not sampled (an ad-hoc
-    URL carries no RT endpoints), so that category shows as not yet measured.
+    For live, exploratory use: point it at a public feed or a local corrected
+    copy and get the same grade, category scores, and plain-language fixes a
+    tracked agency gets. Nothing is written to the public artifacts or index;
+    scratch bytes and validator output land in the gitignored data/raw cache.
+    Realtime is not sampled because an ad-hoc source carries no RT endpoints.
     """
     country_code = validator_country_code(country)
-    label = name or urllib.parse.urlparse(url).netloc or "Ad-hoc feed"
-    agency = Agency(id="_adhoc", name=label, static_gtfs_url=url, country=country_code)
+    candidate = Path(source).expanduser()
+    is_local = candidate.is_file()
+    parsed = urllib.parse.urlparse(source)
+    if not is_local and parsed.scheme not in {"http", "https"}:
+        raise FileNotFoundError(f"local GTFS zip not found: {candidate}")
+    source_ref = candidate.resolve().as_uri() if is_local else source
+    label = name or (candidate.stem if is_local else parsed.netloc) or "Ad-hoc feed"
+    agency = Agency(id="_adhoc", name=label, static_gtfs_url=source_ref, country=country_code)
     # Keep the public artifact identity stable while isolating scratch files by
     # URL and validator country. Several local/worker invocations can score
     # different feeds at once; a shared `_adhoc/<date>` path lets one download
     # replace another between fetch and validation.
-    scratch_key = f"{country_code}\0{url}".encode()
+    scratch_key = f"{country_code}\0{source_ref}".encode()
     scratch_id = f"_adhoc-{hashlib.sha256(scratch_key).hexdigest()[:16]}"
     scratch_agency = dataclasses.replace(agency, id=scratch_id)
-    fetched = fetch_static(scratch_agency, date, force=True)
+    if is_local:
+        local_source = candidate.resolve()
+        scratch_dir = raw_dir() / scratch_id / date.isoformat()
+        scratch_dir.mkdir(parents=True, exist_ok=True)
+        scratch_path = scratch_dir / "gtfs.zip"
+        shutil.copyfile(local_source, scratch_path)
+        digest = hashlib.sha256()
+        with scratch_path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1 << 20), b""):
+                digest.update(chunk)
+        reader = prepare_reader_archive(scratch_path)
+        fetched = FetchResult(
+            agency_id=scratch_id,
+            path=scratch_path,
+            url=source_ref,
+            fetched_date=date,
+            sha256=digest.hexdigest(),
+            size_bytes=scratch_path.stat().st_size,
+            reused=False,
+            source="local",
+            final_url=source_ref,
+            user_agent="local-file",
+            max_attempts=0,
+            reader_path=reader.path if reader.normalized else None,
+            reader_archive_normalized=reader.normalized,
+        )
+    else:
+        fetched = fetch_static(scratch_agency, date, force=True)
     reader_path = fetched.reader_view_path
     report_dir = raw_dir() / scratch_id / date.isoformat() / "validator"
     report = parse_report(run_validator(fetched.path, report_dir, country_code=country_code))
@@ -644,10 +679,19 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         render_yaml,
     )
 
-    source = args.catalog or DEFAULT_CATALOG_URL
-    is_url = source.startswith(("http://", "https://"))
-    csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
-    feeds = parse_catalog(csv_text)
+    which = getattr(args, "source", "mobilitydb")
+    feeds = []
+    if which in ("mobilitydb", "all"):
+        source = args.catalog or DEFAULT_CATALOG_URL
+        is_url = source.startswith(("http://", "https://"))
+        csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
+        feeds.extend(parse_catalog(csv_text))
+    if which in ("transitland", "all"):
+        from .transitland import fetch_feeds
+
+        transitland_feeds = fetch_feeds()
+        log.info("Transitland Atlas contributed %d feed rows.", len(transitland_feeds))
+        feeds.extend(transitland_feeds)
     proposals = propose_agencies(
         feeds,
         country=args.country,
@@ -1786,6 +1830,7 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
         return 0
 
     swept = 0
+    swept_ids: list[str] = []
     changes: list[dict[str, Any]] = []
     # Bounded to the registry: re-stamping an unlisted S3-hydrated directory
     # keeps a delisted feed looking alive (docs/listing-policy.md).
@@ -1801,10 +1846,14 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
             continue
         new_artifact, summary = resweep(artifact, today)
         swept += 1
+        swept_ids.append(str(summary["id"]))
         if summary["grade_changed"]:
             changes.append(summary)
         if args.apply:
             publish(new_artifact)
+
+    if args.changed_out:
+        Path(args.changed_out).write_text("".join(f"{agency_id}\n" for agency_id in swept_ids))
 
     for c in sorted(changes, key=lambda c: (c["new_grade"], c["id"] or "")):
         log.info(
@@ -2322,8 +2371,8 @@ def main(argv: list[str] | None = None) -> int:
         "invocations, then `scorecard run-summary build` turns the log into a summary)",
     )
 
-    adhoc = sub.add_parser("try", help="score any GTFS feed URL ad-hoc (not published)")
-    adhoc.add_argument("url", help="direct link to a GTFS Schedule zip")
+    adhoc = sub.add_parser("try", help="score any GTFS feed URL or local zip (not published)")
+    adhoc.add_argument("url", help="direct link or local path to a GTFS Schedule zip")
     adhoc.add_argument("--name", help="agency name to show (default: the feed host)")
     adhoc.add_argument(
         "--country",
@@ -2439,7 +2488,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
-    sync = sub.add_parser("sync", help="propose registry entries from the Mobility Database")
+    sync = sub.add_parser("sync", help="propose registry entries from a feed catalog")
+    sync.add_argument(
+        "--source",
+        choices=("mobilitydb", "transitland", "all"),
+        default="mobilitydb",
+        help="discovery source: the Mobility Database (default), the Transitland "
+        "Atlas, or both concatenated (dedup handles overlap)",
+    )
     sync.add_argument("--catalog", help="catalog CSV path or URL (default: Mobility Database)")
     sync.add_argument("--country", help="ISO country code filter, e.g. US")
     sync.add_argument("--state", help="state/subdivision filter, e.g. California")
@@ -2779,6 +2835,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     sweep.add_argument(
         "--apply", action="store_true", help="publish refreshed artifacts (default: report only)"
+    )
+    sweep.add_argument(
+        "--changed-out",
+        help="write ids whose artifacts were refreshed (one per line)",
     )
 
     liveness = sub.add_parser(

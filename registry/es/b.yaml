@@ -1,0 +1,52 @@
+# Barcelona (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tram-barcelona-tbx
+    name: TRAM Barcelona (Trambaix)
+    country: ES
+    subdivision_code: ES-B
+    subdivision_name: Barcelona [Barcelona]
+    mdb_id: "1003"
+    is_official: true
+    organization_id: tram-barcelona
+    feed_variant: Trambaix network
+    static_gtfs_url: https://opendata.tram.cat/GTFS/zip/TBX.zip
+    license_note: >-
+      TRAM General Conditions permitting reuse with attribution.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.tram.cat/
+      terms_url: https://opendata.tram.cat/assets/pdf/condicions_en.pdf
+      scope: [gtfs_schedule]
+      attribution: Powered by TRAM Barcelona.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: tram-barcelona-tbs
+    name: TRAM Barcelona (Trambesòs)
+    country: ES
+    subdivision_code: ES-B
+    subdivision_name: Barcelona [Barcelona]
+    mdb_id: "1004"
+    is_official: true
+    organization_id: tram-barcelona
+    feed_variant: Trambesòs network
+    static_gtfs_url: https://opendata.tram.cat/GTFS/zip/TBS.zip
+    license_note: >-
+      TRAM General Conditions permitting reuse with attribution.
+    operating_note: >-
+      A distinct published feed from the same platform as the Trambaix
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.tram.cat/
+      terms_url: https://opendata.tram.cat/assets/pdf/condicions_en.pdf
+      scope: [gtfs_schedule]
+      attribution: Powered by TRAM Barcelona.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

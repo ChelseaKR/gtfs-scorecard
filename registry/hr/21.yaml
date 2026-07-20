@@ -1,0 +1,30 @@
+# Grad Zagreb (HR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: zet-zagreb
+    name: Zagrebački električni tramvaj (ZET)
+    country: HR
+    subdivision_code: HR-21
+    subdivision_name: Grad Zagreb
+    static_gtfs_url: https://www.zet.hr/gtfs-scheduled/latest
+    license_note: >-
+      Open Licence of the Republic of Croatia (Otvorena dozvola); reuse
+      including commercial reuse is permitted with mandatory attribution to
+      ZET as the source.
+    operating_note: >-
+      Croatia's first reviewed feed record. The download is ZET's own live
+      GTFS endpoint; the Mobility Database's ZET row is deprecated and points
+      at a defunct aggregator, so no mdb_id is pinned.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.zet.hr/odredbe/datoteke-u-gtfs-formatu/669
+      terms_url: https://data.gov.hr/otvorena-dozvola
+      scope: [gtfs_schedule]
+      attribution: >-
+        Zagrebački električni tramvaj d.o.o.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

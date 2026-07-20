@@ -24,9 +24,22 @@ def _parse_gtfs_date(value: str) -> dt.date | None:
         return None
 
 
-# Cap a single uncompressed table to guard against zip bombs in untrusted feeds.
-# Real GTFS tables (even a large stop_times.txt) are comfortably under this.
+# Cap a single uncompressed table to guard against zip bombs in untrusted feeds
+# and to bound the memory a table costs when read whole into Python. Most GTFS
+# tables are comfortably under this, but a national aggregate's stop_times.txt
+# can exceed it (the Swiss national timetable's is 2.4 GiB). Readers that hit
+# the cap raise TableTooLargeError so a caller can skip that one table rather
+# than fail the whole score.
 MAX_MEMBER_BYTES = 1024 * 1024 * 1024
+
+
+class TableTooLargeError(ValueError):
+    """A single GTFS table exceeds the reader's per-table memory cap.
+
+    Subclasses ValueError so existing ``except ValueError`` callers keep
+    catching it; a caller that specifically wants to skip an oversized table
+    (rather than fail) can catch this narrower type.
+    """
 
 
 def _read_table(zf: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
@@ -35,7 +48,9 @@ def _read_table(zf: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
     except KeyError:
         return []
     if info.file_size > MAX_MEMBER_BYTES:
-        raise ValueError(f"{name} is {info.file_size} bytes uncompressed, over the safety cap")
+        raise TableTooLargeError(
+            f"{name} is {info.file_size} bytes uncompressed, over the safety cap"
+        )
     text = zf.read(name).decode("utf-8-sig", errors="replace")
     return list(csv.DictReader(io.StringIO(text)))
 

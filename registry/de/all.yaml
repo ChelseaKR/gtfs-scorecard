@@ -10,6 +10,7 @@ agencies:
     organization_id: gtfs-de
     feed_variant: Local transit (nv_free)
     is_official: false
+    large_feed: true
     static_gtfs_url: https://download.gtfs.de/germany/nv_free/latest.zip
     license_note: >-
       CC BY 4.0 per the gtfs.de feeds page, which links the license deed;
@@ -55,4 +56,30 @@ agencies:
       attribution: "Source: gtfs.de, based on DELFI e.V. data."
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: gtfs-de-long-distance-rail
+    name: Germany long-distance rail aggregate (gtfs.de)
+    country: DE
+    mdb_id: "768"
+    organization_id: gtfs-de
+    feed_variant: Long-distance rail (fv_free)
+    is_official: false
+    static_gtfs_url: https://download.gtfs.de/germany/fv_free/latest.zip
+    license_note: >-
+      CC BY 4.0 per the gtfs.de feeds page, which links the license deed;
+      credit gtfs.de as the source. The free base feeds are generated daily
+      from DELFI e.V. data.
+    operating_note: >-
+      One nationwide long-distance rail aggregate (ICE, IC, EC, and comparable
+      long-distance services); counted as one feed record, not a
+      distinct-agency count. The free feed covers a rolling 30-day horizon.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://gtfs.de/de/feeds/de_fv/
+      terms_url: https://gtfs.de/de/feeds/
+      scope: [gtfs_schedule]
+      attribution: "Source: gtfs.de, based on DELFI e.V. data."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
       identity_reviewed: true

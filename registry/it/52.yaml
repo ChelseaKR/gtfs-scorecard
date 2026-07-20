@@ -27,3 +27,104 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: toremar
+    name: Toremar (Toscana island ferries)
+    country: IT
+    subdivision_code: IT-52
+    subdivision_name: Toscana
+    mdb_id: "1068"
+    is_official: true
+    static_gtfs_url: http://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1/resource/56539a5a-e0be-49eb-b3ac-052a42ad0de0/download/toremar.gtfs
+    license_note: >-
+      Creative Commons Attribution through Regione Toscana's open data
+      catalog; credit Regione Toscana and Toremar.
+    operating_note: >-
+      The maritime resource of the region's multi-file public transport
+      dataset, covering Toremar's island ferry service; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      terms_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      scope: [gtfs_schedule]
+      attribution: Regione Toscana and Toremar.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: gest-firenze
+    name: GEST — Tramvia di Firenze
+    country: IT
+    subdivision_code: IT-52
+    subdivision_name: Toscana
+    is_official: true
+    static_gtfs_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1/resource/1f62d551-65f4-49f8-9a99-e19b02077be3/download/gest.gtfs
+    license_note: >-
+      Creative Commons Attribution through Regione Toscana's open data
+      catalog; credit Regione Toscana as the source.
+    operating_note: >-
+      One resource of Regione Toscana's multi-file public transport dataset,
+      covering the Florence tramway (lines T1 and T2); counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      terms_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      scope: [gtfs_schedule]
+      attribution: >-
+        Regione Toscana.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tft-arezzo
+    name: TFT — Trasporto Ferroviario Toscano (Arezzo)
+    country: IT
+    subdivision_code: IT-52
+    subdivision_name: Toscana
+    is_official: true
+    static_gtfs_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1/resource/59aeacbc-99ee-410b-ac1e-622b5574a666/download/tft.gtfs
+    license_note: >-
+      Creative Commons Attribution through Regione Toscana's open data
+      catalog; credit Regione Toscana as the source.
+    operating_note: >-
+      One resource of Regione Toscana's multi-file public transport dataset,
+      covering the Arezzo-area TFT rail and connecting bus service; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      terms_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      scope: [gtfs_schedule]
+      attribution: >-
+        Regione Toscana.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: autolinee-toscane
+    name: Autolinee Toscane (at)
+    country: IT
+    subdivision_code: IT-52
+    subdivision_name: Toscana
+    is_official: true
+    static_gtfs_url: https://regionetoscana.smartregion.toscana.it/mobility/artifacts/gtfs
+    license_note: >-
+      Creative Commons Attribution through Regione Toscana's open data
+      catalog; credit Regione Toscana as the source.
+    operating_note: >-
+      The Tuscan regional bus operator (urban and interurban across Florence
+      and the Tuscan provinces). The download is Regione Toscana's
+      continuously built GTFS artifact for the operator; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      terms_url: https://dati.toscana.it/dataset/8bb8f8fe-fe7d-41d0-90dc-49f2456180d1
+      scope: [gtfs_schedule]
+      attribution: >-
+        Regione Toscana.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

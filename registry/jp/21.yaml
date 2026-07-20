@@ -1,0 +1,297 @@
+# Gifu (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Discovered through the Transitland Atlas (docs/feeds.md, "Transitland-sourced
+# wave"): an official municipal GTFS-JP feed published as open data through the
+# GTFS Data Repository (gtfs-data.jp, operated by AIGID) and absent from the
+# Mobility Database.
+agencies:
+  - id: toki-community-bus
+    name: Toki City Community Bus (土岐市民バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokicity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Toki City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Toki City.
+    operating_note: >-
+      Toki City's community bus (市民バス) network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: gifu-city-community-bus
+    name: Gifu City Community Bus (岐阜市コミュニティバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gifucity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Gifu City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Gifu City.
+    operating_note: >-
+      Gifu City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gifucity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gifu City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: akechi-railway
+    name: Akechi Railway (明知鉄道)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/aketetsu/feeds/akechirailway/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Akechi Railway Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Akechi Railway
+      Co., Ltd.
+    operating_note: >-
+      The Akechi Line between Ena and Akechi in eastern Gifu; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/aketetsu.akechirailway
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Akechi Railway Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kitaena-kotsu
+    name: Kitaena Kotsu (北恵那交通)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kitaena/feeds/kitaena/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kitaena Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Kitaena Kotsu
+      Co., Ltd.
+    operating_note: >-
+      Kitaena Kotsu operates route buses around Nakatsugawa in eastern Gifu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kitaena.kitaena
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kitaena Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tono-railway-ena-bus
+    name: Tono Railway Ena Bus (東濃鉄道 恵那営業所)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tohtetsu/feeds/tohtetsu_ena/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tono Railway Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Tono Railway
+      Co., Ltd.
+    operating_note: >-
+      The Ena-depot route buses of Tono Railway (Tohtetsu Bus) in eastern
+      Gifu; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tohtetsu.tohtetsu_ena
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tono Railway Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: gujo-city-bus
+    name: Gujo City Bus (郡上市自主運行バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gujocity/feeds/citybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Gujo City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Gujo City.
+    operating_note: >-
+      Gujo City's self-operated bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gujocity.citybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gujo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: hachiman-kanko-bus
+    name: Hachiman Kanko Bus (八幡観光バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hachikanbus/feeds/hachimanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Hachiman Kanko Bus through
+      the GTFS Data Repository (gtfs-data.jp). Credit Hachiman Kanko Bus.
+    operating_note: >-
+      A private operator running the Hachiman bus network in Gujo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hachikanbus.hachimanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hachiman Kanko Bus. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ogaki-meihan-kintetsu-bus
+    name: Ogaki City Bus (Meihan Kintetsu) (大垣市 名阪近鉄バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ogakicity/feeds/meihankintetsubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ogaki City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Ogaki City.
+    operating_note: >-
+      Ogaki City routes operated under contract by Meihan Kintetsu Bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ogakicity.meihankintetsubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ogaki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shirotori-kotsu
+    name: Shirotori Kotsu (白鳥交通)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shirotori-kotsu/feeds/shirotorikotsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shirotori Kotsu
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shirotori
+      Kotsu.
+    operating_note: >-
+      A private bus operator based in Gujo, Gifu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shirotori-kotsu.shirotorikotsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shirotori Kotsu. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tajimi-city-kikyo-bus
+    name: Tajimi City Kikyo Bus (多治見市ききょうバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tajimicity/feeds/kikyobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tajimi City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tajimi City.
+    operating_note: >-
+      Tajimi City's Kikyo Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tajimicity.kikyobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tajimi City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: gero-city-gero-bus
+    name: Gero City Gero Bus (下呂市げろバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gerocity/feeds/gerobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Gero City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Gero City.
+    operating_note: >-
+      Gero City's Gero Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gerocity.gerobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gero City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nakatsugawa-city-community-bus
+    name: Nakatsugawa City Community Bus (中津川市コミュニティバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nakatsugawacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nakatsugawa City
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      Nakatsugawa City.
+    operating_note: >-
+      Nakatsugawa City's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nakatsugawacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nakatsugawa City. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

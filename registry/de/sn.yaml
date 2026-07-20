@@ -1,0 +1,29 @@
+# Sachsen (DE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: mdv-mitteldeutscher
+    name: Mitteldeutscher Verkehrsverbund (MDV)
+    country: DE
+    subdivision_code: DE-SN
+    subdivision_name: Sachsen
+    mdb_id: "2360"
+    static_gtfs_url: https://www.mdv.de/media/file/c2422660
+    license_note: >-
+      CC BY 4.0 (DE) per MDV's open data terms; commercial reuse and
+      adaptation are permitted with attribution to MDV.
+    operating_note: >-
+      Saxony's first reviewed feed record. The MDV association network around
+      Leipzig and Halle, published as stop-level GTFS.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.mdv.de/downloads/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mitteldeutscher Verkehrsverbund GmbH (MDV).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

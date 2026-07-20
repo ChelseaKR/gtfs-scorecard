@@ -1,0 +1,130 @@
+# Ibaraki (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: yuki-city-loop-bus
+    name: Yuki City Loop Bus (結城市巡回バス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yukicity/feeds/junkaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Yuki City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Yuki City's circulating community bus (巡回バス) in western Ibaraki; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yukicity.junkaibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yuki City. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tsuchiura-city-tsuchimaru-bus
+    name: Tsuchiura City Tsuchimaru Bus (土浦市つちまるバス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsuchiuracity/feeds/tsuchimarubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsuchiura City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Tsuchiura
+      City.
+    operating_note: >-
+      Tsuchiura City's Tsuchimaru Bus community network (つちまるバス); a
+      second Ibaraki feed record distinct from Yuki City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsuchiuracity.tsuchimarubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsuchiura City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ryugasaki-city-community-bus
+    name: Ryugasaki City Community Bus (龍ケ崎市コミュニティバス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ryugasakicity/feeds/Ryugasakishi-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ryugasaki City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ryugasaki City.
+    operating_note: >-
+      Ryugasaki City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ryugasakicity.Ryugasakishi-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ryugasaki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: otone-kotsu
+    name: Otone Kotsu (大利根交通)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/otonekotu/feeds/otonekotubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Otone Kotsu Jidosha Co.,
+      Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Otone Kotsu
+      Jidosha Co., Ltd.
+    operating_note: >-
+      Otone Kotsu operates route buses in western Ibaraki.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/otonekotu.otonekotubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Otone Kotsu Jidosha Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: namegata-city-bus
+    name: Namegata City Bus (行方市営路線バス)
+    country: JP
+    subdivision_code: JP-08
+    subdivision_name: Ibaraki
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/namegatacity/feeds/bus-namegata-ibaraki-jp/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Namegata City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Namegata City.
+    operating_note: >-
+      Namegata City's municipal route bus in eastern Ibaraki.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/namegatacity.bus-namegata-ibaraki-jp
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Namegata City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
