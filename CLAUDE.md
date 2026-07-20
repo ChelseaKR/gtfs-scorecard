@@ -177,3 +177,14 @@ openings; do not over-polish.
 2. Pilot GTFS-RT — Yolobus publishes three open RT feeds and the Realtime category scores them. Unitrans moved passenger predictions from UmoIQ to Swiftly in March 2026, but no public Swiftly GTFS-RT endpoint is documented; realtime remains unmeasured and nothing is deducted.
 3. Validator runtime — Actions-cron with a sharded matrix; see `docs/decisions/0001-validator-runtime.md`.
 4. Caltrans/Cal-ITP guidance — cited throughout `docs/rubric.md` and mapped in `docs/crosswalk.md`.
+
+## Agent entrypoint (moved from README "For Claude Code", 2026-07-19)
+
+This file is the build spec: product framing, rubric, and quality bar. The
+original four build phases have shipped; current direction lives in the
+roadmaps and `docs/ideation/`. Hard rules: every metric ships with its
+plain-language explanation; accessibility (WCAG 2.2 AAA) is non-negotiable in
+the web app; agencies without realtime are shown neutrally, never shamed.
+(Per DOCUMENTATION-STANDARD §9 [DOC-18], agent-facing instructions live here,
+not in the README; the README states the same guardrails for visitors under
+"Guardrails".)
