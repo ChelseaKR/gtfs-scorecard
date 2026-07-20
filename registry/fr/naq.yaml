@@ -1,0 +1,75 @@
+# Nouvelle-Aquitaine (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tbm-bordeaux-metropole
+    name: Transports Bordeaux Métropole (TBM)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    mdb_id: "2622"
+    is_official: true
+    static_gtfs_url: https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+    license_note: >-
+      Licence Ouverte 1.0 declared by Bordeaux Métropole on France's National
+      Access Point. The download and realtime URLs carry the publisher's
+      public open-data key as published there; it is not a private credential.
+    rt_urls:
+      trip_updates: https://bdx.mecatran.com/utw/ws/gtfsfeed/realtime/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+      vehicle_positions: https://bdx.mecatran.com/utw/ws/gtfsfeed/vehicles/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+      service_alerts: https://bdx.mecatran.com/utw/ws/gtfsfeed/alerts/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offres-de-services-bus-tram-et-scolaire-au-format-gtfs-gtfs-rt-siri-lite-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence
+      scope: [gtfs_schedule]
+      attribution: Bordeaux Métropole.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: carabus-royan
+    name: Cara'bus (Royan)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    mdb_id: "2842"
+    static_gtfs_url: https://data.agglo-royan.fr/dataset/9b761974-a195-4e33-91b7-ecee3b368016/resource/d4915904-ebd0-43cf-9b35-fbfc04ce91fd/download/gtfs_20250613_092554_tdra.zip
+    license_note: >-
+      Licence Ouverte 1.0 declared by the Communauté d'Agglomération Royan
+      Atlantique on France's National Access Point. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-gtfs-du-reseau-de-transport-public-cara-bus
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence
+      scope: [gtfs_schedule]
+      attribution: Communauté d'Agglomération Royan Atlantique.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: idelis-pau
+    name: Idelis (Pau)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83632/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Pau Béarn Pyrénées Mobilités (réseau
+      Idelis) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fichier-des-donnees-theoriques-du-reseau-idelis-au-format-gtfs
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Pau Béarn Pyrénées Mobilités (réseau Idelis).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

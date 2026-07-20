@@ -31,6 +31,7 @@ import {
   VALIDATOR_RULES_PAGE,
 } from "./generated/constants.js";
 import { compareText, formatDate, formatLanguageName, formatNumber } from "./locale.js";
+import { initStrings, t } from "./i18n.js";
 
 /** Candidate locations for published artifacts. A configured CDN base
  *  (web/src/config.js) is tried first, then the deployed-site and repo
@@ -154,7 +155,7 @@ async function fetchJson(path) {
     }
   }
   const detail = lastError instanceof Error ? ` (${lastError.message})` : "";
-  throw new Error(`Could not load ${path}${detail}.`);
+  throw new Error(t("app_fetch_error", { path, detail }));
 }
 
 /** Return the URL only if it is http(s); otherwise "#". Blocks javascript:/data:
@@ -485,6 +486,21 @@ function expiredQuintile(share) {
   return 4;
 }
 
+/** Plain-language coverage label for one choropleth area: how many feeds it
+ *  covers and how many have expired, carried in text so neither count depends
+ *  on the fill color. Reads "Osaka: 3 feeds, 1 expired (33%)", or
+ *  "Osaka: 3 feeds, none expired" when every feed is current. The state, world,
+ *  and subdivision maps share it, so the fill shows the expired share while the
+ *  label always states the raw counts the color cannot.
+ *  @param {string} name @param {number} agencies @param {number} expired
+ *  @returns {string} */
+function coverageLabel(name, agencies, expired) {
+  const noun = agencies === 1 ? "feed" : "feeds";
+  if (!expired) return `${name}: ${agencies} ${noun}, none expired`;
+  const pct = Math.round((expired / agencies) * 100);
+  return `${name}: ${agencies} ${noun}, ${expired} expired (${pct}%)`;
+}
+
 /** Build the US choropleth SVG from the projected state paths and the per-state
  *  summary rows. States with no published feed records render faint and inert.
  *  @param {{viewBox: string, states: Record<string,string>}} mapData
@@ -496,10 +512,8 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
       if (!row || !row.agencies) {
         return `<path d="${d}" class="us-state us-empty" aria-hidden="true"></path>`;
       }
-      const pct = Math.round((row.expired / row.agencies) * 100);
       const q = expiredQuintile(row.expired / row.agencies);
-      const noun = row.agencies === 1 ? "feed" : "feeds";
-      const label = `${name}: ${row.agencies} ${noun}, ${pct}% of feeds expired`;
+      const label = coverageLabel(name, row.agencies, row.expired);
       const subdivision = subdivisionCodes[name] || "";
       if (portableLocations && !subdivision) {
         return `<path d="${escAttr(d)}" class="us-state q${q}" aria-hidden="true"><title>${esc(label)}</title></path>`;
@@ -524,6 +538,109 @@ function buildMapSvg(mapData, byState, subdivisionCodes = {}, portableLocations 
       ${paths}
     </svg>
     <p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
+}
+
+/** Build the world choropleth SVG from projected country paths and the summary
+ *  country rows. Reuses the state-map fill classes and quintiles, so the same
+ *  contrast-gated tokens and text legend carry the meaning; countries with no
+ *  feed records render faint and inert.
+ *  @param {{viewBox: string, countries: Record<string,string>}} mapData
+ *  @param {Record<string, any>} byCountry @returns {string} */
+function buildWorldMapSvg(mapData, byCountry) {
+  const paths = Object.entries(mapData.countries)
+    .map(([code, d]) => {
+      const row = byCountry[code];
+      if (!row || !row.agencies) {
+        return `<path d="${d}" class="us-state us-empty" aria-hidden="true"></path>`;
+      }
+      const q = expiredQuintile(row.expired / row.agencies);
+      const label = coverageLabel(row.country_name || code, row.agencies, row.expired);
+      return `<path d="${escAttr(d)}" class="us-state q${q}" data-map-country="${escAttr(code)}"
+        tabindex="0" role="button" aria-pressed="false"
+        aria-label="${escAttr(label)} — filter to this country"><title>${esc(label)}</title></path>`;
+    })
+    .join("");
+  const legend = [
+    [0, "none expired"],
+    [1, "under 10%"],
+    [2, "10–25%"],
+    [3, "25–40%"],
+    [4, "40% or more"],
+  ]
+    .map(([q, lab]) => `<span class="map-key"><span class="map-swatch q${q}"></span>${lab}</span>`)
+    .join("");
+  return `<svg class="us-map-svg" viewBox="${mapData.viewBox}" role="group"
+      aria-label="World map; each country with tracked GTFS feeds is shaded by the share of those feeds that have expired, and selecting a country filters the list below.">
+      ${paths}
+    </svg>
+    <p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
+}
+
+/** The shared five-bucket legend markup for any coverage choropleth. */
+function expiredLegendHtml() {
+  const legend = [
+    [0, "none expired"],
+    [1, "under 10%"],
+    [2, "10–25%"],
+    [3, "25–40%"],
+    [4, "40% or more"],
+  ]
+    .map(([q, lab]) => `<span class="map-key"><span class="map-swatch q${q}"></span>${lab}</span>`)
+    .join("");
+  return `<p class="map-legend"><span class="map-key-lab">Share of feeds expired:</span> ${legend}</p>`;
+}
+
+/** Build a country's subdivision choropleth, the drill-down level below the
+ *  world map. Each subdivision is shaded by its expired-feed share exactly like
+ *  the country and state maps, announces its counts in text, and filters the
+ *  list on selection. A back control returns to the world view. Subdivisions
+ *  with no tracked feeds (or with no matching geometry) render faint and inert,
+ *  so a partial geometry match degrades gracefully rather than hiding the level.
+ *  @param {{viewBox: string, country: string, subdivisions: Record<string,string>}} mapData
+ *  @param {any[]} subRows @param {string} countryName @returns {string} */
+function buildSubdivisionMapSvg(mapData, subRows, countryName) {
+  const byCode = {};
+  for (const row of subRows) byCode[row.subdivision_code] = row;
+  let shadedAreas = 0;
+  let shadedFeeds = 0;
+  const paths = Object.entries(mapData.subdivisions)
+    .map(([code, d]) => {
+      const row = byCode[code];
+      if (!row || !row.agencies) {
+        return `<path d="${escAttr(d)}" class="us-state us-empty" aria-hidden="true"></path>`;
+      }
+      shadedAreas += 1;
+      shadedFeeds += Number(row.agencies) || 0;
+      const q = expiredQuintile(row.expired / row.agencies);
+      const name = row.subdivision_name || code;
+      const label = coverageLabel(name, row.agencies, row.expired);
+      return `<path d="${escAttr(d)}" class="us-state q${q}"
+        data-map-subdivision="${escAttr(code)}" data-map-country="${escAttr(mapData.country)}"
+        tabindex="0" role="button" aria-pressed="false"
+        aria-label="${escAttr(label)} — filter to this area"><title>${esc(label)}</title></path>`;
+    })
+    .join("");
+  // A visible coverage readout beside the country name: how many feeds this
+  // drill-down covers and across how many areas, so the depth of coverage is
+  // legible without hovering a path or reading the shading. Omitted when the
+  // committed geometry shades nothing, which keeps a bare "0 feeds" off-screen.
+  const feedNoun = shadedFeeds === 1 ? "feed" : "feeds";
+  const areaNoun = shadedAreas === 1 ? "area" : "areas";
+  const coverageReadout = shadedAreas
+    ? `<span class="map-drill-count">${shadedFeeds} ${feedNoun} in ${shadedAreas} ${areaNoun}</span>`
+    : "";
+  return `<div class="map-drill-head">
+      <button type="button" class="map-back" data-map-back="1" aria-label="Back to the world map">
+        <span aria-hidden="true">←</span> World</button>
+      <span class="map-drill-title"><bdi>${esc(countryName)}</bdi></span>
+      ${coverageReadout}
+    </div>
+    <svg class="us-map-svg" viewBox="${mapData.viewBox}" role="group"
+      aria-label="Map of ${escAttr(countryName)}; each area is shaded by the share of its tracked GTFS feeds that have expired, and selecting an area filters the list below.">
+      ${paths}
+    </svg>
+    ${expiredLegendHtml()}
+    <p class="map-note">Color shows the share of feeds in an area that have expired. Each area lists its feed count in its label, and areas with no tracked feed stay unshaded.</p>`;
 }
 
 /** Portable country controls when the directory exposes the location contract.
@@ -559,7 +676,8 @@ function locationControlsHtml(countries, states) {
     )
     .join("");
   return `<div class="country-grid" role="group" aria-label="Filter scorecards by country">
-      ${countryChips}</div><div class="us-map" id="us-map" hidden></div>
+      ${countryChips}</div><div class="us-map" id="world-map"></div>
+      <div class="us-map" id="us-map" hidden></div>
       <div class="location-groups"></div>`;
 }
 
@@ -825,6 +943,7 @@ function renderOverview(directory) {
     <section class="state-browse reveal" aria-labelledby="locations-h">
       <h2 class="section-title" id="locations-h">Browse by location</h2>
       ${locationControlsHtml(countries, s.states || [])}
+      <p class="region-coverage fineprint" id="region-coverage" role="status" aria-live="polite" hidden></p>
     </section>
 
     <section class="feature-match-board reveal" aria-labelledby="feature-match-h" data-active="false">
@@ -897,6 +1016,8 @@ function setupOverview(agencies, total, summary) {
   const legacyStateBtns = /** @type {HTMLElement[]} */ (Array.from(main.querySelectorAll(".legacy-location")));
   const locationGroups = /** @type {HTMLElement | null} */ (main.querySelector(".location-groups"));
   const mapHost = /** @type {HTMLElement | null} */ (main.querySelector("#us-map"));
+  const regionCoverage = /** @type {HTMLElement | null} */ (main.querySelector("#region-coverage"));
+  let lastRegionHtml = "";
   const myLink = /** @type {HTMLElement} */ (main.querySelector("#my-agencies"));
 
   // Deep-linkable filters: prefer portable country/subdivision keys while still
@@ -1240,6 +1361,7 @@ function setupOverview(agencies, total, summary) {
   // native button pressed states in sync. Only the selected country's
   // subdivision buttons are mounted, keeping the worldwide directory compact.
   let mapPaths = /** @type {HTMLElement[]} */ ([]);
+  let worldPaths = /** @type {HTMLElement[]} */ ([]);
   let renderedSubdivisionCountry = "";
   function renderSelectedCountrySubdivisions() {
     if (!locationGroups || !portableLocations) return;
@@ -1287,8 +1409,46 @@ function setupOverview(agencies, total, summary) {
       );
     }
   }
+  // The reviewed-cohort size for the selected country or subdivision, disclosed
+  // beside the location filter so no regional cohort is read as a census. The
+  // count is the tracked feed records for that place (directory.summary carries
+  // it), never a claim of complete coverage. "" when no country is selected.
+  function regionCoverageHtml() {
+    if (locationFilter.country === "all") return "";
+    const country = countries.find((row) => (row.country_code || "") === locationFilter.country);
+    if (!country) return "";
+    const countryName = country.country_name || locationFilter.country;
+    let count = Number(country.agencies) || 0;
+    let place = countryName;
+    let scope = "this country";
+    if (locationFilter.subdivision !== "all") {
+      const sub = (country.subdivisions || []).find(
+        (row) => (row.subdivision_code || UNLOCATED_SUBDIVISION) === locationFilter.subdivision
+      );
+      if (!sub) return "";
+      count = Number(sub.agencies) || 0;
+      place = `${sub.subdivision_name || "Unlocated"}, ${countryName}`;
+      scope = "this area";
+    }
+    const noun = count === 1 ? "reviewed feed record" : "reviewed feed records";
+    const verb = count === 1 ? "is" : "are";
+    return (
+      `${formatNumber(count)} ${noun} in <bdi>${esc(place)}</bdi> ${verb} tracked here. ` +
+      `That is the size of the cohort for ${scope}, not a census of its transit.`
+    );
+  }
+  function updateRegionCoverage() {
+    if (!regionCoverage) return;
+    const html = regionCoverageHtml();
+    if (html !== lastRegionHtml) {
+      lastRegionHtml = html;
+      regionCoverage.innerHTML = html;
+    }
+    regionCoverage.hidden = !html;
+  }
   function syncLocationUI() {
     renderSelectedCountrySubdivisions();
+    updateRegionCoverage();
     for (const button of countryBtns) {
       button.setAttribute("aria-pressed", String(button.dataset.country === locationFilter.country));
     }
@@ -1307,6 +1467,15 @@ function setupOverview(agencies, total, summary) {
     }
     if (mapHost?.dataset.loaded === "true") {
       mapHost.hidden = portableLocations && locationFilter.country !== "US";
+    }
+    for (const path of worldPaths) {
+      const selected = path.dataset.mapSubdivision
+        ? locationFilter.subdivision !== "all" &&
+          path.dataset.mapSubdivision === locationFilter.subdivision &&
+          path.dataset.mapCountry === locationFilter.country
+        : path.dataset.mapCountry === locationFilter.country;
+      path.classList.toggle("selected", selected);
+      path.setAttribute("aria-pressed", String(selected));
     }
     for (const path of mapPaths) {
       const selected = portableLocations
@@ -1378,6 +1547,109 @@ function setupOverview(agencies, total, summary) {
   }
   clear.addEventListener("click", resetFilters);
   resetBtn.addEventListener("click", resetFilters);
+
+  // Mount the world choropleth as progressive enhancement over the country
+  // chips (omitted when web/world-countries.json can't load), and let a country
+  // that has committed subdivision geometry drill down into its states or
+  // provinces. Selecting a country filters exactly like its chip; drilling in is
+  // an additional view, and a Back control returns to the world. Cities are the
+  // agencies themselves, reached through the filtered list and the /map/ page.
+  (async function mountWorldMap() {
+    const host = /** @type {HTMLElement | null} */ (main.querySelector("#world-map"));
+    if (!host || !portableLocations) return;
+    let worldData;
+    try {
+      const resp = await fetch(new URL("../world-countries.json", location.href));
+      if (!resp.ok) return;
+      worldData = await resp.json();
+    } catch {
+      return;
+    }
+    const byCountry = {};
+    for (const row of countries) byCountry[row.country_code || ""] = row;
+    const subGeoCache = /** @type {Record<string, any>} */ ({});
+
+    /** Load a country's subdivision geometry once, or null if it has none. */
+    async function subdivisionGeometry(code) {
+      const cc = (code || "").toLowerCase();
+      if (cc in subGeoCache) return subGeoCache[cc];
+      let geo = null;
+      try {
+        const resp = await fetch(new URL(`../subdivisions/${cc}.json`, location.href));
+        if (resp.ok) geo = await resp.json();
+      } catch {
+        geo = null;
+      }
+      subGeoCache[cc] = geo;
+      return geo;
+    }
+
+    function wireWorldPaths() {
+      worldPaths = /** @type {HTMLElement[]} */ (
+        Array.from(host.querySelectorAll("path[data-map-country]"))
+      );
+      for (const p of worldPaths) {
+        const go = () => enterCountry(p.dataset.mapCountry || "");
+        p.addEventListener("click", go);
+        p.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            go();
+          }
+        });
+      }
+    }
+
+    function renderWorld() {
+      host.innerHTML = buildWorldMapSvg(worldData, byCountry);
+      wireWorldPaths();
+      syncLocationUI();
+    }
+
+    function renderCountry(cc, geo, countryRow) {
+      const rows = (countryRow && countryRow.subdivisions) || [];
+      host.innerHTML = buildSubdivisionMapSvg(geo, rows, (countryRow && countryRow.country_name) || cc);
+      worldPaths = /** @type {HTMLElement[]} */ (
+        Array.from(host.querySelectorAll("path[data-map-subdivision]"))
+      );
+      for (const p of worldPaths) {
+        const go = () => selectSubdivision(p.dataset.mapSubdivision || "", p.dataset.mapCountry || cc);
+        p.addEventListener("click", go);
+        p.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            go();
+          }
+        });
+      }
+      const back = host.querySelector("[data-map-back]");
+      if (back) {
+        back.addEventListener("click", () => {
+          renderWorld();
+          // SVG <path> elements are SVGElement, not HTMLElement, so returning
+          // focus to the country the user drilled from must test SVGElement
+          // (as the drill-in focus below does). Testing HTMLElement here was
+          // dead code that dropped keyboard focus to <body> on every Back.
+          const world = host.querySelector(`path[data-map-country="${cc}"]`);
+          if (world instanceof SVGElement) world.focus();
+        });
+      }
+      syncLocationUI();
+      const first = host.querySelector("path[data-map-subdivision]");
+      if (first instanceof SVGElement) first.focus();
+    }
+
+    async function enterCountry(cc) {
+      selectCountry(cc);
+      const geo = await subdivisionGeometry(cc);
+      if (locationFilter.country !== cc) return; // selection toggled back off
+      const countryRow = countries.find((row) => (row.country_code || "") === cc);
+      if (geo && countryRow) renderCountry(cc, geo, countryRow);
+    }
+
+    host.dataset.loaded = "true";
+    renderWorld();
+  })();
 
   // Mount the choropleth as progressive enhancement: the chip grid already
   // covers browse-by-state, so if the geometry asset can't load the map is just
@@ -2978,19 +3250,19 @@ function badgeSection(agencyId) {
 /** @param {string} message */
 function renderError(message) {
   main.innerHTML = `<div class="error-box" role="alert">
-    <h1 class="page-title">We couldn't load this scorecard.</h1>
+    <h1 class="page-title">${esc(t("app_error_title"))}</h1>
     <p>${esc(message)}</p>
-    <p><a class="backlink" href="#/">Back to all agencies</a></p>
+    <p><a class="backlink" href="#/">${esc(t("app_back_all_agencies"))}</a></p>
   </div>`;
 }
 
 /** @param {string} agencyId */
 function renderNotFound(agencyId) {
-  document.title = "Agency not found — GTFS Scorecard";
+  document.title = t("app_not_found_doc_title");
   main.innerHTML = `<div class="error-box" role="alert">
-    <h1 class="page-title">No scorecard for “${esc(agencyId)}”.</h1>
-    <p>That agency isn't tracked yet, or the link is out of date.</p>
-    <p><a class="backlink" href="#/">Back to all agencies</a></p>
+    <h1 class="page-title">${esc(t("app_not_found_title", { agency: agencyId }))}</h1>
+    <p>${esc(t("app_not_found_body"))}</p>
+    <p><a class="backlink" href="#/">${esc(t("app_back_all_agencies"))}</a></p>
   </div>`;
 }
 
@@ -3064,7 +3336,7 @@ async function renderCompare(aId, bId) {
       const a = first.value;
       const b = second.value;
       if (!a || !b || a === b) {
-        status.textContent = "Pick two different agencies to compare.";
+        status.textContent = t("app_compare_pick_two");
         status.hidden = false;
         second.focus();
         return;
@@ -3074,7 +3346,7 @@ async function renderCompare(aId, bId) {
     return;
   }
 
-  main.innerHTML = `<p class="loading" role="status">Loading…</p>`;
+  main.innerHTML = `<p class="loading" role="status">${esc(t("app_loading"))}</p>`;
   const [aArt, bArt] = await Promise.all([
     fetchJson(`${aId}/latest.json`),
     fetchJson(`${bId}/latest.json`),
@@ -3178,7 +3450,7 @@ async function route() {
   // Every non-agency route is global. Reset first so navigating away from a
   // non-U.S. scorecard never leaves its country-specific footer state behind.
   showUsPolicyToolsForCountry();
-  main.innerHTML = `<p class="loading" role="status">Loading…</p>`;
+  main.innerHTML = `<p class="loading" role="status">${esc(t("app_loading"))}</p>`;
   try {
     if (hash === "#/programs") {
       renderPrograms(await fetchJson("rollups/index.json"));
@@ -3229,5 +3501,9 @@ async function route() {
   main.focus({ preventScroll: true });
 }
 
-window.addEventListener("hashchange", route);
-route();
+// Strings resolve before first render so a requested pseudolocale preview
+// applies to the whole page; in production initStrings returns immediately.
+initStrings().finally(() => {
+  window.addEventListener("hashchange", route);
+  route();
+});

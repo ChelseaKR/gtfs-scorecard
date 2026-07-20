@@ -1,0 +1,139 @@
+# Comunidad de Madrid (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: crtm-red-de-emt
+    name: CRTM — Red de EMT (Madrid city bus)
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "993"
+    is_official: true
+    organization_id: crtm
+    feed_variant: EMT city bus network
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/868df0e58fca47e79b942902dffd7da0/data
+    license_note: >-
+      Licencia CRTM; commercial reuse and transformation are permitted, with
+      CRTM cited as the data source, update metadata retained, and no
+      distortion of the data's meaning.
+    operating_note: >-
+      Madrid's city bus network as published by the regional transport
+      consortium; one of the consortium's separately published network feeds,
+      each counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.crtm.es/datasets/868df0e58fca47e79b942902dffd7da0
+      terms_url: https://www.crtm.es/licencia-de-uso
+      scope: [gtfs_schedule]
+      attribution: >-
+        Powered by CRTM; Consorcio Regional de Transportes de Madrid cited as
+        the data source.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: crtm-metro-ligero
+    name: CRTM — Red de Metro Ligero (Madrid light rail)
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "2802"
+    is_official: true
+    organization_id: crtm
+    feed_variant: Metro Ligero light rail network
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/aaed26cc0ff64b0c947ac0bc3e033196/data
+    license_note: >-
+      Licencia CRTM; commercial reuse and transformation are permitted, with
+      CRTM cited as the data source, update metadata retained, and no
+      distortion of the data's meaning.
+    operating_note: >-
+      The Madrid region's light rail network as published by the regional
+      transport consortium; a distinct published feed from the same
+      organization as the city bus record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.crtm.es/datasets/aaed26cc0ff64b0c947ac0bc3e033196
+      terms_url: https://www.crtm.es/licencia-de-uso
+      scope: [gtfs_schedule]
+      attribution: >-
+        Powered by CRTM; Consorcio Regional de Transportes de Madrid cited as
+        the data source.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: emt-madrid
+    name: EMT Madrid
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "793"
+    is_official: true
+    static_gtfs_url: https://servicios.emtmadrid.es:8443/gtfs/transitemt.zip
+    license_note: >-
+      EMT MobilityLabs open data terms permitting reuse, including commercial
+      reuse, with attribution. The GTFS archive is an open direct download;
+      only the realtime APIs are registration-gated.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://mobilitylabs.emtmadrid.es/es/portal/opendata
+      terms_url: https://mobilitylabs.emtmadrid.es/es/portal/opendata
+      scope: [gtfs_schedule]
+      attribution: Powered by EMT de Madrid.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: emt-fuenlabrada
+    name: EMT Fuenlabrada (EMTF)
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "2400"
+    is_official: true
+    static_gtfs_url: https://api.control.optibus.co/opendata/v1/gtfs?uid=c-5cfcd2d1
+    license_note: >-
+      Open Data Commons Attribution through Fuenlabrada's open data portal.
+      The download is the city's vendor-hosted open data endpoint named by
+      the portal dataset.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datosabiertos.ayto-fuenlabrada.es/
+      terms_url: https://opendatacommons.org/licenses/by/1-0/
+      scope: [gtfs_schedule]
+      attribution: Ayuntamiento de Fuenlabrada (EMTF).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: crtm-red-de-interurbanos
+    name: CRTM — Red de Interurbanos (Madrid regional bus)
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "791"
+    is_official: true
+    organization_id: crtm
+    feed_variant: Interurban regional bus network
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/885399f83408473c8d815e40c5e702b7/data
+    license_note: >-
+      Licencia CRTM; commercial reuse and transformation are permitted, with
+      CRTM cited as the data source, update metadata retained, and no
+      distortion of the data's meaning.
+    operating_note: >-
+      The Madrid region's interurban bus network as published by the regional
+      transport consortium; a distinct published feed from the city bus and
+      light rail records of the same organization.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.crtm.es/datasets/885399f83408473c8d815e40c5e702b7
+      terms_url: https://www.crtm.es/licencia-de-uso
+      scope: [gtfs_schedule]
+      attribution: >-
+        Powered by CRTM; Consorcio Regional de Transportes de Madrid cited as
+        the data source.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

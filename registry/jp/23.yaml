@@ -1,0 +1,274 @@
+# Aichi (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: anjo-ankuru-bus
+    name: Anjo City Ankuru Bus (安城市あんくるバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/anjocity/feeds/AnkuruBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Anjo City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Anjo City.
+    operating_note: >-
+      Anjo City's community bus (あんくるバス) in Aichi; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/anjocity.AnkuruBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Anjo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nagakute-city-n-bus
+    name: Nagakute City N-Bus (長久手市N-バス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagakutecity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagakute City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nagakute City.
+    operating_note: >-
+      Nagakute City's N-Bus community network (N-バス); a second Aichi
+      feed record distinct from Anjo City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagakutecity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagakute City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: seto-city-community-bus
+    name: Seto City Community Bus (瀬戸市コミュニティバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/setocity/feeds/setocitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Seto City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Seto City.
+    operating_note: >-
+      Seto City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/setocity.setocitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Seto City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: chita-bus
+    name: Chita Bus (知多バス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitabus/feeds/chitabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chita Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Chita Bus Co.,
+      Ltd.
+    operating_note: >-
+      Chita Bus's route network on the Chita Peninsula in Aichi; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitabus.chitabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chita Bus Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: aoi-kotsu
+    name: Aoi Kotsu (あおい交通)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/aoi-komaki/feeds/aoikotsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Aoi Kotsu Co., Ltd. through
+      the GTFS Data Repository (gtfs-data.jp). Credit Aoi Kotsu Co., Ltd.
+    operating_note: >-
+      Aoi Kotsu operates route and community buses around Komaki in northern
+      Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/aoi-komaki.aoikotsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aoi Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kariya-city-karimaru
+    name: Kariya City Karimaru Bus (刈谷市コミュニティバス「かりまる」)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kariyacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kariya City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Kariya City.
+    operating_note: >-
+      Kariya City's Karimaru community bus in central Aichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kariyacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kariya City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: meitetsu-kaijo-kanko-ferry
+    name: Meitetsu Kaijo Kanko Sen Ferry (名鉄海上観光船)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/meikaijo/feeds/ship/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Meitetsu Kaijo Kanko Sen
+      through the GTFS Data Repository (gtfs-data.jp). Credit Meitetsu Kaijo
+      Kanko Sen.
+    operating_note: >-
+      High-speed passenger boats to the Mikawa Bay islands.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/meikaijo.ship
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Meitetsu Kaijo Kanko Sen. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: minamichita-umikko-bus
+    name: Minamichita Town Umikko Bus (南知多町海っ子バス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamichitatown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Minamichita Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Minamichita Town.
+    operating_note: >-
+      Minamichita Town's Umikko community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamichitatown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Minamichita Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: chita-city-aiai-bus
+    name: Chita City Aiai Bus (知多市コミュニティバス あいあいバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitacity/feeds/chita-aiaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Chita City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Chita City.
+    operating_note: >-
+      Chita City's Aiai Bus community network, distinct from the tracked
+      Chita Bus operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitacity.chita-aiaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chita City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tokai-city-ranran-bus
+    name: Tokai City Ran-Ran Bus (東海市らんらんバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokaicity/feeds/tokai-ranranbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokai City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tokai City.
+    operating_note: >-
+      Tokai City's Ran-Ran Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokaicity.tokai-ranranbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokai City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: shinshiro-city-s-bus
+    name: Shinshiro City S-Bus (新城市Sバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shinshirocity/feeds/sbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shinshiro City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Shinshiro
+      City.
+    operating_note: >-
+      Shinshiro City's S-Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shinshirocity.sbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shinshiro City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

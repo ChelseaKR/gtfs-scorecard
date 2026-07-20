@@ -1,0 +1,54 @@
+# Latvia (LV) national agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: atd-latvia-national
+    name: Autotransporta direkcija (ATD) national routes
+    country: LV
+    mdb_id: "992"
+    is_official: true
+    static_gtfs_url: https://www.atd.lv/sites/default/files/GTFS/gtfs-latvia-lv.zip
+    license_note: >-
+      CC0 1.0 per the data.gov.lv "ATD GTFS" dataset, which lists this exact
+      feed URL as its resource.
+    operating_note: >-
+      National aggregate of intercity and regional-significance bus and rail
+      routes coordinated by Latvia's Road Transport Administration. Counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lv/dati/lv/dataset/atd-gtfs
+      terms_url: https://data.gov.lv/dati/lv/dataset/atd-gtfs
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: VSIA Autotransporta direkcija via data.gov.lv, released under
+        CC0 1.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: pasazieru-vilciens-vivi
+    name: Pasažieru vilciens (Vivi)
+    country: LV
+    mdb_id: "2015"
+    is_official: true
+    static_gtfs_url: https://vivi.lv/uploads/GTFS.zip
+    license_note: >-
+      CC0 1.0 per the data.gov.lv domestic-rail timetable dataset, which lists
+      this exact feed URL as its resource.
+    operating_note: >-
+      Latvia's domestic passenger rail network, operated by AS Pasažieru
+      vilciens (Vivi). A distinct feed from the ATD intercity bus aggregate.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lv/dati/lv/dataset/iekszemes-dzelzcela-vilcienu-kustibas-saraksts-gtfs-formata
+      terms_url: https://data.gov.lv/dati/lv/dataset/iekszemes-dzelzcela-vilcienu-kustibas-saraksts-gtfs-formata
+      scope: [gtfs_schedule]
+      attribution: >-
+        Source: AS Pasažieru vilciens via VSIA Autotransporta direkcija on
+        data.gov.lv, released under CC0 1.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

@@ -1,0 +1,57 @@
+# Viken (NO) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: brakar-buskerud
+    name: Brakar
+    country: "NO"
+    subdivision_code: NO-30
+    subdivision_name: Viken
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_bra-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering Brakar in
+      Viken. The Entur national aggregate is a separate, much larger
+      download that exceeds the standard archive cap; this per-operator slice
+      stays within it.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Brakar; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ostfold-kollektivtrafikk
+    name: Østfold kollektivtrafikk
+    country: "NO"
+    subdivision_code: NO-30
+    subdivision_name: Viken
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_ost-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Østfold county
+      transport authority within the Viken region.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Østfold kollektivtrafikk; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

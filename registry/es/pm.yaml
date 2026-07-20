@@ -1,0 +1,29 @@
+# Illes Balears (ES) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tib-mallorca
+    name: Consorci de Transports de Mallorca (TIB)
+    country: ES
+    subdivision_code: ES-PM
+    subdivision_name: Illes Balears [Islas Baleares]
+    mdb_id: "2141"
+    is_official: true
+    static_gtfs_url: https://www.tib.org/documents/20124/478141/ctm-mallorca-es.zip
+    license_note: >-
+      CC BY 4.0 through the consortium's open data page; the stated
+      obligation is to correctly attribute authorship of the data.
+    operating_note: >-
+      One consortium feed for Mallorca's interurban bus, rail, and metro
+      network; counted as one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.tib.org/en/sobre-ctm/portal-de-transparencia/dades-obertes
+      terms_url: https://www.tib.org/en/sobre-ctm/portal-de-transparencia/dades-obertes
+      scope: [gtfs_schedule]
+      attribution: Consorci de Transports de Mallorca (TIB).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

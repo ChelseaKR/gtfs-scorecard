@@ -1,0 +1,34 @@
+# Western Australia (AU) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: transperth
+    name: Transperth
+    country: AU
+    subdivision_code: AU-WA
+    subdivision_name: Western Australia
+    mdb_id: "1086"
+    is_official: true
+    static_gtfs_url: http://www.transperth.wa.gov.au/TimetablePDFs/GoogleTransit/Production/google_transit.zip
+    license_note: >-
+      Transperth Spatial Data Access terms: a non-exclusive, attribution-only
+      grant. State that the data is available free of charge from
+      www.transperth.wa.gov.au and do not use PTA trademarks with it. This is a
+      custom government license, not Creative Commons.
+    operating_note: >-
+      One metropolitan network feed for Perth's bus, train, and ferry services,
+      published by the Public Transport Authority of Western Australia; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.transperth.wa.gov.au/About/Spatial-Data-Access
+      terms_url: https://www.transperth.wa.gov.au/About/Spatial-Data-Access
+      scope: [gtfs_schedule]
+      attribution: >-
+        Public Transport Authority of Western Australia; data available free of
+        charge from www.transperth.wa.gov.au.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

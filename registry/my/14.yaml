@@ -1,0 +1,100 @@
+# Wilayah Persekutuan Kuala Lumpur (MY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: rapidkl-bus
+    name: Rapid KL (bus network)
+    country: MY
+    subdivision_code: MY-14
+    subdivision_name: Wilayah Persekutuan Kuala Lumpur
+    is_official: true
+    organization_id: prasarana
+    feed_variant: Klang Valley bus
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/prasarana?category=rapid-bus-kl
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit Prasarana Malaysia Berhad
+      (Rapid Bus).
+    operating_note: >-
+      The Rapid KL city bus and BRT network across the Klang Valley. Its primary
+      Kuala Lumpur location is not a service boundary; the network also serves
+      Selangor. A distinct published feed from the Rapid Rail and MRT feeder
+      networks, counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Prasarana Malaysia Berhad (Rapid Bus), published as open data through
+        data.gov.my, the Government of Malaysia's official open data platform,
+        under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: rapidkl-rail
+    name: Rapid Rail KL (LRT, MRT and monorail)
+    country: MY
+    subdivision_code: MY-14
+    subdivision_name: Wilayah Persekutuan Kuala Lumpur
+    is_official: true
+    organization_id: prasarana
+    feed_variant: Klang Valley rail
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/prasarana?category=rapid-rail-kl
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit Prasarana Malaysia Berhad
+      (Rapid Rail).
+    operating_note: >-
+      Prasarana's Klang Valley urban rail: the LRT Ampang, Sri Petaling and
+      Kelana Jaya lines, the MRT Kajang and Putrajaya lines, and the KL
+      Monorail. Its primary Kuala Lumpur location is not a service boundary; the
+      network also serves Selangor. A distinct published feed from the Rapid Bus
+      networks, counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Prasarana Malaysia Berhad (Rapid Rail), published as open data through
+        data.gov.my, the Government of Malaysia's official open data platform,
+        under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: rapidkl-mrtfeeder
+    name: Rapid KL MRT feeder bus
+    country: MY
+    subdivision_code: MY-14
+    subdivision_name: Wilayah Persekutuan Kuala Lumpur
+    is_official: true
+    organization_id: prasarana
+    feed_variant: MRT feeder bus
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/prasarana?category=rapid-bus-mrtfeeder
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit Prasarana Malaysia Berhad
+      (Rapid Bus).
+    operating_note: >-
+      The Rapid KL feeder buses (T-routes) that connect neighbourhoods to MRT
+      and LRT stations across the Klang Valley. Its primary Kuala Lumpur
+      location is not a service boundary; the network also serves Selangor. A
+      distinct published feed from the Rapid Bus and Rapid Rail networks,
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Prasarana Malaysia Berhad (Rapid Bus), published as open data through
+        data.gov.my, the Government of Malaysia's official open data platform,
+        under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

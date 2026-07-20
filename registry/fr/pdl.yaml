@@ -1,0 +1,145 @@
+# Pays-de-la-Loire (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: aleop-yeu-continent
+    name: Aléop Yeu-Continent (Île d'Yeu ferry)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "1257"
+    is_official: true
+    static_gtfs_url: https://app.mecatran.com/utw/ws/gtfsfeed/static/pdlYeuContinent?apiKey=2c715462180f36483d5f24340c706b627f2f2364
+    license_note: >-
+      Licence Ouverte 2.0; published by the Région des Pays de la Loire
+      through France's National Access Point. The download URL carries the
+      publisher's public open-data key as published there.
+    operating_note: >-
+      The regional ferry crossing between Fromentine and the Île d'Yeu under
+      the Aléop brand; one maritime feed counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-circuit-de-la-lignes-yeu-continent-gtfs
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Région des Pays de la Loire and L'Île-d'Yeu.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: aleop-pays-de-la-loire
+    name: Aléop (Pays de la Loire)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "1096"
+    static_gtfs_url: https://donnees.paysdelaloire.fr/data/pdl.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Région des Pays de la Loire
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    operating_note: >-
+      One regional multi-operator aggregate; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-circuits-des-lignes-de-transports-aleop-1
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Région des Pays de la Loire.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: choletbus
+    name: Choletbus
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "1789"
+    static_gtfs_url: https://www.data.gouv.fr/fr/datasets/r/71e8ee8e-0b55-40a1-a297-21ef89aba4dc
+    license_note: >-
+      Licence Ouverte 2.0; published by the Agglomération du Choletais
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-reseau-choletbus
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Agglomération du Choletais.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: impulsyon-la-roche-sur-yon
+    name: Impulsyon (La Roche-sur-Yon)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    mdb_id: "2005"
+    static_gtfs_url: https://transport.data.gouv.fr/resources/79520/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to La Roche-sur-Yon Agglomération (réseau
+      Impulsyon) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-impulsyon-a-la-roche-sur-yon
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        La Roche-sur-Yon Agglomération (réseau Impulsyon).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: hilagobus-saint-gilles
+    name: Hilagobus (Saint-Gilles-Croix-de-Vie)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82097/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération du Pays de
+      Saint-Gilles-Croix-de-Vie (réseaux Hilagobus et Gillobus) and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transport-urbain
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération du Pays de Saint-Gilles-Croix-de-Vie (réseaux
+        Hilagobus et Gillobus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yole-challans
+    name: Yolé (Challans)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83969/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Challans-Gois Communauté (réseau Yolé) and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-transport-urbain-yole-bus-gtfs-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Challans-Gois Communauté (réseau Yolé).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

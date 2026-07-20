@@ -1,0 +1,173 @@
+# Ireland (IE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bus-eireann
+    name: Bus Éireann
+    country: IE
+    mdb_id: "2636"
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Bus_Eireann.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      The national GTFS_All aggregate is deliberately not added because it
+      duplicates these per-operator files.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: irish-rail
+    name: Iarnród Éireann (Irish Rail)
+    country: IE
+    mdb_id: "2637"
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: tfi-local-link
+    name: TFI Local Link
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Local_Link.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      The National Transport Authority's rural and regional Local Link
+      network, published as one per-operator file under the NTA CC BY 4.0
+      terms.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: citylink-ie
+    name: Citylink
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Citylink.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      A scheduled intercity coach operator (Galway, Dublin, Cork corridors),
+      published as one NTA per-operator file.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: jj-kavanagh
+    name: JJ Kavanagh & Sons
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_JJ_Kavanagh.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      A scheduled intercity coach operator, published as one NTA per-operator
+      file.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: dublin-coach
+    name: Dublin Coach
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Dublin_Coach.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      A scheduled intercity coach operator (Dublin to the mid-west and
+      south-west), published as one NTA per-operator file.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: wexford-bus
+    name: Wexford Bus
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Wexford_Bus.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      A scheduled regional coach operator serving County Wexford and Dublin,
+      published as one NTA per-operator file.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: matthews-coach
+    name: Matthews Coach Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Matthews.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      A scheduled regional coach operator serving the north-east and Dublin,
+      published as one NTA per-operator file.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

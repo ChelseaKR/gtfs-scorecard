@@ -1,0 +1,319 @@
+# Fukuoka (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID) in the second gtfs-data.jp wave (docs/feeds.md). Each is an official
+# municipal or first-party operator GTFS-JP feed, openly licensed and
+# mechanically preflighted, and absent from the Mobility Database.
+agencies:
+  - id: dazaifu-city-mahoroba-bus
+    name: Dazaifu City Community Bus Mahoroba-go (太宰府市コミュニティバスまほろば号)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/dazaifucity/feeds/DazaifuCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Dazaifu City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Dazaifu City.
+    operating_note: >-
+      Dazaifu City's Mahoroba-go community bus (コミュニティバスまほろば号); counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/dazaifucity.DazaifuCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Dazaifu City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: munakata-city-community-bus
+    name: Munakata City Community Bus (宗像市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/munakatacity/feeds/MunakataCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Munakata City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Munakata City.
+    operating_note: >-
+      Munakata City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/munakatacity.MunakataCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Munakata City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nogata-city-community-bus
+    name: Nogata City Community Bus (直方市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nogatacity/feeds/NogataCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nogata City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nogata City.
+    operating_note: >-
+      Nogata City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nogatacity.NogataCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nogata City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tagawa-city-community-bus
+    name: Tagawa City Community Bus (田川市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tagawacity/feeds/TagawaCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tagawa City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tagawa City.
+    operating_note: >-
+      Tagawa City's community bus network; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tagawacity.TagawaCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tagawa City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: koga-city-bus
+    name: Koga City Bus (古賀市「コガバス」)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/fukuoka-kogacity/feeds/KogaBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Koga City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Koga City.
+    operating_note: >-
+      Koga City's Koga Bus community network in Fukuoka; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/fukuoka-kogacity.KogaBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Koga City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: amagi-kanko-bus
+    name: Amagi Kanko Bus (甘木観光バス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/amagikankobus/feeds/AmagiKankoBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Amagi Kanko Bus Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Amagi Kanko Bus
+      Co., Ltd.
+    operating_note: >-
+      Amagi Kanko Bus operates route services in the Asakura area of southern
+      Fukuoka.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/amagikankobus.AmagiKankoBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Amagi Kanko Bus Co., Ltd. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: taiyo-kotsu-fukuoka
+    name: Taiyo Kotsu (太陽交通)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/taiyo-koutu/feeds/taiyo-koutu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Taiyo Kotsu Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Taiyo Kotsu Co.,
+      Ltd.
+    operating_note: >-
+      Taiyo Kotsu operates route buses in Fukuoka Prefecture.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/taiyo-koutu.taiyo-koutu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Taiyo Kotsu Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kama-city-bus
+    name: Kama City Bus (嘉麻市バス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamacity/feeds/KamaCityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kama City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Kama City.
+    operating_note: >-
+      Kama City's municipal bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamacity.KamaCityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yanagawa-community-bus
+    name: Yanagawa City Community Bus (柳川市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yanagawacity/feeds/YanagawaCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yanagawa City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yanagawa City.
+    operating_note: >-
+      Yanagawa City's community bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yanagawacity.YanagawaCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yanagawa City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: buzen-city-bus
+    name: Buzen City Bus (豊前市バス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/buzencity/feeds/BuzenCityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Buzen City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Buzen City.
+    operating_note: >-
+      Buzen City's municipal bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/buzencity.BuzenCityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Buzen City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: fukuoka-ashiya-town-bus
+    name: Ashiya Town Bus (芦屋タウンバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ashiyatown/feeds/AshiyaTownBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ashiya Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Ashiya Town.
+    operating_note: >-
+      Ashiya Town's Ashiya Town Bus in Fukuoka, distinct from Ashiya
+      City in Hyogo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ashiyatown.AshiyaTownBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ashiya Town. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: fukutsu-city-mini-bus
+    name: Fukutsu Mini-Bus (ふくつミニバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/fukutsucity/feeds/minibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Fukutsu City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Fukutsu City.
+    operating_note: >-
+      Fukutsu City's Mini-Bus and shared-taxi network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/fukutsucity.minibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Fukutsu City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: miyama-city-community-bus
+    name: Miyama City Community Bus (みやま市コミュニティバス)
+    country: JP
+    subdivision_code: JP-40
+    subdivision_name: Fukuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/miyamacity/feeds/MiyamaCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Miyama City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Miyama City.
+    operating_note: >-
+      Miyama City's community bus in Fukuoka.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/miyamacity.MiyamaCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Miyama City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

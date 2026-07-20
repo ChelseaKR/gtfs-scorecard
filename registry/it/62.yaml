@@ -1,0 +1,31 @@
+# Lazio (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: roma-servizi-mobilita
+    name: Roma Servizi per la Mobilità
+    country: IT
+    subdivision_code: IT-62
+    subdivision_name: Lazio
+    mdb_id: "1294"
+    is_official: false
+    static_gtfs_url: https://romamobilita.it/sites/default/files/rome_static_gtfs.zip
+    license_note: >-
+      CC BY-SA through Rome's municipal open data catalog; credit Roma Servizi
+      per la Mobilità. The share-alike condition applies to redistributed
+      derivative databases; this scorecard publishes measurements and
+      attribution, not the feed itself.
+    operating_note: >-
+      One citywide feed covering Rome's surface and metro network; counted as
+      one feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.comune.roma.it/catalog/dataset/c_h501-d-9000
+      terms_url: https://dati.comune.roma.it/catalog/dataset/c_h501-d-9000
+      scope: [gtfs_schedule]
+      attribution: Roma Servizi per la Mobilità and Roma Capitale.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

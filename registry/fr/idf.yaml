@@ -1,0 +1,28 @@
+# Île-de-France (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: eurostar
+    name: Eurostar
+    country: FR
+    subdivision_code: FR-IDF
+    subdivision_name: Île-de-France
+    mdb_id: "2431"
+    static_gtfs_url: https://integration-storage.dm.eurostar.com/gtfs-prod/gtfs_static_commercial_v2.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by Eurostar through France's National
+      Access Point. Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One international rail feed registered at France's National Access
+      Point; cross-border stops stay part of this one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/eurostar-gtfs-plan-de-transport-et-temps-reel
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Eurostar.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

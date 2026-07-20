@@ -1,0 +1,71 @@
+# Norfolk (GB) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: konectbus-norfolk
+    name: Konectbus
+    country: GB
+    subdivision_code: GB-NFK
+    subdivision_name: Norfolk
+    mdb_id: "1940"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/konectbus/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Konectbus as the source and do not imply endorsement.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/konectbus
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Konectbus; contains public sector information licensed under the Open
+        Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: coach-services-thetford
+    name: Coach Services
+    country: GB
+    subdivision_code: GB-NFK
+    subdivision_name: Norfolk
+    mdb_id: "2909"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/coachservices/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Coach Services as the source and do not imply endorsement.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/coachservices
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Coach Services; contains public sector information licensed under the
+        Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: sanders-coaches
+    name: Sanders Coaches
+    country: GB
+    subdivision_code: GB-NFK
+    subdivision_name: Norfolk
+    mdb_id: "2912"
+    static_gtfs_url: https://data.discoverpassenger.com/operator/sanderscoaches/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open data
+      feed; credit Sanders Coaches as the source and do not imply endorsement.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/sanderscoaches
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sanders Coaches; contains public sector information licensed under the
+        Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

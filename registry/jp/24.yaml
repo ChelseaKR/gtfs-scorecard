@@ -1,0 +1,275 @@
+# Mie (JP) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+#
+# Curated from Japan's national GTFS Data Repository (gtfs-data.jp, operated by
+# AIGID under the "standard bus information format"/GTFS-JP program). See
+# docs/feeds.md, "Japan gtfs-data.jp wave". Each feed's open license, current
+# calendar, and official municipal publisher were verified on 2026-07-18; none
+# is carried by the Mobility Database.
+agencies:
+  - id: tsu-community-bus
+    name: Tsu City Community Bus (津市コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsucity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsu City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Tsu City.
+    operating_note: >-
+      Tsu City's community bus network in the Mie prefectural capital; counted
+      as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsucity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsu City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kuwana-city-k-bus
+    name: Kuwana City Community Bus K-Bus (桑名市コミュニティバス「Ｋ－バス」)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kuwanacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kuwana City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kuwana City.
+    operating_note: >-
+      Kuwana City's K-Bus community network (コミュニティバス「Ｋ－バス」); a second
+      Mie feed record distinct from Tsu City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kuwanacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kuwana City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: iga-city-community-bus
+    name: Iga City Community Bus (伊賀市行政バス・コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/igacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Iga City through the GTFS
+      Data Repository (gtfs-data.jp). Credit Iga City.
+    operating_note: >-
+      Iga City's administrative and community bus network; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/igacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Iga City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ise-railway
+    name: Ise Railway (伊勢鉄道)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/isetetu/feeds/iserailway/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ise Railway Co., Ltd.
+      through the GTFS Data Repository (gtfs-data.jp). Credit Ise Railway
+      Co., Ltd.
+    operating_note: >-
+      The Ise Railway Ise Line between Kawarada and Tsu in Mie; counted as
+      one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/isetetu.iserailway
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ise Railway Co., Ltd. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: matsusaka-city-bus
+    name: Matsusaka City Community Transport (松阪市コミュニティ交通)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsusakacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Matsusaka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Matsusaka City.
+    operating_note: >-
+      Matsusaka City's community transport network in central Mie.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsusakacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Matsusaka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: seikatsu-bus-yokkaichi
+    name: Seikatsu Bus Yokkaichi (生活バスよっかいち)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/seikatsubus-yokkaichi/feeds/sbusyokkaichi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Seikatsu Bus Yokkaichi
+      through the GTFS Data Repository (gtfs-data.jp). Credit Seikatsu Bus
+      Yokkaichi.
+    operating_note: >-
+      A community-supported bus company in Yokkaichi, distinct from the city's
+      own network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/seikatsubus-yokkaichi.sbusyokkaichi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Seikatsu Bus Yokkaichi. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: tsu-airport-line
+    name: Tsu Airport Line (津エアポートライン)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsu-airportline/feeds/airportline/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tsu Airport Line through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tsu Airport Line.
+    operating_note: >-
+      A high-speed ferry between Tsu-Nagisamachi and Chubu Centrair airport.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsu-airportline.airportline
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tsu Airport Line. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: yokkaichi-community-bus
+    name: Yokkaichi City Bus (四日市市自主運行バス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yokkaichicity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yokkaichi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yokkaichi City.
+    operating_note: >-
+      Yokkaichi City's self-operated bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yokkaichicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yokkaichi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: busnet-tsu-gurutto-bus
+    name: Gurutto-Tsu Bus (ぐるっと・つーバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/busnet-tsu/feeds/guruttotsubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Busnet Tsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Busnet Tsu.
+    operating_note: >-
+      The Gurutto-Tsu community bus serving Tsu, published by the Busnet
+      Tsu operator.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/busnet-tsu.guruttotsubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Busnet Tsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: nabari-city-community-bus
+    name: Nabari City Community Bus (名張市コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nabaricity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nabari City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nabari City.
+    operating_note: >-
+      Nabari City's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nabaricity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nabari City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: kameyama-city-community-bus
+    name: Kameyama City Community Bus (亀山市コミュニティバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kameyamacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Kameyama City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Kameyama City.
+    operating_note: >-
+      Kameyama City's community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kameyamacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kameyama City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

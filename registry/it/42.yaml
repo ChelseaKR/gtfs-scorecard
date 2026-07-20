@@ -1,0 +1,31 @@
+# Liguria (IT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: amt-genova
+    name: AMT Genova
+    country: IT
+    subdivision_code: IT-42
+    subdivision_name: Liguria
+    mdb_id: "2610"
+    is_official: true
+    static_gtfs_url: http://opendatagoogletransit.comune.genova.it/downloads/google_transit.zip
+    license_note: >-
+      CC BY 4.0 through Genoa's municipal open data record; credit AMT Genova
+      and the Comune di Genova. The municipally hosted archive is used because
+      it is the resource the CC BY record names; the operator's own host
+      publishes no license.
+    operating_note: >-
+      The plain-HTTP download host is deliberate; the HTTPS variant of the
+      municipal archive is unreachable.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.comune.genova.it/dataset/amt-trasporto-pubblico-nel-comune-di-genova
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: AMT Genova and Comune di Genova.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

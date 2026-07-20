@@ -1,0 +1,177 @@
+# Grand-Est (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: cts-strasbourg
+    name: CTS (Strasbourg)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    mdb_id: "856"
+    static_gtfs_url: https://opendata.cts-strasbourg.eu/google_transit.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Compagnie des Transports
+      Strasbourgeois through France's National Access Point. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-theoriques-gtfs-et-temps-reel-siri-lite-du-reseau-cts
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Compagnie des Transports Strasbourgeois.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: stan-nancy
+    name: Réseau Stan (Nancy)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    mdb_id: "1256"
+    static_gtfs_url: https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=STAN
+    license_note: >-
+      Licence Ouverte 2.0; published by Grand Nancy through France's
+      National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0034-0000-1
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Grand Nancy.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: le-met-metz
+    name: LE MET' (Metz)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    mdb_id: "1298"
+    static_gtfs_url: https://data.lemet.fr/documents/LEMET-gtfs.zip
+    license_note: >-
+      Licence Ouverte 2.0; published by the Eurométropole de Metz through
+      France's National Access Point. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fichiers-gtfs-eurometropole-de-metz
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Eurométropole de Metz.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: neobus-ouest-vosgien
+    name: Neobus (Ouest Vosgien)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    mdb_id: "1839"
+    static_gtfs_url: https://www.data.gouv.fr/fr/datasets/r/e25586ac-9c14-4872-b00e-e66cd23d4413
+    license_note: >-
+      Licence Ouverte 2.0; published by the Communauté de Communes de
+      l'Ouest Vosgien through France's National Access Point. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-neobus-communaute-de-communes-de-louest-vosgien-gtfs
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté de Communes de l'Ouest Vosgien.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: tmm-moselle-madon
+    name: T'MM (Moselle et Madon)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    mdb_id: "2738"
+    static_gtfs_url: https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=TMM
+    license_note: >-
+      Licence Ouverte 2.0; published by the Communauté de Communes Moselle
+      et Madon through France's National Access Point. Derived measurements
+      by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0025-0000-1
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté de Communes Moselle et Madon.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: solea-mulhouse
+    name: Soléa (Mulhouse Alsace Agglomération)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80492/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Mulhouse Alsace Agglomération (réseau
+      Soléa) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-solea-et-tram-train-en-format-gtfs-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mulhouse Alsace Agglomération (réseau Soléa).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: ritmo-haguenau
+    name: Ritmo (Haguenau)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80449/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération de Haguenau
+      (réseau Ritmo), published through Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0008-0000-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération de Haguenau (réseau Ritmo), published through
+        Fluo Grand Est.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: trace-colmar
+    name: TRACE (Colmar)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80479/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Colmar Agglomération (réseau TRACE),
+      published through Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0004-0000-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Colmar Agglomération (réseau TRACE), published through Fluo Grand Est.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true

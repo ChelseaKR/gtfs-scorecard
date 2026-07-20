@@ -1,0 +1,94 @@
+# Centre-Val de Loire (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fil-bleu-tours
+    name: Fil Bleu (Tours)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    mdb_id: "1987"
+    static_gtfs_url: https://data.tours-metropole.fr/api/datasets/1.0/horaires-temps-reel-gtfsrt-reseau-filbleu-tmvl/alternative_exports/filbleu_gtfszip/
+    license_note: >-
+      Licence Ouverte 2.0; published by the Syndicat des Mobilités de
+      Touraine through France's National Access Point. Derived measurements
+      by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fil-bleu-syndicat-des-mobilites-gtfs-gtfs-rt
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Syndicat des Mobilités de Touraine.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: tao-orleans
+    name: TAO (Orléans Métropole)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83751/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Orléans Métropole (réseau TAO) and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-netex-et-gtfs-rt-reseau-tao-orleans-metropole
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Orléans Métropole (réseau TAO).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: filibus-chartres
+    name: Filibus (Chartres)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80587/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Chartres Métropole (réseau Filibus) and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/filibus-urbain
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chartres Métropole (réseau Filibus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
+  - id: move-vendome
+    name: Move (Vendôme)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82832/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération Territoires
+      Vendômois (réseau Move) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-move-vendome
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération Territoires Vendômois (réseau Move).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-18"
+      identity_reviewed: true
