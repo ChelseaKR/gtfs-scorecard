@@ -100,6 +100,16 @@ jobs:
           uv run scorecard rollups
           uv run scorecard render-site
 
+      # Feed checks and re-scoring can run longer than the default one-hour
+      # OIDC session. Renew immediately before the first public write so a
+      # healthy refresh cannot fail at publication with ExpiredToken.
+      - name: Renew AWS credentials before publishing
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
       - name: Publish refreshed artifacts to S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
