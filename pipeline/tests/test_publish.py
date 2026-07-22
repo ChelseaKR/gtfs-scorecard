@@ -554,6 +554,29 @@ def test_reindex_preserves_authoritative_latest_when_current_dated_is_absent() -
     assert not current_dated.exists()
 
 
+def test_reindex_ignores_ahead_latest_when_indexed_dated_is_present() -> None:
+    """A partial refresh cannot advance the index before its commit pointer."""
+    from scorecard_pipeline.publish import rebuild_index
+
+    indexed_date = dt.date(2026, 6, 19)
+    publish(make_artifact(indexed_date, score=90.0))
+    agency_dir = artifacts_dir() / "unitrans"
+
+    # Simulate Intraday uploading latest.json before its final index write, then
+    # losing AWS credentials. Daily hydrates the indexed dated object alongside
+    # this ahead-of-index latest and must retain the indexed snapshot.
+    ahead = make_artifact(dt.date(2026, 6, 20), score=95.0)
+    (agency_dir / "latest.json").write_text(json.dumps(ahead))
+
+    rebuild_index()
+
+    latest = json.loads((agency_dir / "latest.json").read_text())
+    assert latest["snapshot_date"] == indexed_date.isoformat()
+    assert latest["overall"]["score"] == 90.0
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    assert index["agencies"]["unitrans"]["history"][-1]["date"] == indexed_date.isoformat()
+
+
 def test_reindex_accepts_verified_same_day_shard_replacement() -> None:
     """A methodology re-score may replace today's artifact without changing its date."""
     from scorecard_pipeline.publish import rebuild_index
