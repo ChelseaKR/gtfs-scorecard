@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,900 feed records, still mostly in
+reference; the full registry has more than 2,000 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -2046,6 +2046,75 @@ Grades were never an admission gate. Each accepted archive completed the same
 mechanical path despite grades ranging from F through C. This continuation
 moves the registry to 1,983 configured feed records across 42 country codes.
 Those are reviewed records, not a census or a claim of national coverage.
+
+## Transitland Atlas and Lithuania directory exhaustion wave
+
+The next breadth pass on 2026-07-23 parsed the full current Transitland Atlas:
+743 source documents, 4,045 feed rows, and 2,882 proposed agency records. It
+mechanically tried 146 still-plausible official or licensed schedule
+candidates. Thirty-six archives passed the download, pinned canonical
+MobilityData validator, complete scorecard, and 60-day effective-calendar path.
+Identity, current-source licensing, overlap, and aggregate checks reduced that
+set to 13 admitted records. A separate exhaustive first-party directory pass
+then admitted 50 Lithuanian municipality exports. Together the wave adds 63
+reviewed feed records.
+
+The 13 Atlas-derived records are:
+
+- **Ireland:** Bernard Kavanagh & Sons, City Direct, Express Bus, Kearns
+  Transport, McGrath Coaches, Slieve Bloom Coach Tours, and Dublin Bus
+  Nitelink. Ireland's National Transport Authority publishes each under CC BY
+  4.0. Bernard Kavanagh and Nitelink are explicitly modeled as feed variants
+  of their related organizations.
+- **Hungary, a new country sample:** Tüke Busz in Pécs, Blaguss Agora Hungary
+  in Szombathely, and MÁV's national regional-bus export. The
+  [Hungarian National Access Point](https://napportal.kozut.hu/en/#/informations/toc/)
+  terms expressly permit database storage, retransmission, disclosure, and
+  commercialization. The MÁV record is one aggregate feed, not a count of its
+  services or operating units.
+- **Portugal:** Cascais Próxima's MobiCascais network, Fertagus, and Metro Sul
+  do Tejo. The [MobiCascais catalog record](https://dados.gov.pt/en/datasets/gtfs-rede-mobi-cascais/#/information)
+  and Portugal National Access Point records for
+  [Fertagus](https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/185)
+  and [MTS](https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/200)
+  each apply CC BY 4.0 to the exact current resource.
+
+Lithuania's
+[official open-data record](https://data.gov.lt/datasets/1929/) identifies the
+Lithuanian Transport Safety Administration as provider, applies CC BY 4.0, and
+links the current municipality-level GTFS directory. All 58 directory links
+were tested from downloaded bytes. Fifty-four passed the mechanical path. Four
+of those were national, generic, or duplicate exports (`LTSAR.zip`,
+`VilniausM.zip`, `google_transit.zip`, and `gtfs_all.zip`), leaving 50 admitted
+municipality records. The four failed current archives were Ignalina,
+Kaišiadorys, Pasvalys, and Smiltynė. Kazlų Rūda, Klaipėda district, Pagėgiai,
+Šakiai, Šilalė, and Vilkaviškis had no municipality archive in the directory.
+The already tracked Vilnius city feed was not duplicated.
+
+The no-add ledger matters:
+
+- Transitland rows for Naples, Darwin, Zagreb, Queensland, Berlin-Brandenburg,
+  South Moravia, Copenhagen, and the Rhine-Sieg region duplicated tracked
+  records. Ireland's small-operators collection and Hungary's DAKK archive
+  overlapped admitted per-operator or current-successor feeds.
+- The Irish `GTFS_Ferry_Cable_Flight.zip` file combined airlines, ferries,
+  cable transport, and Northern Ireland rather than representing the named
+  Bere Island candidate. It stayed out as a misleading aggregate.
+- CP's exact current Portugal National Access Point record says “No licence –
+  No contract.” Carris Lisboa's current gateway resource lacked a matching
+  first-party commercial-reuse chain. Neither inherited an older catalog
+  record's terms.
+- Tursib's terms allow only personal, non-commercial use. Oman and Santiago
+  still lack an explicit commercial grant. Polish community mirrors,
+  mismatched API records, and catalog-only licence claims were not substituted
+  for first-party evidence.
+- Short-calendar, expired, unreachable, timed-out, and overlapping candidates
+  elsewhere remained out. A successful validator run alone was never treated
+  as permission or as proof of distinct agency identity.
+
+This wave moves the registry to 2,046 configured feed records across 43 country
+codes. The total describes curated feed records in this service, not agencies
+in operation or national coverage.
 
 ## Unitrans (ASUCD / City of Davis)
 

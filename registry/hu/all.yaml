@@ -1,0 +1,78 @@
+# Hungary (HU) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tuke-busz-pecs
+    name: Tüke Busz (Pécs)
+    country: HU
+    subdivision_code: HU-PS
+    subdivision_name: Pécs
+    is_official: true
+    static_gtfs_url: http://mobilitas.biokom.hu/gtfs
+    license_note: >-
+      Commercialization and redistribution are permitted by the Hungarian
+      National Access Point's published terms; credit the data provider and
+      Hungarian Public Roads NAP.
+    operating_note: >-
+      The feed is hosted by Pécs municipal services publisher BIOKOM and names
+      Tüke Busz Zrt. as the transit agency.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://napportal.kozut.hu/en/#/informations/toc/
+      terms_url: https://napportal.kozut.hu/en/#/informations/toc/
+      scope: [gtfs_schedule]
+      attribution: Tüke Busz Zrt.; Hungarian Public Roads National Access Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: blaguss-szombathely
+    name: Blaguss Agora Hungary (Szombathely)
+    country: HU
+    subdivision_code: HU-SH
+    subdivision_name: Szombathely
+    is_official: true
+    static_gtfs_url: https://szombathely.utas.hu/api/static/v1/gtfs-google/gtfs-google.zip
+    license_note: >-
+      Commercialization and redistribution are permitted by the Hungarian
+      National Access Point's published terms; credit the data provider and
+      Hungarian Public Roads NAP.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://napportal.kozut.hu/en/#/informations/toc/
+      terms_url: https://napportal.kozut.hu/en/#/informations/toc/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Blaguss Agora Hungary Kft.; Hungarian Public Roads National Access
+        Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mav-regional-bus-hungary
+    name: MÁV Személyszállítás (Hungary regional bus)
+    country: HU
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://gtfs.kti.hu/public-gtfs/volanbusz_gtfs.zip
+    license_note: >-
+      Commercialization and redistribution are permitted by the Hungarian
+      National Access Point's published terms; credit the data provider and
+      Hungarian Public Roads NAP.
+    operating_note: >-
+      The URL retains the former Volánbusz label, but the current archive names
+      MÁV Személyszállítási Zrt. and contains the nationwide regional-bus
+      network plus its local-service variants. Counted as one aggregate feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://napportal.kozut.hu/en/#/informations/toc/
+      terms_url: https://napportal.kozut.hu/en/#/informations/toc/
+      scope: [gtfs_schedule]
+      attribution: >-
+        MÁV Személyszállítási Zrt.; Hungarian Public Roads National Access
+        Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
