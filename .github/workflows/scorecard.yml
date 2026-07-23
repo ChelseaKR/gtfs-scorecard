@@ -185,6 +185,7 @@ jobs:
       - name: Hydrate the authoritative current corpus and compact history
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
+          set -euo pipefail
           # Hydrate before overlaying this run's shard outputs. latest.json is
           # the durable current artifact for a skipped feed; index.json proves
           # which snapshot it must represent. Reindex uses that verified pair
@@ -194,6 +195,21 @@ jobs:
             data/artifacts/index.json --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --recursive --exclude "*" --include "*/latest.json" --only-show-errors
+          # index.json is the public commit pointer. A failed intraday run can
+          # upload a newer latest.json before it reaches the final index write,
+          # so hydrate the dated snapshots the index actually names as well.
+          # Reindex can then ignore any ahead-of-index latest safely and retain
+          # the last committed artifact instead of falling back to checkout.
+          jq -r '.agencies[].history[-1].date // empty' data/artifacts/index.json \
+            | sort -u | while IFS= read -r authoritative_date; do
+              if ! [[ "$authoritative_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+                echo "::error::Invalid authoritative artifact date: $authoritative_date"
+                exit 1
+              fi
+              aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+                --recursive --exclude "*" \
+                --include "*/${authoritative_date}.json" --only-show-errors
+            done
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --exclude "*" --include "rollups/*.state.json" \
             --include "coverage-baseline.json" --only-show-errors

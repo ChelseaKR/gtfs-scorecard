@@ -109,6 +109,18 @@ def test_hourly_refresh_publishes_only_changed_or_swept_feed_directories() -> No
     assert 'aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive' not in text
 
 
+def test_hourly_refresh_renews_aws_credentials_before_publishing() -> None:
+    workflow = _workflow("refresh.yml")
+    steps = workflow["jobs"]["refresh"]["steps"]
+    names = [step.get("name") for step in steps]
+
+    assert names.count("Authenticate to AWS") == 1
+    assert names.count("Renew AWS credentials before publishing") == 1
+    assert names.index("Renew AWS credentials before publishing") < names.index(
+        "Publish refreshed artifacts to S3"
+    )
+
+
 def test_boto3_workflow_commands_use_the_temporary_python_environment() -> None:
     names = ("scorecard.yml", "validator-canary.yml", "targeted-score.yml")
     combined = "\n".join((WORKFLOWS / name).read_text() for name in names)
@@ -123,5 +135,19 @@ def test_daily_collect_hydrates_current_before_overlaying_shards() -> None:
     hydrate = text.index("Hydrate the authoritative current corpus and compact history")
     gather = text.index("Gather shard artifacts")
     assert hydrate < gather
+    assert "set -euo pipefail" in text[hydrate:gather]
     assert '--recursive --exclude "*" --include "*/latest.json"' in text
+    assert ".agencies[].history[-1].date // empty" in text
+    assert '--include "*/${authoritative_date}.json"' in text
+    assert "Invalid authoritative artifact date" in text
     assert "index.json proves" in text
+
+
+def test_watchdog_accepts_a_successful_manual_daily_recovery() -> None:
+    text = (WORKFLOWS / "watchdog.yml").read_text()
+    step = text[text.index("The most recent daily run did not fail") :]
+
+    assert "--status completed" in step
+    assert "--json conclusion,status,event" in step
+    assert "--event schedule" not in step
+    assert "most recent completed Daily scorecard run" in step

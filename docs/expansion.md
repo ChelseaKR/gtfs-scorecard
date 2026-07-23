@@ -125,15 +125,3 @@ budget.
   a keyed public API. Cheapest order: client search, then a queryable SQLite or
   DuckDB/Athena artifact over object storage, then a managed database only if
   interactive multi-tenant queries appear.
-
-## Funding (re-verify)
-
-The funding research pass was throttled, so treat this as leads. The closest
-models are MobilityData (nonprofit, membership and grants) and transit.land /
-Interline (an open commons with paid commercial services), which together suggest
-an open-core pattern: the dashboard and dataset stay free, while alerts, an API,
-and SLAs are where a sustaining revenue or grant line could sit. The most direct
-buyer or partner is Cal-ITP / Caltrans. Federal vehicles worth investigating, with
-figures to confirm: FTA SMART grants, ITS4US, and Mobility for All. The US market
-is roughly 3,000 NTD reporters, heavily weighted to small and rural agencies;
-confirm the exact urban-versus-rural split before using it.
