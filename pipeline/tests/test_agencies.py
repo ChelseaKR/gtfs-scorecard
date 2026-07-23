@@ -177,7 +177,7 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_748
+    assert len(agencies) == 1_753
     assert len(european) == 259
     assert len({agency.country for agency in european}) == 24
 
@@ -495,6 +495,33 @@ def test_repo_registry_includes_reactivated_basmy_town_feeds(
         assert agency.reuse_evidence.decision == "approved"
         assert agency.reuse_evidence.identity_reviewed is True
         assert "service through 2026-12-31" in agency.operating_note
+
+
+def test_repo_registry_includes_japan_five_loop_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    cohort = {
+        "kamishihoro-autonomous-bus": ("JP-01", "Hokkaido", "kamishihorotown"),
+        "konan-railway": ("JP-02", "Aomori", "hirosakicity"),
+        "tsukubane-go": ("JP-08", "Ibaraki", "tsukubacity"),
+        "awaji-jenova-line": ("JP-28", "Hyogo", "awajicity"),
+        "hokushin-bus": ("JP-33", "Okayama", "hokushin-bus"),
+    }
+
+    for agency_id, (subdivision_code, subdivision_name, publisher) in cohort.items():
+        agency = by_id[agency_id]
+        assert agency.country == "JP"
+        assert agency.subdivision_code == subdivision_code
+        assert agency.subdivision_name == subdivision_name
+        assert agency.is_official is True
+        assert publisher in agency.static_gtfs_url
+        assert agency.static_gtfs_url.endswith("files/feed.zip?rid=current")
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
 
 
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:

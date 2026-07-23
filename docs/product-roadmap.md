@@ -73,7 +73,13 @@ Product-need presets compose existing, ungraded filters for accessibility
 metadata, multilingual rider information, fare-aware planning, flexible-service
 discovery, contactless bank-card declarations, step-free station navigation,
 modern Fare v2 integration, ferry service discovery, ferry accessibility
-information, and bicycle-aware ferry planning. The ferry accessibility preset
+information, bicycle-aware ferry planning, accessible multilingual rider
+information, accessible fare-aware planning, accessible flexible-service
+planning, accessible rail service information, and fully stated ferry rider
+information. The five composed presets reuse the existing published-field
+filters and retain their individual thresholds in shared links. They do not
+certify physical accessibility, service usability, fare correctness, booking
+availability, or vessel capacity. The ferry accessibility preset
 requires a minimum stated share for both ferry terminals and ferry trips. It
 describes published wheelchair fields, not physical accessibility or boarding
 usability. The bicycle-aware preset composes the ferry service mode with a

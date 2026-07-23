@@ -162,6 +162,15 @@ All four keyless archives passed the canonical validator preflight under the
 same CC BY 4.0 platform and now add reviewed coverage in Kedah, Kelantan,
 Terengganu, and Sarawak.
 
+Five official Japanese networks passed another bounded depth review on
+2026-07-23: Kamishihoro Town Autonomous Bus, Konan Railway, Tsukubane-go,
+Awaji Jenova Line, and Hokushin Bus. They use the three already admitted
+versioned Creative Commons licenses and add one record in each of five
+previously represented prefectures. The loop deliberately rejected Tsuku Bus:
+its current archive still gives four required GTFS files `.csv` names, so the
+canonical validator cannot recognize a usable service calendar. This is
+regional depth from an official source, not a new-country or census claim.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,
