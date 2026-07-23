@@ -554,14 +554,19 @@ concern. Source, reuse terms, current download, and identity were checked on
 - **New Zealand (two records)**: Auckland Transport and Baybus (Bay of Plenty),
   both CC BY 4.0 through their official open-data pages.
 
-Deferred with recorded reasons: the Sydney (Transport for NSW) and Melbourne
-(Public Transport Victoria) bundles both exceed the 256 MiB download cap and
-wait on the large-feed shard; Transport for NSW also gates its bulk download
-behind a registered account. The ACT (Transport Canberra) host returns HTTP 403
-to the pipeline. Tasmania's per-city Metro feeds have moved to a single
-Department of State Growth feed whose license page was unreachable and appears
-to add a share-alike term, and Metlink Wellington publishes no stated reuse
-license. Each is revisited when its blocker clears.
+Deferred with recorded reasons: Transport for NSW gates its Sydney bulk
+download behind a registered account. The ACT (Transport Canberra) host
+returns HTTP 403 to the pipeline, and Metlink Wellington publishes no stated
+reuse license. Each is revisited when its blocker clears.
+
+Tasmania's earlier hold cleared on 2026-07-22. The
+[Tasmanian Government GTFS page](https://www.transport.tas.gov.au/public_transport/gtfs-data)
+now links one stable, keyless statewide aggregate and explicitly applies
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The current 15 MiB
+archive passed the canonical validator preflight with 288 routes, 17,138 trips,
+six publishers in `agency.txt`, and bus and ferry service. `feed_info.txt`
+states service through 2026-09-30. The registry counts this aggregate as one
+feed record, not six agencies.
 
 ## Latin America and Asia-Pacific official wave
 
@@ -902,12 +907,13 @@ No new country qualified. The reasons are the point, and they cluster:
   development work but no first-party open-data download with a resolvable
   license. Waikato Regional Council (BUSIT) exposes no dataset-level open license
   for its feed.
-- **Host blocks automated download, or an unstable URL (rejected):** Tasmania's
-  Department of State Growth publishes GTFS under CC BY-SA 4.0, but its download
-  sits behind a Cloudflare challenge that returns 403 to non-browser clients, so
-  the pipeline cannot fetch it, and the file uses a dated versioned name rather
-  than a stable URL. Transport Canberra's older ACTION feed on `data.act.gov.au`
-  (CC BY 4.0) now 403s, and its current MyWay+ GTFS requires an access key.
+- **Host blocks automated download, or an unstable URL (rejected):** Transport
+  Canberra's older ACTION feed on `data.act.gov.au` (CC BY 4.0) now 403s, and
+  its current MyWay+ GTFS requires an access key.
+- **Resolved after this review:** Tasmania replaced its challenged, dated,
+  share-alike download with the stable keyless CC BY 4.0 aggregate documented
+  in the Oceania section. That new first-party evidence cleared the earlier
+  exclusion; it was not inferred from the old URL.
 - **Community, aggregator, or non-first-party (partnership-gated, not
   curation):** Indonesia has no official city GTFS beyond the catalog's
   TransJakarta; other cities are community exports. The Manila feed is community
@@ -1457,8 +1463,7 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   Société de transport de Laval restricts commercial and quasi-commercial use.
   Neither is an open commercial-reuse grant.
 - Share-alike, held for consistency: Codiac Transpo (Moncton) publishes under
-  CC BY-SA. Share-alike is not on the accepted licence list, matching the
-  earlier hold on Tasmania's CC BY-SA feed.
+  CC BY-SA. Share-alike is not on the accepted licence list.
 - Licence page not resolvable from the review environment (fail closed): Halifax
   Transit, Lethbridge Transit, Red Deer Transit, Durham Region Transit, Greater
   Sudbury Transit, Burlington Transit, Transit Windsor, City of Regina, and STO
@@ -1474,10 +1479,9 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   Trillium mirror, not an operator or government portal.
 - Already evaluated by the Asia-Pacific breadth wave and not re-litigated:
   Transport for New South Wales (key-gated and over the download cap), Transport
-  Canberra (HTTP 403, and its MyWay+ feed needs a key), and Tasmania's Metro
-  feeds (the state's consolidated feed is Cloudflare-challenged and CC BY-SA,
-  and the older per-city metrotas.com.au downloads carry no resolvable open
-  licence).
+  Canberra (HTTP 403, and its MyWay+ feed needs a key). Tasmania's superseding
+  first-party aggregate is documented separately because its source, URL, and
+  licence all changed after this pass.
 
 ## United States small and rural depth wave
 

@@ -72,9 +72,11 @@ The consumer feature finder now has a primary-navigation entry, language-aware
 Product-need presets compose existing, ungraded filters for accessibility
 metadata, multilingual rider information, fare-aware planning, flexible-service
 discovery, contactless bank-card declarations, step-free station navigation,
-modern Fare v2 integration, and ferry service discovery. The ferry preset also
-proves that a product need can compose a service-mode filter without adding a
-new grade or certification claim.
+modern Fare v2 integration, ferry service discovery, and bicycle-aware ferry
+planning. The bicycle-aware preset composes the ferry service mode with a
+minimum share of ferry trips that state whether bicycles are allowed or
+prohibited. This is published policy evidence, not a claim about vessel space,
+boarding conditions, or whether a rider can take a bicycle on every trip.
 CSV exports repeat the selected geographic cohort and its reviewed-record
 denominator on every row, so a shortlist remains interpretable after it leaves
 the site.
