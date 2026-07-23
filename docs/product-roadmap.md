@@ -69,6 +69,12 @@ without accepted ownership still does not establish a verified remediation.
 The consumer feature finder now has a primary-navigation entry, language-aware
 `translations.txt` filters, CSV export, and the same row contract in
 `api/v1/features.json`. The interface states that the corpus is not a census.
+Product-need presets compose existing, ungraded filters for accessibility
+metadata, multilingual rider information, fare-aware planning, flexible-service
+discovery, contactless bank-card declarations, and step-free station navigation.
+CSV exports repeat the selected geographic cohort and its reviewed-record
+denominator on every row, so a shortlist remains interpretable after it leaves
+the site.
 The European GTFS evidence and beta gate are in
 [`global-expansion.md`](global-expansion.md).
 

@@ -43,6 +43,55 @@ const DATA_BASES = [
   "../data/artifacts",
 ].filter(Boolean);
 
+/** Product questions that can be answered from existing, ungraded GTFS
+ *  capability evidence. Presets only compose the public filters; they do not
+ *  certify implementation quality or physical accessibility.
+ *  @type {Record<string, {labelKey: string, features: string[], stops: string, trips: string}>} */
+const FEATURE_USE_CASES = {
+  "accessibility-metadata": {
+    labelKey: "feature_use_case_accessibility",
+    features: ["accessibility"],
+    stops: "95",
+    trips: "95",
+  },
+  "multilingual-rider-info": {
+    labelKey: "feature_use_case_multilingual",
+    features: ["translations"],
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-planning": {
+    labelKey: "feature_use_case_fares",
+    features: ["fares"],
+    stops: "",
+    trips: "",
+  },
+  "flexible-service-discovery": {
+    labelKey: "feature_use_case_flexible_service",
+    features: ["flex"],
+    stops: "",
+    trips: "",
+  },
+  "contactless-payment-metadata": {
+    labelKey: "feature_use_case_contactless",
+    features: ["cemv"],
+    stops: "",
+    trips: "",
+  },
+  "step-free-stations": {
+    labelKey: "feature_use_case_step_free",
+    features: ["pathways", "step_free"],
+    stops: "",
+    trips: "",
+  },
+};
+
+/** Reviewed localized label for a feature-finder preset. @param {string} key */
+function featureUseCaseLabel(key) {
+  const labelKey = FEATURE_USE_CASES[key]?.labelKey;
+  return labelKey ? t(labelKey) : "";
+}
+
 /** @type {string | null} */
 let resolvedBase = null;
 
@@ -371,10 +420,19 @@ function csvCell(value) {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
-/** The exact consumer-facing rows behind the current shortlist.
- * @param {Array<any>} rows @returns {string} */
-function featureCsv(rows) {
+/** The exact consumer-facing rows behind the current shortlist. Repeating the
+ *  export context on each row keeps the file rectangular and machine-readable.
+ *  @param {Array<any>} rows
+ *  @param {{useCase: string, coverageScope: string, coverageDenominator: number,
+ *    matchingRecords: number, filterUrl: string}} context
+ *  @returns {string} */
+function featureCsv(rows, context) {
   const columns = [
+    ["shortlist_use_case", () => context.useCase],
+    ["coverage_scope", () => context.coverageScope],
+    ["coverage_denominator", () => context.coverageDenominator],
+    ["matching_record_count", () => context.matchingRecords],
+    ["filter_url", () => context.filterUrl],
     ["feed_id", (row) => row.id],
     ["feed_name", (row) => row.name],
     ["country_code", (row) => row.country],
@@ -419,9 +477,11 @@ function featureCsv(rows) {
 }
 
 /** Download the current client-side shortlist without sending it anywhere.
- * @param {Array<any>} rows */
-function downloadFeatureCsv(rows) {
-  const blob = new Blob([featureCsv(rows)], { type: "text/csv;charset=utf-8" });
+ * @param {Array<any>} rows
+ * @param {{useCase: string, coverageScope: string, coverageDenominator: number,
+ *   matchingRecords: number, filterUrl: string}} context */
+function downloadFeatureCsv(rows, context) {
+  const blob = new Blob([featureCsv(rows, context)], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -807,6 +867,9 @@ function renderOverview(directory) {
   const translationLanguageOptions = translationLanguages
     .map(({ code, label }) => `<option value="${escAttr(code)}">${esc(label)}</option>`)
     .join("");
+  const featureUseCaseOptions = Object.entries(FEATURE_USE_CASES)
+    .map(([key]) => `<option value="${escAttr(key)}">${esc(featureUseCaseLabel(key))}</option>`)
+    .join("");
   const usCoverage = countries.find((country) => country.country_code === "US");
   const usFeedCount = Number(usCoverage?.feed_records ?? usCoverage?.agencies ?? 0);
   const coverageLimit = usFeedCount > 0
@@ -877,6 +940,15 @@ function renderOverview(directory) {
         Location controls below narrow the same shortlist.</p>
       </div>
       <div class="feature-filter-grid">
+        <fieldset class="feature-fieldset use-case-filters">
+          <legend>${esc(t("feature_use_case_legend"))}</legend>
+          <p class="fineprint">${esc(t("feature_use_case_hint"))}</p>
+          <label for="feature-use-case">${esc(t("feature_use_case_label"))}</label>
+          <select id="feature-use-case">
+            <option value="">${esc(t("feature_use_case_placeholder"))}</option>
+            ${featureUseCaseOptions}
+          </select>
+        </fieldset>
         <fieldset class="feature-fieldset required-feature-filters">
           <legend>Required features</legend>
           <p class="fineprint">Unknown measurements do not match a selected feature.</p>
@@ -999,6 +1071,7 @@ function setupOverview(agencies, total, summary) {
     main.querySelector("#translation-language")
   );
   const serviceMode = /** @type {HTMLSelectElement} */ (main.querySelector("#service-mode"));
+  const useCase = /** @type {HTMLSelectElement} */ (main.querySelector("#feature-use-case"));
   const exportBtn = /** @type {HTMLButtonElement} */ (
     main.querySelector("#download-feature-results")
   );
@@ -1117,7 +1190,6 @@ function setupOverview(agencies, total, summary) {
       .split(",")
       .filter((value) => featureValues.has(value))
   );
-  for (const control of featureChecks) control.checked = selectedFeatures.has(control.value);
   const wantedStops = urlParams.get("stops") || "";
   const wantedTrips = urlParams.get("trips") || "";
   stopsMin.value = thresholdValues.has(wantedStops) ? wantedStops : "";
@@ -1128,6 +1200,32 @@ function setupOverview(agencies, total, summary) {
   const modeValues = new Set(Array.from(serviceMode.options).map((option) => option.value));
   const wantedMode = (urlParams.get("mode") || "").toLocaleLowerCase();
   serviceMode.value = modeValues.has(wantedMode) ? wantedMode : "";
+  const wantedUseCase = urlParams.get("usecase") || "";
+  useCase.value = Object.hasOwn(FEATURE_USE_CASES, wantedUseCase) ? wantedUseCase : "";
+  const hasExplicitFeatureFilters = ["features", "stops", "trips", "lang", "mode"].some(
+    (key) => urlParams.has(key)
+  );
+  if (useCase.value && !hasExplicitFeatureFilters) {
+    const preset = FEATURE_USE_CASES[useCase.value];
+    selectedFeatures.clear();
+    for (const feature of preset.features) selectedFeatures.add(feature);
+    stopsMin.value = preset.stops;
+    tripsMin.value = preset.trips;
+  }
+  function useCaseMatches(key) {
+    const preset = FEATURE_USE_CASES[key];
+    return Boolean(
+      preset &&
+      selectedFeatures.size === preset.features.length &&
+      preset.features.every((feature) => selectedFeatures.has(feature)) &&
+      stopsMin.value === preset.stops &&
+      tripsMin.value === preset.trips &&
+      !translationLanguage.value &&
+      !serviceMode.value
+    );
+  }
+  if (useCase.value && !useCaseMatches(useCase.value)) useCase.value = "";
+  for (const control of featureChecks) control.checked = selectedFeatures.has(control.value);
   const featureView = urlParams.get("view") === "features";
   for (const b of facetBtns) b.setAttribute("aria-pressed", String(b.dataset.facet === facet));
 
@@ -1147,8 +1245,9 @@ function setupOverview(agencies, total, summary) {
     const q = input.value.trim();
     if (q) p.set("q", q);
     if (sortSel.value !== defaultSort) p.set("sort", sortSel.value);
+    if (useCase.value) p.set("usecase", useCase.value);
     if (selectedFeatures.size) p.set("features", [...selectedFeatures].join(","));
-    if (featureView || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value) {
+    if (featureView || useCase.value || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value) {
       p.set("view", "features");
     }
     if (serviceMode.value) p.set("mode", serviceMode.value);
@@ -1326,6 +1425,7 @@ function setupOverview(agencies, total, summary) {
   for (const control of featureChecks) {
     control.addEventListener("change", () => {
       userInteracted = true;
+      useCase.value = "";
       if (control.checked) selectedFeatures.add(control.value);
       else selectedFeatures.delete(control.value);
       apply();
@@ -1334,19 +1434,46 @@ function setupOverview(agencies, total, summary) {
   for (const control of [stopsMin, tripsMin]) {
     control.addEventListener("change", () => {
       userInteracted = true;
+      useCase.value = "";
       apply();
     });
   }
   translationLanguage.addEventListener("change", () => {
     userInteracted = true;
+    useCase.value = "";
     apply();
   });
   serviceMode.addEventListener("change", () => {
     userInteracted = true;
+    useCase.value = "";
+    apply();
+  });
+  useCase.addEventListener("change", () => {
+    userInteracted = true;
+    const preset = FEATURE_USE_CASES[useCase.value];
+    if (preset) {
+      selectedFeatures.clear();
+      for (const feature of preset.features) selectedFeatures.add(feature);
+      for (const control of featureChecks) {
+        control.checked = selectedFeatures.has(control.value);
+      }
+      stopsMin.value = preset.stops;
+      tripsMin.value = preset.trips;
+      translationLanguage.value = "";
+      serviceMode.value = "";
+    }
     apply();
   });
   exportBtn.addEventListener("click", () => {
-    if (matches.length) downloadFeatureCsv(matches);
+    if (!matches.length) return;
+    const coverage = regionCoverageContext();
+    downloadFeatureCsv(matches, {
+      useCase: featureUseCaseLabel(useCase.value),
+      coverageScope: coverage.scope,
+      coverageDenominator: coverage.denominator,
+      matchingRecords: matches.length,
+      filterUrl: location.href,
+    });
   });
   moreBtn.addEventListener("click", paintMore);
   for (const btn of facetBtns) {
@@ -1413,28 +1540,40 @@ function setupOverview(agencies, total, summary) {
   // beside the location filter so no regional cohort is read as a census. The
   // count is the tracked feed records for that place (directory.summary carries
   // it), never a claim of complete coverage. "" when no country is selected.
-  function regionCoverageHtml() {
-    if (locationFilter.country === "all") return "";
+  function regionCoverageContext() {
+    if (locationFilter.country === "all") {
+      return { scope: t("feature_scope_all_tracked"), denominator: total, selected: false };
+    }
     const country = countries.find((row) => (row.country_code || "") === locationFilter.country);
-    if (!country) return "";
+    if (!country) {
+      return { scope: t("feature_scope_all_tracked"), denominator: total, selected: false };
+    }
     const countryName = country.country_name || locationFilter.country;
     let count = Number(country.agencies) || 0;
     let place = countryName;
-    let scope = "this country";
+    let selectedScopeKey = "feature_scope_country";
     if (locationFilter.subdivision !== "all") {
       const sub = (country.subdivisions || []).find(
         (row) => (row.subdivision_code || UNLOCATED_SUBDIVISION) === locationFilter.subdivision
       );
-      if (!sub) return "";
+      if (!sub) return { scope: countryName, denominator: count, selected: true };
       count = Number(sub.agencies) || 0;
       place = `${sub.subdivision_name || "Unlocated"}, ${countryName}`;
-      scope = "this area";
+      selectedScopeKey = "feature_scope_area";
     }
-    const noun = count === 1 ? "reviewed feed record" : "reviewed feed records";
-    const verb = count === 1 ? "is" : "are";
-    return (
-      `${formatNumber(count)} ${noun} in <bdi>${esc(place)}</bdi> ${verb} tracked here. ` +
-      `That is the size of the cohort for ${scope}, not a census of its transit.`
+    return { scope: place, denominator: count, selected: true, selectedScopeKey };
+  }
+  function regionCoverageHtml() {
+    const coverage = regionCoverageContext();
+    if (!coverage.selected) return "";
+    const { denominator: count, scope: place, selectedScopeKey } = coverage;
+    return t(
+      count === 1 ? "feature_scope_disclosure_single" : "feature_scope_disclosure_plural",
+      {
+        count: formatNumber(count),
+        place: `<bdi>${esc(place)}</bdi>`,
+        selectedScope: t(selectedScopeKey),
+      }
     );
   }
   function updateRegionCoverage() {
@@ -1537,6 +1676,7 @@ function setupOverview(agencies, total, summary) {
     tripsMin.value = "";
     translationLanguage.value = "";
     serviceMode.value = "";
+    useCase.value = "";
     locationFilter.country = "all";
     locationFilter.subdivision = "all";
     locationFilter.legacyState = "all";

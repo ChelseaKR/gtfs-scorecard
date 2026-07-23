@@ -255,7 +255,11 @@ These unblock more than one phase and are sequenced by first need.
   same scope line, and the `/status/` page states the European cohort's
   denominator with a per-country breakdown. A remaining refinement is to carry
   the per-region denominator into the CSV export headers as it is added to more
-  activated regions.
+  activated regions. **That refinement shipped in July 2026:** every feature
+  finder CSV row now repeats the selected coverage scope, its reviewed-record
+  denominator, the matching-record count, and the shareable filter URL. Keeping
+  the context in columns preserves a rectangular RFC 4180 file for downstream
+  analysis.
 
 ## Completion
 

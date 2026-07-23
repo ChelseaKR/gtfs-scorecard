@@ -156,7 +156,7 @@ def _feature_directory() -> dict[str, Any]:
                     "fare_model": "v2",
                     "has_pathways": True,
                     "has_step_free": True,
-                    "has_cemv": False,
+                    "has_cemv": True,
                     "translations_measured": True,
                     "has_translations": True,
                     "translation_count": 12,
@@ -557,6 +557,11 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert '"capabilities_measured"' in csv.splitlines()[0]
     assert '"accessibility_fields"' in csv.splitlines()[0]
     assert '"translation_languages"' in csv.splitlines()[0]
+    assert '"coverage_scope"' in csv.splitlines()[0]
+    assert '"coverage_denominator"' in csv.splitlines()[0]
+    assert '"matching_record_count"' in csv.splitlines()[0]
+    assert '"Ontario, Canada"' in csv
+    assert '"2"' in csv
     assert '"barrie-transit"' in csv
     assert '"london-transit-commission"' not in csv
     assert '"100"' in csv and '"96"' in csv
@@ -567,9 +572,95 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     expect(page.locator(".feature-match-board")).to_have_attribute("data-active", "false")
     expect(page.locator('input[value="accessibility"]')).not_to_be_checked()
     expect(page.locator("#wheelchair-stops-min")).to_have_value("")
+    expect(page.locator("#feature-use-case")).to_have_value("")
     expect(page.locator("#download-feature-results")).to_be_disabled()
     expect(page.locator("#download-feature-results")).to_be_hidden()
     assert _hash_params(page) == {"sort": "za"}
+
+
+def test_product_use_case_preset_is_refinable_shareable_and_exported(
+    page: Page, app_url: str
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("step-free-stations")
+
+    expect(page.locator('input[value="pathways"]')).to_be_checked()
+    expect(page.locator('input[value="step_free"]')).to_be_checked()
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text("Station pathways · Step-free paths")
+    assert _hash_params(page) == {
+        "usecase": "step-free-stations",
+        "features": "pathways,step_free",
+        "view": "features",
+    }
+
+    with page.expect_download() as download_info:
+        page.get_by_role("button", name="Download 1 matching feed (CSV)").click()
+    csv = Path(download_info.value.path()).read_text()
+    assert '"Step-free station navigation"' in csv
+    assert '"All tracked feed records"' in csv
+    assert f'"{len(directory["agencies"])}"' in csv
+    assert '"1"' in csv
+    assert "usecase=step-free-stations" in csv
+
+    # Refining a preset makes the custom state explicit instead of leaving a
+    # misleading preset label attached to different conditions.
+    page.locator('input[value="step_free"]').uncheck()
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {
+        "features": "pathways",
+        "view": "features",
+    }
+
+
+@pytest.mark.parametrize(
+    ("use_case", "feature", "agency_name", "evidence"),
+    [
+        (
+            "flexible-service-discovery",
+            "flex",
+            "London Transit Commission",
+            "Flexible service",
+        ),
+        (
+            "contactless-payment-metadata",
+            "cemv",
+            "Barrie Transit (Ontario)",
+            "Contactless fare payments",
+        ),
+    ],
+)
+def test_global_product_use_case_presets_reuse_published_capability_evidence(
+    page: Page,
+    app_url: str,
+    use_case: str,
+    feature: str,
+    agency_name: str,
+    evidence: str,
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option(use_case)
+
+    expect(page.locator(f'input[value="{feature}"]')).to_be_checked()
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name=agency_name)).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text(evidence)
+    assert _hash_params(page) == {
+        "usecase": use_case,
+        "features": feature,
+        "view": "features",
+    }
 
 
 def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str) -> None:
