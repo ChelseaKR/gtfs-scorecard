@@ -1133,14 +1133,16 @@ main:focus { outline: none; }
 }
 .accessibility-thresholds > label,
 .translation-filters > label,
-.mode-filters > label {
+.mode-filters > label,
+.use-case-filters > label {
   display: block;
   margin: 0.65rem 0 0.25rem;
   font-weight: 600;
 }
 .accessibility-thresholds select,
 .translation-filters select,
-.mode-filters select {
+.mode-filters select,
+.use-case-filters select {
   width: 100%;
   min-height: 44px;
   padding: 0.5rem 0.7rem;
@@ -1153,7 +1155,8 @@ main:focus { outline: none; }
 }
 .accessibility-thresholds select:focus-visible,
 .translation-filters select:focus-visible,
-.mode-filters select:focus-visible {
+.mode-filters select:focus-visible,
+.use-case-filters select:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
