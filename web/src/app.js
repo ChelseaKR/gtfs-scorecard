@@ -126,6 +126,41 @@ const FEATURE_USE_CASES = {
     stops: "",
     trips: "",
   },
+  "latest-sample-realtime-review": {
+    labelKey: "feature_use_case_realtime",
+    features: ["realtime"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "live-bus-data-integration": {
+    labelKey: "feature_use_case_realtime_bus",
+    features: ["realtime"],
+    mode: "bus",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-live-service-information": {
+    labelKey: "feature_use_case_realtime_multilingual",
+    features: ["realtime", "translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-live-service-planning": {
+    labelKey: "feature_use_case_realtime_fares",
+    features: ["realtime", "fares"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-live-service-information": {
+    labelKey: "feature_use_case_realtime_accessible",
+    features: ["realtime", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
   "contactless-payment-metadata": {
     labelKey: "feature_use_case_contactless",
     features: ["cemv"],
@@ -570,6 +605,12 @@ function featureCsv(rows, context) {
     ["translation_languages", (row) => row.translationLanguages.join("|")],
     ["translated_tables", (row) => row.translatedTables.join("|")],
     ["feed_language", (row) => row.feedLang],
+    ["realtime_measured", (row) => row.realtimeMeasured],
+    ["realtime_reachable", (row) => row.realtimeReachable],
+    ["realtime_configured_kinds", (row) => row.realtimeConfiguredKinds.join("|")],
+    ["realtime_reachable_kinds", (row) => row.realtimeReachableKinds],
+    ["realtime_coverage_pct", (row) => row.realtimeCoverage],
+    ["realtime_freshness", (row) => row.realtimeFreshness],
     ["modes_measured", (row) => row.modesMeasured],
     ["primary_mode", (row) => row.primaryMode],
     ["modes", (row) => row.modes.join("|")],
@@ -949,6 +990,13 @@ function renderOverview(directory) {
       translationLanguages: stringArray(a.translation_languages),
       translatedTables: stringArray(a.translated_tables),
       feedLang: typeof a.feed_lang === "string" ? a.feed_lang : "",
+      realtimeMeasured: a.realtime_measured === true,
+      realtimeReachable: optionalBoolean(a.realtime_reachable),
+      realtimeConfiguredKinds: stringArray(a.realtime_configured_kinds),
+      realtimeReachableKinds: optionalNumber(a.realtime_reachable_kinds),
+      realtimeCoverage: optionalNumber(a.realtime_coverage_pct),
+      realtimeFreshness:
+        typeof a.realtime_freshness === "string" ? a.realtime_freshness : "",
       modesMeasured: a.modes_measured === true,
       primaryMode: typeof a.primary_mode === "string" ? a.primary_mode : "",
       modes: stringArray(a.modes),
@@ -1061,6 +1109,7 @@ function renderOverview(directory) {
         <h2 class="section-title" id="feature-filter-h">Filter by what feeds publish</h2>
         <p>Select every feature your product needs. A feed must meet all selected conditions.
         Accessibility percentages describe published GTFS fields, not verified physical access.
+        ${esc(t("feature_realtime_disclaimer"))}
         Location controls below narrow the same shortlist.</p>
       </div>
       <div class="feature-filter-grid">
@@ -1085,6 +1134,7 @@ function renderOverview(directory) {
             <label><input class="feature-check" type="checkbox" value="step_free"> Step-free paths</label>
             <label><input class="feature-check" type="checkbox" value="cemv"> Contactless fare payments</label>
             <label><input class="feature-check" type="checkbox" value="translations"> Translated rider information</label>
+            <label><input class="feature-check" type="checkbox" value="realtime"> ${esc(t("feature_filter_realtime_label"))}</label>
           </div>
         </fieldset>
         <fieldset class="feature-fieldset mode-filters">
@@ -1328,6 +1378,7 @@ function setupOverview(agencies, total, summary) {
     step_free: "hasStepFree",
     cemv: "hasCemv",
     translations: "hasTranslations",
+    realtime: "realtimeReachable",
   };
   const featureLabels = {
     fares: "Fare data",
@@ -1337,6 +1388,7 @@ function setupOverview(agencies, total, summary) {
     step_free: "Step-free paths",
     cemv: "Contactless fare payments",
     translations: "Translated rider information",
+    realtime: t("feature_filter_realtime_label"),
   };
   const featureValues = new Set(featureChecks.map((control) => control.value));
   const thresholdValues = new Set(["any", "50", "95", "100"]);
@@ -1493,7 +1545,20 @@ function setupOverview(agencies, total, summary) {
       evidence.push(`Accessibility: ${stops}, ${trips}`);
     }
     for (const feature of selectedFeatures) {
-      if (feature === "translations") {
+      if (feature === "realtime") {
+        const configured = a.realtimeConfiguredKinds.length;
+        const reached = a.realtimeReachableKinds;
+        const endpointText = configured && reached !== null
+          ? t("feature_realtime_endpoints_reached", { reached, configured })
+          : t("feature_realtime_endpoint_reached");
+        const coverage = a.realtimeCoverage === null
+          ? ""
+          : t("feature_realtime_coverage", { coverage: a.realtimeCoverage });
+        evidence.push(t("feature_realtime_evidence", {
+          endpoint_text: endpointText,
+          coverage,
+        }));
+      } else if (feature === "translations") {
         const languages = a.translationLanguages.slice(0, 3).map((code) => formatLanguageName(code));
         const remaining = a.translationLanguages.length - languages.length;
         evidence.push(`Translations: ${languages.join(", ")}${remaining > 0 ? `, plus ${remaining} more` : ""}`);

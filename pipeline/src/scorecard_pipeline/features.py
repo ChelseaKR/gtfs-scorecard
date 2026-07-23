@@ -63,6 +63,32 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
     ferry_cars = ferry_profile.get("cars", {}) if ferry_profile else {}
     ferry_fares = ferry_profile.get("fares", {}) if ferry_profile else {}
     ferry_realtime = ferry_profile.get("realtime", {}) if ferry_profile else {}
+    categories = artifact.get("categories")
+    raw_realtime = categories.get("realtime") if isinstance(categories, dict) else None
+    realtime_status = raw_realtime.get("status") if isinstance(raw_realtime, dict) else None
+    raw_realtime_details = raw_realtime.get("details") if isinstance(raw_realtime, dict) else None
+    realtime_details = raw_realtime_details if isinstance(raw_realtime_details, dict) else {}
+    raw_configured_kinds = realtime_details.get("configured_kinds")
+    realtime_configured_kinds = (
+        [kind for kind in raw_configured_kinds if isinstance(kind, str)]
+        if isinstance(raw_configured_kinds, list)
+        else None
+    )
+    configured_count = realtime_details.get("kinds_configured")
+    reachable_count = realtime_details.get("kinds_reachable")
+    realtime_measured = realtime_status == "measured"
+    has_realtime = (
+        bool(realtime_configured_kinds)
+        or (isinstance(configured_count, int | float) and configured_count > 0)
+        or (isinstance(reachable_count, int | float) and reachable_count > 0)
+        if isinstance(raw_realtime, dict)
+        else None
+    )
+    realtime_reachable = (
+        isinstance(reachable_count, int | float) and reachable_count > 0
+        if realtime_measured
+        else None
+    )
 
     boarding = coverage.get("wheelchair_boarding_pct") if coverage else None
     accessible = coverage.get("wheelchair_accessible_pct") if coverage else None
@@ -93,6 +119,15 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
         "translation_languages": (adoption.get("translation_languages") if adoption else None),
         "translated_tables": adoption.get("translated_tables") if adoption else None,
         "feed_lang": adoption.get("feed_lang") if adoption else None,
+        "realtime_measured": realtime_measured,
+        "has_realtime": has_realtime,
+        "realtime_reachable": realtime_reachable,
+        "realtime_configured_kinds": realtime_configured_kinds,
+        "realtime_reachable_kinds": reachable_count if realtime_measured else None,
+        "realtime_coverage_pct": (
+            realtime_details.get("coverage_pct") if realtime_measured else None
+        ),
+        "realtime_freshness": (realtime_details.get("rt_freshness") if realtime_measured else None),
         "modes_measured": mode_profile is not None,
         "primary_mode": mode_profile.get("primary_mode") if mode_profile else None,
         "modes": modes,
@@ -166,6 +201,13 @@ _PUBLIC_KEYS = (
     "translation_languages",
     "translated_tables",
     "feed_lang",
+    "realtime_measured",
+    "has_realtime",
+    "realtime_reachable",
+    "realtime_configured_kinds",
+    "realtime_reachable_kinds",
+    "realtime_coverage_pct",
+    "realtime_freshness",
     "modes_measured",
     "primary_mode",
     "modes",
@@ -214,6 +256,7 @@ def build_feature_dataset(
         "translation_measured_count": sum(
             row.get("translations_measured") is True for row in feeds
         ),
+        "realtime_measured_count": sum(row.get("realtime_measured") is True for row in feeds),
         "mode_measured_count": sum(row.get("modes_measured") is True for row in feeds),
         "ferry_profile_measured_count": sum(
             row.get("ferry_profile_measured") is True for row in feeds
@@ -223,6 +266,10 @@ def build_feature_dataset(
             "selected_features": "all selected features must be published",
             "translation_language": ("exact case-insensitive BCP 47 tag in translation_languages"),
             "mode": "selected mode key must be present in modes",
+            "realtime": (
+                "realtime_reachable is true only when at least one configured endpoint "
+                "responded in the latest scorecard sample; it is not an uptime or coverage SLA"
+            ),
             "ferry_profile": (
                 "ferry schedule fields use ferry routes and trips only; fare and realtime "
                 "fields describe the whole feed"

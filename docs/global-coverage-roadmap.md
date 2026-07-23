@@ -181,6 +181,15 @@ Japan now has 235 reviewed feed records in the catalog. The seven prefectures
 without an admitted source remain empty; no unclear-license feed or mirror was
 used to change that count.
 
+Five more licensed Japanese bus records passed a realtime-evidence review on
+2026-07-23: Kaetsuno World Heritage Bus, Owari Asahi Asapy-go, Tokoname Gruun,
+Mie Kotsu's Shima-area service, and Kumamoto Dentetsu Bus. Each official
+catalog record supplies keyless TripUpdates and VehiclePositions endpoints.
+The admission check confirmed current schedule archives and endpoint
+responses, but does not treat a response as an uptime, prediction-quality, or
+trip-coverage guarantee. Japan now has 240 reviewed feed records across the
+same 40 prefectures.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,

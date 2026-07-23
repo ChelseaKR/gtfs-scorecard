@@ -133,6 +133,13 @@ def _feature_directory() -> dict[str, Any]:
         "translation_languages": None,
         "translated_tables": None,
         "feed_lang": None,
+        "realtime_measured": False,
+        "has_realtime": None,
+        "realtime_reachable": None,
+        "realtime_configured_kinds": None,
+        "realtime_reachable_kinds": None,
+        "realtime_coverage_pct": None,
+        "realtime_freshness": None,
         "modes_measured": False,
         "primary_mode": None,
         "modes": None,
@@ -168,6 +175,13 @@ def _feature_directory() -> dict[str, Any]:
                     "translation_languages": ["fr", "nl"],
                     "translated_tables": ["routes", "stops"],
                     "feed_lang": "mul",
+                    "realtime_measured": True,
+                    "has_realtime": True,
+                    "realtime_reachable": True,
+                    "realtime_configured_kinds": ["trip_updates", "vehicle_positions"],
+                    "realtime_reachable_kinds": 2,
+                    "realtime_coverage_pct": 98.0,
+                    "realtime_freshness": "fresh",
                     "modes_measured": True,
                     "primary_mode": "ferry",
                     "modes": ["bus", "ferry", "rail"],
@@ -202,6 +216,13 @@ def _feature_directory() -> dict[str, Any]:
                     "translation_languages": [],
                     "translated_tables": [],
                     "feed_lang": "en",
+                    "realtime_measured": True,
+                    "has_realtime": True,
+                    "realtime_reachable": False,
+                    "realtime_configured_kinds": ["trip_updates"],
+                    "realtime_reachable_kinds": 0,
+                    "realtime_coverage_pct": 0.0,
+                    "realtime_freshness": "stale",
                     "modes_measured": True,
                     "primary_mode": "bus",
                     "modes": ["bus"],
@@ -567,6 +588,9 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert '"capabilities_measured"' in csv.splitlines()[0]
     assert '"accessibility_fields"' in csv.splitlines()[0]
     assert '"translation_languages"' in csv.splitlines()[0]
+    assert '"realtime_measured"' in csv.splitlines()[0]
+    assert '"realtime_reachable"' in csv.splitlines()[0]
+    assert '"realtime_coverage_pct"' in csv.splitlines()[0]
     assert '"ferry_profile_measured"' in csv.splitlines()[0]
     assert '"ferry_terminal_accessibility_stated_pct"' in csv.splitlines()[0]
     assert '"ferry_trip_accessibility_stated_pct"' in csv.splitlines()[0]
@@ -795,6 +819,56 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "",
             "Barrie Transit (Ontario)",
         ),
+        (
+            "latest-sample-realtime-review",
+            ["realtime"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "live-bus-data-integration",
+            ["realtime"],
+            "bus",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "multilingual-live-service-information",
+            ["realtime", "translations"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "fare-aware-live-service-planning",
+            ["realtime", "fares"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-live-service-information",
+            ["realtime", "accessibility"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
     ],
 )
 def test_composed_use_case_presets_keep_every_published_evidence_gate(
@@ -842,6 +916,11 @@ def test_composed_use_case_presets_keep_every_published_evidence_gate(
         f"{matching} of {len(directory['agencies']):,} scorecard{suffix}"
     )
     expect(page.get_by_role("link", name=agency_name)).to_be_visible()
+    if "realtime" in features:
+        expect(page.locator(".feature-evidence")).to_contain_text(
+            "Latest realtime sample: 2 of 2 configured endpoints reached, "
+            "98% scheduled-trip coverage"
+        )
 
     expected = {
         "usecase": use_case,
