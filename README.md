@@ -37,6 +37,21 @@ scorecard. Realtime quality is scored only when a usable realtime feed is
 configured and measured; otherwise it is shown neutrally as not yet measured.
 Any agency can be added through `registry/intake.yaml`.
 
+## Use, adopt, or contribute
+
+- **Check a feed:** browse [gtfsscorecard.org](https://gtfsscorecard.org/), or
+  request a [one-off score](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?template=score-a-feed.yml).
+- **Track an agency:** use the
+  [self-serve submission form](https://gtfsscorecard.org/submit.html), or follow
+  the [repository walkthrough](docs/add-your-agency.md) to open a pull request.
+- **Gate a feed in CI:** add the
+  [GTFS Scorecard Marketplace Action](https://github.com/marketplace/actions/gtfs-scorecard-gate)
+  to a feed repository.
+- **Contribute:** choose a
+  [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+  or read [CONTRIBUTING.md](CONTRIBUTING.md). Feed corrections, accessibility
+  review, and practitioner feedback are useful without changing scoring code.
+
 ## Quickstart
 
 Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
