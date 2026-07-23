@@ -138,8 +138,13 @@ def _feature_directory() -> dict[str, Any]:
         "realtime_reachable": None,
         "realtime_configured_kinds": None,
         "realtime_reachable_kinds": None,
+        "realtime_reachable_kinds_list": None,
+        "realtime_trip_updates_reachable": None,
+        "realtime_vehicle_positions_reachable": None,
+        "realtime_service_alerts_reachable": None,
         "realtime_coverage_pct": None,
         "realtime_freshness": None,
+        "realtime_fresh": None,
         "modes_measured": False,
         "primary_mode": None,
         "modes": None,
@@ -178,10 +183,23 @@ def _feature_directory() -> dict[str, Any]:
                     "realtime_measured": True,
                     "has_realtime": True,
                     "realtime_reachable": True,
-                    "realtime_configured_kinds": ["trip_updates", "vehicle_positions"],
-                    "realtime_reachable_kinds": 2,
+                    "realtime_configured_kinds": [
+                        "trip_updates",
+                        "vehicle_positions",
+                        "service_alerts",
+                    ],
+                    "realtime_reachable_kinds": 3,
+                    "realtime_reachable_kinds_list": [
+                        "trip_updates",
+                        "vehicle_positions",
+                        "service_alerts",
+                    ],
+                    "realtime_trip_updates_reachable": True,
+                    "realtime_vehicle_positions_reachable": True,
+                    "realtime_service_alerts_reachable": True,
                     "realtime_coverage_pct": 98.0,
                     "realtime_freshness": "fresh",
+                    "realtime_fresh": True,
                     "modes_measured": True,
                     "primary_mode": "ferry",
                     "modes": ["bus", "ferry", "rail"],
@@ -221,8 +239,13 @@ def _feature_directory() -> dict[str, Any]:
                     "realtime_reachable": False,
                     "realtime_configured_kinds": ["trip_updates"],
                     "realtime_reachable_kinds": 0,
+                    "realtime_reachable_kinds_list": [],
+                    "realtime_trip_updates_reachable": False,
+                    "realtime_vehicle_positions_reachable": None,
+                    "realtime_service_alerts_reachable": None,
                     "realtime_coverage_pct": 0.0,
                     "realtime_freshness": "stale",
+                    "realtime_fresh": False,
                     "modes_measured": True,
                     "primary_mode": "bus",
                     "modes": ["bus"],
@@ -590,6 +613,11 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert '"translation_languages"' in csv.splitlines()[0]
     assert '"realtime_measured"' in csv.splitlines()[0]
     assert '"realtime_reachable"' in csv.splitlines()[0]
+    assert '"realtime_reachable_kinds_list"' in csv.splitlines()[0]
+    assert '"trip_updates_reachable"' in csv.splitlines()[0]
+    assert '"vehicle_positions_reachable"' in csv.splitlines()[0]
+    assert '"service_alerts_reachable"' in csv.splitlines()[0]
+    assert '"realtime_fresh"' in csv.splitlines()[0]
     assert '"realtime_coverage_pct"' in csv.splitlines()[0]
     assert '"ferry_profile_measured"' in csv.splitlines()[0]
     assert '"ferry_terminal_accessibility_stated_pct"' in csv.splitlines()[0]
@@ -705,6 +733,224 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
         "features": feature,
         "view": "features",
     }
+
+
+REALTIME_ENDPOINT_USE_CASES = [
+    (
+        "trip-prediction-endpoint-review",
+        ["trip_updates"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "vehicle-map-endpoint-review",
+        ["vehicle_positions"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "disruption-alert-endpoint-review",
+        ["service_alerts"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "complete-realtime-stack-review",
+        ["trip_updates", "vehicle_positions", "service_alerts"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-realtime-feed-review",
+        ["realtime", "realtime_fresh"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-trip-prediction-integration",
+        ["trip_updates", "realtime_fresh"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-vehicle-map-integration",
+        ["vehicle_positions", "realtime_fresh"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-bus-predictions",
+        ["trip_updates", "realtime_fresh"],
+        "bus",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-bus-map",
+        ["vehicle_positions", "realtime_fresh"],
+        "bus",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-rail-predictions",
+        ["trip_updates", "realtime_fresh"],
+        "rail",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-rail-map",
+        ["vehicle_positions", "realtime_fresh"],
+        "rail",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-ferry-predictions",
+        ["trip_updates", "realtime_fresh"],
+        "ferry",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-ferry-map",
+        ["vehicle_positions", "realtime_fresh"],
+        "ferry",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "multilingual-trip-predictions",
+        ["trip_updates", "translations"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "multilingual-vehicle-map",
+        ["vehicle_positions", "translations"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fare-aware-trip-predictions",
+        ["trip_updates", "fares"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-trip-predictions",
+        ["trip_updates", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-vehicle-map",
+        ["vehicle_positions", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-disruption-alerts",
+        ["service_alerts", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-complete-realtime-stack",
+        ["trip_updates", "vehicle_positions", "service_alerts", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+]
+
+
+def _assert_realtime_feature_evidence(page: Page, features: list[str]) -> None:
+    if "realtime" in features:
+        expect(page.locator(".feature-evidence")).to_contain_text(
+            "Latest realtime sample: 3 of 3 configured endpoints reached, "
+            "98% scheduled-trip coverage"
+        )
+    if any(kind in features for kind in ("trip_updates", "vehicle_positions", "service_alerts")):
+        expect(page.locator(".feature-evidence")).to_contain_text("Latest realtime sample reached:")
+    if "realtime_fresh" in features:
+        expect(page.locator(".feature-evidence")).to_contain_text(
+            "Latest TripUpdates or VehiclePositions header was at most 60 seconds old"
+        )
 
 
 @pytest.mark.parametrize(
@@ -869,6 +1115,7 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "",
             "Barrie Transit (Ontario)",
         ),
+        *REALTIME_ENDPOINT_USE_CASES,
     ],
 )
 def test_composed_use_case_presets_keep_every_published_evidence_gate(
@@ -916,11 +1163,7 @@ def test_composed_use_case_presets_keep_every_published_evidence_gate(
         f"{matching} of {len(directory['agencies']):,} scorecard{suffix}"
     )
     expect(page.get_by_role("link", name=agency_name)).to_be_visible()
-    if "realtime" in features:
-        expect(page.locator(".feature-evidence")).to_contain_text(
-            "Latest realtime sample: 2 of 2 configured endpoints reached, "
-            "98% scheduled-trip coverage"
-        )
+    _assert_realtime_feature_evidence(page, features)
 
     expected = {
         "usecase": use_case,

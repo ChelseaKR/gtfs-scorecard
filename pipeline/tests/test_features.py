@@ -41,6 +41,7 @@ def _artifact(*, measured: bool = True) -> dict[str, Any]:
                     "status": "measured",
                     "details": {
                         "configured_kinds": ["trip_updates", "vehicle_positions"],
+                        "reachable_kinds": ["trip_updates"],
                         "kinds_configured": 2,
                         "kinds_reachable": 1,
                         "coverage_pct": 72.5,
@@ -114,8 +115,13 @@ def test_feature_measurements_preserve_capabilities_and_accessibility_depth() ->
     assert row["realtime_reachable"] is True
     assert row["realtime_configured_kinds"] == ["trip_updates", "vehicle_positions"]
     assert row["realtime_reachable_kinds"] == 1
+    assert row["realtime_reachable_kinds_list"] == ["trip_updates"]
+    assert row["realtime_trip_updates_reachable"] is True
+    assert row["realtime_vehicle_positions_reachable"] is False
+    assert row["realtime_service_alerts_reachable"] is None
     assert row["realtime_coverage_pct"] == 72.5
     assert row["realtime_freshness"] == "fresh"
+    assert row["realtime_fresh"] is True
     assert row["modes_measured"] is True
     assert row["primary_mode"] == "ferry"
     assert row["modes"] == ["bus", "ferry"]
@@ -152,8 +158,13 @@ def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
     assert row["realtime_reachable"] is None
     assert row["realtime_configured_kinds"] is None
     assert row["realtime_reachable_kinds"] is None
+    assert row["realtime_reachable_kinds_list"] is None
+    assert row["realtime_trip_updates_reachable"] is None
+    assert row["realtime_vehicle_positions_reachable"] is None
+    assert row["realtime_service_alerts_reachable"] is None
     assert row["realtime_coverage_pct"] is None
     assert row["realtime_freshness"] is None
+    assert row["realtime_fresh"] is None
     assert row["modes_measured"] is False
     assert row["primary_mode"] is None
     assert row["modes"] is None
@@ -170,6 +181,30 @@ def test_feature_measurements_infer_configured_realtime_from_legacy_reachability
 
     assert row["has_realtime"] is True
     assert row["realtime_reachable"] is True
+    assert row["realtime_reachable_kinds_list"] is None
+    assert row["realtime_trip_updates_reachable"] is None
+
+
+def test_feature_measurements_infer_exact_legacy_realtime_kind_edges() -> None:
+    all_reached = _artifact()
+    all_reached["categories"]["realtime"]["details"].pop("reachable_kinds")
+    all_reached["categories"]["realtime"]["details"]["kinds_reachable"] = 2
+    none_reached = _artifact()
+    none_reached["categories"]["realtime"]["details"].pop("reachable_kinds")
+    none_reached["categories"]["realtime"]["details"]["kinds_reachable"] = 0
+
+    all_row = feature_measurements(all_reached)
+    none_row = feature_measurements(none_reached)
+
+    assert all_row["realtime_reachable_kinds_list"] == [
+        "trip_updates",
+        "vehicle_positions",
+    ]
+    assert all_row["realtime_trip_updates_reachable"] is True
+    assert all_row["realtime_vehicle_positions_reachable"] is True
+    assert none_row["realtime_reachable_kinds_list"] == []
+    assert none_row["realtime_trip_updates_reachable"] is False
+    assert none_row["realtime_vehicle_positions_reachable"] is False
 
 
 def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
@@ -214,3 +249,5 @@ def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
     )
     assert payload["filter_semantics"]["mode"] == "selected mode key must be present in modes"
     assert "latest scorecard sample" in payload["filter_semantics"]["realtime"]
+    assert "latest sample" in payload["filter_semantics"]["realtime_endpoint_kinds"]
+    assert "60 seconds" in payload["filter_semantics"]["realtime_freshness"]

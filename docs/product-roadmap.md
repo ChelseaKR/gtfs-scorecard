@@ -69,25 +69,22 @@ without accepted ownership still does not establish a verified remediation.
 The consumer feature finder now has a primary-navigation entry, language-aware
 `translations.txt` filters, CSV export, and the same row contract in
 `api/v1/features.json`. The interface states that the corpus is not a census.
-Product-need presets compose existing, ungraded filters for accessibility
-metadata, multilingual rider information, fare-aware planning, flexible-service
-discovery, contactless bank-card declarations, step-free station navigation,
-modern Fare v2 integration, ferry service discovery, ferry accessibility
-information, bicycle-aware ferry planning, accessible multilingual rider
-information, accessible fare-aware planning, accessible flexible-service
-planning, accessible rail service information, and fully stated ferry rider
-information. Five more composed questions cover multilingual rail information,
-fare-aware ferry planning, accessible bus information, multilingual flexible
-service, and accessible Fares v2 integration. A further five cover a
-latest-sample realtime review, live bus data integration, multilingual
-live-service information, fare-aware live-service planning, and accessible
-live-service information. These fifteen composed presets reuse the existing
-published-field filters and retain their individual thresholds in shared
-links. The realtime filter matches only feeds where at least one configured
-endpoint responded in the latest scorecard sample. It does not certify uptime,
-service availability, prediction accuracy, or scheduled-trip coverage. The
-presets also do not certify physical accessibility, service usability, fare
-correctness, booking
+The finder has 45 product-need presets. The first 25 compose the existing
+accessibility, translation, fare, flexible-service, pathway, payment, mode,
+ferry, and generic latest-sample realtime filters. Twenty endpoint-specific
+presets add TripUpdates prediction review, VehiclePositions map review,
+ServiceAlerts disruption review, the complete three-endpoint stack, and
+fresh-header variants. They also compose that evidence with bus, rail, ferry,
+translation, fare, and accessibility requirements.
+
+Every preset retains its individual filters and thresholds in shared links.
+Generic realtime matches when at least one configured endpoint responded in
+the latest scorecard sample. Endpoint-specific filters match only the named
+configured endpoint kind. Freshness means the newest measured TripUpdates or
+VehiclePositions header was at most 60 seconds old. None of those fields
+certifies continuous uptime, service availability, prediction accuracy,
+alert content, or scheduled-trip coverage. The presets also do not certify
+physical accessibility, service usability, fare correctness, booking
 availability, or vessel capacity. The ferry accessibility preset
 requires a minimum stated share for both ferry terminals and ferry trips. It
 describes published wheelchair fields, not physical accessibility or boarding

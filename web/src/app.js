@@ -161,6 +161,146 @@ const FEATURE_USE_CASES = {
     stops: "95",
     trips: "95",
   },
+  "trip-prediction-endpoint-review": {
+    labelKey: "feature_use_case_trip_predictions",
+    features: ["trip_updates"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "vehicle-map-endpoint-review": {
+    labelKey: "feature_use_case_vehicle_map",
+    features: ["vehicle_positions"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "disruption-alert-endpoint-review": {
+    labelKey: "feature_use_case_disruption_alerts",
+    features: ["service_alerts"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "complete-realtime-stack-review": {
+    labelKey: "feature_use_case_complete_realtime",
+    features: ["trip_updates", "vehicle_positions", "service_alerts"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-realtime-feed-review": {
+    labelKey: "feature_use_case_fresh_realtime",
+    features: ["realtime", "realtime_fresh"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-trip-prediction-integration": {
+    labelKey: "feature_use_case_fresh_trip_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-vehicle-map-integration": {
+    labelKey: "feature_use_case_fresh_vehicle_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-bus-predictions": {
+    labelKey: "feature_use_case_fresh_bus_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "bus",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-bus-map": {
+    labelKey: "feature_use_case_fresh_bus_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "bus",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-rail-predictions": {
+    labelKey: "feature_use_case_fresh_rail_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "rail",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-rail-map": {
+    labelKey: "feature_use_case_fresh_rail_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "rail",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-ferry-predictions": {
+    labelKey: "feature_use_case_fresh_ferry_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-ferry-map": {
+    labelKey: "feature_use_case_fresh_ferry_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-trip-predictions": {
+    labelKey: "feature_use_case_multilingual_trip_predictions",
+    features: ["trip_updates", "translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-vehicle-map": {
+    labelKey: "feature_use_case_multilingual_vehicle_map",
+    features: ["vehicle_positions", "translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-trip-predictions": {
+    labelKey: "feature_use_case_fare_aware_trip_predictions",
+    features: ["trip_updates", "fares"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-trip-predictions": {
+    labelKey: "feature_use_case_accessible_trip_predictions",
+    features: ["trip_updates", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-vehicle-map": {
+    labelKey: "feature_use_case_accessible_vehicle_map",
+    features: ["vehicle_positions", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-disruption-alerts": {
+    labelKey: "feature_use_case_accessible_disruption_alerts",
+    features: ["service_alerts", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-complete-realtime-stack": {
+    labelKey: "feature_use_case_accessible_complete_realtime",
+    features: ["trip_updates", "vehicle_positions", "service_alerts", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
   "contactless-payment-metadata": {
     labelKey: "feature_use_case_contactless",
     features: ["cemv"],
@@ -609,8 +749,13 @@ function featureCsv(rows, context) {
     ["realtime_reachable", (row) => row.realtimeReachable],
     ["realtime_configured_kinds", (row) => row.realtimeConfiguredKinds.join("|")],
     ["realtime_reachable_kinds", (row) => row.realtimeReachableKinds],
+    ["realtime_reachable_kinds_list", (row) => row.realtimeReachableKindsList.join("|")],
+    ["trip_updates_reachable", (row) => row.realtimeTripUpdatesReachable],
+    ["vehicle_positions_reachable", (row) => row.realtimeVehiclePositionsReachable],
+    ["service_alerts_reachable", (row) => row.realtimeServiceAlertsReachable],
     ["realtime_coverage_pct", (row) => row.realtimeCoverage],
     ["realtime_freshness", (row) => row.realtimeFreshness],
+    ["realtime_fresh", (row) => row.realtimeFresh],
     ["modes_measured", (row) => row.modesMeasured],
     ["primary_mode", (row) => row.primaryMode],
     ["modes", (row) => row.modes.join("|")],
@@ -994,9 +1139,14 @@ function renderOverview(directory) {
       realtimeReachable: optionalBoolean(a.realtime_reachable),
       realtimeConfiguredKinds: stringArray(a.realtime_configured_kinds),
       realtimeReachableKinds: optionalNumber(a.realtime_reachable_kinds),
+      realtimeReachableKindsList: stringArray(a.realtime_reachable_kinds_list),
+      realtimeTripUpdatesReachable: optionalBoolean(a.realtime_trip_updates_reachable),
+      realtimeVehiclePositionsReachable: optionalBoolean(a.realtime_vehicle_positions_reachable),
+      realtimeServiceAlertsReachable: optionalBoolean(a.realtime_service_alerts_reachable),
       realtimeCoverage: optionalNumber(a.realtime_coverage_pct),
       realtimeFreshness:
         typeof a.realtime_freshness === "string" ? a.realtime_freshness : "",
+      realtimeFresh: optionalBoolean(a.realtime_fresh),
       modesMeasured: a.modes_measured === true,
       primaryMode: typeof a.primary_mode === "string" ? a.primary_mode : "",
       modes: stringArray(a.modes),
@@ -1135,6 +1285,10 @@ function renderOverview(directory) {
             <label><input class="feature-check" type="checkbox" value="cemv"> Contactless fare payments</label>
             <label><input class="feature-check" type="checkbox" value="translations"> Translated rider information</label>
             <label><input class="feature-check" type="checkbox" value="realtime"> ${esc(t("feature_filter_realtime_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="trip_updates"> ${esc(t("feature_filter_trip_updates_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="vehicle_positions"> ${esc(t("feature_filter_vehicle_positions_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="service_alerts"> ${esc(t("feature_filter_service_alerts_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="realtime_fresh"> ${esc(t("feature_filter_realtime_fresh_label"))}</label>
           </div>
         </fieldset>
         <fieldset class="feature-fieldset mode-filters">
@@ -1379,6 +1533,10 @@ function setupOverview(agencies, total, summary) {
     cemv: "hasCemv",
     translations: "hasTranslations",
     realtime: "realtimeReachable",
+    trip_updates: "realtimeTripUpdatesReachable",
+    vehicle_positions: "realtimeVehiclePositionsReachable",
+    service_alerts: "realtimeServiceAlertsReachable",
+    realtime_fresh: "realtimeFresh",
   };
   const featureLabels = {
     fares: "Fare data",
@@ -1389,6 +1547,10 @@ function setupOverview(agencies, total, summary) {
     cemv: "Contactless fare payments",
     translations: "Translated rider information",
     realtime: t("feature_filter_realtime_label"),
+    trip_updates: t("feature_filter_trip_updates_label"),
+    vehicle_positions: t("feature_filter_vehicle_positions_label"),
+    service_alerts: t("feature_filter_service_alerts_label"),
+    realtime_fresh: t("feature_filter_realtime_fresh_label"),
   };
   const featureValues = new Set(featureChecks.map((control) => control.value));
   const thresholdValues = new Set(["any", "50", "95", "100"]);
@@ -1535,6 +1697,17 @@ function setupOverview(agencies, total, summary) {
 
   function featureEvidence(a) {
     const evidence = [];
+    const realtimeKindFeatures = [
+      ["trip_updates", t("feature_realtime_kind_trip_updates")],
+      ["vehicle_positions", t("feature_realtime_kind_vehicle_positions")],
+      ["service_alerts", t("feature_realtime_kind_service_alerts")],
+    ];
+    const firstSelectedRealtimeKind = realtimeKindFeatures.find(
+      ([feature]) => selectedFeatures.has(feature)
+    )?.[0];
+    const selectedRealtimeKinds = realtimeKindFeatures
+      .filter(([feature]) => selectedFeatures.has(feature))
+      .map(([, label]) => label);
     if (serviceMode.value) evidence.push(`Mode: ${formatModeName(serviceMode.value)}`);
     if (
       (selectedFeatures.has("accessibility") || stopsMin.value || tripsMin.value) &&
@@ -1558,6 +1731,14 @@ function setupOverview(agencies, total, summary) {
           endpoint_text: endpointText,
           coverage,
         }));
+      } else if (["trip_updates", "vehicle_positions", "service_alerts"].includes(feature)) {
+        if (feature === firstSelectedRealtimeKind) {
+          evidence.push(t("feature_realtime_kinds_evidence", {
+            kinds: selectedRealtimeKinds.join(", "),
+          }));
+        }
+      } else if (feature === "realtime_fresh") {
+        evidence.push(t("feature_realtime_fresh_evidence"));
       } else if (feature === "translations") {
         const languages = a.translationLanguages.slice(0, 3).map((code) => formatLanguageName(code));
         const remaining = a.translationLanguages.length - languages.length;
