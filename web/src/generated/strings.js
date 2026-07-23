@@ -26,6 +26,12 @@ export const STRINGS = {
   "feature_ferry_bicycle_legend": "Ferry bicycle policy",
   "feature_ferry_bicycle_most": "At least 95%",
   "feature_ferry_bicycle_no_minimum": "No minimum",
+  "feature_filter_realtime_label": "Realtime endpoint reached in latest sample",
+  "feature_realtime_coverage": ", {coverage}% scheduled-trip coverage",
+  "feature_realtime_disclaimer": "Realtime reachability describes the latest scorecard sample, not continuous uptime.",
+  "feature_realtime_endpoint_reached": "at least one endpoint reached",
+  "feature_realtime_endpoints_reached": "{reached} of {configured} configured endpoints reached",
+  "feature_realtime_evidence": "Latest realtime sample: {endpoint_text}{coverage}",
   "feature_scope_all_tracked": "All tracked feed records",
   "feature_scope_area": "this area",
   "feature_scope_country": "this country",
@@ -54,5 +60,10 @@ export const STRINGS = {
   "feature_use_case_multilingual_flex": "Multilingual flexible-service discovery",
   "feature_use_case_multilingual_rail": "Multilingual rail service information",
   "feature_use_case_placeholder": "Choose a use case",
+  "feature_use_case_realtime": "Latest-sample realtime review",
+  "feature_use_case_realtime_accessible": "Accessible live-service information",
+  "feature_use_case_realtime_bus": "Live bus data integration",
+  "feature_use_case_realtime_fares": "Fare-aware live-service planning",
+  "feature_use_case_realtime_multilingual": "Multilingual live-service information",
   "feature_use_case_step_free": "Step-free station navigation"
 };

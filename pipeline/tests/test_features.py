@@ -35,7 +35,21 @@ def _artifact(*, measured: bool = True) -> dict[str, Any]:
             "completeness": {
                 "status": "measured" if measured else "not_yet_measured",
                 "details": details,
-            }
+            },
+            "realtime": (
+                {
+                    "status": "measured",
+                    "details": {
+                        "configured_kinds": ["trip_updates", "vehicle_positions"],
+                        "kinds_configured": 2,
+                        "kinds_reachable": 1,
+                        "coverage_pct": 72.5,
+                        "rt_freshness": "fresh",
+                    },
+                }
+                if measured
+                else {"status": "not_yet_measured", "details": {}}
+            ),
         },
         "mode_profile": (
             {
@@ -95,6 +109,13 @@ def test_feature_measurements_preserve_capabilities_and_accessibility_depth() ->
     assert row["translation_languages"] == ["fr", "nl"]
     assert row["translated_tables"] == ["routes", "stops"]
     assert row["feed_lang"] == "mul"
+    assert row["realtime_measured"] is True
+    assert row["has_realtime"] is True
+    assert row["realtime_reachable"] is True
+    assert row["realtime_configured_kinds"] == ["trip_updates", "vehicle_positions"]
+    assert row["realtime_reachable_kinds"] == 1
+    assert row["realtime_coverage_pct"] == 72.5
+    assert row["realtime_freshness"] == "fresh"
     assert row["modes_measured"] is True
     assert row["primary_mode"] == "ferry"
     assert row["modes"] == ["bus", "ferry"]
@@ -126,12 +147,29 @@ def test_feature_measurements_keep_unmeasured_distinct_from_absent() -> None:
     assert row["has_flex"] is None
     assert row["translations_measured"] is False
     assert row["has_translations"] is None
+    assert row["realtime_measured"] is False
+    assert row["has_realtime"] is False
+    assert row["realtime_reachable"] is None
+    assert row["realtime_configured_kinds"] is None
+    assert row["realtime_reachable_kinds"] is None
+    assert row["realtime_coverage_pct"] is None
+    assert row["realtime_freshness"] is None
     assert row["modes_measured"] is False
     assert row["primary_mode"] is None
     assert row["modes"] is None
     assert row["has_ferry"] is None
     assert row["ferry_profile_measured"] is False
     assert row["ferry_route_count"] is None
+
+
+def test_feature_measurements_infer_configured_realtime_from_legacy_reachability() -> None:
+    artifact = _artifact()
+    artifact["categories"]["realtime"]["details"] = {"kinds_reachable": 1}
+
+    row = feature_measurements(artifact)
+
+    assert row["has_realtime"] is True
+    assert row["realtime_reachable"] is True
 
 
 def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
@@ -163,6 +201,7 @@ def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
     assert payload["capability_measured_count"] == 1
     assert payload["accessibility_measured_count"] == 1
     assert payload["translation_measured_count"] == 1
+    assert payload["realtime_measured_count"] == 1
     assert payload["mode_measured_count"] == 1
     assert payload["ferry_profile_measured_count"] == 1
     assert [row["id"] for row in payload["feeds"]] == ["a", "b"]
@@ -174,3 +213,4 @@ def test_build_feature_dataset_publishes_every_row_and_guarded_counts() -> None:
         "exact case-insensitive BCP 47 tag in translation_languages"
     )
     assert payload["filter_semantics"]["mode"] == "selected mode key must be present in modes"
+    assert "latest scorecard sample" in payload["filter_semantics"]["realtime"]

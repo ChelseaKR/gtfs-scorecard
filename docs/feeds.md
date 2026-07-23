@@ -1798,6 +1798,37 @@ requested time, or accessible. The replacement bus is described as published
 and is not presented as restored rail service. Ferry and realtime fields remain
 measured evidence, not a guarantee of vessel capacity or prediction quality.
 
+## Japan gtfs-data.jp ninth wave
+
+Five more records were reviewed from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23 to exercise a
+bounded live-service workflow. The repository's
+[v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied each publisher,
+current service window, exact Creative Commons license, and keyless realtime
+endpoints. Japan moves from 235 to 240 reviewed feed records across the same 40
+prefectures. This is regional depth, not a national-coverage claim.
+
+Each current archive passed the canonical MobilityData validator path from
+pinned local bytes before admission:
+
+- **Toyama (`JP-16`)**: Kaetsuno World Heritage Bus, CC0 1.0, service through
+  2027-03-31, score 79.6 (C).
+- **Aichi (`JP-23`)**: Owari Asahi Asapy-go, CC BY 4.0, service through
+  2026-11-30, score 73.3 (C).
+- **Aichi (`JP-23`)**: Tokoname Gruun, CC0 1.0, service through 2026-12-31,
+  score 75.1 (C).
+- **Mie (`JP-24`)**: Mie Kotsu's Shima-area service, CC BY 4.0, service
+  through 2026-10-23, score 65.5 (D).
+- **Kumamoto (`JP-43`)**: Kumamoto Dentetsu Bus, CC BY 4.0, service through
+  2026-10-24, score 65.9 (D).
+
+All ten TripUpdates and VehiclePositions endpoints returned HTTP 200 and valid
+protobuf responses during the admission check. Four pairs contained only a
+small feed header at that moment. Endpoint reachability therefore means only
+that a configured endpoint responded in the latest scorecard sample. It does
+not establish continuous availability, prediction accuracy, or meaningful
+scheduled-trip coverage. Those remain separate measured fields.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |

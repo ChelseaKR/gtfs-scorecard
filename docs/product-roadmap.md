@@ -78,10 +78,16 @@ information, accessible fare-aware planning, accessible flexible-service
 planning, accessible rail service information, and fully stated ferry rider
 information. Five more composed questions cover multilingual rail information,
 fare-aware ferry planning, accessible bus information, multilingual flexible
-service, and accessible Fares v2 integration. The ten composed presets reuse
-the existing published-field filters and retain their individual thresholds in
-shared links. They do not certify physical accessibility, service usability,
-fare correctness, booking
+service, and accessible Fares v2 integration. A further five cover a
+latest-sample realtime review, live bus data integration, multilingual
+live-service information, fare-aware live-service planning, and accessible
+live-service information. These fifteen composed presets reuse the existing
+published-field filters and retain their individual thresholds in shared
+links. The realtime filter matches only feeds where at least one configured
+endpoint responded in the latest scorecard sample. It does not certify uptime,
+service availability, prediction accuracy, or scheduled-trip coverage. The
+presets also do not certify physical accessibility, service usability, fare
+correctness, booking
 availability, or vessel capacity. The ferry accessibility preset
 requires a minimum stated share for both ferry terminals and ferry trips. It
 describes published wheelchair fields, not physical accessibility or boarding

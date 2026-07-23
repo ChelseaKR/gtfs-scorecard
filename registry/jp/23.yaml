@@ -272,3 +272,61 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: owari-asahi-asapy-go
+    name: Owari Asahi Asapy-go (尾張旭市営バス あさぴー号)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/owariasahicity/feeds/communitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/owariasahi-city/asapygo/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/owariasahi-city/asapygo/VehiclePositions.pb
+      service_alerts: https://gtfs-rt-files.buscatch.jp/owariasahi-city/asapygo/ServiceAlert.pb
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Owari Asahi City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Owari Asahi City.
+    operating_note: >-
+      Owari Asahi City's Asapy-go community bus. The official catalog also
+      publishes keyless TripUpdates, VehiclePositions, and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/owariasahicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Owari Asahi City (尾張旭市). Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tokoname-gruun
+    name: Tokoname Gruun (常滑市グルーン)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokonamecity/feeds/Gruun/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://realtime.gtfs.info/gruun/trip_update.pb
+      vehicle_positions: https://realtime.gtfs.info/gruun/vehicle.pb
+      service_alerts: https://realtime.gtfs.info/gruun/alert.pb
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Tokoname City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Tokoname City's Gruun community bus. The official catalog also
+      publishes keyless TripUpdates, VehiclePositions, and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokonamecity.Gruun
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokoname City (常滑市). Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

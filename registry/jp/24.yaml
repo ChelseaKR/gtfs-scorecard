@@ -298,3 +298,33 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: mie-kotsu-shima
+    name: Mie Kotsu Shima (三重交通 志摩地域)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancoshima/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/shima_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/shima_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/shima_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service in the Shima area. The official
+      catalog also publishes keyless TripUpdates, VehiclePositions, and
+      Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancoshima
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
