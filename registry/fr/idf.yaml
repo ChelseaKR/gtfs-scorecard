@@ -26,3 +26,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: sncf-transilien
+    name: SNCF Transilien
+    country: FR
+    subdivision_code: FR-IDF
+    subdivision_name: Île-de-France
+    mdb_id: "tdg-67595"
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/67595/download
+    license_note: >-
+      ODbL with the National Access Point's particular conditions; published by
+      SNCF with data responsibility held by Île-de-France Mobilités. Credit
+      SNCF and mention the ODbL licence.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-des-lignes-transilien-1
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-des-lignes-transilien-1
+      scope: [gtfs_schedule]
+      attribution: SNCF (Transilien).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

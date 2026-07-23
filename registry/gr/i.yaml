@@ -1,0 +1,58 @@
+# Attikí (GR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: oasa-athens-road
+    name: OASA Athens road transport (buses and trolleybuses)
+    country: GR
+    subdivision_code: GR-I
+    subdivision_name: Attikí
+    mdb_id: "3220"
+    organization_id: oasa-athens
+    feed_variant: road
+    is_official: true
+    static_gtfs_url: https://data.gov.gr/dataset/fb049bb1-aea6-4443-95fa-8b941dd6a057/resource/119db488-16ea-4c76-b560-41c472872390/download/osy_gtfs.zip
+    license_note: >-
+      Published as public open data on data.gov.gr, whose terms of use grant
+      reuse for any lawful purpose including commercial exploitation; data is
+      provided as-is. Credit OASA via data.gov.gr.
+    operating_note: >-
+      Bus and trolleybus schedule for the OASA group, operated by OSY S.A.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.gr/dataset/fb049bb1-aea6-4443-95fa-8b941dd6a057
+      terms_url: https://data.gov.gr/pages/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: Athens Urban Transport Organization (OASA).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: oasa-athens-rail
+    name: OASA Athens rail transport (metro, electric railway, tram)
+    country: GR
+    subdivision_code: GR-I
+    subdivision_name: Attikí
+    mdb_id: "3221"
+    organization_id: oasa-athens
+    feed_variant: rail
+    is_official: true
+    static_gtfs_url: https://data.gov.gr/dataset/4e897a75-975a-4ce7-af65-f32ea01f93b9/resource/5e3858ee-d9ba-48c2-9015-744ea160976d/download/stasy_gtfs.zip
+    license_note: >-
+      Published as public open data on data.gov.gr, whose terms of use grant
+      reuse for any lawful purpose including commercial exploitation; data is
+      provided as-is. Credit OASA via data.gov.gr.
+    operating_note: >-
+      Metro, ISAP electric railway and tram schedule for the OASA group,
+      operated by STASY S.A.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.gr/dataset/4e897a75-975a-4ce7-af65-f32ea01f93b9
+      terms_url: https://data.gov.gr/pages/terms-of-use
+      scope: [gtfs_schedule]
+      attribution: Athens Urban Transport Organization (OASA).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

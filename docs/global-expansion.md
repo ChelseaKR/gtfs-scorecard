@@ -245,6 +245,17 @@ German data licences, and Poznań and Szczecin under ZTM's developer terms
 and CC0. That brings the cohort to 84 reviewed feed records across 17
 countries, with the United Kingdom the largest country at about 27%.
 
+A same-day western and southern Europe wave reviewed eleven candidate
+records; eight were new when it merged, three (Trentino urban, SGM Lecce,
+and Carris Metropolitana) having already landed through the parallel depth
+wave. The eight it adds: the SNCF national and Transilien feeds (ODbL with
+the National Access Point's readable particular conditions), three Fluo
+Grand Est networks (Licence Ouverte 2.0), the two OASA Athens feeds under
+data.gov.gr's open-reuse terms, and the OVapi Netherlands aggregate under
+its published free-use README. Merged after the parallel waves, it brings
+the cohort to 259 reviewed feed records across 24 countries, with France
+the largest country at about 28%.
+
 This wave did not relax ingestion limits to make the map look fuller. The
 Swiss fixed-route national archive expands to about 3.0 GB and exceeds the
 pipeline's 2 GiB safety cap, so the cohort uses the much smaller official SKI+
