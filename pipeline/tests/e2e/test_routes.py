@@ -138,6 +138,9 @@ def _feature_directory() -> dict[str, Any]:
         "modes": None,
         "has_ferry": None,
         "ferry_only": None,
+        "ferry_profile_measured": False,
+        "ferry_bikes_stated_pct": None,
+        "ferry_bikes_allowed_pct": None,
     }
     for agency in directory["agencies"]:
         agency.update(feature_defaults)
@@ -168,6 +171,9 @@ def _feature_directory() -> dict[str, Any]:
                     "modes": ["bus", "ferry"],
                     "has_ferry": True,
                     "ferry_only": False,
+                    "ferry_profile_measured": True,
+                    "ferry_bikes_stated_pct": 100.0,
+                    "ferry_bikes_allowed_pct": 50.0,
                 }
             )
         elif agency["id"] == "london-transit-commission":
@@ -557,6 +563,8 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert '"capabilities_measured"' in csv.splitlines()[0]
     assert '"accessibility_fields"' in csv.splitlines()[0]
     assert '"translation_languages"' in csv.splitlines()[0]
+    assert '"ferry_profile_measured"' in csv.splitlines()[0]
+    assert '"ferry_bikes_stated_pct"' in csv.splitlines()[0]
     assert '"coverage_scope"' in csv.splitlines()[0]
     assert '"coverage_denominator"' in csv.splitlines()[0]
     assert '"matching_record_count"' in csv.splitlines()[0]
@@ -693,6 +701,38 @@ def test_ferry_use_case_preset_composes_and_refines_the_mode_filter(
     page.locator("#service-mode").select_option("")
     expect(page.locator("#feature-use-case")).to_have_value("")
     assert _hash_params(page) == {"view": "features"}
+
+
+def test_bicycle_aware_ferry_preset_uses_scoped_policy_evidence(page: Page, app_url: str) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("bicycle-aware-ferry-planning")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator("#ferry-bikes-min")).to_have_value("95")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text(
+        "Mode: Ferry · Ferry bicycle policy: 100% of trips state allowed or prohibited"
+    )
+    assert _hash_params(page) == {
+        "usecase": "bicycle-aware-ferry-planning",
+        "view": "features",
+        "mode": "ferry",
+        "ferry_bikes": "95",
+    }
+
+    page.locator("#ferry-bikes-min").select_option("100")
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {
+        "view": "features",
+        "mode": "ferry",
+        "ferry_bikes": "100",
+    }
 
 
 def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str) -> None:

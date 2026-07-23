@@ -1,0 +1,30 @@
+# Tasmania (AU) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tasmania-public-transport
+    name: Tasmania public transport aggregate
+    country: AU
+    subdivision_code: AU-TAS
+    subdivision_name: Tasmania
+    is_official: true
+    static_gtfs_url: https://www.transport.tas.gov.au/__data/assets/file/0011/557615/tas_gtfs.zip
+    license_note: >-
+      CC BY 4.0; attribute the State of Tasmania, Department of State Growth.
+      Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One statewide schedule for six publishers listed in agency.txt, including
+      bus and ferry service. It is counted as one feed record, not six agencies.
+      The 2026-07-22 preflight found a valid 15 MiB archive with 288 routes,
+      17,138 trips, feed_info.txt dates, and service through 2026-09-30.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transport.tas.gov.au/public_transport/gtfs-data
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: State of Tasmania, Department of State Growth.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-22"
+      identity_reviewed: true

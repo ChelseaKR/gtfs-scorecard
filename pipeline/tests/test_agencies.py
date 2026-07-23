@@ -177,7 +177,7 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_743
+    assert len(agencies) == 1_744
     assert len(european) == 259
     assert len({agency.country for agency in european}) == 24
 
@@ -444,6 +444,28 @@ def test_repo_registry_includes_hong_kong_frequency_canary(
     assert agency.reuse_evidence.identity_reviewed is True
     assert "frequencies.txt" in agency.operating_note
     assert "unusually distant horizon" in agency.operating_note
+
+
+def test_repo_registry_includes_tasmania_official_aggregate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    agency = by_id["tasmania-public-transport"]
+    assert agency.country == "AU"
+    assert agency.subdivision_code == "AU-TAS"
+    assert agency.subdivision_name == "Tasmania"
+    assert agency.is_official is True
+    assert (
+        agency.static_gtfs_url
+        == "https://www.transport.tas.gov.au/__data/assets/file/0011/557615/tas_gtfs.zip"
+    )
+    assert agency.reuse_evidence is not None
+    assert agency.reuse_evidence.decision == "approved"
+    assert agency.reuse_evidence.provider_source_url.endswith("/public_transport/gtfs-data")
+    assert agency.reuse_evidence.identity_reviewed is True
+    assert "one feed record, not six agencies" in agency.operating_note
 
 
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:

@@ -1142,6 +1142,7 @@ main:focus { outline: none; }
 .accessibility-thresholds select,
 .translation-filters select,
 .mode-filters select,
+.ferry-profile-filters select,
 .use-case-filters select {
   width: 100%;
   min-height: 44px;
@@ -1156,12 +1157,14 @@ main:focus { outline: none; }
 .accessibility-thresholds select:focus-visible,
 .translation-filters select:focus-visible,
 .mode-filters select:focus-visible,
+.ferry-profile-filters select:focus-visible,
 .use-case-filters select:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
 .translation-filters select:disabled,
-.mode-filters select:disabled {
+.mode-filters select:disabled,
+.ferry-profile-filters select:disabled {
   cursor: not-allowed;
   opacity: 0.72;
 }

@@ -109,6 +109,13 @@ Gate: official government or provider source, an explicit open license
 (commonly CC BY 4.0), retained attribution, checked identity, within the
 ingestion caps.
 
+Tasmania's previous license and fetchability hold cleared on 2026-07-22. The
+Tasmanian Government now publishes one stable, keyless statewide aggregate on
+its official transport site under CC BY 4.0. A full preflight found a valid
+15 MiB archive for six listed publishers, bus and ferry routes, explicit
+`feed_info.txt` dates, and service through 2026-09-30. The registry counts the
+aggregate as one feed record, not six agencies.
+
 ### Phase 2 — Latin America official first-party
 
 Several Latin American authorities publish official GTFS under national

@@ -46,7 +46,8 @@ const DATA_BASES = [
 /** Product questions that can be answered from existing, ungraded GTFS
  *  capability evidence. Presets only compose the public filters; they do not
  *  certify implementation quality or physical accessibility.
- *  @type {Record<string, {labelKey: string, features: string[], mode: string, stops: string, trips: string}>} */
+ *  @type {Record<string, {labelKey: string, features: string[], mode: string,
+ *    stops: string, trips: string, ferryBikes?: string}>} */
 const FEATURE_USE_CASES = {
   "accessibility-metadata": {
     labelKey: "feature_use_case_accessibility",
@@ -103,6 +104,14 @@ const FEATURE_USE_CASES = {
     mode: "ferry",
     stops: "",
     trips: "",
+  },
+  "bicycle-aware-ferry-planning": {
+    labelKey: "feature_use_case_ferry_bicycle",
+    features: [],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+    ferryBikes: "95",
   },
 };
 
@@ -486,6 +495,9 @@ function featureCsv(rows, context) {
     ["modes", (row) => row.modes.join("|")],
     ["has_ferry", (row) => row.hasFerry],
     ["ferry_only", (row) => row.ferryOnly],
+    ["ferry_profile_measured", (row) => row.ferryProfileMeasured],
+    ["ferry_bikes_stated_pct", (row) => row.ferryBikesStated],
+    ["ferry_bikes_allowed_pct", (row) => row.ferryBikesAllowed],
     ["scorecard_url", (row) => row.scorecardUrl],
     ["feed_url", (row) => row.feedUrl],
   ];
@@ -860,6 +872,9 @@ function renderOverview(directory) {
       modes: stringArray(a.modes),
       hasFerry: optionalBoolean(a.has_ferry),
       ferryOnly: optionalBoolean(a.ferry_only),
+      ferryProfileMeasured: a.ferry_profile_measured === true,
+      ferryBikesStated: optionalNumber(a.ferry_bikes_stated_pct),
+      ferryBikesAllowed: optionalNumber(a.ferry_bikes_allowed_pct),
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
     .sort((x, y) => compareText(x.name, y.name));
@@ -876,6 +891,9 @@ function renderOverview(directory) {
     (agency) => agency.translationsMeasured
   ).length;
   const modeMeasuredCount = agencies.filter((agency) => agency.modesMeasured).length;
+  const ferryProfileMeasuredCount = agencies.filter(
+    (agency) => agency.ferryProfileMeasured
+  ).length;
   const availableModes = [...new Set(agencies.flatMap((agency) => agency.modes))]
     .sort((left, right) => compareText(formatModeName(left), formatModeName(right)));
   const modeOptions = availableModes
@@ -992,6 +1010,18 @@ function renderOverview(directory) {
             ${modeOptions}
           </select>
         </fieldset>
+        <fieldset class="feature-fieldset ferry-profile-filters">
+          <legend>${esc(t("feature_ferry_bicycle_legend"))}</legend>
+          <p class="fineprint">${esc(t("feature_ferry_bicycle_hint"))}</p>
+          <label for="ferry-bikes-min">${esc(t("feature_ferry_bicycle_label"))}</label>
+          <select id="ferry-bikes-min"${ferryProfileMeasuredCount ? "" : " disabled"}>
+            <option value="">${esc(t("feature_ferry_bicycle_no_minimum"))}</option>
+            <option value="any">${esc(t("feature_ferry_bicycle_any"))}</option>
+            <option value="50">${esc(t("feature_ferry_bicycle_half"))}</option>
+            <option value="95">${esc(t("feature_ferry_bicycle_most"))}</option>
+            <option value="100">${esc(t("feature_ferry_bicycle_all"))}</option>
+          </select>
+        </fieldset>
         <fieldset class="feature-fieldset translation-filters">
           <legend>Translation language</legend>
           <p class="fineprint">Choose a language to require it in <code>translations.txt</code>.</p>
@@ -1027,7 +1057,8 @@ function renderOverview(directory) {
       ${formatNumber(total)} feed records; wheelchair completeness is measured for
       ${formatNumber(accessibilityMeasuredCount)}; translations are measured for
       ${formatNumber(translationMeasuredCount)}; service modes are measured for
-      ${formatNumber(modeMeasuredCount)}. Selecting a field excludes records where that field is unknown.
+      ${formatNumber(modeMeasuredCount)}; ferry bicycle policy is measured for
+      ${formatNumber(ferryProfileMeasuredCount)}. Selecting a field excludes records where that field is unknown.
       The score-comparison cohort above is a separate contract.</p>
       <p class="coverage-limit" id="global-coverage-disclosure">${coverageLimit}</p>
     </section>
@@ -1086,6 +1117,9 @@ function setupOverview(agencies, total, summary) {
   );
   const tripsMin = /** @type {HTMLSelectElement} */ (
     main.querySelector("#wheelchair-trips-min")
+  );
+  const ferryBikesMin = /** @type {HTMLSelectElement} */ (
+    main.querySelector("#ferry-bikes-min")
   );
   const translationLanguage = /** @type {HTMLSelectElement} */ (
     main.querySelector("#translation-language")
@@ -1212,8 +1246,10 @@ function setupOverview(agencies, total, summary) {
   );
   const wantedStops = urlParams.get("stops") || "";
   const wantedTrips = urlParams.get("trips") || "";
+  const wantedFerryBikes = urlParams.get("ferry_bikes") || "";
   stopsMin.value = thresholdValues.has(wantedStops) ? wantedStops : "";
   tripsMin.value = thresholdValues.has(wantedTrips) ? wantedTrips : "";
+  ferryBikesMin.value = thresholdValues.has(wantedFerryBikes) ? wantedFerryBikes : "";
   const languageValues = new Set(Array.from(translationLanguage.options).map((option) => option.value));
   const wantedLanguage = (urlParams.get("lang") || "").toLocaleLowerCase();
   translationLanguage.value = languageValues.has(wantedLanguage) ? wantedLanguage : "";
@@ -1222,7 +1258,14 @@ function setupOverview(agencies, total, summary) {
   serviceMode.value = modeValues.has(wantedMode) ? wantedMode : "";
   const wantedUseCase = urlParams.get("usecase") || "";
   useCase.value = Object.hasOwn(FEATURE_USE_CASES, wantedUseCase) ? wantedUseCase : "";
-  const hasExplicitFeatureFilters = ["features", "stops", "trips", "lang", "mode"].some(
+  const hasExplicitFeatureFilters = [
+    "features",
+    "stops",
+    "trips",
+    "ferry_bikes",
+    "lang",
+    "mode",
+  ].some(
     (key) => urlParams.has(key)
   );
   if (useCase.value && !hasExplicitFeatureFilters) {
@@ -1232,6 +1275,7 @@ function setupOverview(agencies, total, summary) {
     serviceMode.value = preset.mode;
     stopsMin.value = preset.stops;
     tripsMin.value = preset.trips;
+    ferryBikesMin.value = preset.ferryBikes || "";
   }
   function useCaseMatches(key) {
     const preset = FEATURE_USE_CASES[key];
@@ -1242,6 +1286,7 @@ function setupOverview(agencies, total, summary) {
       serviceMode.value === preset.mode &&
       stopsMin.value === preset.stops &&
       tripsMin.value === preset.trips &&
+      ferryBikesMin.value === (preset.ferryBikes || "") &&
       !translationLanguage.value
     );
   }
@@ -1268,13 +1313,14 @@ function setupOverview(agencies, total, summary) {
     if (sortSel.value !== defaultSort) p.set("sort", sortSel.value);
     if (useCase.value) p.set("usecase", useCase.value);
     if (selectedFeatures.size) p.set("features", [...selectedFeatures].join(","));
-    if (featureView || useCase.value || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value) {
+    if (featureView || useCase.value || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value || ferryBikesMin.value) {
       p.set("view", "features");
     }
     if (serviceMode.value) p.set("mode", serviceMode.value);
     if (translationLanguage.value) p.set("lang", translationLanguage.value);
     if (stopsMin.value) p.set("stops", stopsMin.value);
     if (tripsMin.value) p.set("trips", tripsMin.value);
+    if (ferryBikesMin.value) p.set("ferry_bikes", ferryBikesMin.value);
     const qs = p.toString();
     const next = qs ? `#/?${qs}` : "#/";
     // Some browsers (Safari) throttle replaceState and throw; a failed URL sync
@@ -1302,7 +1348,7 @@ function setupOverview(agencies, total, summary) {
   }
 
   function matchesFeatures(a) {
-    if (!selectedFeatures.size && !serviceMode.value && !translationLanguage.value && !stopsMin.value && !tripsMin.value) return true;
+    if (!selectedFeatures.size && !serviceMode.value && !translationLanguage.value && !stopsMin.value && !tripsMin.value && !ferryBikesMin.value) return true;
     for (const feature of selectedFeatures) {
       if (a[featureProperties[feature]] !== true) return false;
     }
@@ -1316,9 +1362,11 @@ function setupOverview(agencies, total, summary) {
       )
     ) return false;
     if ((stopsMin.value || tripsMin.value) && !a.accessibilityMeasured) return false;
+    if (ferryBikesMin.value && !a.ferryProfileMeasured) return false;
     return (
       meetsMinimum(a.wheelchairStops, stopsMin.value) &&
-      meetsMinimum(a.wheelchairTrips, tripsMin.value)
+      meetsMinimum(a.wheelchairTrips, tripsMin.value) &&
+      meetsMinimum(a.ferryBikesStated, ferryBikesMin.value)
     );
   }
 
@@ -1344,6 +1392,9 @@ function setupOverview(agencies, total, summary) {
     }
     if (translationLanguage.value && !selectedFeatures.has("translations")) {
       evidence.push(`Translations: ${formatLanguageName(translationLanguage.value)}`);
+    }
+    if (ferryBikesMin.value && a.ferryProfileMeasured) {
+      evidence.push(t("feature_ferry_bicycle_evidence", { percent: a.ferryBikesStated }));
     }
     return evidence.length
       ? `<p class="feature-evidence"><span class="visually-hidden">Matched features: </span>${evidence.map(esc).join(" · ")}</p>`
@@ -1390,13 +1441,21 @@ function setupOverview(agencies, total, summary) {
       translationLanguage.value ||
       stopsMin.value ||
       tripsMin.value ||
+      ferryBikesMin.value ||
       locationFilter.country !== "all" ||
       locationFilter.subdivision !== "all" ||
       locationFilter.legacyState !== "all"
     );
     setAppNav(
       featureView ||
-      Boolean(selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value)
+      Boolean(
+        selectedFeatures.size ||
+          serviceMode.value ||
+          translationLanguage.value ||
+          stopsMin.value ||
+          tripsMin.value ||
+          ferryBikesMin.value
+      )
     );
     matchBoard.dataset.active = String(active);
     hint.hidden = active;
@@ -1452,7 +1511,7 @@ function setupOverview(agencies, total, summary) {
       apply();
     });
   }
-  for (const control of [stopsMin, tripsMin]) {
+  for (const control of [stopsMin, tripsMin, ferryBikesMin]) {
     control.addEventListener("change", () => {
       userInteracted = true;
       useCase.value = "";
@@ -1480,6 +1539,7 @@ function setupOverview(agencies, total, summary) {
       }
       stopsMin.value = preset.stops;
       tripsMin.value = preset.trips;
+      ferryBikesMin.value = preset.ferryBikes || "";
       translationLanguage.value = "";
       serviceMode.value = preset.mode;
     }
@@ -1695,6 +1755,7 @@ function setupOverview(agencies, total, summary) {
     for (const control of featureChecks) control.checked = false;
     stopsMin.value = "";
     tripsMin.value = "";
+    ferryBikesMin.value = "";
     translationLanguage.value = "";
     serviceMode.value = "";
     useCase.value = "";
