@@ -845,10 +845,10 @@ The sweep rejected far more than it kept, and the rejections are the point:
   DataMall; SãoPaulo's Transpiedade, Argentina's Mar Chiquita, and a Venezuela
   feed are private operator sites with no open license; and the Flixbus and
   Greyhound feeds are private intercity operators.
-- **Technical holds:** Hong Kong's official `static.data.gov.hk` feed is open,
-  but it stays a known technical canary (no ISO 3166-2 subdivision, and
-  frequency-based schedules whose freshness handling is still under review, per
-  the note in this file). Taiwan's TDX feed for Taipei Metro
+- **Technical holds:** Hong Kong's official `static.data.gov.hk` feed was held
+  here until the frequency-based freshness review documented later in this
+  file; that review has now passed and the feed is admitted as a country-only
+  canary. Taiwan's TDX feed for Taipei Metro
   (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
   does not ingest.
 
@@ -1619,10 +1619,29 @@ current, official, explicitly licensed African substitute in this review;
 expired licensed feeds and current feeds without clear reuse terms were not
 added.
 
-Hong Kong is the next technical canary because it has no ISO 3166-2 subdivision
-and publishes frequency-based schedules. It remains out of production until the
-freshness behavior for those schedules is reviewed. Community or informal feeds
-in lower- and middle-income countries follow the partnership and consent gate in
+### Hong Kong frequency-based schedule canary
+
+| | |
+|---|---|
+| GTFS Schedule | `https://static.data.gov.hk/td/pt-headway-en/gtfs.zip` |
+| Location | Hong Kong (`HK`), with no ISO 3166-2 subdivision |
+| Publisher | [Hong Kong Transport Department through DATA.GOV.HK](https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en) |
+| Reuse terms | [DATA.GOV.HK Terms of Use 1.2](https://data.gov.hk/en/terms-and-conditions), permitting commercial and non-commercial reuse with attribution |
+| Update cadence | Biweekly, as stated by DATA.GOV.HK |
+
+The English aggregate was preflighted on 2026-07-22. It is a valid 13 MiB ZIP
+with ten GTFS files, 2,455 routes, 82,692 trips, and bus, ferry, tram/light rail,
+and funicular service. Fourteen publishers appear in `agency.txt`; this remains
+one feed record, not a claim of fourteen separately curated agencies. The
+archive uses `frequencies.txt`, has no `feed_info.txt`, and carries weekly
+calendar rows from 2020 through 2099. A complete ad-hoc scorecard run with the
+Hong Kong country flag produced an 85 freshness score: it deducted for the
+missing validity declaration and labeled the 2099 horizon unusually distant.
+That explicit warning resolves the earlier technical hold without implying that
+the far-future calendar proves maintenance.
+
+Community or informal feeds in lower- and middle-income countries follow the
+partnership and consent gate in
 [ADR 0028](decisions/0028-global-south-pilot.md); they are not added merely to
 create a broader-looking map.
 
