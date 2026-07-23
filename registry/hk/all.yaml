@@ -1,0 +1,35 @@
+# Hong Kong agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: hong-kong-transport-department
+    name: Hong Kong Transport Department public transport aggregate
+    country: HK
+    mdb_id: "1924"
+    is_official: true
+    static_gtfs_url: https://static.data.gov.hk/td/pt-headway-en/gtfs.zip
+    license_note: >-
+      DATA.GOV.HK Terms of Use 1.2; commercial and non-commercial reuse is
+      permitted with attribution to the Government of the Hong Kong Special
+      Administrative Region, the Transport Department, and DATA.GOV.HK.
+      Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      One English-language aggregate for fourteen public transport agencies
+      and multiple modes, counted as one feed record rather than fourteen
+      agencies. Service uses frequencies.txt and a calendar ending in 2099.
+      The scorecard reports the unusually distant horizon and missing
+      feed_info.txt dates instead of treating that horizon as proof of
+      maintenance.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en
+      terms_url: https://data.gov.hk/en/terms-and-conditions
+      scope: [gtfs_schedule]
+      attribution: >-
+        Government of the Hong Kong Special Administrative Region, Transport
+        Department, and DATA.GOV.HK.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-22"
+      identity_reviewed: true

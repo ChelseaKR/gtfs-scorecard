@@ -634,6 +634,12 @@ def test_product_use_case_preset_is_refinable_shareable_and_exported(
             "Barrie Transit (Ontario)",
             "Contactless fare payments",
         ),
+        (
+            "modern-fare-model-integration",
+            "fares_v2",
+            "Barrie Transit (Ontario)",
+            "Fares v2",
+        ),
     ],
 )
 def test_global_product_use_case_presets_reuse_published_capability_evidence(
@@ -661,6 +667,32 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
         "features": feature,
         "view": "features",
     }
+
+
+def test_ferry_use_case_preset_composes_and_refines_the_mode_filter(
+    page: Page, app_url: str
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("ferry-service-discovery")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text("Mode: Ferry")
+    assert _hash_params(page) == {
+        "usecase": "ferry-service-discovery",
+        "view": "features",
+        "mode": "ferry",
+    }
+
+    page.locator("#service-mode").select_option("")
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {"view": "features"}
 
 
 def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str) -> None:
