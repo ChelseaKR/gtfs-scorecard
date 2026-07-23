@@ -1829,6 +1829,42 @@ that a configured endpoint responded in the latest scorecard sample. It does
 not establish continuous availability, prediction accuracy, or meaningful
 scheduled-trip coverage. Those remain separate measured fields.
 
+## Japan gtfs-data.jp tenth wave
+
+Twenty official records were reviewed from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23 for a larger
+endpoint-kind evidence loop. The repository's
+[v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied each publisher,
+current service window, exact Creative Commons license, and keyless realtime
+endpoints. Japan moves from 240 to 260 reviewed feed records across the same 40
+prefectures. This is regional depth, not a national-coverage claim.
+
+Each current archive passed the pinned canonical MobilityData validator path
+from local bytes before admission:
+
+- **Toyama (`JP-16`, CC0 1.0, service through 2027-03-31)**: Kaetsuno Himi
+  City Loop Bus, 77.9 (C); Kaetsuno Route Bus, 75.2 (C); Kamiichi Town Bus,
+  73.3 (C); Kurobe City Bus, 66.1 (D); Nyuzen Noran My Car, 76.2 (C); Asahi
+  Town Bus, 75.0 (C); Toyama Yamada Community Bus, 75.1 (C); Toyama Fuchu
+  Community Bus, 72.5 (C); Toyama Oyama Community Bus, 71.5 (C); Toyama
+  Maidohaya Bus, 75.3 (C); Toyama Horikawa Minami Community Bus, 76.2 (C);
+  Toyama Yatsuo Community Bus, 70.6 (C); and Toyama Kureha Ikiiki Bus,
+  72.6 (C).
+- **Mie (`JP-24`, CC BY 4.0)**: Ise Okage Bus, 73.7 (C), and Komono
+  Kamoshika Bus, 68.9 (D), both with service through 2026-09-13; Mie Kotsu
+  Iga, 74.2 (C); Matsusaka, 75.9 (C); Yokkaichi, 74.0 (C); Kuwana,
+  69.8 (D); and Ise, 71.9 (C), each with service through 2026-10-23.
+
+All twenty records publish TripUpdates and VehiclePositions. The seven Mie
+records also publish ServiceAlerts, for 47 configured endpoints in total. All
+47 returned HTTP 200 and a valid protobuf response during the admission check.
+Most samples contained only a feed header at that moment; the Mie Kotsu Kuwana
+TripUpdates and VehiclePositions samples contained entities. The product
+therefore publishes exact latest-sample endpoint-kind reachability and header
+freshness separately from scheduled-trip coverage. A response does not
+establish continuous uptime, alert content, prediction accuracy, or rider
+information availability.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |

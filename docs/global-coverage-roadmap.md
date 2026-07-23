@@ -190,6 +190,21 @@ responses, but does not treat a response as an uptime, prediction-quality, or
 trip-coverage guarantee. Japan now has 240 reviewed feed records across the
 same 40 prefectures.
 
+Twenty official Japanese records passed a larger endpoint-kind review on
+2026-07-23: thirteen CC0 services in Toyama and seven CC BY 4.0 services in
+Mie. Every current schedule archive passed the canonical validator path. The
+official catalog supplied 47 keyless realtime endpoints: all twenty records
+publish TripUpdates and VehiclePositions, and the seven Mie records also
+publish ServiceAlerts. Every endpoint returned a valid protobuf response
+during admission, although many were header-only at that moment.
+
+The public feature contract now distinguishes the exact endpoint kinds that
+responded and whether the newest TripUpdates or VehiclePositions header was
+fresh. This is latest-sample evidence, not continuous availability, rider
+information content, prediction quality, or trip coverage. Japan now has 260
+reviewed feed records across the same 40 prefectures. The batch adds regional
+depth and new product evidence without changing the national-coverage claim.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,
