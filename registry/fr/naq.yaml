@@ -73,3 +73,45 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-couralin
+    name: "Réseau urbain Couralin"
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: "Nouvelle-Aquitaine"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/3a010c2b-67da-404c-8cbb-85e62cae129c"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Grand Dax and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/reseau-couralin-grand-dax-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Grand Dax"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-uba
+    name: "Navettes maritimes - UBA"
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: "Nouvelle-Aquitaine"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/84043/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      UNION DES BATELIERS ARCACHONNAIS and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/uba-horaires-navettes-maritimes"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "UNION DES BATELIERS ARCACHONNAIS"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

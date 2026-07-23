@@ -1,0 +1,26 @@
+# Kyiv (UA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: kyivpastrans
+    name: Kyivpastrans
+    country: UA
+    subdivision_code: UA-30
+    subdivision_name: Kyiv
+    mdb_id: "3230"
+    is_official: true
+    static_gtfs_url: http://193.23.225.211:8002/export-gtfs-static
+    license_note: >-
+      Kyiv's official data portal identifies the GTFS resource as free for
+      personal or commercial reuse under its Open Data Licence.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.kyivcity.gov.ua/dataset/rozklad-rukhu-miskoho-elektrychnoho-ta-avtomobilnoho-transportu-dep-transport/resource/58f0c3d0-9409-4de9-92c8-de4afa035efd
+      terms_url: https://data.kyivcity.gov.ua/dataset/rozklad-rukhu-miskoho-elektrychnoho-ta-avtomobilnoho-transportu-dep-transport/resource/58f0c3d0-9409-4de9-92c8-de4afa035efd
+      scope: [gtfs_schedule]
+      attribution: Kyiv Department of Transport Infrastructure and Kyivpastrans.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

@@ -1,0 +1,26 @@
+# Hamburg (DE) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: hvv-hamburg
+    name: Hamburger Verkehrsverbund (hvv)
+    country: DE
+    subdivision_code: DE-HH
+    subdivision_name: Hamburg
+    mdb_id: "3362"
+    is_official: true
+    static_gtfs_url: https://daten.transparenz.hamburg.de/Dataport.HmbTG.ZS.Webservice.GetRessource100/GetRessource100.svc/f0073555-962c-4d55-870e-b94bb676ad9d/Upload__hvv_Rohdaten_GTFS_Fpl_20260408.ZIP
+    license_note: >-
+      Datenlizenz Deutschland – Namensnennung 2.0; commercial reuse and
+      adaptation are permitted with attribution.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://suche.transparenz.hamburg.de/?q=gtfs
+      terms_url: https://www.govdata.de/dl-de/by-2-0
+      scope: [gtfs_schedule]
+      attribution: Hamburger Verkehrsverbund GmbH (hvv).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

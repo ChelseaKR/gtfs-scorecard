@@ -1,6 +1,6 @@
 # Global coverage roadmap
 
-Last updated: 2026-07-17
+Last updated: 2026-07-23
 
 This is the multi-region coverage plan. It sits above the Europe-specific
 [`global-expansion.md`](global-expansion.md), which owns the European GTFS beta
@@ -214,6 +214,28 @@ one private residential shuttle, and publishers represented only by several
 line or area fragments stayed out. Japan now has 379 reviewed feed records
 across the same 40 prefectures. This remains depth in a reviewed sample, not a
 census or a claim of national coverage.
+
+A portal-first exhaustion pass on 2026-07-23 then added 70 reviewed feed
+records without weakening those gates. France's National Access Point supplied
+57 local-network records under Licence Ouverte 2.0. Existing-country depth also
+grew in Canada (four records), Germany (two), and the United Kingdom (two).
+Official city and national portals opened four new country samples: Albania
+(Tirana), Moldova (Ungheni), Serbia (Belgrade), and Ukraine (Kyiv and Lviv).
+Every schedule archive passed the complete scorecard path and retained at least
+60 days of effective service. Twenty-seven records also carry official,
+keyless realtime endpoints. This is a reviewed source cohort, not a country
+census.
+
+The same pass exhausted the remaining plausible official/open catalog set and
+kept its failures visible. Short or expired calendars excluded Canberra Light
+Rail, Brussels STIB/MIVB, Luxembourg's national feed, and Metlink Wellington.
+Unreachable or non-archive sources excluded METROFOR, four French local
+networks, Mexico City, Hyderabad Metro, and several Portuguese feeds. Santiago
+remained out because its official current-feed page did not state an explicit
+commercial-reuse licence. Bogotá's very large feed did not complete a bounded
+local score and its catalog licence is share-alike outside the project
+allowlist. Ambiguous source/licence identity excluded Cascais and Barreiro.
+These are future recheck targets, not silent omissions.
 
 ### Phase 4 — partnership-gated regions
 
