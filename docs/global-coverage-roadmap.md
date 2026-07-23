@@ -155,6 +155,13 @@ missing `feed_info.txt` dates rather than treating the end date as evidence of
 active maintenance. Hong Kong has no ISO 3166-2 child in the portable location
 vocabulary, which exercises the supported country-only location contract.
 
+Four BAS.MY town feeds cleared an earlier data-quality hold on 2026-07-22.
+Malaysia's official open API republished Alor Setar, Kota Bharu, Kuala
+Terengganu, and Kuching with hundreds of trips and service through 2026-12-31.
+All four keyless archives passed the canonical validator preflight under the
+same CC BY 4.0 platform and now add reviewed coverage in Kedah, Kelantan,
+Terengganu, and Sarawak.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,

@@ -72,8 +72,11 @@ The consumer feature finder now has a primary-navigation entry, language-aware
 Product-need presets compose existing, ungraded filters for accessibility
 metadata, multilingual rider information, fare-aware planning, flexible-service
 discovery, contactless bank-card declarations, step-free station navigation,
-modern Fare v2 integration, ferry service discovery, and bicycle-aware ferry
-planning. The bicycle-aware preset composes the ferry service mode with a
+modern Fare v2 integration, ferry service discovery, ferry accessibility
+information, and bicycle-aware ferry planning. The ferry accessibility preset
+requires a minimum stated share for both ferry terminals and ferry trips. It
+describes published wheelchair fields, not physical accessibility or boarding
+usability. The bicycle-aware preset composes the ferry service mode with a
 minimum share of ferry trips that state whether bicycles are allowed or
 prohibited. This is published policy evidence, not a claim about vessel space,
 boarding conditions, or whether a rider can take a bicycle on every trip.

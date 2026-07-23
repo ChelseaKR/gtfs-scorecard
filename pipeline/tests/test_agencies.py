@@ -177,7 +177,7 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_744
+    assert len(agencies) == 1_748
     assert len(european) == 259
     assert len({agency.country for agency in european}) == 24
 
@@ -466,6 +466,35 @@ def test_repo_registry_includes_tasmania_official_aggregate(
     assert agency.reuse_evidence.provider_source_url.endswith("/public_transport/gtfs-data")
     assert agency.reuse_evidence.identity_reviewed is True
     assert "one feed record, not six agencies" in agency.operating_note
+
+
+def test_repo_registry_includes_reactivated_basmy_town_feeds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    expected = {
+        "basmy-alor-setar": ("MY-02", "Kedah", "mybas-alor-setar"),
+        "basmy-kota-bharu": ("MY-03", "Kelantan", "mybas-kota-bharu"),
+        "basmy-kuala-terengganu": (
+            "MY-11",
+            "Terengganu",
+            "mybas-kuala-terengganu",
+        ),
+        "basmy-kuching": ("MY-13", "Sarawak", "mybas-kuching"),
+    }
+
+    for agency_id, (subdivision_code, subdivision_name, endpoint) in expected.items():
+        agency = by_id[agency_id]
+        assert agency.country == "MY"
+        assert agency.subdivision_code == subdivision_code
+        assert agency.subdivision_name == subdivision_name
+        assert agency.is_official is True
+        assert agency.static_gtfs_url.endswith(endpoint)
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+        assert "service through 2026-12-31" in agency.operating_note
 
 
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:

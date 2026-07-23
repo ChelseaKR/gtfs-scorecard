@@ -1,0 +1,33 @@
+# Kelantan (MY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: basmy-kota-bharu
+    name: BAS.MY Kota Bharu
+    country: MY
+    subdivision_code: MY-03
+    subdivision_name: Kelantan
+    is_official: true
+    organization_id: konsortium-e-mutiara
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/mybas-kota-bharu
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit BAS.MY Kota Bharu and
+      Konsortium E-Mutiara Berhad.
+    operating_note: >-
+      The federally supported BAS.MY stage bus network based in Kota Bharu and
+      serving Kelantan. A 2026-07-22 preflight found 16 routes, 752 trips, 755
+      stops, and service through 2026-12-31; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        BAS.MY Kota Bharu / Konsortium E-Mutiara Berhad, published through
+        data.gov.my under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-22"
+      identity_reviewed: true
