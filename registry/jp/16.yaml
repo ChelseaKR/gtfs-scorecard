@@ -622,3 +622,53 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: namerikawacity-norumycar
+    name: "コミュニティバス「のるmycar」 (滑川市)"
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/namerikawacity/feeds/norumycar/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 滑川市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      コミュニティバス「のるmycar」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/namerikawacity.norumycar
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        滑川市. コミュニティバス「のるmycar」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tateyamatown-tateyama
+    name: "立山町営バス"
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tateyamatown/feeds/tateyama/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 立山町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      立山町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tateyamatown.tateyama
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        立山町. 立山町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

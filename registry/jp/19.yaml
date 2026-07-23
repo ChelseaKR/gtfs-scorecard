@@ -79,3 +79,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kosugevillage-kosugesoneibus
+    name: "小菅村営バス"
+    country: JP
+    subdivision_code: JP-19
+    subdivision_name: Yamanashi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kosugevillage/feeds/kosugesoneibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 小菅村 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      小菅村営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kosugevillage.kosugesoneibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        小菅村. 小菅村営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

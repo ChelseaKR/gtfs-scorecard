@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,700 feed records, still mostly in
+reference; the full registry has more than 1,900 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -1864,6 +1864,50 @@ therefore publishes exact latest-sample endpoint-kind reachability and header
 freshness separately from scheduled-trip coverage. A response does not
 establish continuous uptime, alert content, prediction accuracy, or rider
 information availability.
+
+## Japan gtfs-data.jp eleventh wave
+
+The next coverage loop reviewed every remaining current publisher in Japan's
+national [GTFS Data Repository](https://gtfs-data.jp/) that had exactly one
+active feed, a versioned Creative Commons license already accepted by this
+project, and at least 60 days of effective service in the downloaded archive.
+This admitted 119 official feed records and moves Japan from 260 to 379 reviewed
+records across the same 40 prefectures. It adds regional depth, not a census or
+a national-coverage claim.
+
+The repository's [v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied
+publisher identity, the direct current-file URL, stated license, and catalog
+service dates. Every archive was then downloaded and run through the pinned
+canonical MobilityData validator and the complete scorecard path. Effective
+calendar dates came from the archive rather than the catalog summary. The
+admitted set has 68 to 434 days of effective service remaining:
+
+- **Aomori (`JP-02`)**: 10 records.
+- **Yamagata (`JP-06`)**: 18 records.
+- **Toyama (`JP-16`)**: 2 records.
+- **Yamanashi (`JP-19`)**: 1 record.
+- **Nagano (`JP-20`)**: 11 records.
+- **Gifu (`JP-21`)**: 14 records.
+- **Aichi (`JP-23`)**: 12 records.
+- **Mie (`JP-24`)**: 11 records.
+- **Shiga (`JP-25`)**: 2 records.
+- **Hyogo (`JP-28`)**: 6 records.
+- **Wakayama (`JP-30`)**: 1 record.
+- **Tokushima (`JP-36`)**: 4 records.
+- **Kochi (`JP-39`)**: 15 records.
+- **Fukuoka (`JP-40`)**: 12 records.
+
+The license mix is 99 CC BY 4.0 records, 10 CC0 1.0 records, and 10 CC BY
+2.1 JP records. Grades were not an admission gate: the point is to show
+publishers what the feed says, not admit only high-scoring data.
+
+Four unique-publisher candidates remained out. Nanbu Town and Nishiwaki City
+advertised future catalog windows but their downloaded service calendars ended
+2026-03-31. Shoo Town had only 39 days of effective service remaining. The
+Radiant City Yokohama shuttle serves a private residential complex rather than
+a public network. Publishers with several current line or area exports also
+remain deferred so a large set of fragments is not presented as a matching set
+of agencies.
 
 ## Unitrans (ASUCD / City of Davis)
 
