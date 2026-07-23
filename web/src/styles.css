@@ -3113,3 +3113,246 @@ main p,
    text pair, so it inherits the checked AAA contrast. */
 .offline-note { background: var(--card); color: var(--ink); border-bottom: 2px solid var(--line);
   padding: 0.65rem 1rem; text-align: center; font-size: 0.95rem; font-weight: 600; }
+
+/* ===================================================================
+   Interface cohesion pass — July 2026
+
+   The scorecard has grown from two pilot reports into a large operational
+   service. These rules strengthen hierarchy across the static reports, app,
+   directories, and tools without replacing the roadway-signage identity.
+   The route line remains the signature; raised surfaces are reserved for
+   decisions and actions, while evidence sections stay quieter.
+   =================================================================== */
+
+:root {
+  --container-prose: 48rem;
+  --container-data: 82rem;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgb(32 36 31 / 0.07), 0 8px 24px rgb(32 36 31 / 0.07);
+  --shadow-raised: 0 2px 4px rgb(32 36 31 / 0.08), 0 18px 44px rgb(32 36 31 / 0.1);
+}
+
+body {
+  font-size: clamp(1rem, 0.97rem + 0.1vw, 1.06rem);
+  text-rendering: optimizeLegibility;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgb(5 22 16 / 0.18);
+}
+
+main {
+  padding-top: clamp(1.8rem, 4vw, 3rem);
+}
+
+.page-title {
+  margin: 0 0 0.65rem;
+  max-width: 18ch;
+  color: var(--ink);
+  font-size: clamp(2.2rem, 5vw, 3.45rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.page-lede,
+.sectlede {
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.16rem);
+  line-height: 1.62;
+}
+
+.breadcrumbs {
+  margin-bottom: 1.15rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+
+.board-hero {
+  isolation: isolate;
+  border: 1px solid rgb(244 246 240 / 0.16);
+  border-top: 5px solid var(--amber);
+  box-shadow: var(--shadow-raised);
+  padding-bottom: clamp(2.1rem, 5vw, 3rem);
+}
+
+/* A single transit line crosses the status board. It is deliberately subtle:
+   the grade and score remain the decision signals. */
+.board-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: clamp(1.3rem, 4vw, 2.2rem);
+  right: clamp(1.3rem, 4vw, 2.2rem);
+  bottom: 1rem;
+  height: 1px;
+  opacity: 0.42;
+  background: var(--amber);
+}
+
+.board-title {
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.report-route {
+  border-top: 4px solid var(--amber);
+}
+
+.report-route a {
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.report-route a:hover {
+  background: var(--paper-deep);
+  transform: translateX(2px);
+}
+
+.agency-report .report-content > section {
+  padding-block: clamp(1.2rem, 2vw, 2rem);
+}
+
+.agency-report .report-content > section + section {
+  border-top: 1px solid var(--line);
+}
+
+.agency-report .report-content > section:target {
+  margin-inline: -0.85rem;
+  padding-inline: 0.85rem;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 0 0 3px var(--amber);
+}
+
+.alerts {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.alert {
+  padding: 1rem 1.05rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.alert:last-child {
+  border-bottom: 1.5px solid var(--line);
+}
+
+.platforms {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.platform {
+  padding: 1rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.platform:last-child {
+  border-bottom: 1.5px solid var(--line);
+}
+
+@media (min-width: 52rem) {
+  .platforms {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .platform.neutral {
+    grid-column: 1 / -1;
+  }
+}
+
+.fix-card,
+.cat-card,
+.finding,
+.trend-chart,
+.expired-panel {
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.fix-card:hover,
+.cat-card:hover,
+.finding:hover,
+.trend-chart:hover {
+  border-color: color-mix(in srgb, var(--line) 35%, var(--green));
+  box-shadow: var(--shadow-raised);
+  transform: translateY(-1px);
+}
+
+details > summary {
+  border-radius: 8px;
+}
+
+details[open] > summary {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.leaderboard tbody tr,
+.compare-table tbody tr {
+  transition: background-color 120ms ease;
+}
+
+.leaderboard tbody tr:hover,
+.leaderboard tbody tr:focus-within,
+.compare-table tbody tr:hover,
+.compare-table tbody tr:focus-within {
+  background: var(--paper-deep);
+}
+
+input,
+select,
+textarea {
+  border-radius: 8px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --radius: 10px;
+  }
+  .site-header > .wrap {
+    min-height: 58px;
+  }
+  main {
+    padding-top: 1.4rem;
+  }
+  .page-title {
+    font-size: clamp(2rem, 11vw, 2.8rem);
+  }
+  .board-hero {
+    margin-inline: -0.35rem;
+  }
+  .alert,
+  .platform {
+    padding: 0.9rem;
+  }
+  .agency-report .report-content > section:target {
+    margin-inline: 0;
+  }
+}
+
+@media print {
+  .site-header {
+    position: static;
+    box-shadow: none;
+  }
+  .board-hero::after {
+    display: none;
+  }
+  .fix-card,
+  .cat-card,
+  .finding,
+  .trend-chart,
+  .alert,
+  .platform {
+    box-shadow: none;
+    transform: none;
+  }
+}

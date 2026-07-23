@@ -910,6 +910,96 @@
     .fix-evidence { grid-template-columns: 1fr; }
   }
 
+  /* Interface cohesion pass — July 2026. The home page is the service desk;
+     these refinements give the desk clearer depth and interaction hierarchy
+     while keeping the same transit-signage system as the inner app. */
+  .home-header {
+    position: sticky;
+    top: 0;
+    box-shadow: 0 8px 24px rgba(5, 22, 16, 0.2);
+  }
+  .bulletin-hero {
+    padding-top: clamp(1.5rem, 4vw, 3.2rem);
+  }
+  .service-desk {
+    background: var(--paper);
+    border-inline: 1px solid var(--line-ink);
+    box-shadow: 0 18px 58px rgba(32, 36, 31, 0.09);
+  }
+  .desk-intro h1,
+  .section-intro h2,
+  .record-head h2 {
+    text-wrap: balance;
+  }
+  .scorecard-desk {
+    position: relative;
+  }
+  .record-head {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 2rem;
+  }
+  .record-head::after {
+    content: "";
+    position: absolute;
+    left: clamp(1rem, 2.4vw, 2rem);
+    right: clamp(1rem, 2.4vw, 2rem);
+    bottom: 0.8rem;
+    height: 1px;
+    opacity: 0.48;
+    background: var(--amber);
+  }
+  .category-panel,
+  .fix-panel {
+    background: color-mix(in srgb, var(--paper) 92%, var(--paper-2));
+  }
+  .category-select,
+  .fix-selector button,
+  .pilot-switch button,
+  .action,
+  .scope-row,
+  .route-stop {
+    transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  }
+  .category-select:hover,
+  .fix-selector button:hover,
+  .pilot-switch button:hover {
+    background: var(--paper-2);
+  }
+  .action:hover {
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: translate(-2px, -2px);
+  }
+  .scope-row:hover,
+  .route-stop:hover {
+    background: color-mix(in srgb, var(--paper) 62%, var(--paper-2));
+  }
+  .fix-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .inspection,
+  .service-index,
+  .method {
+    scroll-margin-top: 5.5rem;
+  }
+  @media (max-width: 760px) {
+    .home-header {
+      position: relative;
+    }
+    .service-desk {
+      border-inline: 0;
+      box-shadow: none;
+    }
+    .record-head {
+      padding-bottom: 2.2rem;
+    }
+    .score-workbench {
+      gap: 0;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
