@@ -71,7 +71,10 @@ The consumer feature finder now has a primary-navigation entry, language-aware
 `api/v1/features.json`. The interface states that the corpus is not a census.
 Product-need presets compose existing, ungraded filters for accessibility
 metadata, multilingual rider information, fare-aware planning, flexible-service
-discovery, contactless bank-card declarations, and step-free station navigation.
+discovery, contactless bank-card declarations, step-free station navigation,
+modern Fare v2 integration, and ferry service discovery. The ferry preset also
+proves that a product need can compose a service-mode filter without adding a
+new grade or certification claim.
 CSV exports repeat the selected geographic cohort and its reviewed-record
 denominator on every row, so a shortlist remains interpretable after it leaves
 the site.

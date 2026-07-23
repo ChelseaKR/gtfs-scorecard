@@ -177,7 +177,7 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_742
+    assert len(agencies) == 1_743
     assert len(european) == 259
     assert len({agency.country for agency in european}) == 24
 
@@ -424,6 +424,26 @@ def test_worldwide_cohort_preserves_public_names_and_realtime_semantics(
     uruguay = by_id["mtop-uruguay-metropolitan"]
     assert uruguay.name == "Servicios metropolitanos de ómnibus (MTOP Uruguay)"
     assert uruguay.rt_urls == {}
+
+
+def test_repo_registry_includes_hong_kong_frequency_canary(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    agency = by_id["hong-kong-transport-department"]
+    assert agency.country == "HK"
+    assert agency.subdivision_code == ""
+    assert agency.subdivision_name == ""
+    assert agency.mdb_id == "1924"
+    assert agency.is_official is True
+    assert agency.static_gtfs_url == "https://static.data.gov.hk/td/pt-headway-en/gtfs.zip"
+    assert agency.reuse_evidence is not None
+    assert agency.reuse_evidence.decision == "approved"
+    assert agency.reuse_evidence.identity_reviewed is True
+    assert "frequencies.txt" in agency.operating_note
+    assert "unusually distant horizon" in agency.operating_note
 
 
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:

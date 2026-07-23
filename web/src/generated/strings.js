@@ -21,6 +21,8 @@ export const STRINGS = {
   "feature_use_case_accessibility": "Accessibility metadata review",
   "feature_use_case_contactless": "Contactless bank-card declaration",
   "feature_use_case_fares": "Fare-aware trip planning",
+  "feature_use_case_fares_v2": "Modern fare model integration",
+  "feature_use_case_ferry": "Ferry service discovery",
   "feature_use_case_flexible_service": "Flexible-service feed discovery",
   "feature_use_case_hint": "Apply a transparent set of filters, then refine it. Presets are evidence shortcuts, not certifications.",
   "feature_use_case_label": "Use case",

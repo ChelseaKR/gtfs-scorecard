@@ -139,6 +139,15 @@ Gate: as Phase 2. Regions where the dominant standard is not GTFS, or where the
 official feed is only reachable behind an account, are out of scope for this
 phase and noted for the alternative-catalog work below.
 
+The Hong Kong Transport Department aggregate is now the phase's frequency-based
+schedule canary. DATA.GOV.HK publishes the keyless GTFS under terms permitting
+commercial and non-commercial reuse with attribution. Its calendar runs to
+2099, so admission required a full scorecard preflight: freshness remains
+measured, explicitly labels the horizon unusually distant, and deducts for
+missing `feed_info.txt` dates rather than treating the end date as evidence of
+active maintenance. Hong Kong has no ISO 3166-2 child in the portable location
+vocabulary, which exercises the supported country-only location contract.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,

@@ -46,41 +46,61 @@ const DATA_BASES = [
 /** Product questions that can be answered from existing, ungraded GTFS
  *  capability evidence. Presets only compose the public filters; they do not
  *  certify implementation quality or physical accessibility.
- *  @type {Record<string, {labelKey: string, features: string[], stops: string, trips: string}>} */
+ *  @type {Record<string, {labelKey: string, features: string[], mode: string, stops: string, trips: string}>} */
 const FEATURE_USE_CASES = {
   "accessibility-metadata": {
     labelKey: "feature_use_case_accessibility",
     features: ["accessibility"],
+    mode: "",
     stops: "95",
     trips: "95",
   },
   "multilingual-rider-info": {
     labelKey: "feature_use_case_multilingual",
     features: ["translations"],
+    mode: "",
     stops: "",
     trips: "",
   },
   "fare-aware-planning": {
     labelKey: "feature_use_case_fares",
     features: ["fares"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "modern-fare-model-integration": {
+    labelKey: "feature_use_case_fares_v2",
+    features: ["fares_v2"],
+    mode: "",
     stops: "",
     trips: "",
   },
   "flexible-service-discovery": {
     labelKey: "feature_use_case_flexible_service",
     features: ["flex"],
+    mode: "",
     stops: "",
     trips: "",
   },
   "contactless-payment-metadata": {
     labelKey: "feature_use_case_contactless",
     features: ["cemv"],
+    mode: "",
     stops: "",
     trips: "",
   },
   "step-free-stations": {
     labelKey: "feature_use_case_step_free",
     features: ["pathways", "step_free"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "ferry-service-discovery": {
+    labelKey: "feature_use_case_ferry",
+    features: [],
+    mode: "ferry",
     stops: "",
     trips: "",
   },
@@ -1209,6 +1229,7 @@ function setupOverview(agencies, total, summary) {
     const preset = FEATURE_USE_CASES[useCase.value];
     selectedFeatures.clear();
     for (const feature of preset.features) selectedFeatures.add(feature);
+    serviceMode.value = preset.mode;
     stopsMin.value = preset.stops;
     tripsMin.value = preset.trips;
   }
@@ -1218,10 +1239,10 @@ function setupOverview(agencies, total, summary) {
       preset &&
       selectedFeatures.size === preset.features.length &&
       preset.features.every((feature) => selectedFeatures.has(feature)) &&
+      serviceMode.value === preset.mode &&
       stopsMin.value === preset.stops &&
       tripsMin.value === preset.trips &&
-      !translationLanguage.value &&
-      !serviceMode.value
+      !translationLanguage.value
     );
   }
   if (useCase.value && !useCaseMatches(useCase.value)) useCase.value = "";
@@ -1460,7 +1481,7 @@ function setupOverview(agencies, total, summary) {
       stopsMin.value = preset.stops;
       tripsMin.value = preset.trips;
       translationLanguage.value = "";
-      serviceMode.value = "";
+      serviceMode.value = preset.mode;
     }
     apply();
   });
