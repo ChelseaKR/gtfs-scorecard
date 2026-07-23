@@ -139,6 +139,8 @@ def _feature_directory() -> dict[str, Any]:
         "has_ferry": None,
         "ferry_only": None,
         "ferry_profile_measured": False,
+        "ferry_terminal_accessibility_stated_pct": None,
+        "ferry_trip_accessibility_stated_pct": None,
         "ferry_bikes_stated_pct": None,
         "ferry_bikes_allowed_pct": None,
     }
@@ -172,6 +174,8 @@ def _feature_directory() -> dict[str, Any]:
                     "has_ferry": True,
                     "ferry_only": False,
                     "ferry_profile_measured": True,
+                    "ferry_terminal_accessibility_stated_pct": 100.0,
+                    "ferry_trip_accessibility_stated_pct": 100.0,
                     "ferry_bikes_stated_pct": 100.0,
                     "ferry_bikes_allowed_pct": 50.0,
                 }
@@ -564,6 +568,8 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert '"accessibility_fields"' in csv.splitlines()[0]
     assert '"translation_languages"' in csv.splitlines()[0]
     assert '"ferry_profile_measured"' in csv.splitlines()[0]
+    assert '"ferry_terminal_accessibility_stated_pct"' in csv.splitlines()[0]
+    assert '"ferry_trip_accessibility_stated_pct"' in csv.splitlines()[0]
     assert '"ferry_bikes_stated_pct"' in csv.splitlines()[0]
     assert '"coverage_scope"' in csv.splitlines()[0]
     assert '"coverage_denominator"' in csv.splitlines()[0]
@@ -732,6 +738,39 @@ def test_bicycle_aware_ferry_preset_uses_scoped_policy_evidence(page: Page, app_
         "view": "features",
         "mode": "ferry",
         "ferry_bikes": "100",
+    }
+
+
+def test_ferry_accessibility_preset_uses_scoped_published_fields(page: Page, app_url: str) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("ferry-accessibility-information")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator("#ferry-access-min")).to_have_value("95")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text(
+        "Mode: Ferry · Ferry accessibility fields: 100% of terminals "
+        "and 100% of trips state a value"
+    )
+    assert _hash_params(page) == {
+        "usecase": "ferry-accessibility-information",
+        "view": "features",
+        "mode": "ferry",
+        "ferry_access": "95",
+    }
+
+    page.locator("#ferry-access-min").select_option("100")
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {
+        "view": "features",
+        "mode": "ferry",
+        "ferry_access": "100",
     }
 
 

@@ -921,12 +921,15 @@ No new country qualified. The reasons are the point, and they cluster:
   catalog and split into time-of-day files rather than a first-party Vietnamese
   source, and Ho Chi Minh City publishes none. Nepal and Bangladesh have only
   community-mapped data. These wait for the roadmap's partnership-gated phase.
-- **Same platform, held on data quality:** the other `data.gov.my` BAS.MY town
-  networks did not pass preflight. Alor Setar, Kota Bharu, Kuala Terengganu, and
-  Kuching return archives with zero trips at present, so they were held as
-  stubs. Ipoh and both Seremban feeds carry service, but their calendars end on
-  the review date with no `calendar_dates` extension, so they were held on
-  freshness.
+- **Resolved after this review:** on 2026-07-22, the official `data.gov.my`
+  API republished Alor Setar, Kota Bharu, Kuala Terengganu, and Kuching with
+  390 to 804 trips apiece and service through 2026-12-31. Each small archive
+  passed the canonical validator preflight and is now admitted as one feed
+  record in Kedah, Kelantan, Terengganu, or Sarawak. This decision uses the new
+  bytes; it does not reinterpret the earlier zero-trip stubs.
+- **Still held on freshness:** Ipoh and both Seremban feeds carry service only
+  on the day they are fetched, with no `calendar_dates` extension, so they
+  remain out until the official API publishes a usable future window.
 
 ## Japan gtfs-data.jp second wave
 
