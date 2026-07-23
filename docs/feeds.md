@@ -1909,6 +1909,79 @@ a public network. Publishers with several current line or area exports also
 remain deferred so a large set of fragments is not presented as a matching set
 of agencies.
 
+## Global portal exhaustion wave
+
+The next breadth-and-depth loop combined the current Mobility Database catalog
+with first-party national and municipal portals, reviewed on 2026-07-23. It
+admitted 70 feed records: 57 French local networks, eight additions in countries
+already represented outside France, and five records opening four new country
+samples. Every schedule archive completed the pinned canonical MobilityData
+validator and full scorecard path and retained at least 60 days of effective
+service. Grades were not an admission gate. The resulting distribution is one
+A, seven B, nine C, twenty-nine D, and twenty-four F records.
+
+France's [National Access Point](https://transport.data.gouv.fr/) supplied 57
+local-network records under Licence Ouverte 2.0. The pass chose one current
+schedule feed per local publisher, rather than regional aggregates or multiple
+line fragments. Fifty-five came from a machine-readable sweep of the National
+Access Point API. Mouvéo in Saint-Omer and Hobus in Honfleur passed separate
+current-resource checks. The 57 records cover Auvergne-Rhône-Alpes,
+Bourgogne-Franche-Comté, Corse, Grand-Est, Guadeloupe, Hauts-de-France, La
+Réunion, Martinique, Mayotte, Normandie, Nouvelle-Aquitaine, Occitanie,
+Pays-de-la-Loire, and Provence-Alpes-Côte-d’Azur. Twenty-six publish official,
+keyless GTFS-Realtime endpoints through the same portal.
+
+Four new country samples cleared the same source, licence, identity, and
+calendar gate:
+
+- **Albania:** Municipality of Tirana. The city's
+  [open-data policy](https://tirana.al/faqe/open-data) states that its data is
+  available without licence restrictions.
+- **Moldova:** Transport Public Ungheni. The operator's
+  [open-data page](https://unghenitransport.md/retea-de-transport/open-data)
+  applies CC BY 4.0.
+- **Serbia:** Belgrade Public Transport, from the
+  [national open-data portal](https://data.gov.rs/sr/datasets/gradski-javni-prevoz-u-beogradu-gtfs/)
+  under Serbia's open-data reuse terms.
+- **Ukraine:** Kyivpastrans from the
+  [Kyiv city data portal](https://data.kyivcity.gov.ua/dataset/rozklad-rukhu-miskoho-elektrychnoho-ta-avtomobilnoho-transportu-dep-transport/resource/58f0c3d0-9409-4de9-92c8-de4afa035efd)
+  and Lvivavtodor from the City of Lviv open-data portal. Lviv also publishes
+  keyless TripUpdates and VehiclePositions.
+
+Existing-country depth added Lethbridge Transit, Rimouski Transit, Réseau de
+transport de Longueuil, and Saint John Transit in Canada; MVG München and hvv
+Hamburg in Germany; and West Coast Motors plus the Essex Bus Network in the
+United Kingdom. Their recorded terms are the relevant Canadian municipal open
+government licences or CC BY 4.0, Germany's provider reuse terms or
+Datenlizenz Deutschland – Namensnennung 2.0, and the UK Open Government Licence
+v3.0.
+
+The rejection set is part of this wave:
+
+- Four otherwise eligible French local networks could not be fetched:
+  Mobilité en Velay, Sud Sainte Baume, Trans’CoVe, and Pays des Écrins.
+- Canberra Light Rail, Brussels STIB/MIVB, Luxembourg's national feed, and
+  Metlink Wellington failed the 60-day effective-calendar gate.
+- Mexico City's official archive timed out and its catalog mirror was expired.
+  The Movimex Toluca and Jilotepec archives remained excluded because they are
+  OSM-derived rather than first-party schedule data.
+- Hyderabad Metro's download did not resolve to a GTFS zip. METROFOR's host did
+  not resolve. Santiago DTPM had a current archive but no explicit
+  commercial-reuse grant on the official current-feed page. Bogotá's 115 MB
+  compressed archive did not finish a bounded local score, and the official
+  portal records CC BY-SA 4.0, which is outside the project's general
+  share-alike allowlist.
+- Cascais no longer exposes the catalog's named GTFS dataset in its official
+  data API. Barreiro's catalog licence link names a different publisher.
+  Neither identity/licence pair was inferred.
+- Short-calendar, expired, dead, registration-gated, aggregate, and
+  multi-fragment candidates elsewhere remained out under their previously
+  documented reasons.
+
+This wave changes the reviewed sample, not the product's claims. A feed record
+is not necessarily a distinct agency, and 1,972 configured records across 40
+country codes are not a census of any country or region.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |

@@ -154,3 +154,93 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-cote-bus
+    name: "Réseau urbain Côte&Bus"
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: "Bourgogne-Franche-Comté"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/c00d487c-4766-4ca1-b736-e7de110331d9"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Beaune, Côte et Sud - Communauté Beaune-Chagny-Nolay and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/beaune-cote-et-bus-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/beaune-cote-et-bus-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-de-transport-de-la-c-a-beaune-cote-sud-gtfs"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Beaune, Côte et Sud - Communauté Beaune-Chagny-Nolay"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-ecla-mobilite
+    name: "Réseau urbain ECLA Mobilité"
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: "Bourgogne-Franche-Comté"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/ec61df69-830c-4ca7-9d78-9a81c515e9de"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA ECLA  (Espace Communautaire Lons Agglomération) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/ecla-lons-agglo-mobilites"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA ECLA  (Espace Communautaire Lons Agglomération)"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-grandole-mobilites
+    name: "Réseau urbain Grandole Mobilités"
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: "Bourgogne-Franche-Comté"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/81254/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Grand Dole and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/tgd-dole-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/tgd-dole-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/reseau-de-transport-du-grand-dole"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Grand Dole"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-monrezo
+    name: "Réseau urbain MonRéZO"
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: "Bourgogne-Franche-Comté"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/128b06bc-f263-4530-8e03-395402f87256"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CU Le Creusot Montceau-les-Mines and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/arrets-horaires-et-parcours-theoriques-du-reseau-monrezo-cucm-gtfs-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CU Le Creusot Montceau-les-Mines"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

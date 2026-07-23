@@ -117,3 +117,116 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-agglobus-foix
+    name: "Réseau urbain l'agglobus"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/8c9dd4f7-f6a2-4760-915e-89e8f9666c5b"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Pays Foix-Varilhes and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/reseau-lagglo-bus-de-lagglo-foix-varilhes"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Pays Foix-Varilhes"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-mio
+    name: "Réseau urbain Mio"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/b1b9a7a6-1baf-4113-a6c3-4c5713764ffd"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC de Millau Grands Causses and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fiches-horaires-reseau-urbain-mio-ccmillaugrandscausses"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC de Millau Grands Causses"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-ole
+    name: "Réseau urbain Olé"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/83852/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Lunel Agglo and the update date.
+    rt_urls:
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/693715b8-992c-43c3-a0e4-24666b713a40"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/5511d6c1-1454-4045-a2f5-1223f22d7530"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-ole-lunel-agglo-gtfs-et-gtfs-rt"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Lunel Agglo"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-transpor-pays-de-lor
+    name: "Réseau urbain Transp’Or"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/84a0902b-ed56-4a09-8eb7-bb58601ba084"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Pays de l'Or and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/transpor-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/transpor-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-transport-en-commun-du-reseau-transpor-gtfs"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Pays de l'Or"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-uggo
+    name: "Réseau urbain UGGO"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/3ba2db00-235a-4958-980e-5cdd20ce204e"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Gard Rhodanien and the update date.
+    rt_urls:
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/bb983834-bc52-4289-b837-13e3d43fbfa4"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/donnees-transport-2024"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Gard Rhodanien"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

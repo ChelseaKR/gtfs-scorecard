@@ -1,0 +1,26 @@
+# Corse (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fr-muvistrada
+    name: "Réseau urbain Muvistrada"
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: "Corse"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/5021a054-43c8-49b7-9166-832f2af6c8f0"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Pays Ajaccien and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/information-sur-les-transports-en-commun"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Pays Ajaccien"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

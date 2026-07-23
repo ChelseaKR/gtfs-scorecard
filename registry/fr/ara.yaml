@@ -113,3 +113,77 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-cherpa
+    name: "Réseau urbain Cherpa"
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: "Auvergne-Rhône-Alpes"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/7d54a219-8fe7-4635-a9fc-cefe5e57462e"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Agglo Pays d'Issoire and the update date.
+    rt_urls:
+      service_alerts: "https://www.data.gouv.fr/api/1/datasets/r/bbc60d61-bf8f-40ec-9e3b-9c040cc2b06e"
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/bbc60d61-bf8f-40ec-9e3b-9c040cc2b06e"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/bbc60d61-bf8f-40ec-9e3b-9c040cc2b06e"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/cherpa-horaires-lignes-regulieres"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Agglo Pays d'Issoire"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-rubis
+    name: "Réseau urbain Rubis"
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: "Auvergne-Rhône-Alpes"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/83842/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Bassin de Bourg-en-Bresse and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/rubis-bourg-en-bresse-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/rubis-bourg-en-bresse-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/rubis-grand-bourg-mobilites-offre-de-transport-theorique-et-temps-reel"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Bassin de Bourg-en-Bresse"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-tout-enbus
+    name: "Réseau urbain Tout'enbus"
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: "Auvergne-Rhône-Alpes"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/e91ff63e-2c15-4c86-8e69-499ceec7bd97"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      Région Auvergne-Rhône-Alpes (CC du Bassin d'Aubenas) and the update date.
+    rt_urls:
+      service_alerts: "https://www.data.gouv.fr/api/1/datasets/r/af576ebf-d3a4-4a0f-b692-8ee580cb1877"
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/af576ebf-d3a4-4a0f-b692-8ee580cb1877"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/af576ebf-d3a4-4a0f-b692-8ee580cb1877"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/donnees-theoriques-et-temps-reel"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "Région Auvergne-Rhône-Alpes (CC du Bassin d'Aubenas)"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
