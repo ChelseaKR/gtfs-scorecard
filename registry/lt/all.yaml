@@ -1,0 +1,1255 @@
+# Lithuania (LT) municipality feeds — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: akmene-public-transport
+    name: Akmenė public transport
+    country: LT
+    subdivision_code: LT-01
+    subdivision_name: Akmenė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/AkmenesR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Akmenė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: alytus-city-public-transport
+    name: Alytus city public transport
+    country: LT
+    subdivision_code: LT-02
+    subdivision_name: Alytaus miestas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/AlytausM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Alytaus miestas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: alytus-district-public-transport
+    name: Alytus district public transport
+    country: LT
+    subdivision_code: LT-03
+    subdivision_name: Alytus
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/AlytausR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Alytus, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: anyksciai-public-transport
+    name: Anykščiai public transport
+    country: LT
+    subdivision_code: LT-04
+    subdivision_name: Anykščiai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/AnyksciuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Anykščiai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: birstonas-public-transport
+    name: Birštonas public transport
+    country: LT
+    subdivision_code: LT-05
+    subdivision_name: Birštonas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/BirstonoSav.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Birštonas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: birzai-public-transport
+    name: Biržai public transport
+    country: LT
+    subdivision_code: LT-06
+    subdivision_name: Biržai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/BirzuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Biržai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: druskininkai-public-transport
+    name: Druskininkai public transport
+    country: LT
+    subdivision_code: LT-07
+    subdivision_name: Druskininkai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/Druskininku.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Druskininkai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: elektrenai-public-transport
+    name: Elektrėnai public transport
+    country: LT
+    subdivision_code: LT-08
+    subdivision_name: Elektrėnai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/Elektrenu.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Elektrėnai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: jonava-public-transport
+    name: Jonava public transport
+    country: LT
+    subdivision_code: LT-10
+    subdivision_name: Jonava
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/JonavosR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Jonava, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: joniskis-public-transport
+    name: Joniškis public transport
+    country: LT
+    subdivision_code: LT-11
+    subdivision_name: Joniškis
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/JoniskioR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Joniškis, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: jurbarkas-public-transport
+    name: Jurbarkas public transport
+    country: LT
+    subdivision_code: LT-12
+    subdivision_name: Jurbarkas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/JurbarkoR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Jurbarkas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kalvarija-public-transport
+    name: Kalvarija public transport
+    country: LT
+    subdivision_code: LT-14
+    subdivision_name: Kalvarija
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/Kalvarijos.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kalvarija, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kaunas-city-public-transport
+    name: Kaunas city public transport
+    country: LT
+    subdivision_code: LT-15
+    subdivision_name: Kauno miestas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KaunoM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kauno miestas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kaunas-district-public-transport
+    name: Kaunas district public transport
+    country: LT
+    subdivision_code: LT-16
+    subdivision_name: Kaunas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KaunoR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kaunas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kedainiai-public-transport
+    name: Kėdainiai public transport
+    country: LT
+    subdivision_code: LT-18
+    subdivision_name: Kėdainiai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KedainiuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kėdainiai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kelme-public-transport
+    name: Kelmė public transport
+    country: LT
+    subdivision_code: LT-19
+    subdivision_name: Kelmė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KelmesR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kelmė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: klaipeda-city-public-transport
+    name: Klaipėda city public transport
+    country: LT
+    subdivision_code: LT-20
+    subdivision_name: Klaipėdos miestas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KlaipedosM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Klaipėdos miestas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kretinga-public-transport
+    name: Kretinga public transport
+    country: LT
+    subdivision_code: LT-22
+    subdivision_name: Kretinga
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KretingosR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kretinga, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kupiskis-public-transport
+    name: Kupiškis public transport
+    country: LT
+    subdivision_code: LT-23
+    subdivision_name: Kupiškis
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/KupiskioR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Kupiškis, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: lazdijai-public-transport
+    name: Lazdijai public transport
+    country: LT
+    subdivision_code: LT-24
+    subdivision_name: Lazdijai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/LazdijuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Lazdijai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: marijampole-public-transport
+    name: Marijampolė public transport
+    country: LT
+    subdivision_code: LT-25
+    subdivision_name: Marijampolė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/Marijampoles.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Marijampolė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mazeikiai-public-transport
+    name: Mažeikiai public transport
+    country: LT
+    subdivision_code: LT-26
+    subdivision_name: Mažeikiai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/MazeikiuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Mažeikiai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: moletai-public-transport
+    name: Molėtai public transport
+    country: LT
+    subdivision_code: LT-27
+    subdivision_name: Molėtai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/MoletuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Molėtai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: neringa-public-transport
+    name: Neringa public transport
+    country: LT
+    subdivision_code: LT-28
+    subdivision_name: Neringa
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/neringa.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Neringa, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: pakruojis-public-transport
+    name: Pakruojis public transport
+    country: LT
+    subdivision_code: LT-30
+    subdivision_name: Pakruojis
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/PakruojoR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Pakruojis, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: palanga-city-public-transport
+    name: Palanga city public transport
+    country: LT
+    subdivision_code: LT-31
+    subdivision_name: Palangos miestas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/PalangosM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Palangos miestas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: panevezys-city-public-transport
+    name: Panevėžys city public transport
+    country: LT
+    subdivision_code: LT-32
+    subdivision_name: Panevėžio miestas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/PanevezioM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Panevėžio miestas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: panevezys-district-public-transport
+    name: Panevėžys district public transport
+    country: LT
+    subdivision_code: LT-33
+    subdivision_name: Panevėžys
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/PanevezioR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Panevėžys, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: plunge-public-transport
+    name: Plungė public transport
+    country: LT
+    subdivision_code: LT-35
+    subdivision_name: Plungė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/PlungesR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Plungė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: prienai-public-transport
+    name: Prienai public transport
+    country: LT
+    subdivision_code: LT-36
+    subdivision_name: Prienai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/PrienuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Prienai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: radviliskis-public-transport
+    name: Radviliškis public transport
+    country: LT
+    subdivision_code: LT-37
+    subdivision_name: Radviliškis
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/RadviliskioR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Radviliškis, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: raseiniai-public-transport
+    name: Raseiniai public transport
+    country: LT
+    subdivision_code: LT-38
+    subdivision_name: Raseiniai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/RaseiniuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Raseiniai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: rietavas-public-transport
+    name: Rietavas public transport
+    country: LT
+    subdivision_code: LT-39
+    subdivision_name: Rietavas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/Rietavo.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Rietavas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: rokiskis-public-transport
+    name: Rokiškis public transport
+    country: LT
+    subdivision_code: LT-40
+    subdivision_name: Rokiškis
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/RokiskioR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Rokiškis, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: salcininkai-public-transport
+    name: Šalčininkai public transport
+    country: LT
+    subdivision_code: LT-42
+    subdivision_name: Šalčininkai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SalcininkuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Šalčininkai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: siauliai-city-public-transport
+    name: Šiauliai city public transport
+    country: LT
+    subdivision_code: LT-43
+    subdivision_name: Šiaulių miestas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SiauliuM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Šiaulių miestas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: siauliai-district-public-transport
+    name: Šiauliai district public transport
+    country: LT
+    subdivision_code: LT-44
+    subdivision_name: Šiauliai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SiauliuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Šiauliai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: silute-public-transport
+    name: Šilutė public transport
+    country: LT
+    subdivision_code: LT-46
+    subdivision_name: Šilutė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SilutesR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Šilutė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: sirvintos-public-transport
+    name: Širvintos public transport
+    country: LT
+    subdivision_code: LT-47
+    subdivision_name: Širvintos
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SirvintuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Širvintos, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: skuodas-public-transport
+    name: Skuodas public transport
+    country: LT
+    subdivision_code: LT-48
+    subdivision_name: Skuodas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SkuodoR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Skuodas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: svencionys-public-transport
+    name: Švenčionys public transport
+    country: LT
+    subdivision_code: LT-49
+    subdivision_name: Švenčionys
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/SvencioniuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Švenčionys, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: taurage-public-transport
+    name: Tauragė public transport
+    country: LT
+    subdivision_code: LT-50
+    subdivision_name: Tauragė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/TauragesR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Tauragė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: telsiai-public-transport
+    name: Telšiai public transport
+    country: LT
+    subdivision_code: LT-51
+    subdivision_name: Telšiai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/TelsiuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Telšiai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: trakai-public-transport
+    name: Trakai public transport
+    country: LT
+    subdivision_code: LT-52
+    subdivision_name: Trakai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/TrakuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Trakai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: ukmerge-public-transport
+    name: Ukmergė public transport
+    country: LT
+    subdivision_code: LT-53
+    subdivision_name: Ukmergė
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/UkmergesR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Ukmergė, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: utena-public-transport
+    name: Utena public transport
+    country: LT
+    subdivision_code: LT-54
+    subdivision_name: Utena
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/UtenosR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Utena, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: varena-public-transport
+    name: Varėna public transport
+    country: LT
+    subdivision_code: LT-55
+    subdivision_name: Varėna
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/VarenosR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Varėna, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: vilnius-district-public-transport
+    name: Vilnius district public transport
+    country: LT
+    subdivision_code: LT-58
+    subdivision_name: Vilnius
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/VilniausR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Vilnius, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: visaginas-public-transport
+    name: Visaginas public transport
+    country: LT
+    subdivision_code: LT-59
+    subdivision_name: Visaginas
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/VisaginoM.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Visaginas, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: zarasai-public-transport
+    name: Zarasai public transport
+    country: LT
+    subdivision_code: LT-60
+    subdivision_name: Zarasai
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/ZarasuR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration and the named municipality.
+    operating_note: >-
+      Official municipality-level export from the national GTFS directory.
+      Counted as one feed record, not as a census of distinct operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Lithuanian Transport Safety Administration and Zarasai, via
+        data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

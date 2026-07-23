@@ -80,3 +80,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: cascais-proxima
+    name: Cascais Próxima (MobiCascais)
+    country: PT
+    subdivision_code: PT-11
+    subdivision_name: Lisboa
+    is_official: true
+    static_gtfs_url: https://drive.google.com/uc?export=download&id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX
+    license_note: >-
+      CC BY 4.0 through Portugal's public-administration open-data catalog;
+      credit Cascais Próxima and the Municipality of Cascais.
+    operating_note: >-
+      The municipal catalog's MO06 dataset identifies this as the complete Mobi
+      Cascais network; its current file is distributed from the publisher's
+      stable Google Drive resource.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dados.gov.pt/en/datasets/gtfs-rede-mobi-cascais/#/information
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Cascais Próxima E.M. S.A.; Município de Cascais.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
