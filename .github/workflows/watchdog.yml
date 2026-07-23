@@ -67,13 +67,17 @@ jobs:
           set -euo pipefail
           # The staleness check above tolerates one bad run inside its window;
           # this pages on the first failure, so a red daily is known within six
-          # hours rather than after the data ages past the threshold.
+          # hours rather than after the data ages past the threshold. Include
+          # workflow_dispatch runs so a successful manual recovery clears the
+          # alert without waiting for the next scheduled refresh.
           latest=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow scorecard.yml \
-            --branch main --event schedule --limit 1 --json conclusion,status 2>/dev/null || echo '[]')
+            --branch main --status completed --limit 1 \
+            --json conclusion,status,event 2>/dev/null || echo '[]')
           conclusion=$(echo "$latest" | jq -r '.[0].conclusion // empty')
           status=$(echo "$latest" | jq -r '.[0].status // empty')
-          echo "most recent scheduled Daily scorecard run: status=$status conclusion=$conclusion"
+          event=$(echo "$latest" | jq -r '.[0].event // empty')
+          echo "most recent completed Daily scorecard run: event=$event status=$status conclusion=$conclusion"
           if [ "$conclusion" = "failure" ] || [ "$conclusion" = "timed_out" ]; then
-            echo "::error::The most recent scheduled Daily scorecard run ended '$conclusion'. Investigate before the published data goes stale."
+            echo "::error::The most recent completed Daily scorecard run ended '$conclusion'. Investigate before the published data goes stale."
             exit 1
           fi
