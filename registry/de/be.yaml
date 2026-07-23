@@ -9,6 +9,8 @@ agencies:
     subdivision_code: DE-BE
     subdivision_name: Berlin
     mdb_id: "3233"
+    organization_id: vbb
+    feed_variant: fixed-route regional schedule
     is_official: true
     static_gtfs_url: https://unternehmen.vbb.de/fileadmin/user_upload/VBB/Dokumente/API-Datensaetze/gtfs-mastscharf/GTFS.zip
     license_note: >-
@@ -17,8 +19,7 @@ agencies:
     operating_note: >-
       One multi-operator regional aggregate for Berlin and Brandenburg;
       counted as one feed record, not a distinct-agency count. The publisher's
-      separate GTFS-Flex collection stays unlisted until a source page stating
-      its reuse terms can be reviewed.
+      GTFS-Flex collection is reviewed as a separate demand-responsive feed.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
@@ -28,4 +29,31 @@ agencies:
       attribution: VBB Verkehrsverbund Berlin-Brandenburg GmbH.
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: vbb-berlin-brandenburg-flex
+    name: VBB GTFS-Flex demand-responsive services
+    country: DE
+    subdivision_code: DE-BE
+    subdivision_name: Berlin
+    mdb_id: "3234"
+    organization_id: vbb
+    feed_variant: GTFS-Flex demand-responsive collection
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://unternehmen.vbb.de/fileadmin/user_upload/VBB/Dokumente/API-Datensaetze/gtfs-flex.zip
+    license_note: >-
+      CC BY 4.0 through VBB's official dataset page; credit VBB
+      Verkehrsverbund Berlin-Brandenburg GmbH.
+    operating_note: >-
+      VBB's separate regional GTFS-Flex collection for demand-responsive
+      services; counted as one feed record, not as another organization.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://unternehmen.vbb.de/digitale-services/datensaetze/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: VBB Verkehrsverbund Berlin-Brandenburg GmbH.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
       identity_reviewed: true

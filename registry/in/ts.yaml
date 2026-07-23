@@ -1,0 +1,32 @@
+# Telangana (IN) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tgsrtc-hyderabad-bus
+    name: TGSRTC — Greater Hyderabad bus
+    country: IN
+    subdivision_code: IN-TS
+    subdivision_name: Telangāna
+    mdb_id: "3361"
+    is_official: true
+    static_gtfs_url: https://data.opencity.in/dataset/88e2d145-7ec6-4666-88dd-6cf18b18312e/resource/1b0d18bb-b2fb-4a79-8ed0-1e071da5790c/download/telangana_opendata_gtfs_tgsrtc_08_february_2026.zip
+    license_note: >-
+      TGSRTC's open-data terms permit commercial and non-commercial reuse,
+      adaptation, reproduction, storage, display, transmission, and
+      redistribution with attribution.
+    operating_note: >-
+      The current archive is an OpenCity mirror of TGSRTC's official open data
+      because the first-party page routes downloads through a registration
+      form. The agency-produced Greater Hyderabad export counts as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.tgsrtc.telangana.gov.in/open-data
+      terms_url: https://www.tgsrtc.telangana.gov.in/open-data
+      scope: [gtfs_schedule]
+      attribution: Contains data provided by TGSRTC.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
