@@ -171,6 +171,16 @@ its current archive still gives four required GTFS files `.csv` names, so the
 canonical validator cannot recognize a usable service calendar. This is
 regional depth from an official source, not a new-country or census claim.
 
+Five additional licensed Japanese records passed an operational-depth review
+on 2026-07-23: JR East's Tsugaru Line replacement bus, Mizuho Town's
+reservation-based Choi-Soko service, Toyama Chitetsu's regional bus network,
+Toba City's island ferries, and Kochi's airport shared taxi. The set adds
+replacement-service, demand-responsive, regional-bus, ferry, airport-link, and
+keyless realtime evidence without changing the 40-prefecture denominator.
+Japan now has 235 reviewed feed records in the catalog. The seven prefectures
+without an admitted source remain empty; no unclear-license feed or mirror was
+used to change that count.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,

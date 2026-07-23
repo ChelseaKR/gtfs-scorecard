@@ -300,3 +300,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: jr-east-tsugaru-line-replacement-bus
+    name: JR East Tsugaru Line Replacement Bus (JR津軽線代行バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/jr-east-morioka/feeds/JR-east_tsugaruline/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by JR East's Morioka
+      branch through the GTFS Data Repository (gtfs-data.jp). Credit JR
+      East Morioka Branch.
+    operating_note: >-
+      The scheduled replacement bus between Kanita Station and Mimmaya
+      Gymnasium for the interrupted Tsugaru Line segment.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/jr-east-morioka.JR-east_tsugaruline
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        JR East Morioka Branch. Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

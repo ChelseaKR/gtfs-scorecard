@@ -177,7 +177,7 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_753
+    assert len(agencies) == 1_758
     assert len(european) == 259
     assert len({agency.country for agency in european}) == 24
 
@@ -522,6 +522,40 @@ def test_repo_registry_includes_japan_five_loop_cohort(
         assert agency.reuse_evidence.decision == "approved"
         assert agency.reuse_evidence.identity_reviewed is True
         assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+
+
+def test_repo_registry_includes_japan_operational_depth_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    cohort = {
+        "jr-east-tsugaru-line-replacement-bus": ("JP-02", "Aomori", "jr-east-morioka"),
+        "mizuho-choisoko-demand-transit": ("JP-13", "Tokyo", "mizuhotown"),
+        "toyama-chitetsu-bus": ("JP-16", "Toyama", "chitetsu"),
+        "toba-municipal-ferry": ("JP-24", "Mie", "tobacity"),
+        "kochi-airport-shared-taxi": ("JP-39", "Kochi", "kochiap"),
+    }
+
+    for agency_id, (subdivision_code, subdivision_name, publisher) in cohort.items():
+        agency = by_id[agency_id]
+        assert agency.country == "JP"
+        assert agency.subdivision_code == subdivision_code
+        assert agency.subdivision_name == subdivision_name
+        assert agency.is_official is True
+        assert publisher in agency.static_gtfs_url
+        assert agency.static_gtfs_url.endswith("files/feed.zip?rid=current")
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+
+    assert by_id["mizuho-choisoko-demand-transit"].service_type == "demand_response"
+    assert by_id["kochi-airport-shared-taxi"].service_type == "demand_response"
+    assert set(by_id["toyama-chitetsu-bus"].rt_urls) == {
+        "trip_updates",
+        "vehicle_positions",
+    }
 
 
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:
