@@ -205,6 +205,16 @@ information content, prediction quality, or trip coverage. Japan now has 260
 reviewed feed records across the same 40 prefectures. The batch adds regional
 depth and new product evidence without changing the national-coverage claim.
 
+An eleventh repository pass then admitted 119 official schedule records from
+publishers with exactly one current feed. Every downloaded archive passed the
+pinned canonical validator path, carried one of the three already reviewed
+versioned Creative Commons licenses, and retained at least 60 days of effective
+service. Two catalog records with expired calendars, one near-expiry record,
+one private residential shuttle, and publishers represented only by several
+line or area fragments stayed out. Japan now has 379 reviewed feed records
+across the same 40 prefectures. This remains depth in a reviewed sample, not a
+census or a claim of national coverage.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,

@@ -295,3 +295,359 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: enacity-communitybus
+    name: "恵那市自主運行バス（コミュニティバス）"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/enacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 恵那市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      恵那市自主運行バス（コミュニティバス） is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/enacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        恵那市. 恵那市自主運行バス（コミュニティバス）, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: gifu-yamagatacity-communitybus
+    name: "山県市自主運行バス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/gifu-yamagatacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 山県市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      山県市自主運行バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/gifu-yamagatacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        山県市. 山県市自主運行バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: hashimacity-hashimacitycommunitybus
+    name: "羽島市コミュニティバス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hashimacity/feeds/HashimaCityCommunityBus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 羽島市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      羽島市コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hashimacity.HashimaCityCommunityBus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        羽島市. 羽島市コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: hichisotown-choeibus
+    name: "七宗町営バス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hichisotown/feeds/choeibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 七宗町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      七宗町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hichisotown.choeibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        七宗町. 七宗町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: hidacity-communitybus
+    name: "飛騨市営バス「ひだまる」"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hidacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 飛騨市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      飛騨市営バス「ひだまる」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hidacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        飛騨市. 飛騨市営バス「ひだまる」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: ibigawatown-communitybus
+    name: "揖斐川町ふれあいバス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ibigawatown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 揖斐川町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      揖斐川町ふれあいバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ibigawatown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        揖斐川町. 揖斐川町ふれあいバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kaizucity-communitybus
+    name: "海津市コミュニティバス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kaizucity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 海津市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      海津市コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kaizucity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        海津市. 海津市コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kanicity-satsukibus
+    name: "さつきバス (可児市)"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kanicity/feeds/satsukibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 可児市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      さつきバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kanicity.satsukibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        可児市. さつきバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kasamatsutown-communitybus
+    name: "笠松町公共施設巡回町民バス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kasamatsutown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 笠松町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      笠松町公共施設巡回町民バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kasamatsutown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        笠松町. 笠松町公共施設巡回町民バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: minokamocity-communitybus
+    name: "美濃加茂市コミュニティバス「あい愛バス」"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minokamocity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 美濃加茂市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      美濃加茂市コミュニティバス「あい愛バス」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minokamocity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        美濃加茂市. 美濃加茂市コミュニティバス「あい愛バス」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mitaketown-communitybus
+    name: "御嵩町コミュニティバス「ふれあいバス」"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mitaketown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 御嵩町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      御嵩町コミュニティバス「ふれあいバス」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mitaketown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        御嵩町. 御嵩町コミュニティバス「ふれあいバス」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mizunamicity-communitybus
+    name: "瑞浪市コミュニティバス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mizunamicity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 瑞浪市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      瑞浪市コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mizunamicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        瑞浪市. 瑞浪市コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: motosucity-shieibus
+    name: "本巣市営バス"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/motosucity/feeds/shieibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 本巣市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      本巣市営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/motosucity.shieibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        本巣市. 本巣市営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: sekicity-itadorifureaibus
+    name: "板取ふれあいバス (関市)"
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sekicity/feeds/itadorifureaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 関市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      板取ふれあいバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sekicity.itadorifureaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        関市. 板取ふれあいバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
