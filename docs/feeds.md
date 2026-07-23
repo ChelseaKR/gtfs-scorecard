@@ -1982,6 +1982,71 @@ This wave changes the reviewed sample, not the product's claims. A feed record
 is not necessarily a distinct agency, and 1,972 configured records across 40
 country codes are not a census of any country or region.
 
+## Twenty-loop official-source continuation
+
+A further 20 grouped discovery and verification loops on 2026-07-23 tested
+both new-country candidates and additional publishers in represented countries.
+The pass began with every still-untracked Mobility Database record marked
+official and carrying a licence link, then crossed each plausible result against
+the publisher or responsible government portal. Seventy-three candidates ran
+through the bounded download, pinned canonical MobilityData validator, full
+scorecard, and 60-day effective-calendar path. Fifty-five produced score
+artifacts; source, archive, or parsing failures stopped the other 18 before
+admission. The loops admitted 11 records.
+
+Six official Cyprus operator exports open a new country sample: OSYPA, OSEA,
+Intercity Buses, Nicosia Public Transport, Larnaka Public Transport, and PAME
+Express. The [Republic of Cyprus open-data portal](https://www.data.gov.cy/index.php/en/dataset/1069)
+publishes the complete public-bus collection under CC BY 4.0. The archives had
+69 to 90 days of effective service remaining when checked.
+
+India's first reviewed record is TGSRTC's Greater Hyderabad bus export.
+[TGSRTC's own open-data terms](https://www.tgsrtc.telangana.gov.in/open-data)
+explicitly permit commercial and non-commercial reuse with attribution. The
+current agency-produced archive is served through an OpenCity mirror because
+the first-party download flow uses a registration form; the source relationship
+is disclosed rather than presenting the mirror as the publisher.
+
+Existing-country depth added VBB's separately published GTFS-Flex collection
+in Germany, Reus Transport in Spain, Cars Régionaux 23 in France, and Belgrade's
+suburban network in Serbia. Related VBB and Belgrade files share organization
+identifiers and distinct feed-variant labels, so the directory does not present
+them as extra organizations.
+
+The 20 loops also recorded their no-add outcomes:
+
+1. Cyprus national portal: six current CC BY 4.0 operator feeds admitted.
+2. India official/open mirror: TGSRTC admitted; Hyderabad Metro was not a GTFS zip.
+3. Germany: VBB Flex admitted; other nationwide or duplicate exports stayed out.
+4. Spain: Reus admitted; Madrid city bus duplicated the tracked CRTM cohort.
+5. France: Creuse admitted; four remaining local sources were unreachable.
+6. Serbia: Belgrade suburban admitted as a variant of the tracked organization.
+7. Italy: GTT Torino's terms are non-commercial, so it stayed out.
+8. Sardegna: 12 portal feeds were tested; the current eligible files were
+   already tracked, while the rest were expired, short-calendar, or unreachable.
+9. Poland: Kraków lacked an explicit commercial licence and Bydgoszcz was a
+   community converter rather than a first-party schedule publisher.
+10. Portugal: Cascais, Barreiro, and Metro Sul do Tejo still lacked a matching
+    current publisher/source/licence chain.
+11. Chile: Santiago's current page still lacked an explicit commercial grant.
+12. Colombia: Bogotá's CC BY-SA licence remains outside the general allowlist.
+13. Australia: Canberra Light Rail failed the effective-calendar gate.
+14. New Zealand: Metlink had only 30 days of effective service remaining.
+15. Belgium: STIB/MIVB's downloaded calendar was expired.
+16. Luxembourg: the national feed had fewer than 60 days remaining.
+17. Canada: the untracked plausible municipal exports were expired or below
+    the 60-day gate.
+18. Mexico: official archives remained expired or unreachable; OSM-derived
+    exports were not substituted for first-party schedules.
+19. Brazil: METROFOR's host did not resolve and no replacement was inferred.
+20. Egypt and remaining aggregates: expired, non-commercial, fragmented, or
+    oversized candidates did not establish an admissible source chain.
+
+Grades were never an admission gate. Each accepted archive completed the same
+mechanical path despite grades ranging from F through C. This continuation
+moves the registry to 1,983 configured feed records across 42 country codes.
+Those are reviewed records, not a census or a claim of national coverage.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |

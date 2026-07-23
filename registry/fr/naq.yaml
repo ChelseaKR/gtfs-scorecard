@@ -94,6 +94,30 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: cars-regionaux-23-creuse
+    name: Cars Régionaux 23 — Creuse
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    mdb_id: "2686"
+    is_official: true
+    static_gtfs_url: https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/creuse-aggregated-gtfs.zip
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) through France's National Access Point;
+      credit Région Nouvelle-Aquitaine and Nouvelle-Aquitaine Mobilités.
+    operating_note: >-
+      One regional aggregate for the Creuse interurban network; counted as one
+      feed record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-parcours-theoriques-des-reseaux-naq-cre-nva-m-1
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Région Nouvelle-Aquitaine / Nouvelle-Aquitaine Mobilités.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
   - id: fr-uba
     name: "Navettes maritimes - UBA"
     country: FR

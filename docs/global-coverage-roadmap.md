@@ -237,6 +237,25 @@ local score and its catalog licence is share-alike outside the project
 allowlist. Ambiguous source/licence identity excluded Cascais and Barreiro.
 These are future recheck targets, not silent omissions.
 
+A 20-loop continuation on 2026-07-23 then admitted 11 more records. Cyprus
+opened as a six-operator CC BY 4.0 sample, and TGSRTC Greater Hyderabad opened
+India under the operator's explicit commercial and non-commercial reuse terms.
+Existing-country depth added VBB's GTFS-Flex collection, Reus Transport, the
+Creuse regional network, and Belgrade's suburban feed. All 11 archives
+completed the pinned validator and full scorecard path with at least 60 days of
+effective service.
+
+The continuation also made its exhaustion results explicit. A 73-candidate
+official/licensed catalog set yielded 55 local score artifacts and 18 bounded
+source or archive failures before evidence review. Sardegna's eligible portal
+feeds were already tracked. Duplicate Madrid and Sardegna records, GTT Torino's
+non-commercial terms, Kraków's unresolved commercial licence, Bydgoszcz's
+community-converter provenance, Portugal's source/licence mismatches, Bogotá's
+share-alike licence, Santiago's unstated commercial grant, and short or expired
+calendars in Australia, New Zealand, Belgium, Luxembourg, Canada, and Mexico
+all stayed out. The pass increases the reviewed sample without loosening the
+identity, reuse, validator, or calendar gates.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,
