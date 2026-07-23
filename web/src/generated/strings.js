@@ -32,11 +32,14 @@ export const STRINGS = {
   "feature_scope_disclosure_plural": "{count} reviewed feed records in {place} are tracked here. That is the size of the cohort for {selectedScope}, not a census of its transit.",
   "feature_scope_disclosure_single": "{count} reviewed feed record in {place} is tracked here. That is the size of the cohort for {selectedScope}, not a census of its transit.",
   "feature_use_case_accessibility": "Accessibility metadata review",
+  "feature_use_case_accessible_bus": "Accessible bus service information",
   "feature_use_case_accessible_fares": "Accessible fare-aware planning",
+  "feature_use_case_accessible_fares_v2": "Accessible modern fare integration",
   "feature_use_case_accessible_flex": "Accessible flexible-service planning",
   "feature_use_case_accessible_multilingual": "Accessible multilingual rider information",
   "feature_use_case_accessible_rail": "Accessible rail service information",
   "feature_use_case_contactless": "Contactless bank-card declaration",
+  "feature_use_case_fare_aware_ferry": "Fare-aware ferry planning",
   "feature_use_case_fares": "Fare-aware trip planning",
   "feature_use_case_fares_v2": "Modern fare model integration",
   "feature_use_case_ferry": "Ferry service discovery",
@@ -48,6 +51,8 @@ export const STRINGS = {
   "feature_use_case_label": "Use case",
   "feature_use_case_legend": "Start from a product need",
   "feature_use_case_multilingual": "Multilingual rider information",
+  "feature_use_case_multilingual_flex": "Multilingual flexible-service discovery",
+  "feature_use_case_multilingual_rail": "Multilingual rail service information",
   "feature_use_case_placeholder": "Choose a use case",
   "feature_use_case_step_free": "Step-free station navigation"
 };

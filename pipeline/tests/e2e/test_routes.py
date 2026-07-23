@@ -688,6 +688,8 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
         "use_case",
         "features",
         "mode",
+        "stops",
+        "trips",
         "ferry_access",
         "ferry_bikes",
         "agency_name",
@@ -697,6 +699,8 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "accessible-multilingual-rider-information",
             ["accessibility", "translations"],
             "",
+            "95",
+            "95",
             "",
             "",
             "Barrie Transit (Ontario)",
@@ -705,6 +709,8 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "accessible-fare-aware-planning",
             ["accessibility", "fares"],
             "",
+            "95",
+            "95",
             "",
             "",
             "Barrie Transit (Ontario)",
@@ -713,6 +719,8 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "accessible-flexible-service-planning",
             ["accessibility", "flex"],
             "",
+            "95",
+            "95",
             "",
             "",
             "London Transit Commission",
@@ -721,6 +729,8 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "accessible-rail-service-information",
             ["accessibility"],
             "rail",
+            "95",
+            "95",
             "",
             "",
             "Barrie Transit (Ontario)",
@@ -729,8 +739,60 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
             "fully-stated-ferry-rider-information",
             [],
             "ferry",
+            "",
+            "",
             "95",
             "95",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "multilingual-rail-service-information",
+            ["translations"],
+            "rail",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "fare-aware-ferry-planning",
+            ["fares"],
+            "ferry",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-bus-service-information",
+            ["accessibility"],
+            "bus",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "multilingual-flexible-service-discovery",
+            ["translations", "flex"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "London Transit Commission",
+        ),
+        (
+            "accessible-modern-fare-integration",
+            ["accessibility", "fares_v2"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
             "Barrie Transit (Ontario)",
         ),
     ],
@@ -741,11 +803,27 @@ def test_composed_use_case_presets_keep_every_published_evidence_gate(
     use_case: str,
     features: list[str],
     mode: str,
+    stops: str,
+    trips: str,
     ferry_access: str,
     ferry_bikes: str,
     agency_name: str,
 ) -> None:
     directory = _feature_directory()
+    if use_case == "multilingual-flexible-service-discovery":
+        london = next(
+            agency
+            for agency in directory["agencies"]
+            if agency["id"] == "london-transit-commission"
+        )
+        london.update(
+            {
+                "has_translations": True,
+                "translation_count": 2,
+                "translation_languages": ["fr"],
+                "translated_tables": ["stops"],
+            }
+        )
     _serve_directory(page, directory)
     page.goto(f"{app_url}#/?view=features")
 
@@ -753,14 +831,15 @@ def test_composed_use_case_presets_keep_every_published_evidence_gate(
 
     for feature in features:
         expect(page.locator(f'input[value="{feature}"]')).to_be_checked()
-    accessibility_minimum = "" if ferry_access else "95"
-    expect(page.locator("#wheelchair-stops-min")).to_have_value(accessibility_minimum)
-    expect(page.locator("#wheelchair-trips-min")).to_have_value(accessibility_minimum)
+    expect(page.locator("#wheelchair-stops-min")).to_have_value(stops)
+    expect(page.locator("#wheelchair-trips-min")).to_have_value(trips)
     expect(page.locator("#service-mode")).to_have_value(mode)
     expect(page.locator("#ferry-access-min")).to_have_value(ferry_access)
     expect(page.locator("#ferry-bikes-min")).to_have_value(ferry_bikes)
+    matching = 2 if use_case == "accessible-bus-service-information" else 1
+    suffix = "s" if matching != 1 else ""
     expect(page.locator(".agency-count")).to_have_text(
-        f"1 of {len(directory['agencies']):,} scorecard"
+        f"{matching} of {len(directory['agencies']):,} scorecard{suffix}"
     )
     expect(page.get_by_role("link", name=agency_name)).to_be_visible()
 
@@ -768,9 +847,10 @@ def test_composed_use_case_presets_keep_every_published_evidence_gate(
         "usecase": use_case,
         "view": "features",
     }
-    if accessibility_minimum:
-        expected["stops"] = accessibility_minimum
-        expected["trips"] = accessibility_minimum
+    if stops:
+        expected["stops"] = stops
+    if trips:
+        expected["trips"] = trips
     if features:
         expected["features"] = ",".join(features)
     if mode:

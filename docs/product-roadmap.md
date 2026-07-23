@@ -76,9 +76,12 @@ modern Fare v2 integration, ferry service discovery, ferry accessibility
 information, bicycle-aware ferry planning, accessible multilingual rider
 information, accessible fare-aware planning, accessible flexible-service
 planning, accessible rail service information, and fully stated ferry rider
-information. The five composed presets reuse the existing published-field
-filters and retain their individual thresholds in shared links. They do not
-certify physical accessibility, service usability, fare correctness, booking
+information. Five more composed questions cover multilingual rail information,
+fare-aware ferry planning, accessible bus information, multilingual flexible
+service, and accessible Fares v2 integration. The ten composed presets reuse
+the existing published-field filters and retain their individual thresholds in
+shared links. They do not certify physical accessibility, service usability,
+fare correctness, booking
 availability, or vessel capacity. The ferry accessibility preset
 requires a minimum stated share for both ferry terminals and ferry trips. It
 describes published wheelchair fields, not physical accessibility or boarding

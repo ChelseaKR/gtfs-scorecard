@@ -199,3 +199,33 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: toyama-chitetsu-bus
+    name: Toyama Chitetsu Bus (富山地方鉄道バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitetsu/feeds/chitetsubus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/chitetsu/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/chitetsu/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Toyama Chiho Railroad through the GTFS Data Repository
+      (gtfs-data.jp).
+    operating_note: >-
+      Toyama Chiho Railroad's regional route-bus network. The official
+      catalog also publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitetsu.chitetsubus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama Chiho Railroad. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

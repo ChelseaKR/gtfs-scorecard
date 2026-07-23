@@ -273,3 +273,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: toba-municipal-ferry
+    name: Toba Municipal Ferry (鳥羽市営定期船)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tobacity/feeds/teikisen/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Toba City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Toba City.
+    operating_note: >-
+      Toba City's scheduled municipal ferry network serving its inhabited
+      islands; all published routes are represented by one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tobacity.teikisen
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toba City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

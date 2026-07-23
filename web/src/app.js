@@ -63,6 +63,13 @@ const FEATURE_USE_CASES = {
     stops: "",
     trips: "",
   },
+  "multilingual-rail-service-information": {
+    labelKey: "feature_use_case_multilingual_rail",
+    features: ["translations"],
+    mode: "rail",
+    stops: "",
+    trips: "",
+  },
   "accessible-multilingual-rider-information": {
     labelKey: "feature_use_case_accessible_multilingual",
     features: ["accessibility", "translations"],
@@ -80,6 +87,13 @@ const FEATURE_USE_CASES = {
   "accessible-fare-aware-planning": {
     labelKey: "feature_use_case_accessible_fares",
     features: ["accessibility", "fares"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-modern-fare-integration": {
+    labelKey: "feature_use_case_accessible_fares_v2",
+    features: ["accessibility", "fares_v2"],
     mode: "",
     stops: "95",
     trips: "95",
@@ -105,6 +119,13 @@ const FEATURE_USE_CASES = {
     stops: "95",
     trips: "95",
   },
+  "multilingual-flexible-service-discovery": {
+    labelKey: "feature_use_case_multilingual_flex",
+    features: ["translations", "flex"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
   "contactless-payment-metadata": {
     labelKey: "feature_use_case_contactless",
     features: ["cemv"],
@@ -126,9 +147,23 @@ const FEATURE_USE_CASES = {
     stops: "95",
     trips: "95",
   },
+  "accessible-bus-service-information": {
+    labelKey: "feature_use_case_accessible_bus",
+    features: ["accessibility"],
+    mode: "bus",
+    stops: "95",
+    trips: "95",
+  },
   "ferry-service-discovery": {
     labelKey: "feature_use_case_ferry",
     features: [],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-ferry-planning": {
+    labelKey: "feature_use_case_fare_aware_ferry",
+    features: ["fares"],
     mode: "ferry",
     stops: "",
     trips: "",

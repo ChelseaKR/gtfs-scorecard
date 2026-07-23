@@ -1766,6 +1766,38 @@ canonical validator reports a missing required file and no usable service
 calendar. The independently published Tsukubane-go feed passed; its admission
 does not clear or conceal the Tsuku Bus hold.
 
+## Japan gtfs-data.jp eighth wave
+
+Five further records were selected from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23 for the different
+operating questions they expose, rather than to inflate a prefecture count.
+The repository's [v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied each
+publisher, current service window, exact Creative Commons license, and, where
+present, official realtime endpoints. Japan moves from 230 to 235 reviewed feed
+records across the same 40 prefectures, so this remains depth rather than a
+national-coverage claim.
+
+Each current archive passed the canonical MobilityData validator path from
+pinned local bytes before admission:
+
+- **Aomori (`JP-02`)**: JR East Tsugaru Line replacement bus, CC BY 4.0,
+  service through 2027-04-30, score 75.3 (C).
+- **Tokyo (`JP-13`)**: Mizuho Town Choi-Soko demand transit, CC BY 4.0,
+  service through 2026-09-30, score 70.3 (C).
+- **Toyama (`JP-16`)**: Toyama Chitetsu Bus, CC0 1.0, service through
+  2027-05-25, score 68.2 (D). Its catalog-published TripUpdates and
+  VehiclePositions both returned keyless protobuf responses and are recorded.
+- **Mie (`JP-24`)**: Toba Municipal Ferry, CC BY 4.0, service through
+  2028-01-31, score 65.5 (D).
+- **Kochi (`JP-39`)**: Kochi Airport Shared Taxi, CC BY 4.0, service through
+  2027-03-31, score 82.2 (B).
+
+The two reservation-based services are explicitly marked as demand-responsive.
+Their presence does not claim that a GTFS trip is bookable, available at the
+requested time, or accessible. The replacement bus is described as published
+and is not presented as restored rail service. Ferry and realtime fields remain
+measured evidence, not a guarantee of vessel capacity or prediction quality.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |
