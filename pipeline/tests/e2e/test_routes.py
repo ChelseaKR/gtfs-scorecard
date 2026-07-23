@@ -170,7 +170,7 @@ def _feature_directory() -> dict[str, Any]:
                     "feed_lang": "mul",
                     "modes_measured": True,
                     "primary_mode": "ferry",
-                    "modes": ["bus", "ferry"],
+                    "modes": ["bus", "ferry", "rail"],
                     "has_ferry": True,
                     "ferry_only": False,
                     "ferry_profile_measured": True,
@@ -186,11 +186,11 @@ def _feature_directory() -> dict[str, Any]:
                     "capabilities_measured": True,
                     "accessibility_measured": True,
                     "has_accessibility": True,
-                    "wheelchair_boarding_pct": 80.0,
-                    "wheelchair_accessible_pct": 40.0,
-                    "accessibility_band": "some",
+                    "wheelchair_boarding_pct": 100.0,
+                    "wheelchair_accessible_pct": 100.0,
+                    "accessibility_band": "most",
                     "has_flex": True,
-                    "has_fares": True,
+                    "has_fares": False,
                     "has_fares_v2": False,
                     "fare_model": "legacy",
                     "has_pathways": False,
@@ -683,6 +683,105 @@ def test_global_product_use_case_presets_reuse_published_capability_evidence(
     }
 
 
+@pytest.mark.parametrize(
+    (
+        "use_case",
+        "features",
+        "mode",
+        "ferry_access",
+        "ferry_bikes",
+        "agency_name",
+    ),
+    [
+        (
+            "accessible-multilingual-rider-information",
+            ["accessibility", "translations"],
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-fare-aware-planning",
+            ["accessibility", "fares"],
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-flexible-service-planning",
+            ["accessibility", "flex"],
+            "",
+            "",
+            "",
+            "London Transit Commission",
+        ),
+        (
+            "accessible-rail-service-information",
+            ["accessibility"],
+            "rail",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "fully-stated-ferry-rider-information",
+            [],
+            "ferry",
+            "95",
+            "95",
+            "Barrie Transit (Ontario)",
+        ),
+    ],
+)
+def test_composed_use_case_presets_keep_every_published_evidence_gate(
+    page: Page,
+    app_url: str,
+    use_case: str,
+    features: list[str],
+    mode: str,
+    ferry_access: str,
+    ferry_bikes: str,
+    agency_name: str,
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option(use_case)
+
+    for feature in features:
+        expect(page.locator(f'input[value="{feature}"]')).to_be_checked()
+    accessibility_minimum = "" if ferry_access else "95"
+    expect(page.locator("#wheelchair-stops-min")).to_have_value(accessibility_minimum)
+    expect(page.locator("#wheelchair-trips-min")).to_have_value(accessibility_minimum)
+    expect(page.locator("#service-mode")).to_have_value(mode)
+    expect(page.locator("#ferry-access-min")).to_have_value(ferry_access)
+    expect(page.locator("#ferry-bikes-min")).to_have_value(ferry_bikes)
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name=agency_name)).to_be_visible()
+
+    expected = {
+        "usecase": use_case,
+        "view": "features",
+    }
+    if accessibility_minimum:
+        expected["stops"] = accessibility_minimum
+        expected["trips"] = accessibility_minimum
+    if features:
+        expected["features"] = ",".join(features)
+    if mode:
+        expected["mode"] = mode
+    if ferry_access:
+        expected["ferry_access"] = ferry_access
+    if ferry_bikes:
+        expected["ferry_bikes"] = ferry_bikes
+    assert _hash_params(page) == expected
+
+
 def test_ferry_use_case_preset_composes_and_refines_the_mode_filter(
     page: Page, app_url: str
 ) -> None:
@@ -823,7 +922,7 @@ def test_service_mode_filter_is_deep_linkable_and_exports_evidence(
     csv = Path(download_info.value.path()).read_text()
     assert '"modes_measured"' in csv.splitlines()[0]
     assert '"primary_mode"' in csv.splitlines()[0]
-    assert '"bus|ferry"' in csv
+    assert '"bus|ferry|rail"' in csv
 
 
 def test_feature_nav_is_available_from_mobile_menu(page: Page, app_url: str) -> None:

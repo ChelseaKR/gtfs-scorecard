@@ -260,3 +260,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: awaji-jenova-line
+    name: Awaji Jenova Line, Akashi–Iwaya (淡路ジェノバライン明石岩屋航路)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/awajicity/feeds/awaji-jenova-line-akashi-iwaya/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Awaji City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Awaji City.
+    operating_note: >-
+      The public passenger ferry between Akashi and Iwaya on Awaji Island;
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/search?target_feed=awajicity*awaji-jenova-line-akashi-iwaya
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Awaji City. Published as GTFS-JP open data (CC BY 2.1 JP) through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

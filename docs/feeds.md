@@ -1735,6 +1735,37 @@ The exclusions carry the discipline:
   against the registry. Forty-two were preflighted by hand for this wave, forty
   passed and were kept, and the rest of the pool is held for later waves.
 
+## Japan gtfs-data.jp seventh wave
+
+Five bounded follow-on loops were reviewed from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23. The repository's
+[v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied the current file,
+publisher identity, service window, and exact Creative Commons license for each
+record. This wave lifts Japan from 225 to 230 feed records across the same 40
+prefectures. It adds regional depth, not a new claim of national coverage.
+
+Each current archive was downloaded once, scored from the pinned local bytes,
+and run through the canonical MobilityData validator before admission:
+
+- **Hokkaido (`JP-01`)**: Kamishihoro Town Autonomous Bus, CC BY 4.0,
+  service through 2026-10-31, score 76.0 (C).
+- **Aomori (`JP-02`)**: Konan Railway, CC BY 4.0, service through
+  2027-03-31, score 69.0 (D).
+- **Ibaraki (`JP-08`)**: Tsukubane-go, CC BY 4.0, service through
+  2026-12-31, score 80.1 (B).
+- **Hyogo (`JP-28`)**: Awaji Jenova Line's Akashi–Iwaya passenger ferry,
+  CC BY 2.1 JP, service through 2027-03-31, score 80.1 (B).
+- **Okayama (`JP-33`)**: Hokushin Bus, CC0 1.0, service through
+  2027-03-08, score 80.5 (B).
+
+One candidate remained excluded. Tsuku Bus was rechecked because its catalog
+window now runs through 2027-12-31, but the current archive names four required
+GTFS tables `calendar.csv`, `calendar_dates.csv`, `shapes.csv`, and
+`stop_times.csv`. The standard requires their `.txt` filenames, so the
+canonical validator reports a missing required file and no usable service
+calendar. The independently published Tsukubane-go feed passed; its admission
+does not clear or conceal the Tsuku Bus hold.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |
