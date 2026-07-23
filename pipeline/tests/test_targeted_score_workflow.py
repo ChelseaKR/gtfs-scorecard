@@ -141,3 +141,13 @@ def test_daily_collect_hydrates_current_before_overlaying_shards() -> None:
     assert '--include "*/${authoritative_date}.json"' in text
     assert "Invalid authoritative artifact date" in text
     assert "index.json proves" in text
+
+
+def test_watchdog_accepts_a_successful_manual_daily_recovery() -> None:
+    text = (WORKFLOWS / "watchdog.yml").read_text()
+    step = text[text.index("The most recent daily run did not fail") :]
+
+    assert "--status completed" in step
+    assert "--json conclusion,status,event" in step
+    assert "--event schedule" not in step
+    assert "most recent completed Daily scorecard run" in step
