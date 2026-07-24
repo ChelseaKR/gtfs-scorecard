@@ -279,6 +279,7 @@ def build_rollup(
                 "days_until_expiry": days,
                 "expiry_status": expiry_status(days),
                 "top_fix": fixes[0]["fix"] if fixes else None,
+                "top_fix_code": fixes[0].get("code") if fixes else None,
                 "shapes_status": _shapes_status(latest),
                 # Filled after every member is loaded, when duplicate reporter
                 # ids can be quarantined rather than double-attributed.

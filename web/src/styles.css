@@ -308,7 +308,7 @@ a:hover { color: var(--green-bright); }
   padding: 1.1rem 1.2rem;
   background: var(--card);
   border: 1.5px solid var(--line);
-  border-left: 5px solid var(--green);
+  border-inline-start: 5px solid var(--green);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -2896,6 +2896,174 @@ main p,
 .fixloop-step:last-child { margin-bottom: 0; }
 .fixloop-close { font-size: 0.9rem; line-height: 1.45; margin-top: 0.85rem; max-width: var(--measure); }
 
+/* Finding handoff: an operational transfer slip, not another dashboard card.
+   The same selected code follows the reader through scorecard, brief, board,
+   fix guide, alerts, and program worklists. */
+.finding-handoff,
+.fix-context {
+  max-width: 62rem;
+  margin: 1.35rem 0 0;
+  padding: 1.1rem 1.2rem 1.2rem;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--paper-deep);
+  scroll-margin-top: 5rem;
+}
+.handoff-head {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.8fr) minmax(18rem, 1.2fr);
+  gap: 1rem 2rem;
+  align-items: end;
+}
+.handoff-head h2,
+.fix-context h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.22rem;
+  line-height: 1.2;
+}
+.handoff-head > p,
+.fix-context > p {
+  max-width: var(--measure);
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+.handoff-kicker {
+  margin: 0 0 0.28rem;
+  color: var(--green-bright);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.finding-picker {
+  display: flex;
+  gap: 0;
+  margin: 1rem 0 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+.finding-picker a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.45rem 0.75rem;
+  border-bottom: 3px solid transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.finding-picker a span { color: var(--green-bright); }
+.finding-picker a:hover { color: var(--ink); border-bottom-color: var(--line-strong); }
+.finding-picker a[aria-current="true"] {
+  border-bottom-color: var(--green);
+  color: var(--ink);
+}
+.handoff-panel { padding-top: 1rem; }
+.handoff-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border-block: 1px solid var(--line);
+}
+.handoff-grid > div {
+  min-width: 0;
+  padding: 0.85rem 1rem 0.9rem 0;
+}
+.handoff-grid > div + div {
+  padding-inline-start: 1rem;
+  border-inline-start: 1px solid var(--line);
+}
+.handoff-grid dt {
+  margin: 0 0 0.3rem;
+  color: var(--green-bright);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.handoff-grid dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.handoff-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin: 0.9rem 0 0;
+}
+.handoff-links a,
+.program-next { font-weight: 700; }
+.handoff-copy { margin: 0.8rem 0 0; max-width: var(--measure); }
+.handoff-copy > summary {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 44px;
+  color: var(--green);
+  font-weight: 700;
+  cursor: pointer;
+}
+.handoff-copy textarea {
+  display: block;
+  width: 100%;
+  margin: 0.35rem 0 0.55rem;
+  padding: 0.75rem;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.handoff-copy-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.copy-status {
+  color: var(--green-bright);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+.finding-selected {
+  border-inline-start: 4px solid var(--green) !important;
+  padding-inline-start: 0.8rem !important;
+}
+.fix-context { margin-bottom: 1.3rem; }
+.fix-context .handoff-links { margin-top: 0.7rem; }
+.fix-context code { overflow-wrap: anywhere; }
+
+@media (max-width: 720px) {
+  .handoff-head,
+  .handoff-grid { grid-template-columns: 1fr; }
+  .handoff-grid > div { padding: 0.75rem 0; }
+  .handoff-grid > div + div {
+    padding-inline-start: 0;
+    border-top: 1px solid var(--line);
+    border-inline-start: 0;
+  }
+  .finding-picker a {
+    max-width: 15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 /* Detailed validator evidence is important but secondary to the top fixes.
    Native details keeps it searchable, keyboard-operable, and printable. */
 .evidence-drawer {
@@ -3031,6 +3199,29 @@ main p,
   .brief-fix { margin-bottom: 0.38rem; }
   .brief-fix-eta,
   .brief .effort-band { font-size: 7pt; }
+  .finding-handoff {
+    break-inside: avoid;
+    margin-top: 0.45rem;
+    padding: 0.45rem 0.55rem;
+    border-inline-start-width: 3px;
+  }
+  .finding-picker,
+  .handoff-copy,
+  .handoff-links { display: none !important; }
+  .handoff-head,
+  .handoff-grid { display: block; }
+  .handoff-head > p { display: none; }
+  .handoff-grid > div,
+  .handoff-grid > div + div {
+    padding: 0.24rem 0;
+    border: 0;
+  }
+  .handoff-grid dt,
+  .handoff-grid dd {
+    display: inline;
+    font-size: 7.5pt;
+  }
+  .handoff-grid dt::after { content: ": "; }
   .brief-ntd dt,
   .brief-facts dt { margin-top: 0.18rem; }
   .brief-foot {

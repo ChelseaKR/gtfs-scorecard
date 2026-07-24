@@ -1,21 +1,39 @@
 # GTFS Scorecard
 
-> Is your transit agency's GTFS feed any good? A plain-language quality grade,
-> the three things to fix, and why each one matters to riders.
+> Daily, plain-language GTFS quality scorecards for small transit agencies:
+> see the current grade, the three things to fix, and why each one matters.
 
 [![CI](https://github.com/ChelseaKR/gtfs-scorecard/actions/workflows/ci.yml/badge.svg)](https://github.com/ChelseaKR/gtfs-scorecard/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-GTFS%20Scorecard%20gate-2ea44f?logo=github)](https://github.com/marketplace/actions/gtfs-scorecard-gate)
 [![Live site](https://img.shields.io/badge/live-gtfsscorecard.org-2ea44f)](https://gtfsscorecard.org)
 
-[![GTFS Scorecard: a plain-language quality grade for a transit agency's feed](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
+[![GTFS Scorecard: plain-language GTFS quality and prioritized fixes](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
 
-A data quality scorecard for small transit agencies. It fetches an agency's
-**GTFS Schedule** feed and, when one is published and configured, its
-**GTFS-Realtime** feeds; runs the canonical MobilityData
-validator, and turns the results into a letter grade with a short list of
-concrete fixes, written for the transit
-manager who inherited the feed from a vendor, not for developers.
+GTFS Scorecard is a daily data-quality service for small transit agencies and
+the program staff, maintainers, and vendors who support them. It publishes
+dated grades, prioritized fixes, history, program views, practitioner tools,
+and open data. It does not implement a competing GTFS validator. Correctness
+findings come from MobilityData's canonical validator.
+
+## Where it fits
+
+GTFS Scorecard is the evidence and triage layer:
+
+1. [Mobility Database](https://mobilitydatabase.org/) and
+   [Transitland](https://www.transit.land/) help identify public feeds and
+   their sources or versions.
+2. The [MobilityData GTFS validator](https://github.com/MobilityData/gtfs-validator)
+   supplies canonical specification findings.
+3. An agency, vendor, editor, or support program changes and publishes the
+   feed through its existing workflow.
+4. A 90-day GTFS Scorecard pilot is testing the final handoff: link an accepted
+   action to the intended feed, run a comparable recheck, and preserve the
+   result.
+
+The [California GTFS Quality Dashboard](https://reports.dds.dot.ca.gov/)
+inspired the project's daily scorecard and support-program framing. GTFS
+Scorecard is independent and is not an official compliance determination.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
@@ -32,14 +50,16 @@ identity registry is reconciled.
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
 completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).
 
-**Status:** Beta. The three schedule categories score for every published
-scorecard. Realtime quality is scored only when a usable realtime feed is
-configured and measured; otherwise it is shown neutrally as not yet measured.
-Any agency can be added through `registry/intake.yaml`.
+**Status:** Beta. The public scorecards and daily evidence service are live.
+The remediation workflow is being tested and is not yet a proven service.
+Realtime quality is scored only when a usable realtime feed is configured and
+measured; otherwise it is shown neutrally as not yet measured. Any agency can
+be added through `registry/intake.yaml`.
 
 ## Use, adopt, or contribute
 
-- **Check a feed:** browse [gtfsscorecard.org](https://gtfsscorecard.org/), or
+- **Check a feed:** browse
+  [gtfsscorecard.org](https://gtfsscorecard.org/), or
   request a [one-off score](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?template=score-a-feed.yml).
 - **Track an agency:** use the
   [self-serve submission form](https://gtfsscorecard.org/submit.html), or follow
@@ -47,6 +67,9 @@ Any agency can be added through `registry/intake.yaml`.
 - **Gate a feed in CI:** add the
   [GTFS Scorecard Marketplace Action](https://github.com/marketplace/actions/gtfs-scorecard-gate)
   to a feed repository.
+- **Test what happens after the scorecard:** read
+  [the remediation pilot request](https://github.com/ChelseaKR/gtfs-scorecard/issues/194)
+  if you can take a finding through an accepted request and same-feed recheck.
 - **Contribute:** choose a
   [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
   or read [CONTRIBUTING.md](CONTRIBUTING.md). Feed corrections, accessibility
@@ -109,6 +132,8 @@ Guidelines v4.0 and the validator's rule taxonomy, is in
 [docs/rubric.md](docs/rubric.md). Methodology changes are governed: a
 validator-version bump must attach the shadow-run impact report from
 `scorecard canary` before it lands (rubric.md, "Governed upgrades").
+The grade, weights, thresholds, and fix order are GTFS Scorecard policy choices,
+not an official MobilityData grade or a universal quality standard.
 Feed sources and licenses are in
 [docs/feeds.md](docs/feeds.md). Forward planning is split in two: the
 infrastructure and scaling plan is in [docs/roadmap.md](docs/roadmap.md), and

@@ -1421,6 +1421,7 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
         "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
         "top_fixes": [
             {
+                "code": "scorecard_wheelchair_boarding_unknown",
                 "fix": "Set wheelchair_boarding on every stop.",
                 "what": "12 stops blank.",
                 "why": "Riders using wheelchairs cannot plan trips.",
@@ -1456,6 +1457,46 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     # It says what the grade does and does not measure.
     assert "not service" in html
     assert '<meta name="robots" content="noindex,follow">' in html
+
+
+@pytest.mark.parametrize("agency_id", ["unitrans", "yolobus"])
+def test_selected_finding_survives_agency_brief_board_and_fix_guide(
+    agency_id: str,
+) -> None:
+    from scorecard_pipeline import render_site
+    from scorecard_pipeline.render_site import _render_agency, _render_brief, _render_fix
+    from scorecard_pipeline.site_shell import esc
+
+    root = Path(__file__).parent / "fixtures" / "golden_site"
+    artifact = json.loads((root / "data" / "artifacts" / agency_id / "latest.json").read_text())
+    code = artifact["top_fixes"][0]["code"]
+    render_site.FIX_CODES_WITH_PAGES.add(code)
+    try:
+        agency_html = _render_agency(artifact)
+        brief_html = _render_brief(artifact)
+        board_html = _render_board_page(artifact)
+    finally:
+        render_site.FIX_CODES_WITH_PAGES.discard(code)
+
+    expected = f"?finding={code}#finding-handoff"
+    for html in (agency_html, brief_html, board_html):
+        assert 'id="finding-handoff"' in html
+        assert f'data-finding-panel="{code}"' in html
+        assert expected in html
+        assert esc(artifact["top_fixes"][0]["what"]) in html
+        assert esc(artifact["top_fixes"][0]["fix"]) in html
+        assert "next complete, comparable scorecard run" in html
+        assert "this finding is no longer reported" in html
+        assert "Copy handoff text" in html
+
+    fix_html = _render_fix(
+        code,
+        f"# Fix {code}\n\nFollow the published guide.\n",
+        now=dt.datetime(2026, 7, 23, tzinfo=dt.UTC),
+    )
+    assert f'data-fix-context="{code}"' in fix_html
+    assert "Keep " + code + " attached to the agency record" in fix_html
+    assert "[data-context-target]" in fix_html
 
 
 def test_board_page_never_publishes_individual_percentile_standing() -> None:

@@ -92,7 +92,7 @@ def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
     assert "1,700+" in html
     assert "curated feed records" in html
     assert "1,100+" in html
-    assert "published scorecards" in html
+    assert "published scorecards" in html.lower()
     assert "30+" in html
     assert "Countries covered" in html
     assert "everywhere they publish a feed" not in html
@@ -101,16 +101,51 @@ def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
         "/agency/unitrans/board/",
         "/program/all/",
         "/app/#/?view=features",
-        "/fix/",
         "/check/",
         "/data/",
-        "/api/v1/index.json",
-        "https://github.com/marketplace/actions/gtfs-scorecard-gate",
-        "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/board-report.md",
-        "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/mcp.md",
     )
     for href in representative_surfaces:
         assert f'href="{href}"' in html, href
+
+
+def test_landing_leads_with_the_quality_workflow_and_keeps_the_pilot_bounded() -> None:
+    html = (_REPO / "web" / "index.html").read_text()
+    script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
+
+    assert "See what needs attention in a published GTFS feed." in html
+    assert "Where the scorecard fits in the work" in html
+    assert "Start with the work you need to do." in html
+    assert "Change and publish the feed" in html
+    assert "Your workflow" in html
+    assert "Latest published scorecard" in html
+    assert "This is not yet a proven service." in html
+    assert "A finding that disappears is a finding clearance." in html
+    assert "Correctness uses MobilityData's canonical validator." in html
+    assert "The scorecard starts the conversation." not in html
+    assert "Other tools" not in html
+    assert html.index('class="workflow-run"') < html.index('id="live-scorecard"')
+    assert html.index('class="task-board"') < html.index('id="live-scorecard"')
+    assert "PUBLIC FEED QUALITY / SERVICE DESK" not in html
+    assert "One scored feed. Five places to use the evidence." not in html
+    assert "Help test the full handoff." not in html
+    for element_id in (
+        "coverage-registry-count",
+        "coverage-published-count",
+        "coverage-country-count",
+    ):
+        assert f'id="{element_id}"' in html
+    assert 'fetch("/api/v1/coverage.json"' in script
+    assert "gtfs-scorecard-coverage-v1" in script
+    assert "COVERAGE_CACHE_TTL_MS" in script
+    assert 'id="pilot"' in html
+    assert 'href="https://github.com/ChelseaKR/gtfs-scorecard/issues/194"' in html
+    for href in (
+        "https://mobilitydatabase.org/",
+        "https://www.transit.land/",
+        "https://github.com/MobilityData/gtfs-validator",
+        "https://reports.dds.dot.ca.gov/",
+    ):
+        assert f'href="{href}"' in html
 
 
 def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashboard() -> None:
@@ -118,7 +153,7 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
 
     assert 'id="live-scorecard"' in html
-    assert 'src="/src/landing-scorecard.js"' in html
+    assert 'src="/src/landing-scorecard.js?v=20260723-coverage"' in html
     assert "Latest published scorecard" in html
     assert 'role="group" aria-label="Home pilots"' in html
     assert "measured category sets can differ" in html

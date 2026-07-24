@@ -32,6 +32,25 @@ published profile, not a local compliance determination.
    automates a proxy for all seven of its fields; the field-by-field mapping is in
    [docs/crosswalk.md](crosswalk.md).
 
+## Ecosystem boundary
+
+GTFS Scorecard is downstream of MobilityData's validator, not an alternative to
+it. The validator owns specification and best-practice notices as GTFS evolves.
+The scorecard consumes those notice codes for correctness and links users back
+to their canonical rule documentation.
+
+This project owns the separate `gtfs-scorecard-1.2` policy layer: category
+weights, deductions, thresholds, grade bands, fix ordering, freshness and
+rider-facing completeness measures, and optional realtime observations. Those
+choices are versioned and inspectable, but they are not presented as an
+official MobilityData grade or a context-free quality standard.
+
+When a scorecard check overlaps a canonical validator concept, the canonical
+notice and rule remain authoritative. Reusable measurement should be consumed
+or contributed upstream where practical; presentation or scoring surface that a
+maintained ecosystem project already provides better should be retired rather
+than duplicated.
+
 ## Overall grade
 
 Four categories with fixed weights:

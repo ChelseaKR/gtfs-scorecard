@@ -241,6 +241,7 @@ def test_coverage_keeps_registry_and_publication_counts_separate() -> None:
             "Bravo",
             "https://example.org/bravo.zip",
             organization_id="shared-operator",
+            country="CA",
         ),
         Agency(
             "old",
@@ -254,6 +255,7 @@ def test_coverage_keeps_registry_and_publication_counts_separate() -> None:
     coverage = coverage_endpoint(idx, build_quality_dataset(idx), agencies)
     assert coverage["configured_feed_records"] == 3
     assert coverage["active_canonical_feed_records"] == 2
+    assert coverage["country_count"] == 2
     assert coverage["distinct_organization_keys"] == 2
     assert coverage["provisional_organization_keys"] == 1
     assert coverage["published_scorecard_pages"] == 4

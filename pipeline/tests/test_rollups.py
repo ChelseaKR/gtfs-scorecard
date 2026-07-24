@@ -352,6 +352,19 @@ def test_common_fixes_counts_shared_codes() -> None:
     assert payload["comparison"]["exclusion_counts"]["validator_version_mismatch"] == 1
 
 
+def test_rollup_members_carry_the_top_finding_code_for_handoff_links() -> None:
+    finding = {
+        "code": "scorecard_wheelchair_boarding_unknown",
+        "fix": "Set wheelchair_boarding on every stop.",
+    }
+    write_latest("a", "A", 70.0, "C", fixes=[finding])
+
+    payload = build_rollup(Rollup("all", "All", ()), WHEN)
+
+    assert payload["members"][0]["top_fix"] == finding["fix"]
+    assert payload["members"][0]["top_fix_code"] == finding["code"]
+
+
 def test_rollup_excludes_a_normalized_reader_profile_from_aggregates() -> None:
     write_latest("raw", "Raw", 80.0, "B")
     write_latest(

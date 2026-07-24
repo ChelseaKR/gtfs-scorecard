@@ -45,6 +45,7 @@
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: missing_feed_contact_email_and_url</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
+    <aside class="fix-context" id="finding-handoff" data-fix-context="missing_feed_contact_email_and_url" hidden><p class="handoff-kicker">Selected finding</p><h2>Keep missing_feed_contact_email_and_url attached to the agency record</h2><p>Agency record: <code data-context-agency></code>. Use this guide, publish the changed feed, then return to the selected scorecard for the comparable recheck.</p><nav class="handoff-links" aria-label="Selected agency links"><a data-context-target="scorecard" href="/agencies/">Scorecard</a><a data-context-target="brief" href="/agencies/">Call brief</a><a data-context-target="board" href="/agencies/">Board view</a><a data-context-target="history" href="/agencies/">Feed history</a></nav></aside>
     <article class="feed-details"><h1>Fix: the feed lists no contact</h1>
 <p>Code: <code>missing_feed_contact_email_and_url</code> (MobilityData validator)</p>
 <h2 class="section-title">What this means</h2>
@@ -70,6 +71,77 @@ export settings that write the rest of <code>feed_info.txt</code>.</p>
 <p>One field, set once.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p><code>missing_feed_contact_email_and_url</code> is a canonical MobilityData GTFS Validator notice used in validator reports across the GTFS ecosystem. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#missing_feed_contact_email_and_url-rule">Read the authoritative rule for missing_feed_contact_email_and_url in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the changed feed is live at your published URL, the next scorecard run checks it again. When the same complete producer contract no longer reports this finding, it can be recorded as a dated finding clearance. That confirms the later feed state, not who changed the feed or why.</p></section></article>
+    <script>
+(function () {
+  "use strict";
+  var safeCode = /^[A-Za-z0-9_-]+$/;
+  var safeAgency = /^[A-Za-z0-9_-]+$/;
+  var params = new URL(window.location.href).searchParams;
+  var requested = params.get("finding") || "";
+  if (!safeCode.test(requested)) requested = "";
+
+  document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
+    var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
+    if (!panels.length) return;
+    var selected = panels.some(function (panel) {
+      return panel.getAttribute("data-finding-panel") === requested;
+    }) ? requested : panels[0].getAttribute("data-finding-panel");
+    panels.forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+    });
+    handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
+      if (choice.getAttribute("data-finding-choice") === selected) {
+        choice.setAttribute("aria-current", "true");
+      } else {
+        choice.removeAttribute("aria-current");
+      }
+    });
+    document.querySelectorAll("[data-finding-card]").forEach(function (card) {
+      card.classList.toggle(
+        "finding-selected",
+        card.getAttribute("data-finding-card") === selected
+      );
+    });
+  });
+
+  document.querySelectorAll("[data-handoff-copy]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var panel = button.closest("[data-finding-panel]");
+      var field = panel && panel.querySelector("textarea");
+      var status = panel && panel.querySelector("[data-copy-status]");
+      if (!field) return;
+      var copied = navigator.clipboard && window.isSecureContext
+        ? navigator.clipboard.writeText(field.value)
+        : Promise.reject();
+      copied.catch(function () {
+        field.focus();
+        field.select();
+        document.execCommand("copy");
+      }).then(function () {
+        if (status) status.textContent = "Copied.";
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-fix-context]").forEach(function (context) {
+    var agency = params.get("agency") || "";
+    var code = context.getAttribute("data-fix-context") || "";
+    if (!safeAgency.test(agency) || !safeCode.test(code)) return;
+    context.hidden = false;
+    var agencyLabel = context.querySelector("[data-context-agency]");
+    if (agencyLabel) agencyLabel.textContent = agency;
+    var base = "/agency/" + encodeURIComponent(agency) + "/";
+    var finding = "?finding=" + encodeURIComponent(code);
+    context.querySelectorAll("[data-context-target]").forEach(function (link) {
+      var target = link.getAttribute("data-context-target");
+      if (target === "scorecard") link.href = base + finding + "#finding-handoff";
+      if (target === "brief") link.href = base + "brief/" + finding + "#finding-handoff";
+      if (target === "board") link.href = base + "board/" + finding + "#finding-handoff";
+      if (target === "history") link.href = base + finding + "#trend-h";
+    });
+  });
+}());
+</script>
   </main>
   <footer class="site-footer">
     <div class="wrap">

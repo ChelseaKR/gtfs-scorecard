@@ -7,6 +7,7 @@
   "required": [
     "configured_feed_records",
     "active_canonical_feed_records",
+    "country_count",
     "distinct_organization_keys",
     "provisional_organization_keys",
     "published_scorecard_pages",
@@ -16,6 +17,7 @@
   "properties": {
     "configured_feed_records": { "type": "integer", "minimum": 0 },
     "active_canonical_feed_records": { "type": "integer", "minimum": 0 },
+    "country_count": { "type": "integer", "minimum": 0 },
     "distinct_organization_keys": { "type": "integer", "minimum": 0 },
     "provisional_organization_keys": { "type": "integer", "minimum": 0 },
     "published_scorecard_pages": { "type": "integer", "minimum": 0 },
@@ -26,6 +28,7 @@
       "required": [
         "configured_feed_records",
         "active_canonical_feed_records",
+        "country_count",
         "distinct_organization_keys",
         "provisional_organization_keys",
         "published_scorecard_pages",
@@ -34,6 +37,7 @@
       "properties": {
         "configured_feed_records": { "type": "string", "minLength": 1 },
         "active_canonical_feed_records": { "type": "string", "minLength": 1 },
+        "country_count": { "type": "string", "minLength": 1 },
         "distinct_organization_keys": { "type": "string", "minLength": 1 },
         "provisional_organization_keys": { "type": "string", "minLength": 1 },
         "published_scorecard_pages": { "type": "string", "minLength": 1 },
