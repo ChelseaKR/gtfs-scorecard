@@ -24,3 +24,186 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: fr-pan-81252
+    name: Réseau urbain A Citadina
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/74f0577f-f709-49db-9750-53c9341f6e50
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté de Communes du Sud Corse and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-a-citadina-porto-vecchio-horaires-theoriques-et-temps-reel
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-a-citadina-porto-vecchio-horaires-theoriques-et-temps-reel
+      scope:
+      - gtfs_schedule
+      attribution: Communauté de Communes du Sud Corse
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81996
+    name: Réseau maritime Corsica Ferries
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/b95d6838-1143-4653-840f-eebc33c16fa7
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Corsica Ferries and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/programme-des-rotations-corsica-ferries
+      terms_url: https://transport.data.gouv.fr/datasets/programme-des-rotations-corsica-ferries
+      scope:
+      - gtfs_schedule
+      attribution: Corsica Ferries
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82305
+    name: Réseau maritime de Corse du Sud
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/edabe706-150e-4320-a0cc-b68eed217495
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Collectivité de Corse and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transport-maritime-via-mare
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-transport-maritime-via-mare
+      scope:
+      - gtfs_schedule
+      attribution: Collectivité de Corse
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82995
+    name: Réseau urbain A Berlina
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/a84de823-7cb2-4d87-917e-e2dda306d280
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Collectivité de Corse and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transport-horaires-des-lignes-de-la-communaute-de-communes-corse-du-sud-a-berlina
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-transport-horaires-des-lignes-de-la-communaute-de-communes-corse-du-sud-a-berlina
+      scope:
+      - gtfs_schedule
+      attribution: Collectivité de Corse
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82997
+    name: Réseau urbain A Balanina
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f88c086a-4fe1-4af1-a027-f809d4422b65
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Collectivité de Corse and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transport-horaires-des-lignes-de-la-communaute-dile-rousse-balagne-a-balanina
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-transport-horaires-des-lignes-de-la-communaute-dile-rousse-balagne-a-balanina
+      scope:
+      - gtfs_schedule
+      attribution: Collectivité de Corse
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82998
+    name: Navette estivale Corté - vallée de la Restonica
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ba2f71b6-23ca-4b51-b319-bd9576933d94
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Collectivité de Corse and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transport-via-corsica-corte-a-la-vallee-de-la-restonica-ligne-c13
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-transport-via-corsica-corte-a-la-vallee-de-la-restonica-ligne-c13
+      scope:
+      - gtfs_schedule
+      attribution: Collectivité de Corse
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83200
+    name: Réseau interurbain - Corse
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fe20cb23-34b8-4965-acf7-1b28bf966891
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Collectivité de Corse and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transport-via-strada
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-transport-via-strada
+      scope:
+      - gtfs_schedule
+      attribution: Collectivité de Corse
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83510
+    name: Réseau maritime Corsica Linea
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/13977931-86ae-4b7a-9598-d222333a5fbd
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CORSICA LINEA and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/programme-des-rotations-corsica-linea
+      terms_url: https://transport.data.gouv.fr/datasets/programme-des-rotations-corsica-linea
+      scope:
+      - gtfs_schedule
+      attribution: CORSICA LINEA
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83962
+    name: Réseau urbain Via Bastia
+    country: FR
+    subdivision_code: FR-20R
+    subdivision_name: Corse
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ddbec19b-ed75-42f8-9205-573519298632
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté d'Agglomération de Bastia and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/via-bastia-1
+      terms_url: https://transport.data.gouv.fr/datasets/via-bastia-1
+      scope:
+      - gtfs_schedule
+      attribution: Communauté d'Agglomération de Bastia
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

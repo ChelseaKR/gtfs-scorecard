@@ -125,3 +125,23 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: fr-pan-82880
+    name: Téléphérique Papang
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: La Réunion
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fa444b8c-c1c6-4015-ac50-f748c12764d3
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CITALIS and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/citalis-telepherique-papang
+      terms_url: https://transport.data.gouv.fr/datasets/citalis-telepherique-papang
+      scope:
+      - gtfs_schedule
+      attribution: CITALIS
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

@@ -133,3 +133,267 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-pan-79528
+    name: Réseau urbain Distribus
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/148bf3a3-792f-44e2-9757-e0cc0d83afae
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Transdev
+      • Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-distribus
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-distribus
+      scope:
+      - gtfs_schedule
+      attribution: Transdev • Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81462
+    name: Réseau interurbain BreizhGo Car — Breizhgo Car 29
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    organization_id: fr-pan-658626a8a582bbf574c71b48
+    feed_variant: Breizhgo Car 29
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c407501a-ee0d-425d-b954-42927c0eaffa
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: One of 3 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-car
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-car
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81463
+    name: Réseau interurbain BreizhGo Car — Breizhgo 35
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    organization_id: fr-pan-658626a8a582bbf574c71b48
+    feed_variant: Breizhgo 35
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/69948a62-0bac-4081-8ae0-d71c4d5b751d
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: One of 3 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-car
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-car
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81464
+    name: Réseau interurbain BreizhGo Car — Breizhgo Car 56
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    organization_id: fr-pan-658626a8a582bbf574c71b48
+    feed_variant: Breizhgo Car 56
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/1b9a895a-1843-4620-bcd4-3bbd08c396c0
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: One of 3 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-car
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-car
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81474
+    name: Réseau interurbain BreizhGo TER
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/b7a835d4-7a93-4d8b-87bd-c657800fc29f
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-ter
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-ter
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81476
+    name: Réseau urbain Coralie
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/becd68ea-3e7a-4336-b14a-dc3bdcf493c2
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/coralie-concarneau-cornouaille-agglomeration-transport
+      terms_url: https://transport.data.gouv.fr/datasets/coralie-concarneau-cornouaille-agglomeration-transport
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81479
+    name: Réseau interurbain BreizhGo Bateaux — Breizhgo Bateaux Bréhat
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    organization_id: fr-pan-658626a9a5597d726dc71b48
+    feed_variant: Breizhgo Bateaux Bréhat
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9ef537b6-fbeb-468f-9d6d-47c1d0d98504
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: One of 3 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-bateaux
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-bateaux
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81480
+    name: Réseau interurbain BreizhGo Bateaux — Breizhgo Bateaux Finistère
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    organization_id: fr-pan-658626a9a5597d726dc71b48
+    feed_variant: Breizhgo Bateaux Finistère
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/705809de-4712-4c52-add3-03c4d9b6d621
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: One of 3 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-bateaux
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-bateaux
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81481
+    name: Réseau interurbain BreizhGo Bateaux — Breizhgo Bateaux Morbihan
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    organization_id: fr-pan-658626a9a5597d726dc71b48
+    feed_variant: Breizhgo Bateaux Morbihan
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c09012e4-cb57-41da-94c5-013a19c99e14
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: One of 3 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/breizhgo-bateaux
+      terms_url: https://transport.data.gouv.fr/datasets/breizhgo-bateaux
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82291
+    name: Réseau urbain Linéotim
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6866358a-cb32-451b-8a88-067f704cc770
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/lineotim-morlaix-communaute
+      terms_url: https://transport.data.gouv.fr/datasets/lineotim-morlaix-communaute
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82872
+    name: Programme des vols Finist'Air
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/073a6dbc-2bef-4088-afe4-68a29dd4e796
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Bretagne, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/finistair-region-bretagne
+      terms_url: https://transport.data.gouv.fr/datasets/finistair-region-bretagne
+      scope:
+      - gtfs_schedule
+      attribution: Région Bretagne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83408
+    name: Réseau urbain Qub
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/95530333-7002-401d-9d64-2829496d1c36
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Quimper
+      Bretagne Occidentale, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-du-reseau-de-transports-qub-transports-urbains-de-quimper-bretagne-occidentale
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-du-reseau-de-transports-qub-transports-urbains-de-quimper-bretagne-occidentale
+      scope:
+      - gtfs_schedule
+      attribution: Quimper Bretagne Occidentale
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

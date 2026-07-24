@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 2,000 feed records, still mostly in
+reference; the full registry has more than 2,100 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -2115,6 +2115,57 @@ The no-add ledger matters:
 This wave moves the registry to 2,046 configured feed records across 43 country
 codes. The total describes curated feed records in this service, not agencies
 in operation or national coverage.
+
+## France national-access-point exhaustion and three-country wave
+
+The next exhaustive loop on 2026-07-23 queried all 774 datasets then available
+from France's official National Access Point API. It identified 331 current
+GTFS resources that did not match a registry URL and ran every one through the
+bounded download, pinned canonical MobilityData validator, complete scorecard,
+and 60-day effective-calendar path. One hundred forty-seven resources passed
+that mechanical gate.
+
+Evidence and overlap review retained 137 National Access Point resources. Six
+regional aggregates would have repeated networks available as more specific
+feeds. Three byte-identical, older, or superseded resource versions stayed out,
+as did one nominally old export with an implausible million-day service horizon.
+The retained set adds 136 French records across 15 regions and collectivities,
+including three Guyane resources in a new manifest shard. Distinct resources
+inside the same official dataset share an organization identifier and carry
+feed-variant labels. France's European cohort rises from 392 to 528 records
+without changing the 26-country European denominator.
+
+Tanéo's current Nouméa-area resource appears in the same official catalog but
+is located in New Caledonia, so it is recorded under ISO code `NC`, not counted
+as a French or European feed. The ODbL dataset is published by the Syndicat
+Mixte des Transports Urbains du grand Nouméa and passed the same scoring and
+calendar gate.
+
+Two additional official-provider records opened country-code samples:
+
+- Puerto Rico ATI publishes its integrated archive in the agency's official
+  open-data section and explicitly invites developers and companies to use it.
+  The archive scored A (91.3) in the admission run and retained more than 60
+  days of effective service.
+- Oman National Transport Company (Mwasalat) serves its GTFS from its official
+  AVL subdomain and labels its route-data surface as open data. Oman's national
+  Open Data License expressly permits commercial and non-commercial reuse,
+  copying, distribution, adaptation, and combination with attribution. Its
+  current archive passed the validator and calendar gate; its F grade was not
+  used as an exclusion criterion.
+
+The loop also closed several tempting but inadmissible paths. Sweden's national
+Trafiklab export now requires an API key and no project credential is
+configured. Monaco and Iceland had only 39 and 27 days of effective service.
+Luxembourg was stale, Taiwan's endpoint returned 401, and current Mexico,
+Argentina, and Chile candidates did not establish both an eligible archive and
+an explicit commercial-reuse chain. Community-produced African feeds remain
+partnership-gated under the roadmap rather than being treated as official
+agency publications.
+
+This wave adds 139 reviewed feed records and moves the registry to 2,185
+configured records across 46 country codes. Those are feed records, not a
+census of agencies, operators, or national coverage.
 
 ## Unitrans (ASUCD / City of Davis)
 

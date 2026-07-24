@@ -26,3 +26,60 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: fr-pan-11681
+    name: Réseau européen FlixBus et FlixTrain
+    country: FR
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/30d94e83-48a4-4c44-8a96-c082377f5221
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Flixbus
+      France, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/flixbus-horaires-theoriques-du-reseau-europeen-1
+      terms_url: https://transport.data.gouv.fr/datasets/flixbus-horaires-theoriques-du-reseau-europeen-1
+      scope:
+      - gtfs_schedule
+      attribution: Flixbus France
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81653
+    name: Réseau national Trenitalia France
+    country: FR
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/bdecea2c-ebc9-4f22-812d-927e4a2e4bad
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to TRENITALIA FRANCE and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-des-trains-trenitalia-france
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-des-trains-trenitalia-france
+      scope:
+      - gtfs_schedule
+      attribution: TRENITALIA FRANCE
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83762
+    name: Réseau urbain et scolaire Lila Presqu'ile
+    country: FR
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83762/download
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Transdev
+      CapAtlantique Mobilités • Lila Presqu'île, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    operating_note: The official covered area crosses Bretagne and Pays de la Loire; no single subdivision
+      is assigned.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-scolaire-lila-presquile
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-scolaire-lila-presquile
+      scope:
+      - gtfs_schedule
+      attribution: Transdev CapAtlantique Mobilités • Lila Presqu'île
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

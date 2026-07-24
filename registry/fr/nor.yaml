@@ -355,3 +355,106 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: fr-pan-81177
+    name: Navette estivale SNGO! Giverny Vernon - Gare SNCF
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81177/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Syndicat mixte Atoumod and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/giverny-vernon-gare-sncf
+      terms_url: https://transport.data.gouv.fr/datasets/giverny-vernon-gare-sncf
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat mixte Atoumod
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82094
+    name: Réseau scolaire de Flers
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/e833d9ed-201b-4154-aa16-45bc00939571
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to NEMUS (Réseau de transports de Flers Agglo) and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-nemus
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-nemus
+      scope:
+      - gtfs_schedule
+      attribution: NEMUS (Réseau de transports de Flers Agglo)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82317
+    name: Réseau interurbain Nomad Car
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82317/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Syndicat mixte Atoumod and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/nomad-car-region-normandie
+      terms_url: https://transport.data.gouv.fr/datasets/nomad-car-region-normandie
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat mixte Atoumod
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83769
+    name: Réseau scolaire Tiva
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4d6b5107-fec7-41bb-9115-bbaafb7e71f1
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Intercom de la Vire au Noireau and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tiva-scolaire-secondaires-intravire-intercom-de-la-vire-au-noireau-2025-2026
+      terms_url: https://transport.data.gouv.fr/datasets/tiva-scolaire-secondaires-intravire-intercom-de-la-vire-au-noireau-2025-2026
+      scope:
+      - gtfs_schedule
+      attribution: Intercom de la Vire au Noireau
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83770
+    name: TAD réseau Tiva
+    country: FR
+    subdivision_code: FR-NOR
+    subdivision_name: Normandie
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f3b71a3c-85fd-48c3-a3f0-30b988a4e64b
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Intercom de la Vire au Noireau and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tiva-a-la-demande-service-de-transport-a-la-demande-intercom-de-la-vire-au-noireau-2025-2026
+      terms_url: https://transport.data.gouv.fr/datasets/tiva-a-la-demande-service-de-transport-a-la-demande-intercom-de-la-vire-au-noireau-2025-2026
+      scope:
+      - gtfs_schedule
+      attribution: Intercom de la Vire au Noireau
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

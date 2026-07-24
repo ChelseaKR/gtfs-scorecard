@@ -177,9 +177,53 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 2_046
-    assert len(european) == 392
+    assert len(agencies) == 2_185
+    assert len(european) == 528
     assert len({agency.country for agency in european}) == 26
+
+
+def test_repo_registry_includes_france_pan_and_new_country_code_wave(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    france_pan = [agency for agency in by_id.values() if agency.id.startswith("fr-pan-")]
+
+    assert len(france_pan) == 136
+    assert {agency.country for agency in france_pan} == {"FR"}
+    assert {agency.subdivision_code for agency in france_pan} >= {
+        "FR-20R",
+        "FR-973",
+        "FR-ARA",
+        "FR-BRE",
+        "FR-GES",
+        "FR-NAQ",
+        "FR-PAC",
+    }
+    for agency in france_pan:
+        assert agency.is_official is True
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.source_kind == "official_portal"
+        assert agency.reuse_evidence.provider_source_url.startswith(
+            "https://transport.data.gouv.fr/datasets/"
+        )
+        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+        assert agency.reuse_evidence.identity_reviewed is True
+
+    taneo = by_id["nc-taneo-82780"]
+    assert taneo.country == "NC"
+    assert taneo.reuse_evidence is not None
+    assert taneo.reuse_evidence.source_kind == "official_portal"
+
+    ati = by_id["puerto-rico-ati"]
+    assert ati.country == "PR"
+    assert ati.reuse_evidence is not None
+    assert ati.reuse_evidence.source_kind == "official_portal"
+
+    mwasalat = by_id["mwasalat-oman"]
+    assert mwasalat.country == "OM"
+    assert mwasalat.reuse_evidence is not None
+    assert mwasalat.reuse_evidence.source_kind == "provider"
 
 
 def test_ntd_id_parses_and_defaults_empty() -> None:

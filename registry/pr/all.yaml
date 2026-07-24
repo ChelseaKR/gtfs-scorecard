@@ -1,0 +1,27 @@
+# Puerto Rico (PR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: puerto-rico-ati
+    name: Autoridad de Transporte Integrado de Puerto Rico (ATI)
+    country: PR
+    is_official: true
+    static_gtfs_url: https://docs.pr.gov/files/ATI/DATOS_ABIERTOS/GTFS/PRITA_GTFS.zip
+    license_note: >-
+      ATI publishes this GTFS dataset in its official open-data section and
+      explicitly invites developers and companies to use the data. Credit the
+      Autoridad de Transporte Integrado de Puerto Rico.
+    operating_note: >-
+      One integrated Puerto Rico transit feed; counted as one feed record, not
+      as a census of every operator represented in the archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.ati.pr.gov/relaciones-comunidad?tab=DatosAbiertos
+      terms_url: https://www.ati.pr.gov/relaciones-comunidad?tab=DatosAbiertos
+      scope: [gtfs_schedule]
+      attribution: Autoridad de Transporte Integrado de Puerto Rico.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

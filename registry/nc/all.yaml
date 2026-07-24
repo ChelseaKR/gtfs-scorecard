@@ -1,0 +1,24 @@
+# New Caledonia (NC) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: nc-taneo-82780
+    name: Réseau urbain Tanéo
+    country: NC
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/696cd51a-1d94-4d3f-9001-8e719c25fe03
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte des Transports Urbains du grand Nouméa, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-taneo-1
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-taneo-1
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte des Transports Urbains du grand Nouméa
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

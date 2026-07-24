@@ -244,3 +244,64 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: fr-pan-79374
+    name: Réseau urbain Optymo
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/797c424e-7d28-4e65-84f6-6677e47d8a6e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Optymo
+      - Belfort, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-circuits-et-horaires-du-reseau-optymo-de-belfort
+      terms_url: https://transport.data.gouv.fr/datasets/arrets-circuits-et-horaires-du-reseau-optymo-de-belfort
+      scope:
+      - gtfs_schedule
+      attribution: Optymo - Belfort
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81944
+    name: Réseau urbain évolitY
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/b45aa8d8-4bd4-4528-99c7-acfc980fdb09
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit évolitY,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/evolity-horaires-theoriques-de-transport-public
+      terms_url: https://transport.data.gouv.fr/datasets/evolity-horaires-theoriques-de-transport-public
+      scope:
+      - gtfs_schedule
+      attribution: évolitY
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83859
+    name: Réseau urbain Papillon
+    country: FR
+    subdivision_code: FR-BFC
+    subdivision_name: Bourgogne-Franche-Comté
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83859/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté de Communes Cœur de Loire and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-du-reseau-de-bus-papillon-a-cosne-cours-sur-loire
+      terms_url: https://transport.data.gouv.fr/datasets/donnees-du-reseau-de-bus-papillon-a-cosne-cours-sur-loire
+      scope:
+      - gtfs_schedule
+      attribution: Communauté de Communes Cœur de Loire
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
