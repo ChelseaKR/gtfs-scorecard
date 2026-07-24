@@ -68,7 +68,24 @@ jobs:
           # avoids downloading the 400-day archive or any private pipeline files.
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+          retry_s3_sync() {
+            local label="$1"
+            shift
+            local attempt
+            for attempt in 1 2 3; do
+              if "$@"; then
+                return 0
+              fi
+              if [ "$attempt" -eq 3 ]; then
+                echo "S3 sync failed after ${attempt} attempts: ${label}" >&2
+                return 1
+              fi
+              echo "S3 changed during ${label}; retrying (${attempt}/3)." >&2
+              sleep $((attempt * 5))
+            done
+          }
+          retry_s3_sync "published artifacts" aws s3 sync \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --exclude "*" \
             --include "directory.json" --include "index.json" \
             --include "scoring.json" --include "sensitivity.json" \
@@ -79,7 +96,8 @@ jobs:
             --include "*/geometry.geojson" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
             --only-show-errors
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
+          retry_s3_sync "fix-log cache" aws s3 sync \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
