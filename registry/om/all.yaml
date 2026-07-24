@@ -1,0 +1,28 @@
+# Oman (OM) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: mwasalat-oman
+    name: Mwasalat (Oman National Transport Company)
+    country: OM
+    is_official: true
+    static_gtfs_url: https://avl.mwasalat.om/data/gtfs/gtfs.zip
+    license_note: >-
+      Oman Open Data License; commercial and non-commercial reuse, copying,
+      publication, distribution, adaptation, and combination are permitted
+      with attribution to Mwasalat.
+    operating_note: >-
+      The feed is served from Mwasalat's official AVL subdomain. Mwasalat
+      labels its published route data as open data, and Oman's national open
+      data license supplies the reuse terms.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://mwasalat.om/city-route
+      terms_url: https://opendata.gov.om/en/license
+      scope: [gtfs_schedule]
+      attribution: Mwasalat, Oman National Transport Company.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

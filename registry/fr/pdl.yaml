@@ -164,3 +164,84 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: fr-pan-79537
+    name: Réseau urbain Réso
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2fc8108a-5b91-455a-8d10-1c938d360a9f
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Transdev
+      • Pays de la Loire, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-reso
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-reso
+      scope:
+      - gtfs_schedule
+      attribution: Transdev • Pays de la Loire
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81421
+    name: Réseau urbain Oléane
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/d5920d40-ea72-4e22-b506-2ca583950282
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      des Pays de la Loire, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/lignes-arrets-et-horaires-theorique-du-reseau-de-transport-gtfs-et-netex-les-sables-dolonne-agglomeration
+      terms_url: https://transport.data.gouv.fr/datasets/lignes-arrets-et-horaires-theorique-du-reseau-de-transport-gtfs-et-netex-les-sables-dolonne-agglomeration
+      scope:
+      - gtfs_schedule
+      attribution: Région des Pays de la Loire
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83881
+    name: Réseau urbain et scolaire Ycéo
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/a1867718-7921-42a6-b672-c53b8c583aa3
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Saint-Nazaire agglo - La CARENE and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/yceo-arrets-horaires-et-lignes-urbaines-et-scolaires-gtfs-1
+      terms_url: https://transport.data.gouv.fr/datasets/yceo-arrets-horaires-et-lignes-urbaines-et-scolaires-gtfs-1
+      scope:
+      - gtfs_schedule
+      attribution: Saint-Nazaire agglo - La CARENE
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-84096
+    name: Ligne de covoiturage Pays Nantais
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/53f79f73-e770-4772-a315-1117708f2647
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Ecov and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/lignes-de-covoiturage-covoitici-pays-nantais
+      terms_url: https://transport.data.gouv.fr/datasets/lignes-de-covoiturage-covoitici-pays-nantais
+      scope:
+      - gtfs_schedule
+      attribution: Ecov
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

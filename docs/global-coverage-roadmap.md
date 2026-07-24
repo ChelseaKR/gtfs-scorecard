@@ -256,6 +256,33 @@ calendars in Australia, New Zealand, Belgium, Luxembourg, Canada, and Mexico
 all stayed out. The pass increases the reviewed sample without loosening the
 identity, reuse, validator, or calendar gates.
 
+An API-level exhaustion of France's National Access Point followed on
+2026-07-23. All 774 catalog datasets were considered, and all 331 currently
+unmatched GTFS resources were run through the complete local scorecard and
+60-day calendar gate. Of 147 mechanical passes, overlap and source review
+retained 137: 136 French resources plus Tanéo in New Caledonia, which is
+correctly modeled under ISO `NC`. Six regional aggregates, three duplicate or
+superseded resource versions, and one anomalous stale export remained out.
+France's reviewed European cohort grows by 136 records across 15 regions and
+collectivities. Multiple resources belonging to one dataset share canonical
+organization identity instead of being presented as extra operators.
+
+The same loop opened Puerto Rico and Oman from official provider evidence.
+Puerto Rico ATI explicitly invites developers and companies to use its
+open-data GTFS. Mwasalat serves its current GTFS from its official Oman
+National Transport Company domain, labels its route-data surface as open data,
+and is covered by Oman's national license permitting commercial and
+non-commercial reuse with attribution. Both feeds passed the validator and
+calendar path. Grade was not an admission criterion.
+
+The rejected set establishes the next boundary. Sweden's national Trafiklab
+archive is useful but key-gated. Monaco and Iceland fell below the calendar
+horizon; Luxembourg was stale and Taiwan returned 401. Mexico, Argentina, and
+Chile did not supply a current candidate with the required source and
+commercial-reuse chain. Community-produced African feeds remain
+partnership-gated. The resulting 2,185-record, 46-country-code registry is a
+reviewed sample and not a census or national-coverage claim.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,
