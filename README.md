@@ -10,12 +10,12 @@
 
 [![GTFS Scorecard: a plain-language quality grade for a transit agency's feed](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
 
-A data quality scorecard for small transit agencies. It fetches an agency's
-**GTFS Schedule** feed and, when one is published and configured, its
-**GTFS-Realtime** feeds; runs the canonical MobilityData
-validator, and turns the results into a letter grade with a short list of
-concrete fixes, written for the transit
-manager who inherited the feed from a vendor, not for developers.
+A data quality scorecard for small transit agencies. It does not implement a
+competing GTFS validator: correctness findings come from MobilityData's
+canonical validator. GTFS Scorecard adds a versioned, project-authored scoring
+profile, freshness and rider-facing completeness measures, optional
+**GTFS-Realtime** observations, and a short list of concrete fixes for the
+transit manager who inherited the feed from a vendor, not for developers.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
@@ -109,6 +109,8 @@ Guidelines v4.0 and the validator's rule taxonomy, is in
 [docs/rubric.md](docs/rubric.md). Methodology changes are governed: a
 validator-version bump must attach the shadow-run impact report from
 `scorecard canary` before it lands (rubric.md, "Governed upgrades").
+The grade, weights, thresholds, and fix order are GTFS Scorecard policy choices,
+not an official MobilityData grade or a universal quality standard.
 Feed sources and licenses are in
 [docs/feeds.md](docs/feeds.md). Forward planning is split in two: the
 infrastructure and scaling plan is in [docs/roadmap.md](docs/roadmap.md), and
