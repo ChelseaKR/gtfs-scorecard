@@ -29,6 +29,7 @@ from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
 
 from markdown_it import MarkdownIt
 
@@ -150,6 +151,200 @@ def _fix_guide_link(code: str) -> str:
     if code in FIX_CODES_WITH_PAGES:
         return f' · <a class="fix-guide" href="/fix/{esc(code)}/">Read the fix guide</a>'
     return ""
+
+
+_SAFE_FINDING_CODE = re.compile(r"^[A-Za-z0-9_-]+$")
+_SAFE_AGENCY_ID = re.compile(r"^[A-Za-z0-9_-]+$")
+
+
+def _safe_finding_code(value: object) -> str:
+    code = str(value or "")
+    return code if _SAFE_FINDING_CODE.fullmatch(code) else ""
+
+
+def _finding_card_attrs(fix: dict[str, Any]) -> str:
+    code = _safe_finding_code(fix.get("code"))
+    if not code:
+        return ""
+    return f' id="finding-{esc(code)}" data-finding-card="{esc(code)}"'
+
+
+def _finding_url(
+    path: str,
+    code: str,
+    *,
+    agency_id: str | None = None,
+    anchor: str = "finding-handoff",
+) -> str:
+    """Attach one validated finding to a route without accepting arbitrary URLs."""
+    safe_code = _safe_finding_code(code)
+    if not safe_code:
+        return path
+    query = {"finding": safe_code}
+    if agency_id and _SAFE_AGENCY_ID.fullmatch(agency_id):
+        query["agency"] = agency_id
+    fragment = f"#{anchor}" if anchor else ""
+    return f"{path}?{urlencode(query)}{fragment}"
+
+
+_FINDING_CONTEXT_SCRIPT = """<script>
+(function () {
+  "use strict";
+  var safeCode = /^[A-Za-z0-9_-]+$/;
+  var safeAgency = /^[A-Za-z0-9_-]+$/;
+  var params = new URL(window.location.href).searchParams;
+  var requested = params.get("finding") || "";
+  if (!safeCode.test(requested)) requested = "";
+
+  document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
+    var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
+    if (!panels.length) return;
+    var selected = panels.some(function (panel) {
+      return panel.getAttribute("data-finding-panel") === requested;
+    }) ? requested : panels[0].getAttribute("data-finding-panel");
+    panels.forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+    });
+    handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
+      if (choice.getAttribute("data-finding-choice") === selected) {
+        choice.setAttribute("aria-current", "true");
+      } else {
+        choice.removeAttribute("aria-current");
+      }
+    });
+    document.querySelectorAll("[data-finding-card]").forEach(function (card) {
+      card.classList.toggle(
+        "finding-selected",
+        card.getAttribute("data-finding-card") === selected
+      );
+    });
+  });
+
+  document.querySelectorAll("[data-handoff-copy]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var panel = button.closest("[data-finding-panel]");
+      var field = panel && panel.querySelector("textarea");
+      var status = panel && panel.querySelector("[data-copy-status]");
+      if (!field) return;
+      var copied = navigator.clipboard && window.isSecureContext
+        ? navigator.clipboard.writeText(field.value)
+        : Promise.reject();
+      copied.catch(function () {
+        field.focus();
+        field.select();
+        document.execCommand("copy");
+      }).then(function () {
+        if (status) status.textContent = "Copied.";
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-fix-context]").forEach(function (context) {
+    var agency = params.get("agency") || "";
+    var code = context.getAttribute("data-fix-context") || "";
+    if (!safeAgency.test(agency) || !safeCode.test(code)) return;
+    context.hidden = false;
+    var agencyLabel = context.querySelector("[data-context-agency]");
+    if (agencyLabel) agencyLabel.textContent = agency;
+    var base = "/agency/" + encodeURIComponent(agency) + "/";
+    var finding = "?finding=" + encodeURIComponent(code);
+    context.querySelectorAll("[data-context-target]").forEach(function (link) {
+      var target = link.getAttribute("data-context-target");
+      if (target === "scorecard") link.href = base + finding + "#finding-handoff";
+      if (target === "brief") link.href = base + "brief/" + finding + "#finding-handoff";
+      if (target === "board") link.href = base + "board/" + finding + "#finding-handoff";
+      if (target === "history") link.href = base + finding + "#trend-h";
+    });
+  });
+}());
+</script>"""
+
+
+def _finding_handoff(
+    artifact: dict[str, Any],
+    agency_id: str,
+    surface_path: str,
+) -> str:
+    """Render one operational handoff whose selection survives across surfaces.
+
+    The artifact remains the source of every statement. The handoff does not
+    claim who owns the change and does not create a ticket or workflow state.
+    """
+    agency_name = str(artifact.get("agency", {}).get("name") or agency_id)
+    fixes = [
+        fix for fix in artifact.get("top_fixes", [])[:3] if _safe_finding_code(fix.get("code"))
+    ]
+    if not fixes:
+        return ""
+
+    choices: list[str] = []
+    panels: list[str] = []
+    for index, fix in enumerate(fixes, start=1):
+        code = _safe_finding_code(fix.get("code"))
+        choice_href = _finding_url(surface_path, code)
+        choices.append(
+            f'<a href="{esc(choice_href)}" data-finding-choice="{esc(code)}">'
+            f"<span>0{index}</span> {esc(code)}</a>"
+        )
+        evidence_url = _finding_url(
+            f"{BASE_URL}/agency/{agency_id}/",
+            code,
+        )
+        recheck = (
+            "Publish the changed feed at the same URL. On the next complete, comparable "
+            "scorecard run, confirm that this finding is no longer reported."
+        )
+        handoff_text = (
+            f"Agency: {agency_name}\n"
+            f"Finding: {code}\n"
+            f"Feed evidence: {fix.get('what', '')}\n"
+            f"Why it matters: {fix.get('why', '')}\n"
+            f"Requested change: {fix.get('fix', '')}\n"
+            f"Recheck: {recheck}\n"
+            f"Evidence: {evidence_url}"
+        )
+        guide_link = (
+            f'<a href="{esc(_finding_url(f"/fix/{code}/", code, agency_id=agency_id))}">'
+            "Open fix guide</a>"
+            if code in FIX_CODES_WITH_PAGES
+            else ""
+        )
+        surface_links = [
+            guide_link,
+            f'<a href="{esc(_finding_url(f"/agency/{agency_id}/brief/", code))}">Call brief</a>',
+            f'<a href="{esc(_finding_url(f"/agency/{agency_id}/board/", code))}">Board view</a>',
+            f'<a href="{esc(_finding_url(f"/agency/{agency_id}/", code, anchor="trend-h"))}">Feed history</a>',
+        ]
+        panels.append(
+            f'<div class="handoff-panel" data-finding-panel="{esc(code)}"'
+            f"{' hidden' if index > 1 else ''}>"
+            '<dl class="handoff-grid">'
+            f"<div><dt>Feed evidence</dt><dd>{esc(fix.get('what', ''))}</dd></div>"
+            f"<div><dt>Next action</dt><dd>{esc(fix.get('fix', ''))}</dd></div>"
+            f"<div><dt>Recheck</dt><dd>{esc(recheck)}</dd></div>"
+            "</dl>"
+            f'<nav class="handoff-links" aria-label="Finding {esc(code)} links">'
+            f"{''.join(link for link in surface_links if link)}</nav>"
+            '<details class="handoff-copy">'
+            "<summary>Copy handoff text</summary>"
+            f'<textarea readonly rows="8" aria-label="Handoff text for {esc(code)}">{esc(handoff_text)}</textarea>'
+            '<div class="handoff-copy-actions"><button type="button" class="copy-btn" '
+            "data-handoff-copy>Copy handoff</button>"
+            '<span class="copy-status" data-copy-status aria-live="polite"></span></div>'
+            "</details></div>"
+        )
+
+    return (
+        '<section class="finding-handoff" id="finding-handoff" '
+        'data-finding-handoff aria-labelledby="finding-handoff-h">'
+        '<div class="handoff-head"><div>'
+        '<p class="handoff-kicker">Finding handoff</p>'
+        '<h2 id="finding-handoff-h">Move one finding to a recheck</h2></div>'
+        "<p>Select one finding. Copy the request, make the change in the "
+        "feed-producing tool, then compare the next complete run.</p></div>"
+        '<nav class="finding-picker" aria-label="Select a prioritized finding">'
+        f"{''.join(choices)}</nav>{''.join(panels)}</section>{_FINDING_CONTEXT_SCRIPT}"
+    )
 
 
 def _rule_ref_link(code: str) -> str:
@@ -2113,6 +2308,10 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         for i, f in enumerate(fixes):
             sev = str(f.get("severity", "")).upper()
             cls = " sev-warning" if sev == "WARNING" else " sev-info" if sev == "INFO" else ""
+            code = _safe_finding_code(f.get("code"))
+            finding_attrs = (
+                f' id="finding-{esc(code)}" data-finding-card="{esc(code)}"' if code else ""
+            )
             pts = f.get("points")
             worth = (
                 f'<span class="aworth">worth about +{round(float(pts))} '
@@ -2123,7 +2322,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             owner = f.get("owner")
             owner_tag = f'<span class="aowner">{esc(owner)}</span>' if owner else ""
             alerts.append(
-                f'<div class="alert"><span class="badge{cls}">Fix {i + 1:02d}</span>'
+                f'<div class="alert"{finding_attrs}><span class="badge{cls}">Fix {i + 1:02d}</span>'
                 f'<div><p class="afix">{esc(f["fix"])}{owner_tag}</p>'
                 f'<p class="awhy">{esc(f["what"])} {esc(f["why"])}</p>'
                 f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p>'
@@ -2312,6 +2511,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
+      {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/")}
       {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
     {_rider_impact_section(artifact)}{ferry_profile_block}
@@ -2508,7 +2708,8 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     fixes = artifact.get("top_fixes", [])[:3]
     if fixes:
         fix_items = "".join(
-            f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
+            f'<li class="brief-fix"{_finding_card_attrs(f)}>'
+            f'<p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
             f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p>'
             f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
@@ -2675,6 +2876,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       <h2 id="brief-fixes-h">Top three things to fix</h2>
       {fixes_html}
     </section>
+    {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/brief/")}
     {outreach_html}
 {ntd_section}
     {standards_html}
@@ -2747,7 +2949,8 @@ def _render_board_page(
     fixes = artifact.get("top_fixes", [])[:3]
     if fixes:
         ask_items = "".join(
-            f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
+            f'<li class="brief-fix"{_finding_card_attrs(f)}>'
+            f'<p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
             f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p>'
             f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
@@ -2793,6 +2996,7 @@ def _render_board_page(
       {asks_html}
       {who_makes}
     </section>
+    {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/board/")}
     <p class="brief-foot">Produced by the GTFS Scorecard, an open-source data quality
       tool. A data-quality read to support the board conversation, not an official
       compliance determination. Live scorecard: {esc(f"{BASE_URL}/agency/{agency_id}/")}.
@@ -3979,6 +4183,13 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     )
     rows_parts = []
     for m in rollup["members"]:
+        top_fix_code = _safe_finding_code(m.get("top_fix_code"))
+        handoff_link = (
+            f' · <a class="program-next" href="{esc(_finding_url(f"/agency/{m['id']}/", top_fix_code))}">'
+            "Open next finding</a>"
+            if top_fix_code
+            else ""
+        )
         attn = (
             f' <span class="pill-warn">{esc(m.get("attention_reason") or "needs attention")}</span>'
             if m.get("needs_attention")
@@ -3988,7 +4199,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
             f'<li class="program-row"><span class="grade-chip {_grade_class(m["grade"])}">'
             f'{esc(m["grade"])}<span class="visually-hidden"> grade</span></span>'
             f'<div><h3><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a>{attn}</h3>'
-            f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}</p>'
+            f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}'
+            f"{handoff_link}</p>"
             "</div></li>"
         )
     rows = "".join(rows_parts)
@@ -4082,12 +4294,20 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
 
 def _rollup_member_row(m: dict[str, Any], note: str) -> str:
     """A program-list row for the expired worklist, with a how-long-ago flag."""
+    top_fix_code = _safe_finding_code(m.get("top_fix_code"))
+    handoff_link = (
+        f' · <a class="program-next" href="{esc(_finding_url(f"/agency/{m['id']}/", top_fix_code))}">'
+        "Open next finding</a>"
+        if top_fix_code
+        else ""
+    )
     return (
         f'<li class="program-row"><span class="grade-chip {_grade_class(m["grade"])}">'
         f'{esc(m["grade"])}<span class="visually-hidden"> grade</span></span>'
         f'<div><h3><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a> '
         f'<span class="pill-warn">{esc(note)}</span></h3>'
-        f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}</p>'
+        f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}'
+        f"{handoff_link}</p>"
         "</div></li>"
     )
 
@@ -4343,9 +4563,24 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
         "finding, it can be recorded as a dated finding clearance. That confirms the later "
         "feed state, not who changed the feed or why.</p></section>"
     )
+    fix_context = (
+        f'<aside class="fix-context" id="finding-handoff" data-fix-context="{esc(code)}" hidden>'
+        '<p class="handoff-kicker">Selected finding</p>'
+        f"<h2>Keep {esc(code)} attached to the agency record</h2>"
+        "<p>Agency record: <code data-context-agency></code>. Use this guide, publish the "
+        "changed feed, then return to the selected scorecard for the comparable recheck.</p>"
+        '<nav class="handoff-links" aria-label="Selected agency links">'
+        '<a data-context-target="scorecard" href="/agencies/">Scorecard</a>'
+        '<a data-context-target="brief" href="/agencies/">Call brief</a>'
+        '<a data-context-target="board" href="/agencies/">Board view</a>'
+        '<a data-context-target="history" href="/agencies/">Feed history</a>'
+        "</nav></aside>"
+    )
     body = f"""    {crumb}
     <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
-    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>"""
+    {fix_context}
+    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>
+    {_FINDING_CONTEXT_SCRIPT}"""
     jsonld = {
         "@context": "https://schema.org",
         "@type": "TechArticle",

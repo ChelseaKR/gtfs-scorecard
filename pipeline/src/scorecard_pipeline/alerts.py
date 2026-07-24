@@ -24,8 +24,10 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import urlencode
 
 from .anomaly import detect_anomalies
 from .comparisons import current_producer_contract_suffix
@@ -69,8 +71,44 @@ def _expiry_tier(days: int | None) -> str:
     return _EXPIRY_TIERS[-1][1]
 
 
-def _scorecard_url(agency_id: str, anchor: str = "") -> str:
+_SAFE_CONTEXT_VALUE = re.compile(r"^[A-Za-z0-9_-]+$")
+
+
+def _primary_finding_code(latest: dict[str, Any]) -> str:
+    """Choose the first published top-fix code, preferring an expiry finding."""
+    fixes = latest.get("top_fixes") or []
+    safe_codes = [
+        str(fix.get("code"))
+        for fix in fixes
+        if _SAFE_CONTEXT_VALUE.fullmatch(str(fix.get("code") or ""))
+    ]
+    if not safe_codes:
+        return ""
+    freshness_codes = {
+        str(finding.get("code"))
+        for finding in latest.get("categories", {}).get("freshness", {}).get("findings", [])
+    }
+    return next((code for code in safe_codes if code in freshness_codes), safe_codes[0])
+
+
+def _scorecard_url(
+    agency_id: str,
+    anchor: str = "",
+    finding_code: str = "",
+) -> str:
+    if finding_code and _SAFE_CONTEXT_VALUE.fullmatch(finding_code):
+        return (
+            f"{SCORECARD_BASE}/agency/{agency_id}/?"
+            f"{urlencode({'finding': finding_code})}#finding-handoff"
+        )
     return f"{SCORECARD_BASE}/agency/{agency_id}/{anchor}"
+
+
+def _attach_finding_context(item: AlertItem, latest: dict[str, Any] | None) -> AlertItem:
+    code = _primary_finding_code(latest or {})
+    if code:
+        item.scorecard_url = _scorecard_url(item.agency_id, finding_code=code)
+    return item
 
 
 @dataclass
@@ -137,7 +175,11 @@ def _expiry_item(latest: dict[str, Any], expiry_days: int) -> AlertItem | None:
         fix="Re-export the feed with a calendar that extends further out, or "
         "set feed_info end dates past the next service change.",
         # Link straight to the ready-to-send note on the scorecard.
-        scorecard_url=_scorecard_url(agency["id"], "#send-note"),
+        scorecard_url=_scorecard_url(
+            agency["id"],
+            "#send-note",
+            _primary_finding_code(latest),
+        ),
         days_until_expiry=days,
     )
 
@@ -292,12 +334,17 @@ def build_digest(  # noqa: C901
                 comparable_history, entry.get("name", agency_id), agency_id
             )
             if lapse_risk:
-                items.append(lapse_risk)
+                items.append(_attach_finding_context(lapse_risk, latest))
         regression = _regression_item(comparable_history, entry.get("name", agency_id), agency_id)
         if regression:
-            items.append(regression)
+            items.append(_attach_finding_context(regression, latest))
         items.extend(
-            _anomaly_alert_items(comparable_history, agency_id, entry.get("name", agency_id))
+            _attach_finding_context(item, latest)
+            for item in _anomaly_alert_items(
+                comparable_history,
+                agency_id,
+                entry.get("name", agency_id),
+            )
         )
 
     def _urgency(item: AlertItem) -> tuple[int, int, str]:
@@ -343,10 +390,16 @@ def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint
         lines.append("")
         lines.append(f"Fix: {item.fix}")
         if item.scorecard_url:
-            # Expiry items deep-link to the ready-to-send note; others to the page.
-            label = (
-                "Copy a note to send the agency" if item.kind == "expiry" else "Open the scorecard"
-            )
+            if "?finding=" in item.scorecard_url:
+                label = "Open the finding handoff"
+            else:
+                # Older artifacts without a safe finding code retain the
+                # ready-to-send note link.
+                label = (
+                    "Copy a note to send the agency"
+                    if item.kind == "expiry"
+                    else "Open the scorecard"
+                )
             lines.append("")
             lines.append(f"[{label}]({item.scorecard_url})")
         lines.append("")
