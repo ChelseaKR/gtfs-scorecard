@@ -103,8 +103,9 @@ def test_hourly_refresh_publishes_only_changed_or_swept_feed_directories() -> No
 
     assert '--changed-out "$RUNNER_TEMP/swept.txt"' in text
     assert 'sort -u "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/swept.txt"' in text
-    assert 'aws s3 sync "data/artifacts/${id}" "${artifact_uri}/${id}"' in text
+    assert '"data/artifacts/${id}/" "$public_stage/$id/"' in text
     assert 'done < "$RUNNER_TEMP/refreshed.txt"' in text
+    assert 'aws s3 sync "$public_stage" "$artifact_uri"' in text
     assert 'aws s3 sync data/artifacts "' not in text
     assert 'aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive' not in text
 
