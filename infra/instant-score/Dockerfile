@@ -5,8 +5,11 @@
 # Java validator via scorecard_pipeline.cli.run_adhoc.
 FROM public.ecr.aws/lambda/python:3.12
 
-# Java 17 for the validator jar.
-RUN dnf install -y java-17-amazon-corretto-headless && dnf clean all
+# Apply available Amazon Linux security fixes, then add Java 17 for the
+# validator jar. The base tag can lag patched repository packages.
+RUN dnf upgrade -y \
+    && dnf install -y java-17-amazon-corretto-headless \
+    && dnf clean all
 
 # The pipeline package (this handler imports scorecard_pipeline.cli.run_adhoc).
 COPY pipeline /opt/pipeline
