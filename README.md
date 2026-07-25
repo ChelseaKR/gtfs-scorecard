@@ -213,9 +213,10 @@ scorecard notify                                  # per-subscriber digest (dry r
 ```
 
 Add `--source-metadata-out <path>` to `scorecard sync` for a source receipt
-that accounts for every Mobility Database Schedule row as excluded, filtered,
-already tracked, duplicate, conflicted, or proposed for review. It never edits
-the registry and does not treat a catalog proposal as permission to republish.
+that accounts for every recognized Mobility Database Schedule row as excluded,
+filtered, already tracked, duplicate, conflicted, or proposed for review. It
+never edits the registry and does not treat a catalog proposal as permission to
+republish.
 
 `notify` builds a feed-health email for each opt-in subscriber in
 [`subscriptions.yaml`](subscriptions.yaml), containing only the agencies they

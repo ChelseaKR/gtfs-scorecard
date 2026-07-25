@@ -703,9 +703,24 @@ def propose_agencies_with_dispositions(  # noqa: C901 - tracked, see docs/lint-c
             for reference in _pipe_values(feed.static_reference):
                 rt_by_reference.setdefault(normalized_mdb_id(reference), []).append(feed)
 
-    # Filter first, then group duplicate catalog records by endpoint. Selecting
-    # the richest row from the complete group makes the result independent of
-    # source order while retaining the raw id of the selected V2 row.
+    # A catalog id is a global identity boundary. Detect conflicts across the
+    # complete Schedule snapshot before eligibility or user filters can hide
+    # one of its endpoints.
+    source_endpoints: dict[str, set[str]] = {}
+    for feed in feeds:
+        if feed.data_type != "gtfs":
+            continue
+        source_id = normalized_mdb_id(feed.mdb_id)
+        url_key = _feed_url_key(feed.direct_download)
+        if source_id and url_key:
+            source_endpoints.setdefault(source_id, set()).add(url_key)
+    ambiguous_source_ids = {
+        source_id for source_id, endpoints in source_endpoints.items() if len(endpoints) > 1
+    }
+
+    # Group mechanically eligible, filter-matched catalog records by endpoint.
+    # Selecting the richest row from the complete group makes the result
+    # independent of source order while retaining the selected V2 row id.
     schedule_groups: dict[str, list[tuple[int, CatalogFeed]]] = {}
     dispositions: dict[int, CandidateDisposition] = {}
     for position, feed in enumerate(feeds):
@@ -718,6 +733,16 @@ def propose_agencies_with_dispositions(  # noqa: C901 - tracked, see docs/lint-c
             subdivision=subdivision,
             providers=provider_filter,
         )
+        if normalized_mdb_id(feed.mdb_id) in ambiguous_source_ids:
+            dispositions[position] = _disposition(
+                feed,
+                position=position,
+                decision="blocked_conflict",
+                reason_codes=("catalog_id_maps_to_multiple_endpoints",),
+                proposal_eligible=not bool(exclusion_reasons),
+                filter_match=not bool(filter_reasons),
+            )
+            continue
         if exclusion_reasons:
             dispositions[position] = _disposition(
                 feed,
@@ -740,16 +765,6 @@ def propose_agencies_with_dispositions(  # noqa: C901 - tracked, see docs/lint-c
         url_key = _feed_url_key(feed.direct_download)
         schedule_groups.setdefault(url_key, []).append((position, feed))
 
-    source_endpoints: dict[str, set[str]] = {}
-    for url_key, indexed_duplicates in schedule_groups.items():
-        for _position, candidate in indexed_duplicates:
-            source_id = normalized_mdb_id(candidate.mdb_id)
-            if source_id:
-                source_endpoints.setdefault(source_id, set()).add(url_key)
-    ambiguous_source_ids = {
-        source_id for source_id, endpoints in source_endpoints.items() if len(endpoints) > 1
-    }
-
     proposals: list[ProposedAgency] = []
     used_ids = set(existing)
     proposed_sources: set[str] = set()
@@ -760,16 +775,6 @@ def propose_agencies_with_dispositions(  # noqa: C901 - tracked, see docs/lint-c
         duplicate_ids = {
             normalized_mdb_id(candidate.mdb_id) for candidate in duplicates if candidate.mdb_id
         }
-        ambiguous_ids = duplicate_ids & ambiguous_source_ids
-        if ambiguous_ids:
-            for position, candidate in indexed_duplicates:
-                dispositions[position] = _disposition(
-                    candidate,
-                    position=position,
-                    decision="blocked_conflict",
-                    reason_codes=("catalog_id_maps_to_multiple_endpoints",),
-                )
-            continue
         tracked_reasons: list[str] = []
         if duplicate_ids & tracked_mdb_ids:
             tracked_reasons.append("catalog_id_already_tracked")

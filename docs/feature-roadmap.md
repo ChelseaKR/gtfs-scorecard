@@ -126,9 +126,9 @@ existing surface without changing a grade or adding a service:
   pseudolocale preview, right-to-left browser check, hardcoded-string and
   directional-CSS ratchets; ADR 0038).
 - **Shipped 2026-07-25:** Mobility Database proposal receipts now account for
-  every Schedule source row with a versioned mechanical disposition ledger.
-  Proposals remain separate from human identity, rights, attribution, and
-  admission decisions (ADR 0043).
+  every recognized Schedule source row with a versioned mechanical disposition
+  ledger. Proposals remain separate from human identity, rights, attribution,
+  and admission decisions (ADR 0043).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

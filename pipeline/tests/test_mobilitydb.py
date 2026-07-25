@@ -303,6 +303,30 @@ def test_ambiguous_catalog_id_precedes_registry_suppression() -> None:
     assert all(record.matched_registry_ids == () for record in dispositions)
 
 
+def test_ambiguous_catalog_id_precedes_geographic_filters() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,country_code,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "same,gtfs,,US Transit,US,true,https://example.org/us.zip,0,active,\n"
+        "same,gtfs,,Canadian Transit,CA,true,https://example.org/ca.zip,0,active,\n"
+    )
+
+    proposals, dispositions = propose_agencies_with_dispositions(
+        parse_catalog_records(catalog),
+        country="US",
+    )
+
+    assert proposals == []
+    assert [record.decision for record in dispositions] == [
+        "blocked_conflict",
+        "blocked_conflict",
+    ]
+    assert all(
+        record.reason_codes == ("catalog_id_maps_to_multiple_endpoints",) for record in dispositions
+    )
+    assert [record.filter_match for record in dispositions] == [True, False]
+
+
 def test_candidate_ledger_surfaces_a_second_generated_id_collision() -> None:
     catalog = (
         "id,data_type,entity_type,provider,is_official,urls.direct_download,"
