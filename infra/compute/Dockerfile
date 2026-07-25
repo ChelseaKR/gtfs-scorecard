@@ -12,6 +12,9 @@ RUN dnf upgrade -y --releasever=2023.12.20260720 \
 
 # The pipeline package (CLI entrypoint: `scorecard`).
 COPY pipeline /opt/pipeline
+# Hatch maps this immutable public schema into the installed wheel. Preserve
+# the repository-relative source path while building the package in the image.
+COPY web/schemas/sync-source-metadata-1.2.schema.json /opt/web/schemas/sync-source-metadata-1.2.schema.json
 RUN pip install --no-cache-dir /opt/pipeline boto3
 
 # Cache the validator jar into the image so cold starts do not download it.
