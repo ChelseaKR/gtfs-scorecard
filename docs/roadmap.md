@@ -77,15 +77,16 @@ remediation cycle.
 
 ### 1. Reusable release shipped
 
-Completed and refreshed 2026-07-16. Marketplace release `v1.3.0` is public. The immutable
-tag, signed release evidence, floating `v1` tag, public
+Completed and refreshed 2026-07-25. Release `v1.4.0` is public, and it produced
+the project's first public Marketplace listing. The immutable tag, signed
+release evidence, floating `v1` tag, public
 [Marketplace listing](https://github.com/marketplace/actions/gtfs-scorecard-gate),
 and downstream consumer runs are verified. The distribution prerequisite for
 asking the GTFS community to test the workflow is satisfied.
 
 Evidence: the public
-[downstream smoke run](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29551173480)
-passed against both `v1.3.0` and `v1`.
+[downstream smoke run](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/30167946534)
+passed against both `v1.4.0` and `v1`.
 
 ### 2. Recruit the pilot
 
