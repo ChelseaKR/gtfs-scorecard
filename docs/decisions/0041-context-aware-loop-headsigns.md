@@ -41,6 +41,9 @@ loop. Every trip on that route must:
 Any mixed headsign population, missing stop-time evidence, second shape,
 second direction, distinct stop pattern, or out-and-back sequence keeps the
 ordinary check. This is a narrow evidence rule, not a general loop exemption.
+The stop-time evidence is streamed and limited to 64 MiB uncompressed. A
+larger table keeps the ordinary check rather than risking an out-of-memory
+failure or granting an exemption from partial evidence.
 
 Artifacts retain `headsign_pct` as the literal published share. Schema 1.17
 adds `headsign_scored_pct`, `headsign_applicable_trips`, and

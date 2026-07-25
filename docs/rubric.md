@@ -184,6 +184,12 @@ a values statement and the most common real gap in small-agency feeds.
 | Headsigns | 15 | share of trips with `trip_headsign`; single-pattern, single-direction loops are credited when every trip on the route omits it and one stop pattern and shape show there is nothing to distinguish |
 | Contact | 15 | half for a working agency_url, half for feed_contact_email/url in feed_info (v4.0 Recommended) |
 
+Loop applicability is optional, conservative analysis. The scorecard streams
+`stop_times.txt` and only retains patterns for candidate trips. If the table is
+more than 64 MiB uncompressed, the analysis is skipped and the ordinary
+headsign check remains; a large feed never fails scoring or receives an
+exemption without complete evidence.
+
 ### Reported but not graded
 
 Seven further signals are computed and shown on the agency page, but carry no

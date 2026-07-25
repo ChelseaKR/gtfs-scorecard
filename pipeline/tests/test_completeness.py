@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from scorecard_pipeline.completeness import WEIGHTS, _is_shouty, completeness
-from scorecard_pipeline.gtfs import TableTooLargeError, read_tables
+from scorecard_pipeline.gtfs import TableTooLargeError
 
 COMPLETE_FEED = {
     "agency.txt": (
@@ -191,16 +191,17 @@ def test_oversized_stop_times_falls_back_to_the_ordinary_headsign_check(
     }
     path = make_gtfs_zip(feed)
 
-    def read_tables_with_oversized_stop_times(
-        gtfs_zip_path: str, names: list[str]
-    ) -> dict[str, list[dict[str, str]]]:
-        if names == ["stop_times.txt"]:
-            raise TableTooLargeError("stop_times.txt exceeds the safety cap")
-        return read_tables(gtfs_zip_path, names)
+    def oversized_stop_times(
+        gtfs_zip_path: str,
+        name: str,
+        *,
+        max_member_bytes: int,
+    ) -> list[dict[str, str]]:
+        raise TableTooLargeError("stop_times.txt exceeds the analysis cap")
 
     monkeypatch.setattr(
-        "scorecard_pipeline.completeness.read_tables",
-        read_tables_with_oversized_stop_times,
+        "scorecard_pipeline.completeness.iter_table_rows",
+        oversized_stop_times,
     )
 
     result = completeness(str(path))

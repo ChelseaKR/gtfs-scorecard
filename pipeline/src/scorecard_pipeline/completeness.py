@@ -9,10 +9,12 @@ in small-agency feeds.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from .cemv import detect_cemv
 from .fares import detect_fares, fares_findings
 from .flex import detect_flex, flex_findings
-from .gtfs import TableTooLargeError, read_tables
+from .gtfs import TableTooLargeError, iter_table_rows, read_tables
 from .metrics import CategoryResult, Finding
 from .pathways import detect_pathways, pathways_findings
 from .translations import detect_translations
@@ -26,6 +28,12 @@ WEIGHTS = {
     "headsigns": 15.0,
     "contact": 15.0,
 }
+
+# Applicability analysis is optional and must not make a previously scoreable
+# feed exhaust runner memory. Parse stop_times.txt as a stream, consider only
+# trips that could qualify, and retain the ordinary headsign check above this
+# uncompressed size.
+HEADSIGN_STOP_TIMES_MAX_BYTES = 64 * 1024 * 1024
 
 
 def _fraction_with_value(rows: list[dict[str, str]], field: str, allowed: set[str]) -> float:
@@ -59,7 +67,9 @@ def _fraction_mixed_case(rows: list[dict[str, str]], field: str) -> float:
     return sum(1 for name in named if not _is_shouty(name)) / len(named)
 
 
-def _trip_stop_patterns(stop_times: list[dict[str, str]]) -> dict[str, tuple[str, ...]]:
+def _trip_stop_patterns(
+    stop_times: Iterable[dict[str, str]], candidate_trip_ids: set[str]
+) -> dict[str, tuple[str, ...]]:
     """Ordered stop IDs for trips whose stop-time evidence is complete.
 
     The canonical validator owns malformed-field reporting. This narrower
@@ -72,7 +82,7 @@ def _trip_stop_patterns(stop_times: list[dict[str, str]]) -> dict[str, tuple[str
     invalid_trip_ids: set[str] = set()
     for position, row in enumerate(stop_times):
         trip_id = (row.get("trip_id") or "").strip()
-        if not trip_id:
+        if trip_id not in candidate_trip_ids:
             continue
         stop_id = (row.get("stop_id") or "").strip()
         sequence_text = (row.get("stop_sequence") or "").strip()
@@ -101,10 +111,8 @@ def _trip_stop_patterns(stop_times: list[dict[str, str]]) -> dict[str, tuple[str
     return patterns_by_trip
 
 
-def _is_single_pattern_loop(
-    route_trips: list[dict[str, str]], patterns_by_trip: dict[str, tuple[str, ...]]
-) -> bool:
-    """Whether one route has enough evidence to make a headsign non-actionable."""
+def _has_loop_candidate_metadata(route_trips: list[dict[str, str]]) -> bool:
+    """Whether cheap trip metadata supports reading stop-pattern evidence."""
     if any(trip.get("trip_headsign", "").strip() for trip in route_trips):
         return False
     direction_ids = {trip.get("direction_id", "").strip() for trip in route_trips}
@@ -115,8 +123,17 @@ def _is_single_pattern_loop(
         return False
 
     trip_ids = [trip.get("trip_id", "").strip() for trip in route_trips]
-    if not all(trip_ids) or len(set(trip_ids)) != len(trip_ids):
+    return bool(all(trip_ids) and len(set(trip_ids)) == len(trip_ids))
+
+
+def _is_single_pattern_loop(
+    route_trips: list[dict[str, str]], patterns_by_trip: dict[str, tuple[str, ...]]
+) -> bool:
+    """Whether one route has enough evidence to make a headsign non-actionable."""
+    if not _has_loop_candidate_metadata(route_trips):
         return False
+
+    trip_ids = [trip.get("trip_id", "").strip() for trip in route_trips]
     patterns = [patterns_by_trip.get(trip_id) for trip_id in trip_ids]
     if any(pattern is None for pattern in patterns) or len(set(patterns)) != 1:
         return False
@@ -133,7 +150,7 @@ def _is_single_pattern_loop(
 
 
 def _single_pattern_loop_headsign_exemptions(
-    trips: list[dict[str, str]], stop_times: list[dict[str, str]]
+    trips: list[dict[str, str]], stop_times: Iterable[dict[str, str]]
 ) -> set[str]:
     """Return trips where a blank ``trip_headsign`` is not an actionable gap.
 
@@ -148,13 +165,21 @@ def _single_pattern_loop_headsign_exemptions(
     shapes, directions, stop patterns, or missing stop-time evidence retain the
     ordinary check.
     """
-    patterns_by_trip = _trip_stop_patterns(stop_times)
-
     trips_by_route: dict[str, list[dict[str, str]]] = {}
     for trip in trips:
         route_id = trip.get("route_id", "").strip()
         if route_id:
             trips_by_route.setdefault(route_id, []).append(trip)
+
+    candidate_trip_ids = {
+        trip.get("trip_id", "").strip()
+        for route_trips in trips_by_route.values()
+        if _has_loop_candidate_metadata(route_trips)
+        for trip in route_trips
+    }
+    if not candidate_trip_ids:
+        return set()
+    patterns_by_trip = _trip_stop_patterns(stop_times, candidate_trip_ids)
 
     exempt: set[str] = set()
     for route_trips in trips_by_route.values():
@@ -304,13 +329,16 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
     loop_exempt_trip_ids: set[str] = set()
     if len(headsign_trip_ids) < len(trips):
         try:
-            stop_times = read_tables(gtfs_zip_path, ["stop_times.txt"])["stop_times.txt"]
+            stop_times = iter_table_rows(
+                gtfs_zip_path,
+                "stop_times.txt",
+                max_member_bytes=HEADSIGN_STOP_TIMES_MAX_BYTES,
+            )
+            loop_exempt_trip_ids = _single_pattern_loop_headsign_exemptions(trips, stop_times)
         except TableTooLargeError:
-            # Large national feeds can exceed the bounded whole-table reader.
-            # Preserve the ordinary headsign check rather than failing scoring
-            # or granting an exemption without inspecting complete evidence.
-            stop_times = []
-        loop_exempt_trip_ids = _single_pattern_loop_headsign_exemptions(trips, stop_times)
+            # Preserve the ordinary check rather than failing scoring or
+            # granting an exemption without inspecting complete evidence.
+            loop_exempt_trip_ids = set()
     hs_published = len(headsign_trip_ids) / len(trips) if trips else 0.0
     hs_scored = (len(headsign_trip_ids) + len(loop_exempt_trip_ids)) / len(trips) if trips else 0.0
     parts["headsigns"] = hs_scored * WEIGHTS["headsigns"]
