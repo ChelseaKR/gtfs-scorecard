@@ -41,6 +41,7 @@ from scorecard_pipeline.render_site import (
     _route_map_section,
     _rt_accuracy_section,
     _standards_section,
+    _states_by_agency,
     _vendor_request,
     _vendor_section,
     compute_changes,
@@ -1359,6 +1360,34 @@ def test_canonical_state_keeps_real_states_and_remaps_known_quirks() -> None:
     # Anything else that isn't a recognized state drops to unlocated.
     assert _canonical_state("Some County") == ""
     assert _canonical_state("") == ""
+
+
+def test_states_by_agency_joins_prefixed_v2_id_to_numeric_legacy_catalog(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import config, mobilitydb
+    from scorecard_pipeline.config import Agency
+
+    monkeypatch.setattr(
+        config,
+        "AGENCIES",
+        {
+            "v2-feed": Agency(
+                "v2-feed",
+                "V2 Feed",
+                "https://example.org/feed.zip",
+                mdb_id="mdb-00123",
+            )
+        },
+    )
+    catalog = mobilitydb.parse_catalog(
+        "mdb_source_id,data_type,location.subdivision_name,provider,"
+        "urls.direct_download\n"
+        "123,gtfs,California,V2 Feed,https://example.org/feed.zip\n"
+    )
+    monkeypatch.setattr(mobilitydb, "load_catalog", lambda: catalog)
+
+    assert _states_by_agency() == {"v2-feed": "California"}
 
 
 def test_peer_context_renders_only_catalog_location() -> None:

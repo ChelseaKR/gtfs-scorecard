@@ -5352,9 +5352,14 @@ def _states_by_agency() -> dict[str, str]:
     if not needs_catalog:
         return states
     try:
+        from .identity import normalized_mdb_id
         from .mobilitydb import load_catalog
 
-        by_mdb = {f.mdb_id: f.subdivision for f in load_catalog() if f.mdb_id and f.subdivision}
+        by_mdb = {
+            normalized_mdb_id(f.mdb_id): f.subdivision
+            for f in load_catalog()
+            if f.mdb_id and f.subdivision
+        }
     except Exception as exc:
         # The live catalog is the authoritative source, but a transient outage
         # must not silently wipe every agency's state from the rendered site.
@@ -5364,7 +5369,7 @@ def _states_by_agency() -> dict[str, str]:
         return _published_states() | states
     for aid, agency in AGENCIES.items():
         if aid not in states and agency.mdb_id:
-            sub = by_mdb.get(agency.mdb_id)
+            sub = by_mdb.get(normalized_mdb_id(agency.mdb_id))
             canonical = _canonical_state(sub) if sub else ""
             if canonical:
                 states[aid] = canonical

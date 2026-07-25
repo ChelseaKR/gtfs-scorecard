@@ -47,6 +47,9 @@ def _dataset(
 def test_feed_id_for_normalizes_bare_mdb_ids() -> None:
     assert feed_id_for("1234") == "mdb-1234"
     assert feed_id_for("mdb-1234") == "mdb-1234"
+    assert feed_id_for("001234") == "mdb-1234"
+    assert feed_id_for("mdb-001234") == "mdb-1234"
+    assert feed_id_for("nonlegacy-id") == "nonlegacy-id"
     assert feed_id_for("") == ""
 
 

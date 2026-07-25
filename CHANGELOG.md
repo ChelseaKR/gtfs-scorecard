@@ -27,6 +27,17 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Added
+- Move proposal-only `scorecard sync` intake to Mobility Database
+  `feeds_v2.csv`, while keeping mirror recovery and replacement discovery on
+  the legacy catalog. Normalize numeric Mobility Database identities across
+  both forms, reject unsafe V2 schema drift, prefer HTTPS endpoint spellings,
+  and leave ambiguous Realtime endpoints unattached with a review note.
+- Add `scorecard sync --source-metadata-out` receipts that bind the exact
+  source bytes, header, filters, registry identity inputs, rendered proposal
+  bytes, and proposal-tool source tree. Proposal outputs cannot overwrite their
+  catalog input or the curated registry, and an empty run clears stale output.
+
 ## [1.4.0] - 2026-07-25
 
 ### Added

@@ -2,22 +2,64 @@
 
 from __future__ import annotations
 
+import csv
+from pathlib import Path
+
 import pytest
 import yaml
 
 from scorecard_pipeline.agencies import AgencyConfigError, parse_agencies
 from scorecard_pipeline.mobilitydb import (
+    DEFAULT_CATALOG_URL,
+    DEFAULT_PROPOSAL_CATALOG_URL,
+    LEGACY_MOBILITY_DATABASE_CATALOG_URL,
+    MOBILITY_DATABASE_FEEDS_V2_URL,
     apply_replacements,
     apply_state_backfill,
     canonical_state,
+    catalog_source_counts,
+    fetch_catalog,
+    fetch_catalog_bytes,
     find_replacements,
     parse_catalog,
+    proposal_catalog_schema,
     propose_agencies,
     render_replacements_md,
     render_yaml,
     replacement_url,
     resolve_states,
     slugify,
+)
+
+V2_FIXTURE = Path(__file__).parent / "fixtures" / "mobilitydb_feeds_v2_trimmed.csv"
+V2_HEADER = (
+    "id",
+    "data_type",
+    "entity_type",
+    "location.country_code",
+    "location.subdivision_name",
+    "location.municipality",
+    "provider",
+    "is_official",
+    "name",
+    "note",
+    "feed_contact_email",
+    "static_reference",
+    "urls.direct_download",
+    "urls.authentication_type",
+    "urls.authentication_info",
+    "urls.api_key_parameter_name",
+    "urls.latest",
+    "urls.license",
+    "location.bounding_box.minimum_latitude",
+    "location.bounding_box.maximum_latitude",
+    "location.bounding_box.minimum_longitude",
+    "location.bounding_box.maximum_longitude",
+    "location.bounding_box.extracted_on",
+    "status",
+    "features",
+    "redirect.id",
+    "redirect.comment",
 )
 
 
@@ -100,6 +142,169 @@ def test_parse_catalog_keeps_gtfs_rows_only() -> None:
     assert types["101"] == "gtfs-rt"
 
 
+def test_v2_source_is_separate_from_legacy_operational_default() -> None:
+    assert DEFAULT_PROPOSAL_CATALOG_URL == MOBILITY_DATABASE_FEEDS_V2_URL
+    assert DEFAULT_CATALOG_URL == LEGACY_MOBILITY_DATABASE_CATALOG_URL
+    assert DEFAULT_PROPOSAL_CATALOG_URL != DEFAULT_CATALOG_URL
+
+
+def test_v2_fixture_has_exact_schema_and_maps_supported_fields() -> None:
+    text = V2_FIXTURE.read_text()
+    reader = csv.DictReader(text.splitlines(keepends=True))
+    rows = list(reader)
+
+    assert tuple(reader.fieldnames or ()) == V2_HEADER
+    assert all(None not in row and None not in row.values() for row in rows)
+
+    by_id = {feed.mdb_id: feed for feed in parse_catalog(text)}
+    assert "gbfs-demo" not in by_id
+
+    schedule = by_id["mdb-100"]
+    assert schedule.data_type == "gtfs"
+    assert schedule.country == "US"
+    assert schedule.subdivision == "California"
+    assert schedule.municipality == "Davis"
+    assert schedule.provider == "Davis Community Transit"
+    assert schedule.name == "DCT Local,\nRegional schedule"
+    assert schedule.direct_download == "http://example.org/dct.zip"
+    assert schedule.authentication_type == "0"
+    assert schedule.hosted_url.endswith("/mdb-100/latest.zip")
+    assert schedule.license_url == "https://example.org/license"
+    assert schedule.status == "active"
+    assert schedule.is_official is True
+
+    realtime = by_id["mdb-rt-1"]
+    assert realtime.data_type == "gtfs-rt"
+    assert realtime.entity_type == "tu|vp"
+    assert realtime.static_reference == "101|mdb-200"
+
+
+def test_proposal_catalog_schema_accepts_v2_and_compatible_legacy() -> None:
+    assert proposal_catalog_schema(V2_FIXTURE.read_text()) == "mobilitydatabase-feeds-v2"
+    assert proposal_catalog_schema(CATALOG) == "mobilitydatabase-legacy"
+
+
+@pytest.mark.parametrize(
+    "body, message",
+    [
+        ("<html><body>upstream error</body></html>", "unrecognized proposal catalog header"),
+        (
+            "id,data_type,provider,urls.direct_download\n",
+            "Mobility Database V2 catalog is missing required column",
+        ),
+    ],
+)
+def test_proposal_catalog_schema_rejects_non_csv_and_unsafe_v2_headers(
+    body: str, message: str
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        proposal_catalog_schema(body)
+
+
+def test_v2_source_counts_preserve_the_pre_filter_denominator() -> None:
+    assert catalog_source_counts(V2_FIXTURE.read_text()) == {
+        "total_records": 9,
+        "schedule_records": 7,
+        "realtime_records": 1,
+        "active_schedule_records": 6,
+        "active_keyless_schedule_records": 5,
+        "proposal_eligible_schedule_records": 3,
+    }
+
+
+def test_v2_hosted_latest_url_is_not_treated_as_a_canonical_source() -> None:
+    catalog = (
+        "id,data_type,entity_type,static_reference,urls.direct_download,"
+        "urls.latest,status,is_official\n"
+        "mdb-700,gtfs,,,,"
+        "https://files.mobilitydatabase.org/mdb-700/latest.zip,active,true\n"
+        "mdb-rt-700,gtfs_rt,tu,mdb-700,,"
+        "https://files.mobilitydatabase.org/mdb-rt-700/latest.pb,active,true\n"
+    )
+
+    assert parse_catalog(catalog) == []
+    counts = catalog_source_counts(catalog)
+    assert counts["schedule_records"] == 1
+    assert counts["realtime_records"] == 1
+    assert counts["proposal_eligible_schedule_records"] == 0
+
+
+def test_v2_proposals_filter_rows_and_prefer_richer_duplicate_metadata() -> None:
+    proposals = propose_agencies(parse_catalog(V2_FIXTURE.read_text()), country="US")
+    by_mdb = {proposal.mdb_id: proposal for proposal in proposals}
+
+    # Inactive, key-gated, explicitly unofficial, and malformed schedule rows
+    # do not enter the review queue. The two DCT rows share one normalized URL;
+    # the official row with license/location/mirror metadata wins.
+    assert set(by_mdb) == {"mdb-100", "mdb-200"}
+    dct = by_mdb["mdb-100"]
+    assert dct.mdb_id == "mdb-100"  # Preserve the selected V2 source id verbatim.
+    assert dct.static_gtfs_url == "https://example.org/dct.zip"
+    assert dct.country == "US"
+    assert dct.subdivision_name == "California"
+    assert dct.license_note == "License: https://example.org/license"
+    assert dct.is_official is True
+
+
+def test_v2_duplicate_selection_is_independent_of_source_order() -> None:
+    duplicates = [
+        feed
+        for feed in parse_catalog(V2_FIXTURE.read_text())
+        if feed.mdb_id in {"mdb-100", "mdb-101"}
+    ]
+
+    first = propose_agencies(duplicates)
+    reversed_order = propose_agencies(list(reversed(duplicates)))
+
+    assert [proposal.mdb_id for proposal in first] == ["mdb-100"]
+    assert [proposal.mdb_id for proposal in reversed_order] == ["mdb-100"]
+
+
+def test_v2_numeric_registry_id_suppresses_prefixed_catalog_id() -> None:
+    proposals = propose_agencies(
+        parse_catalog(V2_FIXTURE.read_text()),
+        existing_mdb_ids={"100"},
+    )
+
+    assert {proposal.mdb_id for proposal in proposals} == {"mdb-200"}
+
+
+def test_v2_pipe_delimited_realtime_kinds_attach_to_each_static_reference() -> None:
+    proposals = propose_agencies(parse_catalog(V2_FIXTURE.read_text()))
+    by_mdb = {proposal.mdb_id: proposal for proposal in proposals}
+    expected = {
+        "trip_updates": "https://example.org/regional.pb",
+        "vehicle_positions": "https://example.org/regional.pb",
+    }
+
+    # The realtime row references the lean duplicate of the first schedule with
+    # its legacy numeric id and the second with its V2 id. Canonical equality
+    # joins both, and endpoint grouping carries the first link to the rich row.
+    assert by_mdb["mdb-100"].rt_urls == expected
+    assert by_mdb["mdb-200"].rt_urls == expected
+
+
+def test_catalog_fetch_exposes_exact_bytes_for_one_fetch_parse_and_hash(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    calls: list[tuple[str, int, int]] = []
+
+    def fake_safe_get(url: str, *, timeout: int, max_bytes: int) -> bytes:
+        calls.append((url, timeout, max_bytes))
+        return b"id,data_type\nsource,gtfs\n"
+
+    monkeypatch.setattr(m, "safe_get", fake_safe_get)
+
+    assert fetch_catalog_bytes("https://example.org/catalog.csv").startswith(b"id,")
+    assert fetch_catalog("https://example.org/catalog.csv").endswith("gtfs\n")
+    assert calls == [
+        ("https://example.org/catalog.csv", 60, 128 * 1024 * 1024),
+        ("https://example.org/catalog.csv", 60, 128 * 1024 * 1024),
+    ]
+
+
 def test_catalog_retains_status_and_official_provenance() -> None:
     catalog = (
         "mdb_source_id,data_type,provider,name,urls.direct_download,status,is_official\n"
@@ -163,6 +368,101 @@ def test_key_gated_rt_becomes_note_not_url() -> None:
     assert "access key" in cap.rt_note
 
 
+_AMBIGUOUS_RT_CATALOG = (
+    "mdb_source_id,data_type,entity_type,provider,name,urls.direct_download,"
+    "urls.authentication_type,static_reference,status,is_official\n"
+    "schedule,gtfs,,Demo Transit,Demo Transit,https://example.org/schedule.zip,"
+    "0,,active,true\n"
+    "tu-a,gtfs-rt,tu,Demo Transit,Trip Updates A,https://example.org/tu-a.pb,"
+    "0,schedule,active,true\n"
+    "tu-b,gtfs-rt,tu,Demo Transit,Trip Updates B,https://example.org/tu-b.pb,"
+    "0,schedule,active,true\n"
+    "vp,gtfs-rt,vp,Demo Transit,Vehicle Positions,https://example.org/vp.pb,"
+    "0,schedule,active,true\n"
+)
+
+
+def test_multiple_same_kind_realtime_urls_are_not_chosen_arbitrarily() -> None:
+    (proposal,) = propose_agencies(parse_catalog(_AMBIGUOUS_RT_CATALOG))
+
+    assert proposal.rt_urls == {
+        "vehicle_positions": "https://example.org/vp.pb",
+    }
+    assert "multiple keyless Trip Updates endpoints" in proposal.rt_note
+    assert "canonical URL is ambiguous" in proposal.rt_note
+
+
+def test_ambiguous_realtime_selection_is_independent_of_row_order() -> None:
+    feeds = parse_catalog(_AMBIGUOUS_RT_CATALOG)
+
+    forward = propose_agencies(feeds)
+    reverse = propose_agencies(list(reversed(feeds)))
+
+    assert reverse == forward
+
+
+def test_duplicate_identical_realtime_urls_remain_unambiguous() -> None:
+    catalog = (
+        "mdb_source_id,data_type,entity_type,provider,name,urls.direct_download,"
+        "urls.authentication_type,static_reference,status,is_official\n"
+        "schedule,gtfs,,Demo Transit,Demo Transit,https://example.org/schedule.zip,"
+        "0,,active,true\n"
+        "tu-a,gtfs-rt,tu,Demo Transit,Trip Updates A,https://example.org/tu.pb,"
+        "0,schedule,active,true\n"
+        "tu-b,gtfs-rt,tu,Demo Transit,Trip Updates B,https://example.org/tu.pb,"
+        "none,schedule,active,true\n"
+    )
+
+    (proposal,) = propose_agencies(parse_catalog(catalog))
+
+    assert proposal.rt_urls == {"trip_updates": "https://example.org/tu.pb"}
+    assert proposal.rt_note == ""
+
+
+def test_mixed_open_and_authenticated_realtime_references_fail_closed() -> None:
+    catalog = (
+        "mdb_source_id,data_type,entity_type,provider,name,urls.direct_download,"
+        "urls.authentication_type,static_reference,status,is_official\n"
+        "schedule,gtfs,,Demo Transit,Demo Transit,https://example.org/schedule.zip,"
+        "0,,active,true\n"
+        "tu-open,gtfs-rt,tu,Demo Transit,Open TU,https://example.org/open-tu.pb,"
+        "0,schedule,active,true\n"
+        "tu-gated,gtfs-rt,tu,Demo Transit,Gated TU,https://example.org/gated-tu.pb,"
+        "1,schedule,active,true\n"
+        "vp-open,gtfs-rt,vp,Demo Transit,Open VP,https://example.org/vp.pb,"
+        "0,schedule,active,true\n"
+        "sa-gated,gtfs-rt,sa,Demo Transit,Gated SA,https://example.org/sa.pb,"
+        "2,schedule,active,true\n"
+    )
+
+    (proposal,) = propose_agencies(parse_catalog(catalog))
+
+    assert proposal.rt_urls == {"vehicle_positions": "https://example.org/vp.pb"}
+    assert "both keyless and access-key Trip Updates references" in proposal.rt_note
+    assert "No Trip Updates endpoint was attached" in proposal.rt_note
+    assert "Service Alerts" in proposal.rt_note
+    assert "need an access key" in proposal.rt_note
+    assert proposal.rt_note.endswith("Nothing here counts against the grade.")
+
+
+def test_explicitly_unofficial_realtime_does_not_create_access_conflict() -> None:
+    catalog = (
+        "mdb_source_id,data_type,entity_type,provider,name,urls.direct_download,"
+        "urls.authentication_type,static_reference,status,is_official\n"
+        "schedule,gtfs,,Demo Transit,Demo Transit,https://example.org/schedule.zip,"
+        "0,,active,true\n"
+        "tu-official,gtfs-rt,tu,Demo Transit,Official TU,https://example.org/tu.pb,"
+        "0,schedule,active,true\n"
+        "tu-unofficial,gtfs-rt,tu,Demo Transit,Unofficial TU,"
+        "https://example.org/unofficial-tu.pb,1,schedule,active,false\n"
+    )
+
+    (proposal,) = propose_agencies(parse_catalog(catalog))
+
+    assert proposal.rt_urls == {"trip_updates": "https://example.org/tu.pb"}
+    assert proposal.rt_note == ""
+
+
 def test_key_gated_schedule_feed_is_not_registry_ready() -> None:
     catalog = (
         "mdb_source_id,data_type,provider,name,urls.direct_download,"
@@ -224,6 +524,26 @@ def test_descriptor_feed_name_falls_back_to_provider() -> None:
 def test_slugify_falls_back_to_mdb_id() -> None:
     assert slugify("Davis Community Transit!", "100") == "davis-community-transit"
     assert slugify("", "100") == "mdb-100"
+    assert slugify("大新東", "mdb-jbda-daishinto-Radiant-City") == "mdb-jbda-daishinto-radiant-city"
+    opaque = slugify("大新東", "完全")
+    assert opaque.startswith("mdb-catalog-")
+    assert opaque == opaque.lower()
+    assert opaque.isascii()
+
+
+def test_collision_suffix_sanitizes_mixed_case_catalog_ids() -> None:
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download\n"
+        "mdb-Upper.A,gtfs,Shared Transit,First,https://example.org/first.zip\n"
+        "Other-ID,gtfs,Shared Transit,Second,https://example.org/second.zip\n"
+    )
+    proposals = propose_agencies(parse_catalog(catalog), existing_ids={"shared-transit"})
+
+    assert {proposal.id for proposal in proposals} == {
+        "shared-transit-mdb-upper-a",
+        "shared-transit-other-id",
+    }
+    parse_agencies(yaml.safe_load("agencies:\n" + render_yaml(proposals)))
 
 
 def test_rendered_yaml_parses_back_into_valid_agencies() -> None:

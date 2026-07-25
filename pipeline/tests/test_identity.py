@@ -5,7 +5,11 @@ from __future__ import annotations
 import pytest
 
 from scorecard_pipeline.config import Agency
-from scorecard_pipeline.identity import build_identity_ledger, normalized_feed_url
+from scorecard_pipeline.identity import (
+    build_identity_ledger,
+    normalized_feed_url,
+    normalized_mdb_id,
+)
 
 
 def _agency(agency_id: str, url: str, **kwargs: object) -> Agency:
@@ -15,6 +19,37 @@ def _agency(agency_id: str, url: str, **kwargs: object) -> Agency:
         static_gtfs_url=url,
         **kwargs,  # type: ignore[arg-type]
     )
+
+
+@pytest.mark.parametrize(
+    ("mdb_id", "expected"),
+    [
+        ("123", "mdb-123"),
+        ("mdb-123", "mdb-123"),
+        ("000123", "mdb-123"),
+        ("mdb-000123", "mdb-123"),
+        ("0", "mdb-0"),
+        ("mdb-000", "mdb-0"),
+    ],
+)
+def test_normalized_mdb_id_canonicalizes_legacy_numeric_forms(mdb_id: str, expected: str) -> None:
+    assert normalized_mdb_id(mdb_id) == expected
+
+
+@pytest.mark.parametrize(
+    "mdb_id",
+    [
+        "",
+        "tdg-123",
+        "f-9q9-example",
+        "mdb-custom",
+        "MDB-123",
+        "\uff11\uff12\uff13",
+        " 123 ",
+    ],
+)
+def test_normalized_mdb_id_preserves_nonlegacy_ids(mdb_id: str) -> None:
+    assert normalized_mdb_id(mdb_id) == mdb_id
 
 
 def test_normalized_feed_url_ignores_scheme_and_default_port() -> None:
@@ -110,3 +145,16 @@ def test_identity_ledger_reports_unresolved_canonical_duplicates() -> None:
         {"key": "example.org/feed.zip", "ids": ["one", "two"]}
     ]
     assert ledger["provisional_organization_keys"] == 2
+
+
+def test_identity_ledger_groups_equivalent_legacy_mdb_ids() -> None:
+    ledger = build_identity_ledger(
+        [
+            _agency("bare", "https://example.org/bare.zip", mdb_id="00123"),
+            _agency("prefixed", "https://example.org/prefixed.zip", mdb_id="mdb-123"),
+        ]
+    )
+
+    assert ledger["unresolved_duplicate_mdb_ids"] == [
+        {"key": "mdb-123", "ids": ["bare", "prefixed"]}
+    ]
