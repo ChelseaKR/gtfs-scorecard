@@ -389,6 +389,15 @@ jobs:
             fi
             echo "Private object ${private_path} stayed private (HTTP ${status})."
           done
+      # Lifecycle tagging is intentionally sequential and currently takes
+      # roughly half an hour. Refresh the one-hour OIDC session here so corpus
+      # growth cannot expire the collect job's original credentials mid-step.
+      - name: Refresh AWS credentials before lifecycle tagging
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
