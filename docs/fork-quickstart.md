@@ -63,9 +63,12 @@ uv run scorecard sync \
 The command omits authentication-gated Schedule feeds and identities already
 tracked by catalog id or normalized URL. The metadata sidecar fingerprints the
 exact CSV bytes, normalized registry identity inputs, proposal-tool source tree,
-and rendered proposal bytes. It also records source counts, filters, and the
-resulting proposal count. Use `--catalog <URL-or-path>` when you need a pinned
-or local catalog snapshot.
+and rendered proposal bytes. It also records source counts, filters, and one
+mechanical disposition for every recognized Schedule source row, including
+excluded, filtered, already tracked, duplicate, conflicted, and proposed
+records. Raw feed URLs, authentication details, and contacts are omitted from
+the ledger. Use `--catalog <URL-or-path>` when you need a pinned or local
+catalog snapshot.
 
 `sync` only writes proposals. It has no `--apply` option and does not edit the
 registry. Review source status, location, reuse terms, attribution, and feed
@@ -74,7 +77,9 @@ supports that review; it does not grant permission to reuse or republish a
 feed. When `--source all` is used, the JSON sidecar covers the Mobility
 Database source rows and per-source counts only and explicitly excludes
 Transitland Atlas. Its output hash still binds the combined proposal file; pin
-Transitland separately if you need to reconstruct that combined run.
+Transitland separately if you need to reconstruct that combined run. The
+candidate ledger is likewise Mobility Database-only before cross-source
+deduplication, and says so explicitly.
 
 ### 3. Set your branding
 

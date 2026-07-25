@@ -127,9 +127,57 @@ class CatalogFeed:
     license_url: str
     authentication_type: str  # "0"/"" means no key required
     static_reference: str  # realtime -> the schedule feed's mdb_id
+    source_record_number: int = 0
     hosted_url: str = ""  # urls.latest: MobilityData's hosted mirror on GCS
     status: str = ""  # active / deprecated / inactive / development
     is_official: bool | None = None
+
+
+@dataclass(frozen=True)
+class CandidateDisposition:
+    """One auditable decision for one Schedule row in a pinned catalog.
+
+    The exact source bytes and row number are the evidence anchor. Raw endpoint
+    URLs, contact fields, and authentication details are deliberately omitted
+    from the ledger; a curator can inspect those in the bound source snapshot.
+    """
+
+    source_record_number: int
+    source_id: str
+    normalized_source_id: str
+    provider: str
+    proposal_eligible: bool
+    filter_match: bool
+    decision: str
+    reason_codes: tuple[str, ...]
+    review_flags: tuple[str, ...] = ()
+    matched_registry_ids: tuple[str, ...] = ()
+    proposal_id: str | None = None
+    selected_source_record_number: int | None = None
+    selected_source_id: str | None = None
+
+    def as_record(self) -> dict[str, object]:
+        """JSON-ready record with stable keys and explicit nullable links."""
+        selected_source: dict[str, object] | None = None
+        if self.selected_source_record_number is not None:
+            selected_source = {
+                "record_number": self.selected_source_record_number,
+                "id": self.selected_source_id or "",
+            }
+        return {
+            "source_record_number": self.source_record_number,
+            "source_id": self.source_id,
+            "normalized_source_id": self.normalized_source_id,
+            "provider": self.provider,
+            "proposal_eligible": self.proposal_eligible,
+            "filter_match": self.filter_match,
+            "decision": self.decision,
+            "reason_codes": list(self.reason_codes),
+            "review_flags": list(self.review_flags),
+            "matched_registry_ids": list(self.matched_registry_ids),
+            "proposal_id": self.proposal_id,
+            "selected_source": selected_source,
+        }
 
 
 @dataclass
@@ -217,12 +265,13 @@ def _requires_authentication(authentication_type: str) -> bool:
     return authentication_type.strip().lower() not in _OPEN_AUTHENTICATION_TYPES
 
 
-def _catalog_feed(row: dict[str, str]) -> CatalogFeed | None:
+def _catalog_feed(row: dict[str, str], *, source_record_number: int = 0) -> CatalogFeed | None:
     """Map one V2 or legacy CSV row without applying proposal eligibility."""
     normalized_type = _normalized_data_type(row)
     if not normalized_type:
         return None
     return CatalogFeed(
+        source_record_number=source_record_number,
         mdb_id=_cell(row, "mdb_source_id", "id"),
         data_type=normalized_type,
         entity_type="|".join(_pipe_values(_cell(row, "entity_type").lower())),
@@ -304,19 +353,26 @@ def proposal_catalog_schema(csv_text: str) -> str:
     )
 
 
+def parse_catalog_records(csv_text: str) -> list[CatalogFeed]:
+    """Parse every recognized Schedule and Realtime row.
+
+    Unlike :func:`parse_catalog`, this preserves Schedule rows without a usable
+    direct-download URL so a disposition ledger can account for them instead
+    of silently shrinking its denominator.
+    """
+    feeds: list[CatalogFeed] = []
+    reader = csv.DictReader(io.StringIO(csv_text))
+    for source_record_number, row in enumerate(reader, start=1):
+        feed = _catalog_feed(row, source_record_number=source_record_number)
+        if feed is not None:
+            feeds.append(feed)
+    return feeds
+
+
 def parse_catalog(csv_text: str) -> list[CatalogFeed]:
     """Parse the catalog CSV into feed records, skipping rows without a usable
     download URL or a recognised data type."""
-    feeds: list[CatalogFeed] = []
-    reader = csv.DictReader(io.StringIO(csv_text))
-    for row in reader:
-        feed = _catalog_feed(row)
-        if feed is None:
-            continue
-        if not feed.direct_download:
-            continue
-        feeds.append(feed)
-    return feeds
+    return [feed for feed in parse_catalog_records(csv_text) if feed.direct_download]
 
 
 def catalog_source_counts(csv_text: str) -> dict[str, int]:
@@ -327,7 +383,11 @@ def catalog_source_counts(csv_text: str) -> dict[str, int]:
     publish any individual feed.
     """
     rows = list(csv.DictReader(io.StringIO(csv_text)))
-    feeds = [feed for row in rows if (feed := _catalog_feed(row)) is not None]
+    feeds = [
+        feed
+        for source_record_number, row in enumerate(rows, start=1)
+        if (feed := _catalog_feed(row, source_record_number=source_record_number)) is not None
+    ]
     schedules = [feed for feed in feeds if feed.data_type == "gtfs"]
     realtime = [feed for feed in feeds if feed.data_type == "gtfs-rt"]
     active_schedules = [feed for feed in schedules if _is_active(feed)]
@@ -375,16 +435,6 @@ def _license_note(feed: CatalogFeed) -> str:
     if feed.license_url:
         return f"License: {feed.license_url}"
     return "No stated data license in the source catalog; verify before publishing."
-
-
-def _matches(
-    feed: CatalogFeed, country: str | None, subdivision: str | None, providers: set[str] | None
-) -> bool:
-    if country and feed.country != country.upper():
-        return False
-    if subdivision and feed.subdivision.lower() != subdivision.lower():
-        return False
-    return not (providers and feed.provider.lower() not in providers)
 
 
 def _schedule_metadata_richness(
@@ -459,29 +509,36 @@ def _realtime_urls_by_access(
     return open_urls, gated_urls, has_unmapped_gated_feed
 
 
-def _select_realtime(feeds: Iterable[CatalogFeed]) -> tuple[dict[str, str], str]:
+def _select_realtime_with_flags(
+    feeds: Iterable[CatalogFeed],
+) -> tuple[dict[str, str], str, tuple[str, ...]]:
     """Attach only one access-consistent URL per realtime kind.
 
     Exact duplicate catalog rows collapse into sets. Distinct keyless URLs or
     mixed keyless/key-gated evidence are not safe to resolve mechanically, so
-    that kind stays unattached and the proposal explains why.
+    that kind stays unattached and the proposal explains why. Stable review
+    flags let the disposition ledger preserve the same decision without
+    parsing human-readable prose.
     """
     open_urls, gated_urls, has_unmapped_gated_feed = _realtime_urls_by_access(feeds)
 
     selected: dict[str, str] = {}
     notes: list[str] = []
+    flags: set[str] = set()
     gated_only: list[str] = []
     for kind in _RT_KIND_ORDER:
         keyless = open_urls[kind]
         gated = gated_urls[kind]
         label = _RT_KIND_LABEL[kind]
         if keyless and gated:
+            flags.add(f"realtime_{kind}_access_conflict")
             notes.append(
                 f"The source catalog lists both keyless and access-key {label} "
                 f"references. No {label} endpoint was attached because the access "
                 "requirements conflict."
             )
         elif len(keyless) > 1:
+            flags.add(f"realtime_{kind}_ambiguous")
             notes.append(
                 f"The source catalog lists multiple keyless {label} endpoints. "
                 f"No {label} endpoint was attached because the canonical URL is ambiguous."
@@ -490,6 +547,7 @@ def _select_realtime(feeds: Iterable[CatalogFeed]) -> tuple[dict[str, str], str]
             selected[kind] = next(iter(keyless))
         elif gated:
             gated_only.append(label)
+            flags.add(f"realtime_{kind}_authentication_required")
 
     if gated_only:
         labels = ", ".join(gated_only)
@@ -497,16 +555,101 @@ def _select_realtime(feeds: Iterable[CatalogFeed]) -> tuple[dict[str, str], str]
             f"This agency publishes {labels}, but those feeds need an access key we don't have yet."
         )
     if has_unmapped_gated_feed:
+        flags.add("realtime_unrecognized_kind_authentication_required")
         notes.append(
             "The source catalog also lists a realtime feed with an unrecognized kind "
             "that needs an access key, so it was not attached."
         )
     if notes:
         notes.append("Nothing here counts against the grade.")
-    return selected, " ".join(notes)
+    return selected, " ".join(notes), tuple(sorted(flags))
 
 
-def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+def _select_realtime(feeds: Iterable[CatalogFeed]) -> tuple[dict[str, str], str]:
+    """Compatibility wrapper for callers that do not need review flags."""
+    selected, note, _flags = _select_realtime_with_flags(feeds)
+    return selected, note
+
+
+def _schedule_exclusion_reasons(feed: CatalogFeed) -> tuple[str, ...]:
+    reasons: list[str] = []
+    if not _is_active(feed):
+        reasons.append("non_active_status")
+    if feed.is_official is False:
+        reasons.append("explicitly_unofficial")
+    if _requires_authentication(feed.authentication_type):
+        reasons.append("schedule_authentication_required")
+    if not feed.direct_download:
+        reasons.append("missing_direct_download")
+    elif not _feed_url_key(feed.direct_download):
+        reasons.append("invalid_direct_download")
+    return tuple(reasons)
+
+
+def _filter_reasons(
+    feed: CatalogFeed,
+    *,
+    country: str | None,
+    subdivision: str | None,
+    providers: set[str] | None,
+) -> tuple[str, ...]:
+    reasons: list[str] = []
+    if country and feed.country != country.upper():
+        reasons.append("country_filter_mismatch")
+    if subdivision and feed.subdivision.lower() != subdivision.lower():
+        reasons.append("subdivision_filter_mismatch")
+    if providers and feed.provider.lower() not in providers:
+        reasons.append("provider_filter_mismatch")
+    return tuple(reasons)
+
+
+def _review_flags(feed: CatalogFeed, realtime_flags: tuple[str, ...]) -> tuple[str, ...]:
+    flags = set(realtime_flags)
+    if not feed.license_url:
+        flags.add("license_not_stated")
+    if feed.is_official is None:
+        flags.add("official_status_unspecified")
+    return tuple(sorted(flags))
+
+
+def _disposition(
+    feed: CatalogFeed,
+    *,
+    position: int,
+    decision: str,
+    reason_codes: tuple[str, ...],
+    proposal_eligible: bool = True,
+    filter_match: bool = True,
+    review_flags: tuple[str, ...] = (),
+    matched_registry_ids: tuple[str, ...] = (),
+    proposal_id: str | None = None,
+    selected: CatalogFeed | None = None,
+    selected_position: int | None = None,
+) -> CandidateDisposition:
+    source_record_number = feed.source_record_number or position + 1
+    selected_record_number = None
+    selected_id = None
+    if selected is not None and selected_position is not None:
+        selected_record_number = selected.source_record_number or selected_position + 1
+        selected_id = selected.mdb_id
+    return CandidateDisposition(
+        source_record_number=source_record_number,
+        source_id=feed.mdb_id,
+        normalized_source_id=normalized_mdb_id(feed.mdb_id),
+        provider=feed.provider,
+        proposal_eligible=proposal_eligible,
+        filter_match=filter_match,
+        decision=decision,
+        reason_codes=reason_codes,
+        review_flags=review_flags,
+        matched_registry_ids=matched_registry_ids,
+        proposal_id=proposal_id,
+        selected_source_record_number=selected_record_number,
+        selected_source_id=selected_id,
+    )
+
+
+def propose_agencies_with_dispositions(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     feeds: list[CatalogFeed],
     *,
     country: str | None = None,
@@ -515,8 +658,10 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
     existing_ids: set[str] | None = None,
     existing_mdb_ids: set[str] | None = None,
     existing_feed_urls: set[str] | None = None,
-) -> list[ProposedAgency]:
-    """Build candidate registry entries from catalog feeds.
+    existing_mdb_id_matches: dict[str, set[str]] | None = None,
+    existing_feed_url_matches: dict[str, set[str]] | None = None,
+) -> tuple[list[ProposedAgency], list[CandidateDisposition]]:
+    """Build proposals plus one decision for every Schedule catalog row.
 
     Schedule feeds matching the filter become agencies; realtime feeds are
     attached to the schedule feed they reference (static_reference). Key-gated
@@ -527,12 +672,23 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
     feed even when its display name or URL spelling differs.
     """
     existing = existing_ids or set()
+    mdb_id_matches: dict[str, set[str]] = {}
+    for raw_id, agency_ids in (existing_mdb_id_matches or {}).items():
+        normalized = normalized_mdb_id(raw_id)
+        if normalized:
+            mdb_id_matches.setdefault(normalized, set()).update(agency_ids)
+    feed_url_matches: dict[str, set[str]] = {}
+    for raw_url, agency_ids in (existing_feed_url_matches or {}).items():
+        normalized = _feed_url_key(raw_url)
+        if normalized:
+            feed_url_matches.setdefault(normalized, set()).update(agency_ids)
+
     tracked_mdb_ids = {
         normalized_mdb_id(mdb_id) for mdb_id in (existing_mdb_ids or set()) if mdb_id
-    }
+    } | set(mdb_id_matches)
     tracked_feed_urls = {
         key for url in (existing_feed_urls or set()) if (key := _feed_url_key(url))
-    }
+    } | set(feed_url_matches)
     provider_filter = {p.lower() for p in providers} if providers else None
 
     rt_by_reference: dict[str, list[CatalogFeed]] = {}
@@ -542,40 +698,125 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
             and feed.static_reference
             and _is_active(feed)
             and feed.is_official is not False
+            and bool(_feed_url_key(feed.direct_download))
         ):
             for reference in _pipe_values(feed.static_reference):
                 rt_by_reference.setdefault(normalized_mdb_id(reference), []).append(feed)
 
-    # Filter first, then group duplicate catalog records by endpoint. Selecting
-    # the richest row from the complete group makes the result independent of
-    # source order while retaining the raw id of the selected V2 row.
-    schedule_groups: dict[str, list[CatalogFeed]] = {}
+    # A catalog id is a global identity boundary. Detect conflicts across the
+    # complete Schedule snapshot before eligibility or user filters can hide
+    # one of its endpoints.
+    source_endpoints: dict[str, set[str]] = {}
     for feed in feeds:
-        if not _is_proposal_eligible_schedule(feed):
+        if feed.data_type != "gtfs":
             continue
-        if not _matches(feed, country, subdivision, provider_filter):
+        source_id = normalized_mdb_id(feed.mdb_id)
+        url_key = _feed_url_key(feed.direct_download)
+        if source_id and url_key:
+            source_endpoints.setdefault(source_id, set()).add(url_key)
+    ambiguous_source_ids = {
+        source_id for source_id, endpoints in source_endpoints.items() if len(endpoints) > 1
+    }
+
+    # Group mechanically eligible, filter-matched catalog records by endpoint.
+    # Selecting the richest row from the complete group makes the result
+    # independent of source order while retaining the selected V2 row id.
+    schedule_groups: dict[str, list[tuple[int, CatalogFeed]]] = {}
+    dispositions: dict[int, CandidateDisposition] = {}
+    for position, feed in enumerate(feeds):
+        if feed.data_type != "gtfs":
+            continue
+        exclusion_reasons = _schedule_exclusion_reasons(feed)
+        filter_reasons = _filter_reasons(
+            feed,
+            country=country,
+            subdivision=subdivision,
+            providers=provider_filter,
+        )
+        if normalized_mdb_id(feed.mdb_id) in ambiguous_source_ids:
+            dispositions[position] = _disposition(
+                feed,
+                position=position,
+                decision="blocked_conflict",
+                reason_codes=("catalog_id_maps_to_multiple_endpoints",),
+                proposal_eligible=not bool(exclusion_reasons),
+                filter_match=not bool(filter_reasons),
+            )
+            continue
+        if exclusion_reasons:
+            dispositions[position] = _disposition(
+                feed,
+                position=position,
+                decision="excluded",
+                reason_codes=exclusion_reasons + filter_reasons,
+                proposal_eligible=False,
+                filter_match=not bool(filter_reasons),
+            )
+            continue
+        if filter_reasons:
+            dispositions[position] = _disposition(
+                feed,
+                position=position,
+                decision="filtered_out",
+                reason_codes=filter_reasons,
+                filter_match=False,
+            )
             continue
         url_key = _feed_url_key(feed.direct_download)
-        schedule_groups.setdefault(url_key, []).append(feed)
+        schedule_groups.setdefault(url_key, []).append((position, feed))
 
     proposals: list[ProposedAgency] = []
     used_ids = set(existing)
     proposed_sources: set[str] = set()
     proposed_urls: set[str] = set()
-    for url_key, duplicates in schedule_groups.items():
+    for url_key in sorted(schedule_groups):
+        indexed_duplicates = schedule_groups[url_key]
+        duplicates = [feed for _position, feed in indexed_duplicates]
         duplicate_ids = {
             normalized_mdb_id(candidate.mdb_id) for candidate in duplicates if candidate.mdb_id
         }
-        if duplicate_ids & tracked_mdb_ids or url_key in tracked_feed_urls:
+        tracked_reasons: list[str] = []
+        if duplicate_ids & tracked_mdb_ids:
+            tracked_reasons.append("catalog_id_already_tracked")
+        if url_key in tracked_feed_urls:
+            tracked_reasons.append("endpoint_already_tracked")
+        if tracked_reasons:
+            matched_registry_ids: set[str] = set()
+            for source_id in duplicate_ids:
+                matched_registry_ids.update(mdb_id_matches.get(source_id, set()))
+            matched_registry_ids.update(feed_url_matches.get(url_key, set()))
+            for position, candidate in indexed_duplicates:
+                dispositions[position] = _disposition(
+                    candidate,
+                    position=position,
+                    decision="already_tracked",
+                    reason_codes=tuple(tracked_reasons),
+                    matched_registry_ids=tuple(sorted(matched_registry_ids)),
+                )
             continue
-        feed = max(duplicates, key=_schedule_metadata_richness)
+        selected_position, feed = max(
+            indexed_duplicates,
+            key=lambda item: (
+                _schedule_metadata_richness(item[1]),
+                -(item[1].source_record_number or item[0] + 1),
+            ),
+        )
         proposal_url = _preferred_schedule_url(duplicates)
-        source_key = normalized_mdb_id(feed.mdb_id)
-        if (source_key and source_key in proposed_sources) or url_key in proposed_urls:
+        conflicting_source_ids = duplicate_ids & proposed_sources
+        if conflicting_source_ids or url_key in proposed_urls:
+            reasons: list[str] = []
+            if conflicting_source_ids:
+                reasons.append("catalog_id_maps_to_multiple_endpoints")
+            if url_key in proposed_urls:
+                reasons.append("endpoint_repeated_across_groups")
+            for position, candidate in indexed_duplicates:
+                dispositions[position] = _disposition(
+                    candidate,
+                    position=position,
+                    decision="blocked_conflict",
+                    reason_codes=tuple(reasons),
+                )
             continue
-        if source_key:
-            proposed_sources.add(source_key)
-        proposed_urls.add(url_key)
 
         base_id = slugify(feed.provider, feed.mdb_id)
         agency_id = base_id
@@ -583,6 +824,13 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
             suffix = _catalog_id_slug(feed.mdb_id, fallback_material=feed.direct_download)
             agency_id = f"{base_id}-{suffix}"
         if agency_id in existing or agency_id in used_ids:
+            for position, candidate in indexed_duplicates:
+                dispositions[position] = _disposition(
+                    candidate,
+                    position=position,
+                    decision="blocked_conflict",
+                    reason_codes=("proposal_id_collision",),
+                )
             continue
         used_ids.add(agency_id)
 
@@ -591,7 +839,7 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
         realtime_feeds: list[CatalogFeed] = []
         for duplicate_id in sorted(duplicate_ids):
             realtime_feeds.extend(rt_by_reference.get(duplicate_id, []))
-        rt_urls, rt_note = _select_realtime(realtime_feeds)
+        rt_urls, rt_note, realtime_flags = _select_realtime_with_flags(realtime_feeds)
 
         # The catalog's feed name is usually the agency's brand ("Yolobus"), but
         # sometimes a feed descriptor ("Flex", "Bus", "Do not use - deprecated").
@@ -602,28 +850,86 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
             subdivision_code=feed.subdivision_code,
             subdivision_name=feed.subdivision,
         )
-        proposals.append(
-            ProposedAgency(
-                id=agency_id,
-                name=name,
-                static_gtfs_url=proposal_url,
-                mdb_id=feed.mdb_id,
-                # Preserve an unassigned or malformed catalog country so the
-                # registry rejects it explicitly instead of a proposal silently
-                # falling back to the legacy US default.
-                country=location.country_code or feed.country.strip().upper(),
-                subdivision_code=location.subdivision_code,
-                # Keep catalog context even when it is not a recognized ISO
-                # subdivision. An unknown name is useful to a curator; it must
-                # not be promoted to a guessed code.
-                subdivision_name=location.subdivision_name or feed.subdivision,
-                rt_urls=rt_urls,
-                rt_note=rt_note,
-                license_note=_license_note(feed),
-                feed_status=feed.status or "active",
-                is_official=feed.is_official,
-            )
+        proposal = ProposedAgency(
+            id=agency_id,
+            name=name,
+            static_gtfs_url=proposal_url,
+            mdb_id=feed.mdb_id,
+            # Preserve an unassigned or malformed catalog country so the
+            # registry rejects it explicitly instead of a proposal silently
+            # falling back to the legacy US default.
+            country=location.country_code or feed.country.strip().upper(),
+            subdivision_code=location.subdivision_code,
+            # Keep catalog context even when it is not a recognized ISO
+            # subdivision. An unknown name is useful to a curator; it must
+            # not be promoted to a guessed code.
+            subdivision_name=location.subdivision_name or feed.subdivision,
+            rt_urls=rt_urls,
+            rt_note=rt_note,
+            license_note=_license_note(feed),
+            feed_status=feed.status or "active",
+            is_official=feed.is_official,
         )
+        proposals.append(proposal)
+        proposed_sources.update(duplicate_ids)
+        proposed_urls.add(url_key)
+        flags = _review_flags(feed, realtime_flags)
+        for position, candidate in indexed_duplicates:
+            if position == selected_position:
+                dispositions[position] = _disposition(
+                    candidate,
+                    position=position,
+                    decision="proposed_for_review",
+                    reason_codes=("selected_group_representative",),
+                    review_flags=flags,
+                    proposal_id=agency_id,
+                    selected=feed,
+                    selected_position=selected_position,
+                )
+            else:
+                dispositions[position] = _disposition(
+                    candidate,
+                    position=position,
+                    decision="collapsed_duplicate",
+                    reason_codes=("same_normalized_endpoint",),
+                    review_flags=flags,
+                    proposal_id=agency_id,
+                    selected=feed,
+                    selected_position=selected_position,
+                )
+
+    ordered_dispositions = [
+        dispositions[position]
+        for position, feed in enumerate(feeds)
+        if feed.data_type == "gtfs" and position in dispositions
+    ]
+    return proposals, ordered_dispositions
+
+
+def propose_agencies(
+    feeds: list[CatalogFeed],
+    *,
+    country: str | None = None,
+    subdivision: str | None = None,
+    providers: list[str] | None = None,
+    existing_ids: set[str] | None = None,
+    existing_mdb_ids: set[str] | None = None,
+    existing_feed_urls: set[str] | None = None,
+    existing_mdb_id_matches: dict[str, set[str]] | None = None,
+    existing_feed_url_matches: dict[str, set[str]] | None = None,
+) -> list[ProposedAgency]:
+    """Compatibility wrapper returning only reviewable registry proposals."""
+    proposals, _dispositions = propose_agencies_with_dispositions(
+        feeds,
+        country=country,
+        subdivision=subdivision,
+        providers=providers,
+        existing_ids=existing_ids,
+        existing_mdb_ids=existing_mdb_ids,
+        existing_feed_urls=existing_feed_urls,
+        existing_mdb_id_matches=existing_mdb_id_matches,
+        existing_feed_url_matches=existing_feed_url_matches,
+    )
     return proposals
 
 

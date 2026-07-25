@@ -46,7 +46,7 @@ display form; new V2 proposals retain the source id.
   attribution, and whether the feed belongs in the declared coverage corpus.
 
 `--source-metadata-out <path>` writes a JSON provenance sidecar with schema
-version `1.0`. It records:
+version `1.1`. It records:
 
 - the source name and a safe location label; URL credentials, all query values,
   fragments, and local directory components are redacted. The exact downloaded
@@ -98,9 +98,9 @@ grant permission to reuse or republish a feed.
   remains unchanged until a person edits the appropriate intake shard.
 - Redirect-sensitive consumers keep known behavior until they receive a
   separate migration with replacement and mirror tests.
-- The sidecar is a source envelope, not a complete disposition ledger. A later
-  intake system can add one decision record per candidate without changing this
-  boundary.
+- Source-metadata schema 1.1 now adds the mechanical candidate ledger described
+  in [ADR 0043](0043-candidate-disposition-ledger.md). It accounts for every
+  Schedule source row but does not replace human identity or reuse review.
 
 ## Alternatives rejected
 

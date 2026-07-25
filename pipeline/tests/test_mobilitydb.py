@@ -22,8 +22,10 @@ from scorecard_pipeline.mobilitydb import (
     fetch_catalog_bytes,
     find_replacements,
     parse_catalog,
+    parse_catalog_records,
     proposal_catalog_schema,
     propose_agencies,
+    propose_agencies_with_dispositions,
     render_replacements_md,
     render_yaml,
     replacement_url,
@@ -210,6 +212,193 @@ def test_v2_source_counts_preserve_the_pre_filter_denominator() -> None:
         "active_keyless_schedule_records": 5,
         "proposal_eligible_schedule_records": 3,
     }
+
+
+def test_candidate_ledger_accounts_for_every_v2_schedule_source_record() -> None:
+    records = parse_catalog_records(V2_FIXTURE.read_text())
+    proposals, dispositions = propose_agencies_with_dispositions(records, country="US")
+
+    assert len(dispositions) == 7
+    assert len(proposals) == 2
+    assert [record.source_record_number for record in dispositions] == [1, 2, 3, 5, 6, 7, 8]
+    by_id = {record.source_id: record for record in dispositions}
+    assert by_id["mdb-100"].decision == "proposed_for_review"
+    assert by_id["mdb-100"].proposal_id == "davis-community-transit"
+    assert by_id["mdb-101"].decision == "collapsed_duplicate"
+    assert by_id["mdb-101"].selected_source_id == "mdb-100"
+    assert by_id["mdb-300"].reason_codes == ("non_active_status",)
+    assert by_id["mdb-400"].reason_codes == ("schedule_authentication_required",)
+    assert by_id["mdb-500"].reason_codes == ("explicitly_unofficial",)
+    assert by_id["mdb-600"].reason_codes == ("invalid_direct_download",)
+    assert by_id["mdb-200"].review_flags == (
+        "license_not_stated",
+        "official_status_unspecified",
+    )
+    assert sum(record.proposal_eligible for record in dispositions) == 3
+
+
+def test_candidate_ledger_preserves_missing_urls_and_multiple_exclusion_reasons() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "missing,gtfs,,Missing Transit,false,,1,inactive,\n"
+        "rt,gtfs_rt,tu,Missing Transit,true,,0,active,missing\n"
+    )
+
+    assert parse_catalog(catalog) == []
+    records = parse_catalog_records(catalog)
+    proposals, dispositions = propose_agencies_with_dispositions(records)
+
+    assert proposals == []
+    assert len(dispositions) == 1
+    assert dispositions[0].reason_codes == (
+        "non_active_status",
+        "explicitly_unofficial",
+        "schedule_authentication_required",
+        "missing_direct_download",
+    )
+
+
+def test_candidate_ledger_blocks_one_catalog_id_mapped_to_multiple_endpoints() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "same,gtfs,,First Transit,true,https://example.org/first.zip,0,active,\n"
+        "same,gtfs,,Second Transit,true,https://example.org/second.zip,0,active,\n"
+    )
+
+    proposals, dispositions = propose_agencies_with_dispositions(parse_catalog_records(catalog))
+
+    assert proposals == []
+    assert [record.decision for record in dispositions] == [
+        "blocked_conflict",
+        "blocked_conflict",
+    ]
+    assert {reason for record in dispositions for reason in record.reason_codes} == {
+        "catalog_id_maps_to_multiple_endpoints"
+    }
+
+
+def test_ambiguous_catalog_id_precedes_registry_suppression() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "same,gtfs,,First Transit,true,https://example.org/first.zip,0,active,\n"
+        "same,gtfs,,Second Transit,true,https://example.org/second.zip,0,active,\n"
+    )
+
+    proposals, dispositions = propose_agencies_with_dispositions(
+        parse_catalog_records(catalog),
+        existing_mdb_id_matches={"same": {"tracked"}},
+    )
+
+    assert proposals == []
+    assert [record.decision for record in dispositions] == [
+        "blocked_conflict",
+        "blocked_conflict",
+    ]
+    assert all(
+        record.reason_codes == ("catalog_id_maps_to_multiple_endpoints",) for record in dispositions
+    )
+    assert all(record.matched_registry_ids == () for record in dispositions)
+
+
+def test_ambiguous_catalog_id_precedes_geographic_filters() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,country_code,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "same,gtfs,,US Transit,US,true,https://example.org/us.zip,0,active,\n"
+        "same,gtfs,,Canadian Transit,CA,true,https://example.org/ca.zip,0,active,\n"
+    )
+
+    proposals, dispositions = propose_agencies_with_dispositions(
+        parse_catalog_records(catalog),
+        country="US",
+    )
+
+    assert proposals == []
+    assert [record.decision for record in dispositions] == [
+        "blocked_conflict",
+        "blocked_conflict",
+    ]
+    assert all(
+        record.reason_codes == ("catalog_id_maps_to_multiple_endpoints",) for record in dispositions
+    )
+    assert [record.filter_match for record in dispositions] == [True, False]
+
+
+def test_candidate_ledger_surfaces_a_second_generated_id_collision() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "mdb-1,gtfs,,Same,true,https://example.org/feed.zip,0,active,\n"
+    )
+
+    proposals, dispositions = propose_agencies_with_dispositions(
+        parse_catalog_records(catalog),
+        existing_ids={"same", "same-mdb-1"},
+    )
+
+    assert proposals == []
+    assert dispositions[0].decision == "blocked_conflict"
+    assert dispositions[0].reason_codes == ("proposal_id_collision",)
+
+
+def test_proposal_ids_are_independent_of_distinct_source_row_order() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "mdb-2,gtfs,,Same,true,https://example.org/b.zip,0,active,\n"
+        "mdb-1,gtfs,,Same,true,https://example.org/a.zip,0,active,\n"
+    )
+    records = parse_catalog_records(catalog)
+
+    forward, _forward_dispositions = propose_agencies_with_dispositions(records)
+    reverse, _reverse_dispositions = propose_agencies_with_dispositions(list(reversed(records)))
+
+    assert forward == reverse
+    assert [proposal.id for proposal in forward] == ["same", "same-mdb-2"]
+
+
+def test_candidate_ledger_names_registry_records_that_suppress_a_candidate() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "mdb-00100,gtfs,,Tracked Transit,true,https://example.org/feed.zip,0,active,\n"
+    )
+
+    proposals, dispositions = propose_agencies_with_dispositions(
+        parse_catalog_records(catalog),
+        existing_mdb_id_matches={"100": {"tracked-by-id"}},
+        existing_feed_url_matches={"http://example.org/feed.zip/": {"tracked-by-url"}},
+    )
+
+    assert proposals == []
+    assert dispositions[0].decision == "already_tracked"
+    assert dispositions[0].reason_codes == (
+        "catalog_id_already_tracked",
+        "endpoint_already_tracked",
+    )
+    assert dispositions[0].matched_registry_ids == (
+        "tracked-by-id",
+        "tracked-by-url",
+    )
+
+
+def test_candidate_ledger_omits_raw_endpoint_credentials_and_query_values() -> None:
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference\n"
+        "unsafe,gtfs,,Unsafe Transit,true,"
+        "https://alice:secret@example.org/feed.zip?token=private,0,active,\n"
+    )
+
+    _proposals, dispositions = propose_agencies_with_dispositions(parse_catalog_records(catalog))
+    rendered = str([record.as_record() for record in dispositions])
+
+    assert "alice" not in rendered
+    assert "secret" not in rendered
+    assert "private" not in rendered
 
 
 def test_v2_hosted_latest_url_is_not_treated_as_a_canonical_source() -> None:
@@ -443,6 +632,34 @@ def test_mixed_open_and_authenticated_realtime_references_fail_closed() -> None:
     assert "Service Alerts" in proposal.rt_note
     assert "need an access key" in proposal.rt_note
     assert proposal.rt_note.endswith("Nothing here counts against the grade.")
+
+
+def test_candidate_ledger_keeps_realtime_review_flags_per_kind() -> None:
+    catalog = (
+        "mdb_source_id,data_type,entity_type,provider,name,urls.direct_download,"
+        "urls.authentication_type,static_reference,status,is_official\n"
+        "schedule,gtfs,,Demo Transit,Demo Transit,https://example.org/schedule.zip,"
+        "0,,active,true\n"
+        "tu-open,gtfs-rt,tu,Demo Transit,Open TU,https://example.org/open-tu.pb,"
+        "0,schedule,active,true\n"
+        "tu-gated,gtfs-rt,tu,Demo Transit,Gated TU,https://example.org/gated-tu.pb,"
+        "1,schedule,active,true\n"
+        "vp-a,gtfs-rt,vp,Demo Transit,VP A,https://example.org/vp-a.pb,"
+        "0,schedule,active,true\n"
+        "vp-b,gtfs-rt,vp,Demo Transit,VP B,https://example.org/vp-b.pb,"
+        "0,schedule,active,true\n"
+        "sa-gated,gtfs-rt,sa,Demo Transit,Gated SA,https://example.org/sa.pb,"
+        "2,schedule,active,true\n"
+    )
+
+    _proposals, dispositions = propose_agencies_with_dispositions(parse_catalog_records(catalog))
+
+    assert dispositions[0].review_flags == (
+        "license_not_stated",
+        "realtime_service_alerts_authentication_required",
+        "realtime_trip_updates_access_conflict",
+        "realtime_vehicle_positions_ambiguous",
+    )
 
 
 def test_explicitly_unofficial_realtime_does_not_create_access_conflict() -> None:

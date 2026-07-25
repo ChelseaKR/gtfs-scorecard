@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/sync-source-metadata.schema.json",
+  "title": "GTFS Scorecard catalog sync source metadata",
+  "description": "Reproducible source envelope and mechanical candidate dispositions for one Mobility Database proposal run. Proposed records still require human identity, rights, attribution, and coverage review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "fetched_at",
+    "raw_bytes_sha256",
+    "columns",
+    "header_sha256",
+    "record_counts",
+    "filters",
+    "proposal_count",
+    "proposal_count_scope",
+    "proposal_output",
+    "registry_identity",
+    "tool",
+    "candidate_ledger",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.1" },
+    "source": { "$ref": "#/$defs/source" },
+    "fetched_at": { "type": "string", "format": "date-time" },
+    "raw_bytes_sha256": { "$ref": "#/$defs/sha256" },
+    "columns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "header_sha256": { "$ref": "#/$defs/sha256" },
+    "record_counts": { "$ref": "#/$defs/recordCounts" },
+    "filters": { "$ref": "#/$defs/filters" },
+    "proposal_count": { "type": "integer", "minimum": 0 },
+    "proposal_count_scope": { "const": "mobilitydatabase_only" },
+    "proposal_output": { "$ref": "#/$defs/proposalOutput" },
+    "registry_identity": { "$ref": "#/$defs/registryIdentity" },
+    "tool": { "$ref": "#/$defs/tool" },
+    "candidate_ledger": { "$ref": "#/$defs/candidateLedger" },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableString": {
+      "type": ["string", "null"]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "command_source",
+        "excluded_sources",
+        "catalog_schema",
+        "url_or_path",
+        "location_redacted"
+      ],
+      "properties": {
+        "name": { "const": "Mobility Database" },
+        "command_source": { "enum": ["mobilitydb", "all"] },
+        "excluded_sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "catalog_schema": {
+          "enum": ["mobilitydatabase-feeds-v2", "mobilitydatabase-legacy"]
+        },
+        "url_or_path": { "type": "string", "minLength": 1 },
+        "location_redacted": { "type": "boolean" }
+      }
+    },
+    "recordCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_records",
+        "schedule_records",
+        "realtime_records",
+        "active_schedule_records",
+        "active_keyless_schedule_records",
+        "proposal_eligible_schedule_records"
+      ],
+      "properties": {
+        "total_records": { "type": "integer", "minimum": 0 },
+        "schedule_records": { "type": "integer", "minimum": 0 },
+        "realtime_records": { "type": "integer", "minimum": 0 },
+        "active_schedule_records": { "type": "integer", "minimum": 0 },
+        "active_keyless_schedule_records": { "type": "integer", "minimum": 0 },
+        "proposal_eligible_schedule_records": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["country", "subdivision", "providers"],
+      "properties": {
+        "country": { "$ref": "#/$defs/nullableString" },
+        "subdivision": { "$ref": "#/$defs/nullableString" },
+        "providers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "proposalOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "bytes", "format", "scope"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "format": {
+          "const": "registry-yaml-fragment; charset=utf-8; line-endings=lf"
+        },
+        "scope": { "enum": ["mobilitydatabase_only", "all_sources"] }
+      }
+    },
+    "registryIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "agency_id_count",
+        "normalized_mdb_id_count",
+        "normalized_feed_url_count",
+        "normalization"
+      ],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "agency_id_count": { "type": "integer", "minimum": 0 },
+        "normalized_mdb_id_count": { "type": "integer", "minimum": 0 },
+        "normalized_feed_url_count": { "type": "integer", "minimum": 0 },
+        "normalization": { "const": "sync-proposal-identity-v1" }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "version",
+        "proposal_contract_version",
+        "python_source_tree_sha256",
+        "python_source_file_count"
+      ],
+      "properties": {
+        "package": { "const": "scorecard-pipeline" },
+        "version": { "type": "string", "minLength": 1 },
+        "proposal_contract_version": { "const": "1.1" },
+        "python_source_tree_sha256": { "$ref": "#/$defs/sha256" },
+        "python_source_file_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "candidateLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "scope",
+        "decision_layer",
+        "cross_source_deduplication",
+        "counts",
+        "mobilitydatabase_proposal_output",
+        "records",
+        "limitations"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "scope": { "const": "mobilitydatabase_schedule_source_records" },
+        "decision_layer": { "const": "mechanical_proposal_only" },
+        "cross_source_deduplication": {
+          "enum": ["not_applicable", "not_represented"]
+        },
+        "counts": { "$ref": "#/$defs/ledgerCounts" },
+        "mobilitydatabase_proposal_output": {
+          "$ref": "#/$defs/mobilityDatabaseProposalOutput"
+        },
+        "records": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/disposition" }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "ledgerCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_schedule_records",
+        "proposal_eligible_source_records",
+        "filter_matched_source_records",
+        "eligible_filter_matched_source_records",
+        "disposition_records",
+        "by_decision",
+        "by_reason",
+        "by_review_flag"
+      ],
+      "properties": {
+        "source_schedule_records": { "type": "integer", "minimum": 0 },
+        "proposal_eligible_source_records": { "type": "integer", "minimum": 0 },
+        "filter_matched_source_records": { "type": "integer", "minimum": 0 },
+        "eligible_filter_matched_source_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "disposition_records": { "type": "integer", "minimum": 0 },
+        "by_decision": { "$ref": "#/$defs/countMap" },
+        "by_reason": { "$ref": "#/$defs/countMap" },
+        "by_review_flag": { "$ref": "#/$defs/countMap" }
+      }
+    },
+    "mobilityDatabaseProposalOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "bytes", "format"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "format": {
+          "const": "registry-yaml-fragment; charset=utf-8; line-endings=lf"
+        }
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_record_number",
+        "source_id",
+        "normalized_source_id",
+        "provider",
+        "proposal_eligible",
+        "filter_match",
+        "decision",
+        "reason_codes",
+        "review_flags",
+        "matched_registry_ids",
+        "proposal_id",
+        "selected_source"
+      ],
+      "properties": {
+        "source_record_number": { "type": "integer", "minimum": 1 },
+        "source_id": { "type": "string", "maxLength": 2048 },
+        "normalized_source_id": { "type": "string", "maxLength": 2048 },
+        "provider": { "type": "string", "maxLength": 4096 },
+        "proposal_eligible": { "type": "boolean" },
+        "filter_match": { "type": "boolean" },
+        "decision": {
+          "enum": [
+            "proposed_for_review",
+            "already_tracked",
+            "collapsed_duplicate",
+            "excluded",
+            "filtered_out",
+            "blocked_conflict"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "non_active_status",
+              "explicitly_unofficial",
+              "schedule_authentication_required",
+              "missing_direct_download",
+              "invalid_direct_download",
+              "country_filter_mismatch",
+              "subdivision_filter_mismatch",
+              "provider_filter_mismatch",
+              "catalog_id_already_tracked",
+              "endpoint_already_tracked",
+              "catalog_id_maps_to_multiple_endpoints",
+              "endpoint_repeated_across_groups",
+              "proposal_id_collision",
+              "selected_group_representative",
+              "same_normalized_endpoint"
+            ]
+          }
+        },
+        "review_flags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "license_not_stated",
+              "official_status_unspecified",
+              "realtime_trip_updates_access_conflict",
+              "realtime_trip_updates_ambiguous",
+              "realtime_trip_updates_authentication_required",
+              "realtime_vehicle_positions_access_conflict",
+              "realtime_vehicle_positions_ambiguous",
+              "realtime_vehicle_positions_authentication_required",
+              "realtime_service_alerts_access_conflict",
+              "realtime_service_alerts_ambiguous",
+              "realtime_service_alerts_authentication_required",
+              "realtime_unrecognized_kind_authentication_required"
+            ]
+          }
+        },
+        "matched_registry_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "proposal_id": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "selected_source": {
+          "oneOf": [
+            { "$ref": "#/$defs/selectedSource" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decision": { "const": "excluded" }
+            },
+            "required": ["decision"]
+          },
+          "then": {
+            "properties": {
+              "proposal_eligible": { "const": false },
+              "proposal_id": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": { "const": "filtered_out" }
+            },
+            "required": ["decision"]
+          },
+          "then": {
+            "properties": {
+              "proposal_eligible": { "const": true },
+              "filter_match": { "const": false },
+              "proposal_id": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": { "enum": ["proposed_for_review", "collapsed_duplicate"] }
+            },
+            "required": ["decision"]
+          },
+          "then": {
+            "properties": {
+              "proposal_eligible": { "const": true },
+              "filter_match": { "const": true },
+              "proposal_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "selected_source": { "$ref": "#/$defs/selectedSource" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": { "const": "already_tracked" }
+            },
+            "required": ["decision"]
+          },
+          "then": {
+            "properties": {
+              "matched_registry_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "selectedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_number", "id"],
+      "properties": {
+        "record_number": { "type": "integer", "minimum": 1 },
+        "id": { "type": "string", "maxLength": 2048 }
+      }
+    }
+  }
+}

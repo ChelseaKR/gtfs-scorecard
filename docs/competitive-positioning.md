@@ -146,6 +146,7 @@ created by adding more dashboard features.
 | Tested fix playbooks | Vendor-specific instructions can be ordered by observed closure evidence rather than author confidence. | Show sample size, tool version, and unsuccessful attempts. |
 | Workflow fit | Integrations with the ticketing, email, webhook, or repository surfaces maintainers already use reduce the cost of assigning work. | Integrate only after the concierge pilot shows the actual handoff. Do not build a new ticket system first. |
 | Feed-identity and provenance discipline | Reproducible receipts build trust with agencies, vendors, support programs, and researchers. | Fail closed on ambiguous identity or changed measurement contracts. |
+| Candidate-disposition evidence | A pinned catalog run can explain every mechanical omission, duplicate, conflict, registry match, or proposal instead of presenting coverage growth as an unexplained count. | Keep proposals distinct from human identity, rights, attribution, and admission decisions. |
 | Program and vendor learning | Aggregated, non-ranking evidence can identify recurring export defects and effective interventions across feeds. | Require a comparable cohort and avoid public claims about individual vendor performance from small samples. |
 | Open distribution | The site, API, MCP server, and reusable Action can put the same evidence in different workflows. | Treat reach as an acquisition channel, not proof of value or a moat. |
 
