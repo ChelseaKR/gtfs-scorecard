@@ -268,9 +268,9 @@ the declared public surface).
 - Keep the daily 2,000-plus-feed scoring run inside AWS credential windows by
   defaulting to 32 shards and refreshing OIDC credentials immediately before
   lifecycle tagging. Manual runs can still override the shard count.
-- Apply available Amazon Linux security updates while building both Lambda
-  images, so fixable high-severity operating-system vulnerabilities are not
-  inherited from an older base-image package set.
+- Upgrade both Lambda images to the reviewed Amazon Linux
+  `2023.12.20260720` repository snapshot, so fixed `glib2` and `libacl`
+  packages replace the vulnerable base-image versions.
 - Restore keyboard focus to the country a user drilled from when they leave a
   subdivision map via Back. The focus-return guard tested `HTMLElement`, but SVG
   paths are `SVGElement`, so focus silently fell to the page body (a WCAG 2.4.3
