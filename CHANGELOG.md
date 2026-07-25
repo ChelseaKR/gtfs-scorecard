@@ -43,6 +43,17 @@ the declared public surface).
   deterministic, existing registry matches are named, and conflicting catalog
   ids fail closed.
 
+### Changed
+
+- Harden the newly published sync-receipt contract as schema 1.2. The 1.1
+  schema stays frozen at its existing URL and both versions have stable,
+  retrievable schema references. New receipts validate before either output
+  is written. Registry provenance binds each external identity to the public
+  registry record that currently carries it. Tool evidence also binds the
+  packaged jurisdiction data and exact schema bytes. Scope, count, and decision
+  contradictions are rejected, while Mobility Database-only receipt runs reuse
+  one proposer evaluation.
+
 ## [1.4.0] - 2026-07-25
 
 ### Added

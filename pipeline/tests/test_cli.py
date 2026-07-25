@@ -361,7 +361,11 @@ def test_sync_source_metadata_is_exact_proposal_only_and_leaves_registry_unchang
     assert "id: fresh-transit" in proposals.read_text()
     metadata = json.loads(metadata_path.read_text())
     header = _SYNC_PROVENANCE_CATALOG.splitlines()[0]
-    assert metadata["schema_version"] == "1.1"
+    assert metadata["schema_version"] == "1.2"
+    assert (
+        metadata["schema_url"]
+        == "https://gtfsscorecard.org/schemas/sync-source-metadata-1.2.schema.json"
+    )
     assert metadata["source"] == {
         "name": "Mobility Database",
         "url_or_path": "<local>/feeds_v2.csv",
@@ -398,11 +402,27 @@ def test_sync_source_metadata_is_exact_proposal_only_and_leaves_registry_unchang
     assert metadata["registry_identity"]["agency_id_count"] == 1
     assert metadata["registry_identity"]["normalized_mdb_id_count"] == 1
     assert metadata["registry_identity"]["normalized_feed_url_count"] == 1
+    assert metadata["registry_identity"]["normalization"] == "sync-proposal-identity-v2"
     assert len(metadata["registry_identity"]["sha256"]) == 64
     assert metadata["tool"]["package"] == "scorecard-pipeline"
     assert metadata["tool"]["proposal_contract_version"] == "1.1"
     assert len(metadata["tool"]["python_source_tree_sha256"]) == 64
     assert metadata["tool"]["python_source_file_count"] > 0
+    package_root = Path(__file__).resolve().parents[1] / "src" / "scorecard_pipeline"
+    source_schema = (
+        Path(__file__).resolve().parents[2]
+        / "web"
+        / "schemas"
+        / "sync-source-metadata-1.2.schema.json"
+    )
+    assert (
+        metadata["tool"]["jurisdiction_registry_sha256"]
+        == hashlib.sha256((package_root / "data" / "iso3166.json").read_bytes()).hexdigest()
+    )
+    assert (
+        metadata["tool"]["source_metadata_schema_sha256"]
+        == hashlib.sha256(source_schema.read_bytes()).hexdigest()
+    )
     ledger = metadata["candidate_ledger"]
     assert ledger["schema_version"] == "1.0"
     assert ledger["scope"] == "mobilitydatabase_schedule_source_records"
@@ -451,9 +471,278 @@ def test_sync_source_metadata_is_exact_proposal_only_and_leaves_registry_unchang
     from jsonschema import Draft202012Validator
 
     schema_path = (
-        Path(__file__).resolve().parents[2] / "web" / "schemas" / "sync-source-metadata.schema.json"
+        Path(__file__).resolve().parents[2]
+        / "web"
+        / "schemas"
+        / "sync-source-metadata-1.2.schema.json"
     )
     Draft202012Validator(json.loads(schema_path.read_text())).validate(metadata)
+
+
+def test_sync_registry_identity_hash_binds_current_registry_assignment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+
+    first = Agency(
+        id="first",
+        name="First",
+        static_gtfs_url="https://first.example/feed.zip",
+        mdb_id="mdb-1",
+    )
+    second = Agency(
+        id="second",
+        name="Second",
+        static_gtfs_url="https://second.example/feed.zip",
+        mdb_id="mdb-2",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {"first": first, "second": second})
+
+    identity = cli._sync_registry_identity()
+    canonical = json.dumps(
+        {
+            "records": [
+                {
+                    "registry_id": "first",
+                    "agency_id": "first",
+                    "normalized_mdb_id": "mdb-1",
+                    "normalized_feed_url": "first.example/feed.zip",
+                },
+                {
+                    "registry_id": "second",
+                    "agency_id": "second",
+                    "normalized_mdb_id": "mdb-2",
+                    "normalized_feed_url": "second.example/feed.zip",
+                },
+            ]
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    assert identity["sha256"] == hashlib.sha256(canonical).hexdigest()
+    assert identity["normalization"] == "sync-proposal-identity-v2"
+
+    monkeypatch.setattr(
+        cli,
+        "AGENCIES",
+        {
+            "first": Agency(
+                id="first",
+                name="First",
+                static_gtfs_url=second.static_gtfs_url,
+                mdb_id=second.mdb_id,
+            ),
+            "second": Agency(
+                id="second",
+                name="Second",
+                static_gtfs_url=first.static_gtfs_url,
+                mdb_id=first.mdb_id,
+            ),
+        },
+    )
+    swapped = cli._sync_registry_identity()
+
+    assert swapped["agency_id_count"] == identity["agency_id_count"]
+    assert swapped["normalized_mdb_id_count"] == identity["normalized_mdb_id_count"]
+    assert swapped["normalized_feed_url_count"] == identity["normalized_feed_url_count"]
+    assert swapped["sha256"] != identity["sha256"]
+
+
+def test_sync_metadata_runs_mobilitydb_decision_engine_once(
+    tmp_path: Path,
+    isolated_repo_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb
+    from scorecard_pipeline.cli import main
+
+    _write_minimal_sync_registry(isolated_repo_root)
+    catalog = tmp_path / "feeds_v2.csv"
+    catalog.write_bytes(_SYNC_PROVENANCE_CATALOG)
+    proposals_path = tmp_path / "proposals.yaml"
+    metadata_path = tmp_path / "source-metadata.json"
+    original_engine = mobilitydb.propose_agencies_with_dispositions
+    calls = 0
+
+    def counted_engine(*args, **kwargs):  # type: ignore[no-untyped-def]
+        nonlocal calls
+        calls += 1
+        return original_engine(*args, **kwargs)
+
+    def unexpected_wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise AssertionError("Mobility Database-only metadata must reuse the disposition result")
+
+    monkeypatch.setattr(mobilitydb, "propose_agencies_with_dispositions", counted_engine)
+    monkeypatch.setattr(mobilitydb, "propose_agencies", unexpected_wrapper)
+
+    assert (
+        main(
+            [
+                "sync",
+                "--catalog",
+                str(catalog),
+                "--out",
+                str(proposals_path),
+                "--source-metadata-out",
+                str(metadata_path),
+            ]
+        )
+        == 0
+    )
+
+    metadata = json.loads(metadata_path.read_text())
+    assert calls == 1
+    assert (
+        metadata["proposal_output"]["sha256"]
+        == hashlib.sha256(proposals_path.read_bytes()).hexdigest()
+    )
+    assert (
+        metadata["candidate_ledger"]["mobilitydatabase_proposal_output"]["sha256"]
+        == metadata["proposal_output"]["sha256"]
+    )
+
+
+def test_sync_runtime_validates_metadata_before_writing_outputs(
+    tmp_path: Path,
+    isolated_repo_root: Path,
+) -> None:
+    from jsonschema.exceptions import ValidationError
+
+    from scorecard_pipeline.cli import main
+
+    _write_minimal_sync_registry(isolated_repo_root)
+    catalog = tmp_path / "feeds_v2.csv"
+    catalog.write_bytes(_SYNC_PROVENANCE_CATALOG.replace(b"Fresh Transit", b"x" * 4097))
+    proposals_path = tmp_path / "proposals.yaml"
+    metadata_path = tmp_path / "source-metadata.json"
+    proposals_path.write_bytes(b"existing proposal bytes\n")
+    metadata_path.write_bytes(b'{"existing":"metadata"}\n')
+    before_proposals = proposals_path.read_bytes()
+    before_metadata = metadata_path.read_bytes()
+
+    with pytest.raises(ValidationError):
+        main(
+            [
+                "sync",
+                "--catalog",
+                str(catalog),
+                "--out",
+                str(proposals_path),
+                "--source-metadata-out",
+                str(metadata_path),
+            ]
+        )
+
+    assert proposals_path.read_bytes() == before_proposals
+    assert metadata_path.read_bytes() == before_metadata
+
+
+def test_sync_schema_rejects_scope_counts_and_decision_contradictions(
+    tmp_path: Path,
+    isolated_repo_root: Path,
+) -> None:
+    from scorecard_pipeline.cli import _sync_source_metadata_validator, main
+
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "agencies.yaml").write_text(
+        "agencies:\n"
+        "  - id: tracked\n"
+        "    name: Tracked Transit\n"
+        "    static_gtfs_url: https://tracked.example/feed.zip\n"
+        "    mdb_id: '100'\n"
+    )
+    catalog = tmp_path / "feeds_v2.csv"
+    catalog.write_bytes(_SYNC_PROVENANCE_CATALOG)
+    metadata_path = tmp_path / "source-metadata.json"
+    assert (
+        main(
+            [
+                "sync",
+                "--catalog",
+                str(catalog),
+                "--source-metadata-out",
+                str(metadata_path),
+            ]
+        )
+        == 0
+    )
+    metadata = json.loads(metadata_path.read_text())
+    validator = _sync_source_metadata_validator()
+    validator.validate(metadata)
+
+    invalid_documents: list[tuple[str, dict]] = []  # type: ignore[type-arg]
+
+    wrong_exclusions = json.loads(json.dumps(metadata))
+    wrong_exclusions["source"]["excluded_sources"] = ["Transitland Atlas"]
+    invalid_documents.append(("Mobility Database scope excludes no other source", wrong_exclusions))
+
+    wrong_output_scope = json.loads(json.dumps(metadata))
+    wrong_output_scope["proposal_output"]["scope"] = "all_sources"
+    invalid_documents.append(("command source is coupled to output scope", wrong_output_scope))
+
+    wrong_cross_source_status = json.loads(json.dumps(metadata))
+    wrong_cross_source_status["candidate_ledger"]["cross_source_deduplication"] = "not_represented"
+    invalid_documents.append(
+        ("command source is coupled to cross-source status", wrong_cross_source_status)
+    )
+
+    for count_name in ("by_decision", "by_reason", "by_review_flag"):
+        unknown_count = json.loads(json.dumps(metadata))
+        unknown_count["candidate_ledger"]["counts"][count_name]["invented"] = 1
+        invalid_documents.append((f"{count_name} uses a closed vocabulary", unknown_count))
+
+        zero_count = json.loads(json.dumps(metadata))
+        observed = zero_count["candidate_ledger"]["counts"][count_name]
+        observed[next(iter(observed))] = 0
+        invalid_documents.append((f"{count_name} serializes only positive counts", zero_count))
+
+    tracked_proposal = json.loads(json.dumps(metadata))
+    tracked_record = next(
+        record
+        for record in tracked_proposal["candidate_ledger"]["records"]
+        if record["decision"] == "already_tracked"
+    )
+    tracked_record["proposal_id"] = "fake"
+    invalid_documents.append(("an already-tracked row has no proposal id", tracked_proposal))
+
+    tracked_selection = json.loads(json.dumps(metadata))
+    tracked_record = next(
+        record
+        for record in tracked_selection["candidate_ledger"]["records"]
+        if record["decision"] == "already_tracked"
+    )
+    tracked_record["selected_source"] = {"record_number": 1, "id": "mdb-00100"}
+    invalid_documents.append(("an already-tracked row selects no source", tracked_selection))
+
+    proposed_contradiction = json.loads(json.dumps(metadata))
+    proposed_record = next(
+        record
+        for record in proposed_contradiction["candidate_ledger"]["records"]
+        if record["decision"] == "proposed_for_review"
+    )
+    proposed_record["matched_registry_ids"] = ["tracked"]
+    invalid_documents.append(
+        ("a proposed row cannot also match the registry", proposed_contradiction)
+    )
+
+    proposed_without_selection = json.loads(json.dumps(metadata))
+    proposed_record = next(
+        record
+        for record in proposed_without_selection["candidate_ledger"]["records"]
+        if record["decision"] == "proposed_for_review"
+    )
+    proposed_record["selected_source"] = None
+    invalid_documents.append(
+        ("a proposed row names its selected source", proposed_without_selection)
+    )
+
+    malformed_timestamp = json.loads(json.dumps(metadata))
+    malformed_timestamp["fetched_at"] = "not-a-date"
+    invalid_documents.append(("the retrieval timestamp is a real date-time", malformed_timestamp))
+
+    for label, document in invalid_documents:
+        assert list(validator.iter_errors(document)), label
 
 
 def test_sync_source_reference_redacts_credentials_and_sensitive_query_values() -> None:

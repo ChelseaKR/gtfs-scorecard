@@ -127,8 +127,10 @@ existing surface without changing a grade or adding a service:
   directional-CSS ratchets; ADR 0038).
 - **Shipped 2026-07-25:** Mobility Database proposal receipts now account for
   every recognized Schedule source row with a versioned mechanical disposition
-  ledger. Proposals remain separate from human identity, rights, attribution,
-  and admission decisions (ADR 0043).
+  ledger. Schema 1.2 validates receipts before either output is written and
+  binds each external identity to the public registry record that currently
+  carries it. Proposals remain separate from human identity, rights,
+  attribution, and admission decisions (ADR 0043).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

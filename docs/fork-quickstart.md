@@ -62,13 +62,15 @@ uv run scorecard sync \
 
 The command omits authentication-gated Schedule feeds and identities already
 tracked by catalog id or normalized URL. The metadata sidecar fingerprints the
-exact CSV bytes, normalized registry identity inputs, proposal-tool source tree,
-and rendered proposal bytes. It also records source counts, filters, and one
-mechanical disposition for every recognized Schedule source row, including
-excluded, filtered, already tracked, duplicate, conflicted, and proposed
-records. Raw feed URLs, authentication details, and contacts are omitted from
-the ledger. Use `--catalog <URL-or-path>` when you need a pinned or local
-catalog snapshot.
+exact CSV bytes, each normalized external identity's current public registry
+assignment, the proposal-tool source and jurisdiction data, the versioned
+public receipt schema, and rendered proposal bytes. It also records source
+counts, filters, and one mechanical disposition for every recognized Schedule
+source row, including excluded, filtered, already tracked, duplicate,
+conflicted, and proposed records. The complete sidecar is schema-validated
+before either output is written. Raw feed URLs, authentication details, and
+contacts are omitted from the ledger. Use `--catalog <URL-or-path>` when you
+need a pinned or local catalog snapshot.
 
 `sync` only writes proposals. It has no `--apply` option and does not edit the
 registry. Review source status, location, reuse terms, attribution, and feed
@@ -80,6 +82,12 @@ Transitland Atlas. Its output hash still binds the combined proposal file; pin
 Transitland separately if you need to reconstruct that combined run. The
 candidate ledger is likewise Mobility Database-only before cross-source
 deduplication, and says so explicitly.
+
+This sidecar is catalog-processing provenance, not a remediation closure
+receipt. It records no participant action and makes no causal claim. Existing
+1.1 sidecars remain valid against the frozen unversioned schema. New sidecars
+name the immutable 1.2 schema URL; regenerate one when you need the stricter
+assignment and decision guarantees.
 
 ### 3. Set your branding
 

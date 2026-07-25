@@ -42,7 +42,7 @@ jobs:
       # Import and dispatch from the built artifact, not the editable checkout.
       # This catches package-data omissions in Marketplace/uvx installations.
       - run: uvx --from dist/scorecard_pipeline-*.whl scorecard --help
-      - name: Verify packaged global ISO vocabulary
+      - name: Verify packaged data and sync receipt contract
         run: |
           wheel="$(pwd)/$(find dist -name 'scorecard_pipeline-*.whl' -print -quit)"
           isolated="$(mktemp -d)"
@@ -51,3 +51,15 @@ jobs:
           cd "$isolated"
           "$isolated/venv/bin/python" -c \
             "from scorecard_pipeline.jurisdictions import JURISDICTIONS; assert len(JURISDICTIONS.countries) == 249; assert JURISDICTIONS.countries['JP'].subdivisions['JP-13'] == 'Tokyo'"
+          mkdir -p "$isolated/root"
+          printf 'agencies: []\n' > "$isolated/root/agencies.yaml"
+          printf '%s\n' \
+            'id,data_type,entity_type,location.country_code,provider,is_official,static_reference,urls.direct_download,urls.authentication_type,status' \
+            'mdb-test,gtfs,,US,Test Transit,true,,https://example.org/gtfs.zip,0,active' \
+            > "$isolated/feeds_v2.csv"
+          SCORECARD_ROOT="$isolated/root" "$isolated/venv/bin/scorecard" sync \
+            --catalog "$isolated/feeds_v2.csv" \
+            --out "$isolated/proposals.yaml" \
+            --source-metadata-out "$isolated/source-metadata.json"
+          "$isolated/venv/bin/python" -c \
+            "import json, pathlib; receipt=json.loads(pathlib.Path('$isolated/source-metadata.json').read_text()); assert receipt['schema_version'] == '1.2'; assert receipt['schema_url'].endswith('sync-source-metadata-1.2.schema.json')"
