@@ -12,7 +12,7 @@ from __future__ import annotations
 from .cemv import detect_cemv
 from .fares import detect_fares, fares_findings
 from .flex import detect_flex, flex_findings
-from .gtfs import read_tables
+from .gtfs import TableTooLargeError, read_tables
 from .metrics import CategoryResult, Finding
 from .pathways import detect_pathways, pathways_findings
 from .translations import detect_translations
@@ -57,6 +57,110 @@ def _fraction_mixed_case(rows: list[dict[str, str]], field: str) -> float:
     if not named:
         return 0.0
     return sum(1 for name in named if not _is_shouty(name)) / len(named)
+
+
+def _trip_stop_patterns(stop_times: list[dict[str, str]]) -> dict[str, tuple[str, ...]]:
+    """Ordered stop IDs for trips whose stop-time evidence is complete.
+
+    The canonical validator owns malformed-field reporting. This narrower
+    reader only decides whether there is enough evidence to waive a scorecard
+    recommendation, so any blank stop, invalid sequence, or duplicate sequence
+    makes the affected trip ineligible for that waiver.
+    """
+    stop_rows_by_trip: dict[str, list[tuple[int, int, str]]] = {}
+    sequences_by_trip: dict[str, set[int]] = {}
+    invalid_trip_ids: set[str] = set()
+    for position, row in enumerate(stop_times):
+        trip_id = (row.get("trip_id") or "").strip()
+        if not trip_id:
+            continue
+        stop_id = (row.get("stop_id") or "").strip()
+        sequence_text = (row.get("stop_sequence") or "").strip()
+        try:
+            sequence = int(sequence_text)
+        except ValueError:
+            invalid_trip_ids.add(trip_id)
+            continue
+        if not stop_id or sequence < 0:
+            invalid_trip_ids.add(trip_id)
+            continue
+
+        sequences = sequences_by_trip.setdefault(trip_id, set())
+        if sequence in sequences:
+            invalid_trip_ids.add(trip_id)
+            continue
+        sequences.add(sequence)
+        stop_rows_by_trip.setdefault(trip_id, []).append((sequence, position, stop_id))
+
+    patterns_by_trip: dict[str, tuple[str, ...]] = {}
+    for trip_id, indexed_rows in stop_rows_by_trip.items():
+        if trip_id in invalid_trip_ids:
+            continue
+        ordered = sorted(indexed_rows)
+        patterns_by_trip[trip_id] = tuple(stop_id for _, _, stop_id in ordered)
+    return patterns_by_trip
+
+
+def _is_single_pattern_loop(
+    route_trips: list[dict[str, str]], patterns_by_trip: dict[str, tuple[str, ...]]
+) -> bool:
+    """Whether one route has enough evidence to make a headsign non-actionable."""
+    if any(trip.get("trip_headsign", "").strip() for trip in route_trips):
+        return False
+    direction_ids = {trip.get("direction_id", "").strip() for trip in route_trips}
+    if len(direction_ids) != 1 or "" in direction_ids:
+        return False
+    shape_ids = {trip.get("shape_id", "").strip() for trip in route_trips}
+    if len(shape_ids) != 1 or "" in shape_ids:
+        return False
+
+    trip_ids = [trip.get("trip_id", "").strip() for trip in route_trips]
+    if not all(trip_ids) or len(set(trip_ids)) != len(trip_ids):
+        return False
+    patterns = [patterns_by_trip.get(trip_id) for trip_id in trip_ids]
+    if any(pattern is None for pattern in patterns) or len(set(patterns)) != 1:
+        return False
+    pattern = patterns[0]
+    return bool(
+        pattern is not None
+        and len(pattern) >= 3
+        and pattern[0] == pattern[-1]
+        # Returning to the origin is not enough: an out-and-back or lollipop
+        # pattern can revisit an interior stop and still need changing rider
+        # guidance. A simple loop visits each stop once before closing.
+        and len(pattern[:-1]) == len(set(pattern[:-1]))
+    )
+
+
+def _single_pattern_loop_headsign_exemptions(
+    trips: list[dict[str, str]], stop_times: list[dict[str, str]]
+) -> set[str]:
+    """Return trips where a blank ``trip_headsign`` is not an actionable gap.
+
+    GTFS makes ``trip_headsign`` optional and says it should distinguish service
+    patterns using rider-facing destination, direction, or "via" text. Copying a
+    route name into the field is explicitly discouraged. A route whose trips all
+    follow one closed stop pattern, one shape, and one direction has nothing for a
+    blanket headsign recommendation to distinguish.
+
+    The exemption is deliberately conservative: every trip on the route must
+    omit the field and have the same complete loop evidence. Mixed headsigns,
+    shapes, directions, stop patterns, or missing stop-time evidence retain the
+    ordinary check.
+    """
+    patterns_by_trip = _trip_stop_patterns(stop_times)
+
+    trips_by_route: dict[str, list[dict[str, str]]] = {}
+    for trip in trips:
+        route_id = trip.get("route_id", "").strip()
+        if route_id:
+            trips_by_route.setdefault(route_id, []).append(trip)
+
+    exempt: set[str] = set()
+    for route_trips in trips_by_route.values():
+        if _is_single_pattern_loop(route_trips, patterns_by_trip):
+            exempt.update(trip.get("trip_id", "").strip() for trip in route_trips)
+    return exempt
 
 
 def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -191,25 +295,41 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
             )
         )
 
-    # Headsigns on trips.
-    hs = (
-        sum(1 for row in trips if row.get("trip_headsign", "").strip()) / len(trips)
-        if trips
-        else 0.0
-    )
-    parts["headsigns"] = hs * WEIGHTS["headsigns"]
-    if hs < 1.0:
-        missing = round((1 - hs) * len(trips))
+    # Headsigns on trips. Single-pattern, single-direction loops are credited
+    # without inventing a direction label or copying the route name into a field
+    # where GTFS Best Practices says it does not belong.
+    headsign_trip_ids = {
+        row.get("trip_id", "").strip() for row in trips if row.get("trip_headsign", "").strip()
+    }
+    loop_exempt_trip_ids: set[str] = set()
+    if len(headsign_trip_ids) < len(trips):
+        try:
+            stop_times = read_tables(gtfs_zip_path, ["stop_times.txt"])["stop_times.txt"]
+        except TableTooLargeError:
+            # Large national feeds can exceed the bounded whole-table reader.
+            # Preserve the ordinary headsign check rather than failing scoring
+            # or granting an exemption without inspecting complete evidence.
+            stop_times = []
+        loop_exempt_trip_ids = _single_pattern_loop_headsign_exemptions(trips, stop_times)
+    hs_published = len(headsign_trip_ids) / len(trips) if trips else 0.0
+    hs_scored = (len(headsign_trip_ids) + len(loop_exempt_trip_ids)) / len(trips) if trips else 0.0
+    parts["headsigns"] = hs_scored * WEIGHTS["headsigns"]
+    missing = len(trips) - len(headsign_trip_ids) - len(loop_exempt_trip_ids)
+    if missing:
         findings.append(
             Finding(
                 code="scorecard_missing_headsigns",
                 severity="WARNING",
                 count=missing,
-                what=f"{missing} of {len(trips)} trips have no headsign.",
-                why="Riders at the stop can't tell which direction a bus is going.",
-                fix="Populate trip_headsign to match what the bus displays.",
-                effort="Usually a bulk edit in your scheduling software.",
-                deduction=round((1 - hs) * WEIGHTS["headsigns"], 1),
+                what=f"{missing} of {len(trips)} trips lack rider-facing destination "
+                "or direction text.",
+                why="When a route has multiple directions or patterns, the route "
+                "name alone may not tell riders which service is coming.",
+                fix="Add the destination, direction, or 'via' label riders actually "
+                "see to trip_headsign. Do not copy the route name. If the label "
+                "changes during the trip, use stop_headsign.",
+                effort="Usually one value per route pattern in your scheduling source.",
+                deduction=round((1 - hs_scored) * WEIGHTS["headsigns"], 1),
             )
         )
 
@@ -332,7 +452,10 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
             # Optional rider-facing translations are an adoption signal, not a
             # score component. Their absence never lowers this category.
             "translations": detect_translations(gtfs_zip_path).to_details(),
-            "headsign_pct": round(hs * 100, 1),
+            "headsign_pct": round(hs_published * 100, 1),
+            "headsign_scored_pct": round(hs_scored * 100, 1),
+            "headsign_applicable_trips": len(trips) - len(loop_exempt_trip_ids),
+            "headsign_loop_exempt_trips": len(loop_exempt_trip_ids),
             "mixed_case_stop_name_pct": round(mixed * 100, 1),
         },
     )
