@@ -68,7 +68,7 @@ be added through `registry/intake.yaml`.
   [GTFS Scorecard Marketplace Action](https://github.com/marketplace/actions/gtfs-scorecard-gate)
   to a feed repository.
 - **Test what happens after the scorecard:** read
-  [the remediation pilot request](https://github.com/ChelseaKR/gtfs-scorecard/issues/194)
+  [the remediation pilot request](https://github.com/ChelseaKR/gtfs-scorecard/issues/185)
   if you can take a finding through an accepted request and same-feed recheck.
 - **Contribute:** choose a
   [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
@@ -211,6 +211,11 @@ scorecard render-site                             # crawlable static pages + sit
 scorecard alerts --out digest.md                  # expiry/regression digest
 scorecard notify                                  # per-subscriber digest (dry run)
 ```
+
+Add `--source-metadata-out <path>` to `scorecard sync` for a source receipt
+that accounts for every Mobility Database Schedule row as excluded, filtered,
+already tracked, duplicate, conflicted, or proposed for review. It never edits
+the registry and does not treat a catalog proposal as permission to republish.
 
 `notify` builds a feed-health email for each opt-in subscriber in
 [`subscriptions.yaml`](subscriptions.yaml), containing only the agencies they

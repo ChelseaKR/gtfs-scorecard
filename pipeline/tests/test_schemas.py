@@ -148,6 +148,7 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "coverage.schema.json",
         "by-location.schema.json",
         "global-coverage.schema.json",
+        "sync-source-metadata.schema.json",
     } <= names
 
 

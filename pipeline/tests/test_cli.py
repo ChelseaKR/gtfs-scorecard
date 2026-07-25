@@ -361,7 +361,7 @@ def test_sync_source_metadata_is_exact_proposal_only_and_leaves_registry_unchang
     assert "id: fresh-transit" in proposals.read_text()
     metadata = json.loads(metadata_path.read_text())
     header = _SYNC_PROVENANCE_CATALOG.splitlines()[0]
-    assert metadata["schema_version"] == "1.0"
+    assert metadata["schema_version"] == "1.1"
     assert metadata["source"] == {
         "name": "Mobility Database",
         "url_or_path": "<local>/feeds_v2.csv",
@@ -400,13 +400,60 @@ def test_sync_source_metadata_is_exact_proposal_only_and_leaves_registry_unchang
     assert metadata["registry_identity"]["normalized_feed_url_count"] == 1
     assert len(metadata["registry_identity"]["sha256"]) == 64
     assert metadata["tool"]["package"] == "scorecard-pipeline"
-    assert metadata["tool"]["proposal_contract_version"] == "1.0"
+    assert metadata["tool"]["proposal_contract_version"] == "1.1"
     assert len(metadata["tool"]["python_source_tree_sha256"]) == 64
     assert metadata["tool"]["python_source_file_count"] > 0
+    ledger = metadata["candidate_ledger"]
+    assert ledger["schema_version"] == "1.0"
+    assert ledger["scope"] == "mobilitydatabase_schedule_source_records"
+    assert ledger["decision_layer"] == "mechanical_proposal_only"
+    assert ledger["cross_source_deduplication"] == "not_applicable"
+    assert ledger["counts"] == {
+        "source_schedule_records": 5,
+        "proposal_eligible_source_records": 2,
+        "filter_matched_source_records": 1,
+        "eligible_filter_matched_source_records": 1,
+        "disposition_records": 5,
+        "by_decision": {
+            "excluded": 3,
+            "filtered_out": 1,
+            "proposed_for_review": 1,
+        },
+        "by_reason": {
+            "explicitly_unofficial": 1,
+            "non_active_status": 1,
+            "provider_filter_mismatch": 4,
+            "schedule_authentication_required": 1,
+            "selected_group_representative": 1,
+        },
+        "by_review_flag": {"license_not_stated": 1},
+    }
+    assert ledger["mobilitydatabase_proposal_output"] == {
+        "sha256": hashlib.sha256(proposals.read_bytes()).hexdigest(),
+        "bytes": len(proposals.read_bytes()),
+        "format": "registry-yaml-fragment; charset=utf-8; line-endings=lf",
+    }
+    assert len(ledger["records"]) == 5
+    proposed = next(
+        record for record in ledger["records"] if record["decision"] == "proposed_for_review"
+    )
+    assert proposed["source_id"] == "mdb-200"
+    assert proposed["proposal_id"] == "fresh-transit"
+    assert all(
+        "direct_download" not in record and "authentication" not in record
+        for record in ledger["records"]
+    )
     assert any(
         "does not grant permission to reuse or republish" in limitation
         for limitation in metadata["limitations"]
     )
+
+    from jsonschema import Draft202012Validator
+
+    schema_path = (
+        Path(__file__).resolve().parents[2] / "web" / "schemas" / "sync-source-metadata.schema.json"
+    )
+    Draft202012Validator(json.loads(schema_path.read_text())).validate(metadata)
 
 
 def test_sync_source_reference_redacts_credentials_and_sensitive_query_values() -> None:
@@ -539,6 +586,11 @@ def test_sync_zero_proposals_replaces_stale_output_and_binds_empty_bytes(
     assert metadata["proposal_count"] == 0
     assert metadata["proposal_output"]["bytes"] == 0
     assert metadata["proposal_output"]["sha256"] == hashlib.sha256(b"").hexdigest()
+    assert metadata["candidate_ledger"]["counts"]["disposition_records"] == 5
+    assert metadata["candidate_ledger"]["counts"]["by_decision"] == {
+        "excluded": 3,
+        "filtered_out": 2,
+    }
 
 
 def test_sync_all_sidecar_excludes_transitland_metadata(
@@ -573,6 +625,7 @@ def test_sync_all_sidecar_excludes_transitland_metadata(
     metadata = json.loads(metadata_path.read_text())
     assert metadata["source"]["excluded_sources"] == ["Transitland Atlas"]
     assert metadata["proposal_output"]["scope"] == "all_sources"
+    assert metadata["candidate_ledger"]["cross_source_deduplication"] == "not_represented"
     assert any(
         "Transitland Atlas source rows and per-source counts" in limitation
         for limitation in metadata["limitations"]

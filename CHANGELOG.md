@@ -37,6 +37,10 @@ the declared public surface).
   source bytes, header, filters, registry identity inputs, rendered proposal
   bytes, and proposal-tool source tree. Proposal outputs cannot overwrite their
   catalog input or the curated registry, and an empty run clears stale output.
+- Extend the sync receipt with a versioned candidate-disposition ledger that
+  accounts for every Mobility Database Schedule row without publishing raw
+  endpoints or contact data. Proposal selection is deterministic, existing
+  registry matches are named, and conflicting catalog ids fail closed.
 
 ## [1.4.0] - 2026-07-25
 

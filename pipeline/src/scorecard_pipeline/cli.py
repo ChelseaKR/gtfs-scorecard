@@ -40,6 +40,7 @@ import shutil
 import sys
 import time
 import urllib.parse
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -672,8 +673,9 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0
 
 
-_SYNC_SOURCE_METADATA_SCHEMA_VERSION = "1.0"
-_SYNC_PROPOSAL_CONTRACT_VERSION = "1.0"
+_SYNC_SOURCE_METADATA_SCHEMA_VERSION = "1.1"
+_SYNC_CANDIDATE_LEDGER_SCHEMA_VERSION = "1.0"
+_SYNC_PROPOSAL_CONTRACT_VERSION = "1.1"
 _CATALOG_PERMISSION_LIMITATION = (
     "Catalog metadata is evidence for review; it does not grant permission to reuse "
     "or republish a feed."
@@ -747,6 +749,17 @@ def _sync_registry_identity() -> dict[str, object]:
         "normalized_feed_url_count": len(identity["normalized_feed_urls"]),
         "normalization": "sync-proposal-identity-v1",
     }
+
+
+def _sync_registry_matches() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
+    """Public registry ids grouped by each catalog and endpoint identity."""
+    mdb_matches: dict[str, set[str]] = {}
+    url_matches: dict[str, set[str]] = {}
+    for agency in AGENCIES.values():
+        if agency.mdb_id:
+            mdb_matches.setdefault(agency.mdb_id, set()).add(agency.id)
+        url_matches.setdefault(agency.static_gtfs_url, set()).add(agency.id)
+    return mdb_matches, url_matches
 
 
 def _validate_sync_output_paths(
@@ -824,6 +837,8 @@ def _sync_source_metadata(
     providers: list[str] | None,
     proposal_count: int,
     proposal_output: str,
+    mobilitydb_proposal_output: str,
+    candidate_records: list[dict[str, object]],
     catalog_schema: str,
 ) -> dict[str, object]:
     """Reproducible envelope for one Mobility Database proposal run."""
@@ -840,7 +855,70 @@ def _sync_source_metadata(
             "proposal output hash still binds the combined rendered output."
         )
     proposal_bytes = proposal_output.encode()
+    mobilitydb_proposal_bytes = mobilitydb_proposal_output.encode()
     source_reference = _sync_source_reference(source)
+
+    def record_values(record: dict[str, object], key: str) -> list[object]:
+        values = record.get(key)
+        return values if isinstance(values, list) else []
+
+    decision_counts = Counter(str(record["decision"]) for record in candidate_records)
+    reason_counts = Counter(
+        str(reason)
+        for record in candidate_records
+        for reason in record_values(record, "reason_codes")
+    )
+    review_flag_counts = Counter(
+        str(flag) for record in candidate_records for flag in record_values(record, "review_flags")
+    )
+    source_counts = catalog_source_counts(csv_text)
+    proposed_records = decision_counts["proposed_for_review"]
+    if len(candidate_records) != source_counts["schedule_records"]:
+        raise ValueError("candidate ledger does not account for every Schedule source record")
+    if (
+        sum(record.get("proposal_eligible") is True for record in candidate_records)
+        != source_counts["proposal_eligible_schedule_records"]
+    ):
+        raise ValueError("candidate ledger eligibility count does not match the source envelope")
+    if proposed_records != proposal_count:
+        raise ValueError("candidate ledger proposal count does not match rendered proposals")
+    candidate_ledger = {
+        "schema_version": _SYNC_CANDIDATE_LEDGER_SCHEMA_VERSION,
+        "scope": "mobilitydatabase_schedule_source_records",
+        "decision_layer": "mechanical_proposal_only",
+        "cross_source_deduplication": (
+            "not_represented" if command_source == "all" else "not_applicable"
+        ),
+        "counts": {
+            "source_schedule_records": source_counts["schedule_records"],
+            "proposal_eligible_source_records": source_counts["proposal_eligible_schedule_records"],
+            "filter_matched_source_records": sum(
+                record.get("filter_match") is True for record in candidate_records
+            ),
+            "eligible_filter_matched_source_records": sum(
+                record.get("proposal_eligible") is True and record.get("filter_match") is True
+                for record in candidate_records
+            ),
+            "disposition_records": len(candidate_records),
+            "by_decision": dict(sorted(decision_counts.items())),
+            "by_reason": dict(sorted(reason_counts.items())),
+            "by_review_flag": dict(sorted(review_flag_counts.items())),
+        },
+        "mobilitydatabase_proposal_output": {
+            "sha256": hashlib.sha256(mobilitydb_proposal_bytes).hexdigest(),
+            "bytes": len(mobilitydb_proposal_bytes),
+            "format": "registry-yaml-fragment; charset=utf-8; line-endings=lf",
+        },
+        "records": candidate_records,
+        "limitations": [
+            "A proposed record is ready for human review, not admitted, licensed, "
+            "approved, or safe to republish.",
+            "The ledger records mechanical intake decisions only. Identity, rights, "
+            "attribution, and coverage decisions remain human review gates.",
+            "Raw feed URLs, authentication details, contacts, and per-endpoint hashes "
+            "are omitted. The exact source snapshot hash is the evidence anchor.",
+        ],
+    }
     return {
         "schema_version": _SYNC_SOURCE_METADATA_SCHEMA_VERSION,
         "source": {
@@ -854,7 +932,7 @@ def _sync_source_metadata(
         "raw_bytes_sha256": hashlib.sha256(raw_bytes).hexdigest(),
         "columns": columns,
         "header_sha256": hashlib.sha256(header).hexdigest(),
-        "record_counts": catalog_source_counts(csv_text),
+        "record_counts": source_counts,
         "filters": {
             "country": country,
             "subdivision": subdivision,
@@ -870,6 +948,7 @@ def _sync_source_metadata(
         },
         "registry_identity": _sync_registry_identity(),
         "tool": _sync_tool_identity(),
+        "candidate_ledger": candidate_ledger,
         "limitations": limitations,
     }
 
@@ -901,7 +980,9 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         DEFAULT_PROPOSAL_CATALOG_URL,
         fetch_catalog_bytes,
         parse_catalog,
+        parse_catalog_records,
         propose_agencies,
+        propose_agencies_with_dispositions,
         render_yaml,
     )
 
@@ -927,6 +1008,7 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
     feeds = []
     mobilitydb_feeds = []
+    mobilitydb_records = []
     raw_bytes = b""
     csv_text = ""
     fetched_at = ""
@@ -943,6 +1025,7 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             default_source=DEFAULT_PROPOSAL_CATALOG_URL,
             parser=parser,
         )
+        mobilitydb_records = parse_catalog_records(csv_text)
         mobilitydb_feeds = parse_catalog(csv_text)
         feeds.extend(mobilitydb_feeds)
     if which in ("transitland", "all"):
@@ -952,6 +1035,7 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         log.info("Transitland Atlas contributed %d feed rows.", len(transitland_feeds))
         feeds.extend(transitland_feeds)
 
+    existing_mdb_id_matches, existing_feed_url_matches = _sync_registry_matches()
     proposal_args = {
         "country": args.country,
         "subdivision": args.state,
@@ -959,19 +1043,21 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "existing_ids": set(AGENCIES),
         "existing_mdb_ids": {agency.mdb_id for agency in AGENCIES.values() if agency.mdb_id},
         "existing_feed_urls": {agency.static_gtfs_url for agency in AGENCIES.values()},
+        "existing_mdb_id_matches": existing_mdb_id_matches,
+        "existing_feed_url_matches": existing_feed_url_matches,
     }
     proposals = propose_agencies(feeds, **proposal_args)
     block = render_yaml(proposals)
-    if args.out:
-        Path(args.out).write_bytes(block.encode())
-        log.info("Wrote %d proposed agencies to %s", len(proposals), args.out)
-    else:
-        print(block, end="")
 
+    source_metadata: dict[str, object] | None = None
     if metadata_out:
         if source is None:  # pragma: no cover - rejected for Transitland above
             parser.error("Mobility Database source metadata is unavailable")
-        mobilitydb_proposals = propose_agencies(mobilitydb_feeds, **proposal_args)
+        mobilitydb_proposals, dispositions = propose_agencies_with_dispositions(
+            mobilitydb_records,
+            **proposal_args,
+        )
+        mobilitydb_block = render_yaml(mobilitydb_proposals)
         source_metadata = _sync_source_metadata(
             raw_bytes=raw_bytes,
             csv_text=csv_text,
@@ -983,8 +1069,17 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             providers=args.provider or None,
             proposal_count=len(mobilitydb_proposals),
             proposal_output=block,
+            mobilitydb_proposal_output=mobilitydb_block,
+            candidate_records=[disposition.as_record() for disposition in dispositions],
             catalog_schema=catalog_schema,
         )
+
+    if args.out:
+        Path(args.out).write_bytes(block.encode())
+        log.info("Wrote %d proposed agencies to %s", len(proposals), args.out)
+    else:
+        print(block, end="")
+    if metadata_out and source_metadata is not None:
         Path(metadata_out).write_text(json.dumps(source_metadata, indent=2, sort_keys=True) + "\n")
         log.info("Wrote Mobility Database source metadata to %s", metadata_out)
     if not proposals:
