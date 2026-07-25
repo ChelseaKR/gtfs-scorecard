@@ -63,7 +63,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.16`). The rule for
+Every artifact carries a `schema_version` (currently `1.17`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -199,11 +199,11 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.16",
-  "rubric_version": "1.2",
+  "schema_version": "1.17",
+  "rubric_version": "1.3",
   "scoring_profile": {
-    "id": "gtfs-scorecard-1.2",
-    "rubric_version": "1.2",
+    "id": "gtfs-scorecard-1.3",
+    "rubric_version": "1.3",
     "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination."
   },
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
@@ -372,8 +372,8 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.16",
-  "rubric_version": "1.2",
+  "schema_version": "1.17",
+  "rubric_version": "1.3",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "agencies": [
@@ -386,9 +386,9 @@ whole picture in a single request rather than fetching each `latest.json`.
       "snapshot_date": "2026-06-12", "days_until_expiry": 120,
       "service_horizon_status": "within_review_threshold", "expiry_status": "current",
       "ntd_ready": "ready", "google_gate": "pass", "stops": 312,
-      "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.2",
-      "scoring_profile_id": "gtfs-scorecard-1.2",
-      "scoring_profile_rubric_version": "1.2",
+      "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.3",
+      "scoring_profile_id": "gtfs-scorecard-1.3",
+      "scoring_profile_rubric_version": "1.3",
       "retrieved_at": "2026-06-12T13:25:01+00:00", "feed_sha256": "...",
       "feed_url": "...", "top_fix": "...", "scorecard_url": "https://..." }
   ]
@@ -599,15 +599,15 @@ archive-profile, measured-category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.16",
+  "schema_version": "1.17",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
   "comparison_eligible_count": 1000,
   "comparison": {
     "eligible_count": 1000,
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1",
     "required_reader_archive_profile": "raw-v1",
     "required_measured_categories": ["correctness", "freshness", "completeness"]
@@ -625,14 +625,14 @@ archive-profile, measured-category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.16",
+  "schema_version": "1.17",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
   "grade_distribution": { "B": 1, "C": 1 },
   "comparison": { "eligible_count": 2, "excluded_count": 0,
-                  "required_rubric_version": "1.2",
-                  "required_scoring_profile_id": "gtfs-scorecard-1.2",
+                  "required_rubric_version": "1.3",
+                  "required_scoring_profile_id": "gtfs-scorecard-1.3",
                   "required_validator_version": "8.0.1",
                   "required_reader_archive_profile": "raw-v1",
                   "required_measured_categories":

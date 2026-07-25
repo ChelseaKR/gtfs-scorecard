@@ -4,27 +4,36 @@ Code: `scorecard_missing_headsigns`
 
 ## What this means
 
-A trip's destination comes from `trip_headsign` in `trips.txt` (or
-`stop_headsign` in `stop_times.txt` for parts of a trip). Many of your trips
-leave it blank, so the feed says which route a bus is on but not where it is
-going.
+A trip can use `trip_headsign` in `trips.txt` for its destination, direction,
+or "via" label. `stop_headsign` in `stop_times.txt` can change that label during
+the trip. Some trips leave both blank even though the route has more than one
+direction or pattern.
+
+`trip_headsign` is optional. The scorecard does not ask a single-pattern,
+single-direction loop to invent one, and GTFS Best Practices says not to copy
+`route_short_name` or `route_long_name` into it.
 
 ## Why it matters
 
-The headsign is the "to Downtown" or "to Transit Center" a rider reads on the
-front of the bus and in the app. Without it, a trip planner shows "Route 5" with
-no direction, and a rider at a stop served in both directions cannot tell which
-bus is theirs. It is one of the most visible gaps in an otherwise working feed.
+The headsign is the "to Downtown" or "to Transit Center" label a rider reads on
+the front of the bus and in an app. When a route has multiple directions,
+branches, or short turns, that text helps a rider tell which service is coming.
+For a one-way loop with one pattern, the route identity may already be the only
+useful label.
 
 ## How to fix it
 
-- **Set `trip_headsign` on every trip** to the public destination, the same text
-  riders see on the bus head sign (for example "Downtown via Main St").
+- **Use the public destination, direction, or "via" text** riders actually see
+  (for example "Downtown via Main St"). Do not duplicate the route name.
 - **In most scheduling tools** this is a field on the trip or the route pattern;
   set it once per pattern and every trip on that pattern inherits it.
-- **Use `stop_headsign`** only where the destination changes partway through a
-  trip (a branch or a short-turn); otherwise `trip_headsign` is enough.
+- **Use `stop_headsign`** where that rider-facing text changes partway through a
+  trip.
+- **For a single-pattern, single-direction loop**, leave `trip_headsign` blank
+  when the vehicle displays only the route identity. Do not invent "clockwise"
+  or "counterclockwise" unless riders actually see or use that label.
 
 ## How long it usually takes
 
-Usually one value per route pattern, so a short pass even for a large system.
+Usually one value per route pattern. A loop that has no distinct rider-facing
+destination needs no change.
