@@ -288,7 +288,7 @@ declared here; none is silently skipped.
 | AI Evaluation | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
 | [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.3.0`), monthly dataset releases, MCP registry entry |
+| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases, MCP registry entry |
 | [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked

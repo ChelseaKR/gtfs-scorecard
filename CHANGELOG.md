@@ -27,6 +27,8 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-25
+
 ### Added
 - Grow reviewed coverage by 123 records to 1,734 by deepening countries already
   in the registry. A sixth gtfs-data.jp pass adds 40 first-party Japanese
@@ -251,12 +253,21 @@ the declared public surface).
 - Broaden the European canaries beyond a bus-first view with metro, tram,
   national multimodal, ferry, and GTFS-Flex demand-responsive service, while
   keeping multi-operator aggregates counted as one feed record.
-- Bump the artifact schema to 1.15 and publish the versioned reader archive
-  profile (`raw-v1` or `flat-single-root-v1`). Raw hashes, archived bytes, and
-  canonical validator inputs remain exact; flat-profile rows stay outside the
-  default raw-profile comparison cohort.
+- Bump the artifact schema through 1.17 with additive reader-archive,
+  endpoint-specific realtime, and headsign-applicability evidence. The
+  versioned reader archive profile is `raw-v1` or `flat-single-root-v1`; raw
+  hashes, archived bytes, and canonical validator inputs remain exact, and
+  flat-profile rows stay outside the default raw-profile comparison cohort.
 
 ### Fixed
+- Do not recommend `trip_headsign` for a verifiable simple loop when its
+  applicable linear trips are already labeled. The exemption requires one
+  closed stop pattern, one shape, one direction, no repeated interior stops,
+  and complete stop-time evidence. Ambiguous, malformed, or oversized cases
+  keep the ordinary finding, and raw headsign coverage remains visible.
+- Keep the daily 2,000-plus-feed scoring run inside AWS credential windows by
+  defaulting to 32 shards and refreshing OIDC credentials immediately before
+  lifecycle tagging. Manual runs can still override the shard count.
 - Restore keyboard focus to the country a user drilled from when they leave a
   subdivision map via Back. The focus-return guard tested `HTMLElement`, but SVG
   paths are `SVGElement`, so focus silently fell to the page body (a WCAG 2.4.3
@@ -449,7 +460,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.3.0
 [1.2.1]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.0
