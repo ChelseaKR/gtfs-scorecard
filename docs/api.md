@@ -29,6 +29,7 @@ domain. Every path below is relative to that base.
 | `scoring.json` | Machine-readable methodology: category weights, grade bands, and the correctness severity deductions. |
 | `/api/v1/coverage.json` | Separately named registry, organization-key, published-page, and scored-row counts. |
 | `/schemas/artifact.schema.json`, `/schemas/catalog.schema.json`, `/schemas/directory.schema.json`, `/schemas/coverage.schema.json` | JSON Schemas (Draft 2020-12) for validating the per-agency artifact, catalog, directory, and coverage counts in CI. |
+| `/schemas/sync-source-metadata-1.1.schema.json`, `/schemas/sync-source-metadata-1.2.schema.json` | Immutable contracts for catalog-sync provenance sidecars. The original unversioned path remains the frozen 1.1 compatibility schema; new sidecars carry their exact versioned URL and schema digest. |
 
 ## License and attribution
 

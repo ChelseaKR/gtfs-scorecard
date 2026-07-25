@@ -46,7 +46,7 @@ display form; new V2 proposals retain the source id.
   attribution, and whether the feed belongs in the declared coverage corpus.
 
 `--source-metadata-out <path>` writes a JSON provenance sidecar with schema
-version `1.1`. It records:
+version `1.2` and its immutable public schema URL. It records:
 
 - the source name and a safe location label; URL credentials, all query values,
   fragments, and local directory components are redacted. The exact downloaded
@@ -62,13 +62,32 @@ version `1.1`. It records:
 - the supplied country, subdivision, and provider filters; and
 - the number of Mobility Database proposals remaining after those filters and
   the current registry's identity checks;
-- a SHA-256 fingerprint and counts for the normalized registry ids, Mobility
-  Database ids, and feed URLs used to suppress already tracked candidates;
-- the package version, proposal-contract version, and SHA-256 of the installed
-  Python source tree; and
+- a SHA-256 fingerprint of the current per-record assignment between registry
+  ids, normalized Mobility Database ids, and normalized feed URLs, plus
+  identity counts. Reassigning the same external identities between agencies
+  therefore changes the fingerprint;
+- the package version, proposal-contract version, SHA-256 of the installed
+  Python source tree, packaged jurisdiction registry, and exact public receipt
+  schema; and
 - the SHA-256 and byte length of the exact rendered proposal output. An empty
   run writes an empty output file, so fresh metadata cannot sit beside a stale
   proposal.
+
+The complete sidecar is validated against the public Draft 2020-12 schema
+before either the proposal file or sidecar is written. Schema 1.2 couples the
+command source to its declared exclusions, output scope, and cross-source
+deduplication status. Count keys use the published decision vocabulary and
+only observed positive counts are serialized. Decision-specific fields cannot
+claim both a proposal and an existing registry match.
+
+Schema 1.1 remains frozen at
+`/schemas/sync-source-metadata.schema.json`, with an explicit versioned
+reference at `/schemas/sync-source-metadata-1.1.schema.json`. New receipts name
+`/schemas/sync-source-metadata-1.2.schema.json` in `schema_url` and bind its
+bytes in `tool.source_metadata_schema_sha256`. Consumers should select the
+named schema rather than treating the unversioned 1.1 URL as latest. Existing
+1.1 sidecars remain valid. Regenerate a sidecar when the per-record registry
+assignment or the stricter 1.2 decision guarantees are required.
 
 The proposal-eligible source count is pre-filter and pre-deduplication. It
 means a row is an active or status-unspecified, keyless, not-explicitly-
@@ -98,9 +117,10 @@ grant permission to reuse or republish a feed.
   remains unchanged until a person edits the appropriate intake shard.
 - Redirect-sensitive consumers keep known behavior until they receive a
   separate migration with replacement and mirror tests.
-- Source-metadata schema 1.1 now adds the mechanical candidate ledger described
-  in [ADR 0043](0043-candidate-disposition-ledger.md). It accounts for every
-  Schedule source row but does not replace human identity or reuse review.
+- Source-metadata schema 1.2 carries the mechanical candidate ledger described
+  in [ADR 0043](0043-candidate-disposition-ledger.md) and validates it before
+  emission. It accounts for every Schedule source row but does not replace
+  human identity or reuse review.
 
 ## Alternatives rejected
 

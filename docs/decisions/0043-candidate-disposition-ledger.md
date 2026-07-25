@@ -17,7 +17,7 @@ would duplicate the proposer and could disagree with it.
 
 ## Decision
 
-Source-metadata schema 1.1 carries a nested `candidate_ledger` with schema
+Source-metadata schema 1.2 carries a nested `candidate_ledger` with schema
 version 1.0. The proposer and ledger use one decision engine. The existing
 `propose_agencies()` API remains as a compatibility wrapper.
 
@@ -41,6 +41,14 @@ Mobility Database proposal fragment. `--source all` labels cross-source
 deduplication as not represented because its Transitland source snapshot is
 not bound by this receipt.
 
+The CLI validates the finished receipt against its public schema before either
+output is written. The schema closes the decision, reason, review-flag, and
+count vocabularies; rejects zero-valued observed counters; couples source scope
+fields; and prevents a disposition from carrying contradictory proposal,
+selection, registry-match, eligibility, or filter state. A Mobility
+Database-only receipt run reuses the disposition engine's proposals rather
+than evaluating the same source twice.
+
 Catalog rows are grouped deterministically. If one normalized catalog id maps
 to multiple normalized endpoints, every affected row is blocked as an identity
 conflict. The proposer does not choose one endpoint by source order.
@@ -50,12 +58,16 @@ authentication details, contact fields, notes, and per-endpoint hashes. The
 whole-source SHA-256 is the evidence anchor. The selected proposal fragment
 continues to carry the keyless endpoint a curator must review.
 
-`proposed_for_review` is not an admission or rights decision. A curator still
-verifies ownership, canonical identity, status, reuse terms, attribution, and
-fit with the declared coverage corpus before editing a registry shard.
+`proposed_for_review` is not an admission or rights decision. This is
+catalog-processing provenance, not a remediation closure receipt; it records
+no participant action or causal claim. A curator still verifies ownership,
+canonical identity, status, reuse terms, attribution, and fit with the declared
+coverage corpus before editing a registry shard.
 
 The public JSON contract is
-[`web/schemas/sync-source-metadata.schema.json`](../../web/schemas/sync-source-metadata.schema.json).
+[`web/schemas/sync-source-metadata-1.2.schema.json`](../../web/schemas/sync-source-metadata-1.2.schema.json).
+The original 1.1 contract remains frozen at its existing unversioned path and
+has a versioned reference beside it.
 
 ## Consequences
 

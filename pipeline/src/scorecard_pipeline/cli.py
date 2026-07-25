@@ -31,6 +31,7 @@ import argparse
 import csv
 import dataclasses
 import datetime as dt
+import functools
 import hashlib
 import importlib.metadata
 import json
@@ -43,6 +44,8 @@ import urllib.parse
 from collections import Counter
 from pathlib import Path
 from typing import Any
+
+import jsonschema
 
 from .agencies import load_agencies
 from .completeness import completeness
@@ -673,13 +676,33 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0
 
 
-_SYNC_SOURCE_METADATA_SCHEMA_VERSION = "1.1"
+_SYNC_SOURCE_METADATA_SCHEMA_VERSION = "1.2"
+_SYNC_SOURCE_METADATA_SCHEMA_URL = (
+    "https://gtfsscorecard.org/schemas/sync-source-metadata-1.2.schema.json"
+)
+_SYNC_SOURCE_METADATA_SCHEMA_FILENAME = "sync-source-metadata-1.2.schema.json"
+_SYNC_SOURCE_METADATA_SCHEMA_SHA256 = (
+    "efe5468c02220fabb99c544b9b47c278f7c242b65ef7ec50dc7739c95e551a96"
+)
 _SYNC_CANDIDATE_LEDGER_SCHEMA_VERSION = "1.0"
 _SYNC_PROPOSAL_CONTRACT_VERSION = "1.1"
 _CATALOG_PERMISSION_LIMITATION = (
     "Catalog metadata is evidence for review; it does not grant permission to reuse "
     "or republish a feed."
 )
+_SYNC_SOURCE_METADATA_FORMAT_CHECKER = jsonschema.FormatChecker()
+
+
+@_SYNC_SOURCE_METADATA_FORMAT_CHECKER.checks("date-time")
+def _is_offset_datetime(value: object) -> bool:
+    """RFC 3339-shaped timestamp check without an optional validator dependency."""
+    if not isinstance(value, str):
+        return True
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return "T" in value and parsed.tzinfo is not None
 
 
 def _csv_header(raw_bytes: bytes) -> tuple[list[str], bytes]:
@@ -697,7 +720,7 @@ def _csv_header(raw_bytes: bytes) -> tuple[list[str], bytes]:
 
 
 def _sync_tool_identity() -> dict[str, object]:
-    """Bind a proposal run to the installed version and exact Python sources."""
+    """Bind a proposal run to its executable code, data, and public contract."""
     package_root = Path(__file__).resolve().parent
     digest = hashlib.sha256()
     source_files = sorted(package_root.rglob("*.py"))
@@ -711,44 +734,86 @@ def _sync_tool_identity() -> dict[str, object]:
         version = importlib.metadata.version("scorecard-pipeline")
     except importlib.metadata.PackageNotFoundError:
         version = "unknown"
+    jurisdiction_registry = package_root / "data" / "iso3166.json"
+    source_metadata_schema = _sync_source_metadata_schema_bytes()
     return {
         "package": "scorecard-pipeline",
         "version": version,
         "proposal_contract_version": _SYNC_PROPOSAL_CONTRACT_VERSION,
         "python_source_tree_sha256": digest.hexdigest(),
         "python_source_file_count": len(source_files),
+        "jurisdiction_registry_sha256": hashlib.sha256(
+            jurisdiction_registry.read_bytes()
+        ).hexdigest(),
+        "source_metadata_schema_sha256": hashlib.sha256(source_metadata_schema).hexdigest(),
     }
 
 
 def _sync_registry_identity() -> dict[str, object]:
-    """Fingerprint the exact registry identity sets that suppress proposals."""
+    """Fingerprint current registry assignments, not only independent value sets."""
     from .identity import normalized_feed_url, normalized_mdb_id
 
-    identity = {
-        "agency_ids": sorted(AGENCIES),
-        "normalized_mdb_ids": sorted(
-            {
-                normalized
-                for agency in AGENCIES.values()
-                if agency.mdb_id and (normalized := normalized_mdb_id(agency.mdb_id))
-            }
-        ),
-        "normalized_feed_urls": sorted(
-            {
-                normalized
-                for agency in AGENCIES.values()
-                if (normalized := normalized_feed_url(agency.static_gtfs_url))
-            }
-        ),
-    }
+    records = [
+        {
+            "registry_id": registry_id,
+            "agency_id": agency.id,
+            "normalized_mdb_id": normalized_mdb_id(agency.mdb_id) if agency.mdb_id else "",
+            "normalized_feed_url": normalized_feed_url(agency.static_gtfs_url),
+        }
+        for registry_id, agency in sorted(AGENCIES.items())
+    ]
+    identity = {"records": records}
     canonical = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
     return {
         "sha256": hashlib.sha256(canonical).hexdigest(),
-        "agency_id_count": len(identity["agency_ids"]),
-        "normalized_mdb_id_count": len(identity["normalized_mdb_ids"]),
-        "normalized_feed_url_count": len(identity["normalized_feed_urls"]),
-        "normalization": "sync-proposal-identity-v1",
+        "agency_id_count": len(records),
+        "normalized_mdb_id_count": len(
+            {record["normalized_mdb_id"] for record in records if record["normalized_mdb_id"]}
+        ),
+        "normalized_feed_url_count": len(
+            {record["normalized_feed_url"] for record in records if record["normalized_feed_url"]}
+        ),
+        "normalization": "sync-proposal-identity-v2",
     }
+
+
+def _sync_source_metadata_schema_path() -> Path:
+    """Find the versioned receipt schema in a checkout or installed wheel."""
+    for root in (repo_root(), Path(__file__).resolve().parents[3]):
+        path = root / "web" / "schemas" / _SYNC_SOURCE_METADATA_SCHEMA_FILENAME
+        if path.exists():
+            return path
+    packaged = Path(__file__).resolve().parent / "data" / "schemas"
+    packaged /= _SYNC_SOURCE_METADATA_SCHEMA_FILENAME
+    if packaged.exists():
+        return packaged
+    raise FileNotFoundError(_SYNC_SOURCE_METADATA_SCHEMA_FILENAME)
+
+
+@functools.lru_cache(maxsize=1)
+def _sync_source_metadata_schema_bytes() -> bytes:
+    """Read one immutable schema snapshot for both hashing and validation."""
+    schema_bytes = _sync_source_metadata_schema_path().read_bytes()
+    actual_sha256 = hashlib.sha256(schema_bytes).hexdigest()
+    if actual_sha256 != _SYNC_SOURCE_METADATA_SCHEMA_SHA256:
+        raise ValueError("sync source metadata schema does not match its immutable 1.2 contract")
+    return schema_bytes
+
+
+@functools.lru_cache(maxsize=1)
+def _sync_source_metadata_validator() -> jsonschema.Draft202012Validator:
+    """Load and check the exact public schema used for fail-closed emission."""
+    schema = json.loads(_sync_source_metadata_schema_bytes())
+    jsonschema.Draft202012Validator.check_schema(schema)
+    return jsonschema.Draft202012Validator(
+        schema,
+        format_checker=_SYNC_SOURCE_METADATA_FORMAT_CHECKER,
+    )
+
+
+def _validate_sync_source_metadata(metadata: dict[str, object]) -> None:
+    """Refuse to emit a source receipt outside its published contract."""
+    _sync_source_metadata_validator().validate(metadata)
 
 
 def _sync_registry_matches() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
@@ -921,6 +986,7 @@ def _sync_source_metadata(
     }
     return {
         "schema_version": _SYNC_SOURCE_METADATA_SCHEMA_VERSION,
+        "schema_url": _SYNC_SOURCE_METADATA_SCHEMA_URL,
         "source": {
             "name": "Mobility Database",
             "command_source": command_source,
@@ -975,15 +1041,45 @@ def _validated_sync_catalog(
     return csv_text, catalog_schema
 
 
+def _sync_proposal_outputs(
+    *,
+    feeds: list[Any],
+    mobilitydb_records: list[Any],
+    proposal_args: dict[str, Any],
+    command_source: str,
+    include_metadata: bool,
+) -> tuple[list[Any], str, list[Any], str, int]:
+    """Run the disposition engine once when it can serve both MDB outputs."""
+    from .mobilitydb import propose_agencies, propose_agencies_with_dispositions, render_yaml
+
+    if not include_metadata:
+        proposals = propose_agencies(feeds, **proposal_args)
+        return proposals, render_yaml(proposals), [], "", 0
+
+    mobilitydb_proposals, dispositions = propose_agencies_with_dispositions(
+        mobilitydb_records,
+        **proposal_args,
+    )
+    proposals = (
+        mobilitydb_proposals
+        if command_source == "mobilitydb"
+        else propose_agencies(feeds, **proposal_args)
+    )
+    return (
+        proposals,
+        render_yaml(proposals),
+        dispositions,
+        render_yaml(mobilitydb_proposals),
+        len(mobilitydb_proposals),
+    )
+
+
 def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .mobilitydb import (
         DEFAULT_PROPOSAL_CATALOG_URL,
         fetch_catalog_bytes,
         parse_catalog,
         parse_catalog_records,
-        propose_agencies,
-        propose_agencies_with_dispositions,
-        render_yaml,
     )
 
     which = getattr(args, "source", "mobilitydb")
@@ -1046,18 +1142,20 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "existing_mdb_id_matches": existing_mdb_id_matches,
         "existing_feed_url_matches": existing_feed_url_matches,
     }
-    proposals = propose_agencies(feeds, **proposal_args)
-    block = render_yaml(proposals)
+    proposals, block, dispositions, mobilitydb_block, mobilitydb_proposal_count = (
+        _sync_proposal_outputs(
+            feeds=feeds,
+            mobilitydb_records=mobilitydb_records,
+            proposal_args=proposal_args,
+            command_source=which,
+            include_metadata=bool(metadata_out),
+        )
+    )
 
     source_metadata: dict[str, object] | None = None
     if metadata_out:
         if source is None:  # pragma: no cover - rejected for Transitland above
             parser.error("Mobility Database source metadata is unavailable")
-        mobilitydb_proposals, dispositions = propose_agencies_with_dispositions(
-            mobilitydb_records,
-            **proposal_args,
-        )
-        mobilitydb_block = render_yaml(mobilitydb_proposals)
         source_metadata = _sync_source_metadata(
             raw_bytes=raw_bytes,
             csv_text=csv_text,
@@ -1067,12 +1165,13 @@ def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             country=args.country,
             subdivision=args.state,
             providers=args.provider or None,
-            proposal_count=len(mobilitydb_proposals),
+            proposal_count=mobilitydb_proposal_count,
             proposal_output=block,
             mobilitydb_proposal_output=mobilitydb_block,
             candidate_records=[disposition.as_record() for disposition in dispositions],
             catalog_schema=catalog_schema,
         )
+        _validate_sync_source_metadata(source_metadata)
 
     if args.out:
         Path(args.out).write_bytes(block.encode())
