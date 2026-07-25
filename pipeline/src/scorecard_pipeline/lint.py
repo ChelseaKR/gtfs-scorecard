@@ -15,7 +15,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from .config import Agency
-from .identity import normalized_feed_url
+from .identity import normalized_feed_url, normalized_mdb_id
 
 # Catalog "name" values that describe a feed, not an agency. An agency whose name
 # is one of these was synced from the wrong column; its provider name is correct.
@@ -64,7 +64,10 @@ def lint_registry(agencies: Iterable[Agency]) -> list[RegistryIssue]:
             issues.append(RegistryIssue(agency.id, "missing_mdb_id", ""))
     canonical = [agency for agency in records if agency.is_canonical_feed]
     for kind, pairs in (
-        ("duplicate_mdb_id", ((agency.mdb_id, agency.id) for agency in canonical)),
+        (
+            "duplicate_mdb_id",
+            ((normalized_mdb_id(agency.mdb_id), agency.id) for agency in canonical),
+        ),
         (
             "duplicate_feed_url",
             ((normalized_feed_url(agency.static_gtfs_url), agency.id) for agency in canonical),

@@ -1,6 +1,6 @@
 # Global coverage roadmap
 
-Last updated: 2026-07-23
+Last updated: 2026-07-25
 
 This is the multi-region coverage plan. It sits above the Europe-specific
 [`global-expansion.md`](global-expansion.md), which owns the European GTFS beta
@@ -76,6 +76,40 @@ national and city open-data portals, regional aggregators, and
 community-mapping projects that never registered with the Mobility Database.
 Sourcing, not curation effort, is the binding limit outside Europe and North
 America. Each phase below names where a region's feeds actually live.
+
+### The declared candidate universe
+
+A 2026-07-25 snapshot puts a hard boundary around the current discovery
+universe. [Mobility Database V2](https://files.mobilitydatabase.org/feeds_v2.csv)
+(SHA-256
+`86e46cb822b1aa11447837c2cdc87755ad8a6f571135d290095a62d4129a2834`)
+contains 2,574 active, keyless Schedule rows.
+[Transitland Atlas](https://github.com/transitland/transitland-atlas) at commit
+[`1df848a`](https://github.com/transitland/transitland-atlas/commit/1df848a98107189e6df16bad2ec28825cfb8f4c6)
+(archive SHA-256
+`c3b93c14c7f4162eb9e8c386e8486f18c94cc2d4ecab07a5d10422e3e50afe30`)
+contains 3,739 Schedule rows with a current, keyless URL.
+After applying the project's scheme-insensitive endpoint normalization, their
+union is about 5,092 endpoints before content, operator, aggregate, redirect,
+identity, and reuse review. The current registry contains 2,185 feed records.
+
+A literal 100-fold increase from that registry would require 218,500 records,
+far beyond the current public-catalog supply and contrary to this roadmap's
+curation rules. Here, a "100x coverage loop" means candidate-processing
+leverage: record a disposition for at least 95% of a declared, deduplicated
+eligible snapshot without weakening human review or auto-writing the registry.
+The loop is:
+
+```text
+source snapshot and hash -> cheap preflight -> identity/content clustering ->
+reuse decision -> 25-record canary -> three checks across seven days ->
+recommendation audit and upstream catalogue corrections
+```
+
+Each new admission is paired with one legacy rights or identity audit until at
+least 90% of the registry has current evidence. Duplicates, mirrors, aggregates,
+and alternate URLs never count as extra coverage merely because they are extra
+catalog rows.
 
 ## Phases
 

@@ -14,6 +14,20 @@ from urllib.parse import urlsplit
 from .config import Agency
 
 
+def normalized_mdb_id(mdb_id: str) -> str:
+    """Canonical key for legacy numeric Mobility Database identifiers.
+
+    Mobility Database's legacy catalog used bare numeric identifiers while its
+    V2 catalog prefixes those same identifiers with ``mdb-``. Normalize only
+    those two ASCII-numeric forms so newer, nonlegacy identifiers retain their
+    exact identity.
+    """
+    numeric = mdb_id.removeprefix("mdb-")
+    if not numeric.isascii() or not numeric.isdigit():
+        return mdb_id
+    return f"mdb-{numeric.lstrip('0') or '0'}"
+
+
 def normalized_feed_url(url: str) -> str:
     """Scheme-insensitive endpoint key for HTTP/HTTPS alias detection."""
     try:
@@ -80,7 +94,7 @@ def build_identity_ledger(agencies: Iterable[Agency]) -> dict[str, object]:
             for status in ("active", "development", "deprecated", "inactive")
         },
         "unresolved_duplicate_mdb_ids": _duplicate_groups(
-            (agency.mdb_id, agency.id) for agency in canonical
+            (normalized_mdb_id(agency.mdb_id), agency.id) for agency in canonical
         ),
         "unresolved_duplicate_feed_urls": _duplicate_groups(
             (normalized_feed_url(agency.static_gtfs_url), agency.id) for agency in canonical

@@ -12,25 +12,37 @@ become an `rt_note` rather than a broken `rt_urls` entry, key-gated Schedule
 feeds are withheld, licenses are carried through, and feeds already present in
 the registry are skipped by stable catalog id or normalized URL.
 
-The catalog CSV is the stable public export of the Mobility Database; its
-column names are used directly so the mapping is auditable against the source.
+The catalog CSVs are public exports of the Mobility Database; their column
+names are used directly so the mapping is auditable against the source. New
+registry proposals use the V2 export. Mirror fallback, moved-feed discovery,
+and state backfill retain the legacy export until their redirect semantics are
+migrated separately.
 """
 
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 
 from .config import Agency
+from .identity import normalized_mdb_id
 from .lint import is_feed_descriptor
 from .location import normalize_location
 from .net import safe_get
 
-# https://mobilitydatabase.org — the catalog is published as a single CSV.
-DEFAULT_CATALOG_URL = "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
+# https://mobilitydatabase.org — V2 is the current proposal corpus. The legacy
+# export remains the default for existing consumers that depend on its mirror
+# and redirect behavior.
+MOBILITY_DATABASE_FEEDS_V2_URL = "https://files.mobilitydatabase.org/feeds_v2.csv"
+LEGACY_MOBILITY_DATABASE_CATALOG_URL = (
+    "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
+)
+DEFAULT_PROPOSAL_CATALOG_URL = MOBILITY_DATABASE_FEEDS_V2_URL
+DEFAULT_CATALOG_URL = LEGACY_MOBILITY_DATABASE_CATALOG_URL
 
 # Mobility Database gtfs-rt rows carry an entity_type; map it to our rt kinds.
 _RT_ENTITY_TO_KIND = {
@@ -38,10 +50,31 @@ _RT_ENTITY_TO_KIND = {
     "vp": "vehicle_positions",
     "sa": "service_alerts",
 }
+_RT_KIND_ORDER = ("trip_updates", "vehicle_positions", "service_alerts")
+_RT_KIND_LABEL = {
+    "trip_updates": "Trip Updates",
+    "vehicle_positions": "Vehicle Positions",
+    "service_alerts": "Service Alerts",
+}
 
 _OPEN_AUTHENTICATION_TYPES = frozenset({"", "0", "none"})
 
 _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
+
+_V2_PROPOSAL_REQUIRED_COLUMNS = frozenset(
+    {
+        "id",
+        "data_type",
+        "entity_type",
+        "location.country_code",
+        "provider",
+        "is_official",
+        "static_reference",
+        "urls.direct_download",
+        "urls.authentication_type",
+        "status",
+    }
+)
 
 # Recognized US states/territories. The catalog's subdivision field is mostly
 # these names; anything else falls back to unlocated rather than becoming its own
@@ -140,6 +173,38 @@ def _optional_bool(value: str) -> bool | None:
     return None
 
 
+def _normalized_data_type(row: dict[str, str]) -> str:
+    data_type = _cell(row, "data_type").lower()
+    if data_type == "gtfs":
+        return "gtfs"
+    if data_type in ("gtfs-rt", "gtfs_rt", "gtfs-realtime"):
+        return "gtfs-rt"
+    return ""
+
+
+def _catalog_download(row: dict[str, str]) -> str:
+    """Usable download field across the V2 and legacy catalog schemas."""
+    direct = _cell(row, "urls.direct_download", "urls.direct_download_url")
+    if direct:
+        return direct
+    # V2 separates the provider endpoint from MobilityData's hosted latest
+    # archive. The latter is useful only as a reviewed runtime mirror and must
+    # not become the canonical URL of a new proposal.
+    if "id" in row and "mdb_source_id" not in row:
+        return ""
+    return _cell(
+        row,
+        "urls.latest",
+        # Retained for compatibility with older hand-trimmed catalog inputs.
+        "static_reference",
+    )
+
+
+def _pipe_values(value: str) -> tuple[str, ...]:
+    """Trim a V2 pipe-delimited array while preserving source order."""
+    return tuple(dict.fromkeys(part.strip() for part in value.split("|") if part.strip()))
+
+
 def _feed_url_key(url: str) -> str:
     """Treat HTTP/HTTPS variants of one endpoint as the same proposal."""
     from .identity import normalized_feed_url
@@ -152,42 +217,145 @@ def _requires_authentication(authentication_type: str) -> bool:
     return authentication_type.strip().lower() not in _OPEN_AUTHENTICATION_TYPES
 
 
+def _catalog_feed(row: dict[str, str]) -> CatalogFeed | None:
+    """Map one V2 or legacy CSV row without applying proposal eligibility."""
+    normalized_type = _normalized_data_type(row)
+    if not normalized_type:
+        return None
+    return CatalogFeed(
+        mdb_id=_cell(row, "mdb_source_id", "id"),
+        data_type=normalized_type,
+        entity_type="|".join(_pipe_values(_cell(row, "entity_type").lower())),
+        country=_cell(row, "location.country_code", "country_code").upper(),
+        subdivision_code=_cell(row, "location.subdivision_code", "subdivision_code").upper(),
+        subdivision=_cell(row, "location.subdivision_name", "subdivision_name"),
+        municipality=_cell(row, "location.municipality", "municipality"),
+        provider=_cell(row, "provider", "operator", "name"),
+        # Keep the explicit-name signal for duplicate preference. Proposal
+        # rendering still falls back to provider when this is empty.
+        name=_cell(row, "name"),
+        direct_download=_catalog_download(row),
+        license_url=_cell(row, "urls.license", "license_url"),
+        authentication_type=_cell(row, "urls.authentication_type", "authentication_type"),
+        static_reference="|".join(_pipe_values(_cell(row, "static_reference"))),
+        hosted_url=_cell(row, "urls.latest"),
+        status=_cell(row, "status").lower(),
+        is_official=_optional_bool(_cell(row, "is_official")),
+    )
+
+
+def _is_active(feed: CatalogFeed) -> bool:
+    """Catalog convention: an omitted status means active."""
+    return not feed.status or feed.status == "active"
+
+
+def _is_proposal_eligible_schedule(feed: CatalogFeed) -> bool:
+    return (
+        feed.data_type == "gtfs"
+        and _is_active(feed)
+        and feed.is_official is not False
+        and not _requires_authentication(feed.authentication_type)
+        and bool(_feed_url_key(feed.direct_download))
+    )
+
+
+def proposal_catalog_schema(csv_text: str) -> str:
+    """Validate the minimum safe proposal schema and name the catalog form.
+
+    Proposal eligibility treats omitted status, authentication, and official
+    flags permissively for old hand-trimmed legacy inputs. The V2 default must
+    therefore prove those columns are present before a missing or non-CSV
+    response can silently become an empty, apparently successful intake run.
+    """
+    reader = csv.reader(io.StringIO(csv_text))
+    try:
+        columns = next(reader)
+    except (csv.Error, StopIteration) as exc:
+        raise ValueError("catalog CSV has no readable header") from exc
+    fields = {column.strip() for column in columns if column.strip()}
+    if "id" in fields and "mdb_source_id" not in fields:
+        missing = sorted(_V2_PROPOSAL_REQUIRED_COLUMNS - fields)
+        if missing:
+            raise ValueError(
+                "Mobility Database V2 catalog is missing required column(s): " + ", ".join(missing)
+            )
+        return "mobilitydatabase-feeds-v2"
+    if "mdb_source_id" in fields:
+        missing = sorted({"mdb_source_id", "data_type"} - fields)
+        has_download = bool(
+            fields
+            & {
+                "urls.direct_download",
+                "urls.direct_download_url",
+                "urls.latest",
+                "static_reference",
+            }
+        )
+        if missing or not has_download:
+            details = missing + ([] if has_download else ["a supported download URL column"])
+            raise ValueError(
+                "legacy Mobility Database catalog is missing required column(s): "
+                + ", ".join(details)
+            )
+        return "mobilitydatabase-legacy"
+    raise ValueError(
+        "unrecognized proposal catalog header: expected Mobility Database V2 "
+        "'id' or legacy 'mdb_source_id'"
+    )
+
+
 def parse_catalog(csv_text: str) -> list[CatalogFeed]:
     """Parse the catalog CSV into feed records, skipping rows without a usable
     download URL or a recognised data type."""
     feeds: list[CatalogFeed] = []
     reader = csv.DictReader(io.StringIO(csv_text))
     for row in reader:
-        data_type = _cell(row, "data_type").lower()
-        if data_type not in ("gtfs", "gtfs-rt", "gtfs_rt", "gtfs-realtime"):
+        feed = _catalog_feed(row)
+        if feed is None:
             continue
-        normalized_type = "gtfs" if data_type == "gtfs" else "gtfs-rt"
-        download = _cell(row, "urls.direct_download", "urls.latest", "static_reference")
-        if normalized_type == "gtfs" and not download:
+        if not feed.direct_download:
             continue
-        feeds.append(
-            CatalogFeed(
-                mdb_id=_cell(row, "mdb_source_id", "id"),
-                data_type=normalized_type,
-                entity_type=_cell(row, "entity_type").lower(),
-                country=_cell(row, "location.country_code", "country_code").upper(),
-                subdivision_code=_cell(
-                    row, "location.subdivision_code", "subdivision_code"
-                ).upper(),
-                subdivision=_cell(row, "location.subdivision_name", "subdivision_name"),
-                municipality=_cell(row, "location.municipality", "municipality"),
-                provider=_cell(row, "provider", "operator", "name"),
-                name=_cell(row, "name", "provider"),
-                direct_download=download,
-                license_url=_cell(row, "urls.license", "license_url"),
-                authentication_type=_cell(row, "urls.authentication_type", "authentication_type"),
-                static_reference=_cell(row, "static_reference"),
-                hosted_url=_cell(row, "urls.latest"),
-                status=_cell(row, "status").lower(),
-                is_official=_optional_bool(_cell(row, "is_official")),
-            )
-        )
+        feeds.append(feed)
     return feeds
+
+
+def catalog_source_counts(csv_text: str) -> dict[str, int]:
+    """Source-envelope counts for a reviewable proposal run.
+
+    ``proposal_eligible_schedule_records`` is intentionally pre-user-filter
+    and pre-deduplication. It records the source denominator, not permission to
+    publish any individual feed.
+    """
+    rows = list(csv.DictReader(io.StringIO(csv_text)))
+    feeds = [feed for row in rows if (feed := _catalog_feed(row)) is not None]
+    schedules = [feed for feed in feeds if feed.data_type == "gtfs"]
+    realtime = [feed for feed in feeds if feed.data_type == "gtfs-rt"]
+    active_schedules = [feed for feed in schedules if _is_active(feed)]
+    active_keyless = [
+        feed for feed in active_schedules if not _requires_authentication(feed.authentication_type)
+    ]
+    return {
+        "total_records": len(rows),
+        "schedule_records": len(schedules),
+        "realtime_records": len(realtime),
+        "active_schedule_records": len(active_schedules),
+        "active_keyless_schedule_records": len(active_keyless),
+        "proposal_eligible_schedule_records": sum(
+            _is_proposal_eligible_schedule(feed) for feed in schedules
+        ),
+    }
+
+
+def _catalog_id_slug(mdb_id: str, *, fallback_material: str = "") -> str:
+    """A lowercase registry-safe catalog-id suffix, with a stable fallback."""
+    slug = _SLUG_STRIP.sub("-", mdb_id.casefold()).strip("-")
+    if slug:
+        return slug
+    material = mdb_id or fallback_material
+    if material:
+        digest = hashlib.sha256(material.encode()).hexdigest()[:12]
+        return f"catalog-{digest}"
+    return "agency"
 
 
 def slugify(provider: str, mdb_id: str) -> str:
@@ -198,14 +366,15 @@ def slugify(provider: str, mdb_id: str) -> str:
     """
     slug = _SLUG_STRIP.sub("-", provider.lower()).strip("-")
     if not slug or not slug[0].isalnum():
-        slug = f"mdb-{mdb_id}" if mdb_id else "agency"
+        catalog_slug = _catalog_id_slug(mdb_id, fallback_material=provider)
+        slug = catalog_slug if catalog_slug.startswith("mdb-") else f"mdb-{catalog_slug}"
     return slug
 
 
 def _license_note(feed: CatalogFeed) -> str:
     if feed.license_url:
         return f"License: {feed.license_url}"
-    return "No stated data license in the Mobility Database; verify before publishing."
+    return "No stated data license in the source catalog; verify before publishing."
 
 
 def _matches(
@@ -216,6 +385,125 @@ def _matches(
     if subdivision and feed.subdivision.lower() != subdivision.lower():
         return False
     return not (providers and feed.provider.lower() not in providers)
+
+
+def _schedule_metadata_richness(
+    feed: CatalogFeed,
+) -> tuple[tuple[int, ...], tuple[str, ...]]:
+    """Preference for duplicate schedule rows that share one endpoint.
+
+    The final string fields make exact ties deterministic without changing the
+    public identity: the selected proposal still carries the raw catalog id.
+    """
+    location_fields = sum(
+        bool(value) for value in (feed.country, feed.subdivision_code, feed.subdivision)
+    )
+    return (
+        (
+            int(feed.is_official is True),
+            int(bool(feed.license_url)),
+            location_fields,
+            int(bool(feed.municipality)),
+            int(bool(feed.hosted_url)),
+            int(bool(feed.name)),
+            int(bool(feed.provider)),
+            len(feed.name),
+            len(feed.provider),
+        ),
+        (
+            feed.name.casefold(),
+            feed.provider.casefold(),
+            feed.country.casefold(),
+            feed.subdivision_code.casefold(),
+            feed.subdivision.casefold(),
+            feed.municipality.casefold(),
+            feed.license_url,
+            feed.hosted_url,
+            normalized_mdb_id(feed.mdb_id),
+            feed.mdb_id,
+            feed.direct_download,
+        ),
+    )
+
+
+def _preferred_schedule_url(feeds: list[CatalogFeed]) -> str:
+    """Choose a stable HTTPS spelling without discarding richer metadata.
+
+    Duplicate rows in one normalized endpoint group can differ in URL spelling.
+    Metadata still comes from the richest row, while the rendered canonical
+    endpoint uses HTTPS whenever the catalog supplies it.
+    """
+    urls = sorted({feed.direct_download for feed in feeds})
+    secure = [url for url in urls if url.casefold().startswith("https://")]
+    return (secure or urls)[0]
+
+
+def _realtime_urls_by_access(
+    feeds: Iterable[CatalogFeed],
+) -> tuple[dict[str, set[str]], dict[str, set[str]], bool]:
+    """Distinct URLs per kind/access class, plus gated rows of unknown kind."""
+    open_urls: dict[str, set[str]] = {kind: set() for kind in _RT_KIND_ORDER}
+    gated_urls: dict[str, set[str]] = {kind: set() for kind in _RT_KIND_ORDER}
+    has_unmapped_gated_feed = False
+    for feed in feeds:
+        gated = _requires_authentication(feed.authentication_type)
+        mapped = False
+        for entity_type in _pipe_values(feed.entity_type):
+            kind = _RT_ENTITY_TO_KIND.get(entity_type)
+            if not kind:
+                continue
+            mapped = True
+            (gated_urls if gated else open_urls)[kind].add(feed.direct_download)
+        if gated and not mapped:
+            has_unmapped_gated_feed = True
+    return open_urls, gated_urls, has_unmapped_gated_feed
+
+
+def _select_realtime(feeds: Iterable[CatalogFeed]) -> tuple[dict[str, str], str]:
+    """Attach only one access-consistent URL per realtime kind.
+
+    Exact duplicate catalog rows collapse into sets. Distinct keyless URLs or
+    mixed keyless/key-gated evidence are not safe to resolve mechanically, so
+    that kind stays unattached and the proposal explains why.
+    """
+    open_urls, gated_urls, has_unmapped_gated_feed = _realtime_urls_by_access(feeds)
+
+    selected: dict[str, str] = {}
+    notes: list[str] = []
+    gated_only: list[str] = []
+    for kind in _RT_KIND_ORDER:
+        keyless = open_urls[kind]
+        gated = gated_urls[kind]
+        label = _RT_KIND_LABEL[kind]
+        if keyless and gated:
+            notes.append(
+                f"The source catalog lists both keyless and access-key {label} "
+                f"references. No {label} endpoint was attached because the access "
+                "requirements conflict."
+            )
+        elif len(keyless) > 1:
+            notes.append(
+                f"The source catalog lists multiple keyless {label} endpoints. "
+                f"No {label} endpoint was attached because the canonical URL is ambiguous."
+            )
+        elif len(keyless) == 1:
+            selected[kind] = next(iter(keyless))
+        elif gated:
+            gated_only.append(label)
+
+    if gated_only:
+        labels = ", ".join(gated_only)
+        notes.append(
+            f"This agency publishes {labels}, but those feeds need an access key we don't have yet."
+        )
+    if has_unmapped_gated_feed:
+        notes.append(
+            "The source catalog also lists a realtime feed with an unrecognized kind "
+            "that needs an access key, so it was not attached."
+        )
+    if notes:
+        notes.append("Nothing here counts against the grade.")
+    return selected, " ".join(notes)
 
 
 def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -239,7 +527,9 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
     feed even when its display name or URL spelling differs.
     """
     existing = existing_ids or set()
-    tracked_mdb_ids = {mdb_id for mdb_id in (existing_mdb_ids or set()) if mdb_id}
+    tracked_mdb_ids = {
+        normalized_mdb_id(mdb_id) for mdb_id in (existing_mdb_ids or set()) if mdb_id
+    }
     tracked_feed_urls = {
         key for url in (existing_feed_urls or set()) if (key := _feed_url_key(url))
     }
@@ -247,69 +537,61 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
 
     rt_by_reference: dict[str, list[CatalogFeed]] = {}
     for feed in feeds:
-        active = not feed.status or feed.status == "active"
         if (
             feed.data_type == "gtfs-rt"
             and feed.static_reference
-            and active
+            and _is_active(feed)
             and feed.is_official is not False
         ):
-            rt_by_reference.setdefault(feed.static_reference, []).append(feed)
+            for reference in _pipe_values(feed.static_reference):
+                rt_by_reference.setdefault(normalized_mdb_id(reference), []).append(feed)
+
+    # Filter first, then group duplicate catalog records by endpoint. Selecting
+    # the richest row from the complete group makes the result independent of
+    # source order while retaining the raw id of the selected V2 row.
+    schedule_groups: dict[str, list[CatalogFeed]] = {}
+    for feed in feeds:
+        if not _is_proposal_eligible_schedule(feed):
+            continue
+        if not _matches(feed, country, subdivision, provider_filter):
+            continue
+        url_key = _feed_url_key(feed.direct_download)
+        schedule_groups.setdefault(url_key, []).append(feed)
 
     proposals: list[ProposedAgency] = []
     used_ids = set(existing)
     proposed_sources: set[str] = set()
     proposed_urls: set[str] = set()
-    for feed in feeds:
-        if feed.data_type != "gtfs":
+    for url_key, duplicates in schedule_groups.items():
+        duplicate_ids = {
+            normalized_mdb_id(candidate.mdb_id) for candidate in duplicates if candidate.mdb_id
+        }
+        if duplicate_ids & tracked_mdb_ids or url_key in tracked_feed_urls:
             continue
-        if feed.status and feed.status != "active":
+        feed = max(duplicates, key=_schedule_metadata_richness)
+        proposal_url = _preferred_schedule_url(duplicates)
+        source_key = normalized_mdb_id(feed.mdb_id)
+        if (source_key and source_key in proposed_sources) or url_key in proposed_urls:
             continue
-        if feed.is_official is False:
-            continue
-        if _requires_authentication(feed.authentication_type):
-            continue
-        if not _matches(feed, country, subdivision, provider_filter):
-            continue
-        url_key = _feed_url_key(feed.direct_download)
-        # A malformed catalog URL has no safe identity key. Do not emit an
-        # unusable proposal or add the empty sentinel to the dedup set, where
-        # it would make later malformed rows look like the same endpoint.
-        if not url_key:
-            continue
-        if feed.mdb_id in tracked_mdb_ids or url_key in tracked_feed_urls:
-            continue
-        if (feed.mdb_id and feed.mdb_id in proposed_sources) or url_key in proposed_urls:
-            continue
-        if feed.mdb_id:
-            proposed_sources.add(feed.mdb_id)
+        if source_key:
+            proposed_sources.add(source_key)
         proposed_urls.add(url_key)
 
         base_id = slugify(feed.provider, feed.mdb_id)
         agency_id = base_id
         if agency_id in used_ids:
-            agency_id = f"{base_id}-{feed.mdb_id}" if feed.mdb_id else base_id
+            suffix = _catalog_id_slug(feed.mdb_id, fallback_material=feed.direct_download)
+            agency_id = f"{base_id}-{suffix}"
         if agency_id in existing or agency_id in used_ids:
             continue
         used_ids.add(agency_id)
 
-        rt_urls: dict[str, str] = {}
-        key_gated = False
-        for rt in rt_by_reference.get(feed.mdb_id, []):
-            kind = _RT_ENTITY_TO_KIND.get(rt.entity_type)
-            if not kind:
-                continue
-            if _requires_authentication(rt.authentication_type):
-                key_gated = True
-                continue
-            rt_urls[kind] = rt.direct_download
-
-        rt_note = ""
-        if key_gated and not rt_urls:
-            rt_note = (
-                "This agency publishes realtime, but the feed needs an access key "
-                "we don't have yet. Nothing here counts against the grade."
-            )
+        # Any duplicate row can be the id referenced by a realtime source, so
+        # attach RT from the complete endpoint group to the selected proposal.
+        realtime_feeds: list[CatalogFeed] = []
+        for duplicate_id in sorted(duplicate_ids):
+            realtime_feeds.extend(rt_by_reference.get(duplicate_id, []))
+        rt_urls, rt_note = _select_realtime(realtime_feeds)
 
         # The catalog's feed name is usually the agency's brand ("Yolobus"), but
         # sometimes a feed descriptor ("Flex", "Bus", "Do not use - deprecated").
@@ -324,7 +606,7 @@ def propose_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.
             ProposedAgency(
                 id=agency_id,
                 name=name,
-                static_gtfs_url=feed.direct_download,
+                static_gtfs_url=proposal_url,
                 mdb_id=feed.mdb_id,
                 # Preserve an unassigned or malformed catalog country so the
                 # registry rejects it explicitly instead of a proposal silently
@@ -406,14 +688,18 @@ def render_yaml(proposals: list[ProposedAgency]) -> str:
     return "\n".join(lines)
 
 
-def fetch_catalog(url: str = DEFAULT_CATALOG_URL) -> str:
-    """Download the catalog CSV. Split out so tests use a local fixture.
+def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
+    """Download the exact catalog bytes for parsing and provenance hashing.
 
     Routed through safe_get so an operator-supplied --catalog URL gets the same
     SSRF and size guards as every other fetch, rather than a raw urlopen.
     """
-    data = safe_get(url, timeout=60, max_bytes=128 * 1024 * 1024)
-    return data.decode("utf-8", errors="replace")
+    return safe_get(url, timeout=60, max_bytes=128 * 1024 * 1024)
+
+
+def fetch_catalog(url: str = DEFAULT_CATALOG_URL) -> str:
+    """Download and decode the catalog CSV. Tests use a local fixture."""
+    return fetch_catalog_bytes(url).decode("utf-8", errors="replace")
 
 
 _catalog_cache: list[CatalogFeed] | None = None
@@ -450,8 +736,9 @@ def hosted_mirror_url(
         return None
     schedule = [feed for feed in feeds if feed.data_type == "gtfs" and feed.hosted_url]
     if mdb_id:
+        mdb_key = normalized_mdb_id(mdb_id)
         for feed in schedule:
-            if feed.mdb_id == mdb_id:
+            if normalized_mdb_id(feed.mdb_id) == mdb_key:
                 return feed.hosted_url
 
     current_key = _feed_url_key(current_url)
@@ -568,14 +855,14 @@ def find_replacements(
     for f in schedule:
         by_slug.setdefault(_url_slug(f.direct_download), []).append(f)
         if f.mdb_id:
-            by_mdb[f.mdb_id] = f
+            by_mdb[normalized_mdb_id(f.mdb_id)] = f
 
     matches: list[FeedMatch] = []
     for agency_id, agency_name, current_url in registry:
         current_slug = _url_slug(current_url)
 
         # Pinned id wins: match the exact catalog row, name changes and all.
-        pinned_feed = by_mdb.get(pinned.get(agency_id, ""))
+        pinned_feed = by_mdb.get(normalized_mdb_id(pinned.get(agency_id, "")))
         if pinned_feed is not None:
             status = "tracked" if _same_feed(current_slug, pinned_feed) else "replaced"
             matches.append(FeedMatch(agency_id, agency_name, current_url, status, [pinned_feed]))
@@ -656,12 +943,14 @@ def resolve_states(agencies: Iterable[Agency], catalog: list[CatalogFeed]) -> di
     subdivision. Only newly resolved agencies are returned: a curator's state is
     left alone, and an mdb_id absent from the catalog or a non-state subdivision
     (a stray city) is skipped rather than guessed."""
-    by_mdb = {f.mdb_id: f.subdivision for f in catalog if f.mdb_id and f.subdivision}
+    by_mdb = {
+        normalized_mdb_id(f.mdb_id): f.subdivision for f in catalog if f.mdb_id and f.subdivision
+    }
     resolved: dict[str, str] = {}
     for agency in agencies:
         if agency.state or not agency.mdb_id:
             continue
-        state = canonical_state(by_mdb.get(agency.mdb_id, ""))
+        state = canonical_state(by_mdb.get(normalized_mdb_id(agency.mdb_id), ""))
         if state:
             resolved[agency.id] = state
     return resolved

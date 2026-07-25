@@ -28,9 +28,11 @@ scorecard report --agency unitrans [--brand b.yaml] [--out r.html]  # board-read
 from __future__ import annotations
 
 import argparse
+import csv
 import dataclasses
 import datetime as dt
 import hashlib
+import importlib.metadata
 import json
 import logging
 import os
@@ -670,46 +672,324 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0
 
 
+_SYNC_SOURCE_METADATA_SCHEMA_VERSION = "1.0"
+_SYNC_PROPOSAL_CONTRACT_VERSION = "1.0"
+_CATALOG_PERMISSION_LIMITATION = (
+    "Catalog metadata is evidence for review; it does not grant permission to reuse "
+    "or republish a feed."
+)
+
+
+def _csv_header(raw_bytes: bytes) -> tuple[list[str], bytes]:
+    """Ordered CSV columns and the exact header record bytes, without its line ending."""
+    lines = raw_bytes.splitlines(keepends=True)
+    if not lines:
+        return [], b""
+    reader = csv.reader(line.decode("utf-8", errors="replace") for line in lines)
+    try:
+        columns = next(reader)
+    except (csv.Error, StopIteration):
+        return [], b""
+    header = b"".join(lines[: reader.line_num]).rstrip(b"\r\n")
+    return columns, header
+
+
+def _sync_tool_identity() -> dict[str, object]:
+    """Bind a proposal run to the installed version and exact Python sources."""
+    package_root = Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    source_files = sorted(package_root.rglob("*.py"))
+    for path in source_files:
+        relative = path.relative_to(package_root).as_posix().encode()
+        digest.update(relative)
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    try:
+        version = importlib.metadata.version("scorecard-pipeline")
+    except importlib.metadata.PackageNotFoundError:
+        version = "unknown"
+    return {
+        "package": "scorecard-pipeline",
+        "version": version,
+        "proposal_contract_version": _SYNC_PROPOSAL_CONTRACT_VERSION,
+        "python_source_tree_sha256": digest.hexdigest(),
+        "python_source_file_count": len(source_files),
+    }
+
+
+def _sync_registry_identity() -> dict[str, object]:
+    """Fingerprint the exact registry identity sets that suppress proposals."""
+    from .identity import normalized_feed_url, normalized_mdb_id
+
+    identity = {
+        "agency_ids": sorted(AGENCIES),
+        "normalized_mdb_ids": sorted(
+            {
+                normalized
+                for agency in AGENCIES.values()
+                if agency.mdb_id and (normalized := normalized_mdb_id(agency.mdb_id))
+            }
+        ),
+        "normalized_feed_urls": sorted(
+            {
+                normalized
+                for agency in AGENCIES.values()
+                if (normalized := normalized_feed_url(agency.static_gtfs_url))
+            }
+        ),
+    }
+    canonical = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    return {
+        "sha256": hashlib.sha256(canonical).hexdigest(),
+        "agency_id_count": len(identity["agency_ids"]),
+        "normalized_mdb_id_count": len(identity["normalized_mdb_ids"]),
+        "normalized_feed_url_count": len(identity["normalized_feed_urls"]),
+        "normalization": "sync-proposal-identity-v1",
+    }
+
+
+def _validate_sync_output_paths(
+    *,
+    out: str | None,
+    metadata_out: str | None,
+    local_catalog: str | None,
+    parser: argparse.ArgumentParser,
+) -> None:
+    """Keep proposal outputs separate from inputs and the curated registry."""
+    outputs = [("--out", out), ("--source-metadata-out", metadata_out)]
+    resolved_outputs = [
+        (label, Path(value).expanduser().resolve()) for label, value in outputs if value is not None
+    ]
+    if len(resolved_outputs) == 2 and resolved_outputs[0][1] == resolved_outputs[1][1]:
+        parser.error("--source-metadata-out and --out must be different paths")
+
+    catalog_path = Path(local_catalog).expanduser().resolve() if local_catalog else None
+    root = repo_root().resolve()
+    legacy_registry = root / "agencies.yaml"
+    registry_dir = root / "registry"
+    for label, path in resolved_outputs:
+        if catalog_path is not None and path == catalog_path:
+            parser.error(f"{label} must not overwrite the local --catalog input")
+        if path == legacy_registry or path.is_relative_to(registry_dir):
+            parser.error(
+                f"{label} must not target the agency registry; sync only writes "
+                "reviewable proposal files"
+            )
+
+
+def _sync_source_reference(source: str) -> dict[str, object]:
+    """Record a useful source label without persisting URL credentials or home paths."""
+    if not source.startswith(("http://", "https://")):
+        return {
+            "url_or_path": f"<local>/{Path(source).name}",
+            "location_redacted": True,
+        }
+
+    parsed = urllib.parse.urlsplit(source)
+    hostname = parsed.hostname or ""
+    if ":" in hostname:
+        hostname = f"[{hostname}]"
+    try:
+        port = parsed.port
+    except ValueError:
+        port = None
+    netloc = f"{hostname}:{port}" if port is not None else hostname
+    query_pairs = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    redacted_pairs = [(key, "REDACTED") for key, _value in query_pairs]
+    display = urllib.parse.urlunsplit(
+        (
+            parsed.scheme,
+            netloc,
+            parsed.path,
+            urllib.parse.urlencode(redacted_pairs),
+            "",
+        )
+    )
+    return {
+        "url_or_path": display,
+        "location_redacted": display != source,
+    }
+
+
+def _sync_source_metadata(
+    *,
+    raw_bytes: bytes,
+    csv_text: str,
+    source: str,
+    fetched_at: str,
+    command_source: str,
+    country: str | None,
+    subdivision: str | None,
+    providers: list[str] | None,
+    proposal_count: int,
+    proposal_output: str,
+    catalog_schema: str,
+) -> dict[str, object]:
+    """Reproducible envelope for one Mobility Database proposal run."""
+    from .mobilitydb import catalog_source_counts
+
+    columns, header = _csv_header(raw_bytes)
+    limitations = [_CATALOG_PERMISSION_LIMITATION]
+    excluded_sources: list[str] = []
+    if command_source == "all":
+        excluded_sources.append("Transitland Atlas")
+        limitations.append(
+            "This sidecar covers only the Mobility Database CSV. Transitland Atlas "
+            "source rows and per-source counts from --source all are excluded. The "
+            "proposal output hash still binds the combined rendered output."
+        )
+    proposal_bytes = proposal_output.encode()
+    source_reference = _sync_source_reference(source)
+    return {
+        "schema_version": _SYNC_SOURCE_METADATA_SCHEMA_VERSION,
+        "source": {
+            "name": "Mobility Database",
+            "command_source": command_source,
+            "excluded_sources": excluded_sources,
+            "catalog_schema": catalog_schema,
+            **source_reference,
+        },
+        "fetched_at": fetched_at,
+        "raw_bytes_sha256": hashlib.sha256(raw_bytes).hexdigest(),
+        "columns": columns,
+        "header_sha256": hashlib.sha256(header).hexdigest(),
+        "record_counts": catalog_source_counts(csv_text),
+        "filters": {
+            "country": country,
+            "subdivision": subdivision,
+            "providers": providers or [],
+        },
+        "proposal_count": proposal_count,
+        "proposal_count_scope": "mobilitydatabase_only",
+        "proposal_output": {
+            "sha256": hashlib.sha256(proposal_bytes).hexdigest(),
+            "bytes": len(proposal_bytes),
+            "format": "registry-yaml-fragment; charset=utf-8; line-endings=lf",
+            "scope": "all_sources" if command_source == "all" else "mobilitydatabase_only",
+        },
+        "registry_identity": _sync_registry_identity(),
+        "tool": _sync_tool_identity(),
+        "limitations": limitations,
+    }
+
+
+def _validated_sync_catalog(
+    raw_bytes: bytes,
+    *,
+    source: str,
+    default_source: str,
+    parser: argparse.ArgumentParser,
+) -> tuple[str, str]:
+    """Decode a proposal catalog and fail closed on schema drift."""
+    from .mobilitydb import proposal_catalog_schema
+
+    csv_text = raw_bytes.decode("utf-8", errors="replace")
+    try:
+        catalog_schema = proposal_catalog_schema(csv_text)
+    except ValueError as exc:
+        parser.error(f"cannot use proposal catalog: {exc}")
+    if source == default_source and catalog_schema != "mobilitydatabase-feeds-v2":
+        parser.error(
+            "the default Mobility Database proposal URL must return the V2 feeds_v2.csv schema"
+        )
+    return csv_text, catalog_schema
+
+
 def _cmd_sync(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .mobilitydb import (
-        DEFAULT_CATALOG_URL,
-        fetch_catalog,
+        DEFAULT_PROPOSAL_CATALOG_URL,
+        fetch_catalog_bytes,
         parse_catalog,
         propose_agencies,
         render_yaml,
     )
 
     which = getattr(args, "source", "mobilitydb")
+    metadata_out = getattr(args, "source_metadata_out", None)
+    if metadata_out and which == "transitland":
+        parser.error(
+            "--source-metadata-out requires --source mobilitydb or --source all; "
+            "Transitland is not part of the CSV sidecar"
+        )
+    source = (
+        args.catalog or DEFAULT_PROPOSAL_CATALOG_URL if which in ("mobilitydb", "all") else None
+    )
+    local_catalog = (
+        source if source is not None and not source.startswith(("http://", "https://")) else None
+    )
+    _validate_sync_output_paths(
+        out=args.out,
+        metadata_out=metadata_out,
+        local_catalog=local_catalog,
+        parser=parser,
+    )
+
     feeds = []
+    mobilitydb_feeds = []
+    raw_bytes = b""
+    csv_text = ""
+    fetched_at = ""
+    catalog_schema = ""
     if which in ("mobilitydb", "all"):
-        source = args.catalog or DEFAULT_CATALOG_URL
+        if source is None:  # pragma: no cover - argparse choices make this unreachable
+            parser.error("Mobility Database source is unavailable")
         is_url = source.startswith(("http://", "https://"))
-        csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
-        feeds.extend(parse_catalog(csv_text))
+        raw_bytes = fetch_catalog_bytes(source) if is_url else Path(source).read_bytes()
+        fetched_at = dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z")
+        csv_text, catalog_schema = _validated_sync_catalog(
+            raw_bytes,
+            source=source,
+            default_source=DEFAULT_PROPOSAL_CATALOG_URL,
+            parser=parser,
+        )
+        mobilitydb_feeds = parse_catalog(csv_text)
+        feeds.extend(mobilitydb_feeds)
     if which in ("transitland", "all"):
         from .transitland import fetch_feeds
 
         transitland_feeds = fetch_feeds()
         log.info("Transitland Atlas contributed %d feed rows.", len(transitland_feeds))
         feeds.extend(transitland_feeds)
-    proposals = propose_agencies(
-        feeds,
-        country=args.country,
-        subdivision=args.state,
-        providers=args.provider or None,
-        existing_ids=set(AGENCIES),
-        existing_mdb_ids={agency.mdb_id for agency in AGENCIES.values() if agency.mdb_id},
-        existing_feed_urls={agency.static_gtfs_url for agency in AGENCIES.values()},
-    )
-    if not proposals:
-        log.info("No new agencies matched the filter (all matches already tracked).")
-        return 0
+
+    proposal_args = {
+        "country": args.country,
+        "subdivision": args.state,
+        "providers": args.provider or None,
+        "existing_ids": set(AGENCIES),
+        "existing_mdb_ids": {agency.mdb_id for agency in AGENCIES.values() if agency.mdb_id},
+        "existing_feed_urls": {agency.static_gtfs_url for agency in AGENCIES.values()},
+    }
+    proposals = propose_agencies(feeds, **proposal_args)
     block = render_yaml(proposals)
     if args.out:
-        Path(args.out).write_text(block)
+        Path(args.out).write_bytes(block.encode())
         log.info("Wrote %d proposed agencies to %s", len(proposals), args.out)
     else:
         print(block, end="")
+
+    if metadata_out:
+        if source is None:  # pragma: no cover - rejected for Transitland above
+            parser.error("Mobility Database source metadata is unavailable")
+        mobilitydb_proposals = propose_agencies(mobilitydb_feeds, **proposal_args)
+        source_metadata = _sync_source_metadata(
+            raw_bytes=raw_bytes,
+            csv_text=csv_text,
+            source=source,
+            fetched_at=fetched_at,
+            command_source=which,
+            country=args.country,
+            subdivision=args.state,
+            providers=args.provider or None,
+            proposal_count=len(mobilitydb_proposals),
+            proposal_output=block,
+            catalog_schema=catalog_schema,
+        )
+        Path(metadata_out).write_text(json.dumps(source_metadata, indent=2, sort_keys=True) + "\n")
+        log.info("Wrote Mobility Database source metadata to %s", metadata_out)
+    if not proposals:
+        log.info("No reviewable, untracked agencies matched the source and filters.")
+        return 0
     log.info("%d proposed; review and merge into the registry intake shard.", len(proposals))
     return 0
 
@@ -2501,6 +2781,11 @@ def main(argv: list[str] | None = None) -> int:
     sync.add_argument("--state", help="state/subdivision filter, e.g. California")
     sync.add_argument("--provider", action="append", help="provider name filter (repeatable)")
     sync.add_argument("--out", help="write proposals here instead of stdout")
+    sync.add_argument(
+        "--source-metadata-out",
+        metavar="PATH",
+        help="write a versioned Mobility Database source-provenance sidecar here",
+    )
 
     discover = sub.add_parser(
         "discover", help="check tracked feed URLs against the Mobility Database for replacements"
