@@ -384,6 +384,7 @@ def test_changes_page_splits_improved_and_declined() -> None:
 
 def test_changes_page_has_friendly_empty_states() -> None:
     html = _changes_sections([])
+    assert "No material score or grade changes were detected" in html
     assert "No comparable upward moves" in html
     assert "No comparable downward moves" in html
 
@@ -3408,6 +3409,34 @@ def test_pulse_page_combines_guarded_changes_and_trend_without_rankings() -> Non
     # The covered-set framing survives the merge, and the page renders wide.
     assert "not covered yet" in html.replace("\n    ", " ")
     assert 'class="wrap wrap-wide"' in html
+
+
+def test_pulse_distinguishes_one_point_contract_baseline_from_quiet_comparison() -> None:
+    from scorecard_pipeline.render_site import _render_pulse_page
+
+    baseline_date = "2030-02-03"
+    html = _render_pulse_page(
+        {"comparison": {"eligible_count": 10}},
+        [],
+        [
+            {
+                "date": baseline_date,
+                "average_score": 68.4,
+                "agency_count": 10,
+                "expired_pct": 5.9,
+            }
+        ],
+        {"points": 1, "score_delta": None, "first": None, "last": None},
+        [],
+    )
+
+    assert "first comparable snapshot under the current scoring contract" in html
+    assert (
+        f"Comparable history under the current scoring contract begins on {baseline_date}" in html
+    )
+    assert "Any scores from earlier contracts are intentionally excluded" in html
+    assert "Rechecks on the same day update that day's snapshot" in html
+    assert "No material score or grade changes were detected" not in html
 
 
 def test_pulse_suppresses_change_and_trend_claims_without_a_guarded_cohort() -> None:

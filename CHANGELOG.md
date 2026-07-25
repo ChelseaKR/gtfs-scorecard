@@ -271,6 +271,9 @@ the declared public surface).
 - Upgrade both Lambda images to the reviewed Amazon Linux
   `2023.12.20260720` repository snapshot, so fixed `glib2` and `libacl`
   packages replace the vulnerable base-image versions.
+- On the first day of a new scoring contract, label the coverage snapshot as
+  a baseline instead of claiming that no material changes were detected.
+  Same-day rechecks now explain that they update the existing daily point.
 - Restore keyboard focus to the country a user drilled from when they leave a
   subdivision map via Back. The focus-return guard tested `HTMLElement`, but SVG
   paths are `SVGElement`, so focus silently fell to the page body (a WCAG 2.4.3

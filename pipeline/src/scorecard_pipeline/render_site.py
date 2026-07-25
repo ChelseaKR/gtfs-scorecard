@@ -5452,7 +5452,7 @@ def compute_changes(
     return out
 
 
-def _changes_sections(changes: list[dict[str, Any]]) -> str:
+def _changes_sections(changes: list[dict[str, Any]], *, baseline_date: str | None = None) -> str:
     """The upward/downward sections of the change feed
     (compute_changes), side by side on wide screens. Rendered inside the
     national pulse page; reuses the delta-* styles from the per-agency trend
@@ -5489,7 +5489,14 @@ def _changes_sections(changes: list[dict[str, Any]]) -> str:
             )
         return "".join(rows)
 
-    return f"""{_movement_balance(changes)}
+    movement = (
+        '<p class="page-lede">This is the first comparable snapshot under the current '
+        f"scoring contract, dated {esc(baseline_date)}. Any scores from earlier contracts "
+        "are intentionally excluded, so there is no prior comparable snapshot yet.</p>"
+        if not changes and baseline_date
+        else _movement_balance(changes)
+    )
+    return f"""{movement}
     <div class="section-grid">
     <section aria-labelledby="improved-h">
       <h2 class="section-title" id="improved-h">Most improved</h2>
@@ -5559,7 +5566,10 @@ def _render_pulse_page(
         and raw_eligible_count > 0
     )
     if guarded_comparisons_available:
-        changes_content = _changes_sections(changes)
+        baseline_date = (
+            str(trend_points[0].get("date") or "").strip() if len(trend_points) == 1 else None
+        )
+        changes_content = _changes_sections(changes, baseline_date=baseline_date)
         trend_content = _trend_sections(trend_points, trend_sum, improvers)
     else:
         changes_content = (
@@ -8546,6 +8556,14 @@ def _trend_sections(
             f"(now {esc(summary['last']['average_score'])})."
         )
         chart = f'<section class="feed-details"><h2 class="section-title">Covered-corpus average score</h2><p>{spark}</p>{axis}</section>'
+    elif len(points) == 1:
+        table = chart = ""
+        date = esc(str(points[0].get("date") or ""))
+        lead = (
+            f"Comparable history under the current scoring contract begins on {date}. "
+            "A trend appears after the corpus is checked on a later date. Rechecks on "
+            "the same day update that day's snapshot instead of adding another point."
+        )
     else:
         table = chart = ""
         lead = (
