@@ -52,7 +52,12 @@ jobs:
           "$isolated/venv/bin/python" -c \
             "from scorecard_pipeline.jurisdictions import JURISDICTIONS; assert len(JURISDICTIONS.countries) == 249; assert JURISDICTIONS.countries['JP'].subdivisions['JP-13'] == 'Tokyo'"
           mkdir -p "$isolated/root"
-          printf 'agencies: []\n' > "$isolated/root/agencies.yaml"
+          printf '%s\n' \
+            'agencies:' \
+            '  - id: fixture-agency' \
+            '    name: Fixture Agency' \
+            '    static_gtfs_url: https://tracked.example.org/gtfs.zip' \
+            > "$isolated/root/agencies.yaml"
           printf '%s\n' \
             'id,data_type,entity_type,location.country_code,provider,is_official,static_reference,urls.direct_download,urls.authentication_type,status' \
             'mdb-test,gtfs,,US,Test Transit,true,,https://example.org/gtfs.zip,0,active' \
