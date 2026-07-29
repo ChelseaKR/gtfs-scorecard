@@ -632,6 +632,25 @@ def test_sitemap_requires_protocol_namespace(
     assert "sitemap.root" in _codes(report)
 
 
+def test_sitemap_rejects_entity_declarations(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    (site / "sitemap.xml").write_text(
+        """<?xml version="1.0"?>
+<!DOCTYPE urlset [<!ENTITY injected "https://example.test/">]>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>&injected;</loc></url>
+</urlset>
+""",
+        encoding="utf-8",
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "sitemap.malformed" in _codes(report)
+
+
 @pytest.mark.parametrize(
     ("old", "new", "expected_code"),
     [

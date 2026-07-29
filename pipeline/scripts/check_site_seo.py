@@ -8,7 +8,6 @@ import ipaddress
 import json
 import re
 import sys
-import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -16,6 +15,10 @@ from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import unquote, urljoin, urlsplit
+from xml.etree.ElementTree import Element, ParseError
+
+from defusedxml import ElementTree as DefusedET
+from defusedxml.common import DefusedXmlException
 
 _CONFIG_KEYS = {
     "schema_version",
@@ -1399,13 +1402,13 @@ def _expected_sitemap_urls(pages: dict[str, Page], config: Config) -> set[str]:
     }
 
 
-def _parse_sitemap(path: Path, relative_path: str, findings: list[Finding]) -> ET.Element | None:
+def _parse_sitemap(path: Path, relative_path: str, findings: list[Finding]) -> Element | None:
     if not path.is_file():
         findings.append(Finding("sitemap.missing", relative_path, "sitemap file is missing"))
         return None
     try:
-        root = ET.parse(path).getroot()  # noqa: S314 - parses the local rendered artifact
-    except (ET.ParseError, OSError) as exc:
+        root = DefusedET.parse(path).getroot()
+    except (DefusedXmlException, ParseError, OSError) as exc:
         findings.append(
             Finding("sitemap.malformed", relative_path, f"could not parse sitemap: {exc}")
         )
@@ -1425,7 +1428,7 @@ def _parse_sitemap(path: Path, relative_path: str, findings: list[Finding]) -> E
     return root
 
 
-def _sitemap_locations(root: ET.Element, relative_path: str, findings: list[Finding]) -> list[str]:
+def _sitemap_locations(root: Element, relative_path: str, findings: list[Finding]) -> list[str]:
     locations: list[str] = []
     for url_node in root:
         if url_node.tag != _sitemap_tag("url"):
