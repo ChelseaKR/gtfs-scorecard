@@ -1707,6 +1707,246 @@ def test_fixlog_page_entries_are_dated_and_linkable() -> None:
     assert "the 2026-07-01 check verified it gone" in html
 
 
+def test_fixlog_metadata_reuses_planned_feed_disambiguators() -> None:
+    from html import unescape
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import (
+        _plan_agency_seo_metadata,
+        _render_fixlog_page,
+    )
+
+    agency_name = "North County Transit District (NCTD)"
+    records = [
+        {
+            "id": "north-county-transit-district-nctd",
+            "name": agency_name,
+            "country": "US",
+            "subdivision_name": "California",
+        },
+        {
+            "id": "north-county-transit-district-nctd-3093",
+            "name": agency_name,
+            "country": "US",
+            "subdivision_name": "California",
+        },
+    ]
+    artifacts = {
+        record["id"]: {
+            "agency": {"id": record["id"], "name": agency_name},
+            "categories": {"realtime": {"status": "not_yet_measured"}},
+        }
+        for record in records
+    }
+    registry = {
+        records[0]["id"]: Agency(
+            records[0]["id"],
+            agency_name,
+            "https://example.test/nctd.zip",
+            mdb_id="14",
+        ),
+        records[1]["id"]: Agency(
+            records[1]["id"],
+            agency_name,
+            "https://example.test/nctd-3093.zip",
+            mdb_id="3093",
+        ),
+    }
+    planned = _plan_agency_seo_metadata(records, artifacts, registry)
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "The old calendar was replaced.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+
+    pages = [
+        _render_fixlog_page(
+            artifacts[record["id"]],
+            receipts,
+            record,
+            seo_metadata=planned[record["id"]],
+        )
+        for record in records
+    ]
+    titles = [unescape(page.split("<title>", 1)[1].split("</title>", 1)[0]) for page in pages]
+    descriptions = [
+        unescape(page.split('<meta name="description" content="', 1)[1].split('">', 1)[0])
+        for page in pages
+    ]
+
+    assert "[MDB 14]" in planned[records[0]["id"]].title
+    assert "[MDB 3093]" in planned[records[1]["id"]].title
+    assert len(set(titles)) == len(set(descriptions)) == 2
+    assert all(len(title) <= 60 for title in titles)
+    assert all(len(description) <= 155 for description in descriptions)
+    assert "[MDB 14]" in titles[0] and "[MDB 3093]" in titles[1]
+    assert all(
+        f'<h1 class="page-title">Finding clearance log: {agency_name}</h1>' in page
+        for page in pages
+    )
+    assert (
+        f'<link rel="canonical" href="https://gtfsscorecard.org/agency/{records[0]["id"]}/fixes/">'
+        in pages[0]
+    )
+    assert (
+        f'<link rel="canonical" href="https://gtfsscorecard.org/agency/{records[1]["id"]}/fixes/">'
+        in pages[1]
+    )
+    assert f'<meta property="og:title" content="{titles[0]}">' in pages[0]
+    assert f'<meta property="og:title" content="{titles[1]}">' in pages[1]
+
+
+def test_fixlog_metadata_preserves_location_identity_and_bounds_long_names() -> None:
+    from html import unescape
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import (
+        _agency_seo_metadata,
+        _plan_agency_seo_metadata,
+        _render_fixlog_page,
+    )
+
+    records = [
+        {
+            "id": "capital-transit-alaska",
+            "name": "Capital Transit",
+            "country": "US",
+            "subdivision_name": "Alaska",
+        },
+        {
+            "id": "capital-transit-montana",
+            "name": "Capital Transit",
+            "country": "US",
+            "subdivision_name": "Montana",
+        },
+    ]
+    artifacts = {
+        record["id"]: {
+            "agency": {"id": record["id"], "name": record["name"]},
+            "categories": {"realtime": {"status": "not_yet_measured"}},
+        }
+        for record in records
+    }
+    registry = {
+        record["id"]: Agency(
+            record["id"],
+            record["name"],
+            f"https://example.test/{record['id']}.zip",
+        )
+        for record in records
+    }
+    planned = _plan_agency_seo_metadata(records, artifacts, registry)
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "The old calendar was replaced.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+
+    pages = [
+        _render_fixlog_page(
+            artifacts[record["id"]],
+            receipts,
+            record,
+            seo_metadata=planned[record["id"]],
+        )
+        for record in records
+    ]
+    titles = [unescape(page.split("<title>", 1)[1].split("</title>", 1)[0]) for page in pages]
+    descriptions = [
+        unescape(page.split('<meta name="description" content="', 1)[1].split('">', 1)[0])
+        for page in pages
+    ]
+
+    assert "(Alaska)" in titles[0] and "(Montana)" in titles[1]
+    assert len(set(titles)) == len(set(descriptions)) == 2
+    assert all(len(title) <= 60 for title in titles)
+    assert all(len(description) <= 155 for description in descriptions)
+
+    long_name = (
+        "San Francisco Bay Area Water Emergency Transportation Authority "
+        "(WETA) Regional Ferry Service"
+    )
+    long_artifact = {"agency": {"id": "weta", "name": long_name}}
+    long_page = _render_fixlog_page(
+        long_artifact,
+        receipts,
+        seo_metadata=_agency_seo_metadata(long_name, location_label="California"),
+    )
+    long_title = unescape(long_page.split("<title>", 1)[1].split("</title>", 1)[0])
+    long_description = unescape(
+        long_page.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+    )
+    assert len(long_title) <= 60
+    assert len(long_description) <= 155
+    assert long_title.endswith("GTFS clearance log")
+
+
+def test_previous_artifact_requires_exact_index_identity_and_summary() -> None:
+    from scorecard_pipeline.render_site import _previous_indexed_artifact
+
+    history: list[dict[str, Any]] = [
+        {"date": "2026-06-27"},
+        {
+            "date": "2026-07-23",
+            "score": 73,
+            "grade": "C",
+            "feed_sha256": "expected-feed-hash",
+        },
+        {"date": "2026-07-25"},
+    ]
+    stale_checkout: list[dict[str, Any]] = [
+        {"agency": {"id": "agency-one"}, "snapshot_date": "2026-06-26"},
+        {"agency": {"id": "agency-one"}, "snapshot_date": "2026-06-27"},
+        {"agency": {"id": "agency-one"}, "snapshot_date": "2026-07-25"},
+    ]
+
+    assert _previous_indexed_artifact("agency-one", history, stale_checkout) is None
+    wrong_identity = {
+        "agency": {"id": "agency-two"},
+        "snapshot_date": "2026-07-23",
+        "overall": {"score": 73, "grade": "C"},
+        "feed": {"sha256": "expected-feed-hash"},
+    }
+    malformed_identity = {
+        "agency": "not-an-object",
+        "snapshot_date": "2026-07-23",
+    }
+    wrong_summary = {
+        "agency": {"id": "agency-one"},
+        "snapshot_date": "2026-07-23",
+        "overall": {"score": 72, "grade": "C"},
+        "feed": {"sha256": "stale-feed-hash"},
+    }
+    assert (
+        _previous_indexed_artifact(
+            "agency-one",
+            history,
+            [*stale_checkout, wrong_identity, malformed_identity, wrong_summary],
+        )
+        is None
+    )
+    exact_prior = {
+        "agency": {"id": "agency-one"},
+        "snapshot_date": "2026-07-23",
+        "overall": {"score": 73, "grade": "C"},
+        "feed": {"sha256": "expected-feed-hash"},
+    }
+    assert (
+        _previous_indexed_artifact(
+            "agency-one",
+            history,
+            [*stale_checkout, wrong_summary, exact_prior],
+        )
+        == exact_prior
+    )
+
+
 def test_non_us_fixlog_prefers_current_directory_country_over_a_stale_artifact() -> None:
     from scorecard_pipeline.render_site import _render_fixlog_page
 

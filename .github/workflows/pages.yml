@@ -65,8 +65,10 @@ jobs:
         if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         run: |
           # S3 is authoritative. index.json already carries complete score
-          # histories, so rendering needs each current artifact plus only the
-          # two newest dated snapshots for finding diffs. This bounded set
+          # histories, so rendering needs latest.json plus today's and
+          # yesterday's dated snapshots for recent finding diffs. The next
+          # step validates each index/latest pair and restores a missing current
+          # dated record from those same latest.json bytes. This bounded set
           # avoids downloading the 400-day archive or any private pipeline files.
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
@@ -103,6 +105,11 @@ jobs:
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
+      - name: Materialize validated current dated records
+        working-directory: pipeline
+        run: >-
+          uv run python scripts/materialize_current_artifacts.py
+          --artifacts-root ../data/artifacts
       - name: Render and assemble the Pages site
         id: assemble
         run: |

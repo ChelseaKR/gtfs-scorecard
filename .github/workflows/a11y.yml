@@ -24,6 +24,11 @@ jobs:
       - name: Install the pipeline
         working-directory: pipeline
         run: uv sync --locked
+      - name: Materialize validated current dated records
+        working-directory: pipeline
+        run: >-
+          uv run python scripts/materialize_current_artifacts.py
+          --artifacts-root ../data/artifacts
       - name: Render the static site
         working-directory: pipeline
         run: uv run scorecard render-site

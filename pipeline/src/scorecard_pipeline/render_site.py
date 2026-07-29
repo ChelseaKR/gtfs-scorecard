@@ -442,6 +442,41 @@ def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[
     return [(code, what) for code, what in _finding_codes(prev).items() if code not in current]
 
 
+def _previous_indexed_artifact(
+    agency_id: str,
+    history: list[dict[str, Any]],
+    dated_artifacts: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Return the exact prior indexed snapshot when it is locally hydrated.
+
+    A bounded Pages checkout can contain old cutover artifacts plus the current
+    record without containing the immediately preceding record. Treating the
+    second-to-last local file as "previous" would then compare non-adjacent
+    checks and could claim a finding cleared in the wrong interval.
+    """
+    if len(history) < 2:
+        return None
+    indexed_previous = history[-2]
+    previous_date = str(indexed_previous.get("date") or "")
+    if not previous_date:
+        return None
+    from .publish import _history_entry
+
+    for artifact in reversed(dated_artifacts):
+        try:
+            if str(artifact.get("snapshot_date") or "") != previous_date:
+                continue
+            if str(artifact.get("agency", {}).get("id") or "") != agency_id:
+                continue
+            candidate_summary = _history_entry(artifact)
+        except (AttributeError, KeyError, TypeError, ValueError):
+            continue
+        if any(candidate_summary.get(field) != value for field, value in indexed_previous.items()):
+            continue
+        return artifact
+    return None
+
+
 def _history_section(
     history: list[dict[str, Any]] | None,
     artifacts: list[dict[str, Any]] | None = None,
@@ -3248,6 +3283,7 @@ def _render_fixlog_page(
     artifact: dict[str, Any],
     receipts: list[dict[str, str]],
     dir_record: dict[str, Any] | None = None,
+    seo_metadata: AgencySeoMetadata | None = None,
 ) -> str:
     """The durable clearance log (/agency/<id>/fixes/), newest first.
 
@@ -3297,12 +3333,25 @@ def _render_fixlog_page(
       Pair a clearance with the owner or vendor's action record when you need evidence of a
       specific intervention. <a href="/agency/{esc(agency_id)}/">Return to the current scorecard</a>.</p>
     </section>"""
-    desc = (
-        f"Dated, linkable record of {len(receipts)} finding "
-        f"{'clearance' if len(receipts) == 1 else 'clearances'} observed on "
-        f"{agency_name}'s GTFS feed."
+    metadata = seo_metadata or _agency_seo_metadata(
+        agency_name,
+        location_label=_location_label(dir_record),
     )
-    title = f"{agency_name} finding clearance log — GTFS Scorecard"
+    report_suffix = " GTFS quality report"
+    if not metadata.title.endswith(report_suffix):
+        raise ValueError(f"agency SEO title has an unexpected shape for {agency_name!r}")
+    # The planned title is corpus-unique and reserves 20 characters for the
+    # report suffix. Reusing its complete identity stem preserves location or
+    # feed disambiguation, while the shorter clearance suffix remains bounded.
+    identity = metadata.title.removesuffix(report_suffix)
+    title = f"{identity} GTFS clearance log"
+    clearance_label = "clearance" if len(receipts) == 1 else "clearances"
+    desc = (
+        f"Dated, linkable record of {len(receipts)} finding {clearance_label} "
+        f"observed for {identity}."
+    )
+    if len(title) > 60 or len(desc) > 155:
+        raise ValueError(f"fix-log SEO metadata exceeds its length budget for {agency_name!r}")
     country = str(
         (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
     )
@@ -9931,7 +9980,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 dated_artifacts.append(json.loads(dated_path.read_text()))
             except (json.JSONDecodeError, OSError):
                 continue
-        prev_artifact = dated_artifacts[-2] if len(dated_artifacts) >= 2 else None
+        prev_artifact = _previous_indexed_artifact(agency_id, history, dated_artifacts)
         # Stop names for the map's accessible equivalent come from the geometry
         # artifact (the map's own data), kept out of the per-day JSON to avoid
         # bloating it. Absent or unreadable geometry simply means no stop list.
@@ -9984,7 +10033,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if receipts:
             write(
                 f"agency/{agency_id}/fixes/index.html",
-                _render_fixlog_page(artifact, receipts, by_id[agency_id]),
+                _render_fixlog_page(
+                    artifact,
+                    receipts,
+                    by_id[agency_id],
+                    seo_metadata=agency_seo_metadata[agency_id],
+                ),
                 f"{BASE_URL}/agency/{agency_id}/fixes/",
             )
         elif fixlog_page_dir.exists():
