@@ -1207,6 +1207,17 @@ def test_guide_shows_validator_stamp_and_methodology_changelog() -> None:
         assert f"Rubric v{entry['rubric_version']}" in html
 
 
+def test_guide_glossary_deep_link_has_a_matching_fragment() -> None:
+    from scorecard_pipeline.render_site import _render_guide
+    from scorecard_pipeline.site_shell import FOOTER_HTML
+
+    html = _render_guide()
+    assert 'href="#glossary"' in html
+    assert 'id="glossary"' in html
+    assert 'aria-labelledby="glossary"' in html
+    assert 'href="/how-to-read/#glossary"' in FOOTER_HTML
+
+
 def test_guide_explains_grade_margins_and_weight_sensitivity() -> None:
     """FIX-07: the how-to-read page names the margin fields, frames a
     near-boundary grade as encouragement (never "almost failing"), and carries
