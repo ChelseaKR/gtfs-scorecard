@@ -2259,6 +2259,16 @@ def _ellipsize(value: str, limit: int) -> str:
     return value[: limit - 1].rstrip(" ,-/;:") + "…"
 
 
+def _seo_location_label(location_label: str, limit: int) -> str:
+    """Keep a useful location within a metadata budget."""
+    if len(location_label) <= limit:
+        return location_label
+    country = location_label.rsplit(",", 1)[-1].strip()
+    if country and len(country) <= limit:
+        return country
+    return _ellipsize(location_label, limit)
+
+
 def _agency_seo_metadata(
     agency_name: str,
     *,
@@ -2268,9 +2278,11 @@ def _agency_seo_metadata(
 ) -> AgencySeoMetadata:
     """Build bounded metadata while keeping any disambiguator visible."""
     if disambiguator:
-        title_suffix = f" [{disambiguator}] GTFS quality report"
+        title_disambiguator = _ellipsize(disambiguator, 20)
+        title_suffix = f" [{title_disambiguator}] GTFS quality report"
     else:
-        title_qualifier = f" ({location_label})" if location_label else ""
+        title_location = _seo_location_label(location_label, 25)
+        title_qualifier = f" ({title_location})" if title_location else ""
         title_suffix = f"{title_qualifier} GTFS quality report"
     title_name = _ellipsize(agency_name, max(1, 60 - len(title_suffix)))
     title = f"{title_name}{title_suffix}"
@@ -2281,8 +2293,10 @@ def _agency_seo_metadata(
         else ": service dates, validator findings, rider information, and fixes."
     )
     desc_prefix = "GTFS quality report for "
-    identity_prefix = f"[{disambiguator}] " if disambiguator else ""
-    location_suffix = f" in {location_label}" if location_label else ""
+    desc_disambiguator = _ellipsize(disambiguator, 24)
+    identity_prefix = f"[{desc_disambiguator}] " if desc_disambiguator else ""
+    desc_location = _seo_location_label(location_label, 35)
+    location_suffix = f" in {desc_location}" if desc_location else ""
     max_desc_name = max(
         1,
         155 - len(desc_prefix) - len(identity_prefix) - len(location_suffix) - len(desc_tail),
@@ -2380,6 +2394,20 @@ def _plan_agency_seo_metadata(
                     artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
                 ),
                 disambiguator=qualifiers[agency_id],
+            )
+
+    remaining = _metadata_collision_components(planned)
+    for group in remaining:
+        for agency_id in group:
+            record = record_by_id[agency_id]
+            artifact = artifacts_by_id[agency_id]
+            planned[agency_id] = _agency_seo_metadata(
+                str(record.get("name") or agency_id),
+                location_label=_location_label(record),
+                rt_measured=(
+                    artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+                ),
+                disambiguator=(f"record {hashlib.sha256(agency_id.encode()).hexdigest()[:8]}"),
             )
 
     remaining = _metadata_collision_components(planned)
