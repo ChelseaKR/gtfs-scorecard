@@ -8,7 +8,7 @@ import pytest
 
 pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is not installed")
 
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, Route, expect
 
 from scorecard_pipeline.render_site import _render_map_page
 
@@ -46,13 +46,13 @@ def _features(count: int = 55) -> dict[str, Any]:
 
 def test_first_map_filter_hydrates_complete_list_once(page: Page, base_url: str) -> None:
     payload = _features()
-    requests: list[str] = []
-    page.on(
-        "request",
-        lambda request: (
-            requests.append(request.url) if request.url.endswith("/map.geojson") else None
-        ),
-    )
+    request_count = 0
+
+    def serve_geojson(route: Route) -> None:
+        nonlocal request_count
+        request_count += 1
+        route.fulfill(json=payload)
+
     page.route(
         "**/map/",
         lambda route: route.fulfill(
@@ -60,13 +60,13 @@ def test_first_map_filter_hydrates_complete_list_once(page: Page, base_url: str)
             body=_render_map_page(payload["features"]),
         ),
     )
-    page.route("**/map.geojson", lambda route: route.fulfill(json=payload))
+    page.route("**/map.geojson", serve_geojson)
 
     page.goto(f"{base_url}/map/")
 
     rows = page.locator("#map-tbody tr")
     expect(rows).to_have_count(50)
-    assert requests == []
+    assert request_count == 0
 
     grade = page.locator("#map-grade")
     grade.focus()
@@ -80,7 +80,7 @@ def test_first_map_filter_hydrates_complete_list_once(page: Page, base_url: str)
     )
     assert page.evaluate("() => document.activeElement?.id") == "map-grade"
     page.locator("#map-flex").check()
-    assert len(requests) == 1
+    assert request_count == 1
 
 
 def test_explicit_map_list_load_moves_focus_to_results(page: Page, base_url: str) -> None:
