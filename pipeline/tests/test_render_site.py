@@ -30,7 +30,9 @@ from scorecard_pipeline.render_site import (
     _outreach_note,
     _outreach_section,
     _peer_context,
+    _remove_stale_agency_index_pages,
     _remove_unlisted_agency_pages,
+    _render_agency_index,
     _render_board_page,
     _render_claim_page,
     _render_equity_page,
@@ -59,6 +61,23 @@ def test_generated_agency_pages_are_bounded_to_published_index(tmp_path: Path) -
     assert (pages / "kept").is_dir()
     assert not (pages / "delisted").exists()
     assert (pages / "README.txt").exists()
+
+
+def test_stale_paginated_directory_cleanup_preserves_non_generated_files(
+    tmp_path: Path,
+) -> None:
+    pages = tmp_path / "agencies" / "page"
+    (pages / "2").mkdir(parents=True)
+    (pages / "99").mkdir()
+    (pages / "notes").mkdir()
+    (pages / "README.txt").write_text("keep")
+
+    _remove_stale_agency_index_pages(pages)
+
+    assert not (pages / "2").exists()
+    assert not (pages / "99").exists()
+    assert (pages / "notes").is_dir()
+    assert (pages / "README.txt").is_file()
 
 
 def test_liveness_status_is_bounded_to_current_published_ids() -> None:
@@ -2634,6 +2653,54 @@ def _map_features() -> list[dict[str, Any]]:
     return [f for f in feats if f is not None]
 
 
+def _directory_index(count: int) -> dict[str, Any]:
+    return {
+        "agencies": {
+            f"agency-{number:03d}": {
+                "name": f"Agency {number:03d}",
+                "history": [
+                    {
+                        "grade": "B",
+                        "score": 82.0,
+                        "date": "2026-07-28",
+                        "days_until_expiry": 30,
+                    }
+                ],
+            }
+            for number in range(count)
+        }
+    }
+
+
+def test_agency_directory_pagination_is_complete_canonical_and_crawlable() -> None:
+    index = _directory_index(7)
+    pages = [_render_agency_index(index, {}, page=page, page_size=3) for page in range(1, 4)]
+
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/">' in pages[0]
+    assert 'rel="prev"' not in pages[0]
+    assert '<link rel="next" href="https://gtfsscorecard.org/agencies/page/2/">' in pages[0]
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/page/2/">' in pages[1]
+    assert '<link rel="prev" href="https://gtfsscorecard.org/agencies/">' in pages[1]
+    assert '<link rel="next" href="https://gtfsscorecard.org/agencies/page/3/">' in pages[1]
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/page/3/">' in pages[2]
+    assert 'rel="next"' not in pages[2]
+    links = [
+        agency_id
+        for html in pages
+        for agency_id in re.findall(r'href="/agency/(agency-\d{3})/"', html)
+    ]
+    assert links == [f"agency-{number:03d}" for number in range(7)]
+    assert len(links) == len(set(links))
+    assert "<title>Agency scorecards — GTFS Scorecard</title>" in pages[0]
+    assert "<title>Agency scorecards, page 2 — GTFS Scorecard</title>" in pages[1]
+    assert 'aria-current="page">Page 2 of 3' in pages[1]
+
+
+def test_agency_directory_rejects_a_page_outside_the_chain() -> None:
+    with pytest.raises(ValueError, match=r"outside 1\.\.2"):
+        _render_agency_index(_directory_index(4), {}, page=3, page_size=3)
+
+
 def test_render_map_page_has_accessible_table_and_skip_link() -> None:
     html = _render_map_page(_map_features())
     # The conformant primary: a bypass link and a real table of every agency.
@@ -2645,6 +2712,34 @@ def test_render_map_page_has_accessible_table_and_skip_link() -> None:
     assert 'href="/agency/alpha-transit/"' in html
     assert 'data-grade="A"' in html and 'data-state="Iowa"' in html
     assert 'data-grade="F"' in html and 'data-state="Ohio"' in html
+
+
+def test_render_map_page_bounds_initial_dom_and_hydrates_safely() -> None:
+    features = []
+    for number in range(55):
+        artifact = _sample_artifact("B", -120.0 + number / 10, 35.0)
+        artifact["agency"]["name"] = f"Agency {number:03d}"
+        feature = _map_feature(
+            f"agency-{number:03d}", artifact, "California", "US", "US-CA", "California"
+        )
+        assert feature is not None
+        features.append(feature)
+    features[-1]["properties"]["name"] = "ZZZ <unsafe> & agency"
+
+    html = _render_map_page(features)
+
+    assert html.count("<tr data-grade=") == 50
+    assert "Agency 049" in html
+    assert "ZZZ &lt;unsafe&gt;" not in html
+    assert html.count('fetch("/map.geojson"') == 1
+    assert "document.createDocumentFragment()" in html
+    assert "name.textContent =" in html
+    assert r"/^[a-z0-9][a-z0-9-]*$/.test(id)" in html
+    assert "var dataPromise = null;" in html
+    assert "if (!rowsHydrated)" in html
+    assert "Loading the complete scorecard list for this filter." in html
+    assert '<select id="map-grade"' in html and '<select id="map-grade" disabled' not in html
+    assert 'href="/agencies/">complete paginated agency directory</a>' in html
 
 
 def test_render_map_page_links_points_to_rows_with_keyboard_model() -> None:
@@ -3316,7 +3411,7 @@ def test_page_shell_can_mark_utility_pages_noindex() -> None:
 def test_map_page_names_its_cdn_fallback() -> None:
     html = _render_map_page(_map_features())
     assert "map-fallback" in html
-    assert "The scorecard list below carries the same feed records" in html
+    assert "Use the complete-list control or the paginated agency" in html
     assert 'id="map-load-status"' in html
     assert "The map could not load" in html
 

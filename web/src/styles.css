@@ -768,6 +768,26 @@ main:focus { outline: none; }
 .grade-jump { margin: 0 0 1.6rem; color: var(--ink-soft); }
 .grade-jump a { margin: 0 0.15rem; }
 .grade-count { font-family: var(--font-body); font-weight: 400; font-size: 0.9rem; color: var(--ink-soft); }
+.directory-pager {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1.2rem;
+  justify-content: space-between;
+  margin: 1.2rem 0 1.6rem;
+}
+.directory-pager a,
+.directory-pager > span {
+  min-height: 44px;
+  padding: 0.65rem 0;
+}
+.directory-pager > span {
+  color: var(--ink-soft);
+}
+.directory-pager [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 700;
+}
 .facet-chip {
   font: inherit;
   font-size: 0.9rem;
@@ -1647,6 +1667,9 @@ main:focus { outline: none; }
 .map-load-panel .fineprint {
   margin: 0;
   max-width: 52rem;
+}
+.map-load-panel .button[hidden] {
+  display: none;
 }
 
 .national-map-pending {
