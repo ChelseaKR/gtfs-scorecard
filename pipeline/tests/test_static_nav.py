@@ -120,12 +120,12 @@ def test_accessible_utility_font_is_used_sitewide() -> None:
 def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
     html = (_REPO / "web" / "index.html").read_text()
 
-    assert "1,700+" in html
+    assert "2,100+" in html
     assert "curated feed records" in html
     assert "1,100+" in html
     assert "published scorecards" in html.lower()
-    assert "30+" in html
-    assert "Countries covered" in html
+    assert "40+" in html
+    assert "Countries in registry" in html
     assert "everywhere they publish a feed" not in html
 
     representative_surfaces = (
@@ -143,7 +143,11 @@ def test_landing_leads_with_the_quality_workflow_and_keeps_the_pilot_bounded() -
     html = (_REPO / "web" / "index.html").read_text()
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
 
-    assert "See what needs attention in a published GTFS feed." in html
+    assert "Find the next fix in a published GTFS feed." in html
+    assert (
+        "Search an agency to open its latest scorecard and first recommended fix. "
+        "You can also check a GTFS ZIP before publishing it."
+    ) in html
     assert "Where the scorecard fits in the work" in html
     assert "Start with the work you need to do." in html
     assert "Change and publish the feed" in html

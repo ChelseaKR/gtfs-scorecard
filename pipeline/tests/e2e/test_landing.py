@@ -39,7 +39,11 @@ def test_landing_puts_the_operating_workflow_before_the_scorecard(
     _wait_for_scorecard(page)
 
     expect(page.get_by_role("heading", level=1)).to_have_text(
-        "See what needs attention in a published GTFS feed."
+        "Find the next fix in a published GTFS feed."
+    )
+    expect(page.locator(".desk-summary")).to_have_text(
+        "Search an agency to open its latest scorecard and first recommended fix. "
+        "You can also check a GTFS ZIP before publishing it."
     )
     expect(page.locator(".workflow-step")).to_have_count(6)
     expect(page.get_by_role("heading", name="Start with the work you need to do.")).to_be_visible()
@@ -85,25 +89,37 @@ def test_landing_loads_and_caches_exact_coverage_counts(page: Page, base_url: st
         requests += 1
         route.fulfill(
             json={
-                "configured_feed_records": 2046,
+                "configured_feed_records": 2185,
                 "published_scorecard_pages": 1128,
-                "country_count": 43,
+                "country_count": 46,
             }
         )
 
     page.route("**/api/v1/coverage.json", fulfill_coverage)
     page.goto(f"{base_url}/")
 
-    expect(page.locator("#coverage-registry-count")).to_have_text("2,046")
+    expect(page.locator("#coverage-registry-count")).to_have_text("2,185")
     expect(page.locator("#coverage-published-count")).to_have_text("1,128")
-    expect(page.locator("#coverage-country-count")).to_have_text("43")
+    expect(page.locator("#coverage-country-count")).to_have_text("46")
     assert requests == 1
 
     page.reload()
-    expect(page.locator("#coverage-registry-count")).to_have_text("2,046")
+    expect(page.locator("#coverage-registry-count")).to_have_text("2,185")
     expect(page.locator("#coverage-published-count")).to_have_text("1,128")
-    expect(page.locator("#coverage-country-count")).to_have_text("43")
+    expect(page.locator("#coverage-country-count")).to_have_text("46")
     assert requests == 1
+
+
+def test_landing_keeps_conservative_coverage_fallbacks_when_request_fails(
+    page: Page, base_url: str
+) -> None:
+    page.route("**/api/v1/coverage.json", lambda route: route.abort())
+    page.goto(f"{base_url}/")
+
+    expect(page.locator("#coverage-registry-count")).to_have_text("2,100+")
+    expect(page.locator("#coverage-published-count")).to_have_text("1,100+")
+    expect(page.locator("#coverage-country-count")).to_have_text("40+")
+    expect(page.locator(".coverage-ledger")).to_contain_text("Countries in registry")
 
 
 def test_landing_switches_record_category_and_fix_without_reload(page: Page, base_url: str) -> None:
