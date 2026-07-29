@@ -50,6 +50,39 @@ from scorecard_pipeline.render_site import (
 )
 
 
+def _jsonld_documents(html: str) -> list[dict[str, Any]]:
+    return [
+        json.loads(payload)
+        for payload in re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>',
+            html,
+            flags=re.DOTALL,
+        )
+    ]
+
+
+def _assert_tech_article_identity(document: dict[str, Any], canonical: str) -> None:
+    organization = {
+        "@type": "Organization",
+        "name": "GTFS Scorecard",
+        "url": "https://gtfsscorecard.org",
+    }
+    assert document["@context"] == "https://schema.org"
+    assert document["@type"] == "TechArticle"
+    assert document["url"] == canonical
+    assert document["mainEntityOfPage"] == canonical
+    assert document["headline"]
+    assert document["description"]
+    assert document["image"] == {
+        "@type": "ImageObject",
+        "url": "https://gtfsscorecard.org/og.png",
+        "width": 1200,
+        "height": 630,
+    }
+    assert document["author"] == organization
+    assert document["publisher"] == organization
+
+
 def test_generated_agency_pages_are_bounded_to_published_index(tmp_path: Path) -> None:
     pages = tmp_path / "agency"
     (pages / "kept").mkdir(parents=True)
@@ -102,7 +135,14 @@ def test_spanish_rider_page_is_localized_accessible_and_scoped() -> None:
     assert '<datalist id="agency-options-es">' in html
     assert 'id="agency-status-es" class="form-status" role="status"' in html
     assert 'src="/src/es.js"' in html
-    assert 'hreflang="en"' in html and 'hreflang="es"' in html
+    alternates = re.findall(
+        r'<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">',
+        html,
+    )
+    assert alternates == [
+        ("en", "https://gtfsscorecard.org/"),
+        ("es", "https://gtfsscorecard.org/es/"),
+    ]
     assert "No certifica la calidad del servicio" in html
 
 
@@ -3154,6 +3194,18 @@ def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
     assert 'href="/ntd.json"' in html
     # No per-agency links: population framing only on this surface.
     assert 'href="/agency/' not in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/ntd/shapes/",
+    )
+    assert articles[0]["about"] == {
+        "@type": "Thing",
+        "name": "GTFS shapes.txt NTD requirement",
+    }
+    assert "datePublished" not in articles[0]
+    assert "dateModified" not in articles[0]
 
 
 def test_shapes_page_without_data_keeps_the_explainer() -> None:
@@ -3377,6 +3429,21 @@ def test_page_shell_keeps_nav_reachable_without_js() -> None:
     # finding: navigation was unreachable below 1240px with scripts off).
     assert "<noscript><style>" in html
     assert ".nav-cluster { display: flex !important" in html
+
+
+def test_page_shell_describes_the_shared_social_image() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    html = _page(
+        title="t",
+        description="d",
+        canonical="https://gtfsscorecard.org/x/",
+        body="<p>hi</p>",
+    )
+
+    alt = "GTFS Scorecard: transit data quality for small agencies."
+    assert html.count(f'<meta property="og:image:alt" content="{alt}">') == 1
+    assert html.count(f'<meta name="twitter:image:alt" content="{alt}">') == 1
 
 
 def test_page_shell_uses_local_system_font_fallbacks() -> None:
@@ -4316,6 +4383,45 @@ def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
     assert "not who changed the feed or why" in html
     assert '<a class="backlink" href="/fix/">' in html
     assert '"author":{"@type":"Organization","name":"GTFS Scorecard"' in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/fix/expired_calendar/",
+    )
+    assert articles[0]["about"] == {
+        "@type": "Thing",
+        "name": "GTFS validator notice expired_calendar",
+    }
+    assert articles[0]["dateModified"] == "2026-07-08"
+    assert "datePublished" not in articles[0]
+
+
+def test_tech_article_helper_has_stable_identity_without_inventing_dates() -> None:
+    from scorecard_pipeline.render_site import _tech_article_jsonld
+
+    about = {"@type": "Thing", "name": "GTFS service calendars"}
+    article = _tech_article_jsonld(
+        headline="Fix a GTFS service calendar",
+        description="How to repair an expired service calendar.",
+        canonical="https://gtfsscorecard.org/fix/example/",
+        about=about,
+    )
+
+    _assert_tech_article_identity(
+        article,
+        "https://gtfsscorecard.org/fix/example/",
+    )
+    assert article["about"] == about
+    assert "datePublished" not in article
+    assert "dateModified" not in article
+
+    without_about = _tech_article_jsonld(
+        headline="Article",
+        description="Description",
+        canonical="https://gtfsscorecard.org/article/",
+    )
+    assert "about" not in without_about
 
 
 def test_fix_guide_description_skips_the_validator_code_line() -> None:
@@ -4410,6 +4516,15 @@ def test_render_crosswalk_page_links_the_authoritative_sources() -> None:
     assert "/crosswalk/" in html
     assert "How the grade maps to the standards" in html
     assert 'href="https://www.transit.dot.gov/ntd"' in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/crosswalk/",
+    )
+    assert "about" not in articles[0]
+    assert "datePublished" not in articles[0]
+    assert "dateModified" not in articles[0]
 
 
 def test_fixlog_page_frames_clearances_as_feed_state_not_causal_proof() -> None:
