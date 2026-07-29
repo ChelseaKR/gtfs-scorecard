@@ -250,13 +250,19 @@ def _redirect_page(target: str, title: str) -> str:
     """A tiny static redirect for a retired URL: meta refresh plus a canonical
     link and a plain fallback link, so old bookmarks, papers, and crawlers all
     land on the page that absorbed this one. Written with no sitemap entry."""
+    has_ascii_control = any(ord(char) < 0x20 or ord(char) == 0x7F for char in target)
+    if not target.startswith("/") or target.startswith("//") or "\\" in target or has_ascii_control:
+        raise ValueError("redirect target must be a safe root-relative path")
+    canonical_target = f"{BASE_URL}{target.partition('#')[0]}"
+    escaped_target = esc(target)
+    escaped_canonical = esc(canonical_target)
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url={esc(target)}">
-  <link rel="canonical" href="{esc(target)}">
+  <meta http-equiv="refresh" content="0; url={escaped_target}">
+  <link rel="canonical" href="{escaped_canonical}">
   <link rel="stylesheet" href="/src/styles.css">
   <title>{esc(title)} — moved</title>
 </head>
@@ -264,7 +270,7 @@ def _redirect_page(target: str, title: str) -> str:
   <a class="skip-link" href="#main">Skip to main content</a>
   <main id="main" class="wrap" tabindex="-1">
     <h1 class="page-title">{esc(title)} moved.</h1>
-    <p class="page-lede">Continue to <a href="{esc(target)}">{esc(title)}</a>.</p>
+    <p class="page-lede">Continue to <a href="{escaped_target}">{esc(title)}</a>.</p>
   </main>
 </body>
 </html>

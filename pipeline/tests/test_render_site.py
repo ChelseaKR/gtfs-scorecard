@@ -3754,7 +3754,9 @@ def test_retired_urls_render_redirects() -> None:
     html = _redirect_page("/pulse/#changes", "What changed")
     assert 'http-equiv="refresh"' in html
     assert "url=/pulse/#changes" in html
-    assert 'rel="canonical"' in html
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/pulse/">' in html
+    assert html.count('rel="canonical"') == 1
+    assert 'name="robots"' not in html
     # A no-JS, no-meta fallback link is always present.
     assert '<a href="/pulse/#changes">' in html
     # If refreshes are disabled, the fallback is still a complete mobile and
@@ -3763,6 +3765,43 @@ def test_retired_urls_render_redirects() -> None:
     assert '<a class="skip-link" href="#main">' in html
     assert '<main id="main"' in html
     assert html.count("<h1") == 1
+
+
+def test_retired_url_canonical_preserves_query_but_not_literal_fragment() -> None:
+    from scorecard_pipeline.site_shell import _redirect_page
+
+    html = _redirect_page(
+        "/pulse/?filter=route%23A&sort=score#changes",
+        "Route A changes",
+    )
+
+    assert (
+        '<meta http-equiv="refresh" '
+        'content="0; url=/pulse/?filter=route%23A&amp;sort=score#changes">'
+    ) in html
+    assert (
+        '<link rel="canonical" '
+        'href="https://gtfsscorecard.org/pulse/?filter=route%23A&amp;sort=score">'
+    ) in html
+    assert ('<a href="/pulse/?filter=route%23A&amp;sort=score#changes">Route A changes</a>') in html
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "pulse/#changes",
+        "https://example.com/pulse/#changes",
+        "//example.com/pulse/#changes",
+        r"/\evil.example/pulse/#changes",
+        "/pulse/\n#changes",
+        "/pulse/\t#changes",
+    ],
+)
+def test_retired_url_redirect_rejects_unsafe_target(target: str) -> None:
+    from scorecard_pipeline.site_shell import _redirect_page
+
+    with pytest.raises(ValueError, match="root-relative path"):
+        _redirect_page(target, "Unsafe redirect")
 
 
 def test_adoption_page_absorbs_access_coverage() -> None:

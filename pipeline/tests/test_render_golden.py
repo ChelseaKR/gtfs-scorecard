@@ -117,6 +117,14 @@ def test_render_site_golden_output(golden_fixture_root: Path, golden_root: Path)
         assert (
             "<loc>https://gtfsscorecard.org/crosswalk/</loc><lastmod>2026-07-14</lastmod>"
         ) in sitemap
+        assert "<loc>https://gtfsscorecard.org/concept/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/changes/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/access/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/trends/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/leaderboard/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/how-to-read/</loc>" in sitemap
+        assert "<loc>https://gtfsscorecard.org/pulse/</loc>" in sitemap
+        assert "<loc>https://gtfsscorecard.org/adoption/</loc>" in sitemap
 
         # Check that every rendered file matches its golden.
         mismatches = []
