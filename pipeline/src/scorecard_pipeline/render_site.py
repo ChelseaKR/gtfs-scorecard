@@ -5284,7 +5284,7 @@ def _render_guide() -> str:
 {_methodology_versions_section()}
 
     {_route_rule()}
-    <section aria-labelledby="glossary-h"><h2 class="section-title" id="glossary-h">Glossary</h2>
+    <section aria-labelledby="glossary"><h2 class="section-title" id="glossary">Glossary</h2>
     <p class="page-lede">Plain-language definitions for the abbreviations and jargon used across
     the scorecard. Each term is also defined inline the first time it appears on a page.</p>
     <dl class="standards-list">
