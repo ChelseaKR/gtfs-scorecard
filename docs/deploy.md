@@ -214,8 +214,12 @@ Actions; this is the inventory an operator should know exists:
 
 ### Site structure and production Lighthouse checks
 
-Both `a11y.yml` and `pages.yml` assemble a fresh `_site` directory, then run
-the blocking structural check before the page-budget check. The command is:
+Both `a11y.yml` and `pages.yml` first validate every index/current-artifact
+pair. When bounded hydration or lifecycle retention omitted the current dated
+record, the build creates an ephemeral byte-identical copy of `latest.json`
+before rendering. An existing dated record must already match. The workflows
+then assemble a fresh `_site` directory and run the blocking structural check
+before the page-budget check. The structural command is:
 
 ```sh
 cd pipeline

@@ -35,15 +35,30 @@ def test_pages_publishes_only_registry_bounded_artifact_directories() -> None:
 def test_browser_workflows_gate_generated_size_after_assembly() -> None:
     for name in ("a11y.yml", "pages.yml"):
         workflow = _workflow(name)
+        materialize = workflow.index("materialize_current_artifacts.py")
+        render = workflow.index("scorecard render-site")
         assembly = workflow.index("assemble_public_artifacts.sh")
         seo = workflow.index("check_site_seo.py")
         budgets = workflow.index("check_site_budgets.py")
-        assert assembly < seo < budgets, name
+        assert materialize < render < assembly < seo < budgets, name
         assert "--site-root ../_site" in workflow, name
         assert "--config ../site-budgets.json" in workflow, name
     pages = _workflow("pages.yml")
     assert 'if [ "$budget_status" -eq 1 ] && [ "$PERF_GATE" = "advisory" ]' in pages
     assert 'exit "$budget_status"' in pages
+
+
+def test_pages_materializes_current_dated_citations_without_full_archive_sync() -> None:
+    workflow = _workflow("pages.yml")
+
+    assert workflow.index("Sync published artifacts from S3") < workflow.index(
+        "materialize_current_artifacts.py"
+    )
+    assert '--include "*/${today}.json"' in workflow
+    assert '--include "*/${yesterday}.json"' in workflow
+    assert "materialize_current_artifacts.py" in workflow
+    assert "--artifacts-root ../data/artifacts" in workflow
+    assert '--include "*/????-??-??.json"' not in workflow
 
 
 def test_browser_workflows_block_on_structural_seo_independent_of_perf_gate() -> None:
