@@ -68,7 +68,9 @@ def test_first_map_filter_hydrates_complete_list_once(page: Page, base_url: str)
     expect(rows).to_have_count(50)
     assert requests == []
 
-    page.locator("#map-grade").select_option("A")
+    grade = page.locator("#map-grade")
+    grade.focus()
+    grade.select_option("A")
 
     expect(rows).to_have_count(55)
     expect(page.locator("#map-list-status")).to_contain_text("Complete list loaded")
@@ -76,8 +78,28 @@ def test_first_map_filter_hydrates_complete_list_once(page: Page, base_url: str)
     assert page.locator("#map-tbody tr:visible").evaluate_all(
         "(rows) => rows.every((row) => row.dataset.grade === 'A')"
     )
+    assert page.evaluate("() => document.activeElement?.id") == "map-grade"
     page.locator("#map-flex").check()
     assert len(requests) == 1
+
+
+def test_explicit_map_list_load_moves_focus_to_results(page: Page, base_url: str) -> None:
+    payload = _features()
+    page.route(
+        "**/map/",
+        lambda route: route.fulfill(
+            content_type="text/html",
+            body=_render_map_page(payload["features"]),
+        ),
+    )
+    page.route("**/map.geojson", lambda route: route.fulfill(json=payload))
+    page.goto(f"{base_url}/map/")
+
+    page.locator("#map-list-load").click()
+
+    expect(page.locator("#map-tbody tr")).to_have_count(55)
+    expect(page.locator("#map-list-load")).to_be_hidden()
+    assert page.evaluate("() => document.activeElement?.id") == "agency-list"
 
 
 def test_map_filter_failure_keeps_bounded_fallback_consistent(page: Page, base_url: str) -> None:

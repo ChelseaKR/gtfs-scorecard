@@ -1668,6 +1668,9 @@ main:focus { outline: none; }
   margin: 0;
   max-width: 52rem;
 }
+.map-load-panel .button[hidden] {
+  display: none;
+}
 
 .national-map-pending {
   align-items: center;

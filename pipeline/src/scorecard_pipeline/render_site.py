@@ -6331,6 +6331,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
         var tbodyEl = document.getElementById("map-tbody");
+        var agencyListEl = document.getElementById("agency-list");
         var listLoadEl = document.getElementById("map-list-load");
         var listStatusEl = document.getElementById("map-list-status");
         var loadEl = document.getElementById("map-load");
@@ -6765,7 +6766,6 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           // complete dataset. Keep the chosen value, announce the short load,
           // then apply it to every row and (when present) every map point.
           if (!rowsHydrated) {{
-            setFiltersDisabled(true);
             if (listStatusEl) listStatusEl.textContent =
               "Loading the complete scorecard list for this filter.";
             loadData()
@@ -6788,15 +6788,21 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         filterTable();
 
         listLoadEl.addEventListener("click", function () {{
-          listLoadEl.disabled = true;
+          if (listLoadEl.getAttribute("aria-disabled") === "true") return;
+          listLoadEl.setAttribute("aria-disabled", "true");
           listLoadEl.textContent = "Loading complete list…";
-          setFiltersDisabled(true);
           if (listStatusEl) listStatusEl.textContent = "Loading the complete scorecard list.";
           loadData()
-            .then(syncFilters)
+            .then(function () {{
+              syncFilters();
+              // This explicit action asked to open the complete result set, so
+              // move focus to its existing tabindex="-1" region after the
+              // initiating button is removed. Filter-triggered hydration never
+              // moves focus out of the selected control.
+              if (agencyListEl) agencyListEl.focus();
+            }})
             .catch(function () {{
-              setFiltersDisabled(false);
-              listLoadEl.disabled = false;
+              listLoadEl.removeAttribute("aria-disabled");
               listLoadEl.textContent = "Try loading the complete list again";
               if (listStatusEl) listStatusEl.textContent =
                 "The complete list could not load. The first scorecards and paginated agency " +
