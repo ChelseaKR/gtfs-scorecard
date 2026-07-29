@@ -89,6 +89,9 @@ from .rule_links import (
 )
 from .score import letter_grade
 from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
+    _SOCIAL_IMAGE_HEIGHT,
+    _SOCIAL_IMAGE_URL,
+    _SOCIAL_IMAGE_WIDTH,
     BASE_URL,
     CATEGORY_LABELS,
     CATEGORY_ORDER,
@@ -4800,6 +4803,39 @@ def _fix_category(code: str) -> str:
     return "Feed structure and publishing"
 
 
+def _tech_article_jsonld(
+    *,
+    headline: str,
+    description: str,
+    canonical: str,
+    about: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Build the stable identity shared by crawlable practitioner articles.
+
+    Publication dates are intentionally outside this helper so their
+    provenance and lifecycle stay with the authored-content renderer.
+    """
+    article: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": headline,
+        "description": description,
+        "url": canonical,
+        "image": {
+            "@type": "ImageObject",
+            "url": _SOCIAL_IMAGE_URL,
+            "width": _SOCIAL_IMAGE_WIDTH,
+            "height": _SOCIAL_IMAGE_HEIGHT,
+        },
+        "author": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
+        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
+        "mainEntityOfPage": canonical,
+    }
+    if about is not None:
+        article["about"] = about
+    return article
+
+
 def _render_fix_index(guides: list[dict[str, str]]) -> str:
     """Topic hub for the curated GTFS errors and fixes knowledge base."""
     grouped: dict[str, list[dict[str, str]]] = {}
@@ -4890,18 +4926,13 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
     {fix_context}
     <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>
     {_FINDING_CONTEXT_SCRIPT}"""
-    jsonld = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": title_text,
-        "description": desc,
-        "url": canonical,
-        "about": {"@type": "Thing", "name": f"GTFS validator notice {code}"},
-        "author": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-        "dateModified": now.date().isoformat(),
-        "mainEntityOfPage": canonical,
-        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-    }
+    jsonld = _tech_article_jsonld(
+        headline=title_text,
+        description=desc,
+        canonical=canonical,
+        about={"@type": "Thing", "name": f"GTFS validator notice {code}"},
+    )
+    jsonld["dateModified"] = now.date().isoformat()
     return _page(
         title=f"{title_text} — GTFS Scorecard",
         description=desc,
@@ -4930,14 +4961,11 @@ def _render_crosswalk_page(md: str) -> str:
     crumb = _breadcrumb([("Home", "/"), ("How to read this", "/how-to-read/"), ("Crosswalk", None)])
     body = f"""    {crumb}
     <article class="feed-details">{body_html}</article>"""
-    jsonld = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": title_text,
-        "description": desc,
-        "url": canonical,
-        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-    }
+    jsonld = _tech_article_jsonld(
+        headline=title_text,
+        description=desc,
+        canonical=canonical,
+    )
     return _page(
         title=f"{title_text} — GTFS Scorecard",
         description=desc,
@@ -7661,18 +7689,15 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     <p class="fineprint">This page is a data-quality heads-up, not an official compliance
     determination or legal advice. The official record is each agency's own NTD filing and
     annual <a href="https://www.transit.dot.gov/ntd">D-10 certification</a>.</p>"""
-    jsonld = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained",
-        "description": (
+    jsonld = _tech_article_jsonld(
+        headline="Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained",
+        description=(
             "Who FTA's shapes.txt requirement covers, the Report Year 2026 phase-in for "
             "small transit agencies, and how to check and fix a GTFS feed."
         ),
-        "url": canonical,
-        "about": {"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
-        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-    }
+        canonical=canonical,
+        about={"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
+    )
     return _page(
         title=(
             "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained "
