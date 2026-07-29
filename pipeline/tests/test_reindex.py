@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from scorecard_pipeline.config import Agency, artifacts_dir
+from scorecard_pipeline.config import Agency, artifacts_dir, register
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.metrics import CategoryResult
 from scorecard_pipeline.publish import build_artifact, publish, rebuild_index
@@ -87,3 +87,23 @@ def test_reindex_indexes_everything_when_no_registry_is_loaded() -> None:
     rebuild_index()
     index = json.loads((artifacts_dir() / "index.json").read_text())
     assert set(index["agencies"]) == {"a", "b"}
+
+
+def test_publish_and_reindex_use_curated_name_but_keep_dated_artifact_immutable() -> None:
+    register(
+        Agency(
+            id="a",
+            name="Curated A Transit",
+            static_gtfs_url="https://ex.org/g.zip",
+        )
+    )
+    _publish("a", dt.date(2026, 6, 12), 80.0)
+
+    index_path = artifacts_dir() / "index.json"
+    assert json.loads(index_path.read_text())["agencies"]["a"]["name"] == "Curated A Transit"
+    dated_path = artifacts_dir() / "a" / "2026-06-12.json"
+    assert json.loads(dated_path.read_text())["agency"]["name"] == "a Transit"
+
+    rebuild_index()
+    assert json.loads(index_path.read_text())["agencies"]["a"]["name"] == "Curated A Transit"
+    assert json.loads(dated_path.read_text())["agency"]["name"] == "a Transit"

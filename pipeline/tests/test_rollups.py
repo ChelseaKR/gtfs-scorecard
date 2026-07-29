@@ -172,6 +172,15 @@ def test_country_rollup_prefers_registry_country_over_artifact() -> None:
     assert [m["id"] for m in payload["members"]] == ["moved"]
 
 
+def test_rollup_prefers_curated_registry_name() -> None:
+    register(Agency("renamed", "Curated Transit", "https://example.com/renamed.zip"))
+    write_latest("renamed", "Stale Export Name", 80.0, "B")
+
+    payload = build_rollup(Rollup("one", "One", ("renamed",)), WHEN)
+
+    assert payload["members"][0]["name"] == "Curated Transit"
+
+
 def test_load_rollups_parses_country_selector(tmp_path: Path) -> None:
     config = tmp_path / "rollups.yaml"
     config.write_text("rollups:\n  - id: country-ca\n    name: Canada\n    country: ca\n")

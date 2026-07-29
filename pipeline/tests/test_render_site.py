@@ -3942,6 +3942,82 @@ def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
     assert "…" in title
 
 
+def test_agency_metadata_planner_disambiguates_truncated_feed_variants() -> None:
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import _plan_agency_seo_metadata
+
+    shared_prefix = "A Very Long Regional Transportation Authority and Municipal Transit "
+    records = [
+        {
+            "id": "demo-bus",
+            "name": f"{shared_prefix}Bus Network",
+            "country": "US",
+            "subdivision_name": "California",
+        },
+        {
+            "id": "demo-rail",
+            "name": f"{shared_prefix}Rail Network",
+            "country": "US",
+            "subdivision_name": "California",
+        },
+    ]
+    artifacts = {
+        record["id"]: {"categories": {"realtime": {"status": "not_yet_measured"}}}
+        for record in records
+    }
+    registry = {
+        "demo-bus": Agency(
+            "demo-bus",
+            records[0]["name"],
+            "https://example.com/bus.zip",
+            feed_variant="Bus",
+        ),
+        "demo-rail": Agency(
+            "demo-rail",
+            records[1]["name"],
+            "https://example.com/rail.zip",
+            feed_variant="Rail",
+        ),
+    }
+
+    planned = _plan_agency_seo_metadata(records, artifacts, registry)
+
+    assert "[Bus]" in planned["demo-bus"].title
+    assert "[Rail]" in planned["demo-rail"].title
+    assert len({item.title for item in planned.values()}) == 2
+    assert len({item.description for item in planned.values()}) == 2
+    assert len({item.dataset_name for item in planned.values()}) == 2
+    assert all(len(item.title) <= 60 for item in planned.values())
+    assert all(len(item.description) <= 155 for item in planned.values())
+
+
+def test_registry_name_overlay_changes_current_index_only() -> None:
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import _apply_registry_agency_names
+
+    index = {
+        "agencies": {
+            "demo": {
+                "name": "Stale Export Name",
+                "history": [{"date": "2026-07-28", "score": 80, "grade": "B"}],
+            }
+        }
+    }
+    history = index["agencies"]["demo"]["history"]
+    registry = {
+        "demo": Agency(
+            "demo",
+            "Curated Demo Transit",
+            "https://example.com/demo.zip",
+        )
+    }
+
+    assert _apply_registry_agency_names(index, registry) is True
+    assert index["agencies"]["demo"]["name"] == "Curated Demo Transit"
+    assert index["agencies"]["demo"]["history"] is history
+    assert _apply_registry_agency_names(index, registry) is False
+
+
 def test_non_us_agency_title_and_peer_context_include_country() -> None:
     from scorecard_pipeline.render_site import _peer_context, _render_agency
 
