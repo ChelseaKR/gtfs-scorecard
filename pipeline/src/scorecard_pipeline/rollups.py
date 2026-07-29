@@ -29,6 +29,7 @@ from . import SCHEMA_VERSION
 from .alerts import build_digest
 from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import artifacts_dir, repo_root
+from .identity import resolve_published_agency_name
 from .location import country_name, normalize_country_code
 from .metrics import expiry_status
 from .ntd import assess_shapes_readiness
@@ -242,6 +243,8 @@ def build_rollup(
     ranking of agencies against each other.
     """
     attention = attention or {}
+    from .config import AGENCIES
+
     member_ids = resolve_member_ids(rollup)
     members: list[dict[str, Any]] = []
     comparison_records: list[dict[str, Any]] = []
@@ -264,13 +267,18 @@ def build_rollup(
             .get("days_until_expiry")
         )
         member_id = str(latest["agency"]["id"])
+        member_name = resolve_published_agency_name(
+            member_id,
+            registry_name=AGENCIES[member_id].name if member_id in AGENCIES else "",
+            artifact_name=str(latest["agency"].get("name") or ""),
+        )
         ntd_id = normalize_ntd_id((latest.get("ntd_id_alignment") or {}).get("ntd_id"))
         if ntd_id:
             ntd_id_by_member[member_id] = ntd_id
         members.append(
             {
                 "id": member_id,
-                "name": latest["agency"]["name"],
+                "name": member_name,
                 "score": overall["score"],
                 "grade": overall["grade"],
                 "snapshot_date": latest["snapshot_date"],
@@ -290,7 +298,7 @@ def build_rollup(
         comparison_records.append(
             {
                 "id": latest["agency"]["id"],
-                "name": latest["agency"]["name"],
+                "name": member_name,
                 "score": overall["score"],
                 "grade": overall["grade"],
                 "date": latest.get("snapshot_date"),

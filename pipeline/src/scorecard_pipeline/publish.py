@@ -35,6 +35,7 @@ from .effort_calibration import (
 )
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
+from .identity import resolve_published_agency_name
 from .metrics import expiry_status, resolve_service_horizon_status
 from .score import Scorecard
 from .site_shell import CATEGORY_LABELS
@@ -641,6 +642,8 @@ def rebuild_index() -> Path:
     indexing whatever is on disk let unlisted S3 directories resurface as live
     listings after the S3 source-of-truth cutover.
     """
+    from .config import AGENCIES
+
     root = artifacts_dir()
     index_path = root / "index.json"
     previous_index: dict[str, Any] = {"agencies": {}}
@@ -690,7 +693,13 @@ def rebuild_index() -> Path:
             fixlog_path.unlink()
         newest = agency_artifacts[-1] if agency_artifacts else None
         if newest is not None:
-            name = newest["agency"]["name"]
+            name = resolve_published_agency_name(
+                agency_dir.name,
+                registry_name=(
+                    AGENCIES[agency_dir.name].name if agency_dir.name in AGENCIES else ""
+                ),
+                artifact_name=str(newest["agency"].get("name") or ""),
+            )
             operating_note = newest["agency"].get("operating_note", "")
         # Episodes are derived per agency from its own dated sequence, then
         # pooled corpus-wide for the calibration stats.
@@ -743,6 +752,8 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
     """Maintain data/artifacts/index.json: per-agency history of
     (date, score, grade) so the frontend can draw trends without fetching
     every artifact."""
+    from .config import AGENCIES
+
     index_path = artifacts_dir() / "index.json"
     index: dict[str, Any] = {"schema_version": SCHEMA_VERSION, "agencies": {}}
     if index_path.exists():
@@ -758,7 +769,14 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
         for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
         if (art := _read_artifact(dated)) is not None
     ]
-    entry: dict[str, Any] = {"name": artifact["agency"]["name"], "history": history}
+    entry: dict[str, Any] = {
+        "name": resolve_published_agency_name(
+            agency_id,
+            registry_name=AGENCIES[agency_id].name if agency_id in AGENCIES else "",
+            artifact_name=str(artifact["agency"].get("name") or ""),
+        ),
+        "history": history,
+    }
     if artifact["agency"].get("operating_note"):
         entry["operating_note"] = artifact["agency"]["operating_note"]
     index["agencies"][agency_id] = entry

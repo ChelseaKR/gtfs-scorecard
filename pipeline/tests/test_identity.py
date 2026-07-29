@@ -9,6 +9,7 @@ from scorecard_pipeline.identity import (
     build_identity_ledger,
     normalized_feed_url,
     normalized_mdb_id,
+    resolve_published_agency_name,
 )
 
 
@@ -19,6 +20,21 @@ def _agency(agency_id: str, url: str, **kwargs: object) -> Agency:
         static_gtfs_url=url,
         **kwargs,  # type: ignore[arg-type]
     )
+
+
+def test_published_agency_name_prefers_registry_then_artifact_then_id() -> None:
+    assert (
+        resolve_published_agency_name(
+            "demo",
+            registry_name="Curated Demo Transit",
+            artifact_name="Old Export Name",
+        )
+        == "Curated Demo Transit"
+    )
+    assert (
+        resolve_published_agency_name("demo", artifact_name="Old Export Name") == "Old Export Name"
+    )
+    assert resolve_published_agency_name("demo") == "demo"
 
 
 @pytest.mark.parametrize(

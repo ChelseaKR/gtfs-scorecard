@@ -14,6 +14,21 @@ from urllib.parse import urlsplit
 from .config import Agency
 
 
+def resolve_published_agency_name(
+    agency_id: str,
+    *,
+    registry_name: str = "",
+    artifact_name: str = "",
+) -> str:
+    """Return the public display name with explicit source precedence.
+
+    The curated registry is the mutable identity authority. Published artifacts
+    remain immutable evidence of what the scorer knew at that time, so older
+    artifact names are only a fallback for records absent from the registry.
+    """
+    return registry_name.strip() or artifact_name.strip() or agency_id
+
+
 def normalized_mdb_id(mdb_id: str) -> str:
     """Canonical key for legacy numeric Mobility Database identifiers.
 

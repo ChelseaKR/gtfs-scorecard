@@ -18,6 +18,7 @@ from __future__ import annotations
 # ruff: noqa: E501
 import csv
 import datetime as dt
+import hashlib
 import html as html_lib
 import io
 import json
@@ -27,6 +28,7 @@ import shutil
 import sys
 from collections import Counter
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
@@ -41,7 +43,7 @@ from .comparisons import (
     reader_archive_profile,
     same_producer_contract,
 )
-from .config import artifacts_dir
+from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
 from .directory import build_directory
@@ -58,6 +60,7 @@ from .i18n import (
     load_catalog,
     validate_catalogs,
 )
+from .identity import normalized_mdb_id, resolve_published_agency_name
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
 from .location import country_name, resolve_published_location
@@ -2238,6 +2241,154 @@ def _location_label(record: dict[str, Any] | None) -> str:
     return country_label or legacy_state
 
 
+@dataclass(frozen=True)
+class AgencySeoMetadata:
+    """Unique search metadata planned for one published feed record."""
+
+    title: str
+    description: str
+    dataset_name: str
+
+
+def _ellipsize(value: str, limit: int) -> str:
+    """Fit human text within ``limit`` without cutting a trailing separator."""
+    if len(value) <= limit:
+        return value
+    if limit <= 1:
+        return "…"[:limit]
+    return value[: limit - 1].rstrip(" ,-/;:") + "…"
+
+
+def _agency_seo_metadata(
+    agency_name: str,
+    *,
+    location_label: str = "",
+    rt_measured: bool = False,
+    disambiguator: str = "",
+) -> AgencySeoMetadata:
+    """Build bounded metadata while keeping any disambiguator visible."""
+    if disambiguator:
+        title_suffix = f" [{disambiguator}] GTFS quality report"
+    else:
+        title_qualifier = f" ({location_label})" if location_label else ""
+        title_suffix = f"{title_qualifier} GTFS quality report"
+    title_name = _ellipsize(agency_name, max(1, 60 - len(title_suffix)))
+    title = f"{title_name}{title_suffix}"
+
+    desc_tail = (
+        ": service dates, validator findings, rider information, realtime, and fixes."
+        if rt_measured
+        else ": service dates, validator findings, rider information, and fixes."
+    )
+    desc_prefix = "GTFS quality report for "
+    identity_prefix = f"[{disambiguator}] " if disambiguator else ""
+    location_suffix = f" in {location_label}" if location_label else ""
+    max_desc_name = max(
+        1,
+        155 - len(desc_prefix) - len(identity_prefix) - len(location_suffix) - len(desc_tail),
+    )
+    desc_name = _ellipsize(agency_name, max_desc_name)
+    description = f"{desc_prefix}{identity_prefix}{desc_name}{location_suffix}{desc_tail}"
+
+    dataset_context = ", ".join(value for value in (location_label, disambiguator) if value)
+    dataset_name = (
+        f"{agency_name} ({dataset_context}) GTFS data quality report"
+        if dataset_context
+        else f"{agency_name} GTFS data quality report"
+    )
+    if len(title) > 60 or len(description) > 155:
+        raise ValueError(f"agency SEO metadata exceeds its length budget for {agency_name!r}")
+    return AgencySeoMetadata(title, description, dataset_name)
+
+
+def _metadata_collision_components(
+    planned: dict[str, AgencySeoMetadata],
+) -> list[set[str]]:
+    """Return connected groups that collide on any indexable metadata field."""
+    parent = {agency_id: agency_id for agency_id in planned}
+
+    def find(agency_id: str) -> str:
+        while parent[agency_id] != agency_id:
+            parent[agency_id] = parent[parent[agency_id]]
+            agency_id = parent[agency_id]
+        return agency_id
+
+    def union(left: str, right: str) -> None:
+        left_root, right_root = find(left), find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    for field in ("title", "description", "dataset_name"):
+        seen: dict[str, str] = {}
+        for agency_id, metadata in planned.items():
+            value = str(getattr(metadata, field)).casefold()
+            if value in seen:
+                union(agency_id, seen[value])
+            else:
+                seen[value] = agency_id
+
+    groups: dict[str, set[str]] = {}
+    for agency_id in planned:
+        groups.setdefault(find(agency_id), set()).add(agency_id)
+    return [group for group in groups.values() if len(group) > 1]
+
+
+def _plan_agency_seo_metadata(
+    records: list[dict[str, Any]],
+    artifacts_by_id: dict[str, dict[str, Any]],
+    registry_by_id: dict[str, Agency],
+) -> dict[str, AgencySeoMetadata]:
+    """Plan unique titles, descriptions, and Dataset names for the corpus."""
+    planned: dict[str, AgencySeoMetadata] = {}
+    record_by_id = {str(record["id"]): record for record in records}
+    for agency_id, record in record_by_id.items():
+        artifact = artifacts_by_id[agency_id]
+        planned[agency_id] = _agency_seo_metadata(
+            str(record.get("name") or agency_id),
+            location_label=_location_label(record),
+            rt_measured=(
+                artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+            ),
+        )
+
+    for group in _metadata_collision_components(planned):
+        agencies = [registry_by_id.get(agency_id) for agency_id in sorted(group)]
+        variants = [agency.feed_variant.strip() if agency else "" for agency in agencies]
+        mdb_ids = [
+            normalized_mdb_id(agency.mdb_id) if agency and agency.mdb_id else ""
+            for agency in agencies
+        ]
+        if all(variants) and len({value.casefold() for value in variants}) == len(group):
+            qualifiers = dict(zip(sorted(group), variants, strict=True))
+        elif all(mdb_ids) and len(set(mdb_ids)) == len(group):
+            qualifiers = {
+                agency_id: f"MDB {mdb_id.removeprefix('mdb-')}"
+                for agency_id, mdb_id in zip(sorted(group), mdb_ids, strict=True)
+            }
+        else:
+            qualifiers = {
+                agency_id: f"record {hashlib.sha256(agency_id.encode()).hexdigest()[:8]}"
+                for agency_id in group
+            }
+        for agency_id in group:
+            record = record_by_id[agency_id]
+            artifact = artifacts_by_id[agency_id]
+            planned[agency_id] = _agency_seo_metadata(
+                str(record.get("name") or agency_id),
+                location_label=_location_label(record),
+                rt_measured=(
+                    artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+                ),
+                disambiguator=qualifiers[agency_id],
+            )
+
+    remaining = _metadata_collision_components(planned)
+    if remaining:
+        collisions = ", ".join(",".join(sorted(group)) for group in remaining)
+        raise ValueError(f"agency SEO metadata is not unique: {collisions}")
+    return planned
+
+
 def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -2249,6 +2400,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     now: dt.datetime | None = None,
     artifacts: list[dict[str, Any]] | None = None,
     effort_bands: dict[str, str] | None = None,
+    seo_metadata: AgencySeoMetadata | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -2272,30 +2424,14 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     from .mode_language import adapt_artifact_language
 
     artifact = adapt_artifact_language(artifact)
-    title_qualifier = f" ({location_label})" if location_label else ""
-    title_suffix = f"{title_qualifier} GTFS quality report"
-    max_name = max(18, 60 - len(title_suffix))
-    title_name = (
-        agency_name
-        if len(agency_name) <= max_name
-        else agency_name[: max_name - 1].rstrip(" ,-/") + "…"
-    )
-    title = f"{title_name}{title_suffix}"
     rt_measured = artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
-    desc_tail = (
-        ": current service dates, validator findings, rider information, realtime quality, "
-        "and prioritized fixes."
-        if rt_measured
-        else ": current service dates, validator findings, rider information, and prioritized fixes."
+    metadata = seo_metadata or _agency_seo_metadata(
+        agency_name,
+        location_label=location_label,
+        rt_measured=rt_measured,
     )
-    desc_prefix = "GTFS quality report for "
-    max_desc_name = max(18, 155 - len(desc_prefix) - len(desc_tail))
-    desc_name = (
-        agency_name
-        if len(agency_name) <= max_desc_name
-        else agency_name[: max_desc_name - 1].rstrip(" ,-/") + "…"
-    )
-    desc = f"{desc_prefix}{desc_name}{desc_tail}"
+    title = metadata.title
+    desc = metadata.description
 
     map_section = _route_map_section(artifact, agency_id, stop_names)
     # Insert the map and a closing rule only when there is a map, so a feed without
@@ -2555,7 +2691,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     jsonld = {
         "@context": "https://schema.org",
         "@type": "Dataset",
-        "name": f"{agency_name} GTFS data quality report",
+        "name": metadata.dataset_name,
         "description": desc,
         "url": canonical,
         "identifier": [
@@ -8671,6 +8807,27 @@ def _prune_unverifiable_change_snapshots(changes_dir: Path) -> None:
             path.unlink(missing_ok=True)
 
 
+def _apply_registry_agency_names(
+    index: dict[str, Any],
+    registry_by_id: dict[str, Agency],
+) -> bool:
+    """Overlay mutable curated names onto the current derived index."""
+    changed = False
+    for agency_id, entry in (index.get("agencies") or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        registry = registry_by_id.get(str(agency_id))
+        name = resolve_published_agency_name(
+            str(agency_id),
+            registry_name=registry.name if registry else "",
+            artifact_name=str(entry.get("name") or ""),
+        )
+        if entry.get("name") != name:
+            entry["name"] = name
+            changed = True
+    return changed
+
+
 def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Generate all static pages, the sitemap, and robots.txt under web/.
 
@@ -8807,7 +8964,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     _remove_unlisted_agency_pages(web / "agency", published_ids)
     from .publish import enrich_index_history_provenance
 
-    if enrich_index_history_provenance(index, art):
+    index_changed = enrich_index_history_provenance(index, art)
+    from .config import AGENCIES
+
+    # CLI renders have the registry loaded already. Direct library callers use
+    # the same manifest-aware reader without mutating the process-global map.
+    registry_by_id = dict(AGENCIES)
+    if not registry_by_id:
+        from .agencies import read_agencies
+
+        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed |= _apply_registry_agency_names(index, registry_by_id)
+    if index_changed:
         index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")
     # Per-feed score histories, keyed by id, for compact trend graphics on
     # named change, NTD one-fix, and realtime tables.
@@ -8820,15 +8988,6 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # (below) read the same state.
     write("agencies/index.html", _render_agency_index(index, liveness_state))
     states = _states_by_agency()
-    from .config import AGENCIES
-
-    # CLI renders have the registry loaded already. Direct library callers use
-    # the same manifest-aware reader without mutating the process-global map.
-    registry_by_id = dict(AGENCIES)
-    if not registry_by_id:
-        from .agencies import read_agencies
-
-        registry_by_id = {agency.id: agency for agency in read_agencies()}
 
     # Pass 1: read each scorecard once to build the catalog records the
     # directory needs (grade, score, location, size, and comparison provenance).
@@ -8859,6 +9018,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         days = fresh.get("days_until_expiry")
         agency_cfg = registry_by_id.get(agency_id)
         artifact_agency = artifact.setdefault("agency", {})
+        artifact_agency["name"] = resolve_published_agency_name(
+            agency_id,
+            registry_name=agency_cfg.name if agency_cfg else "",
+            artifact_name=str(artifact_agency.get("name") or ""),
+        )
         location = resolve_published_location(
             registry_country=agency_cfg.country if agency_cfg else "",
             registry_subdivision_code=agency_cfg.subdivision_code if agency_cfg else "",
@@ -8946,6 +9110,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     (art / "directory.json").write_text(json.dumps(directory, indent=2, sort_keys=True) + "\n")
     by_id = {r["id"]: r for r in directory["agencies"]}
+    agency_seo_metadata = _plan_agency_seo_metadata(
+        directory["agencies"],
+        artifacts_by_id,
+        registry_by_id,
+    )
     # build_directory adds the existing catalog's size and comparison fields.
     # Copy only those established fields back; feature measurements belong to
     # directory.json and features.json, not the older flat catalog contract.
@@ -9137,6 +9306,13 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             artifact = json.loads(latest.read_text())
         except (json.JSONDecodeError, OSError):
             continue  # already warned in pass 1
+        agency_cfg = registry_by_id.get(agency_id)
+        artifact_agency = artifact.setdefault("agency", {})
+        artifact_agency["name"] = resolve_published_agency_name(
+            agency_id,
+            registry_name=agency_cfg.name if agency_cfg else "",
+            artifact_name=str(artifact_agency.get("name") or ""),
+        )
         # Feed every public narrative surface the same mode-aware copy. This
         # covers the full scorecard, call brief, and board one-pager together.
         from .mode_language import adapt_artifact_language
@@ -9183,6 +9359,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 now=now,
                 artifacts=dated_artifacts,
                 effort_bands=effort_bands,
+                seo_metadata=agency_seo_metadata[agency_id],
             ),
             f"{BASE_URL}/agency/{agency_id}/",
             lastmod=str(artifact.get("snapshot_date") or "") or None,
