@@ -57,24 +57,31 @@
       <p class="map-filters-intro">Filter by grade, location, or flexible service. The map and the list update together.</p>
       <div class="map-filter-row">
         <label for="map-grade">Grade</label>
-        <select id="map-grade" name="grade"><option value="">All grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option><option value="D">Grade D</option><option value="F">Grade F</option></select>
+        <select id="map-grade" name="grade" aria-describedby="map-list-status"><option value="">All grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option><option value="D">Grade D</option><option value="F">Grade F</option></select>
         <label for="map-state">Location</label>
-        <select id="map-state" name="state"><option value="">All locations</option><optgroup label="Countries"><option value="country:CA">Canada</option><option value="country:US">United States</option></optgroup><optgroup label="Subdivisions"><option value="subdivision:CA-ON">Ontario, Canada</option></optgroup></select>
+        <select id="map-state" name="state" aria-describedby="map-list-status"><option value="">All locations</option><optgroup label="Countries"><option value="country:CA">Canada</option><option value="country:US">United States</option></optgroup><optgroup label="Subdivisions"><option value="subdivision:CA-ON">Ontario, Canada</option></optgroup></select>
       </div>
       <div class="map-filter-row">
-        <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
+        <label><input type="checkbox" id="map-flex" name="flex" aria-describedby="map-list-status"> Offers GTFS-Flex (demand-responsive service)</label>
       </div>
     </form>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="map-list-load" hidden>
+        Load the complete filterable list
+      </button>
+      <p id="map-list-status" class="fineprint" role="status">All 3 scorecards are ready, and the filters are available.
+        <a href="/agencies/">Browse the paginated agency directory.</a></p>
+    </div>
     <div class="map-load-panel">
       <button type="button" class="button button-secondary" id="map-load">
         Load interactive map
       </button>
-      <p id="map-load-status" class="fineprint" role="status">The scorecard list is ready now.
-        Load the map only when you want the geographic view. It uses additional data.</p>
+      <p id="map-load-status" class="fineprint" role="status">The first scorecard rows are ready
+        now. Load the map only when you want the geographic view. It also loads the complete list.</p>
     </div>
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
-      The interactive map has not loaded. The scorecard list below carries the same feed records,
-      grades, locations, and scorecard links.</p></div>
+      The interactive map has not loaded. Use the complete-list control or the paginated agency
+      directory for the same feed records, grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
@@ -90,18 +97,27 @@
         <tbody id="map-tbody"><tr data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
       </table>
     </section>
+    <noscript><p class="fineprint">The first 3 map records are listed above.
+      Browse the <a href="/agencies/">complete paginated agency directory</a> for every
+      scorecard without JavaScript.</p></noscript>
     <script>
       (function () {
         var gradeEl = document.getElementById("map-grade");
         var stateEl = document.getElementById("map-state");
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
+        var tbodyEl = document.getElementById("map-tbody");
+        var listLoadEl = document.getElementById("map-list-load");
+        var listStatusEl = document.getElementById("map-list-status");
         var loadEl = document.getElementById("map-load");
         var loadStatusEl = document.getElementById("map-load-status");
         var mapEl = document.getElementById("map");
         var rows = Array.prototype.slice.call(
           document.querySelectorAll("#map-tbody tr"));
+        var countryNames = {"CA":"Canada","US":"United States"};
         var all = null;  // the full FeatureCollection, fetched once
+        var dataPromise = null;
+        var rowsHydrated = true;
         var map = null;
 
         function rowAgencyId(tr) {
@@ -109,6 +125,112 @@
           var href = link ? link.getAttribute("href") : "";
           var match = /^\/agency\/([^/]+)\/$/.exec(href);
           return match ? match[1] : "";
+        }
+
+        function textValue(value) {
+          return value === null || value === undefined ? "" : String(value);
+        }
+
+        function locationLabel(properties) {
+          var country = textValue(properties.country || "US").toUpperCase();
+          var subdivision = textValue(properties.subdivision_name);
+          var state = textValue(properties.state);
+          if (country === "US") return subdivision || state || "—";
+          var parent = countryNames[country] || country;
+          return subdivision ? subdivision + ", " + parent : parent || state || "—";
+        }
+
+        function tableRow(feature) {
+          var p = feature && feature.properties ? feature.properties : {};
+          var id = textValue(p.id);
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) return null;
+          var tr = document.createElement("tr");
+          tr.setAttribute("data-grade", textValue(p.grade || "?"));
+          tr.setAttribute("data-state", textValue(p.state));
+          tr.setAttribute("data-country", textValue(p.country));
+          tr.setAttribute("data-subdivision", textValue(p.subdivision_code));
+          tr.setAttribute("data-has-flex", p.has_flex ? "true" : "false");
+
+          var nameCell = document.createElement("td");
+          var link = document.createElement("a");
+          link.href = "/agency/" + id + "/";
+          var name = document.createElement("bdi");
+          name.textContent = textValue(p.name || id);
+          link.appendChild(name);
+          nameCell.appendChild(link);
+          tr.appendChild(nameCell);
+
+          [textValue(p.grade || "?"), locationLabel(p), textValue(p.score)].forEach(
+            function (value, index) {
+              var cell = document.createElement("td");
+              if (index === 1) {
+                var bdi = document.createElement("bdi");
+                bdi.textContent = value;
+                cell.appendChild(bdi);
+              } else {
+                cell.textContent = value;
+              }
+              tr.appendChild(cell);
+            }
+          );
+          return tr;
+        }
+
+        function setFiltersDisabled(disabled) {
+          gradeEl.disabled = disabled;
+          stateEl.disabled = disabled;
+          if (flexEl) flexEl.disabled = disabled;
+        }
+
+        function hydrateRows(geojson) {
+          if (rowsHydrated) return;
+          var features = geojson && Array.isArray(geojson.features) ? geojson.features.slice() : [];
+          features.sort(function (left, right) {
+            var a = textValue((left.properties || {}).name).toLowerCase();
+            var b = textValue((right.properties || {}).name).toLowerCase();
+            return a < b ? -1 : a > b ? 1 : 0;
+          });
+          var fragment = document.createDocumentFragment();
+          features.forEach(function (feature) {
+            var tr = tableRow(feature);
+            if (tr) fragment.appendChild(tr);
+          });
+          while (tbodyEl.firstChild) tbodyEl.removeChild(tbodyEl.firstChild);
+          tbodyEl.appendChild(fragment);
+          rows = Array.prototype.slice.call(tbodyEl.querySelectorAll("tr"));
+          rowsHydrated = true;
+          setFiltersDisabled(false);
+          if (listLoadEl) listLoadEl.hidden = true;
+          if (listStatusEl) {
+            listStatusEl.textContent =
+              "Complete list loaded. Grade, location, and flexible-service filters are ready.";
+          }
+        }
+
+        function loadData(afterRows) {
+          if (!dataPromise) {
+            dataPromise = fetch("/map.geojson", { headers: { Accept: "application/geo+json" } })
+              .then(function (response) {
+                if (!response.ok) throw new Error("map data " + response.status);
+                return response.json();
+              })
+              .then(function (geojson) {
+                if (!geojson || !Array.isArray(geojson.features)) {
+                  throw new Error("map data has no feature list");
+                }
+                all = geojson;
+                hydrateRows(geojson);
+                return geojson;
+              })
+              .catch(function (error) {
+                dataPromise = null;
+                throw error;
+              });
+          }
+          return dataPromise.then(function (geojson) {
+            if (afterRows) afterRows();
+            return geojson;
+          });
         }
 
         function matches(grade, state, country, subdivision, hasFlex) {
@@ -174,10 +296,6 @@
         // Agency id -> table row, so a hovered map point can light up its row
         // and the reverse. Visual only: the row text is the accessible source.
         var rowById = {};
-        rows.forEach(function (tr) {
-          var id = rowAgencyId(tr);
-          if (id) rowById[id] = tr;
-        });
         var current = null;   // agency id currently brushed, or null
         var pinned = null;    // sticky selection from Space or a row tap, or null
         var hiReady = false;  // the highlight layer exists once the map loads
@@ -205,23 +323,30 @@
         // focus reaching it brushes through focusin; Space pins the highlight,
         // while Enter keeps its meaning and follows the link. A click outside
         // the link pins too, for touch.
-        rows.forEach(function (tr) {
-          var id = rowAgencyId(tr);
-          if (!id) return;
-          tr.addEventListener("mouseenter", function () { highlight(id); });
-          tr.addEventListener("mouseleave", function () { highlight(pinned); });
-          tr.addEventListener("focusin", function () { highlight(id); });
-          tr.addEventListener("focusout", function () { highlight(pinned); });
-          tr.addEventListener("click", function (e) {
-            if (e.target && e.target.closest && e.target.closest("a")) return;
-            togglePin(id);
+        function wireRows() {
+          rowById = {};
+          rows.forEach(function (tr) {
+            var id = rowAgencyId(tr);
+            if (!id) return;
+            rowById[id] = tr;
+            if (tr.getAttribute("data-map-wired") === "true") return;
+            tr.setAttribute("data-map-wired", "true");
+            tr.addEventListener("mouseenter", function () { highlight(id); });
+            tr.addEventListener("mouseleave", function () { highlight(pinned); });
+            tr.addEventListener("focusin", function () { highlight(id); });
+            tr.addEventListener("focusout", function () { highlight(pinned); });
+            tr.addEventListener("click", function (e) {
+              if (e.target && e.target.closest && e.target.closest("a")) return;
+              togglePin(id);
+            });
+            tr.addEventListener("keydown", function (e) {
+              if (e.key !== " ") return;
+              e.preventDefault();  // Space pins, never scrolls the page
+              togglePin(id);
+            });
           });
-          tr.addEventListener("keydown", function (e) {
-            if (e.key !== " ") return;
-            e.preventDefault();  // Space pins, never scrolls the page
-            togglePin(id);
-          });
-        });
+        }
+        wireRows();
 
         function filtered() {
           if (!all) return { type: "FeatureCollection", features: [] };
@@ -348,10 +473,19 @@
             map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
           }
           mapEl.classList.remove("national-map-pending");
-          if (loadStatusEl) loadStatusEl.textContent = "Interactive map loaded.";
-          fetch("/map.geojson").then(function (r) { return r.json(); })
-            .then(function (gj) { all = gj; applyFilter(); })
-            .catch(function () {});
+          if (loadStatusEl) loadStatusEl.textContent =
+            "Interactive basemap loaded. Loading the scorecard points and complete list.";
+          loadData(wireRows)
+            .then(function () {
+              applyFilter();
+              if (loadStatusEl) loadStatusEl.textContent =
+                "Interactive map and complete scorecard list loaded.";
+            })
+            .catch(function () {
+              if (loadStatusEl) loadStatusEl.textContent =
+                "The basemap loaded, but the scorecard points did not. The paginated agency " +
+                "directory is still available.";
+            });
 
           map.on("click", "clusters", function (e) {
             var f = map.queryRenderedFeatures(e.point, { layers: ["clusters"] })[0];
@@ -395,15 +529,56 @@
           map.on("mouseleave", "clusters", function () { map.getCanvas().style.cursor = ""; });
         });
         }
-        function onFilterChange() {
-          // Filtering the accessible table never depends on the optional map.
-          if (!map || !all) { filterTable(); return; }
+        function syncFilters() {
+          if (!map || !all || !map.getSource || !map.getSource("agencies")) {
+            filterTable();
+            return;
+          }
           applyFilter();
+        }
+        function onFilterChange() {
+          // The first filter choice is also an explicit request for the
+          // complete dataset. Keep the chosen value, announce the short load,
+          // then apply it to every row and (when present) every map point.
+          if (!rowsHydrated) {
+            setFiltersDisabled(true);
+            if (listStatusEl) listStatusEl.textContent =
+              "Loading the complete scorecard list for this filter.";
+            loadData()
+              .then(syncFilters)
+              .catch(function () {
+                setFiltersDisabled(false);
+                filterTable();
+                if (listStatusEl) listStatusEl.textContent =
+                  "The complete list could not load. This filter applies to the first " +
+                  "3 rows only; use the paginated agency directory for every " +
+                  "scorecard.";
+              });
+            return;
+          }
+          syncFilters();
         }
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
         filterTable();
+
+        listLoadEl.addEventListener("click", function () {
+          listLoadEl.disabled = true;
+          listLoadEl.textContent = "Loading complete list…";
+          setFiltersDisabled(true);
+          if (listStatusEl) listStatusEl.textContent = "Loading the complete scorecard list.";
+          loadData()
+            .then(syncFilters)
+            .catch(function () {
+              setFiltersDisabled(false);
+              listLoadEl.disabled = false;
+              listLoadEl.textContent = "Try loading the complete list again";
+              if (listStatusEl) listStatusEl.textContent =
+                "The complete list could not load. The first scorecards and paginated agency " +
+                "directory are still available.";
+            });
+        });
 
         loadEl.addEventListener("click", function () {
           loadEl.disabled = true;
@@ -423,7 +598,7 @@
             loadEl.disabled = false;
             loadEl.textContent = "Try loading the map again";
             if (loadStatusEl) loadStatusEl.textContent =
-              "The map could not load. The complete agency list is still available below.";
+              "The map could not load. Use the complete-list control or paginated agency directory.";
           };
           document.head.appendChild(script);
         });

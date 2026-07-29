@@ -4155,148 +4155,253 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
     )
 
 
-def _render_agency_index(index: dict[str, Any], liveness: dict[str, dict[str, Any]]) -> str:
-    canonical = f"{BASE_URL}/agencies/"
-    agencies = sorted(index["agencies"].items(), key=lambda kv: kv[1]["name"].lower())
+_AGENCY_INDEX_PAGE_SIZE = 80
 
-    # Pull expired feeds out of the grade sections so the actionable ones aren't
-    # buried in a long alphabetical wall of grade F. Split them: a recently
-    # lapsed feed is a one-line re-export the agency can still fix; a feed that
-    # has been dead for over a year usually means the URL itself is stale and the
-    # canonical endpoint should be re-checked in the Mobility Database. Within
-    # "expired over a year", a further automatic split (metrics.operating_signal,
-    # from the intraday liveness check, not a curator's manual note): a feed
-    # whose URL has itself failed every check for a sustained month reads
-    # differently in a caseload view than one whose stale calendar sits on a
-    # still-answering host. Neither is "the agency stopped" -- that stays a
-    # human call -- but a liaison should not have to guess which one they are
-    # looking at from the same one-line caption.
+
+def _agency_index_href(page: int) -> str:
+    """Stable public URL for one human-readable directory page."""
+    return "/agencies/" if page == 1 else f"/agencies/page/{page}/"
+
+
+def _agency_index_groups(
+    index: dict[str, Any], liveness: dict[str, dict[str, Any]]
+) -> tuple[int, list[dict[str, Any]]]:
+    """Directory rows grouped in their practitioner-facing reading order.
+
+    The returned rows are already ordered. Pagination happens after grouping so
+    every feed appears exactly once and the page chain stays deterministic.
+    """
+    agencies = sorted(index["agencies"].items(), key=lambda kv: kv[1]["name"].lower())
     lapsed: list[tuple[str, dict[str, Any], int]] = []
     stale_reachable: list[tuple[str, dict[str, Any], int]] = []
     stale_unreachable: list[tuple[str, dict[str, Any], int]] = []
-    graded: list[tuple[str, dict[str, Any]]] = []
-    for aid, a in agencies:
-        last = a["history"][-1]
+    current: list[tuple[str, dict[str, Any], int | None]] = []
+    for aid, agency in agencies:
+        last = agency["history"][-1]
         days = last.get("days_until_expiry")
         status = expiry_status(days)
         if status == "lapsed":
-            lapsed.append((aid, a, int(days)))
+            lapsed.append((aid, agency, int(days)))
         elif status == "stale":
             failures = int((liveness.get(aid) or {}).get("consecutive_failures") or 0)
             if operating_signal(status, failures) == "unreachable":
-                stale_unreachable.append((aid, a, int(days)))
+                stale_unreachable.append((aid, agency, int(days)))
             else:
-                stale_reachable.append((aid, a, int(days)))
+                stale_reachable.append((aid, agency, int(days)))
         else:
-            graded.append((aid, a))
-    # Most recently expired first: the closest to recovery, and the most likely
-    # to still be operating.
-    lapsed.sort(key=lambda t: t[2], reverse=True)
-    stale_reachable.sort(key=lambda t: t[2], reverse=True)
-    stale_unreachable.sort(key=lambda t: t[2], reverse=True)
-    stale_total = len(stale_reachable) + len(stale_unreachable)
+            current.append((aid, agency, None))
 
-    nav = []
-    expired_section = ""
-    if lapsed or stale_total:
-        nav.append(f'<a href="#expired">Expired ({len(lapsed) + stale_total})</a>')
-        groups = []
-        if lapsed:
-            rows = "".join(
-                _index_card(aid, a, f"Feed expired {_expired_ago(d)} · likely still running")
-                for aid, a, d in lapsed
-            )
-            groups.append(
-                '<section aria-labelledby="lapsed-h">'
-                '<h3 class="section-sub" id="lapsed-h">Recently lapsed '
-                f'<span class="grade-count">{len(lapsed)} '
-                f"{'feed' if len(lapsed) == 1 else 'feeds'}</span></h3>"
-                '<p class="group-note">Expired within the last year. These feeds are '
-                "almost certainly still running. Re-exporting the feed with a calendar that "
-                "reaches further out brings them back into trip planners.</p>"
-                f'<ul class="agency-list">{rows}</ul></section>'
-            )
-        if stale_reachable:
-            rows = "".join(
-                _index_card(aid, a, f"Feed expired {_expired_ago(d)} · check the feed URL")
-                for aid, a, d in stale_reachable
-            )
-            groups.append(
-                '<section aria-labelledby="stale-h">'
-                '<h3 class="section-sub" id="stale-h">Expired over a year ago '
-                f'<span class="grade-count">{len(stale_reachable)} '
-                f"{'feed' if len(stale_reachable) == 1 else 'feeds'}</span></h3>"
-                '<p class="group-note">Expired more than a year ago. For these, the feed URL on '
-                "file is still the one listed in the Mobility Database, so the stale data is at "
-                "the source: the agency or its vendor stopped refreshing the export. Worth "
-                "confirming the agency still runs before reading the grade as a current failure.</p>"
-                f'<ul class="agency-list">{rows}</ul></section>'
-            )
-        if stale_unreachable:
-            rows = "".join(
-                _index_card(
-                    aid, a, f"Feed expired {_expired_ago(d)} · link unreachable for 30+ checks"
+    # Most recently expired first: the closest to recovery, and the most likely
+    # to still be operating. Current records retain alphabetical order.
+    lapsed.sort(key=lambda row: row[2], reverse=True)
+    stale_reachable.sort(key=lambda row: row[2], reverse=True)
+    stale_unreachable.sort(key=lambda row: row[2], reverse=True)
+    return len(agencies), [
+        {
+            "key": "lapsed",
+            "heading": "Recently lapsed",
+            "note": (
+                "Expired within the last year. These feeds are almost certainly still running. "
+                "Re-exporting the feed with a calendar that reaches further out brings them "
+                "back into trip planners."
+            ),
+            "rows": [
+                (aid, agency, f"Feed expired {_expired_ago(days)} · likely still running")
+                for aid, agency, days in lapsed
+            ],
+        },
+        {
+            "key": "stale",
+            "heading": "Expired over a year ago",
+            "note": (
+                "Expired more than a year ago. For these, the feed URL on file is still the one "
+                "listed in the Mobility Database, so the stale data is at the source: the agency "
+                "or its vendor stopped refreshing the export. Worth confirming the agency still "
+                "runs before reading the grade as a current failure."
+            ),
+            "rows": [
+                (aid, agency, f"Feed expired {_expired_ago(days)} · check the feed URL")
+                for aid, agency, days in stale_reachable
+            ],
+        },
+        {
+            "key": "unreachable",
+            "heading": "Long unreachable",
+            "note": (
+                "Expired more than a year ago, and the feed URL itself has not answered the last "
+                "30 checks in a row — a stronger signal than an old calendar alone. This may "
+                "mean the feed moved, the listing is stale, or service has changed; we cannot "
+                "tell which from here. Worth confirming directly before reading it either way."
+            ),
+            "rows": [
+                (
+                    aid,
+                    agency,
+                    f"Feed expired {_expired_ago(days)} · link unreachable for 30+ checks",
                 )
-                for aid, a, d in stale_unreachable
-            )
-            groups.append(
-                '<section aria-labelledby="unreachable-h">'
-                '<h3 class="section-sub" id="unreachable-h">Long unreachable '
-                f'<span class="grade-count">{len(stale_unreachable)} '
-                f"{'feed' if len(stale_unreachable) == 1 else 'feeds'}</span></h3>"
-                '<p class="group-note">Expired more than a year ago, and the feed URL itself '
-                "has not answered the last 30 checks in a row &mdash; a stronger signal than "
-                "an old calendar alone. This may mean the feed moved, the listing is stale, or "
-                "service has changed; we cannot tell which from here. Worth confirming directly "
-                "before reading it either way.</p>"
-                f'<ul class="agency-list">{rows}</ul></section>'
-            )
+                for aid, agency, days in stale_unreachable
+            ],
+        },
+        {
+            "key": "current",
+            "heading": "Current and upcoming service",
+            "note": (
+                "Listed alphabetically. Each grade describes only that feed's published bytes "
+                "under its stated scoring contract; this list is not a cross-feed ranking."
+            ),
+            "rows": [(aid, agency, "") for aid, agency, _ in current],
+        },
+    ]
+
+
+def _agency_index_pager(page: int, page_count: int, *, label: str) -> str:
+    """Compact crawlable previous/next navigation for the directory."""
+    if page_count <= 1:
+        return ""
+    previous = (
+        f'<a rel="prev" href="{_agency_index_href(page - 1)}">&larr; Previous page</a>'
+        if page > 1
+        else '<span aria-hidden="true">&larr; Previous page</span>'
+    )
+    following = (
+        f'<a rel="next" href="{_agency_index_href(page + 1)}">Next page &rarr;</a>'
+        if page < page_count
+        else '<span aria-hidden="true">Next page &rarr;</span>'
+    )
+    return (
+        f'<nav class="directory-pager" aria-label="{esc(label)}">{previous}'
+        f'<span aria-current="page">Page {page} of {page_count}</span>{following}</nav>'
+    )
+
+
+def _agency_index_head_links(page: int, page_count: int) -> str:
+    """HTML discovery links for the adjacent directory documents."""
+    links = []
+    if page > 1:
+        links.append(f'<link rel="prev" href="{BASE_URL}{_agency_index_href(page - 1)}">')
+    if page < page_count:
+        links.append(f'<link rel="next" href="{BASE_URL}{_agency_index_href(page + 1)}">')
+    return "\n  ".join(links)
+
+
+def _agency_index_jump_nav(*, has_expired: bool, has_current: bool) -> str:
+    """On-page links only for sections present in the current bounded page."""
+    links = []
+    if has_expired:
+        links.append('<a href="#expired">Expired feeds on this page</a>')
+    if has_current:
+        links.append('<a href="#current">Current service on this page</a>')
+    if not links:
+        return ""
+    return (
+        f'<nav class="grade-jump" aria-label="Jump to section">Jump to: {" · ".join(links)}</nav>'
+    )
+
+
+def _render_agency_index(
+    index: dict[str, Any],
+    liveness: dict[str, dict[str, Any]],
+    *,
+    page: int = 1,
+    page_size: int = _AGENCY_INDEX_PAGE_SIZE,
+) -> str:
+    """Render one bounded page of the crawlable agency directory."""
+    total, groups = _agency_index_groups(index, liveness)
+    page_count = max(1, math.ceil(total / page_size))
+    if page < 1 or page > page_count:
+        raise ValueError(f"directory page {page} is outside 1..{page_count}")
+
+    flat_rows: list[tuple[str, str, dict[str, Any], str]] = []
+    group_by_key = {str(group["key"]): group for group in groups}
+    for group in groups:
+        flat_rows.extend(
+            (str(group["key"]), aid, agency, note) for aid, agency, note in group["rows"]
+        )
+    start = (page - 1) * page_size
+    page_rows = flat_rows[start : start + page_size]
+    end = start + len(page_rows)
+
+    rows_by_group: dict[str, list[tuple[str, dict[str, Any], str]]] = {}
+    for key, aid, agency, note in page_rows:
+        rows_by_group.setdefault(key, []).append((aid, agency, note))
+
+    expired_keys = ("lapsed", "stale", "unreachable")
+    expired_total = sum(len(group_by_key[key]["rows"]) for key in expired_keys)
+    expired_groups = []
+    for key in expired_keys:
+        selected = rows_by_group.get(key, [])
+        if not selected:
+            continue
+        group = group_by_key[key]
+        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected)
+        expired_groups.append(
+            f'<section aria-labelledby="{key}-h">'
+            f'<h3 class="section-sub" id="{key}-h">{esc(group["heading"])} '
+            f'<span class="grade-count">{len(selected)} on this page · '
+            f"{len(group['rows'])} total</span></h3>"
+            f'<p class="group-note">{esc(group["note"])}</p>'
+            f'<ul class="agency-list">{rows}</ul></section>'
+        )
+    expired_section = ""
+    if expired_groups:
         expired_section = (
             '<section class="expired-panel" aria-labelledby="expired">'
             '<h2 class="section-title" id="expired">Expired feeds '
-            f'<span class="grade-count">{len(lapsed) + stale_total} '
-            f"{'feed' if len(lapsed) + stale_total == 1 else 'feeds'}</span></h2>"
+            f'<span class="grade-count">{expired_total} total</span></h2>'
             '<p class="page-lede">A feed whose calendar has run out is invisible to trip '
-            "planners even while service continues. These are pulled out of the grade list "
-            "below so the fixable ones are easy to find.</p>"
-            f"{''.join(groups)}</section>"
+            "planners even while service continues. These are pulled out of the current-service "
+            "list so the fixable ones are easy to find.</p>"
+            f"{''.join(expired_groups)}</section>"
         )
 
-    sections: list[str] = []
-    if graded:
-        # ``agencies`` was sorted by name before the expiry split, so this stays
-        # alphabetical. Each row keeps its own grade, but the page does not turn
-        # mixed-contract feed records into a high-to-low list or grade aggregate.
-        nav.append('<a href="#current">Current and upcoming service</a>')
-        rows = "".join(_index_card(aid, agency) for aid, agency in graded)
-        sections.append(
+    current_section = ""
+    selected_current = rows_by_group.get("current", [])
+    if selected_current:
+        current_group = group_by_key["current"]
+        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected_current)
+        current_section = (
             '<section aria-labelledby="current">'
-            '<h2 class="section-title" id="current">Current and upcoming service</h2>'
-            '<p class="group-note">Listed alphabetically. Each grade describes only that '
-            "feed's published bytes under its stated scoring contract; this list is not a "
-            "cross-feed ranking.</p>"
+            '<h2 class="section-title" id="current">Current and upcoming service '
+            f'<span class="grade-count">{len(selected_current)} on this page · '
+            f"{len(current_group['rows'])} total</span></h2>"
+            f'<p class="group-note">{esc(current_group["note"])}</p>'
             f'<ul class="agency-list">{rows}</ul></section>'
         )
 
+    canonical_path = _agency_index_href(page)
+    canonical = f"{BASE_URL}{canonical_path}"
+    page_suffix = f", page {page}" if page > 1 else ""
+    title = f"Agency scorecards{page_suffix} — GTFS Scorecard"
     desc = (
-        f"GTFS data quality scorecards for {len(agencies)} published feed records. Expired feeds are "
-        "listed first, split into recently lapsed and long dead, then the rest alphabetically."
+        f"Page {page} of {page_count} for {total} published GTFS feed scorecards, "
+        "including current, recently expired, and older published feeds."
     )
+    jump_nav = _agency_index_jump_nav(
+        has_expired=bool(expired_groups),
+        has_current=bool(selected_current),
+    )
+    pager_top = _agency_index_pager(page, page_count, label="Directory pages before the list")
+    pager_bottom = _agency_index_pager(page, page_count, label="Directory pages after the list")
     body = f"""    {_breadcrumb([("Home", "/"), ("All agencies", None)])}
     <h1 class="page-title">Agency scorecards</h1>
-    <p class="page-lede">{len(agencies)} published feed scorecards, each with a
+    <p class="page-lede">{total} published feed scorecards, each with a
     <abbr title="General Transit Feed Specification">GTFS</abbr> data
     quality grade and the fixes to start with.</p>
+    <p class="fineprint">Showing records {start + 1 if total else 0}&ndash;{end} of {total}.
+      Use the page links to browse the complete directory.</p>
     <nav class="grade-jump" aria-label="Other views of the same scorecards">Same scorecards, other
     views: <a href="/app/">live search and filters</a> · <a href="/map/">on a map</a> ·
     <a href="/routes/">every route</a> · <a href="/compare/">compare two</a></nav>
-    <nav class="grade-jump" aria-label="Jump to section">Jump to: {" · ".join(nav)}</nav>
-    {expired_section}
-    {"".join(sections)}"""
+{pager_top}
+{jump_nav}
+{expired_section}
+{current_section}
+{pager_bottom}"""
     return _page(
-        title="Agency scorecards — GTFS Scorecard",
+        title=title,
         description=desc,
         canonical=canonical,
+        head_extra=_agency_index_head_links(page, page_count),
         body=body,
         wide=True,
     )
@@ -6028,6 +6133,7 @@ def _map_feature(
 
 
 _MAP_LIB_VERSION = "4.7.1"
+_MAP_TABLE_INITIAL_ROWS = 50
 
 
 def _render_map_page(features: list[dict[str, Any]]) -> str:
@@ -6035,20 +6141,21 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     grade letter and coloured by grade, rendered client-side by MapLibre over the
     keyless OpenFreeMap basemap and clustered at low zoom.
 
-    The map is an enhancement. The conformant primary is the filterable agency
-    table below it (grade, state, score, link), reached by a 'Skip to the agency
-    list' bypass before the map; the same grade and state selectors filter the
-    map and the table together. The MapLibre canvas is marked aria-hidden and
-    kept out of the tab order, so a keyboard or screen-reader user works the
-    table, never the canvas (docs/vpat.md).
+    The map is an enhancement. The conformant primary is the agency table below
+    it (grade, state, score, link), reached by a 'Skip to the agency list'
+    bypass before the map. A bounded first set is server-rendered; a reader can
+    explicitly load the complete filterable table, or follow the crawlable
+    paginated directory without JavaScript. The MapLibre canvas is marked
+    aria-hidden and kept out of the tab order, so a keyboard or screen-reader
+    user works the table, never the canvas (docs/vpat.md).
 
     Linked brushing ties each point to its row: hovering a point lights up its
     row (scrolled into view unless reduced motion is set), and hovering or
     focusing a row enlarges its point through a highlight layer, mirroring the
     agency map's routes-hi pattern. The rows' existing agency links are the tab
     stops (no extra tabindex); Space pins the highlight, Enter keeps its meaning
-    and follows the link. After a user-driven filter, focus moves to the results
-    region so a keyboard or screen-reader user lands on the updated count."""
+    and follows the link. A user-driven filter updates a live result count
+    without moving focus out of the native control."""
     count = len(features)
     legend_items = "".join(
         f'<li><span class="map-dot" style="background:{color}">'
@@ -6056,8 +6163,9 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         f"Grade {grade}</li>"
         for grade, color in _MAP_GRADE_COLOR.items()
     )
-    # The accessible primary: one row per located agency, the same set the map
-    # plots. Sorted by name for a stable, scannable order.
+    # The accessible primary's bounded first set. The same sorted records become
+    # the complete table only after an explicit load, keeping the initial DOM
+    # stable at national scale.
     rows_data = sorted(
         (
             {
@@ -6091,7 +6199,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         f"<td>{esc(r['grade'])}</td>"
         f"<td><bdi>{esc(_location_label(r)) or '&mdash;'}</bdi></td>"
         f"<td>{esc(r['score'])}</td></tr>"
-        for r in rows_data
+        for r in rows_data[:_MAP_TABLE_INITIAL_ROWS]
     )
     # Countries are the primary scope. Every covered ISO subdivision is a
     # namespaced drill-down, so adding a country needs no renderer branch and
@@ -6146,6 +6254,18 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         else ""
     )
     grade_opts = "".join(f'<option value="{g}">Grade {g}</option>' for g in _MAP_GRADE_COLOR)
+    country_labels_json = json.dumps(
+        {code: name for code, name in countries}, ensure_ascii=False, separators=(",", ":")
+    ).replace("</", "<\\/")
+    initial_count = min(count, _MAP_TABLE_INITIAL_ROWS)
+    needs_complete_load = count > _MAP_TABLE_INITIAL_ROWS
+    list_button_hidden = "" if needs_complete_load else " hidden"
+    list_status = (
+        f"The first {initial_count} of {count} scorecards are ready. Choose a filter or load the "
+        "complete list to fetch the remaining records."
+        if needs_complete_load
+        else f"All {count} scorecards are ready, and the filters are available."
+    )
     body = f"""    {_breadcrumb([("Home", "/"), ("Agency map", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Agency map.</h1>
@@ -6161,30 +6281,37 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
       <p class="map-filters-intro">Filter by grade, location, or flexible service. The map and the list update together.</p>
       <div class="map-filter-row">
         <label for="map-grade">Grade</label>
-        <select id="map-grade" name="grade"><option value="">All grades</option>{grade_opts}</select>
+        <select id="map-grade" name="grade" aria-describedby="map-list-status"><option value="">All grades</option>{grade_opts}</select>
         <label for="map-state">Location</label>
-        <select id="map-state" name="state"><option value="">All locations</option>{location_opts}</select>
+        <select id="map-state" name="state" aria-describedby="map-list-status"><option value="">All locations</option>{location_opts}</select>
       </div>
       <div class="map-filter-row">
-        <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
+        <label><input type="checkbox" id="map-flex" name="flex" aria-describedby="map-list-status"> Offers GTFS-Flex (demand-responsive service)</label>
       </div>
     </form>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="map-list-load"{list_button_hidden}>
+        Load the complete filterable list
+      </button>
+      <p id="map-list-status" class="fineprint" role="status">{esc(list_status)}
+        <a href="/agencies/">Browse the paginated agency directory.</a></p>
+    </div>
     <div class="map-load-panel">
       <button type="button" class="button button-secondary" id="map-load">
         Load interactive map
       </button>
-      <p id="map-load-status" class="fineprint" role="status">The scorecard list is ready now.
-        Load the map only when you want the geographic view. It uses additional data.</p>
+      <p id="map-load-status" class="fineprint" role="status">The first scorecard rows are ready
+        now. Load the map only when you want the geographic view. It also loads the complete list.</p>
     </div>
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
-      The interactive map has not loaded. The scorecard list below carries the same feed records,
-      grades, locations, and scorecard links.</p></div>
+      The interactive map has not loaded. Use the complete-list control or the paginated agency
+      directory for the same feed records, grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours">{legend_items}</ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
       <h2 class="section-title" id="agency-list-h">Every feed scorecard on the map</h2>
-      <p class="map-count" role="status"><span id="map-result-count">{count}</span> of {count}
+      <p class="map-count" role="status"><span id="map-result-count">{initial_count}</span> of {count}
         feed scorecards shown.</p>
       <table class="leaderboard map-table">
         <caption class="visually-hidden">Feed scorecards on the coverage map, with grade, location,
@@ -6194,18 +6321,27 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         <tbody id="map-tbody">{table_rows}</tbody>
       </table>
     </section>
+    <noscript><p class="fineprint">The first {initial_count} map records are listed above.
+      Browse the <a href="/agencies/">complete paginated agency directory</a> for every
+      scorecard without JavaScript.</p></noscript>
     <script>
       (function () {{
         var gradeEl = document.getElementById("map-grade");
         var stateEl = document.getElementById("map-state");
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
+        var tbodyEl = document.getElementById("map-tbody");
+        var listLoadEl = document.getElementById("map-list-load");
+        var listStatusEl = document.getElementById("map-list-status");
         var loadEl = document.getElementById("map-load");
         var loadStatusEl = document.getElementById("map-load-status");
         var mapEl = document.getElementById("map");
         var rows = Array.prototype.slice.call(
           document.querySelectorAll("#map-tbody tr"));
+        var countryNames = {country_labels_json};
         var all = null;  // the full FeatureCollection, fetched once
+        var dataPromise = null;
+        var rowsHydrated = {str(not needs_complete_load).lower()};
         var map = null;
 
         function rowAgencyId(tr) {{
@@ -6213,6 +6349,112 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           var href = link ? link.getAttribute("href") : "";
           var match = /^\\/agency\\/([^/]+)\\/$/.exec(href);
           return match ? match[1] : "";
+        }}
+
+        function textValue(value) {{
+          return value === null || value === undefined ? "" : String(value);
+        }}
+
+        function locationLabel(properties) {{
+          var country = textValue(properties.country || "US").toUpperCase();
+          var subdivision = textValue(properties.subdivision_name);
+          var state = textValue(properties.state);
+          if (country === "US") return subdivision || state || "—";
+          var parent = countryNames[country] || country;
+          return subdivision ? subdivision + ", " + parent : parent || state || "—";
+        }}
+
+        function tableRow(feature) {{
+          var p = feature && feature.properties ? feature.properties : {{}};
+          var id = textValue(p.id);
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) return null;
+          var tr = document.createElement("tr");
+          tr.setAttribute("data-grade", textValue(p.grade || "?"));
+          tr.setAttribute("data-state", textValue(p.state));
+          tr.setAttribute("data-country", textValue(p.country));
+          tr.setAttribute("data-subdivision", textValue(p.subdivision_code));
+          tr.setAttribute("data-has-flex", p.has_flex ? "true" : "false");
+
+          var nameCell = document.createElement("td");
+          var link = document.createElement("a");
+          link.href = "/agency/" + id + "/";
+          var name = document.createElement("bdi");
+          name.textContent = textValue(p.name || id);
+          link.appendChild(name);
+          nameCell.appendChild(link);
+          tr.appendChild(nameCell);
+
+          [textValue(p.grade || "?"), locationLabel(p), textValue(p.score)].forEach(
+            function (value, index) {{
+              var cell = document.createElement("td");
+              if (index === 1) {{
+                var bdi = document.createElement("bdi");
+                bdi.textContent = value;
+                cell.appendChild(bdi);
+              }} else {{
+                cell.textContent = value;
+              }}
+              tr.appendChild(cell);
+            }}
+          );
+          return tr;
+        }}
+
+        function setFiltersDisabled(disabled) {{
+          gradeEl.disabled = disabled;
+          stateEl.disabled = disabled;
+          if (flexEl) flexEl.disabled = disabled;
+        }}
+
+        function hydrateRows(geojson) {{
+          if (rowsHydrated) return;
+          var features = geojson && Array.isArray(geojson.features) ? geojson.features.slice() : [];
+          features.sort(function (left, right) {{
+            var a = textValue((left.properties || {{}}).name).toLowerCase();
+            var b = textValue((right.properties || {{}}).name).toLowerCase();
+            return a < b ? -1 : a > b ? 1 : 0;
+          }});
+          var fragment = document.createDocumentFragment();
+          features.forEach(function (feature) {{
+            var tr = tableRow(feature);
+            if (tr) fragment.appendChild(tr);
+          }});
+          while (tbodyEl.firstChild) tbodyEl.removeChild(tbodyEl.firstChild);
+          tbodyEl.appendChild(fragment);
+          rows = Array.prototype.slice.call(tbodyEl.querySelectorAll("tr"));
+          rowsHydrated = true;
+          setFiltersDisabled(false);
+          if (listLoadEl) listLoadEl.hidden = true;
+          if (listStatusEl) {{
+            listStatusEl.textContent =
+              "Complete list loaded. Grade, location, and flexible-service filters are ready.";
+          }}
+        }}
+
+        function loadData(afterRows) {{
+          if (!dataPromise) {{
+            dataPromise = fetch("/map.geojson", {{ headers: {{ Accept: "application/geo+json" }} }})
+              .then(function (response) {{
+                if (!response.ok) throw new Error("map data " + response.status);
+                return response.json();
+              }})
+              .then(function (geojson) {{
+                if (!geojson || !Array.isArray(geojson.features)) {{
+                  throw new Error("map data has no feature list");
+                }}
+                all = geojson;
+                hydrateRows(geojson);
+                return geojson;
+              }})
+              .catch(function (error) {{
+                dataPromise = null;
+                throw error;
+              }});
+          }}
+          return dataPromise.then(function (geojson) {{
+            if (afterRows) afterRows();
+            return geojson;
+          }});
         }}
 
         function matches(grade, state, country, subdivision, hasFlex) {{
@@ -6278,10 +6520,6 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // Agency id -> table row, so a hovered map point can light up its row
         // and the reverse. Visual only: the row text is the accessible source.
         var rowById = {{}};
-        rows.forEach(function (tr) {{
-          var id = rowAgencyId(tr);
-          if (id) rowById[id] = tr;
-        }});
         var current = null;   // agency id currently brushed, or null
         var pinned = null;    // sticky selection from Space or a row tap, or null
         var hiReady = false;  // the highlight layer exists once the map loads
@@ -6309,23 +6547,30 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // focus reaching it brushes through focusin; Space pins the highlight,
         // while Enter keeps its meaning and follows the link. A click outside
         // the link pins too, for touch.
-        rows.forEach(function (tr) {{
-          var id = rowAgencyId(tr);
-          if (!id) return;
-          tr.addEventListener("mouseenter", function () {{ highlight(id); }});
-          tr.addEventListener("mouseleave", function () {{ highlight(pinned); }});
-          tr.addEventListener("focusin", function () {{ highlight(id); }});
-          tr.addEventListener("focusout", function () {{ highlight(pinned); }});
-          tr.addEventListener("click", function (e) {{
-            if (e.target && e.target.closest && e.target.closest("a")) return;
-            togglePin(id);
+        function wireRows() {{
+          rowById = {{}};
+          rows.forEach(function (tr) {{
+            var id = rowAgencyId(tr);
+            if (!id) return;
+            rowById[id] = tr;
+            if (tr.getAttribute("data-map-wired") === "true") return;
+            tr.setAttribute("data-map-wired", "true");
+            tr.addEventListener("mouseenter", function () {{ highlight(id); }});
+            tr.addEventListener("mouseleave", function () {{ highlight(pinned); }});
+            tr.addEventListener("focusin", function () {{ highlight(id); }});
+            tr.addEventListener("focusout", function () {{ highlight(pinned); }});
+            tr.addEventListener("click", function (e) {{
+              if (e.target && e.target.closest && e.target.closest("a")) return;
+              togglePin(id);
+            }});
+            tr.addEventListener("keydown", function (e) {{
+              if (e.key !== " ") return;
+              e.preventDefault();  // Space pins, never scrolls the page
+              togglePin(id);
+            }});
           }});
-          tr.addEventListener("keydown", function (e) {{
-            if (e.key !== " ") return;
-            e.preventDefault();  // Space pins, never scrolls the page
-            togglePin(id);
-          }});
-        }});
+        }}
+        wireRows();
 
         function filtered() {{
           if (!all) return {{ type: "FeatureCollection", features: [] }};
@@ -6452,10 +6697,19 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
           }}
           mapEl.classList.remove("national-map-pending");
-          if (loadStatusEl) loadStatusEl.textContent = "Interactive map loaded.";
-          fetch("/map.geojson").then(function (r) {{ return r.json(); }})
-            .then(function (gj) {{ all = gj; applyFilter(); }})
-            .catch(function () {{}});
+          if (loadStatusEl) loadStatusEl.textContent =
+            "Interactive basemap loaded. Loading the scorecard points and complete list.";
+          loadData(wireRows)
+            .then(function () {{
+              applyFilter();
+              if (loadStatusEl) loadStatusEl.textContent =
+                "Interactive map and complete scorecard list loaded.";
+            }})
+            .catch(function () {{
+              if (loadStatusEl) loadStatusEl.textContent =
+                "The basemap loaded, but the scorecard points did not. The paginated agency " +
+                "directory is still available.";
+            }});
 
           map.on("click", "clusters", function (e) {{
             var f = map.queryRenderedFeatures(e.point, {{ layers: ["clusters"] }})[0];
@@ -6499,15 +6753,56 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           map.on("mouseleave", "clusters", function () {{ map.getCanvas().style.cursor = ""; }});
         }});
         }}
-        function onFilterChange() {{
-          // Filtering the accessible table never depends on the optional map.
-          if (!map || !all) {{ filterTable(); return; }}
+        function syncFilters() {{
+          if (!map || !all || !map.getSource || !map.getSource("agencies")) {{
+            filterTable();
+            return;
+          }}
           applyFilter();
+        }}
+        function onFilterChange() {{
+          // The first filter choice is also an explicit request for the
+          // complete dataset. Keep the chosen value, announce the short load,
+          // then apply it to every row and (when present) every map point.
+          if (!rowsHydrated) {{
+            setFiltersDisabled(true);
+            if (listStatusEl) listStatusEl.textContent =
+              "Loading the complete scorecard list for this filter.";
+            loadData()
+              .then(syncFilters)
+              .catch(function () {{
+                setFiltersDisabled(false);
+                filterTable();
+                if (listStatusEl) listStatusEl.textContent =
+                  "The complete list could not load. This filter applies to the first " +
+                  "{initial_count} rows only; use the paginated agency directory for every " +
+                  "scorecard.";
+              }});
+            return;
+          }}
+          syncFilters();
         }}
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
         filterTable();
+
+        listLoadEl.addEventListener("click", function () {{
+          listLoadEl.disabled = true;
+          listLoadEl.textContent = "Loading complete list…";
+          setFiltersDisabled(true);
+          if (listStatusEl) listStatusEl.textContent = "Loading the complete scorecard list.";
+          loadData()
+            .then(syncFilters)
+            .catch(function () {{
+              setFiltersDisabled(false);
+              listLoadEl.disabled = false;
+              listLoadEl.textContent = "Try loading the complete list again";
+              if (listStatusEl) listStatusEl.textContent =
+                "The complete list could not load. The first scorecards and paginated agency " +
+                "directory are still available.";
+            }});
+        }});
 
         loadEl.addEventListener("click", function () {{
           loadEl.disabled = true;
@@ -6527,7 +6822,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             loadEl.disabled = false;
             loadEl.textContent = "Try loading the map again";
             if (loadStatusEl) loadStatusEl.textContent =
-              "The map could not load. The complete agency list is still available below.";
+              "The map could not load. Use the complete-list control or paginated agency directory.";
           }};
           document.head.appendChild(script);
         }});
@@ -8834,6 +9129,15 @@ def _remove_unlisted_agency_pages(agency_pages: Path, published_ids: set[str]) -
             shutil.rmtree(page_dir)
 
 
+def _remove_stale_agency_index_pages(page_root: Path) -> None:
+    """Remove only generated numeric directory pages before rebuilding them."""
+    if not page_root.exists():
+        return
+    for page_dir in page_root.iterdir():
+        if page_dir.is_dir() and page_dir.name.isdigit():
+            shutil.rmtree(page_dir)
+
+
 def _scope_liveness_state(
     liveness_state: dict[str, dict[str, Any]], published_ids: set[str]
 ) -> dict[str, dict[str, Any]]:
@@ -9060,8 +9364,28 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     }
     # Per-feed change-detection freshness from the intraday refresh; loaded once,
     # early, so both the directory's expired-feed split and each agency page
-    # (below) read the same state.
-    write("agencies/index.html", _render_agency_index(index, liveness_state))
+    # (below) read the same state. Keep every directory document bounded: the
+    # production corpus is large enough that one giant HTML list delays first
+    # paint even though the content itself is static.
+    agency_page_root = web / "agencies" / "page"
+    _remove_stale_agency_index_pages(agency_page_root)
+    agency_count = len(index.get("agencies") or {})
+    agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
+    for page_number in range(1, agency_page_count + 1):
+        page_href = _agency_index_href(page_number)
+        page_rel = (
+            "agencies/index.html" if page_number == 1 else f"agencies/page/{page_number}/index.html"
+        )
+        write(
+            page_rel,
+            _render_agency_index(
+                index,
+                liveness_state,
+                page=page_number,
+                page_size=_AGENCY_INDEX_PAGE_SIZE,
+            ),
+            f"{BASE_URL}{page_href}" if page_number > 1 else None,
+        )
     states = _states_by_agency()
 
     # Pass 1: read each scorecard once to build the catalog records the
