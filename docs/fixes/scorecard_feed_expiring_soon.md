@@ -1,18 +1,18 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-07-04"
+date_modified: "2026-07-29"
 ---
 
-# Fix: the feed expires within 30 days
+# Fix: service coverage expires soon
 
 Code: `scorecard_feed_expiring_soon`
 
 ## What this means
 
-The scorecard works out the last day your feed actually covers service,
-taking the later of `feed_info.txt`'s `feed_end_date` and the last date any
-calendar or calendar_dates entry runs service, and that day falls within the
-next 30 days. The feed is not expired yet, but the window is closing.
+This scorecard finding compares `feed_info.txt`'s `feed_end_date` with the last
+day any `calendar.txt` or `calendar_dates.txt` entry runs service, then uses
+whichever date comes first. That earlier date is still in the future, but it is
+less than 30 days away.
 
 ## Why it matters
 

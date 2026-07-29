@@ -260,8 +260,10 @@ def test_gtfs_abbreviation_is_not_underlined() -> None:
 
 def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
     html = (_REPO / "web" / "app" / "index.html").read_text()
+    canonical = "https://gtfsscorecard.org/agencies/"
 
-    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/">' in html
+    assert html.count(f'<link rel="canonical" href="{canonical}">') == 1
+    assert html.count(f'<meta property="og:url" content="{canonical}">') == 1
 
 
 def test_open_data_page_publishes_data_catalog_jsonld() -> None:

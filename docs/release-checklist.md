@@ -10,11 +10,19 @@ dataset tag. Routine data refreshes use their existing automated workflow.
   version consistency, and golden output.
 - [ ] Browser e2e, 320px reflow/target-size, axe, Lighthouse accessibility, and
   performance budgets pass.
+- [ ] The fresh site passes the blocking structural SEO gate, including local
+  links and fragments, duplicate IDs, metadata, canonical aliases, sitemap and
+  robots parity, reciprocal HTTPS language links, required structured-data
+  identity and dates, and the no-tracking contract. Confirm the generated
+  report is retained for 14 days.
 - [ ] Security, dependency, container, workflow, standards-pin, and CodeQL checks pass.
 - [ ] Public claims identify their source, date, scope, and limitation; no output implies
   certification, rider service quality, or staff performance.
 - [ ] Schema, API, methodology, accessibility, and migration documentation changed with
   the implementation when applicable.
+- [ ] Public pages contain no analytics loader, tracking cookie, or visitor beacon.
+  Search Console DNS verification and sitemap submission remain external owner
+  tasks; no Search Console credentials or configuration are added to the repo.
 - [ ] Rollback is a revert of the merge commit; any data or infrastructure exception has
   an explicit recovery command and owner.
 
@@ -23,6 +31,8 @@ dataset tag. Routine data refreshes use their existing automated workflow.
 - [ ] Merge only after required checks are green.
 - [ ] The Pages workflow passes Lighthouse and the production deploy job.
 - [ ] Smoke-test `/`, `/agencies/`, one agency page, `/status/`, and `/api/v1/index.json`.
+- [ ] Confirm the weekly production Lighthouse job covers its four representative
+  routes with three runs each and retains its reports for 90 days.
 - [ ] For a SemVer tag, confirm `release-sign.yml` attaches the signed manifest,
   CycloneDX SBOM, VEX, and GitHub provenance attestations.
 - [ ] For an Action release, publish the SemVer tag from GitHub's release form with

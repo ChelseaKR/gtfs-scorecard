@@ -200,7 +200,7 @@ Actions; this is the inventory an operator should know exists:
 | `targeted-score.yml` | manual | Activates up to 25 reviewed registry agencies against the authoritative S3 corpus, then deploys. |
 | `rt-monitor.yml` | every 3 h | Short realtime sampling burst across agencies into `data/rt-health` (ADR 0012). |
 | `rt-archive.yml` | manual | Bounded high-resolution realtime polling session for one agency (ADR 0012). |
-| `watchdog.yml` | every 6 h | Independent uptime and freshness check, no AWS dependency. |
+| `watchdog.yml` | every 6 h + weekly | Independent uptime and freshness checks, plus the weekly production Lighthouse run; no AWS dependency. |
 | `discover.yml` | weekly | Checks expired feeds against the Mobility Database; opens PRs for moved URLs. |
 | `equity.yml` | weekly | Refreshes the US equity overlay from Census ACS (ADR 0015). |
 | `canada-equity.yml` | monthly | Refreshes the Canada overlay from StatCan CIMD (ADR 0027). |
@@ -211,6 +211,39 @@ Actions; this is the inventory an operator should know exists:
 | `tiles.yml` | manual | Rebuilds the national PMTiles route archive (needs tippecanoe). |
 | `mutation.yml` | weekly | Advisory mutation testing of the scoring math. |
 | `ci.yml`, `a11y.yml`, `e2e.yml`, `security.yml`, `pages.yml` | push/PR | The merge and deploy gates. |
+
+### Site structure and production Lighthouse checks
+
+Both `a11y.yml` and `pages.yml` assemble a fresh `_site` directory, then run
+the blocking structural check before the page-budget check. The command is:
+
+```sh
+cd pipeline
+uv run python scripts/check_site_seo.py \
+  --site-root ../_site \
+  --config ../site-seo.json \
+  --report ../seo-report.json
+```
+
+It checks internal links, assets, forms, fragments, duplicate IDs, head-only
+page metadata, exact canonical aliases, sitemap and robots rules, reciprocal
+HTTPS language links, required structured-data identity and dates, and the
+public no-tracking contract. A finding stops the build.
+Each workflow uploads its `seo-report.json` even on failure and retains it for
+14 days.
+
+The independent watchdog keeps its six-hour availability schedule and also
+runs a production Lighthouse job every Sunday at 07:41 UTC. It makes three
+runs against `/`, `/agencies/`, `/agency/unitrans/`, and
+`/fix/expired_calendar/`, then retains the reports and log for 90 days. A
+manual watchdog dispatch runs both the availability and Lighthouse jobs.
+
+These are synthetic checks. The deployed pages do not load analytics, set
+tracking cookies, or send visitor beacons. Search Console setup is deliberately
+outside the deployment: the domain owner can complete DNS verification and
+submit `https://gtfsscorecard.org/sitemap.xml`, but this repository must not
+store Search Console credentials, API configuration, or an automated
+submission workflow.
 
 ### Targeted agency activation
 

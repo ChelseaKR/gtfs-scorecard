@@ -135,7 +135,7 @@ def _finding_severity_badge(value: object) -> str:
 
 
 # Non-validator RuleLink.kind -> the phrase naming that authority, for the
-# "Validator rule" line's visually-hidden context. A dict, not an if/elif
+# "Finding code" line's visually-hidden context. A dict, not an if/elif
 # chain, so a kind added to rule_links.py without an entry here raises a
 # KeyError instead of silently falling through to the wrong authority name
 # (exactly the kind of drift ADR 0024 exists to prevent).
@@ -356,7 +356,7 @@ def _finding_handoff(
 
 
 def _rule_ref_link(code: str) -> str:
-    """Inline link to a finding's authoritative rule, for the 'Validator rule'
+    """Inline link to a finding's authoritative rule, for the 'Finding code'
     line on agency findings. Links the canonical gtfs-validator notice (or the
     relevant GTFS Best Practice / reference) so the Cal-ITP / state-DOT reader
     lands on the canonical rule used across validator reports. Empty when no
@@ -394,23 +394,31 @@ def _fix_rule_reference(code: str) -> str:
             )
         link_text = f"Read the authoritative rule for {notice} in the GTFS Validator rules"
     elif link.kind == BEST_PRACTICE:
-        lead = (
-            "The GTFS Validator does not flag this (the field is valid GTFS when "
-            "left empty), so the expectation comes from the community GTFS Best "
-            "Practices."
-        )
+        if code in {"scorecard_feed_expired", "scorecard_feed_expiring_soon"}:
+            lead = (
+                "This scorecard finding combines feed_info and calendar service "
+                "dates to estimate when riders lose trip-planning coverage. The "
+                "GTFS Validator has related expiry notices, but no single validator "
+                "rule uses this exact combined calculation, so the operational "
+                "expectation comes from the community GTFS Best Practices."
+            )
+        else:
+            lead = (
+                "The GTFS Validator does not flag this, so the expectation comes "
+                "from the community GTFS Best Practices."
+            )
         link_text = "Read the relevant GTFS Best Practice"
     elif link.kind == REALTIME_REFERENCE:
         lead = (
-            "This scores GTFS-Realtime, which the GTFS Validator does not check "
-            "(it validates GTFS Schedule), so the expectation comes from the "
-            "GTFS-Realtime reference's message definition."
+            "This scorecard finding concerns GTFS-Realtime, while the MobilityData "
+            "GTFS Validator validates GTFS Schedule. The linked GTFS-Realtime "
+            "reference defines the message this scorecard checks."
         )
         link_text = "Read the relevant GTFS-Realtime reference section"
     else:  # reference
         lead = (
-            "The GTFS Validator does not flag this, so the expectation comes from "
-            "the field's definition in the GTFS Schedule reference."
+            "The linked GTFS Schedule reference defines the field or data this "
+            "scorecard finding checks."
         )
         link_text = "Read the relevant GTFS Schedule reference section"
     return (
@@ -791,7 +799,7 @@ def _feeddiff_finding_cards(changes: list[Any]) -> str:
             f"{_finding_severity_badge(c.severity)}"
             f'<span class="count">{count} {noun}</span></div>'
             f'<p class="what">{esc(c.what)}</p>'
-            f'<p class="code">Validator rule: {esc(c.code)}{_fix_guide_link(str(c.code))}{_rule_ref_link(str(c.code))}</p></li>'
+            f'<p class="code">Finding code: {esc(c.code)}{_fix_guide_link(str(c.code))}{_rule_ref_link(str(c.code))}</p></li>'
         )
     return "".join(items)
 
@@ -1418,7 +1426,7 @@ def _outreach_section(artifact: dict[str, Any], canonical: str) -> str:
 def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
     """A ready-to-send fix request a manager can forward to whoever runs their
     GTFS export (the vendor or scheduling tool). Built from the top fixes so the
-    words match the scorecard, with the validator notice codes and the fix-guide
+    words match the scorecard, with the finding codes and the fix-guide
     links, so a non-technical manager can act without translating anything."""
     fixes = artifact.get("top_fixes", [])
     if not fixes:
@@ -1437,7 +1445,7 @@ def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
         if what:
             lines.append(f"   What: {what}")
         if code:
-            lines.append(f"   Validator notice: {code}")
+            lines.append(f"   Finding code: {code}")
             if code in FIX_CODES_WITH_PAGES:
                 lines.append(f"   Guide: {BASE_URL}/fix/{code}/")
         lines.append("")
@@ -2620,7 +2628,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
         f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
         f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
-        f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
+        f'<p class="code">Finding code: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
         for f in findings
     )
     if findings_html:
@@ -4914,7 +4922,7 @@ def _md_to_html(md: str) -> tuple[str, str]:
 
 
 def _fix_description(body_html: str, code: str) -> str:
-    """Use the first explanatory paragraph, never the validator-code line."""
+    """Use the first explanatory paragraph, never the finding-code line."""
     for paragraph in re.findall(r"<p>(.*?)</p>", body_html, flags=re.DOTALL):
         text = _plain_html_text(paragraph)
         if not text or text.lower().startswith("code:"):
@@ -4922,7 +4930,18 @@ def _fix_description(body_html: str, code: str) -> str:
         if len(text) > 155:
             text = text[:152].rsplit(" ", 1)[0].rstrip(" ,;:") + "…"
         return text
-    return f"What the GTFS validator notice {code} means and how to fix it."
+    return f"What the GTFS data-quality finding {code} means and how to fix it."
+
+
+def _fix_article_about(code: str) -> dict[str, str]:
+    """Describe a fix article without overstating the finding's provenance."""
+    link = rule_link_for(code)
+    if link is not None and link.is_validator:
+        notice = link.canonical or code
+        name = f"GTFS validator notice {notice}"
+    else:
+        name = f"GTFS data-quality finding {code}"
+    return {"@type": "Thing", "name": name}
 
 
 def _fix_category(code: str) -> str:
@@ -4992,7 +5011,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
             f'<p class="what"><a href="/fix/{esc(entry["code"])}/">'
             f"{esc(entry['title'])}</a></p>"
             f'<p class="why">{esc(entry["description"])}</p>'
-            f'<p class="code">Validator rule: {esc(entry["code"])}</p></li>'
+            f'<p class="code">Finding code: {esc(entry["code"])}</p></li>'
             for entry in entries
         )
         section_id = f"fix-{len(sections)}"
@@ -5004,7 +5023,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("GTFS errors and fixes", None)])}
     <a class="backlink" href="/problems/">&larr; Common problems</a>
     <h1 class="page-title">GTFS errors and fixes.</h1>
-    <p class="page-lede">Plain-language guides to the validator notices and data gaps that
+    <p class="page-lede">Plain-language guides to GTFS findings and data gaps that
     affect riders most. Start with the code on your scorecard, then follow the steps and
     republish the feed.</p>
     {"".join(sections)}"""
@@ -5012,7 +5031,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "name": "GTFS errors and fixes",
-        "description": "Plain-language guides for common GTFS validator notices.",
+        "description": "Plain-language guides for common GTFS findings.",
         "url": canonical,
         "hasPart": [
             {"@type": "TechArticle", "name": guide["title"], "url": f"{canonical}{guide['code']}/"}
@@ -5021,7 +5040,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
     }
     return _page(
         title="GTFS errors and fixes — GTFS Scorecard",
-        description="Plain-language guides for common GTFS validator notices, with rider impact, repair steps, and what to check after republishing.",
+        description="Plain-language guides for common GTFS findings, with rider impact, repair steps, and what to check after republishing.",
         canonical=canonical,
         body=body,
         jsonld=jsonld,
@@ -5065,7 +5084,7 @@ def _render_fix(code: str, document: _AuthoredMarkdown) -> str:
         headline=title_text,
         description=desc,
         canonical=canonical,
-        about={"@type": "Thing", "name": f"GTFS validator notice {code}"},
+        about=_fix_article_about(code),
     )
     jsonld["datePublished"] = document.date_published
     jsonld["dateModified"] = document.date_modified
@@ -5760,7 +5779,7 @@ def _render_guide() -> str:
 {_methodology_versions_section()}
 
     {_route_rule()}
-    <section aria-labelledby="glossary"><h2 class="section-title" id="glossary">Glossary</h2>
+    <section id="glossary" aria-labelledby="glossary-h"><h2 class="section-title" id="glossary-h">Glossary</h2>
     <p class="page-lede">Plain-language definitions for the abbreviations and jargon used across
     the scorecard. Each term is also defined inline the first time it appears on a page.</p>
     <dl class="standards-list">

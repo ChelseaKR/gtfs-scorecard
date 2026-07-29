@@ -3479,7 +3479,7 @@ function setupFindings(findings) {
           <p class="what">${esc(f.what)}</p>
           <p class="why">${esc(f.why)}</p>
           <p class="how"><strong>Fix:</strong> ${esc(f.fix)} <em>(${esc(f.effort)})</em></p>
-          <p class="code">Validator rule: ${esc(f.code)} ·
+          <p class="code">Finding code: ${esc(f.code)} ·
             <a class="fix-guide" href="${escAttr(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
                target="_blank" rel="noopener">Read the fix guide<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on GitHub)</span></a>${ruleRefLink(f.code)}</p>
         </li>`;

@@ -34,17 +34,23 @@ left implicit.
 Declare, for the deployed system as it exists today:
 
 - **Tier B (frontend)** for `web/`: the Core Web Vitals lab-gate half of
-  `OBSERVABILITY-STANDARD.md` §8 applies. As of 2026-07-10,
+  `OBSERVABILITY-STANDARD.md` §8 applies. As of 2026-07-29,
   `lighthouserc.json` gates performance ≥90, accessibility ≥95, LCP ≤2.5s,
-  CLS ≤0.1, and TBT ≤200ms as the lab responsiveness proxy.
+  CLS ≤0.1, and TBT ≤200ms as the lab responsiveness proxy. Every freshly
+  assembled site also passes the blocking `check_site_seo.py` structural gate
+  before its page budgets run. Those SEO reports are retained for 14 days.
+  A separate weekly synthetic run checks four representative production routes
+  with three Lighthouse runs per route and retains its reports for 90 days.
   - RUM (field p75 Core Web Vitals) is **declined, N/A-with-reason**: this
-    site has no analytics/beacon pipeline by design (`web/analytics.js` is a
-    static-asset name, not a telemetry client — see `docs/listing-policy.md`
-    for the no-tracking posture), and adding one solely to satisfy a field-SLI
-    review-gate would be adding surveillance surface to a civic tool for a
-    metric the Lighthouse lab gate already regression-tripwires. Revisit if a
-    hosted RUM approach ever becomes privacy-compatible (aggregate-only,
-    no per-visitor identifiers).
+    site ships no analytics loader, page-view beacon, tracking cookie, or other
+    visitor telemetry. Adding one solely to satisfy a field-SLI review gate
+    would add surveillance surface to a civic tool for a metric the synthetic
+    Lighthouse checks already regression-tripwire. See
+    `docs/listing-policy.md` for the public no-tracking statement.
+  - Search Console is not a runtime or observability dependency. The domain
+    owner may complete DNS ownership verification and submit the sitemap
+    outside this repository. No Search Console credential, API configuration,
+    or workflow belongs in the project.
 - **Tier C (batch pipeline)** for `pipeline/`: OTel tracing/metrics/SLOs/
   `/livez`+`/readyz` are **N/A — no network surface to health-check, no
   request path to trace**. The opt-in `--log-format json` structlog pattern
@@ -74,8 +80,10 @@ Declare, for the deployed system as it exists today:
   wrong bar. This is a scoring correction, not new engineering — the audit
   itself notes this single declaration moves overall conformance from ~35%
   to ~39%.
-- The Tier B CWV gate is implemented. Tier C structured logging remains
-  optional operational polish for the current Actions batch deployment.
+- Tier B is covered by blocking build-time structure and Lighthouse checks,
+  plus a retained weekly production Lighthouse record. Tier C structured
+  logging remains optional operational polish for the current Actions batch
+  deployment.
 - If a future contributor stands up `infra/compute`, they must revisit this
   ADR (mark it superseded) before claiming Tier A conformance — applying the
   Terraform without also wiring OTel/SLOs/health probes would recreate
