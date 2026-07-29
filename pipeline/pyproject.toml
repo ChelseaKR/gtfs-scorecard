@@ -32,6 +32,9 @@ scorecard-mcp = "scorecard_pipeline.mcp_server:main"
 
 [dependency-groups]
 dev = [
+    # The structural SEO gate parses rendered sitemap XML. Keep entity
+    # expansion and external references disabled even for local build output.
+    "defusedxml>=0.7.1",
     "pytest>=8.0",
     "ruff>=0.15",
     "mypy>=1.10",

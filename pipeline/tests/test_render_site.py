@@ -1334,8 +1334,8 @@ def test_guide_glossary_deep_link_has_a_matching_fragment() -> None:
 
     html = _render_guide()
     assert 'href="#glossary"' in html
-    assert 'id="glossary"' in html
-    assert 'aria-labelledby="glossary"' in html
+    assert '<section id="glossary" aria-labelledby="glossary-h">' in html
+    assert 'id="glossary-h"' in html
     assert 'href="/how-to-read/#glossary"' in FOOTER_HTML
 
 
@@ -1357,7 +1357,7 @@ def test_guide_explains_grade_margins_and_weight_sensitivity() -> None:
     assert "/data/artifacts/sensitivity.json" in html
 
 
-def test_vendor_request_lists_fixes_with_notice_codes() -> None:
+def test_vendor_request_lists_fixes_with_finding_codes() -> None:
     artifact = {
         "agency": {"id": "demo", "name": "Demo Transit"},
         "overall": {"grade": "C", "score": 72.0},
@@ -1378,7 +1378,8 @@ def test_vendor_request_lists_fixes_with_notice_codes() -> None:
     assert note is not None
     assert "Demo Transit" in note and "C (72.0 out of 100)" in note
     assert "Set wheelchair_boarding on every stop." in note
-    assert "Validator notice: scorecard_feed_expired" in note
+    assert "Finding code: scorecard_feed_expired" in note
+    assert "Validator notice:" not in note
     assert CANONICAL in note
 
 
@@ -1651,6 +1652,9 @@ def test_selected_finding_survives_agency_brief_board_and_fix_guide(
         assert "this finding is no longer reported" in html
         assert "Copy handoff text" in html
 
+    assert "Finding code:" in agency_html
+    assert "Validator rule:" not in agency_html
+
     fix_html = _render_fix(
         code,
         _authored_markdown(f"# Fix {code}\n\nFollow the published guide.\n"),
@@ -1833,6 +1837,57 @@ def test_fix_rule_reference_for_direct_validator_notice() -> None:
     html = _fix_rule_reference("route_color_contrast")
     assert "canonical MobilityData GTFS Validator notice" in html
     assert "#route_color_contrast-rule" in html
+
+
+@pytest.mark.parametrize(
+    "code",
+    ["scorecard_feed_expired", "scorecard_feed_expiring_soon"],
+)
+def test_fix_rule_reference_describes_effective_expiry_provenance(code: str) -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference(code)
+
+    assert "combines feed_info and calendar service dates" in html
+    assert "no single validator rule uses this exact combined calculation" in html
+    assert "the field is valid GTFS when left empty" not in html
+    assert "Read the relevant GTFS Best Practice" in html
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "scorecard_missing_headsigns",
+        "scorecard_no_fare_data",
+        "scorecard_stop_names_all_caps",
+    ],
+)
+def test_fix_rule_reference_uses_neutral_best_practice_provenance(code: str) -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference(code)
+
+    assert "The GTFS Validator does not flag this" in html
+    assert "the field is valid GTFS when left empty" not in html
+    assert "Read the relevant GTFS Best Practice" in html
+
+
+def test_fix_rule_reference_does_not_overstate_realtime_reference() -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference("scorecard_rt_trip_coverage")
+
+    assert "reference defines the message this scorecard checks" in html
+    assert "expectation comes from" not in html
+
+
+def test_fix_rule_reference_does_not_overstate_schedule_reference() -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference("scorecard_wheelchair_boarding_unknown")
+
+    assert "reference defines the field or data this scorecard finding checks" in html
+    assert "expectation comes from" not in html
 
 
 def test_cleared_findings_lists_codes_gone_since_last_run() -> None:
@@ -2102,6 +2157,8 @@ def test_feeddiff_section_lists_new_and_resolved_findings() -> None:
     assert "What changed in this feed" in html
     assert "New since 2026-06-11" in html
     assert "a new issue" in html
+    assert "Finding code: new_one" in html
+    assert "Validator rule:" not in html
     assert "No longer reported since 2026-06-11" in html
     assert "an old issue" in html
     assert "does not establish who made a change or why" in html
@@ -4494,6 +4551,29 @@ def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
     assert '<time datetime="2026-07-08">8 July 2026</time>' in html
 
 
+@pytest.mark.parametrize(
+    ("code", "expected_name"),
+    [
+        ("expired_calendar", "GTFS validator notice expired_calendar"),
+        (
+            "scorecard_missing_feed_info_dates",
+            "GTFS validator notice missing_feed_info_date",
+        ),
+        (
+            "scorecard_feed_expired",
+            "GTFS data-quality finding scorecard_feed_expired",
+        ),
+    ],
+)
+def test_fix_guide_about_matches_finding_provenance(code: str, expected_name: str) -> None:
+    from scorecard_pipeline.render_site import _render_fix
+
+    html = _render_fix(code, _authored_markdown(f"# Fix {code}\n\nDo the next step.\n"))
+    (article,) = _jsonld_documents(html)
+
+    assert article["about"] == {"@type": "Thing", "name": expected_name}
+
+
 def test_tech_article_helper_has_stable_identity_without_inventing_dates() -> None:
     from scorecard_pipeline.render_site import _tech_article_jsonld
 
@@ -4537,6 +4617,14 @@ def test_fix_guide_description_skips_the_validator_code_line() -> None:
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
     assert description.startswith("The service calendar ended")
     assert "Code:" not in description
+
+
+def test_fix_guide_description_fallback_is_provenance_neutral() -> None:
+    from scorecard_pipeline.render_site import _fix_description
+
+    assert _fix_description("<h1>Fix an unnamed issue</h1>", "scorecard_example") == (
+        "What the GTFS data-quality finding scorecard_example means and how to fix it."
+    )
 
 
 def test_md_to_html_renders_a_table() -> None:
@@ -4681,6 +4769,13 @@ def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
 
     assert "GTFS errors and fixes" in html
     assert 'href="/fix/expired_calendar/"' in html
+    assert "Finding code: expired_calendar" in html
+    assert "Validator rule:" not in html
+    assert (
+        '<meta name="description" content="Plain-language guides for common GTFS findings,' in html
+    )
+    (metadata,) = _jsonld_documents(html)
+    assert metadata["description"] == "Plain-language guides for common GTFS findings."
     assert '"@type":"CollectionPage"' in html
 
 

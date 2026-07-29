@@ -309,9 +309,14 @@ see [ADR 0031](docs/decisions/0031-observability-tier.md) for why. In short:
 the deployed system is a scheduled Actions batch job plus a static site, not
 a long-lived hosted service (`infra/compute`, the piece that would make this
 Tier A, is built but not applied). Tier C's health/tracing/SLO controls are
-N/A (no network surface to probe); Tier B's Core Web Vitals lab gate applies
-and is tracked as open work (Lighthouse currently asserts accessibility only).
-Real-user-monitoring beacons are declined by design — see the ADR.
+N/A (no network surface to probe). For Tier B, every fresh site build passes a
+blocking structural SEO check. Lighthouse gates code changes, and a weekly
+synthetic run checks representative production routes. Build-time SEO reports
+are retained for 14 days and production Lighthouse reports for 90 days.
+The public site has no analytics loader, visitor-tracking code, or real-user
+monitoring beacon. Search Console ownership verification and sitemap submission
+remain external domain-owner tasks; this repository stores no Search Console
+credentials or configuration. See the ADR and [deploy runbook](docs/deploy.md).
 
 ## Versioning
 

@@ -1,23 +1,25 @@
 name: Watchdog
 
-# Independent uptime + freshness check. It runs on GitHub's own infrastructure
-# and does NOT touch AWS, so it still fires when Route 53, the domain, or the AWS
-# account is the thing that broke. On a problem it exits non-zero; GitHub then
-# emails the repo owner about the failed scheduled run (keep Actions failure
-# notifications on in your GitHub settings).
+# The six-hour job checks uptime and freshness from GitHub's infrastructure
+# without touching AWS, so it still fires when Route 53, the domain, or the AWS
+# account is the thing that broke. The weekly job audits representative
+# production routes with Lighthouse. A failed scheduled run uses the repository's
+# normal Actions failure notifications.
 
 on:
   schedule:
     - cron: "23 */6 * * *" # every 6 hours
+    - cron: "41 7 * * 0" # weekly production Lighthouse audit
   workflow_dispatch:
 
-permissions:
-  contents: read
-  actions: read # read the Daily scorecard run history
+permissions: {}
 
 jobs:
   watch:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '23 */6 * * *' }}
     runs-on: ubuntu-latest
+    permissions:
+      actions: read # read the Daily scorecard run history
     steps:
       - name: The site answers over HTTPS
         run: |
@@ -81,3 +83,30 @@ jobs:
             echo "::error::The most recent completed Daily scorecard run ended '$conclusion'. Investigate before the published data goes stale."
             exit 1
           fi
+
+  production-lighthouse:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '41 7 * * 0' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - name: Audit representative production routes
+        timeout-minutes: 20
+        run: |
+          set -o pipefail
+          npx --yes @lhci/cli@0.14 autorun \
+            --config=lighthouserc.production.json \
+            --failOnUploadFailure 2>&1 | tee lhci-production.log
+          test -s lhci-reports/production/manifest.json
+      - name: Retain production Lighthouse reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: production-lighthouse-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            lhci-reports/production/
+            lhci-production.log
+          if-no-files-found: error
+          retention-days: 90

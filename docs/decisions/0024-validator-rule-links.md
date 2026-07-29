@@ -73,7 +73,7 @@ layout changes.
 **2026-07-05 addition:** four more scorecard-only codes were fetched and
 verified live before mapping. `scorecard_feed_expired` and
 `scorecard_feed_expiring_soon` are the scorecard's own effective-expiry
-computation (the later of `feed_info.feed_end_date` and the last
+computation (the earlier of `feed_info.feed_end_date` and the last
 calendar/calendar_dates service day), which is not the same check as any single
 validator notice, so neither aliases `expired_calendar` or
 `feed_expiration_date7/30_days`; both map to Best Practices'

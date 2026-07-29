@@ -381,7 +381,6 @@ def _page(
   </script>
   <script src="/src/theme.js" defer></script>
   <script src="/src/nav.js" defer></script>
-  <script src="/analytics.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable

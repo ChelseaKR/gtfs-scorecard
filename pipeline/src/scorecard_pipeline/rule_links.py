@@ -155,7 +155,7 @@ RULE_LINKS: dict[str, RuleLink] = {
     "scorecard_wheelchair_accessible_unknown": RuleLink(
         kind=REFERENCE, url=f"{SCHEDULE_REFERENCE_PAGE}#tripstxt"
     ),
-    # Freshness: the scorecard's own effective-expiry date (the later of
+    # Freshness: the scorecard's own effective-expiry date (the earlier of
     # feed_info.feed_end_date and the last calendar/calendar_dates service day),
     # which is not the same computation as any single validator notice, so it is
     # not aliased to expired_calendar or feed_expiration_date7/30_days. Best
@@ -187,7 +187,7 @@ RULE_LINKS: dict[str, RuleLink] = {
     # feed type, and, when configured, how much of the schedule TripUpdates
     # actually covers. The canonical validator scores GTFS Schedule only, so
     # these have no validator notice or Best Practice to alias; the message spec
-    # itself is the honest authority for each feed type.
+    # is the honest reference for the realtime data each finding assesses.
     "scorecard_rt_trip_updates_unreachable": RuleLink(
         kind=REALTIME_REFERENCE, url=f"{REALTIME_REFERENCE_PAGE}#message-tripupdate"
     ),
