@@ -1484,7 +1484,7 @@ _AGENCY_MAP_STOP_LIST_CAP = 250
 # each drawable route's row focusable (so a page without the script gains no
 # inert tab stops), focus brushes its line, and Enter or Space pins it, the
 # keyboard equivalent of hovering and clicking a line on the canvas.
-_AGENCY_MAP_JS = r"""      (function () {
+_AGENCY_MAP_JS = r"""      function initAgencyMap() {
         if (!window.maplibregl) return;
         var geoUrl = __GEO_URL_JSON__;
         var reduce = window.matchMedia
@@ -1599,6 +1599,8 @@ _AGENCY_MAP_JS = r"""      (function () {
             if (!b.isEmpty()) { map.fitBounds(b, { padding: 36, animate: !reduce, duration: reduce ? 0 : 600 }); }
 
             mapReady = true;
+            var statusEl = document.getElementById("route-map-load-status");
+            if (statusEl) statusEl.textContent = "Interactive route map loaded.";
             if (current !== null) {
               map.setFilter("routes-hi", ["==", ["get", "route_id"], current]);
             }
@@ -1633,9 +1635,13 @@ _AGENCY_MAP_JS = r"""      (function () {
             map.on("click", "stops", popup);
             map.on("mouseenter", "stops", function () { map.getCanvas().style.cursor = "pointer"; });
             map.on("mouseleave", "stops", function () { map.getCanvas().style.cursor = ""; });
-          }).catch(function () {});
+          }).catch(function () {
+            var statusEl = document.getElementById("route-map-load-status");
+            if (statusEl) statusEl.textContent =
+              "The route data could not load. The complete route and stop data is still below.";
+          });
         });
-      })();"""
+      }"""
 
 
 def _agency_map_script(geo_url: str) -> str:
@@ -1647,11 +1653,40 @@ def _agency_map_script(geo_url: str) -> str:
     its row in the table and the reverse; clicking names the route or stop. The
     same rows carry the keyboard model: the script makes each drawable route's
     row focusable, focusing it brushes its line, and Enter or Space pins the
-    selection exactly as a click does. Loads only on pages that have geometry."""
+    selection exactly as a click does. MapLibre and the route geometry load only
+    after an explicit request, so the optional canvas cannot block the scorecard."""
     js = _AGENCY_MAP_JS.replace("__GEO_URL_JSON__", json.dumps(geo_url))
     return (
-        f'    <script src="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js"></script>\n'
-        "    <script>\n" + js + "\n    </script>"
+        "    <script>\n"
+        "      (function () {\n"
+        '        var loadEl = document.getElementById("route-map-load");\n'
+        '        var statusEl = document.getElementById("route-map-load-status");\n'
+        '        var mapEl = document.getElementById("route-map");\n' + js + "\n"
+        '        loadEl.addEventListener("click", function () {\n'
+        "          loadEl.disabled = true;\n"
+        '          loadEl.textContent = "Loading map…";\n'
+        '          if (statusEl) statusEl.textContent = "Loading the interactive route map.";\n'
+        '          var css = document.createElement("link");\n'
+        '          css.rel = "stylesheet";\n'
+        f'          css.href = "https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css";\n'
+        "          document.head.appendChild(css);\n"
+        '          var script = document.createElement("script");\n'
+        f'          script.src = "https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js";\n'
+        "          script.onload = function () {\n"
+        "            loadEl.hidden = true;\n"
+        '            if (mapEl) mapEl.textContent = "";\n'
+        "            initAgencyMap();\n"
+        "          };\n"
+        "          script.onerror = function () {\n"
+        "            loadEl.disabled = false;\n"
+        '            loadEl.textContent = "Try loading the map again";\n'
+        "            if (statusEl) statusEl.textContent =\n"
+        '              "The map could not load. The complete route and stop data is still below.";\n'
+        "          };\n"
+        "          document.head.appendChild(script);\n"
+        "        });\n"
+        "      })();\n"
+        "    </script>"
     )
 
 
@@ -1799,7 +1834,18 @@ def _route_map_section(
     if geo_path:
         map_html = (
             f'<a class="skip-link-inline" href="#route-data">Skip to route and {stop_noun} data</a>'
-            '<div id="route-map" class="agency-map" aria-hidden="true"></div>'
+            '<div class="map-load-panel">'
+            '<button type="button" class="button button-secondary" id="route-map-load" '
+            'aria-controls="route-map">'
+            "Load interactive route map"
+            "</button>"
+            '<p id="route-map-load-status" class="fineprint" role="status">'
+            f"The route and {stop_noun} data is ready below. Load the map only when you want "
+            "the geographic view. It uses additional data.</p>"
+            "</div>"
+            '<div id="route-map" class="agency-map" aria-hidden="true">'
+            '<p class="map-fallback">The interactive map has not loaded. '
+            f"The route and {stop_noun} data below carries the same information.</p></div>"
             '<p class="fineprint">Basemap: OpenFreeMap, &copy; OpenStreetMap contributors. '
             f"Routes and {stop_noun_plural}: this "
             "agency's GTFS feed.</p>"
@@ -2754,12 +2800,6 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'<link rel="alternate" type="application/atom+xml" '
         f'title="{esc(agency_name)} feed quality changes" href="{canonical}feed.xml">'
     )
-    # The map stylesheet loads only on pages that actually draw a map.
-    if map_section:
-        atom += (
-            f'\n  <link rel="stylesheet" '
-            f'href="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css">'
-        )
     return _page(
         title=title,
         description=desc,

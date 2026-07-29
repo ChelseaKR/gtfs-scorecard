@@ -154,8 +154,12 @@ def test_route_map_section_builds_accessible_table_and_skip_link() -> None:
     assert "Bus" in html and "green" in html and "Main Line" in html
     # Stop summary carries the count and the stop names.
     assert "2</strong>" in html and "First Stop" in html and "Second Stop" in html
-    # MapLibre is wired up for the enhancement.
+    # MapLibre is wired up for the enhancement, but only after an explicit request.
     assert "maplibregl" in html and "geometry.geojson" in html
+    assert 'id="route-map-load"' in html
+    assert '<script src="https://unpkg.com/maplibre-gl' not in html
+    assert 'script.src = "https://unpkg.com/maplibre-gl' in html
+    assert 'css.href = "https://unpkg.com/maplibre-gl' in html
 
 
 def test_route_map_section_keyboard_model_rides_on_the_table() -> None:
