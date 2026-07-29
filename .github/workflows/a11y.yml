@@ -33,6 +33,12 @@ jobs:
           cp -r web/. _site/
           bash pipeline/scripts/assemble_public_artifacts.sh \
             data/artifacts _site/data/artifacts
+      - name: Enforce generated page-size budgets
+        working-directory: pipeline
+        run: >-
+          uv run python scripts/check_site_budgets.py
+          --site-root ../_site
+          --config ../site-budgets.json
       # axe-core at WCAG 2.0 AA (the Section 508 technical bar) on representative
       # routes. Contrast is owned by the dedicated token gate
       # (pipeline/scripts/check_contrast.py), which verifies AAA across every theme
@@ -41,10 +47,37 @@ jobs:
       # The /map/ MapLibre canvas is aria-hidden and out of the tab order with no
       # on-canvas controls, so the page is axe-tested like the rest; its filterable
       # agency table is the conformant primary (docs/vpat.md).
-      - name: axe on representative pages
+      - name: Browser quality gates on representative pages
         run: |
+          set -o pipefail
           python3 -m http.server 8080 --directory _site &
           SRV=$!
-          for _attempt in $(seq 1 30); do curl -sf http://127.0.0.1:8080/ >/dev/null && break; sleep 1; done
-          npx --yes pa11y-ci@3 --config .pa11yci.json
-          kill $SRV
+          trap 'kill "$SRV" 2>/dev/null || true' EXIT
+          ready=false
+          for _attempt in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8080/ >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != true ]; then
+            echo "Generated site did not become ready." >&2
+            exit 1
+          fi
+          npx --yes pa11y-ci@3 --config .pa11yci.json | tee pa11y-output.log
+          npx --yes @lhci/cli@0.14 autorun \
+            --config=lighthouserc.json | tee lhci-core.log
+          npx --yes @lhci/cli@0.14 autorun \
+            --config=lighthouserc.routes.json | tee lhci-representative.log
+      - name: Retain browser quality reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: browser-quality-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            lhci-reports/
+            lhci-*.log
+            pa11y-output.log
+          if-no-files-found: warn
+          retention-days: 14

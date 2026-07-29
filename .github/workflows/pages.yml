@@ -43,6 +43,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    outputs:
+      deployed_sha: ${{ steps.assemble.outputs.deployed_sha }}
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -102,6 +104,7 @@ jobs:
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
       - name: Render and assemble the Pages site
+        id: assemble
         run: |
           cd pipeline
           uv run scorecard render-site
@@ -112,31 +115,87 @@ jobs:
           # but only the documented public filenames cross into Pages.
           bash pipeline/scripts/assemble_public_artifacts.sh \
             data/artifacts _site/data/artifacts
-      - name: Lighthouse CI (accessibility >= 95; performance per gate mode)
+          deployed_sha=$(git rev-parse HEAD)
+          jq -n --arg commit "$deployed_sha" \
+            '{schema_version: 1, commit: $commit}' > _site/deployment.json
+          echo "deployed_sha=$deployed_sha" >> "$GITHUB_OUTPUT"
+      - name: Enforce generated page-size budgets
+        env:
+          PERF_GATE: ${{ inputs.perf_gate || 'block' }}
+        run: |
+          set +e
+          (
+            cd pipeline
+            uv run python scripts/check_site_budgets.py \
+              --site-root ../_site \
+              --config ../site-budgets.json
+          )
+          budget_status=$?
+          set -e
+          if [ "$budget_status" -eq 0 ]; then
+            exit 0
+          fi
+          if [ "$budget_status" -eq 1 ] && [ "$PERF_GATE" = "advisory" ]; then
+            echo "::warning title=Generated page-size budget missed (advisory)::This data-refresh deploy exceeded a deterministic HTML byte budget and deployed anyway. Investigate before the next code push, where the budget blocks."
+            echo "Generated page-size budget missed on a data-refresh deploy (advisory); see the output above." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          exit "$budget_status"
+      - name: Lighthouse CI (core and representative routes)
         env:
           PERF_GATE: ${{ inputs.perf_gate || 'block' }}
         run: |
           set -o pipefail
-          CONFIG=lighthouserc.json
+          CORE_CONFIG=lighthouserc.json
+          ROUTES_CONFIG=lighthouserc.routes.json
           if [ "$PERF_GATE" = "advisory" ]; then
             # Derive the advisory config from the blocking one so the two can
             # never drift: accessibility keeps its error level, every other
             # assertion is demoted to a warning.
-            jq '.ci.assert.assertions |= with_entries(
-                  if .key == "categories:accessibility" then .
-                  else .value[0] = "warn" end)' \
-              lighthouserc.json > lighthouserc.advisory.json
-            CONFIG=lighthouserc.advisory.json
+            for source in lighthouserc.json lighthouserc.routes.json; do
+              destination="${source%.json}.advisory.json"
+              jq '.ci.assert.assertions |= with_entries(
+                    if .key == "categories:accessibility" then .
+                    else .value[0] = "warn" end)' \
+                "$source" > "$destination"
+            done
+            CORE_CONFIG=lighthouserc.advisory.json
+            ROUTES_CONFIG=lighthouserc.routes.advisory.json
           fi
           python3 -m http.server 8080 --directory _site &
           SRV=$!
-          for _attempt in $(seq 1 30); do curl -sf http://127.0.0.1:8080/ >/dev/null && break; sleep 1; done
-          npx --yes @lhci/cli@0.14 autorun --config="$CONFIG" | tee lhci-output.log
-          kill $SRV
-          if [ "$PERF_GATE" = "advisory" ] && grep -Eq "warning for" lhci-output.log; then
+          trap 'kill "$SRV" 2>/dev/null || true' EXIT
+          ready=false
+          for _attempt in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8080/ >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != true ]; then
+            echo "Generated site did not become ready." >&2
+            exit 1
+          fi
+          npx --yes @lhci/cli@0.14 autorun \
+            --config="$CORE_CONFIG" | tee lhci-core.log
+          npx --yes @lhci/cli@0.14 autorun \
+            --config="$ROUTES_CONFIG" | tee lhci-representative.log
+          if [ "$PERF_GATE" = "advisory" ] && grep -Eq "warning for" \
+            lhci-core.log lhci-representative.log; then
             echo "::warning title=Performance budget missed (advisory)::This data-refresh deploy missed a Lighthouse performance budget and deployed anyway (FIX-14). Investigate before the next code push, where the budget blocks."
             echo "Performance budget missed on a data-refresh deploy (advisory, FIX-14); see the Lighthouse output above." >> "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Retain Lighthouse reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: lighthouse-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            lhci-reports/
+            lhci-*.log
+          if-no-files-found: warn
+          retention-days: 14
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site
@@ -154,3 +213,57 @@ jobs:
     steps:
       - uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
         id: deployment
+
+  production-smoke:
+    needs: [lighthouse, deploy]
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Verify the deployed crawl surface
+        env:
+          BASE_URL: https://gtfsscorecard.org
+          DEPLOYED_SHA: ${{ needs.lighthouse.outputs.deployed_sha }}
+        run: |
+          set -euo pipefail
+          smoke_dir=$(mktemp -d)
+          trap 'rm -rf "$smoke_dir"' EXIT
+          for attempt in $(seq 1 20); do
+            if curl -fsSL "${BASE_URL}/deployment.json?deploy=${DEPLOYED_SHA}" \
+                -o "$smoke_dir/deployment.json" \
+              && curl -fsSL "${BASE_URL}/?deploy=${DEPLOYED_SHA}" \
+                -o "$smoke_dir/home.html" \
+              && curl -fsSL "${BASE_URL}/robots.txt?deploy=${DEPLOYED_SHA}" \
+                -o "$smoke_dir/robots.txt" \
+              && curl -fsSL "${BASE_URL}/sitemap.xml?deploy=${DEPLOYED_SHA}" \
+                -o "$smoke_dir/sitemap.xml" \
+              && curl -fsSL "${BASE_URL}/agency/unitrans/?deploy=${DEPLOYED_SHA}" \
+                -o "$smoke_dir/unitrans.html" \
+              && curl -fsSL "${BASE_URL}/agency/yolobus/?deploy=${DEPLOYED_SHA}" \
+                -o "$smoke_dir/yolobus.html" \
+              && jq -e --arg commit "$DEPLOYED_SHA" \
+                '.schema_version == 1 and .commit == $commit' \
+                "$smoke_dir/deployment.json" >/dev/null \
+              && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/">' \
+                "$smoke_dir/home.html" \
+              && grep -Fq 'Sitemap: https://gtfsscorecard.org/sitemap.xml' \
+                "$smoke_dir/robots.txt" \
+              && grep -Fq '<loc>https://gtfsscorecard.org/agency/unitrans/</loc>' \
+                "$smoke_dir/sitemap.xml" \
+              && grep -Fq '<loc>https://gtfsscorecard.org/agency/yolobus/</loc>' \
+                "$smoke_dir/sitemap.xml" \
+              && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/agency/unitrans/">' \
+                "$smoke_dir/unitrans.html" \
+              && grep -Fq '<h1 class="board-title"><bdi>Unitrans' \
+                "$smoke_dir/unitrans.html" \
+              && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/agency/yolobus/">' \
+                "$smoke_dir/yolobus.html" \
+              && grep -Fq '<h1 class="board-title"><bdi>Yolobus' \
+                "$smoke_dir/yolobus.html"; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 20 ]; then
+              echo "Production crawl surface did not match ${DEPLOYED_SHA}." >&2
+              exit 1
+            fi
+            sleep 5
+          done
