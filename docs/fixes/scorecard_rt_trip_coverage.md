@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-05"
+date_modified: "2026-07-05"
+---
+
 # Fix: some scheduled trips have no live predictions
 
 Code: `scorecard_rt_trip_coverage`

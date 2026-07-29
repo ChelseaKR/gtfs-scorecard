@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-24"
+---
+
 # Fix: trips don't say where they're headed
 
 Code: `scorecard_missing_headsigns`

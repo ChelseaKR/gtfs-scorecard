@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: trips do not state wheelchair accessibility
 
 Code: `scorecard_wheelchair_accessible_unknown`

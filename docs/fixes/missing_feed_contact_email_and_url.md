@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: the feed lists no contact
 
 Code: `missing_feed_contact_email_and_url` (MobilityData validator)

@@ -33,7 +33,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
+import yaml
 from markdown_it import MarkdownIt
+from yaml.nodes import MappingNode, ScalarNode
 
 from ._stats import _GRADES
 from .anomaly import latest_anomaly
@@ -1784,8 +1786,9 @@ def _route_map_section(
     else:
         route_table = '<p class="page-lede">This feed lists no routes.</p>'
 
-    # Stop summary: the count, and the stop names as a collapsible list so the map
-    # points have a text equivalent without weighing the page down by default.
+    # Keep the stop count eligible for search snippets, while the stop names stay
+    # in the utility-detail boundary with the map and route table. The names form
+    # the map points' text equivalent without weighing the page down by default.
     if stop_count:
         names = stop_names or []
         shown = names[:_AGENCY_MAP_STOP_LIST_CAP]
@@ -1797,18 +1800,19 @@ def _route_map_section(
             if more > 0
             else ""
         )
-        stop_block = (
+        stop_summary = (
             f'<p class="map-stopcount">This feed has <strong>{stop_count}</strong> '
             f"{stop_noun if stop_count == 1 else stop_noun_plural}.</p>"
-            + (
-                f'<details class="stop-list-wrap"><summary>List every {stop_noun}</summary>'
-                f'<ul class="stop-list">{stop_items}{remainder}</ul></details>'
-                if stop_items
-                else ""
-            )
+        )
+        stop_details = (
+            f'<details class="stop-list-wrap"><summary>List every {stop_noun}</summary>'
+            f'<ul class="stop-list">{stop_items}{remainder}</ul></details>'
+            if stop_items
+            else ""
         )
     else:
-        stop_block = f'<p class="page-lede">This feed has no located {stop_noun_plural}.</p>'
+        stop_summary = f'<p class="page-lede">This feed has no located {stop_noun_plural}.</p>'
+        stop_details = ""
 
     # Legend: a swatch plus the route label and color word, so the legend reads
     # without relying on color. Only drawn routes carry a line on the map.
@@ -1859,12 +1863,14 @@ def _route_map_section(
         '<section aria-labelledby="map-h" class="route-map-section">'
         f'<h2 class="section-title" id="map-h">Routes and {stop_noun_plural}</h2>'
         + (f'<p class="page-lede">{intro}</p>' if intro else "")
+        + stop_summary
+        + "<div data-nosnippet>"
         + map_html
         + legend
         + '<div id="route-data" tabindex="-1">'
         + route_table
-        + stop_block
-        + "</div></section>"
+        + stop_details
+        + "</div></div></section>"
         + script
     )
 
@@ -4751,6 +4757,134 @@ def _rollup_common_fixes_section(rollup: dict[str, Any]) -> str:
 # --- CommonMark rendering for the fix knowledge base ---------------------------
 
 _FIX_MARKDOWN = MarkdownIt("commonmark", {"html": False, "linkify": False}).enable("table")
+_AUTHORED_FRONT_MATTER = re.compile(
+    r"\A---\r?\n(?P<header>.*?)(?:\r?\n)---(?:\r?\n|\Z)",
+    flags=re.DOTALL,
+)
+_AUTHORED_DATE_KEYS = frozenset({"date_published", "date_modified"})
+_MONTH_NAMES = (
+    "",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
+
+@dataclass(frozen=True)
+class _AuthoredMarkdown:
+    """Markdown body with dates supplied and reviewed by its author."""
+
+    body: str
+    date_published: str
+    date_modified: str
+
+
+def _parse_authored_date(value: object, *, field: str, source: str) -> str:
+    if isinstance(value, dt.datetime):
+        raise ValueError(f"{source}: {field} must be an ISO date, not a timestamp")
+    if isinstance(value, dt.date):
+        return value.isoformat()
+    if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        raise ValueError(f"{source}: {field} must use YYYY-MM-DD")
+    try:
+        parsed = dt.date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"{source}: {field} is not a valid calendar date") from exc
+    if parsed.isoformat() != value:
+        raise ValueError(f"{source}: {field} must use canonical YYYY-MM-DD")
+    return value
+
+
+def _load_authored_metadata(header: str, source: str) -> dict[str, object]:
+    try:
+        node = yaml.compose(header)
+    except yaml.YAMLError as exc:
+        raise ValueError(f"{source}: authored front matter is invalid YAML") from exc
+    if not isinstance(node, MappingNode):
+        raise ValueError(f"{source}: authored front matter must be a mapping")
+
+    keys: list[str] = []
+    for key_node, _value_node in node.value:
+        if not isinstance(key_node, ScalarNode) or key_node.tag != "tag:yaml.org,2002:str":
+            raise ValueError(f"{source}: authored front matter keys must be strings")
+        key = key_node.value
+        if key in keys:
+            raise ValueError(f"{source}: duplicate authored front matter key {key!r}")
+        keys.append(key)
+
+    actual_keys = set(keys)
+    unknown = sorted(actual_keys - _AUTHORED_DATE_KEYS)
+    missing = sorted(_AUTHORED_DATE_KEYS - actual_keys)
+    if unknown:
+        raise ValueError(f"{source}: unknown authored front matter keys: {', '.join(unknown)}")
+    if missing:
+        raise ValueError(f"{source}: missing authored front matter keys: {', '.join(missing)}")
+    try:
+        metadata = yaml.safe_load(header)
+    except yaml.YAMLError as exc:
+        raise ValueError(f"{source}: authored front matter is invalid YAML") from exc
+    if not isinstance(metadata, dict):
+        raise ValueError(f"{source}: authored front matter must be a mapping")
+    return {key: metadata[key] for key in keys}
+
+
+def _parse_authored_markdown(text: str, source: str) -> _AuthoredMarkdown:
+    """Parse strict leading YAML dates without leaking metadata into article prose."""
+    match = _AUTHORED_FRONT_MATTER.match(text)
+    if match is None:
+        if text.startswith("---"):
+            raise ValueError(f"{source}: authored front matter has no exact closing delimiter")
+        raise ValueError(f"{source}: authored Markdown must start with YAML front matter")
+
+    metadata = _load_authored_metadata(match.group("header"), source)
+    date_published = _parse_authored_date(
+        metadata["date_published"],
+        field="date_published",
+        source=source,
+    )
+    date_modified = _parse_authored_date(
+        metadata["date_modified"],
+        field="date_modified",
+        source=source,
+    )
+    if date_modified < date_published:
+        raise ValueError(f"{source}: date_modified cannot be before date_published")
+    return _AuthoredMarkdown(
+        body=text[match.end() :],
+        date_published=date_published,
+        date_modified=date_modified,
+    )
+
+
+def _authored_dates_html(document: _AuthoredMarkdown) -> str:
+    def visible_date(value: str) -> str:
+        date = dt.date.fromisoformat(value)
+        return f"{date.day} {_MONTH_NAMES[date.month]} {date.year}"
+
+    return (
+        '<p class="fineprint article-dates">Published: '
+        f'<time datetime="{document.date_published}">'
+        f"{visible_date(document.date_published)}</time>. "
+        "Last reviewed: "
+        f'<time datetime="{document.date_modified}">'
+        f"{visible_date(document.date_modified)}</time>.</p>"
+    )
+
+
+def _insert_authored_dates(body_html: str, document: _AuthoredMarkdown) -> str:
+    dates = _authored_dates_html(document)
+    if "</h1>" not in body_html:
+        return dates + body_html
+    return body_html.replace("</h1>", f"</h1>{dates}", 1)
 
 
 def _plain_html_text(fragment: str) -> str:
@@ -4894,11 +5028,12 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
     )
 
 
-def _render_fix(code: str, md: str, now: dt.datetime) -> str:
+def _render_fix(code: str, document: _AuthoredMarkdown) -> str:
     canonical = f"{BASE_URL}/fix/{code}/"
-    body_html, title_text = _md_to_html(md)
+    body_html, title_text = _md_to_html(document.body)
     title_text = title_text or f"Fix: {code}"
     desc = _fix_description(body_html, code)
+    body_html = _insert_authored_dates(body_html, document)
     crumb = _breadcrumb([("Home", "/"), ("GTFS errors and fixes", "/fix/"), (f"Fix: {code}", None)])
     after_republish = (
         '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
@@ -4932,7 +5067,8 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
         canonical=canonical,
         about={"@type": "Thing", "name": f"GTFS validator notice {code}"},
     )
-    jsonld["dateModified"] = now.date().isoformat()
+    jsonld["datePublished"] = document.date_published
+    jsonld["dateModified"] = document.date_modified
     return _page(
         title=f"{title_text} — GTFS Scorecard",
         description=desc,
@@ -4942,7 +5078,7 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
     )
 
 
-def _render_crosswalk_page(md: str) -> str:
+def _render_crosswalk_page(document: _AuthoredMarkdown) -> str:
     """The standards crosswalk (docs/crosswalk.md) as a crawlable page.
 
     Previously linked only as a raw GitHub blob from agency pages; rendering it
@@ -4950,7 +5086,7 @@ def _render_crosswalk_page(md: str) -> str:
     as every other page, for the same reason /fix/<code>/ pages exist rather
     than pointing at the Markdown source."""
     canonical = f"{BASE_URL}/crosswalk/"
-    body_html, title_text = _md_to_html(md)
+    body_html, title_text = _md_to_html(document.body)
     title_text = title_text or "How the grade maps to the standards"
     para = next((re.sub("<[^>]+>", "", p) for p in re.findall(r"<p>(.*?)</p>", body_html)), "")
     desc = (
@@ -4958,6 +5094,7 @@ def _render_crosswalk_page(md: str) -> str:
         or "How the scorecard's categories map to NTD, California's "
         "guidelines, the GTFS Grading Scheme, and Google Transit."
     ).strip()
+    body_html = _insert_authored_dates(body_html, document)
     crumb = _breadcrumb([("Home", "/"), ("How to read this", "/how-to-read/"), ("Crosswalk", None)])
     body = f"""    {crumb}
     <article class="feed-details">{body_html}</article>"""
@@ -4966,6 +5103,8 @@ def _render_crosswalk_page(md: str) -> str:
         description=desc,
         canonical=canonical,
     )
+    jsonld["datePublished"] = document.date_published
+    jsonld["dateModified"] = document.date_modified
     return _page(
         title=f"{title_text} — GTFS Scorecard",
         description=desc,
@@ -9297,8 +9436,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if md_file.stem == "README":
             continue
         code = md_file.stem
-        md = md_file.read_text()
-        body_html, title_text = _md_to_html(md)
+        document = _parse_authored_markdown(md_file.read_text(), str(md_file))
+        body_html, title_text = _md_to_html(document.body)
         fix_guides.append(
             {
                 "code": code,
@@ -9309,8 +9448,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         )
         write(
             f"fix/{code}/index.html",
-            _render_fix(code, md, now),
+            _render_fix(code, document),
             f"{BASE_URL}/fix/{code}/",
+            lastmod=document.date_modified,
         )
     write("fix/index.html", _render_fix_index(fix_guides), f"{BASE_URL}/fix/")
 
@@ -9361,10 +9501,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     crosswalk_file = root / "docs" / "crosswalk.md"
     if crosswalk_file.exists():
+        crosswalk = _parse_authored_markdown(crosswalk_file.read_text(), str(crosswalk_file))
         write(
             "crosswalk/index.html",
-            _render_crosswalk_page(crosswalk_file.read_text()),
+            _render_crosswalk_page(crosswalk),
             f"{BASE_URL}/crosswalk/",
+            lastmod=crosswalk.date_modified,
         )
 
     # web/ is committed between renders. Remove generated scorecard directories
