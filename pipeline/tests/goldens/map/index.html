@@ -87,7 +87,7 @@
           and score. Use the grade and location filters above to narrow the list.</caption>
         <thead><tr><th scope="col">Scorecard</th><th scope="col">Grade</th>
           <th scope="col">Location</th><th scope="col">Score</th></tr></thead>
-        <tbody id="map-tbody"><tr data-id="barrie-transit" data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false" data-name="barrie transit (ontario)"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-id="unitrans" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="unitrans (asucd / city of davis)"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-id="yolobus" data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false" data-name="yolobus (yolo county transportation district)"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
+        <tbody id="map-tbody"><tr data-grade="C" data-state="" data-country="CA" data-subdivision="CA-ON" data-has-flex="false"><td><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></td><td>C</td><td><bdi>Ontario, Canada</bdi></td><td>72.3</td></tr><tr data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false"><td><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>80.8</td></tr><tr data-grade="B" data-state="" data-country="US" data-subdivision="" data-has-flex="false"><td><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></td><td>B</td><td><bdi>&mdash;</bdi></td><td>82.5</td></tr></tbody>
       </table>
     </section>
     <script>
@@ -103,6 +103,13 @@
           document.querySelectorAll("#map-tbody tr"));
         var all = null;  // the full FeatureCollection, fetched once
         var map = null;
+
+        function rowAgencyId(tr) {
+          var link = tr.querySelector('a[href^="/agency/"]');
+          var href = link ? link.getAttribute("href") : "";
+          var match = /^\/agency\/([^/]+)\/$/.exec(href);
+          return match ? match[1] : "";
+        }
 
         function matches(grade, state, country, subdivision, hasFlex) {
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
@@ -168,7 +175,7 @@
         // and the reverse. Visual only: the row text is the accessible source.
         var rowById = {};
         rows.forEach(function (tr) {
-          var id = tr.getAttribute("data-id");
+          var id = rowAgencyId(tr);
           if (id) rowById[id] = tr;
         });
         var current = null;   // agency id currently brushed, or null
@@ -199,7 +206,7 @@
         // while Enter keeps its meaning and follows the link. A click outside
         // the link pins too, for touch.
         rows.forEach(function (tr) {
-          var id = tr.getAttribute("data-id");
+          var id = rowAgencyId(tr);
           if (!id) return;
           tr.addEventListener("mouseenter", function () { highlight(id); });
           tr.addEventListener("mouseleave", function () { highlight(pinned); });

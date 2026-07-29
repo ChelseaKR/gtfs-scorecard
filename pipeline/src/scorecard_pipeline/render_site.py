@@ -6078,15 +6078,15 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         ),
         key=lambda r: r["name"].lower(),
     )
-    # data-id ties the row to its map point (the GeoJSON feature's ``id``
-    # property) for the linked brushing the page script wires up.
+    # The agency link ties each row to its GeoJSON feature for linked brushing.
+    # Do not duplicate that identifier in a data attribute: at full coverage,
+    # repeated row metadata has a measurable first-paint cost.
     table_rows = "".join(
-        f'<tr data-id="{esc(r["id"])}" data-grade="{esc(r["grade"])}" '
+        f'<tr data-grade="{esc(r["grade"])}" '
         f'data-state="{esc(r["state"])}" '
         f'data-country="{esc(r["country"])}" '
         f'data-subdivision="{esc(r["subdivision_code"])}" '
-        f'data-has-flex="{str(r["has_flex"]).lower()}" '
-        f'data-name="{esc(r["name"].lower())}">'
+        f'data-has-flex="{str(r["has_flex"]).lower()}">'
         f'<td><a href="/agency/{esc(r["id"])}/"><bdi>{esc(r["name"])}</bdi></a></td>'
         f"<td>{esc(r['grade'])}</td>"
         f"<td><bdi>{esc(_location_label(r)) or '&mdash;'}</bdi></td>"
@@ -6208,6 +6208,13 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         var all = null;  // the full FeatureCollection, fetched once
         var map = null;
 
+        function rowAgencyId(tr) {{
+          var link = tr.querySelector('a[href^="/agency/"]');
+          var href = link ? link.getAttribute("href") : "";
+          var match = /^\\/agency\\/([^/]+)\\/$/.exec(href);
+          return match ? match[1] : "";
+        }}
+
         function matches(grade, state, country, subdivision, hasFlex) {{
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
           var countryPrefix = "country:";
@@ -6272,7 +6279,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // and the reverse. Visual only: the row text is the accessible source.
         var rowById = {{}};
         rows.forEach(function (tr) {{
-          var id = tr.getAttribute("data-id");
+          var id = rowAgencyId(tr);
           if (id) rowById[id] = tr;
         }});
         var current = null;   // agency id currently brushed, or null
@@ -6303,7 +6310,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // while Enter keeps its meaning and follows the link. A click outside
         // the link pins too, for touch.
         rows.forEach(function (tr) {{
-          var id = tr.getAttribute("data-id");
+          var id = rowAgencyId(tr);
           if (!id) return;
           tr.addEventListener("mouseenter", function () {{ highlight(id); }});
           tr.addEventListener("mouseleave", function () {{ highlight(pinned); }});
