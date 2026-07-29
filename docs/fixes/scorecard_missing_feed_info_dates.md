@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: the feed does not state its validity dates
 
 Code: `scorecard_missing_feed_info_dates`

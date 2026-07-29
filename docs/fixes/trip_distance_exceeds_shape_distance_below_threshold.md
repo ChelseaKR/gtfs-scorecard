@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: trips slightly longer than their drawn route shape
 
 Code: `trip_distance_exceeds_shape_distance_below_threshold` (MobilityData validator)

@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: files contain columns that are not part of GTFS
 
 Code: `unknown_column` (MobilityData validator)

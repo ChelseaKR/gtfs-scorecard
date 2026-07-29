@@ -83,6 +83,20 @@ def _assert_tech_article_identity(document: dict[str, Any], canonical: str) -> N
     assert document["publisher"] == organization
 
 
+def _authored_markdown(
+    body: str,
+    *,
+    date_published: str = "2026-07-03",
+    date_modified: str = "2026-07-08",
+) -> Any:
+    from scorecard_pipeline.render_site import _parse_authored_markdown
+
+    return _parse_authored_markdown(
+        f'---\ndate_published: "{date_published}"\ndate_modified: "{date_modified}"\n---\n{body}',
+        "test.md",
+    )
+
+
 def test_generated_agency_pages_are_bounded_to_published_index(tmp_path: Path) -> None:
     pages = tmp_path / "agency"
     (pages / "kept").mkdir(parents=True)
@@ -219,6 +233,50 @@ def test_route_map_section_builds_accessible_table_and_skip_link() -> None:
     assert '<script src="https://unpkg.com/maplibre-gl' not in html
     assert 'script.src = "https://unpkg.com/maplibre-gl' in html
     assert 'css.href = "https://unpkg.com/maplibre-gl' in html
+
+
+def test_route_map_section_limits_data_nosnippet_to_utility_details() -> None:
+    artifact = _artifact_with_route_map(
+        routes=[
+            {
+                "id": "A",
+                "label": "A",
+                "long": "Main Line",
+                "type_label": "Bus",
+                "color": "0E6734",
+                "color_name": "green",
+                "has_shape": True,
+            }
+        ],
+        route_count=1,
+        drawn_route_count=1,
+        stop_count=2,
+        has_shapes=True,
+        path="data/artifacts/demo/geometry.geojson",
+    )
+
+    html = _route_map_section(artifact, "demo", stop_names=["First Stop", "Second Stop"])
+
+    assert html.count("data-nosnippet") == 1
+    boundary_start = html.index("<div data-nosnippet>")
+    boundary_end = html.index("</div></section>")
+    eligible_copy = html[:boundary_start]
+    utility_details = html[boundary_start:boundary_end]
+
+    assert 'id="map-h"' in eligible_copy
+    assert "Each route is drawn once" in eligible_copy
+    assert "This feed has <strong>2</strong> stops." in eligible_copy
+
+    assert 'id="route-map-load"' in utility_details
+    assert "Basemap: OpenFreeMap" in utility_details
+    assert 'class="map-legend"' in utility_details
+    assert 'class="route-table"' in utility_details
+    assert 'class="stop-list-wrap"' in utility_details
+    assert "First Stop" in utility_details and "Second Stop" in utility_details
+
+    # The optional MapLibre bootstrap remains lazy and outside the static
+    # no-snippet boundary.
+    assert html.index("<script>") > boundary_end
 
 
 def test_route_map_section_keyboard_model_rides_on_the_table() -> None:
@@ -1595,8 +1653,7 @@ def test_selected_finding_survives_agency_brief_board_and_fix_guide(
 
     fix_html = _render_fix(
         code,
-        f"# Fix {code}\n\nFollow the published guide.\n",
-        now=dt.datetime(2026, 7, 23, tzinfo=dt.UTC),
+        _authored_markdown(f"# Fix {code}\n\nFollow the published guide.\n"),
     )
     assert f'data-fix-context="{code}"' in fix_html
     assert "Keep " + code + " attached to the agency record" in fix_html
@@ -4375,8 +4432,7 @@ def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
 
     html = _render_fix(
         "expired_calendar",
-        "# Fix expired calendars\n\nRe-export the feed.\n",
-        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+        _authored_markdown("# Fix expired calendars\n\nRe-export the feed.\n"),
     )
     assert "After you republish" in html
     assert "dated finding clearance" in html
@@ -4393,8 +4449,10 @@ def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
         "@type": "Thing",
         "name": "GTFS validator notice expired_calendar",
     }
+    assert articles[0]["datePublished"] == "2026-07-03"
     assert articles[0]["dateModified"] == "2026-07-08"
-    assert "datePublished" not in articles[0]
+    assert '<time datetime="2026-07-03">3 July 2026</time>' in html
+    assert '<time datetime="2026-07-08">8 July 2026</time>' in html
 
 
 def test_tech_article_helper_has_stable_identity_without_inventing_dates() -> None:
@@ -4429,11 +4487,12 @@ def test_fix_guide_description_skips_the_validator_code_line() -> None:
 
     html = _render_fix(
         "expired_calendar",
-        "# Fix expired calendars\n\n"
-        "Code: `expired_calendar` (MobilityData validator)\n\n"
-        "## What this means\n\n"
-        "The service calendar ended in the past, so the feed may stop showing trips.\n",
-        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+        _authored_markdown(
+            "# Fix expired calendars\n\n"
+            "Code: `expired_calendar` (MobilityData validator)\n\n"
+            "## What this means\n\n"
+            "The service calendar ended in the past, so the feed may stop showing trips.\n"
+        ),
     )
 
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
@@ -4484,6 +4543,89 @@ def test_md_to_html_preserves_wrapped_paragraphs_and_list_continuations() -> Non
     assert "<li>A list item that wraps\nonto its continuation.</li>" in html
 
 
+def test_parse_authored_markdown_strips_dates_and_preserves_body_rules() -> None:
+    from scorecard_pipeline.render_site import _md_to_html, _parse_authored_markdown
+
+    document = _parse_authored_markdown(
+        "---\r\n"
+        "date_published: 2026-07-03\r\n"
+        'date_modified: "2026-07-14"\r\n'
+        "---\r\n"
+        "# Authored title\r\n\r\nFirst explanation.\r\n\r\n---\r\n",
+        "example.md",
+    )
+
+    assert document.date_published == "2026-07-03"
+    assert document.date_modified == "2026-07-14"
+    assert document.body.startswith("# Authored title")
+    html, title = _md_to_html(document.body)
+    assert title == "Authored title"
+    assert "<hr" in html
+    assert "date_published" not in html
+    assert "date_modified" not in html
+
+
+@pytest.mark.parametrize(
+    ("text", "message"),
+    [
+        (
+            "# No front matter\n",
+            "must start with YAML front matter",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\ndate_modified: 2026-07-14\n",
+            "no exact closing delimiter",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\n---\n# Missing modified\n",
+            "missing authored front matter keys",
+        ),
+        (
+            "---\n- 2026-07-03\n- 2026-07-14\n---\n# Sequence\n",
+            "must be a mapping",
+        ),
+        (
+            "---\n!!bool date_published: 2026-07-03\n"
+            "date_modified: 2026-07-14\n---\n# Tagged key\n",
+            "front matter keys must be strings",
+        ),
+        (
+            "---\ndate_published: true\ndate_modified: 2026-07-14\n---\n# Boolean\n",
+            "date_published must use YYYY-MM-DD",
+        ),
+        (
+            '---\ndate_published: "2026-02-30"\ndate_modified: 2026-07-14\n---\n# Bad date\n',
+            "date_published is not a valid calendar date",
+        ),
+        (
+            "---\ndate_published: 2026-07-03T10:30:00Z\ndate_modified: 2026-07-14\n"
+            "---\n# Timestamp\n",
+            "date_published must be an ISO date, not a timestamp",
+        ),
+        (
+            "---\ndate_published: 2026-07-14\ndate_modified: 2026-07-03\n---\n# Reversed\n",
+            "date_modified cannot be before date_published",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\ndate_published: 2026-07-04\n"
+            "date_modified: 2026-07-14\n---\n# Duplicate\n",
+            "duplicate authored front matter key",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\ndate_modified: 2026-07-14\n"
+            "reviewer: Transit team\n---\n# Unknown\n",
+            "unknown authored front matter keys",
+        ),
+    ],
+)
+def test_parse_authored_markdown_rejects_invalid_metadata(text: str, message: str) -> None:
+    from scorecard_pipeline.render_site import _parse_authored_markdown
+
+    with pytest.raises(ValueError, match=message) as exc_info:
+        _parse_authored_markdown(text, "example.md")
+    assert "example.md" in str(exc_info.value)
+
+
 def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
     from scorecard_pipeline.render_site import _render_fix_index
 
@@ -4506,13 +4648,14 @@ def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
 def test_render_crosswalk_page_links_the_authoritative_sources() -> None:
     from scorecard_pipeline.render_site import _render_crosswalk_page
 
-    md = (
+    document = _authored_markdown(
         "# How the grade maps to the standards\n\n"
         "This crosswalk explains the mapping.\n\n"
         "## The standards\n\n"
-        "- [NTD](https://www.transit.dot.gov/ntd)\n"
+        "- [NTD](https://www.transit.dot.gov/ntd)\n",
+        date_modified="2026-07-14",
     )
-    html = _render_crosswalk_page(md)
+    html = _render_crosswalk_page(document)
     assert "/crosswalk/" in html
     assert "How the grade maps to the standards" in html
     assert 'href="https://www.transit.dot.gov/ntd"' in html
@@ -4523,8 +4666,12 @@ def test_render_crosswalk_page_links_the_authoritative_sources() -> None:
         "https://gtfsscorecard.org/crosswalk/",
     )
     assert "about" not in articles[0]
-    assert "datePublished" not in articles[0]
-    assert "dateModified" not in articles[0]
+    assert articles[0]["datePublished"] == "2026-07-03"
+    assert articles[0]["dateModified"] == "2026-07-14"
+    assert '<time datetime="2026-07-03">3 July 2026</time>' in html
+    assert '<time datetime="2026-07-14">14 July 2026</time>' in html
+    assert "date_published" not in html
+    assert "date_modified" not in html
 
 
 def test_fixlog_page_frames_clearances_as_feed_state_not_causal_proof() -> None:

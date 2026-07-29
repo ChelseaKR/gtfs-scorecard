@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-04"
+date_modified: "2026-07-04"
+---
+
 # Fix: a station with no pathways.txt
 
 Code: `scorecard_station_no_pathways`

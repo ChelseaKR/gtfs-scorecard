@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-09"
+date_modified: "2026-07-09"
+---
+
 # Fix: remove a duplicated point from a route shape
 
 Code: `equal_shape_distance_same_coordinates` (MobilityData validator)

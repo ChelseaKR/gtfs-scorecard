@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: stops that no trip ever serves
 
 Code: `stop_without_stop_time` (MobilityData validator)

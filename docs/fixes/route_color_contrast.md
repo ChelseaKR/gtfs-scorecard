@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: route color and text color don't contrast
 
 Code: `route_color_contrast` (MobilityData validator)

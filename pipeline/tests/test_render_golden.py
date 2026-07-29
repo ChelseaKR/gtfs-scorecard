@@ -109,6 +109,14 @@ def test_render_site_golden_output(golden_fixture_root: Path, golden_root: Path)
         assert not (web / "agency" / "unitrans" / "fixes").exists()
         assert not stale_ridership.exists()
         assert not legacy_change.exists()
+        sitemap = (web / "sitemap.xml").read_text()
+        assert (
+            "<loc>https://gtfsscorecard.org/fix/expired_calendar/</loc>"
+            "<lastmod>2026-07-03</lastmod>"
+        ) in sitemap
+        assert (
+            "<loc>https://gtfsscorecard.org/crosswalk/</loc><lastmod>2026-07-14</lastmod>"
+        ) in sitemap
 
         # Check that every rendered file matches its golden.
         mismatches = []
