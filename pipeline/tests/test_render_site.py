@@ -2649,9 +2649,12 @@ def test_render_map_page_has_accessible_table_and_skip_link() -> None:
 
 def test_render_map_page_links_points_to_rows_with_keyboard_model() -> None:
     html = _render_map_page(_map_features())
-    # Each row names its map point so the two can brush each other.
-    assert 'data-id="alpha-transit"' in html
-    assert 'data-id="bravo-transit"' in html
+    # The existing agency link is the single ID source for linked brushing;
+    # avoid duplicating every slug in the full table's markup.
+    assert 'href="/agency/alpha-transit/"' in html
+    assert 'href="/agency/bravo-transit/"' in html
+    assert "function rowAgencyId(tr)" in html
+    assert "data-id=" not in html
     # A highlight layer enlarges one point at a time (the routes-hi pattern).
     assert '"agencies-hi"' in html
     assert '["==", ["get", "id"], NONE]' in html
@@ -2846,6 +2849,11 @@ def test_render_map_page_marker_shows_grade_not_color_only() -> None:
     assert 'id="map-load"' in html
     assert '<script src="https://unpkg.com/maplibre-gl' not in html
     assert 'script.src = "https://unpkg.com/maplibre-gl' in html
+    # Do not duplicate every agency name in an unused data attribute. On the
+    # full directory that dead payload materially delays first paint.
+    assert "data-name=" not in html
+    assert "data-id=" not in html
+    assert "rowAgencyId" in html
 
 
 # ---- equity choropleth (/equity/) ----
