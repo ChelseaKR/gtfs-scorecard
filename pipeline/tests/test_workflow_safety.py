@@ -28,3 +28,42 @@ def test_pages_publishes_only_registry_bounded_artifact_directories() -> None:
     assert "jq -r '.agencies | keys[]' \"$index_path\"" in assembler
     assert "cp -r data/artifacts _site/data/artifacts" not in workflow
     assert 'cp -r "data/artifacts/run"' not in workflow
+
+
+def test_browser_workflows_gate_generated_size_after_assembly() -> None:
+    for name in ("a11y.yml", "pages.yml"):
+        workflow = _workflow(name)
+        assert workflow.index("assemble_public_artifacts.sh") < workflow.index(
+            "check_site_budgets.py"
+        ), name
+        assert "--site-root ../_site" in workflow, name
+        assert "--config ../site-budgets.json" in workflow, name
+    pages = _workflow("pages.yml")
+    assert 'if [ "$budget_status" -eq 1 ] && [ "$PERF_GATE" = "advisory" ]' in pages
+    assert 'exit "$budget_status"' in pages
+
+
+def test_browser_workflows_cover_representative_routes_and_retain_reports() -> None:
+    upload_artifact = "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f"
+    for name in ("a11y.yml", "pages.yml"):
+        workflow = _workflow(name)
+        assert "lighthouserc.json" in workflow, name
+        assert "lighthouserc.routes.json" in workflow, name
+        assert "lhci-reports/" in workflow, name
+        assert "if: ${{ always() }}" in workflow, name
+        assert upload_artifact in workflow, name
+
+
+def test_pages_verifies_the_deployed_crawl_surface() -> None:
+    workflow = _workflow("pages.yml")
+
+    assert "production-smoke:" in workflow
+    assert "needs: [lighthouse, deploy]" in workflow
+    assert "https://gtfsscorecard.org" in workflow
+    assert "/robots.txt" in workflow
+    assert "/sitemap.xml" in workflow
+    assert "/agency/unitrans/" in workflow
+    assert "/agency/yolobus/" in workflow
+    assert "_site/deployment.json" in workflow
+    assert "needs.lighthouse.outputs.deployed_sha" in workflow
+    assert ".commit == $commit" in workflow
