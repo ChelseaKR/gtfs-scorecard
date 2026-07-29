@@ -3991,6 +3991,21 @@ def test_agency_metadata_planner_disambiguates_truncated_feed_variants() -> None
     assert all(len(item.description) <= 155 for item in planned.values())
 
 
+def test_agency_metadata_bounds_long_subdivision_labels() -> None:
+    from scorecard_pipeline.render_site import _agency_seo_metadata
+
+    metadata = _agency_seo_metadata(
+        "Cardiff Bus (Bws Caerdydd)",
+        location_label="Cardiff [Caerdydd GB-CRD], United Kingdom",
+        rt_measured=True,
+    )
+
+    assert len(metadata.title) <= 60
+    assert "(United Kingdom) GTFS quality report" in metadata.title
+    assert len(metadata.description) <= 155
+    assert "United Kingdom" in metadata.description
+
+
 def test_registry_name_overlay_changes_current_index_only() -> None:
     from scorecard_pipeline.config import Agency
     from scorecard_pipeline.render_site import _apply_registry_agency_names
