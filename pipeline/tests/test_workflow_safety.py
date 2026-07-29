@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,7 +60,11 @@ def test_pages_verifies_the_deployed_crawl_surface() -> None:
 
     assert "production-smoke:" in workflow
     assert "needs: [lighthouse, deploy]" in workflow
-    assert "https://gtfsscorecard.org" in workflow
+    assert re.search(
+        r"^\s+BASE_URL: https://gtfsscorecard[.]org$",
+        workflow,
+        flags=re.MULTILINE,
+    )
     assert "/robots.txt" in workflow
     assert "/sitemap.xml" in workflow
     assert "/agency/unitrans/" in workflow
