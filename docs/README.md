@@ -28,4 +28,5 @@ This index is the handoff point for the documentation sweep last reviewed on 202
 - [Board-Ready Report](board-report.md)
 - [CI Action](ci-action.md)
 - [Conformance](conformance.md)
+- [Governance Ledger](governance-ledger.md)
 - [Support this project](support.md)
