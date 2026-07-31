@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results
+.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results iac
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -98,3 +98,15 @@ mutation:
 
 mutation-results:
 	cd pipeline && uv run mutmut results
+
+# QM-08's IaC half: the same Terraform checks .github/workflows/iac.yml runs
+# in CI. Needs terraform >= 1.5 locally. Validation is offline
+# (init -backend=false): no cloud credentials, no state, no plan, no apply.
+iac:
+	terraform fmt -check -recursive infra/
+	set -e; for dir in infra/*/; do \
+		[ -f "$${dir}main.tf" ] || continue; \
+		echo "== $${dir}"; \
+		terraform -chdir="$$dir" init -backend=false -input=false >/dev/null; \
+		terraform -chdir="$$dir" validate; \
+	done

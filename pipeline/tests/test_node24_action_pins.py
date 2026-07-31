@@ -53,6 +53,10 @@ NODE24_PINS = {
         "d979d5b3a71173a29b74b5b88418bfda9437d885",
         "v6.1.1",
     ),
+    "hashicorp/setup-terraform": (
+        "dfe3c3f87815947d99a8997f908cb6525fc44e9e",
+        "v4.0.1",
+    ),
     "peter-evans/create-pull-request": (
         "5f6978faf089d4d20b00c7766989d076bb2fc7f1",
         "v8.1.1",
