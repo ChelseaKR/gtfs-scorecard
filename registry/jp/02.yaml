@@ -275,3 +275,306 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: konan-railway
+    name: Konan Railway (弘南鉄道)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hirosakicity/feeds/kounan-tetsudou/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Hirosaki City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Hirosaki City.
+    operating_note: >-
+      Konan Railway's two railway lines serving Hirosaki and nearby
+      communities in western Aomori; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/search?target_feed=hirosakicity*kounan-tetsudou
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hirosaki City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: jr-east-tsugaru-line-replacement-bus
+    name: JR East Tsugaru Line Replacement Bus (JR津軽線代行バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/jr-east-morioka/feeds/JR-east_tsugaruline/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by JR East's Morioka
+      branch through the GTFS Data Repository (gtfs-data.jp). Credit JR
+      East Morioka Branch.
+    operating_note: >-
+      The scheduled replacement bus between Kanita Station and Mimmaya
+      Gymnasium for the interrupted Tsugaru Line segment.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/jr-east-morioka.JR-east_tsugaruline
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        JR East Morioka Branch. Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: hachinohecity-hachinohe-nango
+    name: "八戸市南郷コミュニティバス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hachinohecity/feeds/hachinohe-nango/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 八戸市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      八戸市南郷コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hachinohecity.hachinohe-nango
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        八戸市. 八戸市南郷コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: hashikamitown-hashikamibus
+    name: "階上町コミュニティバス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hashikamitown/feeds/hashikamibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 階上町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      階上町コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hashikamitown.hashikamibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        階上町. 階上町コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: nakadomaritown-nakadomari-communitybus
+    name: "中泊町コミュニティバス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nakadomaritown/feeds/nakadomari-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 中泊町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      中泊町コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nakadomaritown.nakadomari-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        中泊町. 中泊町コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: owanitown-owanitown-sunekarabus
+    name: "大鰐町スネカラバス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/owanitown/feeds/owanitown-sunekarabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 大鰐町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      大鰐町スネカラバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/owanitown.owanitown-sunekarabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        大鰐町. 大鰐町スネカラバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: rokkashovillage-rokkasho-sharedtaxi
+    name: "六ヶ所村乗合タクシー"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/rokkashovillage/feeds/rokkasho-sharedtaxi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 六ヶ所村 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      六ヶ所村乗合タクシー is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/rokkashovillage.rokkasho-sharedtaxi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        六ヶ所村. 六ヶ所村乗合タクシー, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: shingovillage-shingo-mizubashogo
+    name: "新郷村営バス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shingovillage/feeds/shingo-mizubashogo/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 新郷村 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      新郷村営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shingovillage.shingo-mizubashogo
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        新郷村. 新郷村営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: sotogahamatown-sotogahama-townbus
+    name: "外ヶ浜町営バス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sotogahamatown/feeds/sotogahama-townbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 外ヶ浜町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      外ヶ浜町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sotogahamatown.sotogahama-townbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        外ヶ浜町. 外ヶ浜町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tohokutown-tohoku-town-bus
+    name: "東北町町民バス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tohokutown/feeds/tohoku-town-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 東北町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      東北町町民バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tohokutown.tohoku-town-bus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        東北町. 東北町町民バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tsurutatown-tsuruta-townbus
+    name: "鶴田町地域巡回バス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tsurutatown/feeds/tsuruta-townbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 鶴田町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      鶴田町地域巡回バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tsurutatown.tsuruta-townbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        鶴田町. 鶴田町地域巡回バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: yomogitavillage-yomogita-communitybus
+    name: "蓬田村コミュニティバス"
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yomogitavillage/feeds/yomogita-communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 蓬田村 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      蓬田村コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yomogitavillage.yomogita-communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        蓬田村. 蓬田村コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

@@ -13,6 +13,17 @@ people who support it) see how the feed is doing and what to fix first. The
 sources are public feed catalogs (the Mobility Database, transit.land) and
 agency-submitted feeds.
 
+## Privacy
+
+The public scorecard does not use analytics or track visitors. It sets no
+tracking cookies, sends no page-view beacons, and does not build rider or
+visitor profiles. Site-quality checks use automated synthetic visits instead
+of observing real visitor sessions.
+
+The domain owner may verify ownership through DNS and submit the public sitemap
+to Search Console outside this project. The repository contains no Search
+Console credentials, API configuration, or automated submission workflow.
+
 ## What the grade is, and is not
 
 The grade is a **data-quality and completeness lens** meant to help an agency

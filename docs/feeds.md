@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 1,700 feed records, still mostly in
+reference; the full registry has more than 2,100 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -554,14 +554,19 @@ concern. Source, reuse terms, current download, and identity were checked on
 - **New Zealand (two records)**: Auckland Transport and Baybus (Bay of Plenty),
   both CC BY 4.0 through their official open-data pages.
 
-Deferred with recorded reasons: the Sydney (Transport for NSW) and Melbourne
-(Public Transport Victoria) bundles both exceed the 256 MiB download cap and
-wait on the large-feed shard; Transport for NSW also gates its bulk download
-behind a registered account. The ACT (Transport Canberra) host returns HTTP 403
-to the pipeline. Tasmania's per-city Metro feeds have moved to a single
-Department of State Growth feed whose license page was unreachable and appears
-to add a share-alike term, and Metlink Wellington publishes no stated reuse
-license. Each is revisited when its blocker clears.
+Deferred with recorded reasons: Transport for NSW gates its Sydney bulk
+download behind a registered account. The ACT (Transport Canberra) host
+returns HTTP 403 to the pipeline, and Metlink Wellington publishes no stated
+reuse license. Each is revisited when its blocker clears.
+
+Tasmania's earlier hold cleared on 2026-07-22. The
+[Tasmanian Government GTFS page](https://www.transport.tas.gov.au/public_transport/gtfs-data)
+now links one stable, keyless statewide aggregate and explicitly applies
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The current 15 MiB
+archive passed the canonical validator preflight with 288 routes, 17,138 trips,
+six publishers in `agency.txt`, and bus and ferry service. `feed_info.txt`
+states service through 2026-09-30. The registry counts this aggregate as one
+feed record, not six agencies.
 
 ## Latin America and Asia-Pacific official wave
 
@@ -845,10 +850,10 @@ The sweep rejected far more than it kept, and the rejections are the point:
   DataMall; SãoPaulo's Transpiedade, Argentina's Mar Chiquita, and a Venezuela
   feed are private operator sites with no open license; and the Flixbus and
   Greyhound feeds are private intercity operators.
-- **Technical holds:** Hong Kong's official `static.data.gov.hk` feed is open,
-  but it stays a known technical canary (no ISO 3166-2 subdivision, and
-  frequency-based schedules whose freshness handling is still under review, per
-  the note in this file). Taiwan's TDX feed for Taipei Metro
+- **Technical holds:** Hong Kong's official `static.data.gov.hk` feed was held
+  here until the frequency-based freshness review documented later in this
+  file; that review has now passed and the feed is admitted as a country-only
+  canary. Taiwan's TDX feed for Taipei Metro
   (`tdx.transportdata.tw`) requires OAuth client credentials, which this pipeline
   does not ingest.
 
@@ -902,12 +907,13 @@ No new country qualified. The reasons are the point, and they cluster:
   development work but no first-party open-data download with a resolvable
   license. Waikato Regional Council (BUSIT) exposes no dataset-level open license
   for its feed.
-- **Host blocks automated download, or an unstable URL (rejected):** Tasmania's
-  Department of State Growth publishes GTFS under CC BY-SA 4.0, but its download
-  sits behind a Cloudflare challenge that returns 403 to non-browser clients, so
-  the pipeline cannot fetch it, and the file uses a dated versioned name rather
-  than a stable URL. Transport Canberra's older ACTION feed on `data.act.gov.au`
-  (CC BY 4.0) now 403s, and its current MyWay+ GTFS requires an access key.
+- **Host blocks automated download, or an unstable URL (rejected):** Transport
+  Canberra's older ACTION feed on `data.act.gov.au` (CC BY 4.0) now 403s, and
+  its current MyWay+ GTFS requires an access key.
+- **Resolved after this review:** Tasmania replaced its challenged, dated,
+  share-alike download with the stable keyless CC BY 4.0 aggregate documented
+  in the Oceania section. That new first-party evidence cleared the earlier
+  exclusion; it was not inferred from the old URL.
 - **Community, aggregator, or non-first-party (partnership-gated, not
   curation):** Indonesia has no official city GTFS beyond the catalog's
   TransJakarta; other cities are community exports. The Manila feed is community
@@ -915,12 +921,15 @@ No new country qualified. The reasons are the point, and they cluster:
   catalog and split into time-of-day files rather than a first-party Vietnamese
   source, and Ho Chi Minh City publishes none. Nepal and Bangladesh have only
   community-mapped data. These wait for the roadmap's partnership-gated phase.
-- **Same platform, held on data quality:** the other `data.gov.my` BAS.MY town
-  networks did not pass preflight. Alor Setar, Kota Bharu, Kuala Terengganu, and
-  Kuching return archives with zero trips at present, so they were held as
-  stubs. Ipoh and both Seremban feeds carry service, but their calendars end on
-  the review date with no `calendar_dates` extension, so they were held on
-  freshness.
+- **Resolved after this review:** on 2026-07-22, the official `data.gov.my`
+  API republished Alor Setar, Kota Bharu, Kuala Terengganu, and Kuching with
+  390 to 804 trips apiece and service through 2026-12-31. Each small archive
+  passed the canonical validator preflight and is now admitted as one feed
+  record in Kedah, Kelantan, Terengganu, or Sarawak. This decision uses the new
+  bytes; it does not reinterpret the earlier zero-trip stubs.
+- **Still held on freshness:** Ipoh and both Seremban feeds carry service only
+  on the day they are fetched, with no `calendar_dates` extension, so they
+  remain out until the official API publishes a usable future window.
 
 ## Japan gtfs-data.jp second wave
 
@@ -1457,8 +1466,7 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   Société de transport de Laval restricts commercial and quasi-commercial use.
   Neither is an open commercial-reuse grant.
 - Share-alike, held for consistency: Codiac Transpo (Moncton) publishes under
-  CC BY-SA. Share-alike is not on the accepted licence list, matching the
-  earlier hold on Tasmania's CC BY-SA feed.
+  CC BY-SA. Share-alike is not on the accepted licence list.
 - Licence page not resolvable from the review environment (fail closed): Halifax
   Transit, Lethbridge Transit, Red Deer Transit, Durham Region Transit, Greater
   Sudbury Transit, Burlington Transit, Transit Windsor, City of Regina, and STO
@@ -1474,10 +1482,9 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   Trillium mirror, not an operator or government portal.
 - Already evaluated by the Asia-Pacific breadth wave and not re-litigated:
   Transport for New South Wales (key-gated and over the download cap), Transport
-  Canberra (HTTP 403, and its MyWay+ feed needs a key), and Tasmania's Metro
-  feeds (the state's consolidated feed is Cloudflare-challenged and CC BY-SA,
-  and the older per-city metrotas.com.au downloads carry no resolvable open
-  licence).
+  Canberra (HTTP 403, and its MyWay+ feed needs a key). Tasmania's superseding
+  first-party aggregate is documented separately because its source, URL, and
+  licence all changed after this pass.
 
 ## United States small and rural depth wave
 
@@ -1619,10 +1626,29 @@ current, official, explicitly licensed African substitute in this review;
 expired licensed feeds and current feeds without clear reuse terms were not
 added.
 
-Hong Kong is the next technical canary because it has no ISO 3166-2 subdivision
-and publishes frequency-based schedules. It remains out of production until the
-freshness behavior for those schedules is reviewed. Community or informal feeds
-in lower- and middle-income countries follow the partnership and consent gate in
+### Hong Kong frequency-based schedule canary
+
+| | |
+|---|---|
+| GTFS Schedule | `https://static.data.gov.hk/td/pt-headway-en/gtfs.zip` |
+| Location | Hong Kong (`HK`), with no ISO 3166-2 subdivision |
+| Publisher | [Hong Kong Transport Department through DATA.GOV.HK](https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en) |
+| Reuse terms | [DATA.GOV.HK Terms of Use 1.2](https://data.gov.hk/en/terms-and-conditions), permitting commercial and non-commercial reuse with attribution |
+| Update cadence | Biweekly, as stated by DATA.GOV.HK |
+
+The English aggregate was preflighted on 2026-07-22. It is a valid 13 MiB ZIP
+with ten GTFS files, 2,455 routes, 82,692 trips, and bus, ferry, tram/light rail,
+and funicular service. Fourteen publishers appear in `agency.txt`; this remains
+one feed record, not a claim of fourteen separately curated agencies. The
+archive uses `frequencies.txt`, has no `feed_info.txt`, and carries weekly
+calendar rows from 2020 through 2099. A complete ad-hoc scorecard run with the
+Hong Kong country flag produced an 85 freshness score: it deducted for the
+missing validity declaration and labeled the 2099 horizon unusually distant.
+That explicit warning resolves the earlier technical hold without implying that
+the far-future calendar proves maintenance.
+
+Community or informal feeds in lower- and middle-income countries follow the
+partnership and consent gate in
 [ADR 0028](decisions/0028-global-south-pilot.md); they are not added merely to
 create a broader-looking map.
 
@@ -1708,6 +1734,438 @@ The exclusions carry the discipline:
   an admitted license with a future service window in its metadata, after deduping
   against the registry. Forty-two were preflighted by hand for this wave, forty
   passed and were kept, and the rest of the pool is held for later waves.
+
+## Japan gtfs-data.jp seventh wave
+
+Five bounded follow-on loops were reviewed from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23. The repository's
+[v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied the current file,
+publisher identity, service window, and exact Creative Commons license for each
+record. This wave lifts Japan from 225 to 230 feed records across the same 40
+prefectures. It adds regional depth, not a new claim of national coverage.
+
+Each current archive was downloaded once, scored from the pinned local bytes,
+and run through the canonical MobilityData validator before admission:
+
+- **Hokkaido (`JP-01`)**: Kamishihoro Town Autonomous Bus, CC BY 4.0,
+  service through 2026-10-31, score 76.0 (C).
+- **Aomori (`JP-02`)**: Konan Railway, CC BY 4.0, service through
+  2027-03-31, score 69.0 (D).
+- **Ibaraki (`JP-08`)**: Tsukubane-go, CC BY 4.0, service through
+  2026-12-31, score 80.1 (B).
+- **Hyogo (`JP-28`)**: Awaji Jenova Line's Akashi–Iwaya passenger ferry,
+  CC BY 2.1 JP, service through 2027-03-31, score 80.1 (B).
+- **Okayama (`JP-33`)**: Hokushin Bus, CC0 1.0, service through
+  2027-03-08, score 80.5 (B).
+
+One candidate remained excluded. Tsuku Bus was rechecked because its catalog
+window now runs through 2027-12-31, but the current archive names four required
+GTFS tables `calendar.csv`, `calendar_dates.csv`, `shapes.csv`, and
+`stop_times.csv`. The standard requires their `.txt` filenames, so the
+canonical validator reports a missing required file and no usable service
+calendar. The independently published Tsukubane-go feed passed; its admission
+does not clear or conceal the Tsuku Bus hold.
+
+## Japan gtfs-data.jp eighth wave
+
+Five further records were selected from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23 for the different
+operating questions they expose, rather than to inflate a prefecture count.
+The repository's [v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied each
+publisher, current service window, exact Creative Commons license, and, where
+present, official realtime endpoints. Japan moves from 230 to 235 reviewed feed
+records across the same 40 prefectures, so this remains depth rather than a
+national-coverage claim.
+
+Each current archive passed the canonical MobilityData validator path from
+pinned local bytes before admission:
+
+- **Aomori (`JP-02`)**: JR East Tsugaru Line replacement bus, CC BY 4.0,
+  service through 2027-04-30, score 75.3 (C).
+- **Tokyo (`JP-13`)**: Mizuho Town Choi-Soko demand transit, CC BY 4.0,
+  service through 2026-09-30, score 70.3 (C).
+- **Toyama (`JP-16`)**: Toyama Chitetsu Bus, CC0 1.0, service through
+  2027-05-25, score 68.2 (D). Its catalog-published TripUpdates and
+  VehiclePositions both returned keyless protobuf responses and are recorded.
+- **Mie (`JP-24`)**: Toba Municipal Ferry, CC BY 4.0, service through
+  2028-01-31, score 65.5 (D).
+- **Kochi (`JP-39`)**: Kochi Airport Shared Taxi, CC BY 4.0, service through
+  2027-03-31, score 82.2 (B).
+
+The two reservation-based services are explicitly marked as demand-responsive.
+Their presence does not claim that a GTFS trip is bookable, available at the
+requested time, or accessible. The replacement bus is described as published
+and is not presented as restored rail service. Ferry and realtime fields remain
+measured evidence, not a guarantee of vessel capacity or prediction quality.
+
+## Japan gtfs-data.jp ninth wave
+
+Five more records were reviewed from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23 to exercise a
+bounded live-service workflow. The repository's
+[v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied each publisher,
+current service window, exact Creative Commons license, and keyless realtime
+endpoints. Japan moves from 235 to 240 reviewed feed records across the same 40
+prefectures. This is regional depth, not a national-coverage claim.
+
+Each current archive passed the canonical MobilityData validator path from
+pinned local bytes before admission:
+
+- **Toyama (`JP-16`)**: Kaetsuno World Heritage Bus, CC0 1.0, service through
+  2027-03-31, score 79.6 (C).
+- **Aichi (`JP-23`)**: Owari Asahi Asapy-go, CC BY 4.0, service through
+  2026-11-30, score 73.3 (C).
+- **Aichi (`JP-23`)**: Tokoname Gruun, CC0 1.0, service through 2026-12-31,
+  score 75.1 (C).
+- **Mie (`JP-24`)**: Mie Kotsu's Shima-area service, CC BY 4.0, service
+  through 2026-10-23, score 65.5 (D).
+- **Kumamoto (`JP-43`)**: Kumamoto Dentetsu Bus, CC BY 4.0, service through
+  2026-10-24, score 65.9 (D).
+
+All ten TripUpdates and VehiclePositions endpoints returned HTTP 200 and valid
+protobuf responses during the admission check. Four pairs contained only a
+small feed header at that moment. Endpoint reachability therefore means only
+that a configured endpoint responded in the latest scorecard sample. It does
+not establish continuous availability, prediction accuracy, or meaningful
+scheduled-trip coverage. Those remain separate measured fields.
+
+## Japan gtfs-data.jp tenth wave
+
+Twenty official records were reviewed from Japan's national
+[GTFS Data Repository](https://gtfs-data.jp/) on 2026-07-23 for a larger
+endpoint-kind evidence loop. The repository's
+[v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied each publisher,
+current service window, exact Creative Commons license, and keyless realtime
+endpoints. Japan moves from 240 to 260 reviewed feed records across the same 40
+prefectures. This is regional depth, not a national-coverage claim.
+
+Each current archive passed the pinned canonical MobilityData validator path
+from local bytes before admission:
+
+- **Toyama (`JP-16`, CC0 1.0, service through 2027-03-31)**: Kaetsuno Himi
+  City Loop Bus, 77.9 (C); Kaetsuno Route Bus, 75.2 (C); Kamiichi Town Bus,
+  73.3 (C); Kurobe City Bus, 66.1 (D); Nyuzen Noran My Car, 76.2 (C); Asahi
+  Town Bus, 75.0 (C); Toyama Yamada Community Bus, 75.1 (C); Toyama Fuchu
+  Community Bus, 72.5 (C); Toyama Oyama Community Bus, 71.5 (C); Toyama
+  Maidohaya Bus, 75.3 (C); Toyama Horikawa Minami Community Bus, 76.2 (C);
+  Toyama Yatsuo Community Bus, 70.6 (C); and Toyama Kureha Ikiiki Bus,
+  72.6 (C).
+- **Mie (`JP-24`, CC BY 4.0)**: Ise Okage Bus, 73.7 (C), and Komono
+  Kamoshika Bus, 68.9 (D), both with service through 2026-09-13; Mie Kotsu
+  Iga, 74.2 (C); Matsusaka, 75.9 (C); Yokkaichi, 74.0 (C); Kuwana,
+  69.8 (D); and Ise, 71.9 (C), each with service through 2026-10-23.
+
+All twenty records publish TripUpdates and VehiclePositions. The seven Mie
+records also publish ServiceAlerts, for 47 configured endpoints in total. All
+47 returned HTTP 200 and a valid protobuf response during the admission check.
+Most samples contained only a feed header at that moment; the Mie Kotsu Kuwana
+TripUpdates and VehiclePositions samples contained entities. The product
+therefore publishes exact latest-sample endpoint-kind reachability and header
+freshness separately from scheduled-trip coverage. A response does not
+establish continuous uptime, alert content, prediction accuracy, or rider
+information availability.
+
+## Japan gtfs-data.jp eleventh wave
+
+The next coverage loop reviewed every remaining current publisher in Japan's
+national [GTFS Data Repository](https://gtfs-data.jp/) that had exactly one
+active feed, a versioned Creative Commons license already accepted by this
+project, and at least 60 days of effective service in the downloaded archive.
+This admitted 119 official feed records and moves Japan from 260 to 379 reviewed
+records across the same 40 prefectures. It adds regional depth, not a census or
+a national-coverage claim.
+
+The repository's [v2 API](https://docs.gtfs-data.jp/api.v2.html) supplied
+publisher identity, the direct current-file URL, stated license, and catalog
+service dates. Every archive was then downloaded and run through the pinned
+canonical MobilityData validator and the complete scorecard path. Effective
+calendar dates came from the archive rather than the catalog summary. The
+admitted set has 68 to 434 days of effective service remaining:
+
+- **Aomori (`JP-02`)**: 10 records.
+- **Yamagata (`JP-06`)**: 18 records.
+- **Toyama (`JP-16`)**: 2 records.
+- **Yamanashi (`JP-19`)**: 1 record.
+- **Nagano (`JP-20`)**: 11 records.
+- **Gifu (`JP-21`)**: 14 records.
+- **Aichi (`JP-23`)**: 12 records.
+- **Mie (`JP-24`)**: 11 records.
+- **Shiga (`JP-25`)**: 2 records.
+- **Hyogo (`JP-28`)**: 6 records.
+- **Wakayama (`JP-30`)**: 1 record.
+- **Tokushima (`JP-36`)**: 4 records.
+- **Kochi (`JP-39`)**: 15 records.
+- **Fukuoka (`JP-40`)**: 12 records.
+
+The license mix is 99 CC BY 4.0 records, 10 CC0 1.0 records, and 10 CC BY
+2.1 JP records. Grades were not an admission gate: the point is to show
+publishers what the feed says, not admit only high-scoring data.
+
+Four unique-publisher candidates remained out. Nanbu Town and Nishiwaki City
+advertised future catalog windows but their downloaded service calendars ended
+2026-03-31. Shoo Town had only 39 days of effective service remaining. The
+Radiant City Yokohama shuttle serves a private residential complex rather than
+a public network. Publishers with several current line or area exports also
+remain deferred so a large set of fragments is not presented as a matching set
+of agencies.
+
+## Global portal exhaustion wave
+
+The next breadth-and-depth loop combined the current Mobility Database catalog
+with first-party national and municipal portals, reviewed on 2026-07-23. It
+admitted 70 feed records: 57 French local networks, eight additions in countries
+already represented outside France, and five records opening four new country
+samples. Every schedule archive completed the pinned canonical MobilityData
+validator and full scorecard path and retained at least 60 days of effective
+service. Grades were not an admission gate. The resulting distribution is one
+A, seven B, nine C, twenty-nine D, and twenty-four F records.
+
+France's [National Access Point](https://transport.data.gouv.fr/) supplied 57
+local-network records under Licence Ouverte 2.0. The pass chose one current
+schedule feed per local publisher, rather than regional aggregates or multiple
+line fragments. Fifty-five came from a machine-readable sweep of the National
+Access Point API. Mouvéo in Saint-Omer and Hobus in Honfleur passed separate
+current-resource checks. The 57 records cover Auvergne-Rhône-Alpes,
+Bourgogne-Franche-Comté, Corse, Grand-Est, Guadeloupe, Hauts-de-France, La
+Réunion, Martinique, Mayotte, Normandie, Nouvelle-Aquitaine, Occitanie,
+Pays-de-la-Loire, and Provence-Alpes-Côte-d’Azur. Twenty-six publish official,
+keyless GTFS-Realtime endpoints through the same portal.
+
+Four new country samples cleared the same source, licence, identity, and
+calendar gate:
+
+- **Albania:** Municipality of Tirana. The city's
+  [open-data policy](https://tirana.al/faqe/open-data) states that its data is
+  available without licence restrictions.
+- **Moldova:** Transport Public Ungheni. The operator's
+  [open-data page](https://unghenitransport.md/retea-de-transport/open-data)
+  applies CC BY 4.0.
+- **Serbia:** Belgrade Public Transport, from the
+  [national open-data portal](https://data.gov.rs/sr/datasets/gradski-javni-prevoz-u-beogradu-gtfs/)
+  under Serbia's open-data reuse terms.
+- **Ukraine:** Kyivpastrans from the
+  [Kyiv city data portal](https://data.kyivcity.gov.ua/dataset/rozklad-rukhu-miskoho-elektrychnoho-ta-avtomobilnoho-transportu-dep-transport/resource/58f0c3d0-9409-4de9-92c8-de4afa035efd)
+  and Lvivavtodor from the City of Lviv open-data portal. Lviv also publishes
+  keyless TripUpdates and VehiclePositions.
+
+Existing-country depth added Lethbridge Transit, Rimouski Transit, Réseau de
+transport de Longueuil, and Saint John Transit in Canada; MVG München and hvv
+Hamburg in Germany; and West Coast Motors plus the Essex Bus Network in the
+United Kingdom. Their recorded terms are the relevant Canadian municipal open
+government licences or CC BY 4.0, Germany's provider reuse terms or
+Datenlizenz Deutschland – Namensnennung 2.0, and the UK Open Government Licence
+v3.0.
+
+The rejection set is part of this wave:
+
+- Four otherwise eligible French local networks could not be fetched:
+  Mobilité en Velay, Sud Sainte Baume, Trans’CoVe, and Pays des Écrins.
+- Canberra Light Rail, Brussels STIB/MIVB, Luxembourg's national feed, and
+  Metlink Wellington failed the 60-day effective-calendar gate.
+- Mexico City's official archive timed out and its catalog mirror was expired.
+  The Movimex Toluca and Jilotepec archives remained excluded because they are
+  OSM-derived rather than first-party schedule data.
+- Hyderabad Metro's download did not resolve to a GTFS zip. METROFOR's host did
+  not resolve. Santiago DTPM had a current archive but no explicit
+  commercial-reuse grant on the official current-feed page. Bogotá's 115 MB
+  compressed archive did not finish a bounded local score, and the official
+  portal records CC BY-SA 4.0, which is outside the project's general
+  share-alike allowlist.
+- Cascais no longer exposes the catalog's named GTFS dataset in its official
+  data API. Barreiro's catalog licence link names a different publisher.
+  Neither identity/licence pair was inferred.
+- Short-calendar, expired, dead, registration-gated, aggregate, and
+  multi-fragment candidates elsewhere remained out under their previously
+  documented reasons.
+
+This wave changes the reviewed sample, not the product's claims. A feed record
+is not necessarily a distinct agency, and 1,972 configured records across 40
+country codes are not a census of any country or region.
+
+## Twenty-loop official-source continuation
+
+A further 20 grouped discovery and verification loops on 2026-07-23 tested
+both new-country candidates and additional publishers in represented countries.
+The pass began with every still-untracked Mobility Database record marked
+official and carrying a licence link, then crossed each plausible result against
+the publisher or responsible government portal. Seventy-three candidates ran
+through the bounded download, pinned canonical MobilityData validator, full
+scorecard, and 60-day effective-calendar path. Fifty-five produced score
+artifacts; source, archive, or parsing failures stopped the other 18 before
+admission. The loops admitted 11 records.
+
+Six official Cyprus operator exports open a new country sample: OSYPA, OSEA,
+Intercity Buses, Nicosia Public Transport, Larnaka Public Transport, and PAME
+Express. The [Republic of Cyprus open-data portal](https://www.data.gov.cy/index.php/en/dataset/1069)
+publishes the complete public-bus collection under CC BY 4.0. The archives had
+69 to 90 days of effective service remaining when checked.
+
+India's first reviewed record is TGSRTC's Greater Hyderabad bus export.
+[TGSRTC's own open-data terms](https://www.tgsrtc.telangana.gov.in/open-data)
+explicitly permit commercial and non-commercial reuse with attribution. The
+current agency-produced archive is served through an OpenCity mirror because
+the first-party download flow uses a registration form; the source relationship
+is disclosed rather than presenting the mirror as the publisher.
+
+Existing-country depth added VBB's separately published GTFS-Flex collection
+in Germany, Reus Transport in Spain, Cars Régionaux 23 in France, and Belgrade's
+suburban network in Serbia. Related VBB and Belgrade files share organization
+identifiers and distinct feed-variant labels, so the directory does not present
+them as extra organizations.
+
+The 20 loops also recorded their no-add outcomes:
+
+1. Cyprus national portal: six current CC BY 4.0 operator feeds admitted.
+2. India official/open mirror: TGSRTC admitted; Hyderabad Metro was not a GTFS zip.
+3. Germany: VBB Flex admitted; other nationwide or duplicate exports stayed out.
+4. Spain: Reus admitted; Madrid city bus duplicated the tracked CRTM cohort.
+5. France: Creuse admitted; four remaining local sources were unreachable.
+6. Serbia: Belgrade suburban admitted as a variant of the tracked organization.
+7. Italy: GTT Torino's terms are non-commercial, so it stayed out.
+8. Sardegna: 12 portal feeds were tested; the current eligible files were
+   already tracked, while the rest were expired, short-calendar, or unreachable.
+9. Poland: Kraków lacked an explicit commercial licence and Bydgoszcz was a
+   community converter rather than a first-party schedule publisher.
+10. Portugal: Cascais, Barreiro, and Metro Sul do Tejo still lacked a matching
+    current publisher/source/licence chain.
+11. Chile: Santiago's current page still lacked an explicit commercial grant.
+12. Colombia: Bogotá's CC BY-SA licence remains outside the general allowlist.
+13. Australia: Canberra Light Rail failed the effective-calendar gate.
+14. New Zealand: Metlink had only 30 days of effective service remaining.
+15. Belgium: STIB/MIVB's downloaded calendar was expired.
+16. Luxembourg: the national feed had fewer than 60 days remaining.
+17. Canada: the untracked plausible municipal exports were expired or below
+    the 60-day gate.
+18. Mexico: official archives remained expired or unreachable; OSM-derived
+    exports were not substituted for first-party schedules.
+19. Brazil: METROFOR's host did not resolve and no replacement was inferred.
+20. Egypt and remaining aggregates: expired, non-commercial, fragmented, or
+    oversized candidates did not establish an admissible source chain.
+
+Grades were never an admission gate. Each accepted archive completed the same
+mechanical path despite grades ranging from F through C. This continuation
+moves the registry to 1,983 configured feed records across 42 country codes.
+Those are reviewed records, not a census or a claim of national coverage.
+
+## Transitland Atlas and Lithuania directory exhaustion wave
+
+The next breadth pass on 2026-07-23 parsed the full current Transitland Atlas:
+743 source documents, 4,045 feed rows, and 2,882 proposed agency records. It
+mechanically tried 146 still-plausible official or licensed schedule
+candidates. Thirty-six archives passed the download, pinned canonical
+MobilityData validator, complete scorecard, and 60-day effective-calendar path.
+Identity, current-source licensing, overlap, and aggregate checks reduced that
+set to 13 admitted records. A separate exhaustive first-party directory pass
+then admitted 50 Lithuanian municipality exports. Together the wave adds 63
+reviewed feed records.
+
+The 13 Atlas-derived records are:
+
+- **Ireland:** Bernard Kavanagh & Sons, City Direct, Express Bus, Kearns
+  Transport, McGrath Coaches, Slieve Bloom Coach Tours, and Dublin Bus
+  Nitelink. Ireland's National Transport Authority publishes each under CC BY
+  4.0. Bernard Kavanagh and Nitelink are explicitly modeled as feed variants
+  of their related organizations.
+- **Hungary, a new country sample:** Tüke Busz in Pécs, Blaguss Agora Hungary
+  in Szombathely, and MÁV's national regional-bus export. The
+  [Hungarian National Access Point](https://napportal.kozut.hu/en/#/informations/toc/)
+  terms expressly permit database storage, retransmission, disclosure, and
+  commercialization. The MÁV record is one aggregate feed, not a count of its
+  services or operating units.
+- **Portugal:** Cascais Próxima's MobiCascais network, Fertagus, and Metro Sul
+  do Tejo. The [MobiCascais catalog record](https://dados.gov.pt/en/datasets/gtfs-rede-mobi-cascais/#/information)
+  and Portugal National Access Point records for
+  [Fertagus](https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/185)
+  and [MTS](https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/200)
+  each apply CC BY 4.0 to the exact current resource.
+
+Lithuania's
+[official open-data record](https://data.gov.lt/datasets/1929/) identifies the
+Lithuanian Transport Safety Administration as provider, applies CC BY 4.0, and
+links the current municipality-level GTFS directory. All 58 directory links
+were tested from downloaded bytes. Fifty-four passed the mechanical path. Four
+of those were national, generic, or duplicate exports (`LTSAR.zip`,
+`VilniausM.zip`, `google_transit.zip`, and `gtfs_all.zip`), leaving 50 admitted
+municipality records. The four failed current archives were Ignalina,
+Kaišiadorys, Pasvalys, and Smiltynė. Kazlų Rūda, Klaipėda district, Pagėgiai,
+Šakiai, Šilalė, and Vilkaviškis had no municipality archive in the directory.
+The already tracked Vilnius city feed was not duplicated.
+
+The no-add ledger matters:
+
+- Transitland rows for Naples, Darwin, Zagreb, Queensland, Berlin-Brandenburg,
+  South Moravia, Copenhagen, and the Rhine-Sieg region duplicated tracked
+  records. Ireland's small-operators collection and Hungary's DAKK archive
+  overlapped admitted per-operator or current-successor feeds.
+- The Irish `GTFS_Ferry_Cable_Flight.zip` file combined airlines, ferries,
+  cable transport, and Northern Ireland rather than representing the named
+  Bere Island candidate. It stayed out as a misleading aggregate.
+- CP's exact current Portugal National Access Point record says “No licence –
+  No contract.” Carris Lisboa's current gateway resource lacked a matching
+  first-party commercial-reuse chain. Neither inherited an older catalog
+  record's terms.
+- Tursib's terms allow only personal, non-commercial use. Oman and Santiago
+  still lack an explicit commercial grant. Polish community mirrors,
+  mismatched API records, and catalog-only licence claims were not substituted
+  for first-party evidence.
+- Short-calendar, expired, unreachable, timed-out, and overlapping candidates
+  elsewhere remained out. A successful validator run alone was never treated
+  as permission or as proof of distinct agency identity.
+
+This wave moves the registry to 2,046 configured feed records across 43 country
+codes. The total describes curated feed records in this service, not agencies
+in operation or national coverage.
+
+## France national-access-point exhaustion and three-country wave
+
+The next exhaustive loop on 2026-07-23 queried all 774 datasets then available
+from France's official National Access Point API. It identified 331 current
+GTFS resources that did not match a registry URL and ran every one through the
+bounded download, pinned canonical MobilityData validator, complete scorecard,
+and 60-day effective-calendar path. One hundred forty-seven resources passed
+that mechanical gate.
+
+Evidence and overlap review retained 137 National Access Point resources. Six
+regional aggregates would have repeated networks available as more specific
+feeds. Three byte-identical, older, or superseded resource versions stayed out,
+as did one nominally old export with an implausible million-day service horizon.
+The retained set adds 136 French records across 15 regions and collectivities,
+including three Guyane resources in a new manifest shard. Distinct resources
+inside the same official dataset share an organization identifier and carry
+feed-variant labels. France's European cohort rises from 392 to 528 records
+without changing the 26-country European denominator.
+
+Tanéo's current Nouméa-area resource appears in the same official catalog but
+is located in New Caledonia, so it is recorded under ISO code `NC`, not counted
+as a French or European feed. The ODbL dataset is published by the Syndicat
+Mixte des Transports Urbains du grand Nouméa and passed the same scoring and
+calendar gate.
+
+Two additional official-provider records opened country-code samples:
+
+- Puerto Rico ATI publishes its integrated archive in the agency's official
+  open-data section and explicitly invites developers and companies to use it.
+  The archive scored A (91.3) in the admission run and retained more than 60
+  days of effective service.
+- Oman National Transport Company (Mwasalat) serves its GTFS from its official
+  AVL subdomain and labels its route-data surface as open data. Oman's national
+  Open Data License expressly permits commercial and non-commercial reuse,
+  copying, distribution, adaptation, and combination with attribution. Its
+  current archive passed the validator and calendar gate; its F grade was not
+  used as an exclusion criterion.
+
+The loop also closed several tempting but inadmissible paths. Sweden's national
+Trafiklab export now requires an API key and no project credential is
+configured. Monaco and Iceland had only 39 and 27 days of effective service.
+Luxembourg was stale, Taiwan's endpoint returned 401, and current Mexico,
+Argentina, and Chile candidates did not establish both an eligible archive and
+an explicit commercial-reuse chain. Community-produced African feeds remain
+partnership-gated under the roadmap rather than being treated as official
+agency publications.
+
+This wave adds 139 reviewed feed records and moves the registry to 2,185
+configured records across 46 country codes. Those are feed records, not a
+census of agencies, operators, or national coverage.
 
 ## Unitrans (ASUCD / City of Davis)
 

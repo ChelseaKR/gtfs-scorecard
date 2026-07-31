@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: impossibly fast travel between distant stops
 
 Code: `fast_travel_between_far_stops` (MobilityData validator)

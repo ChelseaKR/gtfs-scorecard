@@ -22,6 +22,11 @@ from typing import Any
 from .config import artifacts_dir
 from .instance import BASE_URL as BASE_URL  # re-exported: render_site imports it from here
 
+_SOCIAL_IMAGE_URL = f"{BASE_URL}/og.png"
+_SOCIAL_IMAGE_ALT = "GTFS Scorecard: transit data quality for small agencies."
+_SOCIAL_IMAGE_WIDTH = 1200
+_SOCIAL_IMAGE_HEIGHT = 630
+
 CATEGORY_LABELS = {
     "correctness": "Correctness",
     "freshness": "Freshness",
@@ -245,13 +250,19 @@ def _redirect_page(target: str, title: str) -> str:
     """A tiny static redirect for a retired URL: meta refresh plus a canonical
     link and a plain fallback link, so old bookmarks, papers, and crawlers all
     land on the page that absorbed this one. Written with no sitemap entry."""
+    has_ascii_control = any(ord(char) < 0x20 or ord(char) == 0x7F for char in target)
+    if not target.startswith("/") or target.startswith("//") or "\\" in target or has_ascii_control:
+        raise ValueError("redirect target must be a safe root-relative path")
+    canonical_target = f"{BASE_URL}{target.partition('#')[0]}"
+    escaped_target = esc(target)
+    escaped_canonical = esc(canonical_target)
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url={esc(target)}">
-  <link rel="canonical" href="{esc(target)}">
+  <meta http-equiv="refresh" content="0; url={escaped_target}">
+  <link rel="canonical" href="{escaped_canonical}">
   <link rel="stylesheet" href="/src/styles.css">
   <title>{esc(title)} — moved</title>
 </head>
@@ -259,7 +270,7 @@ def _redirect_page(target: str, title: str) -> str:
   <a class="skip-link" href="#main">Skip to main content</a>
   <main id="main" class="wrap" tabindex="-1">
     <h1 class="page-title">{esc(title)} moved.</h1>
-    <p class="page-lede">Continue to <a href="{esc(target)}">{esc(title)}</a>.</p>
+    <p class="page-lede">Continue to <a href="{escaped_target}">{esc(title)}</a>.</p>
   </main>
 </body>
 </html>
@@ -351,11 +362,13 @@ def _page(
   <meta property="og:title" content="{esc(title)}">
   <meta property="og:description" content="{esc(description)}">
   <meta property="og:url" content="{esc(canonical)}">
-  <meta property="og:image" content="{BASE_URL}/og.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="{esc(_SOCIAL_IMAGE_URL)}">
+  <meta property="og:image:width" content="{_SOCIAL_IMAGE_WIDTH}">
+  <meta property="og:image:height" content="{_SOCIAL_IMAGE_HEIGHT}">
+  <meta property="og:image:alt" content="{esc(_SOCIAL_IMAGE_ALT)}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="{BASE_URL}/og.png">
+  <meta name="twitter:image" content="{esc(_SOCIAL_IMAGE_URL)}">
+  <meta name="twitter:image:alt" content="{esc(_SOCIAL_IMAGE_ALT)}">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">{ld}
   <script>
@@ -368,7 +381,6 @@ def _page(
   </script>
   <script src="/src/theme.js" defer></script>
   <script src="/src/nav.js" defer></script>
-  <script src="/analytics.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable

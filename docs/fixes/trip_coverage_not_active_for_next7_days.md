@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-14"
+---
+
 # Fix: many trips do not run in the next 7 days
 
 Code: `trip_coverage_not_active_for_next7_days` (MobilityData validator)

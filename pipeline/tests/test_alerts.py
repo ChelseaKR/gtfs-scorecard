@@ -171,6 +171,30 @@ def test_expiry_item_links_to_the_send_note_block() -> None:
     assert "https://gtfsscorecard.org/agency/soon/#send-note" in text
 
 
+def test_alert_link_preserves_the_published_top_finding() -> None:
+    write_latest("soon", "Soon Transit", 90.0, "A", days_until_expiry=5)
+    latest = artifacts_dir() / "soon" / "latest.json"
+    payload = json.loads(latest.read_text())
+    payload["categories"]["freshness"]["findings"] = [{"code": "scorecard_feed_expiring_soon"}]
+    payload["top_fixes"] = [
+        {
+            "code": "scorecard_feed_expiring_soon",
+            "fix": "Publish a longer service calendar.",
+        }
+    ]
+    latest.write_text(json.dumps(payload))
+    write_index({"soon": {"name": "Soon Transit", "history": []}})
+
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    (item,) = [i for i in digest.items if i.kind == "expiry"]
+
+    assert item.scorecard_url == (
+        "https://gtfsscorecard.org/agency/soon/"
+        "?finding=scorecard_feed_expiring_soon#finding-handoff"
+    )
+    assert "Open the finding handoff" in render_digest(digest)
+
+
 def test_sixty_day_feed_gets_a_first_heads_up() -> None:
     # Default window is now 60 days, so a feed two months out is flagged early.
     write_latest("ramp", "Ramp Transit", 90.0, "A", days_until_expiry=58)

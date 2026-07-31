@@ -280,9 +280,10 @@ contracts:
 The coverage ledger is evidence, not a row of decorative proof points. Use
 `<dl>`, visible labels, and current rounded counts. On small screens it follows
 the active scorecard and directory tools rather than delaying the grade.
-The first-screen ledger names the worldwide footprint as 30+ countries; the
+The first-screen ledger names the registry footprint as 40+ countries; the
 operating notes separately disclose that most published records remain in the
-United States and Canada.
+United States and Canada. The country count describes curated registry records,
+not the smaller set of published scorecards.
 
 ### Interactive scorecard desk
 

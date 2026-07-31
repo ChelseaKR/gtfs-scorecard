@@ -5,7 +5,10 @@
 .venv
 AGENTS.md
 docs
-web
+web/*
+!web/schemas/
+web/schemas/*
+!web/schemas/sync-source-metadata-1.2.schema.json
 data/**
 !data/cache/
 data/cache/**

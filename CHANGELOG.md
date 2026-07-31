@@ -28,6 +28,35 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Move proposal-only `scorecard sync` intake to Mobility Database
+  `feeds_v2.csv`, while keeping mirror recovery and replacement discovery on
+  the legacy catalog. Normalize numeric Mobility Database identities across
+  both forms, reject unsafe V2 schema drift, prefer HTTPS endpoint spellings,
+  and leave ambiguous Realtime endpoints unattached with a review note.
+- Add `scorecard sync --source-metadata-out` receipts that bind the exact
+  source bytes, header, filters, registry identity inputs, rendered proposal
+  bytes, and proposal-tool source tree. Proposal outputs cannot overwrite their
+  catalog input or the curated registry, and an empty run clears stale output.
+- Extend the sync receipt with a versioned candidate-disposition ledger that
+  accounts for every recognized Mobility Database Schedule row without
+  publishing raw endpoints or contact data. Proposal selection is
+  deterministic, existing registry matches are named, and conflicting catalog
+  ids fail closed.
+
+### Changed
+
+- Harden the newly published sync-receipt contract as schema 1.2. The 1.1
+  schema stays frozen at its existing URL and both versions have stable,
+  retrievable schema references. New receipts validate before either output
+  is written. Registry provenance binds each external identity to the public
+  registry record that currently carries it. Tool evidence also binds the
+  packaged jurisdiction data and exact schema bytes. Scope, count, and decision
+  contradictions are rejected, while Mobility Database-only receipt runs reuse
+  one proposer evaluation.
+
+## [1.4.0] - 2026-07-25
+
+### Added
 - Grow reviewed coverage by 123 records to 1,734 by deepening countries already
   in the registry. A sixth gtfs-data.jp pass adds 40 first-party Japanese
   operators across 15 prefectures under CC BY 4.0, CC0, and CC BY 2.1 JP, taking
@@ -251,12 +280,27 @@ the declared public surface).
 - Broaden the European canaries beyond a bus-first view with metro, tram,
   national multimodal, ferry, and GTFS-Flex demand-responsive service, while
   keeping multi-operator aggregates counted as one feed record.
-- Bump the artifact schema to 1.15 and publish the versioned reader archive
-  profile (`raw-v1` or `flat-single-root-v1`). Raw hashes, archived bytes, and
-  canonical validator inputs remain exact; flat-profile rows stay outside the
-  default raw-profile comparison cohort.
+- Bump the artifact schema through 1.17 with additive reader-archive,
+  endpoint-specific realtime, and headsign-applicability evidence. The
+  versioned reader archive profile is `raw-v1` or `flat-single-root-v1`; raw
+  hashes, archived bytes, and canonical validator inputs remain exact, and
+  flat-profile rows stay outside the default raw-profile comparison cohort.
 
 ### Fixed
+- Do not recommend `trip_headsign` for a verifiable simple loop when its
+  applicable linear trips are already labeled. The exemption requires one
+  closed stop pattern, one shape, one direction, no repeated interior stops,
+  and complete stop-time evidence. Ambiguous, malformed, or oversized cases
+  keep the ordinary finding, and raw headsign coverage remains visible.
+- Keep the daily 2,000-plus-feed scoring run inside AWS credential windows by
+  defaulting to 32 shards and refreshing OIDC credentials immediately before
+  lifecycle tagging. Manual runs can still override the shard count.
+- Upgrade both Lambda images to the reviewed Amazon Linux
+  `2023.12.20260720` repository snapshot, so fixed `glib2` and `libacl`
+  packages replace the vulnerable base-image versions.
+- On the first day of a new scoring contract, label the coverage snapshot as
+  a baseline instead of claiming that no material changes were detected.
+  Same-day rechecks now explain that they update the existing daily point.
 - Restore keyboard focus to the country a user drilled from when they leave a
   subdivision map via Back. The focus-return guard tested `HTMLElement`, but SVG
   paths are `SVGElement`, so focus silently fell to the page body (a WCAG 2.4.3
@@ -449,7 +493,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.3.0
 [1.2.1]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.0

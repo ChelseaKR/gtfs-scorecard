@@ -166,9 +166,7 @@ scorecard stays free. Realistic support: operating it under a state data program
 or with National RTAP; federal technical-assistance and innovation funding
 ([FTA 5311(b)(3) RTAP](https://www.transit.dot.gov/funding/grants/rural-transportation-assistance-program-5311b3),
 [FTA 5312](https://www.transit.dot.gov/funding/grants/public-transportation-innovation-5312));
-and open-source contribution with sponsored hosting. A paid tier, if any, is for
-the consultancies and programs that manage many agencies (the Stage 3
-workspace), never for the agencies themselves.
+and open-source contribution with sponsored hosting.
 
 ## What "started" looks like (next 90 days)
 

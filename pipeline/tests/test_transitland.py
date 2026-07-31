@@ -98,6 +98,10 @@ def test_parse_dmfr_feeds_flow_through_the_shared_proposer() -> None:
         "trip_updates": "https://demo.example.org/tu.pb",
         "vehicle_positions": "https://demo.example.org/vp.pb",
     }
+    berlin = by_url["https://berlin.example.org/gtfs.zip"]
+    assert berlin.license_note == (
+        "No stated data license in the source catalog; verify before publishing."
+    )
     # The key-gated schedule feed is not proposed as a fetchable feed.
     assert "https://keyed.example.org/gtfs.zip" not in by_url
 

@@ -26,6 +26,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from .identity import normalized_mdb_id
 from .net import safe_get
 from .validate import ValidationReport, parse_report_data
 
@@ -74,10 +75,7 @@ class ApiFeed:
 def feed_id_for(mdb_id: str) -> str:
     """The Feed API id for a catalog mdb id. The API ids are ``mdb-<n>``; a value
     already prefixed (or a non-numeric id) is passed through unchanged."""
-    mdb_id = mdb_id.strip()
-    if not mdb_id or mdb_id.startswith("mdb-"):
-        return mdb_id
-    return f"mdb-{mdb_id}" if mdb_id.isdigit() else mdb_id
+    return normalized_mdb_id(mdb_id.strip())
 
 
 def _int(value: Any) -> int:

@@ -55,3 +55,93 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-alterneo
+    name: "Réseau urbain Alternéo"
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: "La Réunion"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80676/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA CIVIS (Communauté Intercommunale des Villes Solidaires) and the update date.
+    rt_urls:
+      service_alerts: "https://proxy.transport.data.gouv.fr/resource/alterneo-civis-gtfs-rt-service-alert"
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/alterneo-civis-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/alterneo-civis-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/donnees-du-reseau-alterneo"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA CIVIS (Communauté Intercommunale des Villes Solidaires)"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-carsud
+    name: "Réseau urbain CarSud"
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: "La Réunion"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/8f3642e3-9fc3-45ed-af46-8c532966ace3"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Sud and the update date.
+    rt_urls:
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/146fe36f-16c5-44bc-ac1a-06c0fedcc4dd"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/146fe36f-16c5-44bc-ac1a-06c0fedcc4dd"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/referentiel-topologique-reseau-carsud"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Sud"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-estival
+    name: "Réseau urbain Estival"
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: "La Réunion"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/3b659ebb-8c17-46f4-a8ac-78c4129a4a29"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Intercommunale de la Réunion Est (CIREST) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/jeu-de-donnee-spl-estival-2025"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Intercommunale de la Réunion Est (CIREST)"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-pan-82880
+    name: Téléphérique Papang
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: La Réunion
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fa444b8c-c1c6-4015-ac50-f748c12764d3
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CITALIS and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/citalis-telepherique-papang
+      terms_url: https://transport.data.gouv.fr/datasets/citalis-telepherique-papang
+      scope:
+      - gtfs_schedule
+      attribution: CITALIS
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

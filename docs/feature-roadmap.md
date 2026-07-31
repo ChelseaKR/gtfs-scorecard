@@ -1,6 +1,6 @@
 # Feature roadmap
 
-Last updated: 2026-07-17
+Last updated: 2026-07-25
 
 This is the ordered delivery list for the next 90 days. It implements the
 proof-first direction in [`product-roadmap.md`](product-roadmap.md) and uses the
@@ -24,16 +24,16 @@ intended published feed.
 Work through this list in order. Do not start later product expansion to fill a
 participant or release dependency.
 
-### 1. Publish and verify `v1.3.0`
+### 1. Publish and verify `v1.4.0`
 
-Status: completed 2026-07-16. The signed release and public
+Status: completed 2026-07-25. The signed release and the project's first public
 [Marketplace listing](https://github.com/marketplace/actions/gtfs-scorecard-gate)
 are live, and both supported refs passed the
-[downstream consumer check](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/29551173480).
+[downstream consumer check](https://github.com/ChelseaKR/gtfs-scorecard-action-smoke/actions/runs/30167946534).
 
 Done means:
 
-- immutable `v1.3.0` and signed floating `v1` tags point to the intended commit;
+- immutable `v1.4.0` and signed floating `v1` tags point to the intended commit;
 - the release carries the manifest signature, certificate, SBOM, VEX, and
   provenance assets;
 - the Marketplace listing is publicly visible in Code quality and Testing;
@@ -125,6 +125,12 @@ existing surface without changing a grade or adding a service:
   interface-localization readiness layer (app string catalog, `en-XA`
   pseudolocale preview, right-to-left browser check, hardcoded-string and
   directional-CSS ratchets; ADR 0038).
+- **Shipped 2026-07-25:** Mobility Database proposal receipts now account for
+  every recognized Schedule source row with a versioned mechanical disposition
+  ledger. Schema 1.2 validates receipts before either output is written and
+  binds each external identity to the public registry record that currently
+  carries it. Proposals remain separate from human identity, rights,
+  attribution, and admission decisions (ADR 0043).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

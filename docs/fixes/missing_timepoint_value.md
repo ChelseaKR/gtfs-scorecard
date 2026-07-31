@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: stop times without a timepoint value
 
 Code: `missing_timepoint_value` (MobilityData validator)

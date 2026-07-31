@@ -49,17 +49,45 @@ shards. As your registry grows, add your own country/subdivision shards back to
 the explicit manifest. Each entry is documented in
 [docs/add-your-agency.md](add-your-agency.md); `scorecard sync --country <cc>
 --state <state>` can propose entries for a whole state or country from the
-Mobility Database catalog instead of hand-entering each one:
+Mobility Database V2 catalog instead of hand-entering each one:
 
 ```sh
 cd pipeline
-uv run scorecard sync --country US --state Washington
+uv run scorecard sync \
+  --country US \
+  --state Washington \
+  --out /tmp/washington-proposals.yaml \
+  --source-metadata-out /tmp/washington-source-metadata.json
 ```
 
 The command omits authentication-gated Schedule feeds and identities already
-tracked by catalog id or normalized URL. Review source status, location, reuse
-terms, attribution, and feed identity before committing any proposal: the tool
-removes mechanical hazards, but it does not curate or grant reuse permission.
+tracked by catalog id or normalized URL. The metadata sidecar fingerprints the
+exact CSV bytes, each normalized external identity's current public registry
+assignment, the proposal-tool source and jurisdiction data, the versioned
+public receipt schema, and rendered proposal bytes. It also records source
+counts, filters, and one mechanical disposition for every recognized Schedule
+source row, including excluded, filtered, already tracked, duplicate,
+conflicted, and proposed records. The complete sidecar is schema-validated
+before either output is written. Raw feed URLs, authentication details, and
+contacts are omitted from the ledger. Use `--catalog <URL-or-path>` when you
+need a pinned or local catalog snapshot.
+
+`sync` only writes proposals. It has no `--apply` option and does not edit the
+registry. Review source status, location, reuse terms, attribution, and feed
+identity before copying any proposal into an intake shard. Catalog metadata
+supports that review; it does not grant permission to reuse or republish a
+feed. When `--source all` is used, the JSON sidecar covers the Mobility
+Database source rows and per-source counts only and explicitly excludes
+Transitland Atlas. Its output hash still binds the combined proposal file; pin
+Transitland separately if you need to reconstruct that combined run. The
+candidate ledger is likewise Mobility Database-only before cross-source
+deduplication, and says so explicitly.
+
+This sidecar is catalog-processing provenance, not a remediation closure
+receipt. It records no participant action and makes no causal claim. Existing
+1.1 sidecars remain valid against the frozen unversioned schema. New sidecars
+name the immutable 1.2 schema URL; regenerate one when you need the stricter
+assignment and decision guarantees.
 
 ### 3. Set your branding
 

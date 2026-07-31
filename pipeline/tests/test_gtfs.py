@@ -6,11 +6,32 @@ import datetime as dt
 from collections.abc import Callable
 from pathlib import Path
 
-from scorecard_pipeline.gtfs import read_agency_ids, read_feed_dates, read_shapes_coverage
+import pytest
+
+from scorecard_pipeline.gtfs import (
+    TableTooLargeError,
+    iter_table_rows,
+    read_agency_ids,
+    read_feed_dates,
+    read_shapes_coverage,
+)
 
 CALENDAR_HEADER = (
     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\n"
 )
+
+
+def test_iter_table_rows_streams_and_respects_a_task_cap(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    path = make_gtfs_zip({"stop_times.txt": ("trip_id,stop_id,stop_sequence\nT1,S1,1\nT1,S2,2\n")})
+
+    rows = list(iter_table_rows(str(path), "stop_times.txt"))
+    assert [row["stop_id"] for row in rows] == ["S1", "S2"]
+    assert list(iter_table_rows(str(path), "missing.txt")) == []
+
+    with pytest.raises(TableTooLargeError, match="analysis cap"):
+        list(iter_table_rows(str(path), "stop_times.txt", max_member_bytes=1))
 
 
 def test_reads_feed_info_and_calendar(make_gtfs_zip: Callable[..., Path]) -> None:

@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-04"
+date_modified: "2026-07-04"
+---
+
 # Fix: a stop sits far from the route line
 
 Code: `stop_too_far_from_shape` (MobilityData validator)

@@ -1,0 +1,33 @@
+# Sarawak (MY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: basmy-kuching
+    name: BAS.MY Kuching
+    country: MY
+    subdivision_code: MY-13
+    subdivision_name: Sarawak
+    is_official: true
+    organization_id: biaramas-express
+    static_gtfs_url: https://api.data.gov.my/gtfs-static/mybas-kuching
+    license_note: >-
+      CC BY 4.0; published as open data through data.gov.my, the Government of
+      Malaysia's official open data platform. Credit BAS.MY Kuching and
+      Biaramas Express Sdn. Bhd.
+    operating_note: >-
+      The BAS.MY stage bus network based in Kuching, Sarawak. A 2026-07-22
+      preflight found 13 routes, 620 trips, 406 stops, and service through
+      2026-12-31; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.data.gov.my/realtime-api/gtfs-static
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        BAS.MY Kuching / Biaramas Express Sdn. Bhd., published through
+        data.gov.my under CC BY 4.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-22"
+      identity_reviewed: true

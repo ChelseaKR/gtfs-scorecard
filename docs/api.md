@@ -29,6 +29,7 @@ domain. Every path below is relative to that base.
 | `scoring.json` | Machine-readable methodology: category weights, grade bands, and the correctness severity deductions. |
 | `/api/v1/coverage.json` | Separately named registry, organization-key, published-page, and scored-row counts. |
 | `/schemas/artifact.schema.json`, `/schemas/catalog.schema.json`, `/schemas/directory.schema.json`, `/schemas/coverage.schema.json` | JSON Schemas (Draft 2020-12) for validating the per-agency artifact, catalog, directory, and coverage counts in CI. |
+| `/schemas/sync-source-metadata-1.1.schema.json`, `/schemas/sync-source-metadata-1.2.schema.json` | Immutable contracts for catalog-sync provenance sidecars. The original unversioned path remains the frozen 1.1 compatibility schema; new sidecars carry their exact versioned URL and schema digest. |
 
 ## License and attribution
 
@@ -63,7 +64,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.15`). The rule for
+Every artifact carries a `schema_version` (currently `1.17`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -117,6 +118,13 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.16` adds `reachable_kinds` to Realtime details and flattens exact
+  TripUpdates, VehiclePositions, and ServiceAlerts latest-sample reachability
+  into `api/v1/features.json`. It also exposes `realtime_fresh`, which is true
+  only when the newest measured TripUpdates or VehiclePositions header was no
+  more than 60 seconds old. These are sample observations, not uptime, content,
+  accuracy, or trip-coverage guarantees. Additive; grades and the scoring
+  profile are unchanged.
 - `1.15` adds the versioned `fetch.reader_archive_profile` contract. `raw-v1`
   means Scorecard readers used the producer archive directly;
   `flat-single-root-v1` means they flattened one common root folder and trimmed
@@ -192,11 +200,11 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.15",
-  "rubric_version": "1.2",
+  "schema_version": "1.17",
+  "rubric_version": "1.3",
   "scoring_profile": {
-    "id": "gtfs-scorecard-1.2",
-    "rubric_version": "1.2",
+    "id": "gtfs-scorecard-1.3",
+    "rubric_version": "1.3",
     "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination."
   },
   "validator_version": "8.0.1",       // the MobilityData gtfs-validator release used
@@ -365,8 +373,8 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.15",
-  "rubric_version": "1.2",
+  "schema_version": "1.17",
+  "rubric_version": "1.3",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
   "agencies": [
@@ -379,9 +387,9 @@ whole picture in a single request rather than fetching each `latest.json`.
       "snapshot_date": "2026-06-12", "days_until_expiry": 120,
       "service_horizon_status": "within_review_threshold", "expiry_status": "current",
       "ntd_ready": "ready", "google_gate": "pass", "stops": 312,
-      "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.2",
-      "scoring_profile_id": "gtfs-scorecard-1.2",
-      "scoring_profile_rubric_version": "1.2",
+      "mdb_id": "1234", "validator_version": "8.0.1", "rubric_version": "1.3",
+      "scoring_profile_id": "gtfs-scorecard-1.3",
+      "scoring_profile_rubric_version": "1.3",
       "retrieved_at": "2026-06-12T13:25:01+00:00", "feed_sha256": "...",
       "feed_url": "...", "top_fix": "...", "scorecard_url": "https://..." }
   ]
@@ -461,7 +469,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
 | `api/v1/accessibility.json` | Covered-set accessibility-data completeness: how many feeds populate wheelchair fields, overall and by portable country/subdivision. Backs the coverage section at `/adoption/#access`. |
 | `api/v1/adoption.json` | Which optional GTFS capabilities (Flex, Fares v2, pathways, cEMV, and rider-facing translations) feeds publish, overall and by portable country/subdivision. Backs `/adoption/`. |
-| `api/v1/features.json` | Every current feed record with filterable service modes, capability flags, translation languages, stop- and trip-level wheelchair-field completeness, ferry-subset capability measurements, portable location, identity, scorecard URL, and comparison eligibility. Unknown measurements are `null`, never `false`. Backs the consumer filters and CSV export in `/app/`. |
+| `api/v1/features.json` | Every current feed record with filterable service modes, capability flags, translation languages, stop- and trip-level wheelchair-field completeness, ferry-subset capability measurements, latest-sample realtime endpoint-kind reachability and header freshness, portable location, identity, scorecard URL, and comparison eligibility. Unknown measurements are `null`, never `false`. Backs the consumer filters and CSV export in `/app/`. |
 | `api/v1/global-coverage.json` | Auditable readiness gate for a bounded European GTFS Schedule beta. It lists the reviewed feed-record cohort, source and terms evidence, current-versus-threshold criteria, country balance, freshness and measurement exceptions, and explicit limits. `not_ready` is a valid result, not an API failure. |
 | `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. |
 | `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
@@ -484,6 +492,13 @@ ferry profile. Its flat fields include ferry route, trip, and terminal counts;
 allowed percentages; the feed-level fare model; and configured realtime kinds.
 Schedule fields use ferry routes and trips only. Fare and realtime fields
 describe the whole feed, matching the scope labels in the artifact.
+`realtime_trip_updates_reachable`, `realtime_vehicle_positions_reachable`, and
+`realtime_service_alerts_reachable` are true only when that configured endpoint
+kind responded in the latest scorecard sample. `realtime_reachable_kinds_list`
+names those kinds. `realtime_fresh` describes the latest measured
+TripUpdates/VehiclePositions header threshold, not ServiceAlerts content or an
+uptime SLA. Legacy partial-count rows remain null per kind unless the exact
+answer can be recovered without guessing.
 `comparison_eligible_count` only describes whether scores share
 the current producer contract, including the required `raw-v1` reader archive
 profile; it does not control feature filtering. Combine
@@ -585,15 +600,15 @@ archive-profile, measured-category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.15",
+  "schema_version": "1.17",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
   "comparison_eligible_count": 1000,
   "comparison": {
     "eligible_count": 1000,
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1",
     "required_reader_archive_profile": "raw-v1",
     "required_measured_categories": ["correctness", "freshness", "completeness"]
@@ -611,14 +626,14 @@ archive-profile, measured-category, and canonical-identity boundaries.
 
 ```jsonc
 {
-  "schema_version": "1.15",
+  "schema_version": "1.17",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
   "grade_distribution": { "B": 1, "C": 1 },
   "comparison": { "eligible_count": 2, "excluded_count": 0,
-                  "required_rubric_version": "1.2",
-                  "required_scoring_profile_id": "gtfs-scorecard-1.2",
+                  "required_rubric_version": "1.3",
+                  "required_scoring_profile_id": "gtfs-scorecard-1.3",
                   "required_validator_version": "8.0.1",
                   "required_reader_archive_profile": "raw-v1",
                   "required_measured_categories":

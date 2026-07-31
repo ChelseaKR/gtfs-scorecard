@@ -73,3 +73,41 @@ def test_duplicate_identity_requires_an_explicit_alias() -> None:
     kinds = {issue.kind for issue in lint_registry([_agency(id="canonical"), aliased])}
     assert "duplicate_mdb_id" not in kinds
     assert "duplicate_feed_url" not in kinds
+
+
+def test_duplicate_mdb_id_uses_normalized_legacy_identity() -> None:
+    issues = lint_registry(
+        [
+            _agency(id="bare", mdb_id="000123", static_gtfs_url="https://example.org/a.zip"),
+            _agency(
+                id="prefixed",
+                mdb_id="mdb-123",
+                static_gtfs_url="https://example.org/b.zip",
+            ),
+        ]
+    )
+
+    duplicates = [issue for issue in issues if issue.kind == "duplicate_mdb_id"]
+    assert [issue.agency_id for issue in duplicates] == ["bare", "prefixed"]
+    assert {issue.detail for issue in duplicates} == {
+        "mdb-123 is shared by canonical records: bare, prefixed"
+    }
+
+
+def test_duplicate_mdb_id_preserves_distinct_nonlegacy_ids() -> None:
+    issues = lint_registry(
+        [
+            _agency(
+                id="lowercase",
+                mdb_id="mdb-custom",
+                static_gtfs_url="https://example.org/a.zip",
+            ),
+            _agency(
+                id="uppercase",
+                mdb_id="MDB-custom",
+                static_gtfs_url="https://example.org/b.zip",
+            ),
+        ]
+    )
+
+    assert all(issue.kind != "duplicate_mdb_id" for issue in issues)

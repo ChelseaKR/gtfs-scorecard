@@ -29,3 +29,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: essex-bus-network
+    name: Essex Bus Network
+    country: GB
+    subdivision_code: GB-ESS
+    subdivision_name: Essex
+    mdb_id: "2688"
+    is_official: true
+    static_gtfs_url: https://data.essex.gov.uk/download/2ydj8/gl4/gtfs.zip
+    license_note: >-
+      UK Open Government Licence v3.0 on the Essex County Council dataset;
+      personal, educational, and commercial reuse is explicitly permitted.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.essex.gov.uk/dataset/essex-bus-network-data-2ydj8
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Essex County Council; contains public sector information licensed
+        under the Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

@@ -148,3 +148,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: hokushin-bus
+    name: Hokushin Bus (北振バス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hokushin-bus/feeds/hokushinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Hokushin Bus Co., Ltd. through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Hokushin Bus's public route network in western Okayama; counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/search?target_feed=hokushin-bus*hokushinbus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hokushin Bus Co., Ltd. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

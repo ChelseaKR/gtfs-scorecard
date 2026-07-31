@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: the feed expires within 7 days
 
 Code: `feed_expiration_date7_days` (MobilityData validator)

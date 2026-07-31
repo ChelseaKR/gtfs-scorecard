@@ -39,6 +39,19 @@ GRADE_BANDS = [(90.0, "A"), (80.0, "B"), (70.0, "C"), (60.0, "D"), (0.0, "F")]
 # upgrades").
 METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
     {
+        "rubric_version": "1.3",
+        "effective_date": "2026-07-24",
+        "summary": (
+            "The headsign component no longer treats a blank trip_headsign as a "
+            "defect when every trip on a route follows one closed stop pattern, "
+            "one shape, and one direction. This corrects a false positive found "
+            "through maintainer feedback on MRC de Joliette's one-way loop routes. "
+            "Routes with multiple directions or patterns retain the check, and "
+            "the guidance no longer tells producers to copy route names into "
+            "trip_headsign."
+        ),
+    },
+    {
         "rubric_version": "1.2",
         "effective_date": "2026-07-13",
         "summary": (

@@ -15,6 +15,10 @@
         "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1, "aggregationMethod": "median-run" }],
         "total-blocking-time": ["error", { "maxNumericValue": 200, "aggregationMethod": "median-run" }]
       }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "lhci-reports/core"
     }
   }
 }

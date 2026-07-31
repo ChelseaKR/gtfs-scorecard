@@ -98,6 +98,39 @@ def test_cohort_excludes_duplicate_registry_urls_and_feed_hashes() -> None:
     assert comparison["individual_percentiles_published"] is False
 
 
+def test_cohort_excludes_legacy_and_v2_spellings_of_one_mdb_identity() -> None:
+    records = [
+        _row(id="legacy", feed_sha256="legacy-bytes"),
+        _row(id="v2", feed_sha256="v2-bytes"),
+        _row(id="unique", feed_sha256="unique-bytes"),
+    ]
+    agencies = [
+        Agency(
+            "legacy",
+            "Legacy",
+            "https://legacy.example/feed.zip",
+            mdb_id="00123",
+        ),
+        Agency(
+            "v2",
+            "V2",
+            "https://v2.example/feed.zip",
+            mdb_id="mdb-123",
+        ),
+        Agency(
+            "unique",
+            "Unique",
+            "https://unique.example/feed.zip",
+            mdb_id="mdb-456",
+        ),
+    ]
+
+    eligible, comparison = build_comparison_cohort(records, agencies=agencies)
+
+    assert [row["id"] for row in eligible] == ["unique"]
+    assert comparison["exclusion_counts"] == {"duplicate_feed_identity": 2}
+
+
 def test_cohort_requires_one_producer_and_measured_category_contract() -> None:
     records = [
         _row(id="schedule-a", feed_sha256="schedule-a"),

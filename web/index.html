@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GTFS Scorecard: is your transit data any good?</title>
-<meta name="description" content="A free worldwide GTFS quality service for small transit agencies: 1,700+ curated feed records across 30+ countries, 1,100+ published scorecards, scheduled monitoring, practitioner tools, and open data.">
+<title>GTFS Scorecard: plain-language GTFS quality and fixes</title>
+<meta name="description" content="Daily GTFS quality scorecards for small transit agencies, with dated grades, prioritized fixes, history, practitioner tools, and open data.">
 <meta property="og:title" content="GTFS Scorecard">
 <meta property="og:description" content="Plain-language GTFS grades and fixes, scheduled monitoring, program views, pre-publish tools, and open data.">
 <meta property="og:type" content="website">
@@ -12,12 +12,15 @@
 <meta property="og:image" content="https://gtfsscorecard.org/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+<meta name="twitter:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
 <link rel="canonical" href="https://gtfsscorecard.org/">
+<link rel="alternate" hreflang="en" href="https://gtfsscorecard.org/">
+<link rel="alternate" hreflang="es" href="https://gtfsscorecard.org/es/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/","description":"A free GTFS quality service for small and rural transit agencies, with plain-language scorecards, scheduled monitoring, practitioner tools, and open data."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"DataCatalog","name":"GTFS Scorecard","description":"Published data quality scores for the public GTFS feeds this site currently covers, with scheduled monitoring and public last-run status. Checks correctness, freshness, rider-experience completeness, and realtime health. Includes plain-language fixes, program views, pre-publish tools, and machine-readable data for transit managers, riders, program staff, and data teams.","url":"https://gtfsscorecard.org/","license":"https://creativecommons.org/licenses/by/4.0/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"keywords":["GTFS","transit data quality","General Transit Feed Specification","GTFS-RT","public transit","small transit agency","open data"]}</script>
-<script src="/analytics.js" defer></script>
 <script>
   try {
     document.documentElement.classList.add("js");
@@ -27,7 +30,7 @@
   } catch (e) {}
 </script>
 <script src="/src/theme.js" defer></script>
-<script src="/src/landing-scorecard.js" defer></script>
+<script src="/src/landing-scorecard.js?v=20260723-coverage" defer></script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23163a2c'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
 <style>
   @font-face {
@@ -382,10 +385,10 @@
     text-transform: uppercase;
   }
   .desk-intro h1 {
-    max-width: 8.5ch;
+    max-width: 9.8ch;
     margin: 0.7rem 0 1.35rem;
     font-family: var(--display);
-    font-size: clamp(3.25rem, 5.8vw, 6.4rem);
+    font-size: clamp(3rem, 4.6vw, 5.2rem);
     font-weight: 900;
     letter-spacing: -0.045em;
     line-height: 0.88;
@@ -518,6 +521,12 @@
     font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
+  }
+  .evidence-base {
+    margin: 0.85rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.76rem;
+    line-height: 1.45;
   }
 
   .scorecard-desk { grid-column: 2; grid-row: 1 / span 3; min-width: 0; background: var(--paper); }
@@ -660,6 +669,7 @@
   .scorecard-desk[aria-busy="true"] .score-workbench { opacity: 0.72; }
 
   .inspection { padding: clamp(3rem, 6vw, 5.2rem) 0; }
+  .ecosystem { padding-top: 0; }
   .section-intro {
     display: grid;
     grid-template-columns: minmax(12rem, 0.72fr) minmax(0, 2.28fr);
@@ -910,6 +920,642 @@
     .fix-evidence { grid-template-columns: 1fr; }
   }
 
+  /* Interface cohesion pass — July 2026. The home page is the service desk;
+     these refinements give the desk clearer depth and interaction hierarchy
+     while keeping the same transit-signage system as the inner app. */
+  .home-header {
+    position: sticky;
+    top: 0;
+    box-shadow: 0 8px 24px rgba(5, 22, 16, 0.2);
+  }
+  .bulletin-hero {
+    padding-top: clamp(1.5rem, 4vw, 3.2rem);
+  }
+  .service-desk {
+    background: var(--paper);
+    border-inline: 1px solid var(--line-ink);
+    box-shadow: 0 18px 58px rgba(32, 36, 31, 0.09);
+  }
+  .desk-intro h1,
+  .section-intro h2,
+  .record-head h2 {
+    text-wrap: balance;
+  }
+  .scorecard-desk {
+    position: relative;
+  }
+  .record-head {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 2rem;
+  }
+  .record-head::after {
+    content: "";
+    position: absolute;
+    left: clamp(1rem, 2.4vw, 2rem);
+    right: clamp(1rem, 2.4vw, 2rem);
+    bottom: 0.8rem;
+    height: 1px;
+    opacity: 0.48;
+    background: var(--amber);
+  }
+  .category-panel,
+  .fix-panel {
+    background: color-mix(in srgb, var(--paper) 92%, var(--paper-2));
+  }
+  .category-select,
+  .fix-selector button,
+  .pilot-switch button,
+  .action,
+  .scope-row,
+  .route-stop {
+    transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  }
+  .category-select:hover,
+  .fix-selector button:hover,
+  .pilot-switch button:hover {
+    background: var(--paper-2);
+  }
+  .action:hover {
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: translate(-2px, -2px);
+  }
+  .scope-row:hover,
+  .route-stop:hover {
+    background: color-mix(in srgb, var(--paper) 62%, var(--paper-2));
+  }
+  .fix-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .inspection,
+  .service-index,
+  .method {
+    scroll-margin-top: 5.5rem;
+  }
+  @media (max-width: 760px) {
+    .home-header {
+      position: relative;
+    }
+    .service-desk {
+      border-inline: 0;
+      box-shadow: none;
+    }
+    .record-head {
+      padding-bottom: 2.2rem;
+    }
+    .score-workbench {
+      gap: 0;
+    }
+  }
+
+  /* Quiet utility pass. The scorecard is the interface, not a campaign page. */
+  .home-header {
+    position: relative;
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+  .topbar { min-height: 68px; }
+  .bulletin-hero { padding-top: 1.5rem; }
+  .bulletin-meta {
+    grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 2.3fr);
+    border-top: 0;
+  }
+  .bulletin-meta > * { padding: 0.5rem 0; }
+  .bulletin-meta .issue {
+    padding-right: 1rem;
+    font-family: var(--body);
+    font-size: 0.82rem;
+  }
+  .bulletin-meta .runline {
+    align-items: center;
+    padding-left: 1rem;
+    color: var(--ink-soft);
+    font-size: 0.7rem;
+  }
+  .service-desk {
+    grid-template-columns: minmax(0, 1.45fr) minmax(19rem, 0.75fr);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line-ink);
+    box-shadow: none;
+  }
+  .desk-intro {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 1.5rem 2rem 1.25rem 0;
+    border-right: 0;
+  }
+  .desk-intro h1 {
+    max-width: none;
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.75rem, 3vw, 2.6rem);
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+  .desk-summary { max-width: 62ch; font-size: 0.98rem; }
+  .desk-reassure { max-width: 72ch; margin-top: 0.45rem; font-size: 0.78rem; }
+  .desk-tools {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    padding: 1.25rem 0 1.25rem 1.5rem;
+    border-left: 1px solid var(--line-ink);
+    border-right: 0;
+  }
+  .feed-picker label {
+    margin-bottom: 0.3rem;
+    font-family: var(--body);
+    font-size: 0.78rem;
+    text-transform: none;
+  }
+  .feed-search-row input,
+  .feed-search-row button {
+    min-height: 44px;
+    border-width: 1px;
+  }
+  .feed-search-row button {
+    background: var(--green);
+    color: var(--paper);
+  }
+  .picker-note { margin-top: 0.3rem; font-size: 0.7rem; }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.45rem;
+  }
+  .action {
+    min-height: 40px;
+    justify-content: flex-start;
+    padding: 0;
+    border: 0;
+    color: var(--green);
+    font-size: 0.78rem;
+    text-decoration: underline;
+  }
+  .action-primary,
+  .action-secondary {
+    background: transparent;
+    color: var(--green);
+  }
+  .action .arrow { display: none; }
+  .action:hover {
+    box-shadow: none;
+    transform: none;
+  }
+  .hero-ledger {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 0;
+    border-top: 1px solid var(--line-ink);
+    border-right: 0;
+  }
+  .coverage-ledger {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    border-top: 0;
+  }
+  .coverage-ledger div,
+  .coverage-ledger div:nth-child(n + 3) {
+    margin: 0;
+    padding: 0.65rem 1rem 0.65rem 0;
+    border-top: 0;
+  }
+  .coverage-ledger div + div,
+  .coverage-ledger div:nth-child(odd) {
+    padding-left: 1rem;
+    border-left: 1px solid var(--line-ink);
+  }
+  .coverage-ledger div:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .coverage-ledger dt {
+    font-family: var(--body);
+    font-size: 0.66rem;
+    text-transform: none;
+  }
+  .coverage-ledger dd {
+    margin-top: 0.12rem;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+  .scorecard-desk {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    border-top: 1px solid var(--ink);
+  }
+  .scorecard-toolbar {
+    min-height: 50px;
+    background: var(--paper-2);
+  }
+  .record-head {
+    min-height: 126px;
+    padding: 1.1rem;
+    background: var(--paper);
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-ink);
+  }
+  .record-head::after { display: none; }
+  .record-place {
+    margin-bottom: 0.35rem;
+    color: var(--green);
+    text-transform: none;
+  }
+  .record-head h2 { font-size: clamp(1.55rem, 3vw, 2.35rem); line-height: 1.05; }
+  .record-date,
+  .grade-group .desk-label,
+  .score-group .desk-label,
+  .score-of { color: var(--ink-soft); }
+  .grade-reel {
+    width: 62px;
+    height: 62px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    font-size: 2.8rem;
+  }
+  .grade-reel::after { display: none; }
+  .score-number { font-size: 2.4rem; }
+  .category-panel,
+  .fix-panel { background: var(--paper); }
+  .inspection { padding: 2.75rem 0; }
+  .ecosystem {
+    padding-top: 2.75rem;
+    border-top: 1px solid var(--line-ink);
+  }
+  .section-intro {
+    grid-template-columns: minmax(10rem, 0.55fr) minmax(0, 2.45fr);
+    margin-bottom: 1.35rem;
+  }
+  .section-code {
+    font-family: var(--body);
+    font-size: 0.72rem;
+    text-transform: none;
+  }
+  .section-intro h2 {
+    max-width: 32ch;
+    font-size: clamp(1.45rem, 3vw, 2.15rem);
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+  .section-intro .lede {
+    max-width: 74ch;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .route-track {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .route-stop { padding: 1.1rem; }
+  .route-stop::before { display: none; }
+  .route-stop .stop-label {
+    margin-bottom: 0.35rem;
+    font-family: var(--body);
+    font-size: 0.68rem;
+    text-transform: none;
+  }
+  .route-stop h3 { margin-bottom: 0.4rem; font-size: 1rem; line-height: 1.25; }
+  .route-stop p { font-size: 0.82rem; }
+  .route-stop:hover { background: transparent; }
+  .service-index {
+    padding: 2.75rem 0;
+    background: var(--paper-2);
+  }
+  .service-index h2 {
+    margin: 0 0 1rem;
+    font-family: var(--display);
+    font-size: 1.45rem;
+  }
+  .utility-directory {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line-ink);
+  }
+  .utility-directory li {
+    display: grid;
+    grid-template-columns: minmax(9rem, 0.72fr) minmax(0, 1.28fr);
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line-ink);
+  }
+  .utility-directory li:nth-child(odd) { padding-right: 1.5rem; }
+  .utility-directory li:nth-child(even) {
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--line-ink);
+  }
+  .utility-directory a { color: var(--green); font-weight: 700; }
+  .utility-directory span { color: var(--ink-soft); font-size: 0.82rem; }
+  .operating-notes { padding: 2.75rem 0; }
+  .operating-notes .section-intro { margin-bottom: 1.2rem; }
+  .notes-grid { border-top-width: 1px; }
+  .note-row {
+    grid-template-columns: minmax(12rem, 0.62fr) minmax(0, 2.38fr);
+  }
+  .note-row dt,
+  .note-row dd { padding-block: 0.8rem; font-size: 0.86rem; }
+  .movement {
+    background: var(--paper-2);
+    color: var(--ink);
+    border-block: 1px solid var(--line-ink);
+  }
+  .movement .wrap {
+    min-height: 0;
+    grid-template-columns: minmax(8rem, 0.55fr) minmax(0, 2.45fr) auto;
+    gap: 1.5rem;
+    padding-block: 1.5rem;
+  }
+  .movement .live-label {
+    color: var(--ink-soft);
+    font-family: var(--body);
+    font-size: 0.72rem;
+    text-transform: none;
+  }
+  .movement h2 { font-size: 1.25rem; line-height: 1.2; }
+  .movement p { margin-top: 0.3rem; color: var(--ink-soft); font-size: 0.84rem; }
+  .movement a { color: var(--green); font-weight: 700; white-space: nowrap; }
+
+  /* Workflow-first landing. The route line encodes what is live, external,
+     and still under pilot rather than decorating a dashboard. */
+  .service-desk {
+    grid-template-columns: minmax(20rem, 0.9fr) minmax(34rem, 1.1fr);
+    align-items: stretch;
+    border-bottom: 1px solid var(--ink);
+  }
+  .desk-intro {
+    grid-column: 1;
+    grid-row: 1;
+    padding: clamp(2rem, 4vw, 3.8rem) clamp(1.5rem, 3vw, 3rem) 1.4rem 0;
+    border-right: 0;
+  }
+  .desk-intro h1 {
+    max-width: 15ch;
+    margin: 0.55rem 0 0.85rem;
+    font-size: clamp(2.35rem, 3.4vw, 3.55rem);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .desk-summary { max-width: 48ch; font-size: 1.02rem; }
+  .desk-reassure { max-width: 55ch; }
+  .desk-tools {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: auto;
+    padding: 0 clamp(1.5rem, 3vw, 3rem) 1.45rem 0;
+    border: 0;
+  }
+  .hero-actions { gap: 1rem; }
+  .hero-ledger {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+    padding: 0 clamp(1.5rem, 3vw, 3rem) 1.25rem 0;
+    border: 0;
+  }
+  .coverage-ledger {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--line-ink);
+  }
+  .coverage-ledger div,
+  .coverage-ledger div:nth-child(n + 3) {
+    padding-block: 0.65rem;
+  }
+  .coverage-ledger div:nth-child(n + 3) { border-top: 1px solid var(--line-ink); }
+
+  .workflow-run {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    min-width: 0;
+    padding: clamp(1.35rem, 3vw, 2.4rem);
+    background: var(--pine);
+    color: var(--on-pine);
+    border-left: 1px solid var(--ink);
+  }
+  .workflow-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .workflow-label {
+    margin: 0 0 0.25rem;
+    color: var(--amber);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .workflow-head h2 {
+    max-width: 20ch;
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(1.35rem, 2.3vw, 2rem);
+    line-height: 1.1;
+  }
+  .workflow-key {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .workflow-track {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .workflow-track::before {
+    content: "";
+    position: absolute;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    left: 1.05rem;
+    width: 2px;
+    background: var(--amber);
+  }
+  .workflow-step {
+    display: grid;
+    grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.68rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .workflow-step:last-child { border-bottom: 0; }
+  .workflow-node {
+    width: 2.1rem;
+    height: 2.1rem;
+    display: grid;
+    place-items: center;
+    position: relative;
+    z-index: 1;
+    background: var(--pine);
+    border: 2px solid var(--amber);
+    border-radius: 50%;
+    color: var(--on-pine);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .workflow-step h3 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+  .workflow-step p {
+    max-width: 48ch;
+    margin: 0.22rem 0 0;
+    color: #cfdcd2;
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
+  .workflow-state {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.55rem;
+    padding: 0.15rem 0.4rem;
+    border: 1px solid currentColor;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .state-live { background: var(--amber); color: #2a1c00; border-color: var(--amber); }
+  .state-external { color: var(--on-pine); }
+  .state-pilot { color: #cfdcd2; border-style: dashed; }
+
+  .task-board,
+  .scorecard-demo {
+    padding: 2.75rem 0;
+    border-bottom: 1px solid var(--line-ink);
+  }
+  .task-board .section-intro,
+  .scorecard-demo .section-intro { margin-bottom: 1.35rem; }
+  .task-register {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+  .task-register > li {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.72fr) minmax(18rem, 1.45fr) minmax(16rem, 1fr);
+    gap: clamp(1rem, 3vw, 2.5rem);
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line-ink);
+  }
+  .task-register > li > p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+  }
+  .task-name span {
+    display: block;
+    margin-bottom: 0.18rem;
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .task-name h3 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 1.15rem;
+    line-height: 1.15;
+  }
+  .task-register nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+  }
+  .task-register a {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--green);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .scorecard-demo .scorecard-desk {
+    grid-column: auto;
+    grid-row: auto;
+    border: 1px solid var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .service-desk { grid-template-columns: 1fr; }
+    .desk-intro,
+    .desk-tools,
+    .hero-ledger,
+    .workflow-run { grid-column: 1; }
+    .desk-intro { grid-row: 1; padding-inline: 0.8rem; }
+    .desk-tools {
+      grid-row: 2;
+      padding: 0 0.8rem 1.25rem;
+      border-left: 0;
+    }
+    .hero-ledger { grid-row: 3; padding-inline: 0.8rem; }
+    .workflow-run {
+      grid-row: 4;
+      border-top: 1px solid var(--ink);
+      border-left: 0;
+    }
+    .task-register > li {
+      grid-template-columns: minmax(11rem, 0.7fr) minmax(0, 1.3fr);
+    }
+    .task-register nav { grid-column: 2; }
+    .section-intro { grid-template-columns: 1fr; }
+    .section-code { margin-bottom: 0.35rem; }
+    .utility-directory { grid-template-columns: 1fr; }
+    .utility-directory li:nth-child(odd),
+    .utility-directory li:nth-child(even) {
+      padding-inline: 0;
+      border-left: 0;
+    }
+    .movement .wrap { grid-template-columns: 1fr; gap: 0.3rem; }
+  }
+
+  @media (max-width: 620px) {
+    .bulletin-meta { grid-template-columns: 1fr; }
+    .bulletin-meta .issue {
+      padding-right: 0;
+      border-right: 0;
+      border-bottom: 1px solid var(--line-ink);
+    }
+    .bulletin-meta .runline { padding-left: 0; }
+    .coverage-ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .coverage-ledger div:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line-ink);
+    }
+    .coverage-ledger div:nth-child(4) { border-top: 1px solid var(--line-ink); }
+    .utility-directory li { grid-template-columns: 1fr; gap: 0.15rem; }
+    .workflow-head { align-items: start; flex-direction: column; }
+    .workflow-key { justify-content: flex-start; }
+    .workflow-step { grid-template-columns: 2.2rem minmax(0, 1fr); }
+    .workflow-step > .workflow-state { grid-column: 2; justify-self: start; }
+    .task-register > li { grid-template-columns: 1fr; gap: 0.4rem; }
+    .task-register nav { grid-column: 1; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -943,15 +1589,143 @@
   <section class="bulletin-hero" aria-labelledby="home-title">
     <div class="wrap">
       <div class="bulletin-meta">
-        <div class="issue">PUBLIC FEED QUALITY / SERVICE DESK</div>
-        <div class="runline"><span>SCHEDULED DAILY · NO LOGIN</span><a href="/status/">Last-run status and completion record &rarr;</a></div>
+        <div class="issue">GTFS quality workflow</div>
+        <div class="runline"><span>Public feeds checked daily &middot; no login</span><a href="/status/">Run status</a></div>
       </div>
       <div class="service-desk">
         <div class="desk-intro">
-          <p class="desk-kicker">Worldwide feed quality for small transit teams</p>
-          <h1 id="home-title">Is your transit data any good?</h1>
-          <p class="desk-summary">Choose one of 1,100+ published scorecards across 30+ countries to see its dated grade, category results, and next fix.</p>
-          <p class="desk-reassure">Free to use. No login or realtime feed required.</p>
+          <p class="desk-kicker">Published feed evidence</p>
+          <h1 id="home-title">Find the next fix in a published GTFS feed.</h1>
+          <p class="desk-summary">Search an agency to open its latest scorecard and first recommended fix. You can also check a GTFS ZIP before publishing it.</p>
+          <p class="desk-reassure">Correctness uses MobilityData's canonical validator. A missing realtime feed does not lower the grade.</p>
+        </div>
+
+        <div class="desk-tools">
+          <form class="feed-picker" id="feed-picker" action="/app/" method="get" role="search">
+            <label for="feed-search">Find a published feed</label>
+            <div class="feed-search-row">
+              <input id="feed-search" name="q" type="search" autocomplete="off" enterkeyhint="search" aria-controls="feed-results" aria-describedby="picker-status" placeholder="Agency name">
+              <button type="submit">Find</button>
+            </div>
+            <ul class="feed-results" id="feed-results" aria-label="Matching scorecards" hidden></ul>
+            <p class="picker-note" id="picker-status" role="status" aria-live="polite">Search the published directory. The selected record opens in the example below.</p>
+          </form>
+
+          <nav class="hero-actions" aria-label="Start a feed-quality task">
+            <a class="action action-primary" href="/agencies/"><span>Browse published feeds</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="action action-secondary" href="/check/"><span>Check a ZIP before publishing</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
+          </nav>
+        </div>
+
+        <aside class="hero-ledger" aria-label="Coverage at a glance">
+          <dl class="coverage-ledger">
+            <div><dt>Curated feed records</dt><dd id="coverage-registry-count">2,100+</dd></div>
+            <div><dt>Published scorecards</dt><dd id="coverage-published-count">1,100+</dd></div>
+            <div><dt>Countries in registry</dt><dd id="coverage-country-count">40+</dd></div>
+            <div><dt>Monitoring</dt><dd>Scheduled daily</dd></div>
+          </dl>
+        </aside>
+
+        <section class="workflow-run" aria-labelledby="workflow-run-h">
+          <header class="workflow-head">
+            <div>
+              <p class="workflow-label">Check to recheck</p>
+              <h2 id="workflow-run-h">Where the scorecard fits in the work</h2>
+            </div>
+            <ul class="workflow-key" aria-label="Workflow status key">
+              <li><span class="workflow-state state-live">Live</span></li>
+              <li><span class="workflow-state state-external">Your workflow</span></li>
+              <li><span class="workflow-state state-pilot">Pilot</span></li>
+            </ul>
+          </header>
+          <ol class="workflow-track">
+            <li class="workflow-step">
+              <span class="workflow-node" aria-hidden="true">1</span>
+              <div><h3>Identify the intended public feed</h3><p>Keep the source URL and feed identity attached to the record.</p></div>
+              <span class="workflow-state state-live">Live</span>
+            </li>
+            <li class="workflow-step">
+              <span class="workflow-node" aria-hidden="true">2</span>
+              <div><h3>Check the published data</h3><p>Run canonical validation plus freshness, rider-information, and optional realtime checks.</p></div>
+              <span class="workflow-state state-live">Live</span>
+            </li>
+            <li class="workflow-step">
+              <span class="workflow-node" aria-hidden="true">3</span>
+              <div><h3>Choose a concrete action</h3><p>Use the prioritized fix, affected field, rider relevance, and dated evidence.</p></div>
+              <span class="workflow-state state-live">Live</span>
+            </li>
+            <li class="workflow-step">
+              <span class="workflow-node" aria-hidden="true">4</span>
+              <div><h3>Change and publish the feed</h3><p>The agency, vendor, or support program works through its existing tools and channels.</p></div>
+              <span class="workflow-state state-external">Your workflow</span>
+            </li>
+            <li class="workflow-step">
+              <span class="workflow-node" aria-hidden="true">5</span>
+              <div><h3>Recheck the same feed</h3><p>The pilot tests feed identity and measurement comparability before calling a finding cleared.</p></div>
+              <span class="workflow-state state-pilot">Pilot</span>
+            </li>
+            <li class="workflow-step">
+              <span class="workflow-node" aria-hidden="true">6</span>
+              <div><h3>Preserve a closure receipt</h3><p>A verified closure requires an accepted action and a comparable recheck. This is not yet a proven service.</p></div>
+              <span class="workflow-state state-pilot">Pilot</span>
+            </li>
+          </ol>
+        </section>
+      </div>
+
+      <section class="task-board" id="explore" aria-labelledby="task-board-h">
+        <div class="section-intro">
+          <p class="section-code">Choose the next job</p>
+          <div>
+            <h2 id="task-board-h">Start with the work you need to do.</h2>
+            <p class="lede">Each path uses the same dated feed evidence. The scorecard is one record in that workflow.</p>
+          </div>
+        </div>
+        <ul class="task-register">
+          <li>
+            <div class="task-name"><span>Published feed</span><h3>Maintain a feed</h3></div>
+            <p>Review the current findings, prioritize a fix, and follow later published records.</p>
+            <nav aria-label="Maintain a published feed">
+              <a id="scope-scorecard-link" href="/agency/unitrans/">Open selected record</a>
+              <a id="scope-feed-link" href="/agency/unitrans/feed.xml">Follow updates</a>
+            </nav>
+          </li>
+          <li>
+            <div class="task-name"><span>Before release</span><h3>Check before publishing</h3></div>
+            <p>Run a GTFS ZIP in the browser, correct the source, and rerun the same check.</p>
+            <nav aria-label="Check before publishing">
+              <a href="/check/">Check a GTFS ZIP</a>
+              <a href="https://github.com/marketplace/actions/gtfs-scorecard-gate">Add the GitHub Action</a>
+            </nav>
+          </li>
+          <li>
+            <div class="task-name"><span>Agency support</span><h3>Prepare a check-in</h3></div>
+            <p>Use the selected feed’s leading findings in a call brief, board view, or program rollup.</p>
+            <nav aria-label="Prepare agency support">
+              <a id="scope-brief-link" href="/agency/unitrans/brief/">Open selected brief</a>
+              <a id="scope-board-link" href="/agency/unitrans/board/">Board one-pager</a>
+              <a href="/program/all/">Program views</a>
+            </nav>
+          </li>
+          <li>
+            <div class="task-name"><span>Reuse evidence</span><h3>Use the public data</h3></div>
+            <p>Filter feed features, query the API, download records, or embed the selected grade.</p>
+            <nav aria-label="Reuse public evidence">
+              <a href="/app/#/?view=features">Feed features</a>
+              <a href="/data/">Data and API</a>
+              <a id="scope-badge-link" href="/data/artifacts/unitrans/badge.svg">Selected badge</a>
+            </nav>
+          </li>
+        </ul>
+      </section>
+
+      <section class="scorecard-demo" aria-labelledby="scorecard-demo-h">
+        <div class="section-intro">
+          <p class="section-code">Example evidence record</p>
+          <div>
+            <h2 id="scorecard-demo-h">Open the record behind a prioritized fix.</h2>
+            <p class="lede">The example keeps the grade, measured categories, source finding, and next action together. Switch feeds or search above to inspect another published record.</p>
+          </div>
         </div>
 
         <article class="scorecard-desk" id="live-scorecard" aria-labelledby="scorecard-agency" aria-busy="false" data-agency="unitrans">
@@ -1034,41 +1808,14 @@
           <p class="measurement-note" id="measurement-note">Unitrans runs live bus tracking, but its data feed requires an access key the scorecard does not have. Realtime is excluded from this grade, with no deduction. Accessibility values describe what the feed publishes, not verified physical conditions.</p>
           <p class="scorecard-status" id="scorecard-status" role="status" aria-live="polite">Showing the Unitrans published snapshot.</p>
         </article>
-
-        <div class="desk-tools">
-          <form class="feed-picker" id="feed-picker" action="/app/" method="get" role="search">
-            <label for="feed-search">Choose another scorecard</label>
-            <div class="feed-search-row">
-              <input id="feed-search" name="q" type="search" autocomplete="off" enterkeyhint="search" aria-controls="feed-results" aria-describedby="picker-status" placeholder="Agency name">
-              <button type="submit">Find</button>
-            </div>
-            <ul class="feed-results" id="feed-results" aria-label="Matching scorecards" hidden></ul>
-            <p class="picker-note" id="picker-status" role="status" aria-live="polite">Search the published directory, or switch between the home pilots.</p>
-          </form>
-
-          <nav class="hero-actions" aria-label="Other ways to use the scorecard">
-            <a class="action action-primary" href="/agencies/"><span>Browse every scorecard</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <a class="action action-secondary" href="/check/"><span>Check a ZIP before publishing</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
-          </nav>
-        </div>
-
-        <aside class="hero-ledger" aria-label="Coverage at a glance">
-          <p class="for">Built for small and rural transit teams</p>
-          <dl class="coverage-ledger">
-            <div><dt>Curated feed records</dt><dd>1,700+</dd></div>
-            <div><dt>Published scorecards</dt><dd>1,100+</dd></div>
-            <div><dt>Countries covered</dt><dd>30+</dd></div>
-            <div><dt>Monitoring</dt><dd>Scheduled daily</dd></div>
-          </dl>
-        </aside>
-      </div>
+      </section>
 
       <section class="inspection" id="how" aria-labelledby="inspection-h">
         <div class="section-intro">
           <p class="section-code">Selected fix trace</p>
           <div>
-            <h2 id="inspection-h">Follow this fix back to the feed.</h2>
-            <p class="lede">Choose any fix above and this route changes with it: source field, check applied, finding identifier, and dated record. Correctness uses canonical validator notices; the other categories use disclosed field and feed measurements.</p>
+            <h2 id="inspection-h">Check the evidence before anyone acts.</h2>
+            <p class="lede">Choose any fix above and this route changes with it: source field, check applied, finding identifier, and dated record. This establishes the starting point. It does not claim that anyone accepted or completed the work.</p>
           </div>
         </div>
         <ol class="route-track" id="trace-route">
@@ -1097,131 +1844,65 @@
           </li>
         </ol>
       </section>
-    </div>
-  </section>
 
-  <section class="service-index" id="explore" aria-labelledby="scope-h">
-    <div class="wrap">
-      <div class="section-intro">
-        <p class="section-code">Service index</p>
-        <div>
-          <h2 id="scope-h">One scored feed. Five places to use the evidence.</h2>
-          <p class="lede">The same dated record moves from a single agency conversation to program work, rider-information research, release checks, and open-data workflows.</p>
+      <section class="inspection ecosystem" id="ecosystem" aria-labelledby="ecosystem-h">
+        <div class="section-intro">
+          <p class="section-code">Where it fits</p>
+          <div>
+            <h2 id="ecosystem-h">Use the scorecard between discovery and the next feed export.</h2>
+            <p class="lede">GTFS Scorecard adds dated evidence and prioritized fixes around canonical validation. Agencies, vendors, editors, and support programs still make and publish changes through their existing tools. The accepted-action recheck remains a pilot.</p>
+          </div>
         </div>
-      </div>
-
-      <div class="scope-ledger">
-        <section class="scope-row" aria-labelledby="agency-work-h">
-          <div class="scope-key">
-            <span class="scope-code">AGENCY</span>
-            <h3 id="agency-work-h">Work with one agency</h3>
-            <p class="audience">Transit manager · vendor handoff · board communication</p>
-          </div>
-          <div class="scope-body">
-            <p>Open the current condition first, then move from the top fix to a meeting-ready or reusable version of the same evidence.</p>
-            <ul class="scope-list">
-              <li><a id="scope-scorecard-link" href="/agency/unitrans/">Scorecard and history</a> with measured categories, provenance, and changes over time.</li>
-              <li><a id="scope-board-link" href="/agency/unitrans/board/">Board one-pager</a>, <a id="scope-brief-link" href="/agency/unitrans/brief/">call brief</a>, and the <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/board-report.md">offline board-report tool</a>.</li>
-              <li><a href="/pulse/#changes">Comparable dated changes</a> without turning agencies into a ranking.</li>
-              <li><a id="scope-badge-link" href="/data/artifacts/unitrans/badge.svg">Embeddable badge</a>, <a id="scope-feed-link" href="/agency/unitrans/feed.xml">Atom updates</a>, and <a href="/subscribe.html">feed-health alerts</a>.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="scope-row" aria-labelledby="program-work-h">
-          <div class="scope-key">
-            <span class="scope-code">PROGRAM</span>
-            <h3 id="program-work-h">Support a program</h3>
-            <p class="audience">Program liaison · state or regional portfolio</p>
-          </div>
-          <div class="scope-body">
-            <p>Group feeds by the work they share, prepare for agency calls, and carry the same evidence into procurement or monitoring.</p>
-            <ul class="scope-list">
-              <li><a href="/program/all/">Program and cohort pages</a>, <a href="/pulse/">portfolio coverage</a>, and <a href="/problems/">recurring problems</a>.</li>
-              <li><a href="/map/">Agency map</a>, <a href="/routes/">route map</a>, and <a href="/realtime/">realtime reliability</a>.</li>
-              <li><a href="/ntd/">U.S. NTD readiness</a> and <a href="/equity/">U.S. equity</a>, clearly separated from the worldwide quality core.</li>
-              <li><a href="/subscribe.html">Liaison digests and alerts</a> plus <a href="/procurement/">vendor-contract language</a>.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="scope-row" aria-labelledby="features-work-h">
-          <div class="scope-key">
-            <span class="scope-code">FEATURES</span>
-            <h3 id="features-work-h">Find rider-facing features</h3>
-            <p class="audience">Accessibility staff · rider-information teams · researchers</p>
-          </div>
-          <div class="scope-body">
-            <p>Look past the overall grade to find the fields that shape accessible and understandable trip planning.</p>
-            <ul class="scope-list">
-              <li><a href="/app/#/?view=features">Feature finder</a> for accessibility, fares, flexible service, pathways, payments, and translated rider information.</li>
-              <li><a href="/adoption/">Adoption and accessibility views</a> show which optional fields are present and how complete they are.</li>
-              <li><a href="/api/v1/features.json">Row-level feature data</a> is available through public exports and the API.</li>
-              <li>Missing fields are described as work to do, not as a judgment about the agency or its service.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="scope-row" aria-labelledby="tools-work-h">
-          <div class="scope-key">
-            <span class="scope-code">FEED BENCH</span>
-            <h3 id="tools-work-h">Check and improve a feed</h3>
-            <p class="audience">Feed publisher · scheduler · vendor</p>
-          </div>
-          <div class="scope-body">
-            <p>Use the same rubric before a release, make a specific handoff, or add a quality gate to the publishing workflow.</p>
-            <ul class="scope-list">
-              <li><a href="/check/">Check a ZIP in the browser</a>; the file never leaves the device.</li>
-              <li><a href="/fix/">Fix knowledge base</a>, <a href="/crosswalk/">standards crosswalk</a>, and guidance for the tool that produced the feed.</li>
-              <li><a href="/try.html">Request a one-off score</a> or use the <a href="https://github.com/marketplace/actions/gtfs-scorecard-gate">Scorecard GitHub Action</a> as a release gate.</li>
-              <li><a href="/compare/">Compare like-for-like records</a>, <a href="/submit.html">add a feed</a>, or <a href="/claim/">correct a listing</a>.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="scope-row" aria-labelledby="data-work-h">
-          <div class="scope-key">
-            <span class="scope-code">DATA</span>
-            <h3 id="data-work-h">Use it in another workflow</h3>
-            <p class="audience">Analyst · developer · civic data team</p>
-          </div>
-          <div class="scope-body">
-            <p>Reuse the published evidence without scraping the interface or losing its source and measurement contract.</p>
-            <ul class="scope-list">
-              <li><a href="/data/">Open CSV, JSON, and Parquet downloads</a> with monthly citable releases.</li>
-              <li><a href="/query/">Browser SQL</a> for analysis without setting up a database.</li>
-              <li><a href="/api/v1/index.json">Versioned no-key API</a> with documented JSON endpoints.</li>
-              <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/mcp.md">Read-only MCP server</a>, plus badges, conformance marks, Atom feeds, and dated artifacts.</li>
-            </ul>
-          </div>
-        </section>
-      </div>
+        <ol class="route-track">
+          <li class="route-stop">
+            <p class="stop-label">1 / Discover</p>
+            <h3>Identify the intended feed</h3>
+            <p><a href="https://mobilitydatabase.org/">Mobility Database</a> and <a href="https://www.transit.land/">Transitland</a> help people find public feeds and distinguish their sources or versions.</p>
+          </li>
+          <li class="route-stop">
+            <p class="stop-label">2 / Diagnose</p>
+            <h3>Apply canonical rules</h3>
+            <p>The <a href="https://github.com/MobilityData/gtfs-validator">MobilityData GTFS validator</a> supplies the specification findings used for correctness. The scorecard does not reimplement them.</p>
+          </li>
+          <li class="route-stop">
+            <p class="stop-label">3 / Change</p>
+            <h3>Fix and publish the feed</h3>
+            <p>An agency, vendor, editor, or support program decides what to change and publishes the new export through its existing workflow.</p>
+          </li>
+          <li class="route-stop">
+            <p class="stop-label">4 / Verify</p>
+            <h3>Pilot the final recheck</h3>
+            <p>GTFS Scorecard is testing whether an accepted action can be linked to a comparable recheck of the intended published feed. This is not yet a proven service.</p>
+          </li>
+        </ol>
+        <p class="evidence-base">The <a href="https://reports.dds.dot.ca.gov/">California GTFS Quality Dashboard</a> inspired this project's daily scorecard and support-program framing. GTFS Scorecard is independent and is not an official compliance determination.</p>
+      </section>
     </div>
   </section>
 
   <section class="operating-notes" aria-labelledby="notes-h">
     <div class="wrap">
       <div class="section-intro">
-        <p class="section-code">Operating notes</p>
+        <p class="section-code">Scope and limits</p>
         <div>
-          <h2 id="notes-h">What the score measures and leaves out.</h2>
-          <p class="lede">The page states which rubric applies and where the published evidence stops.</p>
+          <h2 id="notes-h">What the score does not establish</h2>
         </div>
       </div>
       <dl class="notes-grid">
         <div class="note-row"><dt>Worldwide quality core</dt><dd>Correctness, freshness, rider experience, and optional realtime quality use one disclosed rubric wherever a covered feed is published.</dd></div>
-        <div class="note-row"><dt>Coverage boundary</dt><dd>The registry spans more than 30 countries and 1,700 curated feed records, with most published records still in the United States and Canada. It is not a census. A missing place means not covered, never poor performance.</dd></div>
+        <div class="note-row"><dt>Coverage boundary</dt><dd>The registry spans dozens of countries and more than 2,000 curated feed records, with most published records still in the United States and Canada. It is not a census. A missing place means not covered, never poor performance.</dd></div>
         <div class="note-row"><dt>Regional modules</dt><dd>Country-specific views appear only where their sources apply. U.S. NTD readiness and equity context do not change the worldwide quality grade.</dd></div>
         <div class="note-row"><dt>Realtime and compliance</dt><dd>No realtime feed means “not measured” and does not lower the grade. The scorecard measures published data, not legal compliance or transit service quality.</dd></div>
+        <div class="note-row"><dt>Remediation boundary</dt><dd>A finding that disappears is a finding clearance. It becomes a verified closure only when an accepted action is linked to a comparable recheck of the intended published feed.</dd></div>
       </dl>
     </div>
   </section>
 
-  <section class="movement" aria-labelledby="movement-h">
+  <section class="movement" id="pilot" aria-labelledby="movement-h">
     <div class="wrap">
-      <p class="live-label">Recent feed changes</p>
-      <div><h2 id="movement-h">See changes that can be compared.</h2><p>Only checks made under the same method are described as improved, cleared, or regressed. When none qualify, the page says so.</p></div>
-      <a class="action" href="/pulse/#changes"><span>Open dated changes</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
+      <p class="live-label">Pilot</p>
+      <div><h2 id="movement-h">Remediation workflow</h2><p>A 90-day pilot is testing whether a finding can move through an accepted request and comparable same-feed recheck. This is not yet a proven service.</p></div>
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/194">Pilot details</a>
     </div>
   </section>
 </main>

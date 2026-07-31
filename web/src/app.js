@@ -43,6 +43,339 @@ const DATA_BASES = [
   "../data/artifacts",
 ].filter(Boolean);
 
+/** Product questions that can be answered from existing, ungraded GTFS
+ *  capability evidence. Presets only compose the public filters; they do not
+ *  certify implementation quality or physical accessibility.
+ *  @type {Record<string, {labelKey: string, features: string[], mode: string,
+ *    stops: string, trips: string, ferryAccess?: string, ferryBikes?: string}>} */
+const FEATURE_USE_CASES = {
+  "accessibility-metadata": {
+    labelKey: "feature_use_case_accessibility",
+    features: ["accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "multilingual-rider-info": {
+    labelKey: "feature_use_case_multilingual",
+    features: ["translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-rail-service-information": {
+    labelKey: "feature_use_case_multilingual_rail",
+    features: ["translations"],
+    mode: "rail",
+    stops: "",
+    trips: "",
+  },
+  "accessible-multilingual-rider-information": {
+    labelKey: "feature_use_case_accessible_multilingual",
+    features: ["accessibility", "translations"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "fare-aware-planning": {
+    labelKey: "feature_use_case_fares",
+    features: ["fares"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-fare-aware-planning": {
+    labelKey: "feature_use_case_accessible_fares",
+    features: ["accessibility", "fares"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-modern-fare-integration": {
+    labelKey: "feature_use_case_accessible_fares_v2",
+    features: ["accessibility", "fares_v2"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "modern-fare-model-integration": {
+    labelKey: "feature_use_case_fares_v2",
+    features: ["fares_v2"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "flexible-service-discovery": {
+    labelKey: "feature_use_case_flexible_service",
+    features: ["flex"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-flexible-service-planning": {
+    labelKey: "feature_use_case_accessible_flex",
+    features: ["accessibility", "flex"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "multilingual-flexible-service-discovery": {
+    labelKey: "feature_use_case_multilingual_flex",
+    features: ["translations", "flex"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "latest-sample-realtime-review": {
+    labelKey: "feature_use_case_realtime",
+    features: ["realtime"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "live-bus-data-integration": {
+    labelKey: "feature_use_case_realtime_bus",
+    features: ["realtime"],
+    mode: "bus",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-live-service-information": {
+    labelKey: "feature_use_case_realtime_multilingual",
+    features: ["realtime", "translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-live-service-planning": {
+    labelKey: "feature_use_case_realtime_fares",
+    features: ["realtime", "fares"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-live-service-information": {
+    labelKey: "feature_use_case_realtime_accessible",
+    features: ["realtime", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "trip-prediction-endpoint-review": {
+    labelKey: "feature_use_case_trip_predictions",
+    features: ["trip_updates"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "vehicle-map-endpoint-review": {
+    labelKey: "feature_use_case_vehicle_map",
+    features: ["vehicle_positions"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "disruption-alert-endpoint-review": {
+    labelKey: "feature_use_case_disruption_alerts",
+    features: ["service_alerts"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "complete-realtime-stack-review": {
+    labelKey: "feature_use_case_complete_realtime",
+    features: ["trip_updates", "vehicle_positions", "service_alerts"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-realtime-feed-review": {
+    labelKey: "feature_use_case_fresh_realtime",
+    features: ["realtime", "realtime_fresh"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-trip-prediction-integration": {
+    labelKey: "feature_use_case_fresh_trip_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-vehicle-map-integration": {
+    labelKey: "feature_use_case_fresh_vehicle_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-bus-predictions": {
+    labelKey: "feature_use_case_fresh_bus_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "bus",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-bus-map": {
+    labelKey: "feature_use_case_fresh_bus_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "bus",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-rail-predictions": {
+    labelKey: "feature_use_case_fresh_rail_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "rail",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-rail-map": {
+    labelKey: "feature_use_case_fresh_rail_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "rail",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-ferry-predictions": {
+    labelKey: "feature_use_case_fresh_ferry_predictions",
+    features: ["trip_updates", "realtime_fresh"],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "fresh-live-ferry-map": {
+    labelKey: "feature_use_case_fresh_ferry_map",
+    features: ["vehicle_positions", "realtime_fresh"],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-trip-predictions": {
+    labelKey: "feature_use_case_multilingual_trip_predictions",
+    features: ["trip_updates", "translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "multilingual-vehicle-map": {
+    labelKey: "feature_use_case_multilingual_vehicle_map",
+    features: ["vehicle_positions", "translations"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-trip-predictions": {
+    labelKey: "feature_use_case_fare_aware_trip_predictions",
+    features: ["trip_updates", "fares"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-trip-predictions": {
+    labelKey: "feature_use_case_accessible_trip_predictions",
+    features: ["trip_updates", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-vehicle-map": {
+    labelKey: "feature_use_case_accessible_vehicle_map",
+    features: ["vehicle_positions", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-disruption-alerts": {
+    labelKey: "feature_use_case_accessible_disruption_alerts",
+    features: ["service_alerts", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-complete-realtime-stack": {
+    labelKey: "feature_use_case_accessible_complete_realtime",
+    features: ["trip_updates", "vehicle_positions", "service_alerts", "accessibility"],
+    mode: "",
+    stops: "95",
+    trips: "95",
+  },
+  "contactless-payment-metadata": {
+    labelKey: "feature_use_case_contactless",
+    features: ["cemv"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "step-free-stations": {
+    labelKey: "feature_use_case_step_free",
+    features: ["pathways", "step_free"],
+    mode: "",
+    stops: "",
+    trips: "",
+  },
+  "accessible-rail-service-information": {
+    labelKey: "feature_use_case_accessible_rail",
+    features: ["accessibility"],
+    mode: "rail",
+    stops: "95",
+    trips: "95",
+  },
+  "accessible-bus-service-information": {
+    labelKey: "feature_use_case_accessible_bus",
+    features: ["accessibility"],
+    mode: "bus",
+    stops: "95",
+    trips: "95",
+  },
+  "ferry-service-discovery": {
+    labelKey: "feature_use_case_ferry",
+    features: [],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "fare-aware-ferry-planning": {
+    labelKey: "feature_use_case_fare_aware_ferry",
+    features: ["fares"],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+  },
+  "ferry-accessibility-information": {
+    labelKey: "feature_use_case_ferry_accessibility",
+    features: [],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+    ferryAccess: "95",
+  },
+  "bicycle-aware-ferry-planning": {
+    labelKey: "feature_use_case_ferry_bicycle",
+    features: [],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+    ferryBikes: "95",
+  },
+  "fully-stated-ferry-rider-information": {
+    labelKey: "feature_use_case_ferry_fully_stated",
+    features: [],
+    mode: "ferry",
+    stops: "",
+    trips: "",
+    ferryAccess: "95",
+    ferryBikes: "95",
+  },
+};
+
+/** Reviewed localized label for a feature-finder preset. @param {string} key */
+function featureUseCaseLabel(key) {
+  const labelKey = FEATURE_USE_CASES[key]?.labelKey;
+  return labelKey ? t(labelKey) : "";
+}
+
 /** @type {string | null} */
 let resolvedBase = null;
 
@@ -371,10 +704,19 @@ function csvCell(value) {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
-/** The exact consumer-facing rows behind the current shortlist.
- * @param {Array<any>} rows @returns {string} */
-function featureCsv(rows) {
+/** The exact consumer-facing rows behind the current shortlist. Repeating the
+ *  export context on each row keeps the file rectangular and machine-readable.
+ *  @param {Array<any>} rows
+ *  @param {{useCase: string, coverageScope: string, coverageDenominator: number,
+ *    matchingRecords: number, filterUrl: string}} context
+ *  @returns {string} */
+function featureCsv(rows, context) {
   const columns = [
+    ["shortlist_use_case", () => context.useCase],
+    ["coverage_scope", () => context.coverageScope],
+    ["coverage_denominator", () => context.coverageDenominator],
+    ["matching_record_count", () => context.matchingRecords],
+    ["filter_url", () => context.filterUrl],
     ["feed_id", (row) => row.id],
     ["feed_name", (row) => row.name],
     ["country_code", (row) => row.country],
@@ -403,11 +745,27 @@ function featureCsv(rows) {
     ["translation_languages", (row) => row.translationLanguages.join("|")],
     ["translated_tables", (row) => row.translatedTables.join("|")],
     ["feed_language", (row) => row.feedLang],
+    ["realtime_measured", (row) => row.realtimeMeasured],
+    ["realtime_reachable", (row) => row.realtimeReachable],
+    ["realtime_configured_kinds", (row) => row.realtimeConfiguredKinds.join("|")],
+    ["realtime_reachable_kinds", (row) => row.realtimeReachableKinds],
+    ["realtime_reachable_kinds_list", (row) => row.realtimeReachableKindsList.join("|")],
+    ["trip_updates_reachable", (row) => row.realtimeTripUpdatesReachable],
+    ["vehicle_positions_reachable", (row) => row.realtimeVehiclePositionsReachable],
+    ["service_alerts_reachable", (row) => row.realtimeServiceAlertsReachable],
+    ["realtime_coverage_pct", (row) => row.realtimeCoverage],
+    ["realtime_freshness", (row) => row.realtimeFreshness],
+    ["realtime_fresh", (row) => row.realtimeFresh],
     ["modes_measured", (row) => row.modesMeasured],
     ["primary_mode", (row) => row.primaryMode],
     ["modes", (row) => row.modes.join("|")],
     ["has_ferry", (row) => row.hasFerry],
     ["ferry_only", (row) => row.ferryOnly],
+    ["ferry_profile_measured", (row) => row.ferryProfileMeasured],
+    ["ferry_terminal_accessibility_stated_pct", (row) => row.ferryTerminalAccessibility],
+    ["ferry_trip_accessibility_stated_pct", (row) => row.ferryTripAccessibility],
+    ["ferry_bikes_stated_pct", (row) => row.ferryBikesStated],
+    ["ferry_bikes_allowed_pct", (row) => row.ferryBikesAllowed],
     ["scorecard_url", (row) => row.scorecardUrl],
     ["feed_url", (row) => row.feedUrl],
   ];
@@ -419,9 +777,11 @@ function featureCsv(rows) {
 }
 
 /** Download the current client-side shortlist without sending it anywhere.
- * @param {Array<any>} rows */
-function downloadFeatureCsv(rows) {
-  const blob = new Blob([featureCsv(rows)], { type: "text/csv;charset=utf-8" });
+ * @param {Array<any>} rows
+ * @param {{useCase: string, coverageScope: string, coverageDenominator: number,
+ *   matchingRecords: number, filterUrl: string}} context */
+function downloadFeatureCsv(rows, context) {
+  const blob = new Blob([featureCsv(rows, context)], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -775,11 +1135,30 @@ function renderOverview(directory) {
       translationLanguages: stringArray(a.translation_languages),
       translatedTables: stringArray(a.translated_tables),
       feedLang: typeof a.feed_lang === "string" ? a.feed_lang : "",
+      realtimeMeasured: a.realtime_measured === true,
+      realtimeReachable: optionalBoolean(a.realtime_reachable),
+      realtimeConfiguredKinds: stringArray(a.realtime_configured_kinds),
+      realtimeReachableKinds: optionalNumber(a.realtime_reachable_kinds),
+      realtimeReachableKindsList: stringArray(a.realtime_reachable_kinds_list),
+      realtimeTripUpdatesReachable: optionalBoolean(a.realtime_trip_updates_reachable),
+      realtimeVehiclePositionsReachable: optionalBoolean(a.realtime_vehicle_positions_reachable),
+      realtimeServiceAlertsReachable: optionalBoolean(a.realtime_service_alerts_reachable),
+      realtimeCoverage: optionalNumber(a.realtime_coverage_pct),
+      realtimeFreshness:
+        typeof a.realtime_freshness === "string" ? a.realtime_freshness : "",
+      realtimeFresh: optionalBoolean(a.realtime_fresh),
       modesMeasured: a.modes_measured === true,
       primaryMode: typeof a.primary_mode === "string" ? a.primary_mode : "",
       modes: stringArray(a.modes),
       hasFerry: optionalBoolean(a.has_ferry),
       ferryOnly: optionalBoolean(a.ferry_only),
+      ferryProfileMeasured: a.ferry_profile_measured === true,
+      ferryTerminalAccessibility: optionalNumber(
+        a.ferry_terminal_accessibility_stated_pct
+      ),
+      ferryTripAccessibility: optionalNumber(a.ferry_trip_accessibility_stated_pct),
+      ferryBikesStated: optionalNumber(a.ferry_bikes_stated_pct),
+      ferryBikesAllowed: optionalNumber(a.ferry_bikes_allowed_pct),
       search: `${a.name} ${a.id} ${a.country || ""} ${countryNames[a.country || ""] || ""} ${a.subdivision_code || ""} ${a.subdivision_name || ""} ${a.state || ""}`.toLowerCase(),
     }))
     .sort((x, y) => compareText(x.name, y.name));
@@ -796,6 +1175,9 @@ function renderOverview(directory) {
     (agency) => agency.translationsMeasured
   ).length;
   const modeMeasuredCount = agencies.filter((agency) => agency.modesMeasured).length;
+  const ferryProfileMeasuredCount = agencies.filter(
+    (agency) => agency.ferryProfileMeasured
+  ).length;
   const availableModes = [...new Set(agencies.flatMap((agency) => agency.modes))]
     .sort((left, right) => compareText(formatModeName(left), formatModeName(right)));
   const modeOptions = availableModes
@@ -806,6 +1188,9 @@ function renderOverview(directory) {
     .sort((left, right) => compareText(left.label, right.label));
   const translationLanguageOptions = translationLanguages
     .map(({ code, label }) => `<option value="${escAttr(code)}">${esc(label)}</option>`)
+    .join("");
+  const featureUseCaseOptions = Object.entries(FEATURE_USE_CASES)
+    .map(([key]) => `<option value="${escAttr(key)}">${esc(featureUseCaseLabel(key))}</option>`)
     .join("");
   const usCoverage = countries.find((country) => country.country_code === "US");
   const usFeedCount = Number(usCoverage?.feed_records ?? usCoverage?.agencies ?? 0);
@@ -874,9 +1259,19 @@ function renderOverview(directory) {
         <h2 class="section-title" id="feature-filter-h">Filter by what feeds publish</h2>
         <p>Select every feature your product needs. A feed must meet all selected conditions.
         Accessibility percentages describe published GTFS fields, not verified physical access.
+        ${esc(t("feature_realtime_disclaimer"))}
         Location controls below narrow the same shortlist.</p>
       </div>
       <div class="feature-filter-grid">
+        <fieldset class="feature-fieldset use-case-filters">
+          <legend>${esc(t("feature_use_case_legend"))}</legend>
+          <p class="fineprint">${esc(t("feature_use_case_hint"))}</p>
+          <label for="feature-use-case">${esc(t("feature_use_case_label"))}</label>
+          <select id="feature-use-case">
+            <option value="">${esc(t("feature_use_case_placeholder"))}</option>
+            ${featureUseCaseOptions}
+          </select>
+        </fieldset>
         <fieldset class="feature-fieldset required-feature-filters">
           <legend>Required features</legend>
           <p class="fineprint">Unknown measurements do not match a selected feature.</p>
@@ -889,6 +1284,11 @@ function renderOverview(directory) {
             <label><input class="feature-check" type="checkbox" value="step_free"> Step-free paths</label>
             <label><input class="feature-check" type="checkbox" value="cemv"> Contactless fare payments</label>
             <label><input class="feature-check" type="checkbox" value="translations"> Translated rider information</label>
+            <label><input class="feature-check" type="checkbox" value="realtime"> ${esc(t("feature_filter_realtime_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="trip_updates"> ${esc(t("feature_filter_trip_updates_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="vehicle_positions"> ${esc(t("feature_filter_vehicle_positions_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="service_alerts"> ${esc(t("feature_filter_service_alerts_label"))}</label>
+            <label><input class="feature-check" type="checkbox" value="realtime_fresh"> ${esc(t("feature_filter_realtime_fresh_label"))}</label>
           </div>
         </fieldset>
         <fieldset class="feature-fieldset mode-filters">
@@ -898,6 +1298,30 @@ function renderOverview(directory) {
           <select id="service-mode"${availableModes.length ? "" : " disabled"}>
             <option value="">Any service mode</option>
             ${modeOptions}
+          </select>
+        </fieldset>
+        <fieldset class="feature-fieldset ferry-profile-filters">
+          <legend>${esc(t("feature_ferry_access_legend"))}</legend>
+          <p class="fineprint">${esc(t("feature_ferry_access_hint"))}</p>
+          <label for="ferry-access-min">${esc(t("feature_ferry_access_label"))}</label>
+          <select id="ferry-access-min"${ferryProfileMeasuredCount ? "" : " disabled"}>
+            <option value="">${esc(t("feature_ferry_bicycle_no_minimum"))}</option>
+            <option value="any">${esc(t("feature_ferry_bicycle_any"))}</option>
+            <option value="50">${esc(t("feature_ferry_bicycle_half"))}</option>
+            <option value="95">${esc(t("feature_ferry_bicycle_most"))}</option>
+            <option value="100">${esc(t("feature_ferry_bicycle_all"))}</option>
+          </select>
+        </fieldset>
+        <fieldset class="feature-fieldset ferry-profile-filters">
+          <legend>${esc(t("feature_ferry_bicycle_legend"))}</legend>
+          <p class="fineprint">${esc(t("feature_ferry_bicycle_hint"))}</p>
+          <label for="ferry-bikes-min">${esc(t("feature_ferry_bicycle_label"))}</label>
+          <select id="ferry-bikes-min"${ferryProfileMeasuredCount ? "" : " disabled"}>
+            <option value="">${esc(t("feature_ferry_bicycle_no_minimum"))}</option>
+            <option value="any">${esc(t("feature_ferry_bicycle_any"))}</option>
+            <option value="50">${esc(t("feature_ferry_bicycle_half"))}</option>
+            <option value="95">${esc(t("feature_ferry_bicycle_most"))}</option>
+            <option value="100">${esc(t("feature_ferry_bicycle_all"))}</option>
           </select>
         </fieldset>
         <fieldset class="feature-fieldset translation-filters">
@@ -935,7 +1359,8 @@ function renderOverview(directory) {
       ${formatNumber(total)} feed records; wheelchair completeness is measured for
       ${formatNumber(accessibilityMeasuredCount)}; translations are measured for
       ${formatNumber(translationMeasuredCount)}; service modes are measured for
-      ${formatNumber(modeMeasuredCount)}. Selecting a field excludes records where that field is unknown.
+      ${formatNumber(modeMeasuredCount)}; ferry-specific fields are measured for
+      ${formatNumber(ferryProfileMeasuredCount)}. Selecting a field excludes records where that field is unknown.
       The score-comparison cohort above is a separate contract.</p>
       <p class="coverage-limit" id="global-coverage-disclosure">${coverageLimit}</p>
     </section>
@@ -995,10 +1420,17 @@ function setupOverview(agencies, total, summary) {
   const tripsMin = /** @type {HTMLSelectElement} */ (
     main.querySelector("#wheelchair-trips-min")
   );
+  const ferryAccessMin = /** @type {HTMLSelectElement} */ (
+    main.querySelector("#ferry-access-min")
+  );
+  const ferryBikesMin = /** @type {HTMLSelectElement} */ (
+    main.querySelector("#ferry-bikes-min")
+  );
   const translationLanguage = /** @type {HTMLSelectElement} */ (
     main.querySelector("#translation-language")
   );
   const serviceMode = /** @type {HTMLSelectElement} */ (main.querySelector("#service-mode"));
+  const useCase = /** @type {HTMLSelectElement} */ (main.querySelector("#feature-use-case"));
   const exportBtn = /** @type {HTMLButtonElement} */ (
     main.querySelector("#download-feature-results")
   );
@@ -1100,6 +1532,11 @@ function setupOverview(agencies, total, summary) {
     step_free: "hasStepFree",
     cemv: "hasCemv",
     translations: "hasTranslations",
+    realtime: "realtimeReachable",
+    trip_updates: "realtimeTripUpdatesReachable",
+    vehicle_positions: "realtimeVehiclePositionsReachable",
+    service_alerts: "realtimeServiceAlertsReachable",
+    realtime_fresh: "realtimeFresh",
   };
   const featureLabels = {
     fares: "Fare data",
@@ -1109,6 +1546,11 @@ function setupOverview(agencies, total, summary) {
     step_free: "Step-free paths",
     cemv: "Contactless fare payments",
     translations: "Translated rider information",
+    realtime: t("feature_filter_realtime_label"),
+    trip_updates: t("feature_filter_trip_updates_label"),
+    vehicle_positions: t("feature_filter_vehicle_positions_label"),
+    service_alerts: t("feature_filter_service_alerts_label"),
+    realtime_fresh: t("feature_filter_realtime_fresh_label"),
   };
   const featureValues = new Set(featureChecks.map((control) => control.value));
   const thresholdValues = new Set(["any", "50", "95", "100"]);
@@ -1117,17 +1559,59 @@ function setupOverview(agencies, total, summary) {
       .split(",")
       .filter((value) => featureValues.has(value))
   );
-  for (const control of featureChecks) control.checked = selectedFeatures.has(control.value);
   const wantedStops = urlParams.get("stops") || "";
   const wantedTrips = urlParams.get("trips") || "";
+  const wantedFerryAccess = urlParams.get("ferry_access") || "";
+  const wantedFerryBikes = urlParams.get("ferry_bikes") || "";
   stopsMin.value = thresholdValues.has(wantedStops) ? wantedStops : "";
   tripsMin.value = thresholdValues.has(wantedTrips) ? wantedTrips : "";
+  ferryAccessMin.value = thresholdValues.has(wantedFerryAccess) ? wantedFerryAccess : "";
+  ferryBikesMin.value = thresholdValues.has(wantedFerryBikes) ? wantedFerryBikes : "";
   const languageValues = new Set(Array.from(translationLanguage.options).map((option) => option.value));
   const wantedLanguage = (urlParams.get("lang") || "").toLocaleLowerCase();
   translationLanguage.value = languageValues.has(wantedLanguage) ? wantedLanguage : "";
   const modeValues = new Set(Array.from(serviceMode.options).map((option) => option.value));
   const wantedMode = (urlParams.get("mode") || "").toLocaleLowerCase();
   serviceMode.value = modeValues.has(wantedMode) ? wantedMode : "";
+  const wantedUseCase = urlParams.get("usecase") || "";
+  useCase.value = Object.hasOwn(FEATURE_USE_CASES, wantedUseCase) ? wantedUseCase : "";
+  const hasExplicitFeatureFilters = [
+    "features",
+    "stops",
+    "trips",
+    "ferry_access",
+    "ferry_bikes",
+    "lang",
+    "mode",
+  ].some(
+    (key) => urlParams.has(key)
+  );
+  if (useCase.value && !hasExplicitFeatureFilters) {
+    const preset = FEATURE_USE_CASES[useCase.value];
+    selectedFeatures.clear();
+    for (const feature of preset.features) selectedFeatures.add(feature);
+    serviceMode.value = preset.mode;
+    stopsMin.value = preset.stops;
+    tripsMin.value = preset.trips;
+    ferryAccessMin.value = preset.ferryAccess || "";
+    ferryBikesMin.value = preset.ferryBikes || "";
+  }
+  function useCaseMatches(key) {
+    const preset = FEATURE_USE_CASES[key];
+    return Boolean(
+      preset &&
+      selectedFeatures.size === preset.features.length &&
+      preset.features.every((feature) => selectedFeatures.has(feature)) &&
+      serviceMode.value === preset.mode &&
+      stopsMin.value === preset.stops &&
+      tripsMin.value === preset.trips &&
+      ferryAccessMin.value === (preset.ferryAccess || "") &&
+      ferryBikesMin.value === (preset.ferryBikes || "") &&
+      !translationLanguage.value
+    );
+  }
+  if (useCase.value && !useCaseMatches(useCase.value)) useCase.value = "";
+  for (const control of featureChecks) control.checked = selectedFeatures.has(control.value);
   const featureView = urlParams.get("view") === "features";
   for (const b of facetBtns) b.setAttribute("aria-pressed", String(b.dataset.facet === facet));
 
@@ -1147,14 +1631,17 @@ function setupOverview(agencies, total, summary) {
     const q = input.value.trim();
     if (q) p.set("q", q);
     if (sortSel.value !== defaultSort) p.set("sort", sortSel.value);
+    if (useCase.value) p.set("usecase", useCase.value);
     if (selectedFeatures.size) p.set("features", [...selectedFeatures].join(","));
-    if (featureView || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value) {
+    if (featureView || useCase.value || selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value || ferryAccessMin.value || ferryBikesMin.value) {
       p.set("view", "features");
     }
     if (serviceMode.value) p.set("mode", serviceMode.value);
     if (translationLanguage.value) p.set("lang", translationLanguage.value);
     if (stopsMin.value) p.set("stops", stopsMin.value);
     if (tripsMin.value) p.set("trips", tripsMin.value);
+    if (ferryAccessMin.value) p.set("ferry_access", ferryAccessMin.value);
+    if (ferryBikesMin.value) p.set("ferry_bikes", ferryBikesMin.value);
     const qs = p.toString();
     const next = qs ? `#/?${qs}` : "#/";
     // Some browsers (Safari) throttle replaceState and throw; a failed URL sync
@@ -1182,7 +1669,7 @@ function setupOverview(agencies, total, summary) {
   }
 
   function matchesFeatures(a) {
-    if (!selectedFeatures.size && !serviceMode.value && !translationLanguage.value && !stopsMin.value && !tripsMin.value) return true;
+    if (!selectedFeatures.size && !serviceMode.value && !translationLanguage.value && !stopsMin.value && !tripsMin.value && !ferryAccessMin.value && !ferryBikesMin.value) return true;
     for (const feature of selectedFeatures) {
       if (a[featureProperties[feature]] !== true) return false;
     }
@@ -1196,14 +1683,31 @@ function setupOverview(agencies, total, summary) {
       )
     ) return false;
     if ((stopsMin.value || tripsMin.value) && !a.accessibilityMeasured) return false;
+    if ((ferryAccessMin.value || ferryBikesMin.value) && !a.ferryProfileMeasured) {
+      return false;
+    }
     return (
       meetsMinimum(a.wheelchairStops, stopsMin.value) &&
-      meetsMinimum(a.wheelchairTrips, tripsMin.value)
+      meetsMinimum(a.wheelchairTrips, tripsMin.value) &&
+      meetsMinimum(a.ferryTerminalAccessibility, ferryAccessMin.value) &&
+      meetsMinimum(a.ferryTripAccessibility, ferryAccessMin.value) &&
+      meetsMinimum(a.ferryBikesStated, ferryBikesMin.value)
     );
   }
 
   function featureEvidence(a) {
     const evidence = [];
+    const realtimeKindFeatures = [
+      ["trip_updates", t("feature_realtime_kind_trip_updates")],
+      ["vehicle_positions", t("feature_realtime_kind_vehicle_positions")],
+      ["service_alerts", t("feature_realtime_kind_service_alerts")],
+    ];
+    const firstSelectedRealtimeKind = realtimeKindFeatures.find(
+      ([feature]) => selectedFeatures.has(feature)
+    )?.[0];
+    const selectedRealtimeKinds = realtimeKindFeatures
+      .filter(([feature]) => selectedFeatures.has(feature))
+      .map(([, label]) => label);
     if (serviceMode.value) evidence.push(`Mode: ${formatModeName(serviceMode.value)}`);
     if (
       (selectedFeatures.has("accessibility") || stopsMin.value || tripsMin.value) &&
@@ -1214,7 +1718,28 @@ function setupOverview(agencies, total, summary) {
       evidence.push(`Accessibility: ${stops}, ${trips}`);
     }
     for (const feature of selectedFeatures) {
-      if (feature === "translations") {
+      if (feature === "realtime") {
+        const configured = a.realtimeConfiguredKinds.length;
+        const reached = a.realtimeReachableKinds;
+        const endpointText = configured && reached !== null
+          ? t("feature_realtime_endpoints_reached", { reached, configured })
+          : t("feature_realtime_endpoint_reached");
+        const coverage = a.realtimeCoverage === null
+          ? ""
+          : t("feature_realtime_coverage", { coverage: a.realtimeCoverage });
+        evidence.push(t("feature_realtime_evidence", {
+          endpoint_text: endpointText,
+          coverage,
+        }));
+      } else if (["trip_updates", "vehicle_positions", "service_alerts"].includes(feature)) {
+        if (feature === firstSelectedRealtimeKind) {
+          evidence.push(t("feature_realtime_kinds_evidence", {
+            kinds: selectedRealtimeKinds.join(", "),
+          }));
+        }
+      } else if (feature === "realtime_fresh") {
+        evidence.push(t("feature_realtime_fresh_evidence"));
+      } else if (feature === "translations") {
         const languages = a.translationLanguages.slice(0, 3).map((code) => formatLanguageName(code));
         const remaining = a.translationLanguages.length - languages.length;
         evidence.push(`Translations: ${languages.join(", ")}${remaining > 0 ? `, plus ${remaining} more` : ""}`);
@@ -1224,6 +1749,17 @@ function setupOverview(agencies, total, summary) {
     }
     if (translationLanguage.value && !selectedFeatures.has("translations")) {
       evidence.push(`Translations: ${formatLanguageName(translationLanguage.value)}`);
+    }
+    if (ferryAccessMin.value && a.ferryProfileMeasured) {
+      evidence.push(
+        t("feature_ferry_access_evidence", {
+          terminals: a.ferryTerminalAccessibility,
+          trips: a.ferryTripAccessibility,
+        })
+      );
+    }
+    if (ferryBikesMin.value && a.ferryProfileMeasured) {
+      evidence.push(t("feature_ferry_bicycle_evidence", { percent: a.ferryBikesStated }));
     }
     return evidence.length
       ? `<p class="feature-evidence"><span class="visually-hidden">Matched features: </span>${evidence.map(esc).join(" · ")}</p>`
@@ -1270,13 +1806,23 @@ function setupOverview(agencies, total, summary) {
       translationLanguage.value ||
       stopsMin.value ||
       tripsMin.value ||
+      ferryAccessMin.value ||
+      ferryBikesMin.value ||
       locationFilter.country !== "all" ||
       locationFilter.subdivision !== "all" ||
       locationFilter.legacyState !== "all"
     );
     setAppNav(
       featureView ||
-      Boolean(selectedFeatures.size || serviceMode.value || translationLanguage.value || stopsMin.value || tripsMin.value)
+      Boolean(
+        selectedFeatures.size ||
+          serviceMode.value ||
+          translationLanguage.value ||
+          stopsMin.value ||
+          tripsMin.value ||
+          ferryAccessMin.value ||
+          ferryBikesMin.value
+      )
     );
     matchBoard.dataset.active = String(active);
     hint.hidden = active;
@@ -1326,27 +1872,57 @@ function setupOverview(agencies, total, summary) {
   for (const control of featureChecks) {
     control.addEventListener("change", () => {
       userInteracted = true;
+      useCase.value = "";
       if (control.checked) selectedFeatures.add(control.value);
       else selectedFeatures.delete(control.value);
       apply();
     });
   }
-  for (const control of [stopsMin, tripsMin]) {
+  for (const control of [stopsMin, tripsMin, ferryAccessMin, ferryBikesMin]) {
     control.addEventListener("change", () => {
       userInteracted = true;
+      useCase.value = "";
       apply();
     });
   }
   translationLanguage.addEventListener("change", () => {
     userInteracted = true;
+    useCase.value = "";
     apply();
   });
   serviceMode.addEventListener("change", () => {
     userInteracted = true;
+    useCase.value = "";
+    apply();
+  });
+  useCase.addEventListener("change", () => {
+    userInteracted = true;
+    const preset = FEATURE_USE_CASES[useCase.value];
+    if (preset) {
+      selectedFeatures.clear();
+      for (const feature of preset.features) selectedFeatures.add(feature);
+      for (const control of featureChecks) {
+        control.checked = selectedFeatures.has(control.value);
+      }
+      stopsMin.value = preset.stops;
+      tripsMin.value = preset.trips;
+      ferryAccessMin.value = preset.ferryAccess || "";
+      ferryBikesMin.value = preset.ferryBikes || "";
+      translationLanguage.value = "";
+      serviceMode.value = preset.mode;
+    }
     apply();
   });
   exportBtn.addEventListener("click", () => {
-    if (matches.length) downloadFeatureCsv(matches);
+    if (!matches.length) return;
+    const coverage = regionCoverageContext();
+    downloadFeatureCsv(matches, {
+      useCase: featureUseCaseLabel(useCase.value),
+      coverageScope: coverage.scope,
+      coverageDenominator: coverage.denominator,
+      matchingRecords: matches.length,
+      filterUrl: location.href,
+    });
   });
   moreBtn.addEventListener("click", paintMore);
   for (const btn of facetBtns) {
@@ -1413,28 +1989,40 @@ function setupOverview(agencies, total, summary) {
   // beside the location filter so no regional cohort is read as a census. The
   // count is the tracked feed records for that place (directory.summary carries
   // it), never a claim of complete coverage. "" when no country is selected.
-  function regionCoverageHtml() {
-    if (locationFilter.country === "all") return "";
+  function regionCoverageContext() {
+    if (locationFilter.country === "all") {
+      return { scope: t("feature_scope_all_tracked"), denominator: total, selected: false };
+    }
     const country = countries.find((row) => (row.country_code || "") === locationFilter.country);
-    if (!country) return "";
+    if (!country) {
+      return { scope: t("feature_scope_all_tracked"), denominator: total, selected: false };
+    }
     const countryName = country.country_name || locationFilter.country;
     let count = Number(country.agencies) || 0;
     let place = countryName;
-    let scope = "this country";
+    let selectedScopeKey = "feature_scope_country";
     if (locationFilter.subdivision !== "all") {
       const sub = (country.subdivisions || []).find(
         (row) => (row.subdivision_code || UNLOCATED_SUBDIVISION) === locationFilter.subdivision
       );
-      if (!sub) return "";
+      if (!sub) return { scope: countryName, denominator: count, selected: true };
       count = Number(sub.agencies) || 0;
       place = `${sub.subdivision_name || "Unlocated"}, ${countryName}`;
-      scope = "this area";
+      selectedScopeKey = "feature_scope_area";
     }
-    const noun = count === 1 ? "reviewed feed record" : "reviewed feed records";
-    const verb = count === 1 ? "is" : "are";
-    return (
-      `${formatNumber(count)} ${noun} in <bdi>${esc(place)}</bdi> ${verb} tracked here. ` +
-      `That is the size of the cohort for ${scope}, not a census of its transit.`
+    return { scope: place, denominator: count, selected: true, selectedScopeKey };
+  }
+  function regionCoverageHtml() {
+    const coverage = regionCoverageContext();
+    if (!coverage.selected) return "";
+    const { denominator: count, scope: place, selectedScopeKey } = coverage;
+    return t(
+      count === 1 ? "feature_scope_disclosure_single" : "feature_scope_disclosure_plural",
+      {
+        count: formatNumber(count),
+        place: `<bdi>${esc(place)}</bdi>`,
+        selectedScope: t(selectedScopeKey),
+      }
     );
   }
   function updateRegionCoverage() {
@@ -1535,8 +2123,11 @@ function setupOverview(agencies, total, summary) {
     for (const control of featureChecks) control.checked = false;
     stopsMin.value = "";
     tripsMin.value = "";
+    ferryAccessMin.value = "";
+    ferryBikesMin.value = "";
     translationLanguage.value = "";
     serviceMode.value = "";
+    useCase.value = "";
     locationFilter.country = "all";
     locationFilter.subdivision = "all";
     locationFilter.legacyState = "all";
@@ -2888,7 +3479,7 @@ function setupFindings(findings) {
           <p class="what">${esc(f.what)}</p>
           <p class="why">${esc(f.why)}</p>
           <p class="how"><strong>Fix:</strong> ${esc(f.fix)} <em>(${esc(f.effort)})</em></p>
-          <p class="code">Validator rule: ${esc(f.code)} ·
+          <p class="code">Finding code: ${esc(f.code)} ·
             <a class="fix-guide" href="${escAttr(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"
                target="_blank" rel="noopener">Read the fix guide<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens on GitHub)</span></a>${ruleRefLink(f.code)}</p>
         </li>`;

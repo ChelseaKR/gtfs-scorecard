@@ -51,6 +51,21 @@ def test_every_fix_page_is_mapped() -> None:
     assert not unmapped, f"docs/fixes pages with no rule mapping: {unmapped}"
 
 
+def test_every_authored_article_has_valid_dates() -> None:
+    from scorecard_pipeline.render_site import _parse_authored_markdown
+
+    paths = sorted(FIXES_DIR.glob("*.md"))
+    fix_paths = [path for path in paths if path.stem != "README"]
+    assert len(fix_paths) == 40
+    for path in fix_paths:
+        document = _parse_authored_markdown(path.read_text(), str(path))
+        assert document.body.lstrip().startswith("# "), path
+
+    crosswalk = FIXES_DIR.parent / "crosswalk.md"
+    document = _parse_authored_markdown(crosswalk.read_text(), str(crosswalk))
+    assert document.body.lstrip().startswith("# How the grade maps to the standards")
+
+
 def test_validator_links_are_anchored_to_a_notice() -> None:
     for code, link in RULE_LINKS.items():
         if link.kind != VALIDATOR:

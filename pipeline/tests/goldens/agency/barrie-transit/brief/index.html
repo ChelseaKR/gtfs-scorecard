@@ -13,8 +13,10 @@
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <meta name="twitter:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <meta name="robots" content="noindex,follow">
@@ -28,7 +30,6 @@
   </script>
   <script src="/src/theme.js" defer></script>
   <script src="/src/nav.js" defer></script>
-  <script src="/analytics.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
@@ -60,8 +61,97 @@
     </section>
     <section aria-labelledby="brief-fixes-h">
       <h2 id="brief-fixes-h">Top three things to fix</h2>
-      <ol class="brief-fixes"><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">566 of 566 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">2295 of 2295 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the transit vehicle itself can take them.</p><p class="brief-fix-eta">Effort: Often one default setting in your export.</p></li><li class="brief-fix"><p class="brief-fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p class="brief-fix-why">The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="brief-fix-eta">Effort: A small file for most flat-fare systems.</p></li></ol>
+      <ol class="brief-fixes"><li class="brief-fix" id="finding-scorecard_wheelchair_boarding_unknown" data-finding-card="scorecard_wheelchair_boarding_unknown"><p class="brief-fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p class="brief-fix-why">566 of 566 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="brief-fix-eta">Effort: A column in stops.txt; your scheduling software likely has it.</p></li><li class="brief-fix" id="finding-scorecard_wheelchair_accessible_unknown" data-finding-card="scorecard_wheelchair_accessible_unknown"><p class="brief-fix-do">Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</p><p class="brief-fix-why">2295 of 2295 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the transit vehicle itself can take them.</p><p class="brief-fix-eta">Effort: Often one default setting in your export.</p></li><li class="brief-fix" id="finding-scorecard_no_fare_data" data-finding-card="scorecard_no_fare_data"><p class="brief-fix-do">Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</p><p class="brief-fix-why">The feed contains no fare information. Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.</p><p class="brief-fix-eta">Effort: A small file for most flat-fare systems.</p></li></ol>
     </section>
+    <section class="finding-handoff" id="finding-handoff" data-finding-handoff aria-labelledby="finding-handoff-h"><div class="handoff-head"><div><p class="handoff-kicker">Finding handoff</p><h2 id="finding-handoff-h">Move one finding to a recheck</h2></div><p>Select one finding. Copy the request, make the change in the feed-producing tool, then compare the next complete run.</p></div><nav class="finding-picker" aria-label="Select a prioritized finding"><a href="/agency/barrie-transit/brief/?finding=scorecard_wheelchair_boarding_unknown#finding-handoff" data-finding-choice="scorecard_wheelchair_boarding_unknown"><span>01</span> scorecard_wheelchair_boarding_unknown</a><a href="/agency/barrie-transit/brief/?finding=scorecard_wheelchair_accessible_unknown#finding-handoff" data-finding-choice="scorecard_wheelchair_accessible_unknown"><span>02</span> scorecard_wheelchair_accessible_unknown</a><a href="/agency/barrie-transit/brief/?finding=scorecard_no_fare_data#finding-handoff" data-finding-choice="scorecard_no_fare_data"><span>03</span> scorecard_no_fare_data</a></nav><div class="handoff-panel" data-finding-panel="scorecard_wheelchair_boarding_unknown"><dl class="handoff-grid"><div><dt>Feed evidence</dt><dd>566 of 566 stops don&#x27;t say whether a wheelchair user can board there.</dd></div><div><dt>Next action</dt><dd>Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</dd></div><div><dt>Recheck</dt><dd>Publish the changed feed at the same URL. On the next complete, comparable scorecard run, confirm that this finding is no longer reported.</dd></div></dl><nav class="handoff-links" aria-label="Finding scorecard_wheelchair_boarding_unknown links"><a href="/agency/barrie-transit/brief/?finding=scorecard_wheelchair_boarding_unknown#finding-handoff">Call brief</a><a href="/agency/barrie-transit/board/?finding=scorecard_wheelchair_boarding_unknown#finding-handoff">Board view</a><a href="/agency/barrie-transit/?finding=scorecard_wheelchair_boarding_unknown#trend-h">Feed history</a></nav><details class="handoff-copy"><summary>Copy handoff text</summary><textarea readonly rows="8" aria-label="Handoff text for scorecard_wheelchair_boarding_unknown">Agency: Barrie Transit (Ontario)
+Finding: scorecard_wheelchair_boarding_unknown
+Feed evidence: 566 of 566 stops don&#x27;t say whether a wheelchair user can board there.
+Why it matters: Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.
+Requested change: Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.
+Recheck: Publish the changed feed at the same URL. On the next complete, comparable scorecard run, confirm that this finding is no longer reported.
+Evidence: https://gtfsscorecard.org/agency/barrie-transit/?finding=scorecard_wheelchair_boarding_unknown#finding-handoff</textarea><div class="handoff-copy-actions"><button type="button" class="copy-btn" data-handoff-copy>Copy handoff</button><span class="copy-status" data-copy-status aria-live="polite"></span></div></details></div><div class="handoff-panel" data-finding-panel="scorecard_wheelchair_accessible_unknown" hidden><dl class="handoff-grid"><div><dt>Feed evidence</dt><dd>2295 of 2295 trips don&#x27;t say whether the vehicle is wheelchair accessible.</dd></div><div><dt>Next action</dt><dd>Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).</dd></div><div><dt>Recheck</dt><dd>Publish the changed feed at the same URL. On the next complete, comparable scorecard run, confirm that this finding is no longer reported.</dd></div></dl><nav class="handoff-links" aria-label="Finding scorecard_wheelchair_accessible_unknown links"><a href="/agency/barrie-transit/brief/?finding=scorecard_wheelchair_accessible_unknown#finding-handoff">Call brief</a><a href="/agency/barrie-transit/board/?finding=scorecard_wheelchair_accessible_unknown#finding-handoff">Board view</a><a href="/agency/barrie-transit/?finding=scorecard_wheelchair_accessible_unknown#trend-h">Feed history</a></nav><details class="handoff-copy"><summary>Copy handoff text</summary><textarea readonly rows="8" aria-label="Handoff text for scorecard_wheelchair_accessible_unknown">Agency: Barrie Transit (Ontario)
+Finding: scorecard_wheelchair_accessible_unknown
+Feed evidence: 2295 of 2295 trips don&#x27;t say whether the vehicle is wheelchair accessible.
+Why it matters: Even with accessible stops, riders need to know the transit vehicle itself can take them.
+Requested change: Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).
+Recheck: Publish the changed feed at the same URL. On the next complete, comparable scorecard run, confirm that this finding is no longer reported.
+Evidence: https://gtfsscorecard.org/agency/barrie-transit/?finding=scorecard_wheelchair_accessible_unknown#finding-handoff</textarea><div class="handoff-copy-actions"><button type="button" class="copy-btn" data-handoff-copy>Copy handoff</button><span class="copy-status" data-copy-status aria-live="polite"></span></div></details></div><div class="handoff-panel" data-finding-panel="scorecard_no_fare_data" hidden><dl class="handoff-grid"><div><dt>Feed evidence</dt><dd>The feed contains no fare information.</dd></div><div><dt>Next action</dt><dd>Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.</dd></div><div><dt>Recheck</dt><dd>Publish the changed feed at the same URL. On the next complete, comparable scorecard run, confirm that this finding is no longer reported.</dd></div></dl><nav class="handoff-links" aria-label="Finding scorecard_no_fare_data links"><a href="/agency/barrie-transit/brief/?finding=scorecard_no_fare_data#finding-handoff">Call brief</a><a href="/agency/barrie-transit/board/?finding=scorecard_no_fare_data#finding-handoff">Board view</a><a href="/agency/barrie-transit/?finding=scorecard_no_fare_data#trend-h">Feed history</a></nav><details class="handoff-copy"><summary>Copy handoff text</summary><textarea readonly rows="8" aria-label="Handoff text for scorecard_no_fare_data">Agency: Barrie Transit (Ontario)
+Finding: scorecard_no_fare_data
+Feed evidence: The feed contains no fare information.
+Why it matters: Riders see &#x27;fare unknown&#x27; in trip planners and can&#x27;t budget their trip; visitors are most affected.
+Requested change: Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.
+Recheck: Publish the changed feed at the same URL. On the next complete, comparable scorecard run, confirm that this finding is no longer reported.
+Evidence: https://gtfsscorecard.org/agency/barrie-transit/?finding=scorecard_no_fare_data#finding-handoff</textarea><div class="handoff-copy-actions"><button type="button" class="copy-btn" data-handoff-copy>Copy handoff</button><span class="copy-status" data-copy-status aria-live="polite"></span></div></details></div></section><script>
+(function () {
+  "use strict";
+  var safeCode = /^[A-Za-z0-9_-]+$/;
+  var safeAgency = /^[A-Za-z0-9_-]+$/;
+  var params = new URL(window.location.href).searchParams;
+  var requested = params.get("finding") || "";
+  if (!safeCode.test(requested)) requested = "";
+
+  document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
+    var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
+    if (!panels.length) return;
+    var selected = panels.some(function (panel) {
+      return panel.getAttribute("data-finding-panel") === requested;
+    }) ? requested : panels[0].getAttribute("data-finding-panel");
+    panels.forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+    });
+    handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
+      if (choice.getAttribute("data-finding-choice") === selected) {
+        choice.setAttribute("aria-current", "true");
+      } else {
+        choice.removeAttribute("aria-current");
+      }
+    });
+    document.querySelectorAll("[data-finding-card]").forEach(function (card) {
+      card.classList.toggle(
+        "finding-selected",
+        card.getAttribute("data-finding-card") === selected
+      );
+    });
+  });
+
+  document.querySelectorAll("[data-handoff-copy]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var panel = button.closest("[data-finding-panel]");
+      var field = panel && panel.querySelector("textarea");
+      var status = panel && panel.querySelector("[data-copy-status]");
+      if (!field) return;
+      var copied = navigator.clipboard && window.isSecureContext
+        ? navigator.clipboard.writeText(field.value)
+        : Promise.reject();
+      copied.catch(function () {
+        field.focus();
+        field.select();
+        document.execCommand("copy");
+      }).then(function () {
+        if (status) status.textContent = "Copied.";
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-fix-context]").forEach(function (context) {
+    var agency = params.get("agency") || "";
+    var code = context.getAttribute("data-fix-context") || "";
+    if (!safeAgency.test(agency) || !safeCode.test(code)) return;
+    context.hidden = false;
+    var agencyLabel = context.querySelector("[data-context-agency]");
+    if (agencyLabel) agencyLabel.textContent = agency;
+    var base = "/agency/" + encodeURIComponent(agency) + "/";
+    var finding = "?finding=" + encodeURIComponent(code);
+    context.querySelectorAll("[data-context-target]").forEach(function (link) {
+      var target = link.getAttribute("data-context-target");
+      if (target === "scorecard") link.href = base + finding + "#finding-handoff";
+      if (target === "brief") link.href = base + "brief/" + finding + "#finding-handoff";
+      if (target === "board") link.href = base + "board/" + finding + "#finding-handoff";
+      if (target === "history") link.href = base + finding + "#trend-h";
+    });
+  });
+}());
+</script>
 
 
 

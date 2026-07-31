@@ -63,6 +63,67 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
     ferry_cars = ferry_profile.get("cars", {}) if ferry_profile else {}
     ferry_fares = ferry_profile.get("fares", {}) if ferry_profile else {}
     ferry_realtime = ferry_profile.get("realtime", {}) if ferry_profile else {}
+    categories = artifact.get("categories")
+    raw_realtime = categories.get("realtime") if isinstance(categories, dict) else None
+    realtime_status = raw_realtime.get("status") if isinstance(raw_realtime, dict) else None
+    raw_realtime_details = raw_realtime.get("details") if isinstance(raw_realtime, dict) else None
+    realtime_details = raw_realtime_details if isinstance(raw_realtime_details, dict) else {}
+    raw_configured_kinds = realtime_details.get("configured_kinds")
+    realtime_configured_kinds = (
+        [kind for kind in raw_configured_kinds if isinstance(kind, str)]
+        if isinstance(raw_configured_kinds, list)
+        else None
+    )
+    configured_count = realtime_details.get("kinds_configured")
+    reachable_count = realtime_details.get("kinds_reachable")
+    realtime_measured = realtime_status == "measured"
+    raw_reachable_kinds = realtime_details.get("reachable_kinds")
+    realtime_reachable_kinds_list = (
+        [kind for kind in raw_reachable_kinds if isinstance(kind, str)]
+        if realtime_measured and isinstance(raw_reachable_kinds, list)
+        else None
+    )
+    # Older artifacts only publish the aggregate count. Exact endpoint-kind
+    # evidence can still be recovered when every configured kind, or none of
+    # them, responded; a partial legacy count remains unknown per kind.
+    if realtime_measured and realtime_reachable_kinds_list is None:
+        if isinstance(reachable_count, int | float) and reachable_count == 0:
+            realtime_reachable_kinds_list = []
+        elif (
+            realtime_configured_kinds is not None
+            and isinstance(configured_count, int | float)
+            and isinstance(reachable_count, int | float)
+            and configured_count == reachable_count == len(realtime_configured_kinds)
+        ):
+            realtime_reachable_kinds_list = realtime_configured_kinds.copy()
+    has_realtime = (
+        bool(realtime_configured_kinds)
+        or (isinstance(configured_count, int | float) and configured_count > 0)
+        or (isinstance(reachable_count, int | float) and reachable_count > 0)
+        if isinstance(raw_realtime, dict)
+        else None
+    )
+    realtime_reachable = (
+        isinstance(reachable_count, int | float) and reachable_count > 0
+        if realtime_measured
+        else None
+    )
+    endpoint_reachable = {
+        kind: (
+            True
+            if realtime_reachable_kinds_list is not None and kind in realtime_reachable_kinds_list
+            else (
+                False
+                if realtime_reachable_kinds_list is not None
+                and realtime_configured_kinds is not None
+                and kind in realtime_configured_kinds
+                else None
+            )
+        )
+        for kind in ("trip_updates", "vehicle_positions", "service_alerts")
+    }
+    raw_freshness = realtime_details.get("rt_freshness") if realtime_measured else None
+    realtime_fresh = raw_freshness == "fresh" if isinstance(raw_freshness, str) else None
 
     boarding = coverage.get("wheelchair_boarding_pct") if coverage else None
     accessible = coverage.get("wheelchair_accessible_pct") if coverage else None
@@ -93,6 +154,20 @@ def feature_measurements(artifact: dict[str, Any]) -> dict[str, Any]:
         "translation_languages": (adoption.get("translation_languages") if adoption else None),
         "translated_tables": adoption.get("translated_tables") if adoption else None,
         "feed_lang": adoption.get("feed_lang") if adoption else None,
+        "realtime_measured": realtime_measured,
+        "has_realtime": has_realtime,
+        "realtime_reachable": realtime_reachable,
+        "realtime_configured_kinds": realtime_configured_kinds,
+        "realtime_reachable_kinds": reachable_count if realtime_measured else None,
+        "realtime_reachable_kinds_list": realtime_reachable_kinds_list,
+        "realtime_trip_updates_reachable": endpoint_reachable["trip_updates"],
+        "realtime_vehicle_positions_reachable": endpoint_reachable["vehicle_positions"],
+        "realtime_service_alerts_reachable": endpoint_reachable["service_alerts"],
+        "realtime_coverage_pct": (
+            realtime_details.get("coverage_pct") if realtime_measured else None
+        ),
+        "realtime_freshness": raw_freshness,
+        "realtime_fresh": realtime_fresh,
         "modes_measured": mode_profile is not None,
         "primary_mode": mode_profile.get("primary_mode") if mode_profile else None,
         "modes": modes,
@@ -166,6 +241,18 @@ _PUBLIC_KEYS = (
     "translation_languages",
     "translated_tables",
     "feed_lang",
+    "realtime_measured",
+    "has_realtime",
+    "realtime_reachable",
+    "realtime_configured_kinds",
+    "realtime_reachable_kinds",
+    "realtime_reachable_kinds_list",
+    "realtime_trip_updates_reachable",
+    "realtime_vehicle_positions_reachable",
+    "realtime_service_alerts_reachable",
+    "realtime_coverage_pct",
+    "realtime_freshness",
+    "realtime_fresh",
     "modes_measured",
     "primary_mode",
     "modes",
@@ -214,6 +301,7 @@ def build_feature_dataset(
         "translation_measured_count": sum(
             row.get("translations_measured") is True for row in feeds
         ),
+        "realtime_measured_count": sum(row.get("realtime_measured") is True for row in feeds),
         "mode_measured_count": sum(row.get("modes_measured") is True for row in feeds),
         "ferry_profile_measured_count": sum(
             row.get("ferry_profile_measured") is True for row in feeds
@@ -223,6 +311,19 @@ def build_feature_dataset(
             "selected_features": "all selected features must be published",
             "translation_language": ("exact case-insensitive BCP 47 tag in translation_languages"),
             "mode": "selected mode key must be present in modes",
+            "realtime": (
+                "realtime_reachable is true only when at least one configured endpoint "
+                "responded in the latest scorecard sample; it is not an uptime or coverage SLA"
+            ),
+            "realtime_endpoint_kinds": (
+                "per-kind reachability is true only when that configured TripUpdates, "
+                "VehiclePositions, or ServiceAlerts endpoint responded in the latest sample"
+            ),
+            "realtime_freshness": (
+                "realtime_fresh is true only when the latest measured TripUpdates or "
+                "VehiclePositions header timestamp was at most 60 seconds old; service-alert "
+                "content and continuous uptime are outside this field"
+            ),
             "ferry_profile": (
                 "ferry schedule fields use ferry routes and trips only; fare and realtime "
                 "fields describe the whole feed"
